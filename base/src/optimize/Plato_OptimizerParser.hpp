@@ -41,125 +41,118 @@
 */
 
 /*
- * Plato_Radius.hpp
+ * Plato_OptimizerParser.hpp
  *
- *  Created on: Oct 21, 2017
+ *  Created on: Sep 1, 2019
  */
 
 #pragma once
 
-#include <cmath>
-#include <memory>
-#include <cassert>
+#include <limits>
 
-#include "Plato_Vector.hpp"
-#include "Plato_Criterion.hpp"
-#include "Plato_MultiVector.hpp"
+#include "Plato_Parser.hpp"
 
 namespace Plato
 {
 
 /******************************************************************************//**
- * @brief Evaluate unit disc constraint, which is defined as
- *   /f$ g(x) = x_1^2 + x_2^2 \leq \alpha /f$,
- * where /f$ \alpha /f$ is the upper bound on the constraint.
+ * @brief Optimizer parser parent class
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class Radius : public Plato::Criterion<ScalarType, OrdinalType>
+class OptimizerParser
 {
 public:
     /******************************************************************************//**
      * @brief Constructor
     **********************************************************************************/
-    Radius() :
-            mLimit(1)
+    OptimizerParser()
     {
     }
 
     /******************************************************************************//**
      * @brief Destructor
     **********************************************************************************/
-    virtual ~Radius()
+    ~OptimizerParser()
     {
     }
 
     /******************************************************************************//**
-     * @brief Set upper bound on constraint
-     * @param [in] upper bound
+     * @brief Return gradient free objective function stage name
+     * @param [in] aOptimizerNode data structure with optimization related input options
+     * @return gradient free objective function stage name
     **********************************************************************************/
-    void setLimit(const ScalarType & aLimit)
+    std::string getObjectiveStageName(const Plato::InputData & aOptimizerNode) const
     {
-        mLimit = aLimit;
-    }
-
-    /******************************************************************************//**
-     * @brief Safely cache application data after a trial control has been accepted.
-    **********************************************************************************/
-    void cacheData()
-    {
-        return;
-    }
-
-    /******************************************************************************//**
-     * @brief Evaluate objective function.
-     * @param [in] aControl optimization variables
-    **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
-    {
-        assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
-
-        const OrdinalType tVectorIndex = 0;
-        ScalarType tOutput = std::pow(aControl(tVectorIndex, 0), static_cast<ScalarType>(2.)) +
-                std::pow(aControl(tVectorIndex, 1), static_cast<ScalarType>(2.));
-        tOutput = tOutput - mLimit;
+        std::string tOutput("ObjFuncEval");
+        if(aOptimizerNode.size<Plato::InputData>("Objective"))
+        {
+            Plato::InputData tObjectiveNode = aOptimizerNode.get<Plato::InputData>("Objective");
+            tOutput = Plato::Get::String(tObjectiveNode, "ValueStageName");
+        }
         return (tOutput);
     }
 
     /******************************************************************************//**
-     * @brief Compute objective function gradient.
-     * @param [in] aControl optimization variables
-     * @param [in/out] aOutput gradient
+     * @brief Return list of gradient free constraint stage names
+     * @param [in] aOptimizerNode data structure with optimization related input options
+     * @return list of gradient free constraint stage names
     **********************************************************************************/
-    void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+    std::vector<std::string> getConstraintStageNames(const Plato::InputData & aOptimizerNode) const
     {
-        assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
-        assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
-        assert(aControl.getNumVectors() == aOutput.getNumVectors());
-
-        const OrdinalType tVectorIndex = 0;
-        aOutput(tVectorIndex, 0) = static_cast<ScalarType>(2.) * aControl(tVectorIndex, 0);
-        aOutput(tVectorIndex, 1) = static_cast<ScalarType>(2.) * aControl(tVectorIndex, 1);
-
+        std::vector<std::string> tNames;
+        auto tAllNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
+        for(auto tNode = tAllNodes.begin(); tNode != tAllNodes.end(); ++tNode)
+        {
+            std::string tMyStageName = Plato::Get::String(*tNode, "ValueStageName");
+            tNames.push_back(tMyStageName);
+        }
+        return (tNames);
     }
 
     /******************************************************************************//**
-     * @brief Apply descent direction to Hessian.
-     * @param [in] aControl optimization variables
-     * @param [in] aVector descent direction
-     * @param [in/out] aOutput application of input vector to Hessian
+     * @brief Return list of constraint reference values
+     * @param [in] aOptimizerNode data structure with optimization related input options
+     * @return list of constraint reference values
     **********************************************************************************/
-    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                 const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+    std::vector<ScalarType> getConstraintReferenceValues(const Plato::InputData & aOptimizerNode) const
     {
-        assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
-        assert(aVector.getNumVectors() > static_cast<OrdinalType>(0));
-        assert(aVector.getNumVectors() == aOutput.getNumVectors());
+        std::vector<ScalarType> tOutput;
+        auto tAllNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
+        for(auto tNode = tAllNodes.begin(); tNode != tAllNodes.end(); ++tNode)
+        {
+            ScalarType tMyReferenceValue = Plato::Get::Double(*tNode, "ReferenceValue");
+            tMyReferenceValue = tMyReferenceValue <= static_cast<ScalarType>(0.0) ? static_cast<ScalarType>(1.0) : tMyReferenceValue;
+            tOutput.push_back(tMyReferenceValue);
+        }
+        return (tOutput);
+    }
 
-        const OrdinalType tVectorIndex = 0;
-        aOutput(tVectorIndex, 0) = static_cast<ScalarType>(2.) * aVector(tVectorIndex, 0);
-        aOutput(tVectorIndex, 1) = static_cast<ScalarType>(2.) * aVector(tVectorIndex, 1);
+    /******************************************************************************//**
+     * @brief Return list of constraint target values
+     * @param [in] aOptimizerNode data structure with optimization related input options
+     * @return list of constraint target values
+    **********************************************************************************/
+    std::vector<ScalarType> getConstraintTargetValues(const Plato::InputData & aOptimizerNode) const
+    {
+        std::vector<ScalarType> tOutput;
+        auto tAllNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
+        for(auto tNode = tAllNodes.begin(); tNode != tAllNodes.end(); ++tNode)
+        {
+            ScalarType tValue = Plato::Get::Double(*tNode, "TargetValue");
+            if(std::abs(tValue) <= std::numeric_limits<ScalarType>::epsilon())
+            {
+                tValue = Plato::Get::Double(*tNode, "NormalizedTargetValue");
+            }
+            tOutput.push_back(tValue);
+        }
+        return (tOutput);
     }
 
 private:
-    ScalarType mLimit;  /*!< upper bound on constraint */
-
-private:
-    Radius(const Plato::Radius<ScalarType, OrdinalType> & aRhs);
-    Plato::Radius<ScalarType, OrdinalType> & operator=(const Plato::Radius<ScalarType, OrdinalType> & aRhs);
+    OptimizerParser(const Plato::OptimizerParser<ScalarType, OrdinalType>&);
+    Plato::OptimizerParser<ScalarType, OrdinalType> & operator=(const Plato::OptimizerParser<ScalarType, OrdinalType>&);
 };
-// class Radius
+// class OptimizerParser
 
 }
 // namespace Plato

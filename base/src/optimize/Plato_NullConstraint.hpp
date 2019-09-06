@@ -1,10 +1,4 @@
 /*
- * Plato_AnalyticalHessian.hpp
- *
- *  Created on: Oct 21, 2017
- */
-
-/*
 //@HEADER
 // *************************************************************************
 //   Plato Engine v.1.0: Copyright 2018, National Technology & Engineering
@@ -46,75 +40,87 @@
 //@HEADER
 */
 
-#ifndef PLATO_ANALYTICALHESSIAN_HPP_
-#define PLATO_ANALYTICALHESSIAN_HPP_
+/*
+ * Plato_NullConstraint.hpp
+ *
+ *  Created on: Sep 1, 2019
+ */
 
-#include <memory>
+#pragma once
 
 #include "Plato_Criterion.hpp"
-#include "Plato_StateData.hpp"
-#include "Plato_MultiVector.hpp"
 #include "Plato_LinearAlgebra.hpp"
-#include "Plato_LinearOperator.hpp"
 
 namespace Plato
 {
 
-/******************************************************************************//**
- * @brief Analytical Hessian interface
-**********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class AnalyticalHessian : public Plato::LinearOperator<ScalarType, OrdinalType>
+class NullConstraint : public Plato::Criterion<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
-     * @brief Constructor
-     * @param [in] aCriterion problem criterion
-    **********************************************************************************/
-    explicit AnalyticalHessian(const std::shared_ptr<Plato::Criterion<ScalarType, OrdinalType>> & aCriterion) :
-            mCriterion(aCriterion)
+     * Contructor
+    ***********************************************************************************/
+    NullConstraint()
     {
     }
 
     /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~AnalyticalHessian()
+     * Destructor
+    ***********************************************************************************/
+    virtual ~NullConstraint()
     {
     }
 
     /******************************************************************************//**
-     * @brief Update state-dependent data needed to compute the Hessian
-     * @param [in] aStateData state data, e.g. controls, gradient, etc.
-    **********************************************************************************/
-    void update(const Plato::StateData<ScalarType, OrdinalType> & aStateData)
+     * Safely cache application specific data after a new trial control is accepted.
+     * For instance, the state solution, i.e. solution to Partial Differential Equation,
+     * can be safely cached via the cacheData function.
+    ***********************************************************************************/
+    void cacheData()
     {
         return;
     }
 
     /******************************************************************************//**
-     * @brief Apply vector to analytical Hessian
-     * @param [in] aControl design variables
-     * @param [in] aOutput application of the input vector to analytical Hessian
-    **********************************************************************************/
-    void apply(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-               const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-               Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+     * Evaluate criterion function
+     * @param [in] aControl: control, i.e. design, variables
+     * @return criterion value
+    ***********************************************************************************/
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
     {
-        Plato::fill(static_cast<ScalarType>(0), aOutput);
-        mCriterion->hessian(aControl, aVector, aOutput);
+        return (0.0);
+    }
+
+    /******************************************************************************//**
+     * Evaluate criterion function gradient
+     * @param [in] aControl: control, i.e. design, variables
+     * @param [in/out] aOutput: function gradient
+    ***********************************************************************************/
+    void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+    {
+        Plato::fill(0.0, aOutput);
+    }
+
+    /******************************************************************************//**
+     * Evaluate criterion function gradient
+     * @param [in] aControl: control, i.e. design, variables
+     * @param [in] aVector: descent direction
+     * @param [in/out] aOutput: function gradient
+    ***********************************************************************************/
+    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> &aControl,
+                 const Plato::MultiVector<ScalarType, OrdinalType> &aVector,
+                 Plato::MultiVector<ScalarType, OrdinalType> &aOutput)
+    {
+        Plato::fill(0.0, aOutput);
     }
 
 private:
-    std::shared_ptr<Plato::Criterion<ScalarType, OrdinalType>> mCriterion;  /*!< criterion interface */
-
-private:
-    AnalyticalHessian(const Plato::AnalyticalHessian<ScalarType, OrdinalType> & aRhs);
-    Plato::AnalyticalHessian<ScalarType, OrdinalType> & operator=(const Plato::AnalyticalHessian<ScalarType, OrdinalType> & aRhs);
+    NullConstraint(const Plato::NullConstraint<ScalarType, OrdinalType> & aRhs);
+    Plato::NullConstraint<ScalarType, OrdinalType> & operator=(const Plato::NullConstraint<ScalarType, OrdinalType> & aRhs);
 };
-// class AnalyticalHessian
+// class NullConstraint
 
 }
 // namespace Plato
-
-#endif /* PLATO_ANALYTICALHESSIAN_HPP_ */

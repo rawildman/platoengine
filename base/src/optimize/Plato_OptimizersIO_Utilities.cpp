@@ -41,41 +41,28 @@
 */
 
 /*
- * Plato_StructuralTopologyOptimizationProxyGoldResults.hpp
+ * Plato_OptimizersIO_Utilities.cpp
  *
- *  Created on: Dec 14, 2017
+ *  Created on: Sep 1, 2019
  */
 
-#ifndef PLATO_STRUCTURALTOPOLOGYOPTIMIZATIONPROXYGOLDRESULTS_HPP_
-#define PLATO_STRUCTURALTOPOLOGYOPTIMIZATIONPROXYGOLDRESULTS_HPP_
+#include <cstring>
 
-#include <vector>
+#include "Plato_OptimizersIO_Utilities.hpp"
 
-namespace TopoProxy
+namespace Plato
 {
 
-std::vector<double> getGoldControlRolTest();
-std::vector<double> get_gold_control_gcmma_test();
-std::vector<double> get_gold_control_ksbc_test();
-std::vector<double> get_gold_control_ksbc_lbfgs_test();
-std::vector<double> get_gold_control_ksal_test_one();
-std::vector<double> get_gold_control_ksal_test_two();
-std::vector<double> get_gold_control_ksal_test_three();
-std::vector<double> get_gold_control_ksal_test_four();
-std::vector<double> get_gold_control_ksal_test_five();
-std::vector<double> get_gold_control_optimality_criteria_test();
+Plato::MemorySpace::type_t get_memory_space(const std::string& aInput)
+{
+    Plato::MemorySpace::type_t tOutput = Plato::MemorySpace::HOST;
+    if(std::strcmp(aInput.c_str(), "DEVICE") == 0)
+    {
+        tOutput = Plato::MemorySpace::DEVICE;
+    }
+    return (tOutput);
+}
+// function get_memory_space
 
-std::vector<double> getGoldStateData();
-std::vector<double> getGoldGradientData();
-std::vector<double> getGoldFilteredGradient();
-std::vector<double> getGoldElemStiffnessMatrix();
-std::vector<double> getGoldElemStiffnessMatrix();
-std::vector<double> getGoldHessianTimesVectorData();
-std::vector<double> getGoldNormalizedFilteredGradient();
-std::vector<double> getGoldNormalizedHessianTimesVector();
-std::vector<double> getGoldNormalizedCompoundFilteredGradient();
-std::vector<double> getGoldNormalizedCompoundHessianTimesVector();
-
-} // namespace TopoProxy
-
-#endif /* PLATO_STRUCTURALTOPOLOGYOPTIMIZATIONPROXYGOLDRESULTS_HPP_ */
+}
+// namespace Plato
