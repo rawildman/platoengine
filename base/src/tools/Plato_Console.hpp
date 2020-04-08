@@ -1,11 +1,4 @@
 /*
- * Plato_SharedValue.hpp
- *
- *  Created on: April 23, 2017
- *
- */
-
-/*
 //@HEADER
 // *************************************************************************
 //   Plato Engine v.1.0: Copyright 2018, National Technology & Engineering
@@ -47,54 +40,59 @@
 //@HEADER
 */
 
-#ifndef SRC_SHAREDVALUE_HPP_
-#define SRC_SHAREDVALUE_HPP_
+/*
+ * Plato_Console.hpp
+ *
+ *  Created on: Nov 7, 2019
+ *
+ */
 
+#ifndef SRC_CONSOLE_HPP_
+#define SRC_CONSOLE_HPP_
+
+#include "Plato_InputData.hpp"
+
+#include <mpi.h>
 #include <string>
-#include <vector>
-
-#include "mpi.h"
-#include "Plato_SharedData.hpp"
+#include <fstream>
+#include <iostream>
 
 namespace Plato
 {
 
-struct CommunicationData;
-
-class SharedValue : public SharedData
+class Console
 {
 public:
-    SharedValue(const std::string & aMyName, 
-                const std::vector<std::string> & aProviderName, 
-                const Plato::CommunicationData & aCommData, int aSize = 1, bool aIsDynamic=false);
-    virtual ~SharedValue();
+    explicit Console(const std::string & aPerformerName, int aPerformerID, InputData aInputData, MPI_Comm& aLocalComm);
+    ~Console();
 
-    int size() const;
-    std::string myName() const;
-    Plato::data::layout_t myLayout() const;
+    static void Alert(std::string aAlertMessage);
+    static void Status(std::string aStatusMessage);
 
-    void transmitData();
-    void setData(const std::vector<double> & aData);
-    void getData(std::vector<double> & aData) const;
+    static std::streambuf* mStreamBufferCout;
 
 private:
-    std::string mMyName;
-    std::vector<std::string> mProviderNames;
-    std::string mLocalCommName;
+    std::string mPerformerName;
+    int mPerformerID;
 
-    MPI_Comm mMyComm;
-    MPI_Comm mInterComm;
+    static int mMyRank;
+    static bool mEnabled;
+    static bool mVerbose;
+    static bool mRedirectable;
+    static int m_stdout_fd;
+    static int m_stderr_fd;
+    static int m_redir_fd;
 
-    int mNumData;
-    bool mIsDynamic;
-    std::vector<double> mData;
-    Plato::data::layout_t mMyLayout;
+    static std::fstream* mConsoleFile;
 
-private:
-    SharedValue(const SharedValue& aRhs);
-    SharedValue& operator=(const SharedValue& aRhs);
+    static void redirect();
+    static void restore();
+    static void redirect_cout();
+    static void redirect_printf();
+    static void restore_cout();
+    static void restore_printf();
 };
 
-} // End namespace Plato
+}
 
 #endif
