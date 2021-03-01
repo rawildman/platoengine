@@ -41,50 +41,54 @@
  */
 
 /*
- * SalinasInputDeckWriter.hpp
+ * Plato_OutputNodalFieldSharedData.hpp
  *
- *  Created on: Nov 20, 2019
- *
+ *  Created on: Feb 11, 2021
  */
 
-#ifndef SRC_SALINASINPUTDECKWRITER_HPP_
-#define SRC_SALINASINPUTDECKWRITER_HPP_
+#pragma once
 
-#include "Plato_Parser.hpp"
-#include "XMLGeneratorDataStruct.hpp"
+#include "Plato_LocalOperation.hpp"
 
-namespace XMLGen
+namespace Plato
 {
 
-class SalinasInputDeckWriter
-{
+class InputData;
 
+/******************************************************************************//**
+ * @brief Manage PLATO Main output
+ **********************************************************************************/
+class OutputNodalFieldSharedData : public Plato::LocalOp
+{
 public:
-    SalinasInputDeckWriter(const InputData &aInputData);
-    ~SalinasInputDeckWriter();
-    void generate(bool aHasUncertainties, bool aRequestedVonMises, std::ostringstream *aStringStream = NULL);
+    /******************************************************************************//**
+     * @brief Constructor
+     * @param [in] aPlatoApp PLATO application
+     * @param [in] aNode input XML data
+     **********************************************************************************/
+    OutputNodalFieldSharedData(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
-protected:
+    /******************************************************************************//**
+     * @brief Destructor
+     **********************************************************************************/
+    ~OutputNodalFieldSharedData();
+
+    /******************************************************************************//**
+     * @brief perform local operation - output data
+     **********************************************************************************/
+    void operator()();
+
+    /******************************************************************************//**
+     * @brief Return local operation's argument list
+     * @param [out] aLocalArgs argument list
+    **********************************************************************************/
+    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
 private:
-    void writeSolutionBlock(FILE *aFilePtr, const Objective &aObjective);
-    void writeParametersBlock(FILE *aFilePtr, const Objective &aObjective);
-    void writeFRFRelatedBlocks(FILE *aFilePtr, const Objective &aObjective, const bool &aFRF);
-    void writeGDSWBlock(FILE *aFilePtr, const Objective &aObjective);
-    void writeOutputsBlock(FILE *aFilePtr, const bool &aFRF);
-    void writeEchoBlock(FILE *aFilePtr, const bool &aFRF);
-    void writeMaterialBlocks(FILE *aFilePtr, const bool &aFRF);
-    void writeBlockBlocks(FILE *aFilePtr, const bool &aFRF);
-    void writeTOBlock(FILE *aFilePtr, const Objective &aObjective, const bool &aFRF,
-                      const bool& aNormalizeObjective);
-    void writeFileBlock(FILE *aFilePtr);
-    void writeLoadsBlock(FILE *aFilePtr, const Objective &aObjective, const bool &aFRF);
-    void writeBoundaryBlock(FILE *aFilePtr, const Objective &aObjective);
-
-    const InputData &mInputData;
-    FILE *mFilePointer;
+    std::vector<std::string> mInputNames;
+    int mIndex;
 };
+// class OutputNodalFieldSharedData
 
 }
-
-#endif /* SRC_SALINASINPUTDECKWRITER_HPP_ */
+// namespace Plato

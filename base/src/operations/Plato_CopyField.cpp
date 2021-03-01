@@ -41,40 +41,62 @@
  */
 
 /*
- * DefaultInputGenerator.hpp
+ * Plato_CopyField.cpp
  *
- *  Created on: Apr 16, 2020
- *
+ *  Created on: Jun 28, 2019
  */
 
-#ifndef SRC_DEFAULTINPUTGENERATOR_UNIT_TESTERHPP_
-#define SRC_DEFAULTINPUTGENERATOR_UNIT_TESTERHPP_
+#include "PlatoApp.hpp"
+#include "Plato_Parser.hpp"
+#include "Plato_CopyField.hpp"
+#include "Plato_InputData.hpp"
 
-#include <string>
-#include <map>
-#include <vector>
-#include <fstream>
-
-#include "XMLGeneratorDataStruct.hpp"
-#include "DefaultInputGenerator.hpp"
-
-
-class DefaultInputGenerator_UnitTester : public XMLGen::DefaultInputGenerator
+namespace Plato
 {
 
-public:
-    DefaultInputGenerator_UnitTester(const XMLGen::InputData &aInputData);
-    ~DefaultInputGenerator_UnitTester();
-    bool publicGeneratePlatoAnalyzeInputDecks(std::ostringstream *aStringStream = NULL);
-    bool publicGenerateInterfaceXML(std::ostringstream *aStringStream = NULL);
+CopyField::CopyField(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+        Plato::LocalOp(aPlatoApp),
+        mInputName("InputField"),
+        mOutputName("OutputField")
+{
+}
 
+CopyField::~CopyField()
+{
+}
 
-protected:
+void CopyField::operator()()
+{
+    if(mPlatoApp->getTimersTree())
+    {
+        mPlatoApp->getTimersTree()->begin_partition(Plato::timer_partition_t::timer_partition_t::filter);
+    }
 
+    // get input data
+    auto tInfield = mPlatoApp->getNodeField(mInputName);
+    Real* tInputField;
+    tInfield->ExtractView(&tInputField);
+    auto tOutfield = mPlatoApp->getNodeField(mOutputName);
+    Real* tOutputField;
+    tOutfield->ExtractView(&tOutputField);
 
-private:
+    // copy input field to output
+    const int tLength = tInfield->MyLength();
+    std::copy(tInputField, tInputField + tLength, tOutputField);
 
-};
+    if(mPlatoApp->getTimersTree())
+    {
+        mPlatoApp->getTimersTree()->end_partition();
+    }
+}
 
+void CopyField::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+{
+    aLocalArgs.push_back(Plato::LocalArg
+        { Plato::data::layout_t::SCALAR_FIELD, mInputName });
+    aLocalArgs.push_back(Plato::LocalArg
+        { Plato::data::layout_t::SCALAR_FIELD, mOutputName });
+}
 
-#endif /* SRC_DEFAULTINPUTGENERATOR_UNIT_TESTERHPP_ */
+}
+// namespace Plato

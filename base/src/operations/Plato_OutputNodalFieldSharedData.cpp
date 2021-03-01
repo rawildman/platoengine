@@ -41,52 +41,72 @@
  */
 
 /*
- * PlatoAnalyzeInputDeckWriter.hpp
+ * Plato_OutputNodalFieldSharedData.cpp
  *
- *  Created on: Nov 19, 2019
- *
+ *  Created on: October 10, 2020
  */
 
-#ifndef SRC_PLATOANALYZEINPUTDECKWRITER_HPP_
-#define SRC_PLATOANALYZEINPUTDECKWRITER_HPP_
+#include <string>
+#include <cstdio>
+#include <cstdlib>
 
-#include "Plato_Parser.hpp"
-#include "XMLGeneratorDataStruct.hpp"
+#include "PlatoApp.hpp"
+#include "Plato_OutputNodalFieldSharedData.hpp"
+#include "Plato_OperationsUtilities.hpp"
 
-namespace XMLGen
+namespace Plato
 {
 
-class PlatoAnalyzeInputDeckWriter
+OutputNodalFieldSharedData::OutputNodalFieldSharedData(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+        Plato::LocalOp(aPlatoApp)
 {
-
-public:
-    PlatoAnalyzeInputDeckWriter(const InputData &aInputData);
-    ~PlatoAnalyzeInputDeckWriter();
-    bool generate(std::ostringstream *aStringStream = NULL);
-    bool generateForShape(std::ostringstream *aStringStream = NULL);
-
-protected:
-
-private:
-    void buildMinimizeThermoelasticEnergyParamsForPlatoAnalyze(const XMLGen::Objective& cur_obj, pugi::xml_node aNode);
-    void buildMaximizeStiffnessParamsForPlatoAnalyze(const XMLGen::Objective& cur_obj, pugi::xml_node aNode);
-    void buildMaximizeHeatConductionParamsForPlatoAnalyze(const XMLGen::Objective& cur_obj, pugi::xml_node aNode);
-    void addVolumeConstraintForPlatoAnalyze(pugi::xml_node aNode);
-    void addPAObjectiveBlock(pugi::xml_node aNode, const char* aObjectiveName);
-    void addPAPDEConstraintBlock(pugi::xml_node aNode, 
-                                 const char* aPDEConstraintName,
-                                 const XMLGen::Objective& aObjective);
-    void addPAMaterialModelBlock(pugi::xml_node aNode, const char* aMaterialModelName);
-    void buildThermalNBCsForPlatoAnalyze(const XMLGen::Objective& aObjective, pugi::xml_node aNode, const std::string &aTitle, int &aBCCounter);
-    void buildThermalEBCsForPlatoAnalyze(const XMLGen::Objective& aObjective, pugi::xml_node aNode, int &aBCCounter,
-                                         const char* aVariableIndex);
-    void buildMechanicalNBCsForPlatoAnalyze(const XMLGen::Objective& cur_obj, pugi::xml_node aNode, const std::string &aTitle, int &aBCCounter);
-    void buildMechanicalEBCsForPlatoAnalyze(const XMLGen::Objective& cur_obj, pugi::xml_node aNode, int &aBCCounter);
-    bool checkForNodesetSidesetNameConflicts();
-
-    const InputData &mInputData;
-};
-
+    mIndex = 0;
+    for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
+    {
+        mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
+    }
 }
 
-#endif /* SRC_PLATOANALYZEINPUTDECKWRITER_HPP_ */
+OutputNodalFieldSharedData::~OutputNodalFieldSharedData()
+{
+}
+
+void OutputNodalFieldSharedData::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+{
+    for(auto& tInputName : mInputNames) {
+        aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, tInputName));
+    }
+}
+
+void OutputNodalFieldSharedData::operator()()
+{
+    int tMyRank = 0;
+    MPI_Comm_rank(mPlatoApp->getComm(), &tMyRank);
+    if(tMyRank == 0)
+    {
+        mIndex++;
+        for(size_t i=0; i<mInputNames.size(); ++i)
+        {
+            auto tInputName = mInputNames[i];
+            auto tFileName = tInputName;
+            
+            tFileName += std::to_string(mIndex);
+            FILE *fp=fopen(tFileName.c_str(), "w");
+            if(fp)
+            {
+                // get input data
+                auto tInfield = mPlatoApp->getNodeField(tInputName);
+                Real* tInputField;
+                tInfield->ExtractView(&tInputField);
+                const int tLength = tInfield->MyLength();
+                for(int j=0; j<tLength; ++j)
+                {
+                    fprintf(fp, "%lf\n", tInputField[j]);
+                }
+                fclose(fp);
+            }
+        }
+    }
+}
+
+}
