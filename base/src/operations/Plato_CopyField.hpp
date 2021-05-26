@@ -41,40 +41,55 @@
  */
 
 /*
- * ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester.hpp
+ * Plato_CopyField.hpp
  *
- *  Created on: Apr 27, 2020
- *
+ *  Created on: Jan 18, 2021
  */
 
-#ifndef SRC_COMPLIANCEMINTOPLATOANALYZEINPUTGENERATOR_UNIT_TESTERHPP_
-#define SRC_COMPLIANCEMINTOPLATOANALYZEINPUTGENERATOR_UNIT_TESTERHPP_
+#pragma once
 
-#include <string>
-#include <map>
-#include <vector>
-#include <fstream>
+#include "Plato_LocalOperation.hpp"
 
-#include "XMLGeneratorDataStruct.hpp"
-#include "ComplianceMinTOPlatoAnalyzeInputGenerator.hpp"
+class PlatoApp;
 
-
-class ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester : public XMLGen::ComplianceMinTOPlatoAnalyzeInputGenerator
+namespace Plato
 {
 
+class InputData;
+
+/******************************************************************************//**
+ * @brief Manages application of copy to a quantity of interest
+ **********************************************************************************/
+class CopyField : public Plato::LocalOp
+{
 public:
-    ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester(const XMLGen::InputData &aInputData);
-    ~ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester();
-    bool publicGeneratePlatoAnalyzeInputDecks(std::ostringstream *aStringStream = NULL);
-    bool publicGenerateInterfaceXML(std::ostringstream *aStringStream = NULL);
+    /******************************************************************************//**
+     * @brief Constructor
+     * @param [in] aPlatoApp PLATO application
+     * @param [in] aNode input XML data
+    **********************************************************************************/
+    CopyField(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
+    /******************************************************************************//**
+     * @brief Destructor
+    **********************************************************************************/
+    virtual ~CopyField();
 
-protected:
+    /******************************************************************************//**
+     * @brief perform local operation - apply copy
+    **********************************************************************************/
+    void operator()();
 
+    /******************************************************************************//**
+     * @brief Return local operation's argument list
+     * @param [out] aLocalArgs argument list
+    **********************************************************************************/
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
 private:
-
+    std::string mInputName; /*!< input argument name */
+    std::string mOutputName; /*!< output argument name */
 };
+// class CopyField;
 
-
-#endif /* SRC_COMPLIANCEMINTOPLATOANALYZEINPUTGENERATOR_UNIT_TESTERHPP_ */
+}

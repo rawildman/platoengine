@@ -40,41 +40,39 @@
 //@HEADER
 */
 
-/*
- * ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester.cpp
- *
- *  Created on: Apr 27, 2020
- *
- */
+#pragma once
 
-#include "ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester.hpp"
+#include "PlatoEngine_AbstractKernelThenFilter.hpp"
+#include "Plato_InputData.hpp"
+// #include "Plato_Parser.hpp"
+// #include "PSL_AbstractAuthority.hpp"
 
-/******************************************************************************/
-ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester::ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester(const XMLGen::InputData& aInputData) :
-ComplianceMinTOPlatoAnalyzeInputGenerator(aInputData) 
-/******************************************************************************/
+namespace Plato
 {
-}
 
-/******************************************************************************/
-ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester::~ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester()
-/******************************************************************************/
+class KernelThenStructuredAMFilter : public AbstractKernelThenFilter
 {
+public:
+    KernelThenStructuredAMFilter(){}
+    virtual ~KernelThenStructuredAMFilter(){}
+
+    virtual void build(InputData aInputData, MPI_Comm& aLocalComm, DataMesh* aMesh);
+
+private:
+
+    virtual void allocateFilter();
+    void extractMeshData(DataMesh* aMesh, const std::string& aSideSetName);
+
+    void getCoordinates(DataMesh* aMesh);
+    void getConnectivity(DataMesh* aMesh);
+    void getBaseLayer(DataMesh* aMesh, const std::string& aSideSetName);
+
+    const int mDimension = 3;
+    const int mNumNodesPerElement = 4;
+
+    std::vector<std::vector<double>> mCoordinates;
+    std::vector<std::vector<int>> mConnectivity;
+    std::vector<int> mBaseLayer;
+};
+
 }
-
-/******************************************************************************/
-bool ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester::publicGeneratePlatoAnalyzeInputDecks(std::ostringstream *aStringStream)
-/******************************************************************************/
-{
-    return generatePlatoAnalyzeInputDecks(aStringStream);
-}
-
-/******************************************************************************/
-bool ComplianceMinTOPlatoAnalyzeInputGenerator_UnitTester::publicGenerateInterfaceXML(std::ostringstream *aStringStream)
-/******************************************************************************/
-{
-    return generateInterfaceXML(aStringStream);
-}
-
-
-

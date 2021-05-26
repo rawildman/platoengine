@@ -40,38 +40,39 @@
 //@HEADER
 */
 
-/*
- * Plato_Test_FreeFunctions.cpp
- *
- */
+#pragma once
 
-#include "gtest/gtest.h"
+#include "PlatoEngine_AbstractKernelThenFilter.hpp"
+#include "Plato_InputData.hpp"
+// #include "Plato_Parser.hpp"
+// #include "PSL_AbstractAuthority.hpp"
 
-#include "Plato_FreeFunctions.hpp"
-
-#include <cstddef>
-
-namespace PlatoTest
+namespace Plato
 {
 
-TEST(FreeFunctions, DivideUpProcessors)
+class KernelThenAMFilter : public AbstractKernelThenFilter
 {
-    // first scenario
-    EXPECT_EQ(4u, Plato::divide_up_atmost_processors(4u,3u,12u));
-    EXPECT_EQ(3u, Plato::divide_up_atmost_processors(4u,3u,10u));
-    EXPECT_EQ(3u, Plato::divide_up_atmost_processors(4u,3u,9u));
-    EXPECT_EQ(2u, Plato::divide_up_atmost_processors(4u,3u,8u));
+public:
+    KernelThenAMFilter(){}
+    virtual ~KernelThenAMFilter(){}
 
-    // second scenario
-    EXPECT_EQ(7u, Plato::divide_up_atmost_processors(7u,5u,43u));
-    EXPECT_EQ(7u, Plato::divide_up_atmost_processors(7u,5u,42u));
-    EXPECT_EQ(7u, Plato::divide_up_atmost_processors(7u,5u,41u));
-    EXPECT_EQ(7u, Plato::divide_up_atmost_processors(7u,5u,36u));
-    EXPECT_EQ(7u, Plato::divide_up_atmost_processors(7u,5u,35u));
-    EXPECT_EQ(6u, Plato::divide_up_atmost_processors(7u,5u,34u));
-    EXPECT_EQ(5u, Plato::divide_up_atmost_processors(7u,5u,26u));
-    EXPECT_EQ(5u, Plato::divide_up_atmost_processors(7u,5u,25u));
-    EXPECT_EQ(4u, Plato::divide_up_atmost_processors(7u,5u,24u));
+    virtual void build(InputData aInputData, MPI_Comm& aLocalComm, DataMesh* aMesh);
+
+private:
+
+    virtual void allocateFilter();
+    void extractMeshData(DataMesh* aMesh);
+
+    void getCoordinates(DataMesh* aMesh);
+    void getConnectivity(DataMesh* aMesh);
+    void getBaseLayer(DataMesh* aMesh);
+
+    const int mDimension = 3;
+    const int mNumNodesPerElement = 4;
+
+    std::vector<std::vector<double>> mCoordinates;
+    std::vector<std::vector<int>> mConnectivity;
+    std::vector<int> mBaseLayer;
+};
+
 }
-
-} // namespace PlatoTest
