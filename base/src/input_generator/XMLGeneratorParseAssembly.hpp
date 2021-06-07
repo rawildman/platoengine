@@ -90,11 +90,11 @@ public:
     void setParentBlock(XMLGen::Assembly& aMetadata);
 
     /******************************************************************************//**
-     * \fn setOffset
+     * \fn setOffsetMetadata
      * \brief Set the Assembly offset vector.
      * \param [in] aMetadata assembly metadata.
     **********************************************************************************/
-    void setOffset(XMLGen::Assembly& aMetadata);
+    void setOffsetMetadata(XMLGen::Assembly& aMetadata);
 
     /******************************************************************************//**
      * \fn setRhsValue

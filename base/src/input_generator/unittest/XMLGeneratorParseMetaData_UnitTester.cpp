@@ -1085,8 +1085,9 @@ TEST(PlatoTestXMLGenerator, ParseAssembly_DefaultMainValues)
         ASSERT_STREQ("tied", tAssembly.value("type").c_str());
         ASSERT_STREQ("ns_1", tAssembly.value("child_nodeset").c_str());
         ASSERT_STREQ("1", tAssembly.value("parent_block").c_str());
-
-        ASSERT_STREQ("0.0 0.0 0.0", tAssembly.value("offset").c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[0].c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[1].c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[2].c_str());
         ASSERT_STREQ("0.0", tAssembly.value("rhs_value").c_str());
     }
 }
@@ -1198,11 +1199,13 @@ TEST(PlatoTestXMLGenerator, ParseAssembly_OneAssembly)
     ASSERT_STREQ("1", tAssemblyMetaData[0].id().c_str());
 
     auto tTags = tAssemblyMetaData[0].tags();
-    ASSERT_EQ(6u, tTags.size());
+    ASSERT_EQ(5u, tTags.size());
     ASSERT_STREQ("tied", tAssemblyMetaData[0].property("type").c_str());
     ASSERT_STREQ("ns_1", tAssemblyMetaData[0].property("child_nodeset").c_str());
     ASSERT_STREQ("1", tAssemblyMetaData[0].property("parent_block").c_str());
-    ASSERT_STREQ("0.0 0.0 0.0", tAssemblyMetaData[0].property("offset").c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[1].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[2].c_str());
     ASSERT_STREQ("0.0", tAssemblyMetaData[0].property("rhs_value").c_str());
 }
 
@@ -1234,19 +1237,23 @@ TEST(PlatoTestXMLGenerator, ParseAssembly_TwoAssembly)
     ASSERT_STREQ("2", tAssemblyMetaData[1].id().c_str());
 
     auto tTags = tAssemblyMetaData[0].tags();
-    ASSERT_EQ(6u, tTags.size());
+    ASSERT_EQ(5u, tTags.size());
     ASSERT_STREQ("tied", tAssemblyMetaData[0].property("type").c_str());
     ASSERT_STREQ("ns_1", tAssemblyMetaData[0].property("child_nodeset").c_str());
     ASSERT_STREQ("1", tAssemblyMetaData[0].property("parent_block").c_str());
-    ASSERT_STREQ("0.0 0.0 0.0", tAssemblyMetaData[0].property("offset").c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[1].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[2].c_str());
     ASSERT_STREQ("10.0", tAssemblyMetaData[0].property("rhs_value").c_str());
 
     tTags = tAssemblyMetaData[1].tags();
-    ASSERT_EQ(6u, tTags.size());
+    ASSERT_EQ(5u, tTags.size());
     ASSERT_STREQ("tied", tAssemblyMetaData[1].property("type").c_str());
     ASSERT_STREQ("ns_2", tAssemblyMetaData[1].property("child_nodeset").c_str());
     ASSERT_STREQ("4", tAssemblyMetaData[1].property("parent_block").c_str());
-    ASSERT_STREQ("1.0 0.0 -0.4", tAssemblyMetaData[1].property("offset").c_str());
+    ASSERT_STREQ("1.0", tAssemblyMetaData[1].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[1].offset()[1].c_str());
+    ASSERT_STREQ("-0.4", tAssemblyMetaData[1].offset()[2].c_str());
     ASSERT_STREQ("0.0", tAssemblyMetaData[1].property("rhs_value").c_str());
 }
 

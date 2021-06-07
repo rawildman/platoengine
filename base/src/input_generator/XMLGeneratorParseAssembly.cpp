@@ -81,26 +81,6 @@ void ParseAssembly::setParentBlock(XMLGen::Assembly& aMetadata)
     }
 }
 
-void ParseAssembly::setOffset(XMLGen::Assembly& aMetadata)
-{
-    if(aMetadata.value("offset").empty())
-    {
-        auto tItr = mTags.find("offset");
-        if(tItr->second.first.second.empty()) // set to default
-        {
-            if(tItr->second.second.empty())
-            {
-                THROWERR("Parse Assembly: assembly offset default is empty.")
-            }
-            aMetadata.property("offset", tItr->second.second);
-        } 
-        else
-        {
-            aMetadata.property("offset", tItr->second.first.second);
-        }
-    }
-}
-
 void ParseAssembly::setRhsValue(XMLGen::Assembly& aMetadata)
 {
     if(aMetadata.value("rhs_value").empty())
@@ -121,13 +101,43 @@ void ParseAssembly::setRhsValue(XMLGen::Assembly& aMetadata)
     }
 }
 
+void ParseAssembly::setOffsetMetadata(XMLGen::Assembly& aMetadata)
+{
+    if(aMetadata.offset().size() == 0)
+    {
+        auto tItr = mTags.find("offset");
+        if(tItr->second.first.second.empty()) // set to default
+        {
+            if(tItr->second.second.empty())
+            {
+                THROWERR("Parse Assembly: assembly offset default is empty.")
+            }
+            std::string tOffset = tItr->second.second;
+            std::vector<std::string> tParsedOffset;
+            char tOffsetBuffer[10000];
+            strcpy(tOffsetBuffer, tOffset.c_str());
+            XMLGen::parse_tokens(tOffsetBuffer, tParsedOffset);
+            aMetadata.offset(tParsedOffset);
+        } 
+        else
+        {
+            std::string tOffset = tItr->second.first.second;
+            std::vector<std::string> tParsedOffset;
+            char tOffsetBuffer[10000];
+            strcpy(tOffsetBuffer, tOffset.c_str());
+            XMLGen::parse_tokens(tOffsetBuffer, tParsedOffset);
+            aMetadata.offset(tParsedOffset);
+        }
+    }
+}
+
 void ParseAssembly::setMetadata(XMLGen::Assembly& aMetadata)
 {
     this->setAssemblyIdentification(aMetadata);
     this->setType(aMetadata);
     this->setChildNodeset(aMetadata);
     this->setParentBlock(aMetadata);
-    this->setOffset(aMetadata);
+    this->setOffsetMetadata(aMetadata);
     this->setRhsValue(aMetadata);
 }
 

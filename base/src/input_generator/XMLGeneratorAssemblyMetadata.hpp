@@ -24,6 +24,7 @@ struct Assembly
 {
 private:
     std::map<std::string, std::pair<std::string, std::string>> mProperties; /*!< list of assembly properties, map< tag, pair<attribute,value> > */
+    std::vector<std::string> mOffset;
 
 public:
     /******************************************************************************//**
@@ -105,11 +106,18 @@ public:
      * \brief offset distance between part faces in assembly
      * \return assembly offset
     **********************************************************************************/
-    std::string offset() const
+    const std::vector<std::string>& offset() const
     {
-        auto tItr = mProperties.find("offset");
-        auto tOutput = tItr == mProperties.end() ? "" : tItr->second.second;
-        return tOutput;
+        return mOffset;
+    }
+
+    /******************************************************************************//**
+     * \fn offset
+     * \brief set offset values
+    **********************************************************************************/
+    void offset(const std::vector<std::string>& aOffset) 
+    {
+        mOffset = aOffset;
     }
 
     /******************************************************************************//**
