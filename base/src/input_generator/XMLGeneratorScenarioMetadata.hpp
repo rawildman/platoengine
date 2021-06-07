@@ -24,6 +24,7 @@ private:
     std::unordered_map<std::string, std::string> mMetaData; /*!< Scenario metadata, map< tag, value > */
     std::vector<std::string> mLoadIDs;
     std::vector<std::string> mBCIDs;
+    std::vector<std::string> mAssemblyIDs;
     std::vector<std::string> mFRFMatchNodesetIDs;
 
 // private member functions
@@ -88,6 +89,20 @@ public:
      * \param [in] input boundary condition IDs 
     **********************************************************************************/
     void setBCIDs(std::vector<std::string>& aBCIDs) {mBCIDs = aBCIDs;};
+
+    /******************************************************************************//**
+     * \fn assemblyIDs
+     * \brief Return scenario assembly IDs
+     * \return scenario assembly IDs
+    **********************************************************************************/
+    std::vector<std::string> assemblyIDs() const {return mAssemblyIDs;};
+
+    /******************************************************************************//**
+     * \fn setAssemblyIDs
+     * \brief Set scenario assembly IDs
+     * \param [in] input assembly IDs 
+    **********************************************************************************/
+    void setAssemblyIDs(std::vector<std::string>& aAssemblyIDs) {mAssemblyIDs = aAssemblyIDs;};
 
     /******************************************************************************//**
      * \fn value

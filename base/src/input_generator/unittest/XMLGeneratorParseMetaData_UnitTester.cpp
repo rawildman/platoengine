@@ -821,8 +821,8 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithAssembly)
         "   dimensions 3\n"
         "   loads 1\n"
         "   boundary_conditions 1\n"
-        "   assembly 1\n"
-        "end scenario\n"
+        "   assemblies 1\n"
+        "end scenario\n";
     std::istringstream tInputSS;
     tInputSS.str(tStringInput);
 

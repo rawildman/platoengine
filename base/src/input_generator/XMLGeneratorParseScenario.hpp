@@ -61,6 +61,13 @@ private:
     void setBCIDs(XMLGen::Scenario& aScenario);
 
     /******************************************************************************//**
+     * \fn setAssemblyIDs
+     * \brief Set Scenario assembly ids.
+     * \param [in] aScenario Scenario metadata
+    **********************************************************************************/
+    void setAssemblyIDs(XMLGen::Scenario& aScenario);
+
+    /******************************************************************************//**
      * \fn checkTags
      * \brief Check Scenario metadata.
      * \param [in] aScenario Scenario metadata
