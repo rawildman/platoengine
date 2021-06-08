@@ -586,6 +586,7 @@ void append_spatial_model_to_plato_problem
 }
 // function append_spatial_model_to_plato_problem
 /**********************************************************************************/
+
 /**********************************************************************************/
 void append_material_model_to_plato_problem
 (const std::vector<XMLGen::Material>& aMaterials,
@@ -919,10 +920,40 @@ void append_essential_boundary_conditions_to_plato_analyze_input_deck
 /**********************************************************************************/
 
 /**********************************************************************************/
+void check_valid_assembly_parent_blocks
+(const XMLGen::InputData& aXMLMetaData)
+{
+    for(auto& tAssembly : aXMLMetaData.assemblies)
+    {
+        auto tBlocks = aXMLMetaData.blocks;
+        bool tBlockFound = false;
+
+        for(auto tBlk : tBlocks)
+        {
+            if(tBlk.block_id == tAssembly.parent_block())
+            {
+                tBlockFound = true;
+                break;
+            }
+
+        }
+        if(!tBlockFound)
+        {
+            THROWERR("Append Assembly to Plato Analyze Input Deck: Assembly " + tAssembly.id() + 
+                    " lists parent block with id " + tAssembly.parent_block() + " but no block with ID " + tAssembly.parent_block() + " exists")
+        }
+    }
+}
+// function check_valid_assembly_parent_blocks
+/**********************************************************************************/
+
+/**********************************************************************************/
 void append_assemblies_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
+    check_valid_assembly_parent_blocks(aXMLMetaData);
+
     XMLGen::AppendAssembly tFuncInterface;
 
     std::vector<XMLGen::Scenario> tScenarioList;

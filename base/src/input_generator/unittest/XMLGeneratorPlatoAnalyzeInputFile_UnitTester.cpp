@@ -1630,6 +1630,29 @@ TEST(PlatoTestXMLGenerator, NaturalBoundaryConditionTag)
     ASSERT_STREQ("Random Uniform Surface Flux Boundary Condition with ID 1", tName.c_str());
 }
 
+TEST(PlatoTestXMLGenerator, AppendAssembly_ErrorInvalidParentBlock)
+{
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Assembly tAssembly;
+    tAssembly.property("id", "1");
+    tAssembly.property("type", "tied");
+    tAssembly.property("child_nodeset", "ns_1");
+    tAssembly.property("parent_block", "2");
+    std::vector<std::string> tDefaultOffset = {"0.0", "0.0", "0.0"};
+    tAssembly.offset(tDefaultOffset);
+    tAssembly.property("rhs_value", "0.0");
+    tXMLMetaData.assemblies.push_back(tAssembly);
+
+    XMLGen::Block tBlock;
+    tBlock.block_id = "1";
+    tXMLMetaData.blocks.push_back(tBlock);
+
+    pugi::xml_document tDocument;
+
+    ASSERT_THROW(XMLGen::append_assemblies_to_plato_analyze_input_deck(tXMLMetaData, tDocument), std::runtime_error);
+}
+
 TEST(PlatoTestXMLGenerator, AppendAssembly_CategoryFixed)
 {
     XMLGen::Assembly tAssembly;
@@ -1703,6 +1726,13 @@ TEST(PlatoTestXMLGenerator, AppendAssembliesToPlatoAnalyzeInputDeck)
     tAssembly.offset(tPrescribedOffset);
     tAssembly.property("rhs_value", "0.0");
     tXMLMetaData.assemblies.push_back(tAssembly);
+
+    XMLGen::Block tBlock;
+    tBlock.block_id = "2";
+    tXMLMetaData.blocks.push_back(tBlock);
+    tBlock.block_id = "3";
+    tXMLMetaData.blocks.push_back(tBlock);
+
     XMLGen::Scenario tScenario;
     tScenario.id("1");
 

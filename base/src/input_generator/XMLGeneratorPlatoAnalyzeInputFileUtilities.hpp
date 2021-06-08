@@ -398,6 +398,14 @@ void append_essential_boundary_conditions_to_plato_analyze_input_deck
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn check_valid_assembly_parent_blocks
+ * \brief check parent block IDs with block IDs stored in input data
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+void check_valid_assembly_parent_blocks
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
  * \fn append_assemblies_to_plato_analyze_input_deck
  * \brief Append assemblies to problem parameter list.
  * \param [in]     aXMLMetaData Plato problem input data
