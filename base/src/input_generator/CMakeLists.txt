@@ -41,6 +41,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
                       XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
@@ -85,6 +86,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentiallBCTagFunctionInterface.hpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp
                       # XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp
                       # XMLGeneratorAnalyzeAppendCriterionFunctionInterface.hpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp

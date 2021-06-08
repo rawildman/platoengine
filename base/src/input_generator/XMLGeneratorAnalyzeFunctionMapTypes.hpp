@@ -33,6 +33,9 @@ typedef void (*NaturalBCFunc)(void);
 /*!< define essential boundary condition function pointer type */
 typedef void (*EssentialBCFunc)(void);
 
+/*!< define assembly function pointer type */
+typedef void (*AssemblyFunc)(void);
+
 /*!< define natural boundary condition tag function pointer type */
 typedef std::string (*NaturalBCTagFunc)(void);
 
@@ -72,6 +75,10 @@ typedef std::unordered_map<std::string, std::pair<XMLGen::Analyze::EssentialBCFu
 /*!< map from essential boundary condition (bc) category to essential bc function used to define \n
  * the essential bcs tags, i.e. map<essential_bc_category, define_essential_bc_tag_function> */
 typedef std::unordered_map<std::string, std::pair<XMLGen::Analyze::EssentialBCTagFunc, std::type_index>> EssentialBCTagFuncMap;
+
+/*!< map from assembly type to assembly function used to append, \n
+ * assembly parameters, i.e. map<assembly_type, append_assembly_function> */
+typedef std::unordered_map<std::string, std::pair<XMLGen::Analyze::AssemblyFunc, std::type_index>> AssemblyFuncMap;
 
 }
 // namespace Analyze

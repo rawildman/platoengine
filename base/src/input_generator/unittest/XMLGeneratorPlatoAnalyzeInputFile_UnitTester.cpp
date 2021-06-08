@@ -14,6 +14,7 @@
 #include "XMLGeneratorAnalyzePhysicsFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeNaturalBCFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp"
+#include "XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
@@ -1627,6 +1628,132 @@ TEST(PlatoTestXMLGenerator, NaturalBoundaryConditionTag)
     tLoad.is_random("true");
     tName = tInterface.call(tLoad);
     ASSERT_STREQ("Random Uniform Surface Flux Boundary Condition with ID 1", tName.c_str());
+}
+
+TEST(PlatoTestXMLGenerator, AppendAssembly_CategoryFixed)
+{
+    XMLGen::Assembly tAssembly;
+    tAssembly.property("id", "1");
+    tAssembly.property("type", "tied");
+    tAssembly.property("child_nodeset", "ns_1");
+    tAssembly.property("parent_block", "2");
+    std::vector<std::string> tDefaultOffset = {"0.0", "0.0", "0.0"};
+    tAssembly.offset(tDefaultOffset);
+    tAssembly.property("rhs_value", "0.0");
+    pugi::xml_document tDocument;
+
+    XMLGen::AppendAssembly tInterface;
+    ASSERT_NO_THROW(tInterface.call(tAssembly, tDocument));
+
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::vector<std::string>> tGoldValues =
+        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "0.0"} };
+    std::vector<std::string> tGoldParameterListNames =
+        {"Tied Assembly Using PBC Multipoint Constraint"};
+
+    auto tParamList = tDocument.child("ParameterList");
+    auto tGoldValuesItr = tGoldValues.begin();
+    auto tGoldParameterListNamesItr = tGoldParameterListNames.begin();
+    while(!tParamList.empty())
+    {
+        ASSERT_FALSE(tParamList.empty());
+        ASSERT_STREQ("ParameterList", tParamList.name());
+        PlatoTestXMLGenerator::test_attributes({"name"}, {tGoldParameterListNamesItr->c_str()}, tParamList);
+
+        auto tParameter = tParamList.child("Parameter");
+        while(!tParameter.empty())
+        {
+            ASSERT_FALSE(tParameter.empty());
+            ASSERT_STREQ("Parameter", tParameter.name());
+            PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValuesItr.operator*(), tParameter);
+            tParameter = tParameter.next_sibling();
+            std::advance(tGoldValuesItr, 1);
+        }
+        tParamList = tParamList.next_sibling();
+        std::advance(tGoldParameterListNamesItr, 1);
+    }
+}
+
+TEST(PlatoTestXMLGenerator, AppendAssembliesToPlatoAnalyzeInputDeck)
+{
+    // POSE PROBLEM
+    std::vector<std::string> tDefaultOffset = {"0.0", "0.0", "0.0"};
+    std::vector<std::string> tPrescribedOffset = {"1.0", "-0.01", "80.0"};
+
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::Assembly tAssembly;
+    tAssembly.property("id", "1");
+    tAssembly.property("type", "tied");
+    tAssembly.property("child_nodeset", "ns_1");
+    tAssembly.property("parent_block", "2");
+    tAssembly.offset(tDefaultOffset);
+    tAssembly.property("rhs_value", "0.0");
+    tXMLMetaData.assemblies.push_back(tAssembly);
+    tAssembly.property("id", "2");
+    tAssembly.property("type", "tied");
+    tAssembly.property("child_nodeset", "ns_2");
+    tAssembly.property("parent_block", "2");
+    tAssembly.offset(tDefaultOffset);
+    tAssembly.property("rhs_value", "2.4");
+    tXMLMetaData.assemblies.push_back(tAssembly);
+    tAssembly.property("id", "3");
+    tAssembly.property("type", "tied");
+    tAssembly.property("child_nodeset", "ns_5");
+    tAssembly.property("parent_block", "3");
+    tAssembly.offset(tPrescribedOffset);
+    tAssembly.property("rhs_value", "0.0");
+    tXMLMetaData.assemblies.push_back(tAssembly);
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+
+    tScenario.physics("steady_state_mechanics");
+
+    std::vector<std::string> assemblyIDs = {{"1"},{"2"},{"3"}};
+    tScenario.setAssemblyIDs(assemblyIDs);
+    tXMLMetaData.append(tScenario);
+    tXMLMetaData.objective.scenarioIDs.push_back("1");
+
+    // CALL FUNCTION
+    pugi::xml_document tDocument;
+    XMLGen::append_assemblies_to_plato_analyze_input_deck(tXMLMetaData, tDocument);
+
+    // TEST
+    auto tAssemblyDoc = tDocument.child("ParameterList");
+    ASSERT_FALSE(tAssemblyDoc.empty());
+    ASSERT_STREQ("ParameterList", tAssemblyDoc.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Multipoint Constraints"}, tAssemblyDoc);
+
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::vector<std::string>> tGoldValues =
+        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "0.0"}, 
+          {"Type", "string", "PBC"}, {"Child", "string", "ns_2"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "2.4"},
+          {"Type", "string", "PBC"}, {"Child", "string", "ns_5"}, {"Parent", "string", "Block 3"}, {"Vector", "Array(double)", "{1.0, -0.01, 80.0}"}, {"Value", "double", "0.0"} };
+    std::vector<std::string> tGoldParameterListNames =
+        {"Tied Assembly Using PBC Multipoint Constraint",
+         "Tied Assembly Using PBC Multipoint Constraint",
+         "Tied Assembly Using PBC Multipoint Constraint"};
+
+    auto tParamList = tAssemblyDoc.child("ParameterList");
+    auto tGoldValuesItr = tGoldValues.begin();
+    auto tGoldParameterListNamesItr = tGoldParameterListNames.begin();
+    while(!tParamList.empty())
+    {
+        ASSERT_FALSE(tParamList.empty());
+        ASSERT_STREQ("ParameterList", tParamList.name());
+        PlatoTestXMLGenerator::test_attributes({"name"}, {tGoldParameterListNamesItr->c_str()}, tParamList);
+
+        auto tParameter = tParamList.child("Parameter");
+        while(!tParameter.empty())
+        {
+            ASSERT_FALSE(tParameter.empty());
+            ASSERT_STREQ("Parameter", tParameter.name());
+            PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValuesItr.operator*(), tParameter);
+            tParameter = tParameter.next_sibling();
+            std::advance(tGoldValuesItr, 1);
+        }
+        tParamList = tParamList.next_sibling();
+        std::advance(tGoldParameterListNamesItr, 1);
+    }
 }
 
 TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_ErrorEmptyBlockContainer)

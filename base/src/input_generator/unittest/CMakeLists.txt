@@ -55,6 +55,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.cpp
                                       ../XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                                       ../XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                                      ../XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
                                       ../XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
                                       ../XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                                       ../XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp

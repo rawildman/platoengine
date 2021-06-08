@@ -81,6 +81,7 @@
 #include "XMLGeneratorParseOptimizationParameters.hpp"
 #include "XMLGeneratorParseEssentialBoundaryCondition.hpp"
 #include "XMLGeneratorParseNaturalBoundaryCondition.hpp"
+#include "XMLGeneratorParseAssembly.hpp"
 
 namespace XMLGen
 {
@@ -667,6 +668,16 @@ bool XMLGenerator::parseLoads(std::istream &fin)
     XMLGen::ParseNaturalBoundaryCondition tParseNaturalBoundaryCondition;
     tParseNaturalBoundaryCondition.parse(fin);
     m_InputData.loads = tParseNaturalBoundaryCondition.data();
+    return true;
+}
+
+/******************************************************************************/
+bool XMLGenerator::parseAssemblies(std::istream &fin)
+/******************************************************************************/
+{
+    XMLGen::ParseAssembly tParseAssembly;
+    tParseAssembly.parse(fin);
+    m_InputData.assemblies = tParseAssembly.data();
     return true;
 }
 
@@ -2053,6 +2064,10 @@ void XMLGenerator::parseInputFile()
 
   tInputFile.open(m_InputFilename.c_str()); // open a file
   parseLoads(tInputFile);
+  tInputFile.close();
+
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  parseAssemblies(tInputFile);
   tInputFile.close();
 
   tInputFile.open(m_InputFilename.c_str()); // open a file

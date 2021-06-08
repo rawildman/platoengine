@@ -22,6 +22,7 @@
 #include "XMLGeneratorMaterialMetadata.hpp"
 #include "XMLGeneratorEssentialBoundaryConditionMetadata.hpp"
 #include "XMLGeneratorNaturalBoundaryConditionMetadata.hpp"
+#include "XMLGeneratorAssemblyMetadata.hpp"
 #include "XMLGeneratorUncertaintyMetadata.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorOptimizationParametersMetadata.hpp"
@@ -542,6 +543,7 @@ public:
     std::vector<XMLGen::EssentialBoundaryCondition> ebcs;
     std::vector<XMLGen::Block> blocks;
     std::vector<XMLGen::NaturalBoundaryCondition> loads;
+    std::vector<XMLGen::Assembly> assemblies;
     XMLGen::Mesh mesh;
     XMLGen::CodePaths codepaths;
     std::vector<XMLGen::Uncertainty> uncertainties;

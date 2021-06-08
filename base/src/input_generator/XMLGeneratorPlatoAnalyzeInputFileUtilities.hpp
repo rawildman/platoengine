@@ -144,6 +144,18 @@ void get_ebc_vector_for_scenario
  std::vector<XMLGen::EssentialBoundaryCondition> &aEBCVector);
 
 /******************************************************************************//**
+ * \fn get_assembly_vector_for_scenario
+ * \brief Utility function to retrieve the assemblies used in a scenario
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in]     aScenario The scenario of interest
+ * \param [out]    aAssemblyVector  assembly vector to populate
+**********************************************************************************/
+void get_assembly_vector_for_scenario
+(const XMLGen::InputData& aXMLMetaData,
+ const XMLGen::Scenario &aScenario,
+ std::vector<XMLGen::Assembly> &aAssemblyVector);
+
+/******************************************************************************//**
  * \fn append_weighted_sum_objective_to_plato_problem
  * \brief Append weighted sum objective function to plato problem parameter list.
  * \param [in]     aXMLMetaData Plato problem input data
@@ -382,6 +394,16 @@ void append_natural_boundary_conditions_to_plato_analyze_input_deck
  * \param [in/out] aParentNode  pugi::xml_node
 **********************************************************************************/
 void append_essential_boundary_conditions_to_plato_analyze_input_deck
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_assemblies_to_plato_analyze_input_deck
+ * \brief Append assemblies to problem parameter list.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+void append_assemblies_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode);
 
