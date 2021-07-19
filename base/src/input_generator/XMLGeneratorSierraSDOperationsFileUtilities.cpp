@@ -19,37 +19,42 @@ void append_cache_state_operation
     append_children({"Function","Name"}, {"Cache State","Cache State"}, tOperationNode);
     for(size_t k=0; k<aMetaData.objective.scenarioIDs.size(); ++k)
     {
+        auto tCriterionID = aMetaData.objective.criteriaIDs[k];
         auto tScenarioID = aMetaData.objective.scenarioIDs[k];
         auto tServiceID = aMetaData.objective.serviceIDs[k];
-        for(auto &tOutput : aMetaData.mOutputMetaData)
+        auto tCriterion = aMetaData.criterion(tCriterionID);
+        if(tCriterion.type() != "modal_projection_error" &&
+           tCriterion.type() != "modal_matching")
         {
-   
-            if(tOutput.serviceID() == tServiceID)
+            for(auto &tOutput : aMetaData.mOutputMetaData)
             {
-                XMLGen::Service tService = aMetaData.service(tServiceID);
-                if(aMetaData.objective.multi_load_case == "true")
+                if(tOutput.serviceID() == tServiceID)
                 {
-                    auto &tScenario = aMetaData.scenario(aMetaData.objective.scenarioIDs[0]);
-                    for(size_t i=0; i<tScenario.loadIDs().size(); ++i)
+                    XMLGen::Service tService = aMetaData.service(tServiceID);
+                    if(aMetaData.objective.multi_load_case == "true")
                     {
-                        auto tLoadIndex = std::to_string(i);
+                        auto &tScenario = aMetaData.scenario(aMetaData.objective.scenarioIDs[0]);
+                        for(size_t i=0; i<tScenario.loadIDs().size(); ++i)
+                        {
+                            auto tLoadIndex = std::to_string(i);
+                            for(auto &tCurData : tOutput.outputIDs())
+                            {
+                                auto tOutputNode = tOperationNode.append_child("Output");
+                                XMLGen::append_children({"ArgumentName"}, {tCurData + tLoadIndex}, tOutputNode);
+                            }
+                        }                        
+                    }
+                    else
+                    {
                         for(auto &tCurData : tOutput.outputIDs())
                         {
                             auto tOutputNode = tOperationNode.append_child("Output");
-                            XMLGen::append_children({"ArgumentName"}, {tCurData + tLoadIndex}, tOutputNode);
+                            append_children({"ArgumentName"}, {tCurData + "0"}, tOutputNode);
                         }
-                    }                        
-                }
-                else
-                {
-                    for(auto &tCurData : tOutput.outputIDs())
-                    {
-                        auto tOutputNode = tOperationNode.append_child("Output");
-                        append_children({"ArgumentName"}, {tCurData + "0"}, tOutputNode);
                     }
-                }
-                break;
-            } 
+                    break;
+                } 
+            }
         }
     }
 }
@@ -103,6 +108,22 @@ void append_internal_energy_operation
     append_SIMP_penalty_model(aScenario, tOperationNode);
     auto tOutputNode = tOperationNode.append_child("OutputValue");
     append_children({"Name"}, {"Internal Energy"}, tOutputNode);
+}
+/******************************************************************************/
+void append_compute_objective_gradient_operation_for_shape_problem
+(const XMLGen::Scenario& aScenario,
+ pugi::xml_document& aDocument)
+{
+    pugi::xml_node tmp_node = aDocument.append_child("Operation");
+    addChild(tmp_node, "Name", "Compute Objective Gradient wrt CAD Parameters");
+    addChild(tmp_node, "Function", "Compute Objective Gradient wrt CAD Parameters");
+    pugi::xml_node tForNode = tmp_node.append_child("For");
+    tForNode.append_attribute("var") = "I";
+    tForNode.append_attribute("in") = "Parameters";
+    pugi::xml_node tmp_node1 = tForNode.append_child("Input");
+    addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
+    tmp_node1 = tmp_node.append_child("Output");
+    addChild(tmp_node1, "ArgumentName", "Internal Energy Gradient");
 }
 /**************************************************************************/
 void append_internal_energy_gradient_operation
@@ -193,6 +214,7 @@ void add_operations
             append_displacement_operation(tScenario, aDocument);
             append_internal_energy_operation(tScenario, aDocument);
             append_internal_energy_gradient_operation(tScenario, aDocument);
+            append_compute_objective_gradient_operation_for_shape_problem(tScenario, aDocument);
             append_internal_energy_hessian_operation(aMetaData, tScenario, aDocument);
             append_surface_area_operation(aMetaData, tScenario, aDocument);
             append_surface_area_gradient_operation(aMetaData, tScenario, aDocument);
@@ -205,6 +227,7 @@ void write_sierra_sd_operation_xml_file
 (const XMLGen::InputData& aXMLMetaData)
 {
     pugi::xml_document tDocument;
+    XMLGen::append_include_defines_xml_data(aXMLMetaData, tDocument);
     add_operations(aXMLMetaData, tDocument);
     std::string tServiceID = get_salinas_service_id(aXMLMetaData);
     std::string tFilename = std::string("sierra_sd_") + tServiceID + "_operations.xml";
