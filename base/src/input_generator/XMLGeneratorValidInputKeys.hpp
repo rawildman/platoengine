@@ -1223,6 +1223,7 @@ struct ValidAnalyzeCriteriaKeys
         { "effective_energy", { "Effective Energy", true } },
         { "stress_constraint", { "Stress Constraint", false } },
         { "stress_constraint_general", { "Stress Constraint General", false } },
+        { "stress_constraint_quadratic", { "Stress Constraint Quadratic", false } },
         { "stress_and_mass", { "Stress Constraint General", false } },
         { "thermal_compliance", { "Internal Thermal Energy", false } },
         { "flux_p-norm", { "Flux P-Norm", false } },

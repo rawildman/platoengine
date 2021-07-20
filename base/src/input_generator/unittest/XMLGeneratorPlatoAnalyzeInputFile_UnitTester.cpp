@@ -3188,6 +3188,61 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveCriteriaToPlatoProblem_StressConstrai
     }
 }
 
+TEST(PlatoTestXMLGenerator, AppendObjectiveCriteriaToPlatoProblem_StressConstraintQuadratic)
+{
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("stress_constraint_quadratic");
+    tCriterion.append("stress_limit", "3.0");
+    tCriterion.append("local_measure", "vonmises");
+    tCriterion.append("material_penalty_exponent", "2.0");
+    tCriterion.append("minimum_ersatz_material_value", "1.0e-8");
+    tXMLMetaData.append(tCriterion);
+    
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("plato_analyze");
+    tXMLMetaData.append(tService);
+
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.serviceIDs.push_back("1");
+    tXMLMetaData.objective = tObjective;
+
+    pugi::xml_document tDocument;
+    XMLGen::append_objective_criteria_to_plato_problem(tXMLMetaData, tDocument);
+
+    // TEST MY OBJECTIVE
+    auto tParamList = tDocument.child("ParameterList");
+    ASSERT_FALSE(tParamList.empty());
+    ASSERT_STREQ("ParameterList", tParamList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"my_stress_constraint_quadratic_criterion_id_1"}, tParamList);
+
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::vector<std::string>> tGoldValues =
+        {
+          {"Type", "string", "Scalar Function"},
+          {"Scalar Function Type", "string", "Stress Constraint Quadratic"},
+          {"Local Measure", "string", "vonmises"},
+          {"Local Measure Limit", "double", "3.0"},
+          {"SIMP Penalty", "double", "2.0"},
+          {"Min. Ersatz Material", "double", "1.0e-8"}
+        };
+
+    auto tParam = tParamList.child("Parameter");
+    auto tValuesItr = tGoldValues.begin();
+    while(!tParam.empty())
+    {
+        ASSERT_FALSE(tParam.empty());
+        ASSERT_STREQ("Parameter", tParam.name());
+        PlatoTestXMLGenerator::test_attributes(tGoldKeys, tValuesItr.operator*(), tParam);
+        tParam = tParam.next_sibling();
+        std::advance(tValuesItr, 1);
+    }
+}
+
 TEST(PlatoTestXMLGenerator, AppendObjectiveCriteriaToCriteriaList)
 {
     XMLGen::InputData tXMLMetaData;
