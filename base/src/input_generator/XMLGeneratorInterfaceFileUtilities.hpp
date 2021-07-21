@@ -320,6 +320,23 @@ void append_design_parameters_shared_data
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn do_tet10_conversion
+ * \brief determine whether we are using tet10 conversion
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+bool do_tet10_conversion(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn append_tet10_conversion_operation
+ * \brief Append operation for converting to tet10
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_tet10_conversion_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
  * \fn append_constraint_stage_for_topology_problem
  * \brief Append constaint stage for topology optimization problem
  * \param [in]     aXMLMetaData Plato problem input data

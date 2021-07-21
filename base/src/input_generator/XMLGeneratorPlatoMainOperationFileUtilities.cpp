@@ -4,11 +4,13 @@
  *  Created on: May 28, 2020
  */
 
+#include <fstream>
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeProblem.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 
 namespace XMLGen
 {
@@ -51,6 +53,9 @@ void write_plato_main_operations_xml_file
     XMLGen::append_initialize_geometry_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_enforce_bounds_operation_to_plato_main_operation(aMetaData, tDocument);
+    if (XMLGen::do_tet10_conversion(aMetaData)) {
+        XMLGen::append_tet10_conversion_operation_to_plato_main_operation(aMetaData, tDocument);
+    }
 
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
@@ -724,6 +729,42 @@ void append_initialize_geometry_operation_to_plato_main_operation
 }
 // function append_initialize_geometry_operation_to_plato_main_operation
 /******************************************************************************/
+
+void writeCubitJournalFile(std::string fileName, std::string meshName, std::vector<XMLGen::Block> blockList) {
+    std::ofstream outfile(fileName);
+
+    outfile << "import mesh \"" << meshName << "\" no_geom" << std::endl;
+    for(auto ib : blockList) {
+        outfile << "block " << ib.block_id << " element type tetra10" << std::endl;
+    }
+    outfile << "set exodus netcdf4 off" << std::endl;
+    outfile << "set large exodus file on" << std::endl;
+    outfile << "export mesh \"" << meshName << "\" overwrite" << std::endl;
+
+    outfile.close();
+}
+
+void append_tet10_conversion_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        writeCubitJournalFile("toTet10.jou", exodusFile, blockList);
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCall");
+        addChild(operationNode, "Name", "ToTet10 On Change");
+        addChild(operationNode, "Command", "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
 
 /******************************************************************************/
 void append_update_geometry_on_change_operation_to_plato_main_operation

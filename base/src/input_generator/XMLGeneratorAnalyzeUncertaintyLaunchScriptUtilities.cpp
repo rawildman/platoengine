@@ -1,3 +1,4 @@
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "pugixml.hpp"
 
 #include "XMLGeneratorUtilities.hpp"
@@ -209,6 +210,9 @@ void generate_mpirun_launch_script(const XMLGen::InputData& aInputData)
     if(aInputData.optimization_parameters().optimizationType() == XMLGen::OT_SHAPE)
     {
         XMLGen::append_esp_initialization_line(aInputData, fp);
+        if (do_tet10_conversion(aInputData)) {
+            XMLGen::append_tet10_conversion_operation_line(fp);
+        }
     }
     XMLGen::append_decomp_lines_for_prune_and_refine(aInputData, fp);
     XMLGen::append_prune_and_refine_lines_to_mpirun_launch_script(aInputData, fp);
@@ -308,7 +312,7 @@ void append_esp_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerf
     }
 }
 
-void append_esp_initialization_line(const XMLGen::InputData& aInputData, FILE*& aFile)
+void append_esp_initialization_line(const XMLGen::InputData& aInputData, FILE* aFile)
 {
     std::string tEnvString, tSeparationString, tLaunchString, tNumProcsString;
     XMLGen::determine_mpi_env_and_separation_strings(tEnvString, tSeparationString);
@@ -326,6 +330,11 @@ void append_esp_initialization_line(const XMLGen::InputData& aInputData, FILE*& 
             aInputData.optimization_parameters().csm_exodus_file().c_str(),
             aInputData.optimization_parameters().csm_tesselation_file().c_str());
     }
+}
+
+void append_tet10_conversion_operation_line(FILE* aFile)
+{
+    fprintf(aFile, "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off\n");
 }
 
 }

@@ -11,6 +11,7 @@
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp"
 #include "XMLGeneratorPlatoMainConstraintGradientOperationInterface.hpp"
+#include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 #include <tuple>
 
 namespace XMLGen
@@ -902,6 +903,9 @@ void append_objective_value_stage_for_shape_problem
     auto tStageInputNode = tStageNode.append_child("Input");
     XMLGen::append_children( { "SharedDataName" }, { "Design Parameters" }, tStageInputNode);
     XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
+    if (XMLGen::do_tet10_conversion(aXMLMetaData)) {
+        XMLGen::append_tet10_conversion_operation(tFirstPlatoMainPerformer, tStageNode);
+    }
     int tNumReinits = count_number_of_reinitializations_needed(aXMLMetaData, tObjective);
     auto tParentNode = tStageNode;
     if(tNumReinits > 0)
@@ -1190,6 +1194,9 @@ void append_objective_gradient_stage_for_shape_problem
     auto tStageInputNode = tStageNode.append_child("Input");
     XMLGen::append_children({"SharedDataName"}, {"Design Parameters"}, tStageInputNode);
     XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
+    if (XMLGen::do_tet10_conversion(aXMLMetaData)) {
+        XMLGen::append_tet10_conversion_operation(tFirstPlatoMainPerformer, tStageNode);
+    }
     int tNumReinits = count_number_of_reinitializations_needed(aXMLMetaData, tObjective);
     auto tParentNode = tStageNode;
     if(tNumReinits > 0)
@@ -1918,6 +1925,29 @@ void append_design_parameters_shared_data
 // append_design_parameters_shared_data append_control_shared_data
 /******************************************************************************/
 
+bool do_tet10_conversion(const XMLGen::InputData& aXMLMetaData)
+{
+    XMLGen::Service tService;
+    XMLGen::Scenario tScenario;
+    XMLGen::Criterion tCriterion;
+
+    if (!extractMetaDataForWritingSDInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
+        return false;
+    }
+
+    return tScenario.convert_to_tet10().length()>0;
+}
+
+void append_tet10_conversion_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode)
+{
+    auto tOperationNode = aParentNode.append_child("Operation");
+    XMLGen::append_children({"Name", "PerformerName"}, {"ToTet10 On Change", aFirstPlatoMainPerformer}, tOperationNode);
+    auto tInputNode = tOperationNode.append_child("Input");
+    XMLGen::append_children({"SharedDataName", "ArgumentName"}, {"Design Parameters", "Parameters"}, tInputNode);
+}
+
 /******************************************************************************/
 void append_control_shared_data
 (const XMLGen::InputData& aMetaData,
@@ -2069,7 +2099,14 @@ void append_initial_guess_stage
         auto tStageNode = aDocument.append_child("Stage");
         XMLGen::append_children({"Name"},{"Initialize Design Parameters"}, tStageNode);
         XMLGen::append_initial_values_operation(aXMLMetaData, tStageNode);
-        XMLGen::append_initialize_geometry_operation(aXMLMetaData, tStageNode);
+        if (!XMLGen::do_tet10_conversion(aXMLMetaData)) {
+            XMLGen::append_initialize_geometry_operation(aXMLMetaData, tStageNode);
+        }
+        else {
+            const std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
+            XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
+            XMLGen::append_tet10_conversion_operation(tFirstPlatoMainPerformer, tStageNode);
+        }
         auto tOutputNode = tStageNode.append_child("Output");
         XMLGen::append_children({"SharedDataName"},{"Design Parameters"}, tOutputNode);
     }

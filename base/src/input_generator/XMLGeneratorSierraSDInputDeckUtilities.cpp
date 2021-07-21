@@ -414,7 +414,7 @@ void append_block_blocks
         {
             outfile << "  tet4" << std::endl;
         }
-        else if(tBlock.element_type == "tet10")
+        else if(tBlock.element_type == "tet10" || aScenario.convert_to_tet10().length()>0)
         {
             if (isInverseMethodCase(aCriterion)) {
                 outfile << "  cutet10" << std::endl;
@@ -645,9 +645,6 @@ void append_case
             if (aScenario.complex_error_measure().length() > 0)
                 outfile << "  complex_error_measure " << aScenario.complex_error_measure() << std::endl;
         }
-
-        if (aScenario.convert_to_tet10().length()>0)
-            outfile << " ls_tet_mesh_type " << aScenario.convert_to_tet10() << std::endl;
     }
 }
 /**************************************************************************/
@@ -852,10 +849,10 @@ void append_boundary_block
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
-bool extractMetaDataForWritingInputDeck(const XMLGen::InputData &aMetaData,
-                                        XMLGen::Service &tService,
-                                        XMLGen::Scenario &tScenario,
-                                        XMLGen::Criterion &tCriterion)
+bool extractMetaDataForWritingSDInputDeck(const XMLGen::InputData &aMetaData,
+                                          XMLGen::Service &tService,
+                                          XMLGen::Scenario &tScenario,
+                                          XMLGen::Criterion &tCriterion)
 {
     if(aMetaData.objective.serviceIDs.size() > 0)
     {
@@ -881,7 +878,7 @@ void add_input_deck_blocks
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
 
-    if (!extractMetaDataForWritingInputDeck(aMetaData, tService, tScenario, tCriterion)) {
+    if (!extractMetaDataForWritingSDInputDeck(aMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 
@@ -985,7 +982,7 @@ void augment_sierra_sd_input_deck_with_plato_problem_description(const XMLGen::I
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
 
-    if (!extractMetaDataForWritingInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
+    if (!extractMetaDataForWritingSDInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 
