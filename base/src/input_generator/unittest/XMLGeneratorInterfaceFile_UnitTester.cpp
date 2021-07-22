@@ -616,8 +616,20 @@ TEST(PlatoTestXMLGenerator, AppendCacheStateStage)
     tService.cacheState("true");
     tMetaData.append(tService);
 
+    XMLGen::Objective tObjective;
+    tObjective.serviceIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("1");
+    tMetaData.objective = tObjective;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("mass");
+    tMetaData.append(tCriterion);
+
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_cache_state_stage(tMetaData, tDocument));
+
+    //tDocument.save_file("xml.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -639,13 +651,22 @@ TEST(PlatoTestXMLGenerator, AppendCacheStateStage_multi_load_case)
     tMetaData.append(tService);
     tMetaData.objective.multi_load_case = "true";
     tMetaData.objective.scenarioIDs.push_back("33");
+    tMetaData.objective.serviceIDs.push_back("1");
     XMLGen::Output tOutputMetadata;
     tOutputMetadata.serviceID("1");
     tOutputMetadata.appendDeterminsiticQoI("dispx", "nodal field");
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("mass");
+    tMetaData.append(tCriterion);
+    tMetaData.objective.criteriaIDs.push_back("1");
+
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_cache_state_stage(tMetaData, tDocument));
+
+    //tDocument.save_file("xml.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());

@@ -1,3 +1,4 @@
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "pugixml.hpp"
 
 #include "XMLGeneratorUtilities.hpp"
@@ -192,7 +193,7 @@ namespace XMLGen
         XMLGen::Service tService = aInputData.service(aInputData.objective.serviceIDs[i]);
         if(tService.code() != "plato_analyze")
         {
-            XMLGen::Scenario tScenario = aInputData.scenario(aInputData.objective.scenarioIDs[i]);
+            XMLGen::Criterion tCriterion = aInputData.criterion(aInputData.objective.criteriaIDs[i]);
             std::string num_procs = tService.numberProcessors();
     
             XMLGen::assert_is_positive_integer(num_procs);
@@ -202,8 +203,8 @@ namespace XMLGen
             {
                 if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0)
                   XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
-                if(tScenario.value("ref_data_file").length() > 0)
-                  XMLGen::append_decomp_line(fp, num_procs, tScenario.value("ref_data_file"));
+                if(tCriterion.value("ref_data_file").length() > 0)
+                  XMLGen::append_decomp_line(fp, num_procs, tCriterion.value("ref_data_file"));
             }
         }
     }
