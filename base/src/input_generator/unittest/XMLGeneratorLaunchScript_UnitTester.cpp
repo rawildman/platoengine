@@ -290,10 +290,11 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers)
   tService.numberProcessors("10");
   tInputData.append(tService);
 
-  XMLGen::Scenario tScenario;
-  tScenario.id("1");
-  tScenario.append("ref_data_file", "dummy_frf_file.exo");
-  tInputData.append(tScenario);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
@@ -336,10 +337,11 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_noNeedToDecompose)
   tService.numberProcessors("1");
   tInputData.append(tService);
 
-  XMLGen::Scenario tScenario;
-  tScenario.id("1");
-  tScenario.append("ref_data_file", "dummy_frf_file.exo");
-  tInputData.append(tScenario);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
@@ -373,15 +375,17 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_multipleObjectivesSam
   tService2.numberProcessors("10");
   tInputData.append(tService2);
 
-  XMLGen::Scenario tScenario;
-  tScenario.id("1");
-  tScenario.append("ref_data_file", "dummy_frf_file.exo");
-  tInputData.append(tScenario);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
-  XMLGen::Scenario tScenario2;
-  tScenario2.id("2");
-  tScenario2.append("ref_data_file", "dummy_frf_file2.exo");
-  tInputData.append(tScenario2);
+  XMLGen::Criterion tCriterion2;
+  tCriterion2.id("2");
+  tCriterion2.type("frf_mismatch");
+  tCriterion2.append("ref_data_file", "dummy_frf_file2.exo");
+  tInputData.append(tCriterion2);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
@@ -412,10 +416,11 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_hasBeenDecomposed)
   tService.numberProcessors("10");
   tInputData.append(tService);
 
-  XMLGen::Scenario tScenario;
-  tScenario.id("1");
-  tScenario.append("ref_data_file", "dummy_frf_file.exo");
-  tInputData.append(tScenario);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
@@ -452,10 +457,11 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesToMPILaunchScript)
   tService2.numberProcessors("10");
   tInputData.append(tService2);
 
-  XMLGen::Scenario tScenario;
-  tScenario.id("1");
-  tScenario.append("ref_data_file", "dummy_frf_file.exo");
-  tInputData.append(tScenario);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("2");

@@ -9,6 +9,7 @@
 #include <sstream>
 #include <sys/stat.h>
 
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
 
@@ -95,7 +96,7 @@ void writeOptimizationBlock(std::ostream &outfile)
     outfile << "END" << std::endl;
 }
 
-void writeDummyFRFFiles(const XMLGen::Scenario &aScenario, std::ostream &outfile) {
+void writeDummyFRFFiles(const XMLGen::Scenario &aScenario, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
     std::string tTruthTableFile = "dummy_ttable_";
     tTruthTableFile += aScenario.id();
     tTruthTableFile += ".txt";
@@ -119,7 +120,7 @@ void writeDummyFRFFiles(const XMLGen::Scenario &aScenario, std::ostream &outfile
     sscanf(aScenario.frequency_step().c_str(), "%lf", &tFreqStep);
     // This is the formula sierra_sd uses to get the number of frequencies
     int tNumFreqs = (int)(((tFreqMax - tFreqMin) / tFreqStep) + 0.5) + 1;
-    int tNumMatchNodes = aScenario.matchNodesetIDs().size();
+    int tNumMatchNodes = aCriterion.matchNodesetIDs().size();
     FILE *tTmpFP = fopen(tTruthTableFile.c_str(), "w");
     if (tTmpFP) {
         fprintf(tTmpFP, "%d\n", tNumMatchNodes);
@@ -159,7 +160,7 @@ void writeFRFInverseBlocks(const XMLGen::InputData &aMetaData,
 {
     outfile << "INVERSE-PROBLEM" << std::endl;
     if (aMetaData.optimization_parameters().discretization().compare("levelset") == 0) {
-        writeDummyFRFFiles(aScenario, outfile);
+        writeDummyFRFFiles(aScenario, aCriterion, outfile);
     } else {
         outfile << "  data_truth_table ttable.txt" << std::endl;
         outfile << "  real_data_file data.txt" << std::endl;
@@ -209,7 +210,7 @@ void writeDummyModalFiles(const XMLGen::Scenario &aScenario, const XMLGen::Crite
     outfile << "  modal_data_file " << modal_data_file << std::endl;
     outfile << "  modal_weight_table " << modal_weight_table << std::endl;
 
-    const auto &matchNodes = aScenario.matchNodesetIDs();
+    const auto &matchNodes = aCriterion.matchNodesetIDs();
     const int numNodes = matchNodes.size();
     int numModes;
     sscanf(aCriterion.num_modes_compute().c_str(), "%d", &numModes);
@@ -259,7 +260,7 @@ void writeModalInverseBlocks(const XMLGen::InputData &aMetaData,
 
     writeDummyModalFiles(aScenario, aCriterion, outfile);
 
-    outfile << "  shape_sideset " << aScenario.shapeSideset() << std::endl;
+    outfile << "  shape_sideset " << aCriterion.shapeSideset() << std::endl;
 
     // dummy value doesn't matter because SD just computes the gradient
     outfile << "  shape_bounds 1.0" << std::endl;
@@ -623,11 +624,11 @@ void append_case
         std::string tDiscretization = aMetaData.optimization_parameters().discretization();
         writeInverseMethodObjective(tDiscretization, aCriterion, outfile);
 
-        outfile << "  ref_data_file " << aScenario.ref_data_file() << std::endl;
-        if(aScenario.matchNodesetIDs().size() > 0)
+        outfile << "  ref_data_file " << aCriterion.ref_data_file() << std::endl;
+        if(aCriterion.matchNodesetIDs().size() > 0)
         {
             outfile << "  match_nodesets";
-            for(auto tNodesetID : aScenario.matchNodesetIDs())
+            for(auto tNodesetID : aCriterion.matchNodesetIDs())
             {
                 outfile << " " << tNodesetID;
             }

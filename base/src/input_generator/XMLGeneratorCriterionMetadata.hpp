@@ -29,6 +29,7 @@ private:
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
     std::vector<std::string> mModesToExclude;
+    std::vector<std::string> mMatchNodesetIDs;
 
 public:
     /******************************************************************************//**
@@ -377,6 +378,43 @@ public:
     {
         return this->mModesToExclude;
     }
+
+    /******************************************************************************//**
+     * \fn shapeSideset
+     * \brief Set string value for Sierra/SD shape sideset
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void shapeSideset(const std::string& aInput) {
+        this->append("shape_sideset", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn weightMassScaleFactor
+     * \brief Return string value Sierra/SD shape sideset
+     * \return value
+    **********************************************************************************/
+    std::string shapeSideset() const {
+        return (this->value("shape_sideset"));
+    }
+
+    std::string ref_data_file() const {
+        return this->value("ref_data_file");
+    }
+
+    /******************************************************************************//**
+     * \fn matchNodesetIDs
+     * \brief Return nodeset ids for matching frfs or eigen
+     * \return mMatchNodesetIDs
+    **********************************************************************************/
+    std::vector<std::string> matchNodesetIDs() const {return mMatchNodesetIDs;};
+
+    /******************************************************************************//**
+     * \fn setMatchNodesetIDs
+     * \brief Set nodeset ids for matching frfs or eigen
+     * \param [in] input nodeset IDs 
+    **********************************************************************************/
+    void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
+
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     std::string volume_misfit_target() const { return this->value("volume_misfit_target"); }

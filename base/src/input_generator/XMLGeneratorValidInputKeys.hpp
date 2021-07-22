@@ -111,7 +111,10 @@ struct ValidCriterionParameterKeys
         "modes_to_exclude",
         "eigen_solver_shift",
         "camp_solver_tol",
-        "camp_max_iter"
+        "camp_max_iter",
+        "shape_sideset",
+        "ref_data_file",
+        "match_nodesets"
     };
 };
 

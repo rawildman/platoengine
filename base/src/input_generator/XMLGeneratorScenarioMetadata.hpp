@@ -24,7 +24,6 @@ private:
     std::unordered_map<std::string, std::string> mMetaData; /*!< Scenario metadata, map< tag, value > */
     std::vector<std::string> mLoadIDs;
     std::vector<std::string> mBCIDs;
-    std::vector<std::string> mMatchNodesetIDs;
 
 // private member functions
 private:
@@ -60,20 +59,6 @@ public:
      * \param [in] input load IDs 
     **********************************************************************************/
     void setLoadIDs(std::vector<std::string>& aLoadIDs) {mLoadIDs = aLoadIDs;};
-
-    /******************************************************************************//**
-     * \fn matchNodesetIDs
-     * \brief Return nodeset ids for matching frfs or eigen
-     * \return mMatchNodesetIDs
-    **********************************************************************************/
-    std::vector<std::string> matchNodesetIDs() const {return mMatchNodesetIDs;};
-
-    /******************************************************************************//**
-     * \fn setMatchNodesetIDs
-     * \brief Set nodeset ids for matching frfs or eigen
-     * \param [in] input nodeset IDs 
-    **********************************************************************************/
-    void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
 
     /******************************************************************************//**
      * \fn bcIDs
@@ -359,20 +344,6 @@ public:
     std::string weightMassScaleFactor() const;
 
     /******************************************************************************//**
-     * \fn shapeSideset
-     * \brief Set string value for Sierra/SD shape sideset
-     * \param [in] aInput string value
-    **********************************************************************************/
-    void shapeSideset(const std::string& aInput);
-
-    /******************************************************************************//**
-     * \fn weightMassScaleFactor
-     * \brief Return string value Sierra/SD shape sideset
-     * \return value
-    **********************************************************************************/
-    std::string shapeSideset() const;
-
-    /******************************************************************************//**
      * \fn pressureScaling
      * \brief Set string value for keyword 'pressure_scaling'.
      * \param [in] aInput string value
@@ -407,7 +378,6 @@ public:
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }
     std::string convert_to_tet10() const {return this->getValue("convert_to_tet10"); }
-    std::string ref_data_file() const {return this->getValue("ref_data_file"); }
 
 };
 // struct Scenario

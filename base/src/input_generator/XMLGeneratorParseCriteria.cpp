@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
@@ -103,6 +104,9 @@ void ParseCriteria::allocate()
     mTags.insert({ "eigen_solver_shift", { { {"eigen_solver_shift"}, ""}, "-1e6" } });
     mTags.insert({ "camp_solver_tol", { { {"camp_solver_tol"}, ""}, "1e-6" } });
     mTags.insert({ "camp_max_iter", { { {"camp_max_iter"}, ""}, "1000" } });
+    mTags.insert({ "shape_sideset", { { {"shape_sideset"}, ""}, "" } });
+    mTags.insert({ "ref_data_file", { { {"ref_data_file"}, ""}, "" } });
+    mTags.insert({ "match_nodesets", { { {"match_nodesets"}, ""}, "" } });
 }
 
 void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
@@ -117,6 +121,21 @@ void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
         aMetadata.modesToExclude(tModes);
     }
 }
+
+void ParseCriteria::setMatchNodesetIDs(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("match_nodesets");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tNodesetIDs;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tNodesetIDs);
+        aMetadata.setMatchNodesetIDs(tNodesetIDs);
+    }
+}
+
 
 void ParseCriteria::setCriterionWeights(XMLGen::Criterion &aMetadata)
 {
@@ -180,6 +199,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionIDs(aMetadata);
     this->setCriterionWeights(aMetadata);
     setModesToExclude(aMetadata);
+    setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
 }
 
