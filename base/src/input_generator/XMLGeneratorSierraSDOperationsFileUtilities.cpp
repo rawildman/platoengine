@@ -214,7 +214,9 @@ void add_operations
             append_displacement_operation(tScenario, aDocument);
             append_internal_energy_operation(tScenario, aDocument);
             append_internal_energy_gradient_operation(tScenario, aDocument);
-            append_compute_objective_gradient_operation_for_shape_problem(tScenario, aDocument);
+            if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) {
+                append_compute_objective_gradient_operation_for_shape_problem(tScenario, aDocument);
+            }
             append_internal_energy_hessian_operation(aMetaData, tScenario, aDocument);
             append_surface_area_operation(aMetaData, tScenario, aDocument);
             append_surface_area_gradient_operation(aMetaData, tScenario, aDocument);
