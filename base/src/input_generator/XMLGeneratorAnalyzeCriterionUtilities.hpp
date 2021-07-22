@@ -15,6 +15,29 @@ namespace XMLGen
 namespace Private
 {
 
+template<typename Criterion>
+void append_block_list
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tLowerType = Plato::tolower(aCriterion.type());
+    if( tLowerType == "volume" )
+    {
+        auto tElemBlockList = aCriterion.values("blocks");
+        if( !tElemBlockList.empty() )
+        {
+            std::vector<std::string> tKeys = {"name", "type", "value"};
+            auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
+            std::vector<std::string> tValues = {"Element Blocks", "Array(string)", tElemBlocksNames};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+        }
+        else
+        {
+            aCriterion.report("All the element blocks (i.e. full geometry) will be taken into consideration in the volume criterion evaluation.");
+        }
+    }
+}
+
 /******************************************************************************//**
  * \fn is_criterion_supported_in_plato_analyze
  * \tparam Criterion criterion metadata
@@ -81,34 +104,75 @@ void append_simp_penalty_function
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
 }
 
+template<typename CriterionT>
+std::vector<std::string> set_conductivity_ratios(const CriterionT& aCriterion)
+{
+    auto tConductivityRatios = aCriterion.values("conductivity_ratios");
+    if( tConductivityRatios.empty() )
+    {
+        std::cout << "\n" << std::flush;
+        THROWERR(std::string("Error creating surface scalar function of type '") + aCriterion.type() + "' with criterion id '" 
+            + aCriterion.id() + "'. List of conductivity ratios (i.e. 'conductivity_ratios' keyword) is empty. "
+            + "Conductivity ratios must be defined.")
+    }
+
+    if( tConductivityRatios.size() <= 1 && tConductivityRatios[0].empty() )
+    {
+        auto tLocationNames = aCriterion.values("location_names");
+        tConductivityRatios.resize(tLocationNames.size());
+        std::fill(tConductivityRatios.begin(), tConductivityRatios.end(), "1.0");
+    }
+
+    return tConductivityRatios;
+}
+
 /******************************************************************************//**
- * \fn check_surface_entity_set_list
+ * \fn check_criterion_location_names_list
  * \tparam CriterionT criterion metadata
- * \brief Check if 'surfaces' keyword is defined, if not, thorw error to console.
+ * \brief Check if 'location_names' keyword is defined, if not, thorw error to console.
  * \param [in]  aCriterion   criterion metadata
  **********************************************************************************/
 template<typename CriterionT>
-void check_surface_entity_set_list
+void check_criterion_location_names_list
 (const CriterionT& aCriterion)
 {
-    auto tEntitySetNames = aCriterion.values("surfaces");
+    auto tEntitySetNames = aCriterion.values("location_names");
     if (!tEntitySetNames.empty())
     {
         if (tEntitySetNames.size() <= 1 && tEntitySetNames[0].empty())
         {
             std::cout << "\n" << std::flush;
             THROWERR(std::string("Surface scalar function of type '") + aCriterion.type() + "' with criterion id '" + aCriterion.id() 
-                + "' was requested but its application location was not specified. User must defined the application location by setting the 'surfaces' keyword.")
+                + "' was requested but the location name (i.e. sideset name where the criterion will be evaluated) is not define in the "
+                + "criterion block. User must defined the location name by setting the 'location_names' keyword.")
         }
     }
     else
     {
             std::cout << "\n" << std::flush;
             THROWERR(std::string("Surface scalar function of type '") + aCriterion.type() + "' with criterion id '" + aCriterion.id() 
-                + "' was requested but its application location was not specified. User must defined the application location by setting the 'surfaces' keyword.")
+                + "' was requested but the location name (i.e. sideset name where the criterion will be evaluated) is not define in the "
+                + "criterion block. User must defined the location name by setting the 'location_names' keyword.")
     }
 }
-// function check_surface_entity_set_list
+
+template<typename CriterionT>
+void append_conductivity_ratios
+(const CriterionT& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tLowerType = Plato::tolower(aCriterion.type());
+    if( tLowerType == "maximize_fluid_thermal_flux" )
+    {
+        XMLGen::Private::check_criterion_location_names_list(aCriterion);
+        auto tConductivityRatios = XMLGen::Private::set_conductivity_ratios(aCriterion);
+        XMLGen::negate_scalar_values(tConductivityRatios);
+        auto tConductivityRatiosList = XMLGen::transform_tokens_for_plato_analyze_input_deck(tConductivityRatios);
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        std::vector<std::string> tValues = {"Conductivity Ratios", "Array(double)", tConductivityRatiosList};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+    }
+}
 
 /******************************************************************************//**
  * \fn append_surface_scalar_function_criterion
@@ -126,24 +190,26 @@ pugi::xml_node append_surface_scalar_function_criterion
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
 
     auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tCriterion = aParentNode.append_child("ParameterList");
+    auto tCriterionNode = aParentNode.append_child("ParameterList");
     std::vector<std::string> tKeys = {"name"};
     std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_attributes(tKeys, tValues, tCriterionNode);
 
     tKeys = {"name", "type", "value"}; tValues = {"Type", "string", "Scalar Function"};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
     tValues = {"Scalar Function Type", "string", tDesignCriterionName};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
-    XMLGen::Private::check_surface_entity_set_list(aCriterion);
-    auto tEntitySetNames = aCriterion.values("surfaces");
+    XMLGen::Private::check_criterion_location_names_list(aCriterion);
+    auto tEntitySetNames = aCriterion.values("location_names");
     auto tEntitySetList = XMLGen::transform_tokens_for_plato_analyze_input_deck(tEntitySetNames);
     tValues = {"Sides", "Array(string)", tEntitySetList};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
-    return tCriterion;
+    XMLGen::Private::append_conductivity_ratios(aCriterion, tCriterionNode);
+
+    return tCriterionNode;
 }
 
 /******************************************************************************//**
@@ -162,7 +228,6 @@ pugi::xml_node append_scalar_function_criterion
     auto tCriterionLinearFlag = XMLGen::Private::is_criterion_linear(aCriterion);
 
     auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    //auto tName = std::string("my ") + Plato::tolower(aCriterion.category());
     auto tScalarFunction = aParentNode.append_child("ParameterList");
     std::vector<std::string> tKeys = {"name"};
     std::vector<std::string> tValues = {tName};
@@ -177,13 +242,7 @@ pugi::xml_node append_scalar_function_criterion
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
     }
 
-    /*auto tElemBlocks = aCriterion.values("blocks");
-    if( !tElemBlocks.empty() )
-    {
-        auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(aCriterion.values("blocks"));
-        tValues = {"Element Blocks", "Array(string)", tElemBlocksNames};
-        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
-    }*/
+    XMLGen::Private::append_block_list(aCriterion, tScalarFunction);
     
     tValues = {"Scalar Function Type", "string", tDesignCriterionName};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);

@@ -83,7 +83,8 @@ struct ValidCriterionParameterKeys
         "criterion_weights",
         "relative_stress_limit",
         "relaxed_stress_ramp_factor",
-        "surfaces",
+        "conductivity_ratios",
+        "location_names",
         "blocks",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
@@ -204,7 +205,8 @@ private:
         "surface_pressure",
         "surface_temperature",
         "flow_rate",
-        "cfd_thermal_compliance"
+        "fluid_thermal_compliance",
+        "maximize_fluid_thermal_flux"
     };
 
 public:
@@ -218,6 +220,14 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
+
+    /******************************************************************************//**
+     * \fn size
+     * \brief Return const reference to criteria list.
+     * \return criteria list
+    **********************************************************************************/
+    const decltype(mKeys)& list() const
+    { return mKeys; }
 };
 // struct ValidCriterionTypeKeys
 
@@ -1250,7 +1260,8 @@ struct ValidAnalyzeCriteriaKeys
         { "surface_temperature", { "Average Surface Temperature", false } },
         { "surface_pressure", { "Average Surface Pressure", false } },
         { "flow_rate", { "Flow Rate", false } },
-        { "cfd_thermal_compliance", { "Thermal Compliance", false } },
+        { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
+        { "fluid_thermal_compliance", { "Thermal Compliance", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys

@@ -44,7 +44,15 @@ std::string check_criterion_type_key
     auto tValue = tValidKeys.value(aKeyword);
     if(tValue.empty())
     {
-        THROWERR(std::string("Check Criterion type Key: Criterion type '") + tValue + "' is not supported.")
+        auto tMsg = std::string("Input criterion keyword '") + aKeyword + "' is not defined in the list of supported Plato criterion. Supported Plato criterion options are: ";
+        const auto& tKeys = tValidKeys.list();
+        for(const auto& tKey : tKeys)
+        {
+            size_t tIndex = &tKey - &tKeys[0];
+            auto tDelimiter = (tIndex + 1u) == tKeys.size() ? ".\n" : ", ";
+            tMsg = tMsg + tKey + tDelimiter;
+        }
+        THROWERR(tMsg)
     }
     return tValue;
 }
@@ -71,8 +79,9 @@ void ParseCriteria::allocate()
     mTags.insert({ "minimum_ersatz_material_value", { { {"minimum_ersatz_material_value"}, ""}, "" } });
     mTags.insert({ "criterion_ids", { { {"criterion_ids"}, ""}, "" } });
     mTags.insert({ "criterion_weights", { { {"criterion_weights"}, ""}, "" } });
-    mTags.insert({ "surfaces", { { {"surfaces"}, ""}, "" } });
+    mTags.insert({ "location_names", { { {"location_names"}, ""}, "" } });
     mTags.insert({ "blocks", { { {"blocks"}, ""}, "" } });
+    mTags.insert({ "conductivity_ratios", { { {"conductivity_ratios"}, ""}, "" } });
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     mTags.insert({ "volume_misfit_target", { { {"volume_misfit_target"}, ""}, "" } });

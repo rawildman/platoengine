@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "Plato_FreeFunctions.hpp"
 #include "XMLG_Macros.hpp"
@@ -29,7 +29,29 @@ private:
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
 
+    std::string mReport;
+
 public:
+    /******************************************************************************//**
+     * \fn report
+     * \brief Return accumulated report, which will be outputed in the plato report text file.
+     * \return report
+    **********************************************************************************/
+    std::string report() const
+    {
+        return mReport;
+    }
+
+    /******************************************************************************//**
+     * \fn report
+     * \brief Append input report to criteria report.
+     * \param [in] aInput message to be appended to criterion report.
+    **********************************************************************************/
+    void report(const std::string& aInput) const
+    {
+        mReport + "\nPlato Input Deck Report: " + aInput;
+    }
+
     /******************************************************************************//**
      * \fn id
      * \brief Return criterion identification number.
