@@ -244,6 +244,59 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
 }
 
 /******************************************************************************//**
+ * \fn append_stress_constraint_quadratic_criterion
+ * \brief Append stress constraint quadratic input parameters \n
+ * to criterion parameter list.
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+ **********************************************************************************/
+inline void append_stress_constraint_quadratic_criterion
+(const XMLGen::Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
+    auto tObjective = aParentNode.append_child("ParameterList");
+    std::vector<std::string> tKeys = {"name"};
+    std::vector<std::string> tValues = {tName};
+    XMLGen::append_attributes(tKeys, tValues, tObjective);
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Type", "string", "Scalar Function"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    tValues = {"Scalar Function Type", "string", tDesignCriterionName};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    std::string tLocalMeasureType = aCriterion.localMeasure();
+    tValues = {"Local Measure", "string", tLocalMeasureType};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Local Measure Limit", "double", aCriterion.stressLimit()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Initial Penalty", "double", aCriterion.scmmInitialPenalty()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Penalty Upper Bound", "double", aCriterion.scmmPenaltyUpperBound()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Penalty Expansion Multiplier", "double", aCriterion.scmmPenaltyExpansionMultiplier()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"SIMP Penalty", "double", aCriterion.materialPenaltyExponent()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aCriterion.minErsatzMaterialConstant());
+    tValues = {"Min. Ersatz Material", "double", tPropertyValue};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+}
+
+/******************************************************************************//**
  * \fn append_volume_average_criterion
  * \brief Append volume average criterion to criterion parameter list.
  * \tparam Criterion criterion metadata
