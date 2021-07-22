@@ -28,6 +28,8 @@ private:
     std::unordered_map<std::string, std::vector<std::string> > mMetaData; /*!< Scenario metadata, map< tag, vector<values> > */
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
+    std::vector<std::string> mModesToExclude;
+    std::vector<std::string> mMatchNodesetIDs;
 
 public:
     /******************************************************************************//**
@@ -357,6 +359,63 @@ public:
         return this->mCriterionWeights;
     }
 
+    /******************************************************************************//**
+     * \fn modesToExclude
+     * \brief Set list of modes to be excluded by modal inverse
+     * \param [in] aInput list of IDs
+     **********************************************************************************/
+    void modesToExclude(const std::vector<std::string>& aInput)
+    {
+        this->mModesToExclude = aInput;
+    }
+
+    /******************************************************************************//**
+     * \fn modesToExclude
+     * \brief Return list of modes to be excluded by modal inverse
+     * \return value
+     **********************************************************************************/
+    std::vector<std::string> modesToExclude() const
+    {
+        return this->mModesToExclude;
+    }
+
+    /******************************************************************************//**
+     * \fn shapeSideset
+     * \brief Set string value for Sierra/SD shape sideset
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void shapeSideset(const std::string& aInput) {
+        this->append("shape_sideset", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn weightMassScaleFactor
+     * \brief Return string value Sierra/SD shape sideset
+     * \return value
+    **********************************************************************************/
+    std::string shapeSideset() const {
+        return (this->value("shape_sideset"));
+    }
+
+    std::string ref_data_file() const {
+        return this->value("ref_data_file");
+    }
+
+    /******************************************************************************//**
+     * \fn matchNodesetIDs
+     * \brief Return nodeset ids for matching frfs or eigen
+     * \return mMatchNodesetIDs
+    **********************************************************************************/
+    std::vector<std::string> matchNodesetIDs() const {return mMatchNodesetIDs;};
+
+    /******************************************************************************//**
+     * \fn setMatchNodesetIDs
+     * \brief Set nodeset ids for matching frfs or eigen
+     * \param [in] input nodeset IDs 
+    **********************************************************************************/
+    void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
+
+
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     std::string volume_misfit_target() const { return this->value("volume_misfit_target"); }
     std::string scmm_constraint_exponent() const { return this->value("scmm_constraint_exponent"); }
@@ -381,6 +440,12 @@ public:
     std::string volume_penalty_bias() const { return this->value("volume_penalty_bias"); }
     std::string surface_area_sideset_id() const { return this->value("surface_area_sideset_id"); }
 
+    // Sierra/SD modal objectives
+    std::string num_modes_compute() const { return this->value("num_modes_compute"); }
+    std::vector<std::string> modes_to_exclude() const { return mModesToExclude; }
+    std::string eigen_solver_shift() const { return this->value("eigen_solver_shift"); }
+    std::string camp_solver_tol() const { return this->value("camp_solver_tol"); }
+    std::string camp_max_iter() const { return this->value("camp_max_iter"); }
 };
 // struct Criterion
 

@@ -48,20 +48,6 @@ void ParseScenario::setLoadIDs(XMLGen::Scenario &aMetadata)
     }
 }
 
-void ParseScenario::setFRFMatchNodesetIDs(XMLGen::Scenario &aMetadata)
-{
-    auto tItr = mTags.find("frf_match_nodesets");
-    std::string tValues = tItr->second.first.second;
-    if (tItr != mTags.end() && !tValues.empty())
-    {
-        std::vector<std::string> tNodesetIDs;
-        char tValuesBuffer[10000];
-        strcpy(tValuesBuffer, tValues.c_str());
-        XMLGen::parse_tokens(tValuesBuffer, tNodesetIDs);
-        aMetadata.setFRFMatchNodesetIDs(tNodesetIDs);
-    }
-}
-
 void ParseScenario::setBCIDs(XMLGen::Scenario &aMetadata)
 {
     auto tItr = mTags.find("boundary_conditions");
@@ -75,7 +61,7 @@ void ParseScenario::setBCIDs(XMLGen::Scenario &aMetadata)
         XMLGen::parse_tokens(tValuesBuffer, tBCIDs);
         aMetadata.setBCIDs(tBCIDs);
     }
-    else
+    else if (aMetadata.physics() != "modal_response")
     {
         THROWERR("Parse Scenario: boundary_conditions are not defined");
     }
@@ -126,7 +112,6 @@ void ParseScenario::allocate()
 
     mTags.insert({ "loads", { { {"loads"}, ""}, "" } });
     mTags.insert({ "boundary_conditions", { { {"boundary_conditions"}, ""}, "" } });
-    mTags.insert({ "ref_frf_file", { { {"ref_frf_file"}, ""}, "" } });
     mTags.insert({ "weight_mass_scale_factor", { { {"weight_mass_scale_factor"}, ""}, "" } });
 
     mTags.insert({ "frequency_min", { { {"frequency_min"}, ""}, "" } });
@@ -134,12 +119,8 @@ void ParseScenario::allocate()
     mTags.insert({ "frequency_step", { { {"frequency_step"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_alpha", { { {"raleigh_damping_alpha"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_beta", { { {"raleigh_damping_beta"}, ""}, "" } });
-    mTags.insert({ "frf_match_nodesets", { { {"frf_match_nodesets"}, ""}, "" } });
     mTags.insert({ "complex_error_measure", { { {"complex_error_measure"}, ""}, "" } });
     mTags.insert({ "convert_to_tet10", { { {"convert_to_tet10"}, ""}, "" } });
-
-    //frf matching, some of these probably should belong as criterion parameters instead
-    // mTags.insert({ "normalize_objective", { { {"normalize_objective"}, ""}, "" } });
 }
 
 void ParseScenario::checkSpatialDimensions(XMLGen::Scenario& aScenario)
@@ -232,7 +213,6 @@ void ParseScenario::parse(std::istream &aInputFile)
             this->setTags(tScenario);
             this->setLoadIDs(tScenario);
             this->setBCIDs(tScenario);
-            this->setFRFMatchNodesetIDs(tScenario);
             tScenario.id(tScenarioBlockID);
             this->checkTags(tScenario);
             mData.push_back(tScenario);
