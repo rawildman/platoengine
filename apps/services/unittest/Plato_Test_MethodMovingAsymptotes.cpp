@@ -831,9 +831,9 @@ TEST(PlatoTest, MethodMovingAsymptotes_RosenbrockRadius)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
-    ASSERT_EQ(77u, tOutputs.mNumSolverIter);
-    ASSERT_NEAR(0.0456748, tOutputs.mObjFuncValue, tTolerance);
-    ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
+    EXPECT_EQ(77u, tOutputs.mNumSolverIter);
+    EXPECT_NEAR(0.0456748, tOutputs.mObjFuncValue, tTolerance);
+    EXPECT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
     tGold(0,0) = 0.7864153996; tGold(0,1) = 0.6176982996;
     PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution);
