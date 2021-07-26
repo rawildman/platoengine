@@ -2072,8 +2072,11 @@ void append_compute_normalization_factor_operation
 {
     if(aXMLMetaData.optimization_parameters().normalizeInAggregator())
     {
-        XMLGen::append_filter_control_operation(aXMLMetaData, aParentNode);
-        XMLGen::append_enforce_bounds_operation(aXMLMetaData, aParentNode);
+        if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+        {
+            XMLGen::append_filter_control_operation(aXMLMetaData, aParentNode);
+            XMLGen::append_enforce_bounds_operation(aXMLMetaData, aParentNode);
+        }
         XMLGen::append_objective_value_operation(aXMLMetaData, aParentNode, true);
     }
 }
@@ -2099,14 +2102,17 @@ void append_initial_guess_stage
         auto tStageNode = aDocument.append_child("Stage");
         XMLGen::append_children({"Name"},{"Initialize Design Parameters"}, tStageNode);
         XMLGen::append_initial_values_operation(aXMLMetaData, tStageNode);
-        if (!XMLGen::do_tet10_conversion(aXMLMetaData)) {
+        if (!XMLGen::do_tet10_conversion(aXMLMetaData)) 
+        {
             XMLGen::append_initialize_geometry_operation(aXMLMetaData, tStageNode);
         }
-        else {
+        else 
+        {
             const std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
             XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
             XMLGen::append_tet10_conversion_operation(tFirstPlatoMainPerformer, tStageNode);
         }
+        XMLGen::append_compute_normalization_factor_operation(aXMLMetaData, tStageNode);
         auto tOutputNode = tStageNode.append_child("Output");
         XMLGen::append_children({"SharedDataName"},{"Design Parameters"}, tOutputNode);
     }

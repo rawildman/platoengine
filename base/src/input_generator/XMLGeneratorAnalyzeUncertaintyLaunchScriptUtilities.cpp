@@ -119,9 +119,9 @@ void append_sierra_sd_mpirun_commands
             fprintf(aFile, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", tEnvString.c_str(), tSeparationString.c_str());
             fprintf(aFile, "%s PLATO_APP_FILE%ssierra_sd_%s_operations.xml \\\n", tEnvString.c_str(), tSeparationString.c_str(), tService.id().c_str());
             if(aInputData.codepaths.sierra_sd_path.length() != 0)
-              fprintf(aFile, "%s sierra_sd_%s_input_deck.i \\\n", aInputData.codepaths.sierra_sd_path.c_str(), tService.id().c_str());
+              fprintf(aFile, "%s --beta -i sierra_sd_%s_input_deck.i \\\n", aInputData.codepaths.sierra_sd_path.c_str(), tService.id().c_str());
             else
-              fprintf(aFile, "plato_sd_main sierra_sd_%s_input_deck.i \\\n", tService.id().c_str());
+              fprintf(aFile, "plato_sd_main --beta -i sierra_sd_%s_input_deck.i \\\n", tService.id().c_str());
         }
         tServiceIndex++;
     }
