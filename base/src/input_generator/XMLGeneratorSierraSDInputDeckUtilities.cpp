@@ -9,17 +9,26 @@
 #include <sstream>
 #include <sys/stat.h>
 
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
 
 namespace XMLGen
 {
 
+bool isModalCriterion(const XMLGen::Criterion &aCriterion) {
+    return aCriterion.type() == "modal_matching" ||
+           aCriterion.type() == "modal_projection_error";
+}
+
+bool isInverseMethodCase(const XMLGen::Criterion &aCriterion) {
+    return aCriterion.type() == "frf_mismatch" || isModalCriterion(aCriterion);
+}
+
 /**************************************************************************/
-void append_solution_block
-(const XMLGen::InputData& aMetaData,
- std::ostream &outfile)
-{
+void append_solution_block(const XMLGen::InputData &aMetaData,
+                           const XMLGen::Criterion &aCriterion,
+                           std::ostream &outfile) {
     outfile << "SOLUTION" << std::endl;
     if(aMetaData.objective.multi_load_case == "true")
     {
@@ -35,24 +44,238 @@ void append_solution_block
         outfile << "  case '" << aMetaData.objective.scenarioIDs[0] << "'" << std::endl;
         outfile << "  topology_optimization" << std::endl;
     }
+    if (isModalCriterion(aCriterion)) {
+        outfile << "  nmodes " << aCriterion.num_modes_compute() << std::endl;
+        outfile << "  modalAdjointSolver = camp" << std::endl;
+        outfile << "  shift " << aCriterion.eigen_solver_shift() << std::endl;
+    }
     outfile << "  solver gdsw" << std::endl;
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
-void append_parameters_block
-(const XMLGen::Scenario &aScenario,
- std::ostream &outfile)
-{
+void append_parameters_block(const XMLGen::Scenario &aScenario,
+                             const XMLGen::Criterion &aCriterion,
+                             std::ostream &outfile) {
     auto tWeightMassScaleFactor = aScenario.weightMassScaleFactor();
-    if(tWeightMassScaleFactor != "")
+    const bool haveWtMass = (tWeightMassScaleFactor != "");
+    const bool writeSwapModes = isModalCriterion(aCriterion);
+
+    if(haveWtMass || writeSwapModes)
     {
         outfile << "PARAMETERS" << std::endl;
-        outfile << "  WTMASS = " << tWeightMassScaleFactor << std::endl;
+        if (haveWtMass) {
+            outfile << "  WTMASS = " << tWeightMassScaleFactor << std::endl;
+        }
+        if (writeSwapModes) {
+            outfile << "  swapModes no" << std::endl;
+        }
         outfile << "END" << std::endl;
     }
 }
+
+void append_camp_block(const XMLGen::Scenario &aScenario, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
+    if (isModalCriterion(aCriterion)) {
+        outfile << "CAMP" << std::endl;
+        outfile << "  solver_tol " << aCriterion.camp_solver_tol() << std::endl;
+        outfile << "  preconditioner gdsw" << std::endl;
+        outfile << "  max_iter " << aCriterion.camp_max_iter() << std::endl;
+        outfile << "END" << std::endl;
+    }
+}
+
+void writeOptimizationBlock(std::ostream &outfile)
+{
+    outfile << "OPTIMIZATION" << std::endl;
+    outfile << "  optimization_package ROL_lib" << std::endl;
+    outfile << "  ROLmethod linesearch" << std::endl;
+    outfile << "  LSstep Newton-Krylov" << std::endl;
+    outfile << "  LS_curvature_condition null" << std::endl;
+    outfile << "  Max_iter_Krylov 50" << std::endl;
+    outfile << "  Use_FD_hessvec false" << std::endl;
+    outfile << "  Use_inexact_hessvec false" << std::endl;
+    outfile << "END" << std::endl;
+}
+
+void writeDummyFRFFiles(const XMLGen::Scenario &aScenario, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
+    std::string tTruthTableFile = "dummy_ttable_";
+    tTruthTableFile += aScenario.id();
+    tTruthTableFile += ".txt";
+    std::string tRealDataFile = "dummy_data_";
+    tRealDataFile += aScenario.id();
+    tRealDataFile += ".txt";
+    std::string tImagDataFile = "dummy_data_im_";
+    tImagDataFile += aScenario.id();
+    tImagDataFile += ".txt";
+    // For levelset frf we will be generating the experimental data
+    // files at each iteration corresponding to the new computational
+    // mesh node ids.  Therefore, we will start things off with 3
+    // dummy files that just have generic data in them.
+    outfile << "  data_truth_table " << tTruthTableFile << std::endl;
+    outfile << "  real_data_file " << tRealDataFile << std::endl;
+    outfile << "  imaginary_data_file " << tImagDataFile << std::endl;
+    // Create the 3 generic files.
+    double tFreqMin, tFreqMax, tFreqStep;
+    sscanf(aScenario.frequency_min().c_str(), "%lf", &tFreqMin);
+    sscanf(aScenario.frequency_max().c_str(), "%lf", &tFreqMax);
+    sscanf(aScenario.frequency_step().c_str(), "%lf", &tFreqStep);
+    // This is the formula sierra_sd uses to get the number of frequencies
+    int tNumFreqs = (int)(((tFreqMax - tFreqMin) / tFreqStep) + 0.5) + 1;
+    int tNumMatchNodes = aCriterion.matchNodesetIDs().size();
+    FILE *tTmpFP = fopen(tTruthTableFile.c_str(), "w");
+    if (tTmpFP) {
+        fprintf(tTmpFP, "%d\n", tNumMatchNodes);
+        for (int tIndex = 0; tIndex < tNumMatchNodes; ++tIndex) {
+            fprintf(tTmpFP, "%d 1 1 1\n", tIndex + 1);
+        }
+        fclose(tTmpFP);
+    }
+    tTmpFP = fopen(tRealDataFile.c_str(), "w");
+    if (tTmpFP) {
+        fprintf(tTmpFP, "%d %d\n", 3 * tNumMatchNodes, tNumFreqs);
+        for (int tIndex = 0; tIndex < 3 * tNumMatchNodes; ++tIndex) {
+            for (int tIndex2 = 0; tIndex2 < tNumFreqs; ++tIndex2) {
+                fprintf(tTmpFP, "0 ");
+            }
+            fprintf(tTmpFP, "\n");
+        }
+        fclose(tTmpFP);
+    }
+    tTmpFP = fopen(tImagDataFile.c_str(), "w");
+    if (tTmpFP) {
+        fprintf(tTmpFP, "%d %d\n", 3 * tNumMatchNodes, tNumFreqs);
+        for (int tIndex = 0; tIndex < 3 * tNumMatchNodes; ++tIndex) {
+            for (int tIndex2 = 0; tIndex2 < tNumFreqs; ++tIndex2) {
+                fprintf(tTmpFP, "0 ");
+            }
+            fprintf(tTmpFP, "\n");
+        }
+        fclose(tTmpFP);
+    }
+}
+
+void writeFRFInverseBlocks(const XMLGen::InputData &aMetaData,
+                           const XMLGen::Criterion &aCriterion,
+                           const XMLGen::Scenario &aScenario,
+                           std::ostream &outfile)
+{
+    outfile << "INVERSE-PROBLEM" << std::endl;
+    if (aMetaData.optimization_parameters().discretization().compare("levelset") == 0) {
+        writeDummyFRFFiles(aScenario, aCriterion, outfile);
+    } else {
+        outfile << "  data_truth_table ttable.txt" << std::endl;
+        outfile << "  real_data_file data.txt" << std::endl;
+        outfile << "  imaginary_data_file data_im.txt" << std::endl;
+    }
+    outfile << "END" << std::endl;
+
+    writeOptimizationBlock(outfile);
+
+    if (aScenario.raleigh_damping_alpha().length() > 0 && aScenario.raleigh_damping_beta().length() > 0) {
+        outfile << "DAMPING" << std::endl;
+        outfile << "  alpha " << aScenario.raleigh_damping_alpha() << std::endl;
+        outfile << "  beta " << aScenario.raleigh_damping_beta() << std::endl;
+        outfile << "END" << std::endl;
+    }
+    outfile << "FREQUENCY" << std::endl;
+    outfile << "  freq_min " << aScenario.frequency_min() << std::endl;
+    outfile << "  freq_max " << aScenario.frequency_max() << std::endl;
+    outfile << "  freq_step " << aScenario.frequency_step() << std::endl;
+    outfile << "END" << std::endl;
+
+    outfile << "FUNCTION 1" << std::endl;
+    outfile << "  type linear" << std::endl;
+    outfile << "  data 0 1" << std::endl;
+    outfile << "  data 1e6 1" << std::endl;
+    outfile << "END" << std::endl;
+}
+
+void writeDummyModalFiles(const XMLGen::Scenario &aScenario, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
+    const std::string id = aScenario.id();
+
+    std::string data_truth_table = "dummy_eigen_ttable_";
+    data_truth_table += aScenario.id();
+    data_truth_table += ".txt";
+    std::string data_file = "dummy_eigen_data_";
+    data_file += aScenario.id();
+    data_file += ".txt";
+    std::string modal_data_file = "dummy_modal_data_";
+    modal_data_file += aScenario.id();
+    modal_data_file += ".txt";
+    std::string modal_weight_table = "dummy_modal_weight_";
+    modal_weight_table += aScenario.id();
+    modal_weight_table += ".txt";
+
+    outfile << "  data_truth_table " << data_truth_table << std::endl;
+    outfile << "  data_file " << data_file << std::endl;
+    outfile << "  modal_data_file " << modal_data_file << std::endl;
+    outfile << "  modal_weight_table " << modal_weight_table << std::endl;
+
+    const auto &matchNodes = aCriterion.matchNodesetIDs();
+    const int numNodes = matchNodes.size();
+    int numModes;
+    sscanf(aCriterion.num_modes_compute().c_str(), "%d", &numModes);
+
+    // Create the 4 generic files.
+
+    std::ofstream dummy;
+
+    dummy.open(data_truth_table);
+    dummy << numNodes << std::endl;
+    for(int i=0;i<numNodes;i++) {
+        dummy << matchNodes[i] << " 1 1 1" << std::endl;
+    }
+    dummy.close();
+
+    dummy.open(data_file);
+    dummy << 3*numNodes << " " << numModes << std::endl;
+    for(int i=0;i<3*numNodes;i++) {
+        for(int j=0;j<numModes;j++) {
+            dummy << "0 ";
+        }
+        dummy << std::endl;
+    }
+    dummy.close();
+
+    dummy.open(modal_data_file);
+    dummy << numModes << std::endl;
+    for(int i=0;i<numModes;i++) {
+        dummy << "0" << std::endl;
+    }
+    dummy.close();
+
+    dummy.open(modal_weight_table);
+    dummy << numModes << std::endl;
+    for(int i=0;i<numModes;i++) {
+        dummy << "1" << std::endl;
+    }
+    dummy.close();
+}
+
+void writeModalInverseBlocks(const XMLGen::InputData &aMetaData,
+                             const XMLGen::Criterion &aCriterion,
+                             const XMLGen::Scenario &aScenario,
+                             std::ostream &outfile)
+{
+    outfile << "INVERSE-PROBLEM" << std::endl;
+
+    writeDummyModalFiles(aScenario, aCriterion, outfile);
+
+    outfile << "  shape_sideset " << aCriterion.shapeSideset() << std::endl;
+
+    // dummy value doesn't matter because SD just computes the gradient
+    outfile << "  shape_bounds 1.0" << std::endl;
+ 
+    if (aCriterion.type() == "modal_projection_error") {
+        outfile << "  eigen_objective mpe" << std::endl;
+    }
+    outfile << "  design_variable shape" << std::endl;
+    outfile << "END" << std::endl;
+
+    writeOptimizationBlock(outfile);
+}
+
 /**************************************************************************/
-void append_frf_related_blocks
+void append_inverse_problem_blocks
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Criterion &aCriterion,
  const XMLGen::Scenario &aScenario,
@@ -60,106 +283,11 @@ void append_frf_related_blocks
 {
     if(aCriterion.type() == "frf_mismatch")
     {
-        outfile << "INVERSE-PROBLEM" << std::endl;
-        if(aMetaData.optimization_parameters().discretization().compare("levelset") == 0)
-        {
-            std::string tTruthTableFile = "dummy_ttable_";
-            tTruthTableFile += aScenario.id();
-            tTruthTableFile += ".txt";
-            std::string tRealDataFile = "dummy_data_";
-            tRealDataFile += aScenario.id();
-            tRealDataFile += ".txt";
-            std::string tImagDataFile = "dummy_data_im_";
-            tImagDataFile += aScenario.id();
-            tImagDataFile += ".txt";
-            // For levelset frf we will be generating the experimental data
-            // files at each iteration corresponding to the new computational
-            // mesh node ids.  Therefore, we will start things off with 3
-            // dummy files that just have generic data in them.
-            outfile << "  data_truth_table " << tTruthTableFile << std::endl;
-            outfile << "  real_data_file " << tRealDataFile << std::endl;
-            outfile << "  imaginary_data_file " << tImagDataFile << std::endl;
-            // Create the 3 generic files.
-            double tFreqMin, tFreqMax, tFreqStep;
-            sscanf(aScenario.frequency_min().c_str(), "%lf", &tFreqMin);
-            sscanf(aScenario.frequency_max().c_str(), "%lf", &tFreqMax);
-            sscanf(aScenario.frequency_step().c_str(), "%lf", &tFreqStep);
-            // This is the formula sierra_sd uses to get the number of frequencies
-            int tNumFreqs = (int)(((tFreqMax-tFreqMin)/tFreqStep)+0.5) + 1;
-            int tNumMatchNodes = aScenario.frfMatchNodesetIDs().size();
-            FILE *tTmpFP = fopen(tTruthTableFile.c_str(), "w");
-            if(tTmpFP)
-            {
-                fprintf(tTmpFP, "%d\n", tNumMatchNodes);
-                for(int tIndex=0; tIndex<tNumMatchNodes; ++tIndex)
-                {
-                    fprintf(tTmpFP, "%d 1 1 1\n", tIndex+1);
-                }
-                fclose(tTmpFP);
-            }
-            tTmpFP = fopen(tRealDataFile.c_str(), "w");
-            if(tTmpFP)
-            {
-                fprintf(tTmpFP, "%d %d\n", 3*tNumMatchNodes, tNumFreqs);
-                for(int tIndex=0; tIndex<3*tNumMatchNodes; ++tIndex)
-                {
-                    for(int tIndex2=0; tIndex2<tNumFreqs; ++tIndex2)
-                    {
-                        fprintf(tTmpFP, "0 ");
-                    }
-                    fprintf(tTmpFP, "\n");
-                }
-                fclose(tTmpFP);
-            }
-            tTmpFP = fopen(tImagDataFile.c_str(), "w");
-            if(tTmpFP)
-            {
-                fprintf(tTmpFP, "%d %d\n", 3*tNumMatchNodes, tNumFreqs);
-                for(int tIndex=0; tIndex<3*tNumMatchNodes; ++tIndex)
-                {
-                    for(int tIndex2=0; tIndex2<tNumFreqs; ++tIndex2)
-                    {
-                        fprintf(tTmpFP, "0 ");
-                    }
-                    fprintf(tTmpFP, "\n");
-                }
-                fclose(tTmpFP);
-            }
-        }
-        else
-        {
-            outfile << "  data_truth_table ttable.txt" << std::endl;
-            outfile << "  real_data_file data.txt" << std::endl;
-            outfile << "  imaginary_data_file data_im.txt" << std::endl;
-        }
-        outfile << "END" << std::endl;
-        outfile << "OPTIMIZATION" << std::endl;
-        outfile << "  optimization_package ROL_lib" << std::endl;
-        outfile << "  ROLmethod linesearch" << std::endl;
-        outfile << "  LSstep Newton-Krylov" << std::endl;
-        outfile << "  LS_curvature_condition null" << std::endl;
-        outfile << "  Max_iter_Krylov 50" << std::endl;
-        outfile << "  Use_FD_hessvec false" << std::endl;
-        outfile << "  Use_inexact_hessvec false" << std::endl;
-        outfile << "END" << std::endl;
-        if(aScenario.raleigh_damping_alpha().length() > 0 &&
-           aScenario.raleigh_damping_beta().length() > 0)
-        {
-            outfile << "DAMPING" << std::endl;
-            outfile << "  alpha " << aScenario.raleigh_damping_alpha() << std::endl;
-            outfile << "  beta " << aScenario.raleigh_damping_beta() << std::endl;
-            outfile << "END" << std::endl;
-        }
-        outfile << "FREQUENCY" << std::endl;
-        outfile << "  freq_min " << aScenario.frequency_min() << std::endl;
-        outfile << "  freq_max " << aScenario.frequency_max() << std::endl;
-        outfile << "  freq_step " << aScenario.frequency_step() << std::endl;
-        outfile << "END" << std::endl;
-        outfile << "FUNCTION 1" << std::endl;
-        outfile << "  type linear" << std::endl;
-        outfile << "  data 0 1" << std::endl;
-        outfile << "  data 1e6 1" << std::endl;
-        outfile << "END" << std::endl;
+        writeFRFInverseBlocks(aMetaData, aCriterion, aScenario, outfile);
+    }
+    else if (isModalCriterion(aCriterion))
+    {
+        writeModalInverseBlocks(aMetaData, aCriterion, aScenario, outfile);
     }
 }
 /**************************************************************************/
@@ -195,6 +323,9 @@ void append_gdsw_block
             outfile << "  solver_tol = 1e-4" << std::endl;
         }
     }
+    if (isModalCriterion(aCriterion)) {
+        outfile << "  SC_option 0" << std::endl;
+    }
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
@@ -203,7 +334,7 @@ void append_outputs_block
  std::ostream &outfile)
 {
     outfile << "OUTPUTS" << std::endl;
-    if(aCriterion.type() != "frf_mismatch")
+    if(!isInverseMethodCase(aCriterion))
     {
         outfile << "  topology" << std::endl;
     }
@@ -215,7 +346,7 @@ void append_echo_block
  std::ostream &outfile)
 {
     outfile << "ECHO" << std::endl;
-    if(aCriterion.type() != "frf_mismatch")
+    if(!isInverseMethodCase(aCriterion))
     {
         outfile << "  topology" << std::endl;
     }
@@ -251,7 +382,9 @@ void append_material_blocks
         outfile << "  nu = " << tMaterial.property("poissons_ratio") << std::endl;
         if(tMaterial.property("mass_density").empty() == false)
             outfile << "  density = " << tMaterial.property("mass_density") << std::endl;
-        append_penalty_terms_to_material_block(aMetaData, aCriterion, aScenario, outfile);
+        if (!isModalCriterion(aCriterion)) {
+            append_penalty_terms_to_material_block(aMetaData, aCriterion, aScenario, outfile);
+        }
         outfile << "END" << std::endl;
     }
 }
@@ -282,9 +415,14 @@ void append_block_blocks
         {
             outfile << "  tet4" << std::endl;
         }
-        else if(tBlock.element_type == "tet10")
+        else if(tBlock.element_type == "tet10" || aScenario.convert_to_tet10().length()>0)
         {
-            outfile << "  tet10" << std::endl;
+            if (isInverseMethodCase(aCriterion)) {
+                outfile << "  cutet10" << std::endl;
+            }
+            else {
+                outfile << "  tet10" << std::endl;
+            }
         }
         else if(tBlock.element_type == "rbar")
         {
@@ -439,6 +577,19 @@ void append_stress_parameters
         }
     }
 }
+
+void writeInverseMethodObjective(const std::string &tDiscretization, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
+    if (aCriterion.type() == "frf_mismatch") {
+        if(tDiscretization == "density")
+            outfile << "  inverse_method_objective = directfrf-plato-density-method" << std::endl;
+        else if(tDiscretization == "levelset")
+            outfile << "  inverse_method_objective = directfrf-plato-levelset-method" << std::endl;
+    }
+    else if (isModalCriterion(aCriterion)) {
+        outfile << "  inverse_method_objective = eigen-inverse" << std::endl;
+    }
+}
+
 /**************************************************************************/
 void append_case
 (const XMLGen::InputData& aMetaData,
@@ -466,31 +617,35 @@ void append_case
     {
         outfile << "  case = primary_compliance_secondary_volume" << std::endl;
     }
-    else if(aCriterion.type() == "frf_mismatch")
+    else if(isInverseMethodCase(aCriterion))
     {
-        std::string tDiscretization = aMetaData.optimization_parameters().discretization();
         outfile << "  case = inverse_methods" << std::endl;
-        if(tDiscretization == "density")
-            outfile << "  inverse_method_objective = directfrf-plato-density-method" << std::endl;
-        else if(tDiscretization == "levelset")
-            outfile << "  inverse_method_objective = directfrf-plato-levelset-method" << std::endl;
-        outfile << "  ref_frf_file " << aScenario.ref_frf_file() << std::endl;
-        if(aScenario.frfMatchNodesetIDs().size() > 0)
+
+        std::string tDiscretization = aMetaData.optimization_parameters().discretization();
+        writeInverseMethodObjective(tDiscretization, aCriterion, outfile);
+
+        outfile << "  ref_data_file " << aCriterion.ref_data_file() << std::endl;
+        if(aCriterion.matchNodesetIDs().size() > 0)
         {
-            outfile << "  frf_nodesets";
-            for(auto tNodesetID : aScenario.frfMatchNodesetIDs())
+            outfile << "  match_nodesets";
+            for(auto tNodesetID : aCriterion.matchNodesetIDs())
             {
-                outfile << " " << tNodesetID << std::endl;
-    
+                outfile << " " << tNodesetID;
             }
-            outfile << "" << std::endl;
+            outfile << std::endl;
         }
-        if(aScenario.complex_error_measure().length() > 0)
-            outfile << "  complex_error_measure " << aScenario.complex_error_measure() << std::endl;
+        if (aCriterion.modesToExclude().size() > 0) {
+            outfile << "  modes_to_exclude";
+            for(auto tModeID : aCriterion.modesToExclude()) {
+                outfile << " " << tModeID;
+            }
+            outfile << std::endl;
+        }
 
-        if (aScenario.convert_to_tet10().length()>0)
-            outfile << " ls_tet_mesh_type " << aScenario.convert_to_tet10() << std::endl;
-
+        if (aCriterion.type() == "frf_mismatch") {
+            if (aScenario.complex_error_measure().length() > 0)
+                outfile << "  complex_error_measure " << aScenario.complex_error_measure() << std::endl;
+        }
     }
 }
 /**************************************************************************/
@@ -506,6 +661,9 @@ void append_normalization_parameter
     }
     if(aCriterion.type() == "stress_and_mass")
     {
+        tNormalizeObjective = false;
+    }
+    if (isModalCriterion(aCriterion)) {
         tNormalizeObjective = false;
     }
     if(tNormalizeObjective == false)
@@ -692,10 +850,10 @@ void append_boundary_block
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
-bool extractMetaDataForWritingInputDeck(const XMLGen::InputData &aMetaData,
-                                        XMLGen::Service &tService,
-                                        XMLGen::Scenario &tScenario,
-                                        XMLGen::Criterion &tCriterion)
+bool extractMetaDataForWritingSDInputDeck(const XMLGen::InputData &aMetaData,
+                                          XMLGen::Service &tService,
+                                          XMLGen::Scenario &tScenario,
+                                          XMLGen::Criterion &tCriterion)
 {
     if(aMetaData.objective.serviceIDs.size() > 0)
     {
@@ -721,13 +879,14 @@ void add_input_deck_blocks
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
 
-    if (!extractMetaDataForWritingInputDeck(aMetaData, tService, tScenario, tCriterion)) {
+    if (!extractMetaDataForWritingSDInputDeck(aMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 
-    append_solution_block(aMetaData, outfile);
-    append_parameters_block(tScenario, outfile);
-    append_frf_related_blocks(aMetaData, tCriterion, tScenario, outfile);
+    append_solution_block(aMetaData, tCriterion, outfile);
+    append_parameters_block(tScenario, tCriterion, outfile);
+    append_camp_block(tScenario, tCriterion, outfile);
+    append_inverse_problem_blocks(aMetaData, tCriterion, tScenario, outfile);
     append_gdsw_block(tCriterion, tScenario, outfile);
     append_outputs_block(tCriterion, outfile);
     append_echo_block(tCriterion, outfile);
@@ -824,7 +983,7 @@ void augment_sierra_sd_input_deck_with_plato_problem_description(const XMLGen::I
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
 
-    if (!extractMetaDataForWritingInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
+    if (!extractMetaDataForWritingSDInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 

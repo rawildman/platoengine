@@ -86,6 +86,8 @@ struct ValidCriterionParameterKeys
         "conductivity_ratios",
         "location_names",
         "blocks",
+        "local_measure",
+        "spatial_weighting_function",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -105,7 +107,16 @@ struct ValidCriterionParameterKeys
         "volume_penalty_power",
         "volume_penalty_divisor",
         "volume_penalty_bias",
-        "surface_area_sideset_id"
+        "surface_area_sideset_id",
+        // SD modal objectives
+        "num_modes_compute",
+        "modes_to_exclude",
+        "eigen_solver_shift",
+        "camp_solver_tol",
+        "camp_max_iter",
+        "shape_sideset",
+        "ref_data_file",
+        "match_nodesets"
     };
 };
 
@@ -178,6 +189,7 @@ private:
         "plastic_work",
         "thermoplasticity_thermal_energy",
         "volume", 
+        "volume_average", 
         "mass", 
         "CG_x", 
         "CG_y", 
@@ -206,7 +218,9 @@ private:
         "surface_temperature",
         "flow_rate",
         "fluid_thermal_compliance",
-        "maximize_fluid_thermal_flux"
+        "maximize_fluid_thermal_flux",
+        "modal_matching",
+        "modal_projection_error"
     };
 
 public:
@@ -515,6 +529,7 @@ private:
         {"plasticity", "solid"},
         {"thermoplasticity", "solid"},
         {"frequency_response_function", "solid"},
+        {"modal_response", "solid"},
         {"steady_state_incompressible_fluids", "fluid"}
     };
 
@@ -1243,6 +1258,7 @@ struct ValidAnalyzeCriteriaKeys
     {
         { "composite", { "Composite", false } },
         { "volume", { "Volume", false } },
+        { "volume_average", { "Volume Average Criterion", false } },
         { "elastic_work", { "Elastic Work", false } },
         { "plastic_work", { "Plastic Work", false } },
         { "total_work", { "Total Work", false } },
@@ -1253,6 +1269,7 @@ struct ValidAnalyzeCriteriaKeys
         { "effective_energy", { "Effective Energy", true } },
         { "stress_constraint", { "Stress Constraint", false } },
         { "stress_constraint_general", { "Stress Constraint General", false } },
+        { "stress_constraint_quadratic", { "Stress Constraint Quadratic", false } },
         { "stress_and_mass", { "Stress Constraint General", false } },
         { "thermal_compliance", { "Internal Thermal Energy", false } },
         { "flux_p-norm", { "Flux P-Norm", false } },

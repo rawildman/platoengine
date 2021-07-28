@@ -85,6 +85,11 @@ private:
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_stress_constrained_mass_minimization_criterion));
         mMap.insert(std::make_pair("stress_constraint_general",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_stress_constrained_mass_minimization_criterion, tFuncIndex)));
+        
+        // stress_constraint_quadratic
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_stress_constrained_mass_minimization_criterion));
+        mMap.insert(std::make_pair("stress_constraint_quadratic",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_stress_constraint_quadratic_criterion, tFuncIndex)));
 
         // stress p-norm
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_pnorm_criterion<CriterionType>));
@@ -135,6 +140,11 @@ private:
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionType>));
         mMap.insert(std::make_pair("thermoplasticity_thermal_energy",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionType>, tFuncIndex)));
+        
+        // volume_average
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_volume_average_criterion<CriterionType>));
+        mMap.insert(std::make_pair("volume_average",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_volume_average_criterion<CriterionType>, tFuncIndex)));
         
         // incompressible fluids
         XMLGen::Private::append_incompressible_fluids_scalar_functions<CriterionType>(mMap);
