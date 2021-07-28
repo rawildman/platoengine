@@ -22,12 +22,22 @@ void append_incompressible_fluids_scalar_functions
     // surface pressure
     auto tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("surface_pressure",
-    std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
 
     // surface temperature
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("surface_temperature",
-    std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+
+    // maximize_fluid_thermal_flux
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
+    aMap.insert(std::make_pair("maximize_fluid_thermal_flux", 
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+
+    // fluid_thermal_compliance
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionT>));
+    aMap.insert(std::make_pair("fluid_thermal_compliance", 
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionT>, tFuncIndex)));
 }
 // function append_incompressible_fluids_scalar_functions
 
@@ -154,8 +164,8 @@ public:
      * \fn call
      * \tparam CriterionType criterion function metadata C++ structure type
      * \brief Append criterion function parameters to plato_analyze_input_deck.xml file.
-     * \param [in]     Criterion    criterion metadata
-     * \param [in/out] aParentNode  pugi::xml_node
+     * \param [in]  aCriterion   criterion metadata
+     * \param [out] aParentNode  pugi::xml_node
     **********************************************************************************/
     pugi::xml_node call(const CriterionType& aCriterion, pugi::xml_node &aParentNode) const
     {
