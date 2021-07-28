@@ -535,12 +535,12 @@ private:
 
 public:
     /******************************************************************************//**
-     * \fn usecase
-     * \brief Return supported simulation usecase.
+     * \fn physics
+     * \brief Return supported simulation physics.
      * \param [in] aKey keyword
-     * \return supported simulation usecase keyword, if not supported, return empty string.
+     * \return supported simulation physics keyword, if not supported, return empty string.
     **********************************************************************************/
-    std::string usecase(const std::string& aKey) const
+    std::string physics(const std::string& aKey) const
     {
         auto tItr = mKeys.find(aKey);
         if(tItr == mKeys.end())
