@@ -81,7 +81,6 @@ protected:
     void parseInputFile();
     bool parseMesh(std::istream &fin);
     void parseOutput(std::istream &fin);
-    bool parseCodePaths(std::istream &fin);
     void parseMaterials(std::istream &fin);
     void parseCriteria(std::istream &fin);
     bool parseBlocks(std::istream &fin);

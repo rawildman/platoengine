@@ -855,6 +855,7 @@ TEST(PlatoTestXMLGenerator, ParseService)
     std::string tStringInput =
         "begin service 1\n"
         "code plato_analyze\n"
+        "path /path/to/platoanalyze/build/analyze_MPMD\n"
         "cache_state false\n"
         "update_problem true\n"
         "additive_continuation true\n"
@@ -871,6 +872,7 @@ TEST(PlatoTestXMLGenerator, ParseService)
     {
         ASSERT_STREQ("1", tService.value("id").c_str());
         ASSERT_STREQ("plato_analyze", tService.value("code").c_str());
+        ASSERT_STREQ("/path/to/platoanalyze/build/analyze_MPMD", tService.value("path").c_str());
         ASSERT_STREQ("false", tService.value("cache_state").c_str());
         ASSERT_STREQ("true", tService.value("update_problem").c_str());
         ASSERT_STREQ("true", tService.value("additive_continuation").c_str());

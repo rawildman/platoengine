@@ -83,6 +83,16 @@ std::string Service::code() const
     return (this->getValue("code"));
 }
 
+void Service::path(const std::string& aInput)
+{
+    mMetaData["path"] = aInput;
+}
+
+std::string Service::path() const
+{
+    return (this->getValue("path"));
+}
+
 void Service::deviceIDs(const std::vector<std::string>& aInput)
 {
     mDeviceIDs = aInput;

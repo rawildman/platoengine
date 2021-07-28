@@ -79,7 +79,6 @@ public:
     void publicParseBCs(std::istream &sin);
     bool publicParseOptimizationParameters(std::istream &sin);
     bool publicParseMesh(std::istream &sin);
-    bool publicParseCodePaths(std::istream &sin);
     bool publicParseBlocks(std::istream &sin);
     bool publicRunSROMForUncertainVariables();
     std::string getBlockID(const int &aIndex) {return m_InputData.blocks[aIndex].block_id;}
@@ -127,10 +126,6 @@ public:
     std::string getCheckGradient() {return m_InputData.optimization_parameters().check_gradient();}
     std::string getCheckHessian() {return m_InputData.optimization_parameters().check_hessian();}
     std::string getMeshName() {return m_InputData.mesh.name;}
-    std::string getSalinasPath() {return m_InputData.codepaths.sierra_sd_path;}
-    std::string getAlbanyPath() {return m_InputData.codepaths.albany_path;}
-    std::string getLightMPPath() {return m_InputData.codepaths.lightmp_path;}
-    std::string getPlatoMainPath() {return m_InputData.codepaths.plato_main_path;}
     void clearInputData();
     XMLGen::InputData* exposeInputData() {return &m_InputData;}
     size_t      getNumPerformers() {return m_InputData.m_UncertaintyMetaData.numPerformers;}

@@ -28,9 +28,9 @@ inline void append_plato_analyze_code_path
     }
 
     // Add executable name.
-    if(aInputData.codepaths.plato_analyze_path.length() != 0)
+    if(aInputData.service(aServiceID).path().length() != 0)
     {
-        fprintf(aFile, "%s ", aInputData.codepaths.plato_analyze_path.c_str());
+        fprintf(aFile, "%s ", aInputData.service(aServiceID).path().c_str());
     }
     else
     {
@@ -117,8 +117,8 @@ void append_sierra_sd_mpirun_commands
 
             fprintf(aFile, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", tEnvString.c_str(), tSeparationString.c_str());
             fprintf(aFile, "%s PLATO_APP_FILE%ssierra_sd_%s_operations.xml \\\n", tEnvString.c_str(), tSeparationString.c_str(), tService.id().c_str());
-            if(aInputData.codepaths.sierra_sd_path.length() != 0)
-              fprintf(aFile, "%s sierra_sd_%s_input_deck.i \\\n", aInputData.codepaths.sierra_sd_path.c_str(), tService.id().c_str());
+            if(aInputData.service(tService.id()).path().length() != 0)
+              fprintf(aFile, "%s sierra_sd_%s_input_deck.i \\\n", aInputData.service(tService.id()).path().c_str(), tService.id().c_str());
             else
               fprintf(aFile, "plato_sd_main sierra_sd_%s_input_deck.i \\\n", tService.id().c_str());
         }

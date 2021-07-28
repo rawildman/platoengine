@@ -76,12 +76,14 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "fixed_nodeset_ids", { { {"fixed_nodeset_ids"}, ""}, "" } });
     mTags.insert({ "levelset_nodesets", { { {"levelset_nodesets"}, ""}, "" } });
     mTags.insert({ "number_prune_and_refine_processors", { { {"number_prune_and_refine_processors"}, ""}, "" } });
+    mTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });
     mTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
     mTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
     mTags.insert({ "optimization_algorithm", { { {"optimization_algorithm"}, ""}, "oc" } });
     mTags.insert({ "check_gradient", { { {"check_gradient"}, ""}, "false" } });
     mTags.insert({ "check_hessian", { { {"check_hessian"}, ""}, "false" } });
     mTags.insert({ "filter_type", { { {"filter_type"}, ""}, "kernel" } });
+    mTags.insert({ "filter_service", { { {"filter_service"}, ""}, "" } });
     mTags.insert({ "projection_type", { { {"projection_type"}, ""}, "" } });
     mTags.insert({ "filter_power", { { {"filter_power"}, ""}, "1" } });
     mTags.insert({ "gcmma_inner_kkt_tolerance", { { {"gcmma_inner_kkt_tolerance"}, ""}, "" } });

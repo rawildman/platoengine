@@ -480,7 +480,9 @@ TEST(PlatoTestXMLGenerator, appendEngineMPIRunLines)
   tInputData.mesh.run_name = "dummy_mesh.exo";
   XMLGen::Service tService;
   tService.numberProcessors("10");
+  tService.id("1");
   tService.code("platomain");
+  tService.path("/home/path/to/PlatoMain");
   tInputData.append(tService);
   FILE* fp=fopen("appendEngineMPIRunLines.txt", "w");
   int tPerformerID = 0;
@@ -488,7 +490,7 @@ TEST(PlatoTestXMLGenerator, appendEngineMPIRunLines)
   fclose(fp);
 
   auto tReadData = XMLGen::read_data_from_file("appendEngineMPIRunLines.txt");
-  auto tGold = std::string("mpiexec-np10-xPLATO_PERFORMER_ID=0\\-xPLATO_INTERFACE_FILE=interface.xml\\-xPLATO_APP_FILE=plato_main_operations.xml\\PlatoMainplato_main_input_deck.xml\\");
+  auto tGold = std::string("mpiexec-np10-xPLATO_PERFORMER_ID=0\\-xPLATO_INTERFACE_FILE=interface.xml\\-xPLATO_APP_FILE=plato_main_operations.xml\\/home/path/to/PlatoMainplato_main_input_deck.xml\\");
 
   EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
   Plato::system("rm -rf appendEngineMPIRunLines.txt");
@@ -730,13 +732,13 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineCommand)
   XMLGen::InputData tInputData;
   XMLGen::OptimizationParameters tOptimizationParameters;
   tOptimizationParameters.append("prune_mesh", "true");
+  tOptimizationParameters.append("prune_and_refine_path", "path/to/some/executable");
   tOptimizationParameters.append("number_refines", "2");
   tOptimizationParameters.append("number_buffer_layers", "2");
   tOptimizationParameters.append("number_prune_and_refine_processors", "10");
   tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
   tOptimizationParameters.append("initial_guess_field_name", "badGuess");
   tInputData.set(tOptimizationParameters);
-  tInputData.codepaths.prune_and_refine_path = "path/to/some/executable";
   tInputData.mesh.name = "dummy.exo";
   tInputData.mesh.run_name = "output.exo";
   tInputData.m_UseLaunch = false;
@@ -752,14 +754,14 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineCommand)
   EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
 
-  tOptimizationParameters.append("prune_mesh", "false");
-  tOptimizationParameters.append("number_refines", "");
-  tOptimizationParameters.append("number_buffer_layers", "");
-  tOptimizationParameters.append("number_prune_and_refine_processors", "");
-  tOptimizationParameters.append("initial_guess_file_name", "");
-  tOptimizationParameters.append("initial_guess_field_name", "");
-  tInputData.set(tOptimizationParameters);
-  tInputData.codepaths.prune_and_refine_path = "";
+  XMLGen::OptimizationParameters tOptimizationParameters2;
+  tOptimizationParameters2.append("prune_mesh", "false");
+  tOptimizationParameters2.append("number_refines", "");
+  tOptimizationParameters2.append("number_buffer_layers", "");
+  tOptimizationParameters2.append("number_prune_and_refine_processors", "");
+  tOptimizationParameters2.append("initial_guess_file_name", "");
+  tOptimizationParameters2.append("initial_guess_field_name", "");
+  tInputData.set(tOptimizationParameters2);
 
   tInputData.mesh.name = "dummy.exo";
   tInputData.mesh.run_name = "output.exo";
@@ -780,13 +782,13 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineCommand_invalidInput)
   XMLGen::InputData tInputData;
   XMLGen::OptimizationParameters tOptimizationParameters;
   tOptimizationParameters.append("prune_mesh", "true");
+  tOptimizationParameters.append("prune_and_refine_path", "path/to/some/executable");
   tOptimizationParameters.append("number_refines", "2");
   tOptimizationParameters.append("number_buffer_layers", "2");
   tOptimizationParameters.append("number_prune_and_refine_processors", "10");
   tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
   tOptimizationParameters.append("initial_guess_field_name", "badGuess");
   tInputData.set(tOptimizationParameters);
-  tInputData.codepaths.prune_and_refine_path = "path/to/some/executable";
   tInputData.mesh.name = "";
   tInputData.mesh.run_name = "output.exo";
 
@@ -887,13 +889,13 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineLinesToMPIRunLaunchScript)
   XMLGen::InputData tInputData;
   XMLGen::OptimizationParameters tOptimizationParameters;
   tOptimizationParameters.append("prune_mesh", "true");
+  tOptimizationParameters.append("prune_and_refine_path", "path/to/some/executable");
   tOptimizationParameters.append("number_refines", "2");
   tOptimizationParameters.append("number_buffer_layers", "2");
   tOptimizationParameters.append("number_prune_and_refine_processors", "10");
   tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
   tOptimizationParameters.append("initial_guess_field_name", "badGuess");
   tInputData.set(tOptimizationParameters);
-  tInputData.codepaths.prune_and_refine_path = "path/to/some/executable";
   tInputData.mesh.name = "dummy.exo";
   tInputData.mesh.run_name = "output.exo";
   tInputData.m_UseLaunch = false;
