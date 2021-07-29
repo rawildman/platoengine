@@ -292,12 +292,18 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers)
 
   XMLGen::Scenario tScenario;
   tScenario.id("1");
-  tScenario.append("ref_frf_file", "dummy_frf_file.exo");
   tInputData.append(tScenario);
+
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
   tObjective.scenarioIDs.push_back("1");
+  tObjective.criteriaIDs.push_back("1");
   tInputData.objective = tObjective;
   FILE* fp=fopen("appendDecompLine.txt", "w");
   std::map<std::string,int> hasBeenDecompedForThisNumberOfProcessors;
@@ -338,12 +344,18 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_noNeedToDecompose)
 
   XMLGen::Scenario tScenario;
   tScenario.id("1");
-  tScenario.append("ref_frf_file", "dummy_frf_file.exo");
   tInputData.append(tScenario);
+
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
   tObjective.scenarioIDs.push_back("1");
+  tObjective.criteriaIDs.push_back("1");
   tInputData.objective = tObjective;
 
   FILE* fp=fopen("appendDecompLine.txt", "w");
@@ -375,19 +387,27 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_multipleObjectivesSam
 
   XMLGen::Scenario tScenario;
   tScenario.id("1");
-  tScenario.append("ref_frf_file", "dummy_frf_file.exo");
   tInputData.append(tScenario);
 
-  XMLGen::Scenario tScenario2;
-  tScenario2.id("2");
-  tScenario2.append("ref_frf_file", "dummy_frf_file2.exo");
-  tInputData.append(tScenario2);
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
+
+  XMLGen::Criterion tCriterion2;
+  tCriterion2.id("2");
+  tCriterion2.type("frf_mismatch");
+  tCriterion2.append("ref_data_file", "dummy_frf_file2.exo");
+  tInputData.append(tCriterion2);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
   tObjective.serviceIDs.push_back("2");
   tObjective.scenarioIDs.push_back("1");
   tObjective.scenarioIDs.push_back("2");
+  tObjective.criteriaIDs.push_back("1");
+  tObjective.criteriaIDs.push_back("2");
   tInputData.objective = tObjective;
 
   FILE* fp=fopen("appendDecompLine.txt", "w");
@@ -414,12 +434,18 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPerformers_hasBeenDecomposed)
 
   XMLGen::Scenario tScenario;
   tScenario.id("1");
-  tScenario.append("ref_frf_file", "dummy_frf_file.exo");
   tInputData.append(tScenario);
+
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("1");
   tObjective.scenarioIDs.push_back("1");
+  tObjective.criteriaIDs.push_back("1");
   tInputData.objective = tObjective;
 
   FILE* fp=fopen("appendDecompLine.txt", "w");
@@ -454,12 +480,18 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesToMPILaunchScript)
 
   XMLGen::Scenario tScenario;
   tScenario.id("1");
-  tScenario.append("ref_frf_file", "dummy_frf_file.exo");
   tInputData.append(tScenario);
+
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("frf_mismatch");
+  tCriterion.append("ref_data_file", "dummy_frf_file.exo");
+  tInputData.append(tCriterion);
 
   XMLGen::Objective tObjective;
   tObjective.serviceIDs.push_back("2");
   tObjective.scenarioIDs.push_back("1");
+  tObjective.criteriaIDs.push_back("1");
   tInputData.objective = tObjective;
 
   FILE* fp=fopen("appendDecompLine.txt", "w");
@@ -842,6 +874,7 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPruneAndRefine)
   tOptimizationParameters.append("number_prune_and_refine_processors", "2");
   tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
   tOptimizationParameters.append("initial_guess_field_name", "badGuess");
+  tOptimizationParameters.isARestartRun(true);
   tInputData.set(tOptimizationParameters);
   tInputData.mesh.name = "dummy.exo";
   fp = fopen("decomp.txt", "w");
@@ -857,6 +890,7 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPruneAndRefine)
   tOptimizationParameters.append("number_prune_and_refine_processors", "2");
   tOptimizationParameters.append("initial_guess_file_name", "");
   tOptimizationParameters.append("initial_guess_field_name", "");
+  tOptimizationParameters.isARestartRun(true);
   tInputData.set(tOptimizationParameters);
   tInputData.mesh.name = "dummy.exo";
   fp = fopen("decomp.txt", "w");
@@ -876,6 +910,7 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesForPruneAndRefine_missingMeshName)
   XMLGen::OptimizationParameters tOptimizationParameters;
   tOptimizationParameters.append("number_refines", "2");
   tOptimizationParameters.append("number_prune_and_refine_processors", "2");
+  tOptimizationParameters.isARestartRun(true);
   tInputData.set(tOptimizationParameters);
   FILE* fp = fopen("decomp.txt", "w");
   EXPECT_THROW(XMLGen::append_decomp_lines_for_prune_and_refine(tInputData, fp),std::runtime_error);
@@ -895,6 +930,7 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineLinesToMPIRunLaunchScript)
   tOptimizationParameters.append("number_prune_and_refine_processors", "10");
   tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
   tOptimizationParameters.append("initial_guess_field_name", "badGuess");
+  tOptimizationParameters.isARestartRun(true);
   tInputData.set(tOptimizationParameters);
   tInputData.mesh.name = "dummy.exo";
   tInputData.mesh.run_name = "output.exo";

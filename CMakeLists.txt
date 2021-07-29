@@ -80,7 +80,7 @@ set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 project(PlatoEngine) 
 ###############################################################################
 
-
+set(PLATO_INCLUDES)
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
@@ -111,7 +111,6 @@ if( UNIT_TESTING )
     set(CMAKE_PREFIX_PATH ${GTEST_HOME} ${CMAKE_PREFIX_PATH})
   endif()
   find_package(GTest REQUIRED)
-  set(PLATO_LIBRARIES ${GTEST_BOTH_LIBRARIES})
   include_directories( ${GTEST_INCLUDE_DIRS} )
 endif()
 
@@ -165,7 +164,17 @@ if( REGRESSION OR UNIT_TESTING )
     enable_testing()
 endif()
 
-set(PLATO_INCLUDES)
+if( AMFILTER_ENABLED )
+    message( "-- Compiling AMFilter, c++14 required " )
+    string(REPLACE "-std=c++11" "-std=c++14" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    string(REPLACE "-std=c++11" "-std=c++14" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+    string(REPLACE "-std=c++11" "-std=c++14" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+    add_definitions(-DAMFILTER_ENABLED)
+    find_package(ArborX REQUIRED)
+    set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ArborX::ArborX)
+    set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
+endif()
+
 
 add_subdirectory(base/src)
 add_subdirectory(base/src/analyze)
@@ -202,7 +211,7 @@ endif()
 
 
 if( ENABLE_ISO )
-  add_subdirectory(base/src/iso/main)
+  add_subdirectory(base/src/iso)
 endif()
 
 if( ENABLE_PRUNE )

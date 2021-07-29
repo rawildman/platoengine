@@ -30,8 +30,8 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 							 Plato_Test_UniqueCounter.cpp
 							 Plato_Test_SimpleRocketOptimization.cpp
 							 Plato_Test_UncertainLoadGeneratorXML.cpp
-						         Plato_Test_UncertainMaterial.cpp
-						         Plato_Test_Srom.cpp
+                                                         Plato_Test_UncertainMaterial.cpp
+                                                         Plato_Test_Srom.cpp
 							 Plato_Test_LocalStatisticsOperations.cpp
 							 Plato_Test_MethodMovingAsymptotes.cpp
 							 PSL_Test_Triangle.cpp  
@@ -63,13 +63,18 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 							 PSL_Test_BasicDenseVectorOperations.cpp
 							 PSL_Test_AbstractAuthority.cpp
 							 PSL_Test_Point.cpp
+							 PSL_Test_Vector.cpp
 							 Plato_Test_TimersTree.cpp
+                                                         PSL_Test_OrthogonalGridUtilities.cpp
+                                                         PSL_Test_RegularHex8.cpp
 							 )
 
+if( AMFILTER_ENABLED )
+    SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} PSL_Test_TetMeshUtilities.cpp PSL_Test_AMFilterUtilities.cpp)
+endif()
+
 IF( ENABLE_ROL )
-SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS}
-							   Plato_Test_ROL.cpp
-                                                         )
+    SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} Plato_Test_ROL.cpp)
 ENDIF()
 
 ###############################################################################
@@ -133,7 +138,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 # actual target:
 #set(PLATOMAINUNITTESTER_ADDITIONAL_LIBS ${CMAKE_SOURCE_DIR}/tpls/gtest/build) 
 set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_ADDITIONAL_LIBS} ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} 
-                             ${NLOPT_LIBRARY} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} ${PYTHON_LIBRARY} 
+                             ${NLOPT_LIBRARY} ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} ${PYTHON_LIBRARY} 
                              ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
 add_executable(PlatoMainUnitTester ${PlatoMainUnitTester_SRCS})
 target_link_libraries(PlatoMainUnitTester PlatoApp ${PLATOMAINUNITTESTER_LIBS})

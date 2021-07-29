@@ -61,7 +61,6 @@ class DataMesh;
 
 namespace Plato
 {
-class InputData;
 
 class AbstractKernelThenFilter : public AbstractFilter
 {

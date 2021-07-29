@@ -137,7 +137,7 @@ TEST(PlatoTestXMLGenerator, appendSierraSDMPIRunLines_withPath)
   fclose(fp);
 
   auto tReadData = XMLGen::read_data_from_file("appendSierraSDMPIRunLines.txt");
-  auto tGold = std::string(":-np10-xPLATO_PERFORMER_ID=1\\-xPLATO_INTERFACE_FILE=interface.xml\\-xPLATO_APP_FILE=sierra_sd_3_operations.xml\\/path/to/plato_sd_mainsierra_sd_3_input_deck.i\\");
+  auto tGold = std::string(":-np10-xPLATO_PERFORMER_ID=1\\-xPLATO_INTERFACE_FILE=interface.xml\\-xPLATO_APP_FILE=sierra_sd_3_operations.xml\\/path/to/plato_sd_main--beta-isierra_sd_3_input_deck.i\\");
 
   EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
   Plato::system("rm -rf appendSierraSDMPIRunLines.txt");

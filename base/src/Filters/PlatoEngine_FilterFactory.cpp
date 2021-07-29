@@ -49,6 +49,9 @@
 #include "PlatoEngine_KernelThenTANHFilter.hpp"
 #include "PlatoEngine_ProjectionHeavisideFilter.hpp"
 #include "PlatoEngine_ProjectionTANHFilter.hpp"
+#ifdef AMFILTER_ENABLED
+#include "PlatoEngine_KernelThenStructuredAMFilter.hpp"
+#endif
 #include "Plato_Interface.hpp"
 #include "data_mesh.hpp"
 #include "Plato_Parser.hpp"
@@ -94,6 +97,16 @@ Plato::AbstractFilter* build_filter(InputData aInputData, MPI_Comm& aLocalComm, 
         {
             tResult = new Plato::ProjectionTANHFilter();
         }
+#ifdef AMFILTER_ENABLED
+        else if(tNameString == "KernelThenAM")
+        {
+            // we need to call the custom build function with the AM filter 
+            // to extract the mesh data
+            Plato::KernelThenStructuredAMFilter* tCustomFilter = new Plato::KernelThenStructuredAMFilter();
+            tCustomFilter->build(aInputData, aLocalComm, aMesh);
+            return tCustomFilter;
+        }
+#endif
         else if(tNameString == "Identity")
         {
             tResult = new Plato::IdentityFilter();

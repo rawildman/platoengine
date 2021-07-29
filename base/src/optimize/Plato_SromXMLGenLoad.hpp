@@ -52,7 +52,7 @@
 #include <iostream>
 
 #include "XMLGeneratorDataStruct.hpp"
-#include "XMLGeneratorNaturalBoundaryConditionMetadata.hpp"
+#include "XMLGeneratorLoadMetadata.hpp"
 
 #include "Plato_RandomLoadMetadata.hpp"
 #include "Plato_SromXMLGenHelpers.hpp"
@@ -98,7 +98,7 @@ inline bool variable_type_string_to_enum(const std::string& aStringVarType, Plat
  * \param [out] aLoad deterministic load metadata
  * \return error flag - function call was successful, true = no error, false = error
 **********************************************************************************/
-inline bool create_deterministic_load_variable(const XMLGen::NaturalBoundaryCondition &aLoad, Plato::srom::Load& aNewLoad)
+inline bool create_deterministic_load_variable(const XMLGen::Load &aLoad, Plato::srom::Load& aNewLoad)
 {
     aNewLoad.mLoadID = aLoad.id();
     aNewLoad.mLoadType = aLoad.type();
@@ -128,7 +128,7 @@ inline bool create_deterministic_load_variable(const XMLGen::NaturalBoundaryCond
  * \return random load identification number
 **********************************************************************************/
 inline int create_random_load
-(const XMLGen::NaturalBoundaryCondition &aLoad,
+(const XMLGen::Load &aLoad,
  std::vector<Plato::srom::Load> &aRandomLoads)
 {
     for(auto& tRandomLoad : aRandomLoads)
@@ -198,7 +198,7 @@ inline void add_random_variable_to_random_load(Plato::srom::Load &aRandomLoad,
  * \param [out] aRandomLoads set of random load cases
 **********************************************************************************/
 inline void create_random_loads_from_uncertainty(const XMLGen::Uncertainty& aRandomVariable,
-                                                 const std::vector<XMLGen::NaturalBoundaryCondition> &aLoads,
+                                                 const std::vector<XMLGen::Load> &aLoads,
                                                  std::set<int> &aRandomLoadIDs,
                                                  std::vector<Plato::srom::Load> &aRandomLoads)
 {
@@ -229,7 +229,7 @@ inline void create_random_loads_from_uncertainty(const XMLGen::Uncertainty& aRan
  * \param [out] aRandomLoads set of random load cases
 **********************************************************************************/
 inline void create_random_load_variables(const std::vector<XMLGen::Uncertainty> &aRandomVariables,
-                                         const std::vector<XMLGen::NaturalBoundaryCondition> &aLoads,
+                                         const std::vector<XMLGen::Load> &aLoads,
                                          std::set<int> &aRandomLoadIDs,
                                          std::vector<Plato::srom::Load> &aRandomLoads)
 {
@@ -251,7 +251,7 @@ inline void create_random_load_variables(const std::vector<XMLGen::Uncertainty> 
  * \param [in] aRandomLoadIDs set of random load case identifiers
  * \param [out] aDeterministicLoads set of deterministic load cases
 **********************************************************************************/
-inline void create_deterministic_load_variables(const std::vector<XMLGen::NaturalBoundaryCondition> &aLoads,
+inline void create_deterministic_load_variables(const std::vector<XMLGen::Load> &aLoads,
                                                 const std::set<int> & aRandomLoadIDs,
                                                 std::vector<Plato::srom::Load> &aDeterministicLoads)
 {
@@ -283,7 +283,7 @@ inline void create_deterministic_load_variables(const std::vector<XMLGen::Natura
 **********************************************************************************/
 inline std::vector<Plato::srom::Load>
 generate_srom_load_inputs
-(const std::vector<XMLGen::NaturalBoundaryCondition> &aInputLoads,
+(const std::vector<XMLGen::Load> &aInputLoads,
  const std::vector<XMLGen::Uncertainty> &aUncertainties)
 {
     std::set<int> tRandomLoadIDs;
@@ -303,7 +303,7 @@ generate_srom_load_inputs
  * \param [in/out] aLoads         set of load metadata
  * \param [in/out] aUncertainties set of uncertainty metadata
 **********************************************************************************/
-inline std::vector<XMLGen::NaturalBoundaryCondition>
+inline std::vector<XMLGen::Load>
 preprocess_srom_problem_load_inputs
 (const XMLGen::InputData& aInputMetadata)
 {
@@ -318,7 +318,7 @@ preprocess_srom_problem_load_inputs
             "in stochastic use cases. Meaning, there cannot be more than one objective block defined in the Plato input file.")
     }
 
-    std::vector<XMLGen::NaturalBoundaryCondition> tLoads;
+    std::vector<XMLGen::Load> tLoads;
     for (auto &tScenarioID : aInputMetadata.objective.scenarioIDs)
     {
         auto &tScenario = aInputMetadata.scenario(tScenarioID);
@@ -434,6 +434,36 @@ inline void preprocess_load_inputs
 // function preprocess_load_inputs
 
 /******************************************************************************//**
+ * \fn load_value_to_string
+ * \brief Take a load value and convert it to a string that is acceptable in a Teuchos MathExor
+ * \param [in] aLoadValue Numeric value of the load
+ * \return  string representation of the load
+**********************************************************************************/
+inline std::string load_value_to_string(const double aLoadValue)
+{
+    if (aLoadValue == 0.0)
+        return std::string("0.0");
+
+    std::string tLoadString = Plato::to_string(aLoadValue);
+    size_t tIndexOfE = tLoadString.find('e');
+    if (tIndexOfE == std::string::npos)
+        return tLoadString;
+    
+    size_t tNumCharsToErase = 0;
+    for (size_t tStringIndex = tIndexOfE + 1; tStringIndex < tLoadString.size(); ++tStringIndex)
+    {
+        if ( (tLoadString[tStringIndex] == '0') || (tLoadString[tStringIndex] == '+') )
+            ++tNumCharsToErase;
+        else
+            break;
+    }
+    if (tNumCharsToErase > 0)
+        tLoadString.erase(tIndexOfE + 1, tNumCharsToErase);
+    
+    return tLoadString;
+}
+
+/******************************************************************************//**
  * \fn postprocess_load_outputs
  * \brief Post-process non-deterministic load outputs.
  * \param [in/out] aSromOutputs     SROM problem output metadata
@@ -457,7 +487,7 @@ inline void postprocess_load_outputs
         tNewLoadCase.id = std::to_string(tLoadCaseID);
         for (size_t tLoadIndex = 0; tLoadIndex < tLoadCase.numLoads(); ++tLoadIndex)
         {
-            XMLGen::NaturalBoundaryCondition tNewLoad;
+            XMLGen::Load tNewLoad;
             tNewLoad.is_random((tLoadCase.isRandom(tLoadIndex) ? "true" : "false"));
             tNewLoad.type(tLoadCase.loadType(tLoadIndex));
             tNewLoad.location_id(tLoadCase.applicationID(tLoadIndex));
@@ -466,7 +496,7 @@ inline void postprocess_load_outputs
             std::vector<std::string> tValues;
             for (size_t tDim = 0; tDim < tLoadCase.numLoadValues(tLoadIndex); ++tDim)
             {
-                tValues.push_back(Plato::to_string(tLoadCase.loadValue(tLoadIndex, tDim)));
+                tValues.push_back(Plato::srom::load_value_to_string(tLoadCase.loadValue(tLoadIndex, tDim)));
             }
             tNewLoad.load_values(tValues);
             tNewLoad.id(tLoadCase.loadID(tLoadIndex));

@@ -76,10 +76,12 @@ TEST(PlatoTestXMLGenerator, WritePlatoMainOperationsXmlFile)
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("max_iterations", "10");
+    tOptimizationParameters.append("filter_radius_scale", "2.0");
     tOptimizationParameters.append("discretization", "density");
     tOptimizationParameters.append("optimization_algorithm", "oc");
-    tOptimizationParameters.append("optimization_type", "topology");
-    tOptimizationParameters.append("filter_in_engine", "true");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
+    tOptimizationParameters.filterInEngine(true);
+    tOptimizationParameters.normalizeInAggregator(true);
     tMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");
@@ -143,7 +145,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -231,8 +233,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStage)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("filter_in_engine", "true");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(true);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -318,7 +320,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStage_MultiObjective)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -403,8 +405,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueOperation_non_multi_load_case)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("filter_in_engine", "true");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(true);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -463,8 +465,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueOperation_multi_load_case)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("filter_in_engine", "true");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(true);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -552,7 +554,8 @@ TEST(PlatoTestXMLGenerator, AppendAggregateObjectiveGradientOperation_non_multi_
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_aggregate_objective_gradient_operation_for_non_multi_load_case(tMetaData, tDocument));
+    std::string tType = "Field";
+    ASSERT_NO_THROW(XMLGen::append_aggregate_objective_gradient_operation_for_non_multi_load_case(tMetaData, tDocument, tType));
     //tDocument.save_file("xml.txt", " ");
 
     auto tInput = tDocument.child("Input");
@@ -587,7 +590,8 @@ TEST(PlatoTestXMLGenerator, AppendAggregateObjectiveGradientOperation_multi_load
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_aggregate_objective_gradient_operation_for_multi_load_case(tMetaData, tDocument));
+    std::string tType = "Field";
+    ASSERT_NO_THROW(XMLGen::append_aggregate_objective_gradient_operation_for_multi_load_case(tMetaData, tDocument, tType));
     //tDocument.save_file("xml.txt", " ");
 
     auto tInput = tDocument.child("Input");
@@ -612,8 +616,20 @@ TEST(PlatoTestXMLGenerator, AppendCacheStateStage)
     tService.cacheState("true");
     tMetaData.append(tService);
 
+    XMLGen::Objective tObjective;
+    tObjective.serviceIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("1");
+    tMetaData.objective = tObjective;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("mass");
+    tMetaData.append(tCriterion);
+
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_cache_state_stage(tMetaData, tDocument));
+
+    //tDocument.save_file("xml.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -635,13 +651,22 @@ TEST(PlatoTestXMLGenerator, AppendCacheStateStage_multi_load_case)
     tMetaData.append(tService);
     tMetaData.objective.multi_load_case = "true";
     tMetaData.objective.scenarioIDs.push_back("33");
+    tMetaData.objective.serviceIDs.push_back("1");
     XMLGen::Output tOutputMetadata;
     tOutputMetadata.serviceID("1");
     tOutputMetadata.appendDeterminsiticQoI("dispx", "nodal field");
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("mass");
+    tMetaData.append(tCriterion);
+    tMetaData.objective.criteriaIDs.push_back("1");
+
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_cache_state_stage(tMetaData, tDocument));
+
+    //tDocument.save_file("xml.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -719,7 +744,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedData)
     tMetaData.objective = tObjective;
 
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -961,7 +986,7 @@ TEST(PlatoTestXMLGenerator, AppendNormalizationSharedData_non_multi_load_case)
     tMetaData.objective.criteriaIDs.push_back("8");
     tMetaData.objective.criteriaIDs.push_back("9");
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("normalize_in_aggregator", "true");
+    tOptimizationParameters.normalizeInAggregator(true);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1001,7 +1026,7 @@ TEST(PlatoTestXMLGenerator, AppendNormalizationSharedData_multi_load_case)
     tMetaData.objective.criteriaIDs.push_back("8");
     tMetaData.objective.criteriaIDs.push_back("9");
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("normalize_in_aggregator", "true");
+    tOptimizationParameters.normalizeInAggregator(true);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1172,7 +1197,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.filterInEngine(false);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1205,7 +1230,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataWithHelmholtzAndProjection)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "heaviside");
     tMetaData.set(tOptimizationParameters);
 
@@ -1247,8 +1272,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveSharedDataWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1287,8 +1312,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintSharedDataWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     XMLGen::Constraint tConstraint;
@@ -1351,8 +1376,8 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1409,9 +1434,9 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtzAndProjection)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "tanh");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1478,8 +1503,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1567,8 +1592,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1660,8 +1685,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageWithHelmholtz)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.filterInEngine(false);
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1741,9 +1766,9 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageWithHelmholtzAndProjection)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "heaviside");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1830,9 +1855,9 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "helmholtz");
-    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "tanh");
-    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1904,6 +1929,42 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
     auto tOutput = tStage.child("Output");
     ASSERT_STREQ("Output", tOutput.name());
     PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Constraint Gradient 18"}, tOutput);
+}
+
+TEST(PlatoTestXMLGenerator, AppendConstraintOptions)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptParams;
+    tOptParams.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptParams);
+
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tMetaData.append(tCriterion);
+
+    XMLGen::Constraint tConstraint;
+    tConstraint.service("1");
+    tConstraint.criterion("1");
+    tConstraint.id("1");
+    tConstraint.append("absolute_target", ".008");
+    tMetaData.constraints.push_back(tConstraint);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_optimization_constraint_options(tMetaData, tDocument));
+  
+    auto tConstraintNode = tDocument.child("Constraint");
+    ASSERT_FALSE(tConstraintNode.empty());
+
+    std::vector<std::string> tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
+                   "GradientStageName", "ValueName"};
+    std::vector<std::string> tValues = {".008", "Constraint Gradient 1", "Compute Constraint Value 1",
+                   ".008", "Compute Constraint Gradient 1", "Constraint Value 1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
 }
 
 }

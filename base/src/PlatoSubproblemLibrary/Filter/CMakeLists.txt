@@ -12,6 +12,7 @@ set(${LIB_NAME}_SOURCES
     PSL_ProjectionTANHFilter.cpp
     PSL_AbstractKernelThenFilter.cpp
     PSL_AbstractProjectionFilter.cpp
+    PSL_AbstractKernelThenProjection.cpp
     PSL_OverhangFilter.cpp
     )
 
@@ -24,8 +25,14 @@ set(${LIB_NAME}_HEADERS
     PSL_ProjectionTANHFilter.hpp
     PSL_AbstractKernelThenFilter.hpp
     PSL_AbstractProjectionFilter.hpp
+    PSL_AbstractKernelThenProjection.hpp
     PSL_OverhangFilter.hpp
     )
+
+if( AMFILTER_ENABLED )
+    set(${LIB_NAME}_SOURCES ${${LIB_NAME}_SOURCES} PSL_KernelThenStructuredAMFilter.cpp PSL_AMFilterUtilities.cpp)
+    set(${LIB_NAME}_HEADERS ${${LIB_NAME}_HEADERS} PSL_KernelThenStructuredAMFilter.hpp PSL_AMFilterUtilities.hpp)
+endif()
 
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibraryInterface)

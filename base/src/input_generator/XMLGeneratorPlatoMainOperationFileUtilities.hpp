@@ -280,6 +280,16 @@ void append_initialize_geometry_operation_to_plato_main_operation
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_tet10_conversion_operation_to_plato_main_operation
+ * \brief Append operation for converting to tet10
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument  pugi::xml_document
+**********************************************************************************/
+void append_tet10_conversion_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
  * \fn append_update_geometry_on_change_operation_to_plato_main_operation
  * \brief Append operation for updating csm geometry
  * \param [in]     aXMLMetaData Plato problem input data

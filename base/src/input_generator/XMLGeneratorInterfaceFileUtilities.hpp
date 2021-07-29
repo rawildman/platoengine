@@ -343,6 +343,23 @@ void append_design_parameters_shared_data
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn do_tet10_conversion
+ * \brief determine whether we are using tet10 conversion
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+bool do_tet10_conversion(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn append_tet10_conversion_operation
+ * \brief Append operation for converting to tet10
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_tet10_conversion_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
  * \fn append_constraint_stage_for_topology_problem
  * \brief Append constaint stage for topology optimization problem
  * \param [in]     aXMLMetaData Plato problem input data
@@ -917,20 +934,24 @@ void append_aggregate_objective_value_operation_for_non_multi_load_case
  * \brief Append the aggregate objective gradient operation for multi-load case problems
  * \param [in]     aXMLMetaData  Plato problem input data
  * \param [in]     aParentNode Parent to add data to
+ * \param [in]     aType type of data being aggregated
 **********************************************************************************/
 void append_aggregate_objective_gradient_operation_for_multi_load_case
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node &aParentNode);
+ pugi::xml_node &aParentNode,
+ std::string &aType);
 
 /******************************************************************************//**
  * \fn append_aggregate_objective_gradient_operation_for_non_multi_load_case
  * \brief Append the aggregate objective gradient operation for non multi-load case problems
  * \param [in]     aXMLMetaData  Plato problem input data
  * \param [in]     aParentNode Parent to add data to
+ * \param [in]     aType type of data being aggregated
 **********************************************************************************/
 void append_aggregate_objective_gradient_operation_for_non_multi_load_case
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node &aParentNode);
+ pugi::xml_node &aParentNode,
+ std::string &aType);
 
 /******************************************************************************//**
  * \fn getCompoundScenarioID

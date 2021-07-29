@@ -83,6 +83,9 @@ struct ValidCriterionParameterKeys
         "criterion_weights",
         "relative_stress_limit",
         "relaxed_stress_ramp_factor",
+        "location_name",
+        "local_measure",
+        "spatial_weighting_function",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -102,7 +105,16 @@ struct ValidCriterionParameterKeys
         "volume_penalty_power",
         "volume_penalty_divisor",
         "volume_penalty_bias",
-        "surface_area_sideset_id"
+        "surface_area_sideset_id",
+        // SD modal objectives
+        "num_modes_compute",
+        "modes_to_exclude",
+        "eigen_solver_shift",
+        "camp_solver_tol",
+        "camp_max_iter",
+        "shape_sideset",
+        "ref_data_file",
+        "match_nodesets"
     };
 };
 
@@ -173,7 +185,9 @@ private:
         "total_work", 
         "elastic_work",
         "plastic_work",
+        "thermoplasticity_thermal_energy",
         "volume", 
+        "volume_average", 
         "mass", 
         "CG_x", 
         "CG_y", 
@@ -197,7 +211,12 @@ private:
         "flux", 
         "frf_mismatch", 
         "limit_stress",
-        "compliance_and_volume_min"
+        "compliance_and_volume_min",
+        "surface_pressure",
+        "surface_temperature",
+        "flow_rate",
+        "modal_matching",
+        "modal_projection_error"
     };
 
 public:
@@ -355,7 +374,7 @@ struct ValidLoadKeys
     /*!<
      * \brief Valid plato input deck essential boundary condition keywords.
      **/
-    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure"};
+    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_source"};
 };
 
 // struct ValidEssentialBoundaryConditionsKeys
@@ -495,7 +514,9 @@ private:
         "steady_state_electromechanics",
         "plasticity", 
         "thermoplasticity",
-        "frequency_response_function"
+        "frequency_response_function",
+        "modal_response",
+        "steady_state_incompressible_fluids"
     };
 
 
@@ -525,7 +546,11 @@ private:
         "orthotropic_linear_elastic", 
         "isotropic_linear_electroelastic", 
         "isotropic_linear_thermal",
-        "isotropic_linear_thermoelastic" };
+        "isotropic_linear_thermoelastic",
+        "j2_plasticity",
+        "thermoplasticity",
+        "natural_buoyancy",
+        "incompressible_flow"};
 
 public:
     /******************************************************************************//**
@@ -846,65 +871,86 @@ public:
         return (tKeyItr->second);
     }
 };
-struct ValidPhysicsNBCCombinations
+struct ValidPhysicsLoadCombinations
 {
-    // Map physics->NBC->parent node name
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> mKeys =
+    // Map physics->load->parent node name
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>> mKeys =
     {
         {"steady_state_mechanics", 
             {
-                {"traction", "Natural Boundary Conditions"},
-                {"pressure", "Natural Boundary Conditions"}
+                {"traction", {"Natural Boundary Conditions"}},
+                {"pressure", {"Natural Boundary Conditions"}}
             }
         },
         {"steady_state_thermal", 
             {
-                {"uniform_surface_flux", "Natural Boundary Conditions"}
+                {"uniform_surface_flux", {"Natural Boundary Conditions"}}
             }
         },
         { "steady_state_thermomechanics", 
             {
-                {"uniform_surface_flux", "Thermal Natural Boundary Conditions"},
-                {"traction", "Mechanical Natural Boundary Conditions"}, 
-                {"pressure", "Mechanical Natural Boundary Conditions"} 
+                {"uniform_surface_flux", {"Thermal Natural Boundary Conditions"}},
+                {"traction", {"Mechanical Natural Boundary Conditions"}}, 
+                {"pressure", {"Mechanical Natural Boundary Conditions"}} 
             }
         },
         {"transient_mechanics", 
             {
-                {"traction", "Natural Boundary Conditions"},
-                {"pressure", "Natural Boundary Conditions"}
+                {"traction", {"Natural Boundary Conditions"}},
+                {"pressure", {"Natural Boundary Conditions"}}
+            }
+        },
+        {"plasticity", 
+            {
+                {"traction", {"Natural Boundary Conditions","Mechanical Natural Boundary Conditions"}}
+            }
+        },
+        {"thermoplasticity", 
+            {
+                {"uniform_surface_flux", {"Natural Boundary Conditions","Thermal Natural Boundary Conditions"}},
+                {"traction", {"Natural Boundary Conditions","Mechanical Natural Boundary Conditions"}}
+            }
+        },
+        {"steady_state_incompressible_fluids", 
+            {
+                {"uniform_source", {"Thermal Sources"}},
+                {"traction", {"Momentum Natural Boundary Conditions"}},
+                {"uniform_surface_flux", {"Thermal Natural Boundary Conditions"}}
             }
         }
     };
 public:
-    void get_parent_names(const std::string &aPhysics,
-                          std::set<std::string> &aParentNames)
+    void get_parent_names
+    (const std::string &aPhysics,
+     std::set<std::vector<std::string>> &aParentNames)
     {
         auto tKeyItr = mKeys.find(aPhysics);
         if(tKeyItr == mKeys.end())
         {
-            THROWERR("Valid Physics NBC Combinations: Couldn't find physics: " + aPhysics)
+            THROWERR("Valid Physics-To-Load Combinations: Couldn't find physics: " + aPhysics)
         }
-        auto tNBCItr = tKeyItr->second.begin();
-        while(tNBCItr != tKeyItr->second.end())
+        auto tLoadItr = tKeyItr->second.begin();
+        while(tLoadItr != tKeyItr->second.end())
         {
-            aParentNames.insert(tNBCItr->second);
-            tNBCItr++;
+            aParentNames.insert(tLoadItr->second);
+            tLoadItr++;
         }
     }  
-    std::string get_parent_nbc_node_name(const std::string &aPhysics,
-                                         const std::string &aLoadType)
+
+    std::vector<std::string> get_parent_load_node_names
+    (const std::string &aPhysics,
+     const std::string &aLoadType)
     {
         auto tKeyItr = mKeys.find(aPhysics);
         if(tKeyItr != mKeys.end())
         {
-            auto tNBCItr = tKeyItr->second.find(aLoadType);
-            if(tNBCItr != tKeyItr->second.end())
+            auto tLoadItr = tKeyItr->second.find(aLoadType);
+            if(tLoadItr != tKeyItr->second.end())
             {
-                return tNBCItr->second;
+                return tLoadItr->second;
             }
         }
-        return "";
+        return {""};
     }
 };
 
@@ -980,7 +1026,6 @@ private:
             {
                 { "youngs_modulus", {"Youngs Modulus", "double"} },
                 { "poissons_ratio", {"Poissons Ratio", "double"} },
-                { "pressure_scaling", { "Pressure Scaling", "double" } },
                 { "hardening_modulus_isotropic", { "Hardening Modulus Isotropic", "double" } },
                 { "hardening_modulus_kinematic", { "Hardening Modulus Kinematic", "double" } },
                 { "initial_yield_stress", {"Initial Yield Stress", "double"} },
@@ -988,6 +1033,46 @@ private:
                 { "elastic_properties_minimum_ersatz", {"Elastic Properties Minimum Ersatz", "double"} },
                 { "plastic_properties_penalty_exponent", {"Plastic Properties Penalty Exponent", "double"} },
                 { "plastic_properties_minimum_ersatz", {"Plastic Properties Minimum Ersatz", "double"} }
+            }
+        },
+
+        { "thermoplasticity",
+            {
+                { "youngs_modulus", {"Youngs Modulus", "double"} },
+                { "poissons_ratio", {"Poissons Ratio", "double"} },
+                { "thermal_conductivity", { "Thermal Conductivity", "double" } },
+                { "thermal_expansivity", { "Thermal Expansivity", "double" } }, 
+                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "hardening_modulus_isotropic", { "Hardening Modulus Isotropic", "double" } },
+                { "hardening_modulus_kinematic", { "Hardening Modulus Kinematic", "double" } },
+                { "initial_yield_stress", {"Initial Yield Stress", "double"} },
+                { "elastic_properties_penalty_exponent", {"Elastic Properties Penalty Exponent", "double"} },
+                { "elastic_properties_minimum_ersatz", {"Elastic Properties Minimum Ersatz", "double"} },
+                { "plastic_properties_penalty_exponent", {"Plastic Properties Penalty Exponent", "double"} },
+                { "plastic_properties_minimum_ersatz", {"Plastic Properties Minimum Ersatz", "double"} }
+            }
+        },
+
+        { "natural_buoyancy",
+            {
+                { "impermeability_number", {"Impermeability Number", "double"} },
+                { "prandtl_number", { "Prandtl Number", "double" } }, 
+                { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
+                { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
+                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "characteristic_length", { "Characteristic Length", "double" } },
+                { "grashof_number", { "Grashof Number", "Array(double)" } },
+                { "richardson_number", {"Richardson Number", "Array(double)"} },
+                { "rayleigh_number", {"Rayleigh Number", "Array(double)"} },
+                { "thermal_diffusivity_ratio", {"Thermal Diffusivity Ratio", "double"} },
+                { "thermal_conductivity", {"Thermal Conductivity", "double"} }
+            }
+        },
+
+        { "incompressible_flow",
+            {
+                { "reynolds_number", {"Reynolds Number", "double"} },
+                { "impermeability_number", {"Impermeability Number", "double"} },
             }
         }
     };
@@ -1115,6 +1200,7 @@ private:
         {
             { "steady_state_mechanics", {"Mechanical", "Elliptic"} },
             { "transient_mechanics", {"Mechanical", "Hyperbolic"} },
+            { "steady_state_incompressible_fluids", {"Incompressible Fluids", "Hyperbolic"} },
             { "steady_state_thermal", {"Thermal", "Elliptic"} },
             { "transient_thermal", {"Thermal", "Parabolic"} },
             { "steady_state_electrical", {"Electrical", "Elliptic"} },
@@ -1163,20 +1249,27 @@ struct ValidAnalyzeCriteriaKeys
      **/
     std::unordered_map<std::string, std::pair<std::string, bool>> mKeys =
     {
+        { "composite", { "Composite", false } },
         { "volume", { "Volume", false } },
-        { "elastic_work", { "Elastic Work", true } },
+        { "volume_average", { "Volume Average Criterion", false } },
+        { "elastic_work", { "Elastic Work", false } },
         { "plastic_work", { "Plastic Work", false } },
+        { "total_work", { "Total Work", false } },
+        { "thermoplasticity_thermal_energy", { "Thermal Energy", false } },
         { "mechanical_compliance", { "Internal Elastic Energy", true } },
         { "local_stress", { "Stress Constraint Quadratic", false } },
         { "stress_p-norm", { "Stress P-Norm", false } },
         { "effective_energy", { "Effective Energy", true } },
         { "stress_constraint", { "Stress Constraint", false } },
         { "stress_constraint_general", { "Stress Constraint General", false } },
+        { "stress_constraint_quadratic", { "Stress Constraint Quadratic", false } },
         { "stress_and_mass", { "Stress Constraint General", false } },
         { "thermal_compliance", { "Internal Thermal Energy", false } },
         { "flux_p-norm", { "Flux P-Norm", false } },
         { "thermomechanical_compliance", { "Internal Thermoelastic Energy", false } },
-
+        { "surface_temperature", { "Average Surface Temperature", false } },
+        { "surface_pressure", { "Average Surface Pressure", false } },
+        { "flow_rate", { "Flow Rate", false } },
     };
 };
 // ValidAnalyzeCriteriaKeys
@@ -1204,6 +1297,57 @@ struct ValidSpatialDimsKeys
 };
 // struct ValidSpatialDimsKeys
 
+/******************************************************************************/ /**
+* \struct ValidEssentialBoundaryConditionBlockNames
+* \brief Maps Plato Analyze physics to the corresponding Essential Boundary Condition
+*        block name based on the degree of freedom key.
+**********************************************************************************/
+struct ValidEssentialBoundaryConditionBlockNames
+{
+private:
+    /*!< map from physics to the essential boundary condition block name used in the Plato Analyze input deck */
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> mMap =
+        {
+            {"steady_state_incompressible_fluids", {{"velx", "Velocity Essential Boundary Conditions"}, {"vely", "Velocity Essential Boundary Conditions"}, {"velz", "Velocity Essential Boundary Conditions"}, {"press", "Pressure Essential Boundary Conditions"}, {"temp", "Temperature Essential Boundary Conditions"}}},
+            {"steady_state_mechanics", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}}},
+            {"transient_mechanics", {{"dispx", "Displacement Boundary Conditions"}, {"dispy", "Displacement Boundary Conditions"}, {"dispz", "Displacement Boundary Conditions"}}},
+            {"steady_state_thermal", {{"temp", "Essential Boundary Conditions"}}},
+            {"transient_thermal", {{"temp", "Essential Boundary Conditions"}}},
+            {"steady_state_electrical", {{"potential", "Essential Boundary Conditions"}}},
+            {"steady_state_thermomechanics", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}, {"temp", "Essential Boundary Conditions"}}},
+            {"transient_thermomechanics", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}, {"temp", "Essential Boundary Conditions"}}},
+            {"steady_state_electromechanics", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}, {"potential", "Essential Boundary Conditions"}}},
+            {"plasticity", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}}},
+            {"thermoplasticity", {{"dispx", "Essential Boundary Conditions"}, {"dispy", "Essential Boundary Conditions"}, {"dispz", "Essential Boundary Conditions"}, {"temp", "Essential Boundary Conditions"}}},
+        };
+
+public:
+    /******************************************************************************/ /**
+        * \fn blockName
+        * \brief Return supported essential boundary condition block name.
+        * \param [in] aPhysics physics name/tag
+        * \param [in] aDofName degree of freedom name/tag
+        * \return supported essential boundary condition block name
+        **********************************************************************************/
+    std::string blockName(
+        const std::string &aPhysics,
+        const std::string &aDofName) const
+    {
+        auto tItr1 = mMap.find(aPhysics);
+        if (tItr1 == mMap.end())
+        {
+            THROWERR(std::string("Physics key with tag '") + aPhysics + "' is not supported.")
+        }
+        auto tItr2 = tItr1->second.find(aDofName);
+        if (tItr2 == tItr1->second.end())
+        {
+            THROWERR(std::string("Degree of freedom (dof) key with tag '") + aDofName + "' is not a supported dof in '" + aPhysics + "' physics.")
+        }
+        return (tItr2->second);
+    }
+};
+// struct ValidEssentialBoundaryConditionBlockNames
+
 struct ValidDofsKeys
 {
 private:
@@ -1220,9 +1364,10 @@ private:
             {"steady_state_electrical", { {"potential", "0"} } },
             {"steady_state_thermomechanics", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"}, {"temp", "3"} } },
             {"transient_thermomechanics", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"}, {"temp", "3"} } },
-            {"steady_state_electromechanics", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"}, {"potential", "3"} } }
-            // not sure of DOFs {"plasticity", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"} } }
-            // not sure of DOFs {"thermoplasticity", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"} } }
+            {"steady_state_electromechanics", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"}, {"potential", "3"} } },
+            {"steady_state_incompressible_fluids", { {"velx", "0"}, {"vely", "1"}, {"velz", "2"}, {"press", "0"}, {"temp", "0"} } },
+            {"plasticity", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"} } },
+            {"thermoplasticity", { {"dispx", "0"}, {"dispy", "1"}, {"dispz", "2"}, {"temp", "3"} } }
         };
 
 public:
@@ -1301,8 +1446,15 @@ struct ValidOptimizationParameterKeys
      "mma_asymptote_expansion",
      "mma_asymptote_contraction",
      "mma_max_sub_problem_iterations",
+     "mma_sub_problem_initial_penalty",
+     "mma_sub_problem_penalty_multiplier",
+     "mma_sub_problem_feasibility_tolerance",
      "mma_control_stagnation_tolerance",
      "mma_objective_stagnation_tolerance",
+     "mma_output_subproblem_diagnostics",
+     "oc_control_stagnation_tolerance",
+     "oc_objective_stagnation_tolerance",
+     "oc_gradient_tolerance",
      "initial_guess_file_name",
      "initial_guess_field_name",
      "normalize_in_aggregator",
@@ -1384,5 +1536,15 @@ struct ValidOptimizationParameterKeys
      "filter_type_kernel_then_tanh_generator_name"
     };
 };
+
+/******************************************************************************/ /**
+* \struct ValidHeatTransferMechanisms
+* \brief Set of valid Plato Analyze's heat transfer mechanisms.
+**********************************************************************************/
+struct ValidHeatTransferMechanisms
+{
+    std::unordered_set<std::string> mKeys = { "none", "natural", "forced", "mixed" };
+};
+
 }
 // namespace XMLGen
