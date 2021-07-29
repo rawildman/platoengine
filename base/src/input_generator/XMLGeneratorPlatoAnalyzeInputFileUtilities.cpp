@@ -176,9 +176,12 @@ std::string transform_tokens_for_plato_analyze_input_deck
     for(auto tItr = aTokens.begin(); tItr != tEndIterator; ++tItr)
     {
         auto tIndex = std::distance(aTokens.begin(), tItr);
-        tOutput += aTokens[tIndex] + ", ";
+        tOutput += aTokens[tIndex] + ",";
     }
     tOutput += aTokens[tEndIndex] + "}";
+
+    std::replace(tOutput.begin(), tOutput.end(), ' ', ','); // guard against the possibility of white spaces between two consecutive number characters
+
     return tOutput;
 }
 // function transform_tokens_for_plato_analyze_input_deck
@@ -554,7 +557,7 @@ void append_spatial_model_to_plato_problem
         auto tCurDomain = tDomains.append_child("ParameterList");
         XMLGen::append_attributes({"name"}, {std::string("Block ") + tBlock.block_id}, tCurDomain);
         std::vector<std::string> tKeys = {"name", "type", "value"};
-        std::vector<std::string> tValues = {"Element Block", "string", std::string("block_") + tBlock.block_id};
+        std::vector<std::string> tValues = {"Element Block", "string", tBlock.name};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
 
         auto tMaterials = aXMLMetaData.materials;

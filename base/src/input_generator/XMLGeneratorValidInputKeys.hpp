@@ -83,7 +83,9 @@ struct ValidCriterionParameterKeys
         "criterion_weights",
         "relative_stress_limit",
         "relaxed_stress_ramp_factor",
-        "location_name",
+        "conductivity_ratios",
+        "location_names",
+        "blocks",
         "local_measure",
         "spatial_weighting_function",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
@@ -215,6 +217,8 @@ private:
         "surface_pressure",
         "surface_temperature",
         "flow_rate",
+        "fluid_thermal_compliance",
+        "maximize_fluid_thermal_flux",
         "modal_matching",
         "modal_projection_error"
     };
@@ -230,6 +234,14 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
+
+    /******************************************************************************//**
+     * \fn size
+     * \brief Return const reference to criteria list.
+     * \return criteria list
+    **********************************************************************************/
+    const decltype(mKeys)& list() const
+    { return mKeys; }
 };
 // struct ValidCriterionTypeKeys
 
@@ -499,37 +511,59 @@ public:
 struct ValidPhysicsKeys
 {
 private:
-    /*!<
-     * \brief Valid plato input deck physics keywords.
-     **/
-    std::vector<std::string> mKeys =
+     /******************************************************************************//**
+     * \brief Map from valid simulation usecase to principal material state. Fluid 
+     *  usecases can have both fluid and solid material states in a single run. 
+     *  However, the principal material state for a fluids application is the fluid state.
+     **********************************************************************************/
+    std::unordered_map<std::string, std::string> mKeys =
     { 
-        "steady_state_mechanics", 
-        "transient_mechanics", 
-        "steady_state_thermal", 
-        "transient_thermal", 
-        "steady_state_electrical", 
-        "steady_state_thermomechanics",
-        "transient_thermomechanics",
-        "steady_state_electromechanics",
-        "plasticity", 
-        "thermoplasticity",
-        "frequency_response_function",
-        "modal_response",
-        "steady_state_incompressible_fluids"
+        {"steady_state_mechanics", "solid"},
+        {"transient_mechanics", "solid"}, 
+        {"steady_state_thermal", "solid"}, 
+        {"transient_thermal", "solid"}, 
+        {"steady_state_electrical", "solid"}, 
+        {"steady_state_thermomechanics", "solid"},
+        {"transient_thermomechanics", "solid"},
+        {"steady_state_electromechanics", "solid"},
+        {"plasticity", "solid"},
+        {"thermoplasticity", "solid"},
+        {"frequency_response_function", "solid"},
+        {"modal_response", "solid"},
+        {"steady_state_incompressible_fluids", "fluid"}
     };
-
 
 public:
     /******************************************************************************//**
-     * \fn value
-     * \brief Return supported physics keyword.
-     * \param [in] aKey input file keyword
-     * \return supported physics keyword. If key is not supported, return an empty string.
+     * \fn physics
+     * \brief Return supported simulation physics.
+     * \param [in] aKey keyword
+     * \return supported simulation physics keyword, if not supported, return empty string.
     **********************************************************************************/
-    std::string value(const std::string& aKey) const
+    std::string physics(const std::string& aKey) const
     {
-        return (XMLGen::return_supported_value(aKey, mKeys));
+        auto tItr = mKeys.find(aKey);
+        if(tItr == mKeys.end())
+        {
+            return ("");
+        }
+        return tItr->first;
+    }
+
+    /******************************************************************************//**
+     * \fn material_state
+     * \brief Return principal material state given a supported simulation usecase.
+     * \param [in] aKey supported simulation usecase
+     * \return principal material state, if simulation usecase is not supported, return empty string.
+    **********************************************************************************/
+    std::string material_state(const std::string& aKey) const
+    {
+        auto tItr = mKeys.find(aKey);
+        if(tItr == mKeys.end())
+        {
+            return ("");
+        }
+        return tItr->second;
     }
 };
 // struct ValidPhysicsKeys
@@ -1270,6 +1304,8 @@ struct ValidAnalyzeCriteriaKeys
         { "surface_temperature", { "Average Surface Temperature", false } },
         { "surface_pressure", { "Average Surface Pressure", false } },
         { "flow_rate", { "Flow Rate", false } },
+        { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
+        { "fluid_thermal_compliance", { "Thermal Compliance", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys
@@ -1474,6 +1510,9 @@ struct ValidOptimizationParameterKeys
      "fixed_block_ids",
      "fixed_sideset_ids",
      "fixed_nodeset_ids",
+     "fixed_block_domain_values",
+     "fixed_block_boundary_values",
+     "fixed_block_material_states",
      "levelset_nodesets",
      "number_prune_and_refine_processors",
      "prune_and_refine_path",

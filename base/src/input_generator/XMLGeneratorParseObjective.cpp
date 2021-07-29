@@ -65,7 +65,7 @@ void ParseObjective::setCriteriaIDs(XMLGen::Objective &aMetadata)
     }
     else
     {
-        THROWERR("Objective criteria are not defined");
+        THROWERR("Error in objective block, 'criteria' keyword is not defined.");
     }
 }
 

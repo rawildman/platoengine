@@ -269,5 +269,13 @@ namespace XMLGen
         else
             return true;
     }
+
+    /******************************************************************************//**
+     * \fn negate_scalar_values
+     * \brief Add "-" character to each element in the list.
+     * \param [in,out] aInputs list of strings
+    **********************************************************************************/
+    void negate_scalar_values(std::vector<std::string>& aInputs);
+
 }
 // namespace XMLGen
