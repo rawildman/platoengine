@@ -159,6 +159,24 @@ void append_filter_options_to_operation
 /******************************************************************************/
 
 /******************************************************************************/
+void append_projection_options_to_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node &aParentNode)
+{
+    std::vector<std::string> tKeys = {"StartIteration", "UpdateInterval",
+        "UseAdditiveContinuation", "HeavisideMin", "HeavisideUpdate", "HeavisideMax"};
+
+    std::vector<std::string> tValues = {aXMLMetaData.optimization_parameters().filter_projection_start_iteration(), aXMLMetaData.optimization_parameters().filter_projection_update_interval(),
+        aXMLMetaData.optimization_parameters().filter_use_additive_continuation(), aXMLMetaData.optimization_parameters().filter_heaviside_min(),
+        aXMLMetaData.optimization_parameters().filter_heaviside_update(), aXMLMetaData.optimization_parameters().filter_heaviside_max()};
+
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_children(tKeys, tValues, aParentNode);
+}
+// function append_projection_options_to_operation
+/******************************************************************************/
+
+/******************************************************************************/
 void append_filter_options_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document &aDocument)
@@ -166,12 +184,39 @@ void append_filter_options_to_plato_main_operation
     if(aXMLMetaData.optimization_parameters().filterInEngine() &&
        aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
-        XMLGen::ValidFilterKeys tValidKeys;
-        auto tValue = tValidKeys.value(aXMLMetaData.optimization_parameters().filter_type());
+        XMLGen::ValidFilterKeys tValidFilterKeys;
+        auto tValue = tValidFilterKeys.value(aXMLMetaData.optimization_parameters().filter_type());
         auto tFilterName = tValue.empty() ? "Kernel" : tValue;
+
+        XMLGen::ValidProjectionKeys tValidProjectionKeys;
+        auto tProjectionName = tValidProjectionKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+
         auto tFilterNode = aDocument.append_child("Filter");
-        XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        if(tProjectionName.empty())
+        {
+            XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        }
+        else
+        {
+            auto tFullName = tFilterName + "_then_" + aXMLMetaData.optimization_parameters().projection_type();
+            tFilterName = tValidFilterKeys.value(tFullName);
+            XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        }
         XMLGen::append_filter_options_to_operation(aXMLMetaData, tFilterNode);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+
+        if(!tProjectionName.empty())
+        {
+            auto tFilterNode = aDocument.append_child("Filter");
+            XMLGen::append_children({"Name"}, {tProjectionName}, tFilterNode);
+            XMLGen::append_projection_options_to_operation(aXMLMetaData, tFilterNode);
+        }
     }
 }
 // function append_filter_options_to_plato_main_operation
@@ -698,7 +743,8 @@ void append_filter_control_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         auto tOperation = aDocument.append_child("Operation");
         XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Filter Control", "False"}, tOperation);
@@ -706,6 +752,22 @@ void append_filter_control_to_plato_main_operation
         XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"ArgumentName"}, {"Filtered Field"}, tOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+        if(!tProjectionName.empty())
+        {
+            auto tOperation = aDocument.append_child("Operation");
+            XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Project Control", "False"}, tOperation);
+            auto tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
+            auto tOutput = tOperation.append_child("Output");
+            XMLGen::append_children({"ArgumentName"}, {"Filtered Field"}, tOutput);
+        }
     }
 }
 // function append_filter_control_to_plato_main_operation
@@ -815,7 +877,8 @@ void append_filter_gradient_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         auto tOperation = aDocument.append_child("Operation");
         XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Filter Gradient", "True"}, tOperation);
@@ -825,6 +888,24 @@ void append_filter_gradient_to_plato_main_operation
         XMLGen::append_children({"ArgumentName"}, {"Gradient"}, tInput);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"ArgumentName"}, {"Filtered Gradient"}, tOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+        if(!tProjectionName.empty())
+        {
+            auto tOperation = aDocument.append_child("Operation");
+            XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Project Gradient", "True"}, tOperation);
+            auto tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
+            tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Gradient"}, tInput);
+            auto tOutput = tOperation.append_child("Output");
+            XMLGen::append_children({"ArgumentName"}, {"Filtered Gradient"}, tOutput);
+        }
     }
 }
 // function append_filter_gradient_to_plato_main_operation

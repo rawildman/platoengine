@@ -83,7 +83,6 @@ protected:
     void parseInputFile();
     bool parseMesh(std::istream &fin);
     void parseOutput(std::istream &fin);
-    bool parseCodePaths(std::istream &fin);
     void parseMaterials(std::istream &fin);
     void parseCriteria(std::istream &fin);
     bool parseBlocks(std::istream &fin);
@@ -117,9 +116,8 @@ private:
 
     void preProcessInputMetaData(XMLGen::InputData& aInputData);
     void determineIfPlatoEngineFilteringIsNeeded();
-
+    void setupHelmholtzFilterService();
     void expandEssentialBoundaryConditions(XMLGen::InputData& aInputData);
-
     void updateScenariosWithExpandedBoundaryConditions(std::map<int, std::vector<int> > aOldIDToNewIDMap);
 
     void loadOutputData

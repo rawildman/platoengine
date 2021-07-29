@@ -239,8 +239,10 @@ namespace XMLGen
     aNextPerformerID++;
     fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
-    if(aInputData.codepaths.plato_main_path.length() != 0)
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.codepaths.plato_main_path.c_str());
+
+    auto tPlatoMainServiceId = aInputData.getFirstPlatoMainId();
+    if(aInputData.service(tPlatoMainServiceId).path().length() != 0)
+      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.service(tPlatoMainServiceId).path().c_str());
     else
       fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoEngineName.c_str());
   }
@@ -398,8 +400,8 @@ namespace XMLGen
     std::string get_prune_and_refine_executable_path(const XMLGen::InputData& aInputData)
     {
       std::string tPruneAndRefineExe = "prune_and_refine";
-      if(aInputData.codepaths.prune_and_refine_path.length() > 0)
-        tPruneAndRefineExe = aInputData.codepaths.prune_and_refine_path;
+      if(aInputData.optimization_parameters().prune_and_refine_path().length() > 0)
+        tPruneAndRefineExe = aInputData.optimization_parameters().prune_and_refine_path();
       return tPruneAndRefineExe;
     }
 

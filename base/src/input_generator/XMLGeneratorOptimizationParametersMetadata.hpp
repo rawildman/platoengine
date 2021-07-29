@@ -293,6 +293,7 @@ public:
     std::string normalize_in_aggregator() const {return value("normalize_in_aggregator");} 
     std::string number_refines() const {return value("number_refines");}
     std::string number_prune_and_refine_processors() const {return value("number_prune_and_refine_processors");}
+    std::string prune_and_refine_path() const {return value("prune_and_refine_path");}
     std::string number_buffer_layers() const {return value("number_buffer_layers");}
     std::string prune_mesh() const {return value("prune_mesh");}
     std::string num_shape_design_variables() const {return value("num_shape_design_variables");}
@@ -366,6 +367,8 @@ public:
     std::string filter_heaviside_update() const {return value("filter_heaviside_update");}
     std::string filter_heaviside_max() const {return value("filter_heaviside_max");}
     std::string filter_type() const {return value("filter_type");}
+    std::string filter_service() const {return value("filter_service");}
+    std::string projection_type() const {return value("projection_type");}
     std::string write_restart_file() const {return value("write_restart_file");}
     std::string output_frequency() const {return value("output_frequency");}
     std::string gcmma_max_inner_iterations() const {return value("gcmma_max_inner_iterations");}

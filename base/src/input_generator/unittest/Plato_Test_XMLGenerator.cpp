@@ -1421,69 +1421,6 @@ TEST(PlatoTestXMLGenerator, parseMesh)
     EXPECT_EQ(tester.getMeshName(), "file.gen");
 }
 
-TEST(PlatoTestXMLGenerator, parseCodePaths)
-{
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    stringInput = "begin paths\n"
-            "code sierra_sd\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), false);
-    stringInput = "begin paths\n"
-            "code lightmp\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), false);
-    stringInput = "begin paths\n"
-            "code albany\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), false);
-    stringInput = "begin paths\n"
-            "code platomain\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), false);
-    stringInput = "begin paths\n"
-            "bad_keyword\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), false);
-    stringInput = "begin paths\n"
-            "code sierra_sd /Users/bwclark/salinas\n"
-            "code albany /Users/bwclark/albany\n"
-            "code lightmp /Users/bwclark/lightmp\n"
-            "code platomain /Users/bwclark/platomain\n"
-            "end paths\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseCodePaths(iss), true);
-    EXPECT_EQ(tester.getSalinasPath(), "/Users/bwclark/salinas");
-    EXPECT_EQ(tester.getAlbanyPath(), "/Users/bwclark/albany");
-    EXPECT_EQ(tester.getLightMPPath(), "/Users/bwclark/lightmp");
-    EXPECT_EQ(tester.getPlatoMainPath(), "/Users/bwclark/platomain");
-}
-
 TEST(PlatoTestXMLGenerator, parseBlocks)
 {
     XMLGenerator_UnitTester tester;
@@ -2167,9 +2104,6 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
     tIss.clear();
     tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
-    tIss.clear();
-    tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
 
     // CALL GENERATE
@@ -2408,9 +2342,6 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
     tIss.clear();
     tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
-    tIss.clear();
-    tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
 
     // CALL GENERATE
@@ -2561,9 +2492,6 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
     tIss.clear();
     tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
-    tIss.clear();
-    tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
 
     // CALL GENERATE
@@ -2571,159 +2499,6 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
     ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
     Plato::Utils::ignore_unused(tTrash);
-}
-
-TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_bad)
-{
-    // POSE INPUT DATA
-    std::istringstream tIss;
-    std::string tStringInput =
-        "begin service 1\n"
-        "  code platomain\n"
-        "  number_processors 1\n"
-        "end service\n"
-        "begin service 2\n"
-        "  code plato_esp\n"
-        "  number_processors 10\n"
-        "end service\n"
-        "begin service 3\n"
-        "  code plato_analyze\n"
-        "  number_processors 1\n"
-        "end service\n"
-        "begin criterion 1\n"
-        "  type composite\n"
-        "  criterion_ids 2 3\n"
-        "  criterion_weights 1.0 -1.0\n"
-        "end criterion\n"
-        "begin criterion 2\n"
-        "  type surface_pressure\n"
-        "  location_name inlet\n"
-        "end criterion\n"
-        "begin criterion 3\n"
-        "  type surface_pressure\n"
-        "  location_name outlet\n"
-        "end criterion\n"
-        "begin criterion 4\n"
-        "   type volume\n"
-        "end criterion\n"
-        "begin scenario 1\n"
-        "  physics steady_state_incompressible_fluids\n"
-        "  dimensions 2\n"
-        "  loads 10 1\n"
-        "  boundary_conditions 1 2 3 4 5\n"
-        "  material 1\n"
-        "end scenario\n"
-        "begin objective\n"
-        "  scenarios 1\n"
-        "  criteria 1\n"
-        "  services 3\n"
-        "  shape_services 2\n"
-        "  type weighted_sum\n"
-        "  weights 1\n"
-        "end objective\n"
-        "begin constraint 1\n"
-        "  criterion 4\n"
-        "  relative_target 0.25\n"
-        "  type less_than\n"
-        "  service 1\n"
-        "  scenario 1\n"
-        "end constraint\n"
-        "begin boundary_condition 1\n"
-        "  type zero_value\n"
-        "  location_type nodeset\n"
-        "  location_name no_slip\n"
-        "  degree_of_freedom velx\n"
-        "end boundary_condition\n"
-        "begin boundary_condition 2\n"
-        "  type zero_value\n"
-        "  location_type nodeset\n"
-        "  location_name no_slip\n"
-        "  degree_of_freedom vely\n"
-        "end boundary_condition\n"
-        "begin boundary_condition 3\n"
-        "  type fixed_value\n"
-        "  location_type nodeset\n"
-        "  location_name inlet\n"
-        "  degree_of_freedom velx\n"
-        "  value 1.5\n"
-        "end boundary_condition\n"
-        "begin boundary_condition 4\n"
-        "  type fixed_value\n"
-        "  location_type nodeset\n"
-        "  location_name inlet\n"
-        "  degree_of_freedom vely\n"
-        "  value 0\n"
-        "end boundary_condition\n"
-        "begin boundary_condition 5\n"
-        "  type zero_value\n"
-        "  location_type nodeset\n"
-        "  location_name outlet\n"
-        "  degree_of_freedom press\n"
-        "end boundary_condition\n"
-        "begin block 1\n"
-        "  material 1\n"
-        "end block\n"
-        "begin material 1\n"
-        "  material_model incompressible_flow\n"
-        "  reynolds_number 100\n"
-        "  impermeability_number 100\n"
-        "end material\n"
-        "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
-        "  discretization density\n"
-        "  max_iterations 50\n"
-        "  filter_radius_scale 1.75\n"
-        "  optimization_type shape\n"
-        "  num_shape_design_variables 4\n"
-        "end optimization_parameters\n"
-        "begin mesh\n"
-        "  name bolted_bracket.exo\n"
-        "end mesh\n"
-        "begin paths\n"
-        "  code PlatoMain PlatoMain\n"
-        "  code plato_analyze analyze_MPMD\n"
-        "end paths\n";
-
-    // do parse
-    XMLGenerator_UnitTester tTester;
-    tIss.str(tStringInput);
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseObjective(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseConstraints(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseServices(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCriteria(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseBCs(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseBlocks(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseScenarios(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseMaterials(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
-
-    // CALL GENERATE
-    auto tXMLGenMetadata = tTester.getInputData();
-    ASSERT_THROW(tTester.generate(tXMLGenMetadata), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
@@ -2855,9 +2630,6 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
     tIss.clear();
     tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
     tIss.clear();
     tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
@@ -3010,9 +2782,6 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
     tIss.clear();
     tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCodePaths(tIss));
     tIss.clear();
     tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseMesh(tIss));

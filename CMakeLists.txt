@@ -126,7 +126,6 @@ endif()
 if("${CMAKE_BUILD_TYPE}" STREQUAL Release)
   add_definitions( -DNDEBUG)
 elseif("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
-add_compile_options(-Wall -Werror -Wno-unused-result)
 endif()
 
 if( GEOMETRY )

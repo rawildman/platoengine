@@ -41,6 +41,7 @@ void ParseService::allocate()
     mTags.clear();
     mTags.insert({ "id", { { {"id"}, ""}, "" } });
     mTags.insert({ "code", { { {"code"}, ""}, "" } });
+    mTags.insert({ "path", { { {"path"}, ""}, "" } });
     mTags.insert({ "cache_state", { { {"cache_state"}, ""}, "false" } });
     mTags.insert({ "update_problem", { { {"update_problem"}, ""}, "false" } });
     mTags.insert({ "additive_continuation", { { {"additive_continuation"}, ""}, "false" } }); //this should be in the optimizer block
@@ -124,11 +125,13 @@ void ParseService::parse(std::istream &aInputFile)
             XMLGen::Service tService;
             XMLGen::is_metadata_block_id_valid(tTokens);
             XMLGen::erase_tag_values(mTags);
-            XMLGen::parse_input_metadata( { "end", "service" }, aInputFile, mTags);
+            std::string tValue;
+            XMLGen::parse_input_metadata_unlowered( { "end", "service" }, { "path" }, aInputFile, mTags, tValue);
             this->setTags(tService);
             this->setDeviceIDs(tService);
             tService.id(tServiceBlockID);
             this->checkTags(tService);
+            tService.path(tValue);
             mData.push_back(tService);
         }
     }

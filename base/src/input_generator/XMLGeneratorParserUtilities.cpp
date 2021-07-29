@@ -72,6 +72,44 @@ void parse_input_metadata
     }
 }
 
+void parse_input_metadata_unlowered
+(const std::vector<std::string>& aStopKeys,
+ const std::vector<std::string>& aFindKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::string& aOutputString)
+{
+    constexpr int tMAX_CHARS_PER_LINE = 10000;
+    std::vector<char> tBuffer(tMAX_CHARS_PER_LINE);
+    while (!aInputFile.eof())
+    {
+        std::vector<std::string> tTokens;
+        aInputFile.getline(tBuffer.data(), tMAX_CHARS_PER_LINE);
+        XMLGen::parse_tokens(tBuffer.data(), tTokens);
+        std::vector<std::string> tUnLoweredTokens = tTokens;
+        XMLGen::to_lower(tTokens);
+
+        std::string tID;
+        int tIndex;
+        if (XMLGen::parse_single_value(tTokens, aStopKeys, tID))
+        {
+            break;
+        }
+        else if (XMLGen::parse_single_value_index(tTokens, aFindKeys, tIndex))
+        {
+            aOutputString = tUnLoweredTokens[tIndex];
+            if (aOutputString == "")
+            {
+                THROWERR(std::string("Parse input metadata unlowered: Can't find specified token for desired unlowered key"))
+            }
+        }
+        else
+        {
+            XMLGen::parse_tag_values(tTokens, aTags);
+        }
+    }
+}
+
 bool parse_single_value
 (const std::vector<std::string> &aTokens,
  const std::vector<std::string> &aTargetTokens,
@@ -101,6 +139,35 @@ bool parse_single_value
     return true;
 }
 // function parse_single_value
+
+bool parse_single_value_index
+(const std::vector<std::string> &aTokens,
+ const std::vector<std::string> &aTargetTokens,
+ int &aIndex)
+{
+    if(aTargetTokens.size() < 1 || aTokens.size() < 1 || aTokens.size() < aTargetTokens.size())
+    {
+        return false;
+    }
+
+    for(auto& tTargetToken : aTargetTokens)
+    {
+        auto tIndex = &tTargetToken - &aTargetTokens[0];
+        if(aTokens[tIndex].compare(tTargetToken))
+        {
+            return false;
+        }
+    }
+
+    if(aTokens.size() == (aTargetTokens.size() + 1u))
+    {
+        auto tIndex = aTargetTokens.size();
+        aIndex = tIndex;
+    }
+
+    return true;
+}
+// function parse_single_value_index
 
 std::string to_lower(const std::string &aInput)
 {

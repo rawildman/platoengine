@@ -239,6 +239,53 @@ void XMLGenerator::determineIfPlatoEngineFilteringIsNeeded()
 }
 
 /******************************************************************************/
+void XMLGenerator::setupHelmholtzFilterService()
+/******************************************************************************/
+{
+    if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_type() == "helmholtz")
+    {
+        // set filter_in_engine to false
+        XMLGen::OptimizationParameters tOptimizationParameters = m_InputData.optimization_parameters();
+        tOptimizationParameters.filter_in_engine("false");
+        m_InputData.set(tOptimizationParameters);
+
+        XMLGen::Service tHelmholtzService;
+        if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_service().length() > 0)
+        {
+            std::string tFilterServiceId = m_InputDataWithExpandedEBCs.optimization_parameters().filter_service();
+            tHelmholtzService = m_InputDataWithExpandedEBCs.service(tFilterServiceId);
+        }
+
+        // fill in service data for helmholtz filter
+        tHelmholtzService.id("helmholtz");
+        tHelmholtzService.code("plato_analyze");
+        tHelmholtzService.numberProcessors("1");
+        tHelmholtzService.updateProblem("false");
+        tHelmholtzService.cacheState("false");
+        
+        // copy objective first scenario for helmholtz performer spatial dimensions
+        std::string tScenarioID = m_InputDataWithExpandedEBCs.objective.scenarioIDs[0];
+        XMLGen::Scenario tCurScenario = m_InputDataWithExpandedEBCs.scenario(tScenarioID);
+
+        // create new input data for helmholtz performer
+        XMLGen::InputData tNewInputData = m_InputDataWithExpandedEBCs;
+        clearInputDataLists(tNewInputData);
+        tNewInputData.append_unique(tHelmholtzService);
+        tNewInputData.append(tCurScenario);
+        loadMaterialData(tNewInputData, m_InputDataWithExpandedEBCs, tScenarioID);
+
+        if(!serviceExists(m_InputData.mPerformerServices, tHelmholtzService))
+        {
+            m_InputData.mPerformerServices.push_back(tHelmholtzService);
+        }
+
+        m_InputData.append_unique(tHelmholtzService); // add Helmholtz service for path
+
+        m_PreProcessedInputData.push_back(tNewInputData);
+    }
+}
+
+/******************************************************************************/
 void XMLGenerator::updateScenariosWithExpandedBoundaryConditions(std::map<int, std::vector<int> > aOldIDToNewIDMap)
 /******************************************************************************/
 {
@@ -276,6 +323,7 @@ void XMLGenerator::preProcessInputMetaData
     this->expandEssentialBoundaryConditions(aInputData);
     determineIfPlatoEngineFilteringIsNeeded();
     this->createCopiesForPerformerCreation(aInputData);
+    setupHelmholtzFilterService();
 }
 
 /******************************************************************************/
@@ -923,114 +971,6 @@ bool XMLGenerator::parseMesh(std::istream &fin)
   return true;
 }
 /******************************************************************************/
-bool XMLGenerator::parseCodePaths(std::istream &fin)
-/******************************************************************************/
-{
-  std::string tStringValue;
-  std::vector<std::string> tInputStringList;
-
-  // read each line of the file
-  while (!fin.eof())
-  {
-    // read an entire line into memory
-    char buf[MAX_CHARS_PER_LINE];
-    fin.getline(buf, MAX_CHARS_PER_LINE);
-    std::vector<std::string> tokens;
-    XMLGen::parseTokens(buf, tokens);
-
-    // process the tokens
-    if(tokens.size() > 0)
-    {
-      for(size_t j=0; j<tokens.size(); ++j)
-        tokens[j] = toLower(tokens[j]);
-
-      if(parseSingleValue(tokens, tInputStringList = {"begin","paths"}, tStringValue))
-      {
-        // found mesh block
-        while (!fin.eof())
-        {
-          fin.getline(buf, MAX_CHARS_PER_LINE);
-          tokens.clear();
-          XMLGen::parseTokens(buf, tokens);
-          // process the tokens
-          if(tokens.size() > 0)
-          {
-            std::vector<std::string> unlowered_tokens = tokens;
-
-            for(size_t j=0; j<tokens.size(); ++j)
-              tokens[j] = toLower(tokens[j]);
-
-            if(parseSingleValue(tokens, tInputStringList = {"end","paths"}, tStringValue))
-            {
-              break;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","sierra_sd"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code sierra_sd\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.sierra_sd_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","platomain"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code platomain\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.plato_main_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","lightmp"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code lightmp\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.lightmp_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","prune_and_refine"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code prune_and_refine\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.prune_and_refine_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","albany"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code albany\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.albany_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","plato_analyze"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code plato_analyze\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.plato_analyze_path = tStringValue;
-            }
-            else
-            {
-              PrintUnrecognizedTokens(tokens);
-              std::cout << "ERROR:XMLGenerator:parseCodePaths: Unrecognized keyword.\n";
-              return false;
-            }
-          }
-        }
-      }
-    }
-  }
-  return true;
-}
 
 /******************************************************************************/
 bool XMLGenerator::parseBlocks(std::istream &fin)
@@ -1189,10 +1129,6 @@ void XMLGenerator::parseInputFile()
 
   tInputFile.open(m_InputFilename.c_str()); // open a file
   parseBlocks(tInputFile);
-  tInputFile.close();
-
-  tInputFile.open(m_InputFilename.c_str()); // open a file
-  parseCodePaths(tInputFile);
   tInputFile.close();
 
   tInputFile.open(m_InputFilename.c_str()); // open a file

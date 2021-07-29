@@ -31,7 +31,7 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_OutputDataSetFalse)
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
     pugi::xml_document tDocument;
-    XMLGen::append_write_ouput_operation(tMetaData, tDocument);
+    XMLGen::append_write_output_operation(tMetaData, tDocument);
     auto tOperation = tDocument.child("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
@@ -49,7 +49,7 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_OutputDataSetTrueButEmptyO
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
     pugi::xml_document tDocument;
-    XMLGen::append_write_ouput_operation(tMetaData, tDocument);
+    XMLGen::append_write_output_operation(tMetaData, tDocument);
     auto tOperation = tDocument.child("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
@@ -67,7 +67,7 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_Random)
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
     pugi::xml_document tDocument;
-    XMLGen::append_write_ouput_operation(tMetaData, tDocument);
+    XMLGen::append_write_output_operation(tMetaData, tDocument);
 
     auto tOuterFor = tDocument.child("For");
     ASSERT_FALSE(tOuterFor.empty());
@@ -112,7 +112,7 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_Deterministic)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    XMLGen::append_write_ouput_operation(tMetaData, tDocument);
+    XMLGen::append_write_output_operation(tMetaData, tDocument);
 
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());

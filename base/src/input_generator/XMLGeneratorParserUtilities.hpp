@@ -60,6 +60,23 @@ void parse_input_metadata
  XMLGen::MetaDataTags& aTags);
 
 /******************************************************************************//**
+ * \fn parse_input_metadata_unlowered
+ * \brief Parse input metadata, set token-value pairs in XMLGen::MetaDataTags map,
+ * and return unlowered token value.
+ * \param [in]  aStopKeys   keys used to denote end of the parameter block to be parsed
+ * \param [in]  aFindKeys   keys used to denote the unlowered value to return
+ * \param [in]  aInputFile  input file string
+ * \param [out] aTags       map from property tag to pair< pair<token,input_value>, default> >
+ * \param [out] aOutputString unlowered token value
+**********************************************************************************/
+void parse_input_metadata_unlowered
+(const std::vector<std::string>& aStopKeys,
+ const std::vector<std::string>& aFindKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::string& aOutputString);
+
+/******************************************************************************//**
  * \fn parse_single_value
  * \brief Return matching keyword if input token matches target token.
  * \param [in]  aTokens   input token
@@ -68,8 +85,20 @@ void parse_input_metadata
 **********************************************************************************/
 bool parse_single_value
 (const std::vector<std::string> &aTokens,
- const std::vector<std::string> &aTarget,
+ const std::vector<std::string> &aTargetTokens,
  std::string &aKeyword);
+
+/******************************************************************************//**
+ * \fn parse_single_value_index
+ * \brief Return index of keyword after target token.
+ * \param [in]  aTokens   input token
+ * \param [in]  aTarget   target token
+ * \param [out] aKeyword  matching keyword
+**********************************************************************************/
+bool parse_single_value_index
+(const std::vector<std::string> &aTokens,
+ const std::vector<std::string> &aTargetTokens,
+ int &aIndex);
 
 /******************************************************************************//**
  * \fn to_lower

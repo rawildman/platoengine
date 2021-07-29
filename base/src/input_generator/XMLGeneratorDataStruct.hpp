@@ -59,16 +59,6 @@ struct Block
     std::string element_type;
 };
 
-struct CodePaths
-{
-    std::string plato_main_path;
-    std::string lightmp_path;
-    std::string sierra_sd_path;
-    std::string albany_path;
-    std::string plato_analyze_path;
-    std::string prune_and_refine_path;
-};
-
 struct Mesh
 {
     std::string name;
@@ -222,6 +212,20 @@ public:
             if(tService.code() == "platomain")
             {
                 tReturnValue = tService.performer();
+                break;
+            }
+        }
+        return tReturnValue;
+    }
+
+    std::string getFirstPlatoMainId() const
+    {
+        std::string tReturnValue = "";
+        for(auto& tService : mServices)
+        {
+            if(tService.code() == "platomain")
+            {
+                tReturnValue = tService.id();
                 break;
             }
         }
@@ -434,7 +438,6 @@ public:
     std::vector<XMLGen::Block> blocks;
     std::vector<XMLGen::Load> loads;
     XMLGen::Mesh mesh;
-    XMLGen::CodePaths codepaths;
     std::vector<XMLGen::Uncertainty> uncertainties;
     std::vector<XMLGen::Output> mOutputMetaData;
     XMLGen::Arch m_Arch;
