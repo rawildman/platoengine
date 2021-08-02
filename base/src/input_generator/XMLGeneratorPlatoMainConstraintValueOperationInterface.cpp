@@ -20,7 +20,7 @@ void append_compute_constraint_value_operation_platomain
  pugi::xml_node& aParentNode)
 {
     auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value " + aConstraint.id(), aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value", aPerformer}, tOperationNode);
 
     if(aDesignVariableName != "")
     {
