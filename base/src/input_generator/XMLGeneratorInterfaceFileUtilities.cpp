@@ -1870,11 +1870,11 @@ void append_parameter_sensitivity_shared_data
             if(aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
             {
                 std::string tHelmholtzPerformer = "";
-                for(auto& tService : aXMLMetaData.mPerformerServices)
+                for(auto& tService2 : aXMLMetaData.mPerformerServices)
                 {
-                    if(tService.id() == "helmholtz")
+                    if(tService2.id() == "helmholtz")
                     {
-                        tHelmholtzPerformer = tService.performer();
+                        tHelmholtzPerformer = tService2.performer();
                         break;
                     }
                 }
@@ -2229,8 +2229,8 @@ void append_filter_control_operation
             std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
             auto tProjectionNode = aParentNode.append_child("Operation");
             XMLGen::append_children({"Name", "PerformerName"},{"Project Control", tFirstPlatoMainPerformer}, tProjectionNode);
-            auto tInputNode = tProjectionNode.append_child("Input");
-            XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Field", "Filtered Control"}, tInputNode);
+            auto tInputNode2 = tProjectionNode.append_child("Input");
+            XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Field", "Filtered Control"}, tInputNode2);
             tOutputNode = tProjectionNode.append_child("Output");
             XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Filtered Field", "Topology"}, tOutputNode);
         }
