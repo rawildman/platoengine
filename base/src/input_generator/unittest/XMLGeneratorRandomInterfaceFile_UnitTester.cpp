@@ -392,6 +392,7 @@ TEST(PlatoTestXMLGenerator, ConstraintValueOperation_PlatoMain)
     XMLGen::ConstraintValueOperation tInterface;
     pugi::xml_document tDocument;
     XMLGen::Constraint tConstraint;
+    tConstraint.id("12");
     tConstraint.criterion("11");
     tConstraint.service("22");
     ASSERT_NO_THROW(tInterface.call(tConstraint, "platomain_1", "Topology", "platomain", tDocument));
@@ -401,7 +402,7 @@ TEST(PlatoTestXMLGenerator, ConstraintValueOperation_PlatoMain)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Value", "platomain_1", "", "", ""};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Value 12", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -428,6 +429,7 @@ TEST(PlatoTestXMLGenerator, ConstraintValueOperation_PlatoAnalyze)
     XMLGen::ConstraintValueOperation tInterface;
     pugi::xml_document tDocument;
     XMLGen::Constraint tConstraint;
+    tConstraint.id("12");
     tConstraint.criterion("2");
     tConstraint.service("3");
     ASSERT_NO_THROW(tInterface.call(tConstraint, "plato_analyze_1", "Topology", "plato_analyze", tDocument));
@@ -437,7 +439,7 @@ TEST(PlatoTestXMLGenerator, ConstraintValueOperation_PlatoAnalyze)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Value", "plato_analyze_1", "", ""};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Value 12", "plato_analyze_1", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -449,7 +451,7 @@ TEST(PlatoTestXMLGenerator, ConstraintValueOperation_PlatoAnalyze)
     auto tOutput = tOperation.child("Output");
     ASSERT_FALSE(tOutput.empty());
     tGoldKeys = {"ArgumentName", "SharedDataName"};
-    tGoldValues = {"Constraint Value", "Criterion Value - criterion_2_service_3_scenario_"};
+    tGoldValues = {"Constraint Value 12", "Criterion Value - criterion_2_service_3_scenario_"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOutput);
 }
 
@@ -466,6 +468,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoMain)
     XMLGen::ConstraintGradientOperation tInterface;
     pugi::xml_document tDocument;
     XMLGen::Constraint tConstraint;
+    tConstraint.id("12");
     tConstraint.criterion("1");
     tConstraint.service("1");
     ASSERT_NO_THROW(tInterface.call(tConstraint, "platomain_1", "Topology", "platomain", tDocument));
@@ -475,7 +478,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoMain)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient", "platomain_1", "", "", ""};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 12", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -502,6 +505,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoAnalyze)
     XMLGen::ConstraintGradientOperation tInterface;
     pugi::xml_document tDocument;
     XMLGen::Constraint tConstraint;
+    tConstraint.id("12");
     tConstraint.criterion("1");
     tConstraint.service("1");
     ASSERT_NO_THROW(tInterface.call(tConstraint, "plato_analyze_1", "Topology", "plato_analyze", tDocument));
@@ -511,7 +515,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoAnalyze)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient", "plato_analyze_1", "", ""};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 12", "plato_analyze_1", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -523,7 +527,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoAnalyze)
     auto tOutput = tOperation.child("Output");
     ASSERT_FALSE(tOutput.empty());
     tGoldKeys = {"ArgumentName", "SharedDataName"};
-    tGoldValues = {"Constraint Gradient", "Criterion Gradient - criterion_1_service_1_scenario_"};
+    tGoldValues = {"Constraint Gradient 12", "Criterion Gradient - criterion_1_service_1_scenario_"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOutput);
 }
 
@@ -1631,7 +1635,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintValueStage)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
-    tGoldValues = {"Compute Constraint Value", "platomain_1", "", "", ""};
+    tGoldValues = {"Compute Constraint Value 3", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
     auto tConstraintInput = tOperation.child("Input");
     ASSERT_FALSE(tConstraintInput.empty());
@@ -1714,7 +1718,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
-    tGoldValues = {"Compute Constraint Gradient", "platomain_1", "", "", ""};
+    tGoldValues = {"Compute Constraint Gradient 1", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
     auto tConstraintInput = tOperation.child("Input");
     ASSERT_FALSE(tConstraintInput.empty());

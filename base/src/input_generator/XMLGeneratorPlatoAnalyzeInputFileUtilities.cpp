@@ -507,10 +507,10 @@ void append_constraint_criteria_to_criteria_list
     auto tContraintFunctions = XMLGen::return_list_of_constraint_functions(aXMLMetaData);
     if(tContraintFunctions.size() > 1)
     {
-        auto tConstraint = aParentNode.append_child("ParameterList");
-        XMLGen::append_weighted_sum_constraint_to_plato_problem(aXMLMetaData, tConstraint);
-        XMLGen::append_functions_to_weighted_sum_constraint(aXMLMetaData, tContraintFunctions, tConstraint);
-        XMLGen::append_weights_to_weighted_sum_constraint(aXMLMetaData, tConstraint);
+        // auto tConstraint = aParentNode.append_child("ParameterList");
+        // XMLGen::append_weighted_sum_constraint_to_plato_problem(aXMLMetaData, tConstraint);
+        // XMLGen::append_functions_to_weighted_sum_constraint(aXMLMetaData, tContraintFunctions, tConstraint);
+        // XMLGen::append_weights_to_weighted_sum_constraint(aXMLMetaData, tConstraint);
         XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
     }
     else

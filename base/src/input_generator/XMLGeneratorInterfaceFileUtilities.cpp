@@ -2347,11 +2347,12 @@ void append_constraint_gradient_stage_for_topology_problem
 
 /******************************************************************************/
 void append_compute_constraint_gradient_operation
-(const std::string &aPerformer,
+(const XMLGen::Constraint &aConstraint,
+ const std::string &aPerformer,
  pugi::xml_node &aParent)
 {
     auto tOperationNode = aParent.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient", aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient " + aConstraint.id(), aPerformer}, tOperationNode);
 }
 /******************************************************************************/
 
@@ -2465,7 +2466,7 @@ void append_constraint_gradient_stage_for_shape_problem
         XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
         XMLGen::append_reinitialize_on_change_operation(tService.performer(), tStageNode);
         auto tOuterOperationNode = tStageNode.append_child("Operation");
-        append_compute_constraint_gradient_operation(tService.performer(), tOuterOperationNode);
+        append_compute_constraint_gradient_operation(tConstraint, tService.performer(), tOuterOperationNode);
         append_compute_shape_sensitivity_on_change_operation(tOuterOperationNode);
         append_compute_constraint_sensitivity_operation(tService.performer(), tSharedDataName, tStageNode);
         append_copy_value_operation(tFirstPlatoMainPerformer, tSharedDataName, tStageOutputName, tStageNode);
