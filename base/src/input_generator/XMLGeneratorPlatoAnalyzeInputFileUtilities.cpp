@@ -517,8 +517,8 @@ void append_constraint_criteria_to_criteria_list
     {
         auto tConstraint = XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
         // Change the name to "My Constraint"
-        tConstraint.remove_attribute("name");
-        XMLGen::append_attributes({"name"}, {"My Constraint"}, tConstraint);
+        // tConstraint.remove_attribute("name");
+        // XMLGen::append_attributes({"name"}, {"My Constraint"}, tConstraint);
     }
 }
 // function append_constraint_criteria_to_criteria_list
