@@ -3698,6 +3698,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintCriteriaToCriteriaList)
     XMLGen::Constraint tConstraint;
     tConstraint.scenario("1"); 
     tConstraint.service("1"); 
+    tConstraint.id("3"); 
     tConstraint.criterion("1"); 
     tConstraint.weight("0.5"); 
     tXMLMetaData.constraints.push_back(tConstraint);
@@ -3710,7 +3711,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintCriteriaToCriteriaList)
     auto tParamList = tCriteriaList.child("ParameterList");
     ASSERT_FALSE(tParamList.empty());
     ASSERT_STREQ("ParameterList", tParamList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"My Constraint"}, tParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"my_stress_p-norm_criterion_id_1"}, tParamList);
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues = { {"Type", "string", "Scalar Function"}, {"Scalar Function Type", "string", "Stress P-Norm"}, {}, {"Exponent", "double", "6"} };

@@ -470,6 +470,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeVolumeGradientToPlatoMainOperation)
     XMLGen::Constraint tConstraint;
     tConstraint.criterion("1");
     tConstraint.service("1");
+    tConstraint.id("3");
     tXMLMetaData.constraints.push_back(tConstraint);
 
     XMLGen::append_compute_volume_gradient_to_plato_main_operation(tXMLMetaData, tDocument);
@@ -479,7 +480,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeVolumeGradientToPlatoMainOperation)
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel", "Input", "Output", "Output", "SIMP"};
-    std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient", "SIMP", "", "", "", ""};
+    std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient 3", "SIMP", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -521,6 +522,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeVolumeToPlatoMainOperation)
     XMLGen::Constraint tConstraint;
     tConstraint.criterion("1");
     tConstraint.service("1");
+    tConstraint.id("3");
     tXMLMetaData.constraints.push_back(tConstraint);
 
     XMLGen::append_compute_volume_to_plato_main_operation(tXMLMetaData, tDocument);
@@ -530,7 +532,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeVolumeToPlatoMainOperation)
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel", "Input", "Output", "Output", "SIMP"};
-    std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value", "SIMP", "", "", "", ""};
+    std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value 3", "SIMP", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tInput = tOperation.child("Input");

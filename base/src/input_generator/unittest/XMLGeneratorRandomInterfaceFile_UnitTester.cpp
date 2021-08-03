@@ -1669,7 +1669,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     tInputData.append(tCriterion);
 
     XMLGen::Constraint tConstraint;
-    tConstraint.id("1");
+    tConstraint.id("3");
     tConstraint.service("1");
     tConstraint.criterion("1");
     tInputData.constraints.push_back(tConstraint);
@@ -1685,7 +1685,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
     std::vector<std::string> tGoldKeys = {"Name", "Type", "Input", "Operation", "Operation", "Operation", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 1", "volume", "", "", "", "", ""};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 3", "volume", "", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tStage);
 
     auto tOuterInput = tStage.child("Input");
@@ -1697,7 +1697,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     auto tOuterOutput = tStage.child("Output");
     ASSERT_FALSE(tOuterOutput.empty());
     tGoldKeys = {"SharedDataName"};
-    tGoldValues = {"Constraint Gradient 1"};
+    tGoldValues = {"Constraint Gradient 3"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOuterOutput);
 
     auto tOperation = tStage.child("Operation");
@@ -1718,7 +1718,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
-    tGoldValues = {"Compute Constraint Gradient 1", "platomain_1", "", "", ""};
+    tGoldValues = {"Compute Constraint Gradient 3", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
     auto tConstraintInput = tOperation.child("Input");
     ASSERT_FALSE(tConstraintInput.empty());
@@ -1731,7 +1731,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintOutput);
     tConstraintOutput = tOperation.next_sibling("Output");
     ASSERT_FALSE(tConstraintOutput.empty());
-    tGoldValues = {"Volume Gradient", "Constraint Gradient 1"};
+    tGoldValues = {"Volume Gradient", "Constraint Gradient 3"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintOutput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1751,7 +1751,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterInput);
     tFilterOutput = tOperation.child("Output");
     ASSERT_FALSE(tFilterOutput.empty());
-    tGoldValues = {"Filtered Gradient", "Constraint Gradient 1"};
+    tGoldValues = {"Filtered Gradient", "Constraint Gradient 3"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterOutput);
 }
 

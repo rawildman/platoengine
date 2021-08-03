@@ -102,6 +102,30 @@ bool is_volume_constraint_defined_and_computed_by_platomain
 /******************************************************************************/
 
 /******************************************************************************/
+std::string get_platomain_volume_constraint_id
+(const XMLGen::InputData& aXMLMetaData)
+{
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        auto tCriterion = aXMLMetaData.criterion(tConstraint.criterion());
+        auto tType = Plato::tolower(tCriterion.type());
+        auto tService = aXMLMetaData.service(tConstraint.service());
+        auto tCode = Plato::tolower(tService.code());
+
+        auto tIsVolumeConstraintDefined = tType.compare("volume") == 0;
+        auto tIsVolumeComputedByPlatoMain = tCode.compare("platomain") == 0;
+        bool tIsVolumeDefinedAndComputedByPlatoMain = tIsVolumeConstraintDefined && tIsVolumeComputedByPlatoMain;
+        if (tIsVolumeDefinedAndComputedByPlatoMain == true)
+        {
+            return tConstraint.id();
+        }
+    }
+    THROWERR("Volume constraint was assumed to be computed by platomain but was not.")
+}
+//function get_platomain_volume_constraint_id
+/******************************************************************************/
+
+/******************************************************************************/
 void append_filter_options_to_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node &aParentNode)
@@ -1046,9 +1070,11 @@ void append_compute_volume_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};
@@ -1078,9 +1104,11 @@ void append_compute_volume_gradient_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};
