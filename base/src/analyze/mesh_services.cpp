@@ -589,6 +589,11 @@ void MeshServices::setBoundsVector
         
         // determine if this block is in the fixed block list and find its index
         auto tIterator = std::find(aMetadata.mBlockIDs.begin(), aMetadata.mBlockIDs.end(), tCurBlockId);
+        if(tIterator == aMetadata.mBlockIDs.end())
+        {
+            continue;
+        }
+
         auto tFixedBlockIndex = std::distance(aMetadata.mBlockIDs.begin(), tIterator);
 
         // for each element
