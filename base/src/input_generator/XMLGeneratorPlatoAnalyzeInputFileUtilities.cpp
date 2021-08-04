@@ -244,7 +244,7 @@ void append_self_adjoint_parameter_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
-    XMLGen::is_objective_container_empty(aXMLMetaData);
+    //XMLGen::is_objective_container_empty(aXMLMetaData);
 
     std::string tIsSelfAdjoint = "false";
     if(aXMLMetaData.objective.criteriaIDs.size() == 1u)

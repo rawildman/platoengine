@@ -37,7 +37,7 @@ void append_compute_objective_value_to_plato_analyze_operation
     }
     else
     {
-        THROWERR("Append Compute Objective Value to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+        //THROWERR("Append Compute Objective Value to Plato Analyze Operation: No objectives computed by Plato Analyze.")
     }
 }
 /******************************************************************************/
@@ -295,7 +295,7 @@ void append_compute_objective_gradient_to_plato_analyze_operation
     }
     else
     {
-        THROWERR("Append Compute Objective Gradient to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+        //THROWERR("Append Compute Objective Gradient to Plato Analyze Operation: No objectives computed by Plato Analyze.")
     }
 }
 

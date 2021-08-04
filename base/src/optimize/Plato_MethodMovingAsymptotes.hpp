@@ -464,6 +464,9 @@ private:
     **********************************************************************************/
     void setSubProblemOptions()
     {
+        mSubProblemSolver->setAugLagActualReductionTolerance(-1.0); // disable
+        //mSubProblemSolver->setMaxNumAugLagSubProbIter(5);
+        //mSubProblemSolver->setPenaltyParameterLowerBound(1.0e-3);
         mSubProblemSolver->disablePostSmoothing();
         mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
         mSubProblemSolver->setFeasibilityTolerance(mSubProblemFeasibilityTolerance);
@@ -710,6 +713,16 @@ private:
     **********************************************************************************/
     void solveSubProblem()
     {
+        const bool tProblemIsNotNearlyFeasible = !(mDataMng->isProblemNearlyFeasible());
+        if (tProblemIsNotNearlyFeasible)
+        {
+            mSubProblemSolver->setMaxNumOuterIterations(20);
+        }
+        else
+        {
+            mSubProblemSolver->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
+            mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
+        }
         mSubProblemSolver->resetParameters();
         mSubProblemSolver->setInitialGuess(mDataMng->getCurrentControls());
         mSubProblemSolver->setControlLowerBounds(mDataMng->getSubProblemControlLowerBounds());
