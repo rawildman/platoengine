@@ -95,9 +95,11 @@ public:
      * @brief Construct interface to optimization algorithm
      * @param [in] aInterface PLATO Engine interface
      * @param [in] aLocalComm local MPI communicator
+     * @param [in] aInnerLoopDepth depth (if any) of the optimize inner loop.
      * @return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
-    Plato::OptimizerInterface<ScalarType, OrdinalType>* create(Plato::Interface* aInterface, MPI_Comm aLocalComm)
+    Plato::OptimizerInterface<ScalarType, OrdinalType>*
+    create(Plato::Interface* aInterface, MPI_Comm aLocalComm, int aInnerLoopDepth = 0)
     {
      Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
      try {
@@ -114,6 +116,13 @@ public:
          aInterface->registerException(tParsingException);
        }
        auto tOptNode = tInputData.get<Plato::InputData>("Optimizer");
+
+       // The top level interface is always passed to the factory. As
+       // such, recursively search for the block which is a series of
+       // nested blocks.
+       for( int i=0; i<aInnerLoopDepth; ++i )
+           tOptNode = tOptNode.get<Plato::InputData>("Optimizer");
+
        std::string tOptPackage = Plato::Get::String(tOptNode, "Package");
        if( tOptPackage == "OC" )
        {
@@ -232,3 +241,18 @@ private:
 // class OptimizerFactory
 
 } // namespace Plato
+
+// With some of the the optimizer interfaces such as the MMA it is
+// possible to have nested optimization. This nesting creates a
+// circular dependency:
+// OptimizerFactory->MMA->EngineObjective->OptimizerFactory
+//
+// Because of this circular dependency it is necessary to break from
+// the traditional template class definition where everything is
+// defined as part of the class definition in a single header file.
+// Instead the EngineObjective::value method (which calls the
+// OptimizerFactory) is defined and SEPARTELY and AFTER the
+// OptimizerFactory class has been defined. As such, the definition of
+// EngineObjective::value is included here.
+
+#include "Plato_EngineObjective.tcc"

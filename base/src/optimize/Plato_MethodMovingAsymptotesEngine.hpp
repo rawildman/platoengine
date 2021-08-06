@@ -127,7 +127,10 @@ public:
     void optimize()
     {
         mInterface->handleExceptions();
-        this->initialize();
+
+        // Only initialize if an outer loop.
+        if( this->mInnerLoopDepth == 0 )
+            this->initialize();
 
         // PARSE INPUT DATA
         Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> tInputs;
@@ -152,6 +155,8 @@ public:
         this->setUpperBounds(tInputs);
 
         // SET PROBLEM CRITERIA
+
+        // ARS - This code is the outer loop.
         std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> tConstraints;
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective;
         const OrdinalType tNumConstraints = tInputs.mConstraintNormalizationParams->size();
@@ -162,7 +167,9 @@ public:
         Plato::AlgorithmOutputsMMA<ScalarType, OrdinalType> tOutputs;
         Plato::solve_mma<ScalarType, OrdinalType>(tObjective, tConstraints, tInputs, tOutputs);
 
-        this->finalize();
+        // Only finalize if an outer loop.
+        if( this->mInnerLoopDepth == 0 )
+            this->finalize();
     }
 
 private:
@@ -174,6 +181,24 @@ private:
     {
         auto tInputData = mInterface->getInputData();
         auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+
+        // If an inner loop get the optimizer block for its
+        // depth. The depth is set by the engine objective.
+        if( this->mInnerLoopDepth > 0 )
+        {
+            // The top level interface is always passed between the
+            // optimizer and the engine. As such, recursively search
+            // for the block which is a series of nested blocks.
+            for( int i=0; i<this->mInnerLoopDepth; ++i )
+                tOptimizerNode =
+                    tOptimizerNode.get<Plato::InputData>("Optimizer");
+        }
+
+        // Now check for an inner optimizer block. This flag and depth
+        // are used by the engine objective to determine the nesting.
+        this->mHasInnerLoop =
+            (tOptimizerNode.size<Plato::InputData>("Optimizer") > 0);
+
         Plato::MethodMovingAsymptotesParser<ScalarType, OrdinalType> tParser;
         mObjFuncStageName = tParser.getObjectiveStageName(tOptimizerNode);
         mConstraintStageNames = tParser.getConstraintStageNames(tOptimizerNode);
@@ -341,6 +366,11 @@ private:
         // SET OBJECTIVE FUNCTION
         aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface);
         aObjective->allocateControlContainers(aNumControls);
+
+        // Let the engine objective know if there is an inner loop and
+        // the current loop depth.
+        aObjective->setHasInnerLoop  ( this->mHasInnerLoop );
+        aObjective->setInnerLoopDepth( this->mInnerLoopDepth );
 
         // SET CONSTRAINTS
         aConstraints = std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>();

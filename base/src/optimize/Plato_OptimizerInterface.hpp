@@ -100,6 +100,22 @@ public:
      * @brief Allocate memory
     **********************************************************************************/
     virtual void initialize() = 0;
+
+    /******************************************************************************//**
+     * @brief set the inner loop depth of the optimizer.
+    **********************************************************************************/
+    void setInnerLoopDepth( int val ) {  this->mInnerLoopDepth = val; }
+
+protected:
+    /******************************************************************************//**
+     * @brief boolean to note whether there is an inner optimization loop
+    **********************************************************************************/
+    bool mHasInnerLoop{false};
+
+    /******************************************************************************//**
+     * @brief optimizer inner loop depth (zero is no inner loop)
+    **********************************************************************************/
+  int mInnerLoopDepth{0};
 };
 // class OptimizerInterface
 

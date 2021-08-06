@@ -73,6 +73,7 @@ public:
     void exportData(const std::string & aArgumentName, SharedData & aExportData);
 
     void setApplication(Application* aApplication);
+    Application * getApplication() const;
 
     std::string myName();
     int myCommID();

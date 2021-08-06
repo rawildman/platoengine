@@ -265,6 +265,7 @@ void Interface::perform()
         Plato::Stage* tStage = this->getStage();
 
         // 'Terminate' stage is nullptr
+        // ARS - if tStage is null then the perform(tStage) will barf.
         if(!tStage)
         {
             continue;
@@ -366,25 +367,37 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
-    // find requested stage
-    Plato::Stage* tStage = getStage(aStageName);
-
-    // Unpack input arguments into Plato::SharedData
-    //
-    std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
-    for(std::string tName : tStageInputDataNames)
+    // ARS - intercept a regenerate stage compute
+    if( aStageName == "Regenerate" )
     {
-        exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+      //this->regenate(); // call CreateSharedData - need the
+                        // application which is stored as part of
+                        // this->mPerformer->GetApplication() (and a
+                        // new interface).
+      // this->perform("Regenerate");
     }
-
-    this->perform(tStage);
-
-    // Unpack output arguments from Plato::SharedData
-    //
-    std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
-    for(std::string tName : tStageOutputDataNames)
+    else
     {
-        importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+        // find requested stage
+        Plato::Stage* tStage = getStage(aStageName);
+
+        // Unpack input arguments into Plato::SharedData
+        //
+        std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
+        for(std::string tName : tStageInputDataNames)
+        {
+            exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+        }
+
+        this->perform(tStage);
+
+        // Unpack output arguments from Plato::SharedData
+        //
+        std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
+        for(std::string tName : tStageOutputDataNames)
+        {
+            importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+        }
     }
 }
 
@@ -417,7 +430,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
         registerException(Plato::ParsingException("Failed to create Performer"));
     }
     mExceptionHandler->handleExceptions();
-    
+
     try
     {
         aApplication->initialize();
@@ -493,8 +506,8 @@ void Interface::createPerformers()
                 std::cout << " -----------------------------------------------------------------------------" << std::endl;
             }
             throw 1;
-        } 
-       
+        }
+
         // is the PerformerID already used? If so, error out.
         //
         if( std::count( tPerfIDs.begin(), tPerfIDs.end(), tLocalPerformerID ) )
@@ -506,14 +519,14 @@ void Interface::createPerformers()
                 std::cout << " -----------------------------------------------------------------------------" << std::endl;
             }
             throw 1;
-        } 
-        else 
+        }
+        else
         {
             tPerfIDs.push_back(tLocalPerformerID);
         }
 
 
-        // Are any PerformerIDs specified in the interface definition that weren't 
+        // Are any PerformerIDs specified in the interface definition that weren't
         // defined on the mpi command line?
         //
         int tMyPerformerSpec = (tLocalPerformerID == mPerformerID) ? 1 : 0;
@@ -528,13 +541,13 @@ void Interface::createPerformers()
             }
             throw 1;
         }
-        else 
+        else
         {
            tPerfCommSize[tLocalPerformerID] = tNumRanksThisID;
         }
     }
 
-    // Is there a Performer spec for my local Performer ID?  
+    // Is there a Performer spec for my local Performer ID?
     //
     int tErrorNoSpec = ( std::count( tPerfIDs.begin(), tPerfIDs.end(), mPerformerID ) == 0 ) ? 1 : 0;
     int tErrorNoSpecGlobal = 0;
@@ -550,7 +563,7 @@ void Interface::createPerformers()
     }
 
     // If the Performer spec has N names defined then the allocated ranks on that PerformerID are
-    // broken into N local comms.  To avoid any semantics of how ranks are assigned, manually color 
+    // broken into N local comms.  To avoid any semantics of how ranks are assigned, manually color
     // the local comms before splitting.
     //
     std::vector<int> tPerformerIDs(tNumGlobalRanks);
@@ -573,7 +586,7 @@ void Interface::createPerformers()
             {
                     std::cout << " -- Fatal Error --------------------------------------------------------------" << std::endl;
                     std::cout << "  Error creating performer with ID=" << tLocalPerformerID << "." << std::endl;
-                    std::cout << "  Attempted to spread N=" << tNumRanksThisID 
+                    std::cout << "  Attempted to spread N=" << tNumRanksThisID
                               << " processes over M=" << tNumCommsThisID << " comms, but N % M != 0." << std::endl;
                     std::cout << "  Change N to a whole number multiple of M and try again." << std::endl;
                     std::cout << " -----------------------------------------------------------------------------" << std::endl;
@@ -792,4 +805,3 @@ Interface::~Interface()
 }
 
 } /* namespace Plato */
-
