@@ -48,8 +48,7 @@
  */
 
 #include "PlatoESPApp.hpp"
-#include "Plato_Interface.hpp"
-#include "Plato_Exceptions.hpp"
+#include "Plato_TemplateMain.hpp"
 
 /******************************************************************************/
 int main(int aArgc, char *aArgv[])
