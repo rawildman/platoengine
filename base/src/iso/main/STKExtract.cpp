@@ -56,6 +56,14 @@
 namespace iso
 {
 
+STKExtract::STKExtract()
+{
+  mAvailableFormats = {"EXODUS","STL"};
+  mMeshAPIIn = nullptr;
+  mMeshAPIOut = nullptr;
+  mOutputSTL = 0; 
+}
+
 STKExtract::~STKExtract()
 {
   if(mMeshAPIOut && mMeshAPIOut != mMeshAPIIn)
