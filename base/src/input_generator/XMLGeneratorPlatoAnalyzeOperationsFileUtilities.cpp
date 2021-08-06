@@ -37,7 +37,7 @@ void append_compute_objective_value_to_plato_analyze_operation
     }
     else
     {
-        //THROWERR("Append Compute Objective Value to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+        // User could have two Analyze services and only one needs an objective
     }
 }
 /******************************************************************************/
@@ -295,7 +295,7 @@ void append_compute_objective_gradient_to_plato_analyze_operation
     }
     else
     {
-        //THROWERR("Append Compute Objective Gradient to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+       // User could have two Analyze services and only one needs an objective
     }
 }
 
@@ -495,10 +495,13 @@ void append_visualization_to_plato_analyze_operation
     }
     auto tItr = std::find(tNativeOutputList.begin(), tNativeOutputList.end(), "true");
 
+    std::string tServiceID = get_plato_analyze_service_id(aMetaData);
+    std::string tNativeOutputDirectoryTag = tServiceID + "_";
+
     if(tItr != tNativeOutputList.end())
     {
         auto tOperationNode = aParentNode.append_child("Operation");
-        XMLGen::append_children({"Function", "Name", "VizDirectory"}, {"Visualization", "Visualization", "native_plato_analyze_output"}, tOperationNode);
+        XMLGen::append_children({"Function", "Name", "VizDirectory"}, {"Visualization", "Visualization", "native_plato_analyze_" + tNativeOutputDirectoryTag + "output"}, tOperationNode);
     }
 }
  // function append_visualization_to_plato_analyze_operation

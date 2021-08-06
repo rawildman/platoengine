@@ -445,7 +445,7 @@ public:
         std::vector<ScalarType> tContainer(tNumVectors);
         for(OrdinalType tIndex = 0; tIndex < tNumVectors; ++tIndex)
         {
-            //(*mDualWorkMultiVec)[tIndex].modulus();
+            (*mDualWorkMultiVec)[tIndex].modulus();
             tContainer[tIndex] = mDualReductionOperations->max( (*mDualWorkMultiVec)[tIndex] );
         }
         mNormConstraints = *std::max_element(tContainer.begin(), tContainer.end());

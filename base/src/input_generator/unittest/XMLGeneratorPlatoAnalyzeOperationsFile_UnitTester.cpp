@@ -1563,41 +1563,6 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomConstraintGradientToPlatoAnalyzeO
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tParameter);
 }
 
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOperation_EmptyOptimizationType)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    ASSERT_THROW(XMLGen::append_compute_objective_value_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOperation_Empty)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
-    tInputData.set(tOptimizationParameters);
-    ASSERT_THROW(XMLGen::append_compute_objective_value_to_plato_analyze_operation(tInputData, tDocument),
-                 std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOperation_NotPlatoAnalyzePerformer)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
-    tInputData.set(tOptimizationParameters);
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("sierra_sd");
-    tInputData.append(tService);
-    XMLGen::Objective tObjective;
-    tObjective.serviceIDs.push_back("1");
-    tInputData.objective = tObjective;
-    ASSERT_THROW(XMLGen::append_compute_objective_value_to_plato_analyze_operation(tInputData, tDocument),
-                 std::runtime_error);
-}
 
 TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOperation)
 {
@@ -1729,40 +1694,6 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOpera
     ASSERT_STREQ("Parameter", tParameter.name());
     tValues = {"youngs_modulus_block_id_2", "[Plato Problem]:[Material Models]:[material_2]:[Isotropic Linear Thermoelastic]:Youngs Modulus", "0.0"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tParameter);
-}
-
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOperation_EmptyOptimizationType)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    ASSERT_THROW(XMLGen::append_compute_objective_gradient_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOperation_Empty)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
-    tInputData.set(tOptimizationParameters);
-    ASSERT_THROW(XMLGen::append_compute_objective_gradient_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOperation_NotPlatoAnalyzePerformer)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tInputData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("optimization_type", "topology");
-    tInputData.set(tOptimizationParameters);
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("sierra_sd");
-    tInputData.append(tService);
-    XMLGen::Objective tObjective;
-    tObjective.serviceIDs.push_back("1");
-    tInputData.objective = tObjective;
-    ASSERT_THROW(XMLGen::append_compute_objective_gradient_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOperation)

@@ -1154,5 +1154,68 @@ TEST(PlatoTestXMLGenerator, AppendConstraintOptions)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
 }
 
+TEST(PlatoTestXMLGenerator, AppendMultipleConstraints)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptParams;
+    tOptParams.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptParams);
+
+    XMLGen::Service tService1;
+    tService1.id("1");
+    tService1.code("platomain");
+    tMetaData.append(tService1);
+
+    XMLGen::Service tService2;
+    tService2.id("2");
+    tService2.code("plato_analyze");
+    tMetaData.append(tService2);
+
+    XMLGen::Criterion tCriterion1;
+    tCriterion1.id("1");
+    tCriterion1.type("volume");
+    tMetaData.append(tCriterion1);
+
+    XMLGen::Criterion tCriterion2;
+    tCriterion2.id("2");
+    tCriterion2.type("mechanical_compliance");
+    tMetaData.append(tCriterion2);
+
+    XMLGen::Constraint tConstraint1;
+    tConstraint1.service("1");
+    tConstraint1.criterion("1");
+    tConstraint1.id("1");
+    tConstraint1.append("absolute_target", ".4");
+    tMetaData.constraints.push_back(tConstraint1);
+
+    XMLGen::Constraint tConstraint2;
+    tConstraint2.service("2");
+    tConstraint2.criterion("2");
+    tConstraint2.id("2");
+    tConstraint2.append("absolute_target", ".1");
+    tMetaData.constraints.push_back(tConstraint2);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_optimization_constraint_options(tMetaData, tDocument));
+  
+    auto tConstraintNode = tDocument.child("Constraint");
+    ASSERT_FALSE(tConstraintNode.empty());
+
+    std::vector<std::string> tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
+                   "GradientStageName", "ValueName"};
+    std::vector<std::string> tValues = {".4", "Constraint Gradient 1", "Compute Constraint Value 1",
+                   ".4", "Compute Constraint Gradient 1", "Constraint Value 1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
+
+    tConstraintNode = tConstraintNode.next_sibling("Constraint");
+    ASSERT_FALSE(tConstraintNode.empty());
+
+    tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
+                   "GradientStageName", "ValueName"};
+    tValues = {".1", "Constraint Gradient 2", "Compute Constraint Value 2",
+                   ".1", "Compute Constraint Gradient 2", "Constraint Value 2"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
+}
+
 }
 // namespace PlatoTestXMLGenerator
