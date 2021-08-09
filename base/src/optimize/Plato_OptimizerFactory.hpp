@@ -110,11 +110,12 @@ public:
          Plato::ParsingException tParsingException("Plato::OptimizerFactory: multiple 'Optimizer' definitions");
          aInterface->registerException(tParsingException);
        }
-       if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
+       else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
        {
          Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definitions");
          aInterface->registerException(tParsingException);
        }
+
        auto tOptNode = tInputData.get<Plato::InputData>("Optimizer");
 
        // The top level interface is always passed to the factory. As
@@ -203,39 +204,44 @@ public:
        else
        {
            std::stringstream tStringStream;
-           tStringStream << "Plato::OptimizerFactory: " << tOptPackage << " Unknown." << std::endl
-           << "Valid options are\n"
-           << "\t OC ... Optimality Criteria\n"
-           << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
-           << "\t MMA ... Method of Moving Asymptotes\n"
-           << "\t KSUC ... Kelley Sachs Unconstrained\n"
-           << "\t KSBC ... Kelley Sachs Bound Constrained\n"
-           << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
-           << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
-           << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
-           << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
-           << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
+           tStringStream << "Plato::OptimizerFactory: "
+	       << tOptPackage << " Unknown." << std::endl
+	       << "Valid options are\n"
+               << "\t OC ... Optimality Criteria\n"
+               << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
+               << "\t MMA ... Method of Moving Asymptotes\n"
+               << "\t KSUC ... Kelley Sachs Unconstrained\n"
+               << "\t KSBC ... Kelley Sachs Bound Constrained\n"
+               << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
+               << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
+               << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
 #ifdef ENABLE_ROL
-           << "\t ROL KSAL... Rapid Optimization Library Kelley Sachs Augmented Lagrangian\n"
-           << "\t ROL KSBC... Rapid Optimization Library Kelley Sachs Bound Constrained\n"
+               << "\t ROL KSAL ... Rapid Optimization Library Kelley Sachs Augmented Lagrangian\n"
+               << "\t ROL KSBC ... Rapid Optimization Library Kelley Sachs Bound Constrained\n"
 #endif
-           << std::endl;
+               << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
+               << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"      << std::endl;
+
            throw Plato::ParsingException(tStringStream.str());
        }
-
-
      }
-        catch(...)
-        {
-            aInterface->Catch();
-            tOptimizer = nullptr;
-        }
+
+     catch(...)
+     {
+         aInterface->Catch();
+         tOptimizer = nullptr;
+     }
+
+     // Set the loop depth so the optimizer knows where to
+     // find the correct block in the input data.
+     tOptimizer->setInnerLoopDepth( aInnerLoopDepth );
 
      return (tOptimizer);
    }
 
 private:
     OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
+
     Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
 };
 // class OptimizerFactory

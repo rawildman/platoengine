@@ -165,9 +165,15 @@ public:
     **********************************************************************************/
     void updateProblem(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
     {
+        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+		  << "mInnerLoopDepth " << this->mInnerLoopDepth << "  "
+		  << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+		  << std::endl;
+
         assert(mInterface != nullptr);
 
         this->setControls(aControl);
+
         // Tell performers to cache the state
         std::vector<std::string> tStageNames;
         std::string tUpdateProblemName = mEngineInputData.getUpdateProblemStageName();
@@ -210,6 +216,11 @@ public:
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                   Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
     {
+	std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+		  << "mInnerLoopDepth " << this->mInnerLoopDepth << "  "
+		  << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+		  << std::endl;
+
         assert(mInterface != nullptr);
         // ********* Set view to each control vector entry ********* //
         this->setControls(aControl);
@@ -304,6 +315,11 @@ private:
     **********************************************************************************/
     void setControls(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
     {
+	std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+		  << "mInnerLoopDepth " << this->mInnerLoopDepth << "  "
+		  << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+		  << std::endl;
+
         // ********* Set view to each control vector entry ********* //
         const OrdinalType tControlVectorIndex = 0;
         assert(aControl[tControlVectorIndex].size() == mControl.size());

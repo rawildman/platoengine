@@ -65,11 +65,22 @@ namespace Plato
 
 /********************************************************************************/
 template<typename ScalarType, typename OrdinalType>
-inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData)
+inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData, int aInnerLoopDepth = 0)
 /********************************************************************************/
 {
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+	      << "aInnerLoopDepth " << aInnerLoopDepth << "  "
+	      << std::endl;
+
     auto tInputData = aInterface->getInputData();
     auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
+
+    // The top level interface is always passed to the factory. As
+    // such, recursively search for the block which is a series of
+    // nested blocks.
+    for( int i=0; i<aInnerLoopDepth; ++i )
+        tOptimizationNode = tOptimizationNode.get<Plato::InputData>("Optimizer");
+    
     Plato::Parse::parseOptimizerStages(tOptimizationNode, aInputData);
 
     const OrdinalType tNumConstraints = aInputData.getNumConstraints();

@@ -73,7 +73,12 @@ template<typename ScalarType, typename OrdinalType>
 ScalarType
 Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 {
-    ScalarType tObjectiveValue = 0;
+    assert(mInterface != nullptr);
+
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+              << "mInnerLoopDepth " << this->mInnerLoopDepth << "  "
+              << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+              << std::endl;
 
     // Check to see if there is a nested inner loop.
     if( this->mHasInnerLoop )
@@ -84,16 +89,11 @@ Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<
         Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
         Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer =
-          // tOptimizerFactory.create(mInterface, tLocalComm);
-          nullptr;
-        // new Plato::MethodMovingAsymptotesEngineNested<ScalarType, OrdinalType>(mInterface, tLocalComm);
+            tOptimizerFactory.create(mInterface, tLocalComm,
+                                     this->mInnerLoopDepth+1);
 
         if(tOptimizer)
         {
-            // Set the loop depth so the optimizer knows where to
-            // find the correct block in the input data.
-            tOptimizer->setInnerLoopDepth( this->mInnerLoopDepth+1 );
-
             tOptimizer->optimize();
         }
         else
@@ -101,30 +101,42 @@ Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<
             mInterface->handleExceptions();
         }
 
-        // ARS - todo get the value and other operations.
-        return (tObjectiveValue);
+	// ARS - Completed the inner loop - now what??
+
+	// ********* Regenerate the data ********* //
+	std::string tMyStageName("Regenerate");
+	std::vector<std::string> tStageNames;
+	tStageNames.push_back(tMyStageName);
+	
+	mInterface->compute(tStageNames, *mParameterList);
     }
-    // No nested inner loop so normal evaluation of the objective.
-    else
-    {
-        assert(mInterface != nullptr);
 
-        // ********* Set view to each control vector entry ********* //
-        this->setControls(aControl);
+    // Normal evaluation of the objective.
 
-        // ********* Set view to objective function value ********* //
-        std::string tValueOutputName = mEngineInputData.getObjectiveValueOutputName();
-        mParameterList->set(tValueOutputName, &tObjectiveValue);
+    // ********* Set view to each control vector entry ********* //
+    this->setControls(aControl);
 
-        // ********* Compute objective function value ********* //
-        std::string tMyStageName = mEngineInputData.getObjectiveValueStageName();
-        assert(tMyStageName.empty() == false);
-        std::vector<std::string> tStageNames;
-        tStageNames.push_back(tMyStageName);
-        mInterface->compute(tStageNames, *mParameterList);
+    // ********* Set view to objective function value ********* //
+    std::string tValueOutputName = mEngineInputData.getObjectiveValueOutputName();
+    ScalarType tObjectiveValue = 0;
 
-        return (tObjectiveValue);
-    }
+    mParameterList->set(tValueOutputName, &tObjectiveValue);
+
+    // ********* Compute objective function value ********* //
+    std::string tMyStageName = mEngineInputData.getObjectiveValueStageName();
+    assert(tMyStageName.empty() == false);
+
+    std::vector<std::string> tStageNames;
+    tStageNames.push_back(tMyStageName);
+
+    mInterface->compute(tStageNames, *mParameterList);
+
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+              << "tMyStageName  " << tMyStageName << "  "
+              << "tObjectiveValue  " << tObjectiveValue << "  "
+              << std::endl;
+
+    return (tObjectiveValue);
 }
 
 } // namespace Plato

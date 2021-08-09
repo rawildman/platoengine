@@ -115,7 +115,7 @@ protected:
     /******************************************************************************//**
      * @brief optimizer inner loop depth (zero is no inner loop)
     **********************************************************************************/
-  int mInnerLoopDepth{0};
+    int mInnerLoopDepth{0};
 };
 // class OptimizerInterface
 

@@ -207,7 +207,10 @@ Interface::getStage(std::string aStageName)
 
         auto tTerminate = Plato::Get::Bool(tControlData, "Terminate", false);
 
-        if(tTerminate) aStageName = "Terminate";
+        if(tTerminate)
+        {
+            aStageName = "Terminate";
+        }
     }
 
     // broadcast the index of the next stage
@@ -235,7 +238,6 @@ Plato::Stage*
 Interface::getStage()
 /******************************************************************************/
 {
-
     // broadcast the index of the next stage
     int tStageIndex;
 
@@ -260,13 +262,11 @@ void Interface::perform()
 
     while(this->isDone() == false)
     {
-
         // performers 'hang' here until a new stage is established
         Plato::Stage* tStage = this->getStage();
 
         // 'Terminate' stage is nullptr
-        // ARS - if tStage is null then the perform(tStage) will barf.
-        if(!tStage)
+        if(tStage == nullptr)
         {
             continue;
         }
@@ -275,7 +275,7 @@ void Interface::perform()
 
     }
 
-      mPerformer->finalize();
+    mPerformer->finalize();
 }
 
 /******************************************************************************/
@@ -367,18 +367,24 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
-    // ARS - intercept a regenerate stage compute
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+              << "StageName  '" << aStageName << "'"
+              << std::endl;
+
+    // Intercept a regenerate stage compute as it is an internal
+    // stage. That is the user does not need to define it.
+
+    // ARS - when should this called 
     if( aStageName == "Regenerate" )
     {
-      //this->regenate(); // call CreateSharedData - need the
-                        // application which is stored as part of
-                        // this->mPerformer->GetApplication() (and a
-                        // new interface).
-      // this->perform("Regenerate");
+        // this->createSharedData( this->mPerformer->getApplication() );
+
+        // ARS - what does it mean to perfrom the "Regenerate"??
+        // this->perform("Regenerate");
     }
     else
     {
-        // find requested stage
+        // find the requested stage
         Plato::Stage* tStage = getStage(aStageName);
 
         // Unpack input arguments into Plato::SharedData
@@ -526,8 +532,8 @@ void Interface::createPerformers()
         }
 
 
-        // Are any PerformerIDs specified in the interface definition that weren't
-        // defined on the mpi command line?
+        // Are any PerformerIDs specified in the interface definition
+        // that weren't defined on the mpi command line?
         //
         int tMyPerformerSpec = (tLocalPerformerID == mPerformerID) ? 1 : 0;
         int tNumRanksThisID = 0;
@@ -562,8 +568,9 @@ void Interface::createPerformers()
         throw 1;
     }
 
-    // If the Performer spec has N names defined then the allocated ranks on that PerformerID are
-    // broken into N local comms.  To avoid any semantics of how ranks are assigned, manually color
+    // If the Performer spec has N names defined then the allocated
+    // ranks on that PerformerID are broken into N local comms.  To
+    // avoid any semantics of how ranks are assigned, manually color
     // the local comms before splitting.
     //
     std::vector<int> tPerformerIDs(tNumGlobalRanks);
@@ -578,7 +585,8 @@ void Interface::createPerformers()
         int tNumCommsThisID = tPerformerNames.size();
         int tLocalPerformerCommSize = tNumRanksThisID / tNumCommsThisID;
 
-        // Does the number of Comms partition the ranks for this PerformerID without a remainder?
+        // Does the number of Comms partition the ranks for this
+        // PerformerID without a remainder?
         //
         int tErrorUneven = ( tNumCommsThisID * tLocalPerformerCommSize == tNumRanksThisID ) ? 0 : 1;
         if( tErrorUneven ){
