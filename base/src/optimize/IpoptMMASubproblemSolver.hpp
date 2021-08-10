@@ -281,7 +281,7 @@ private:
   std::shared_ptr<Plato::MethodMovingAsymptotesCriterion<ScalarType, OrdinalType>> mObjectiveMMA;
   std::vector<std::shared_ptr<Plato::MethodMovingAsymptotesCriterion<ScalarType, OrdinalType>>> mConstraintsMMA;
 
-};
+}; // class IPOPT_MMA
 
 template<typename ScalarType, typename OrdinalType = size_t>
 class IpoptMMASubproblemSolver

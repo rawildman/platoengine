@@ -54,7 +54,6 @@
 #include "Plato_DataFactory.hpp"
 #include "Plato_CriterionList.hpp"
 
-//#define USE_IPOPT_FOR_MMA_SUBPROBLEM
 #ifdef USE_IPOPT_FOR_MMA_SUBPROBLEM
 #include "IpoptMMASubproblemSolver.hpp"
 #else
@@ -500,9 +499,7 @@ private:
 #ifdef USE_IPOPT_FOR_MMA_SUBPROBLEM
         mSubProblemSolver->setMaxNumSubproblemIterations(mMaxNumSubProblemIterations);
 #else
-        mSubProblemSolver->setAugLagActualReductionTolerance(-1.0); // disable
-        //mSubProblemSolver->setMaxNumAugLagSubProbIter(5);
-        //mSubProblemSolver->setPenaltyParameterLowerBound(1.0e-3);
+        //mSubProblemSolver->setAugLagActualReductionTolerance(-1.0);
         mSubProblemSolver->disablePostSmoothing();
         mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
         mSubProblemSolver->setControlStagnationTolerance(mControlStagnationTolerance);
@@ -754,16 +751,16 @@ private:
         std::string tSubproblemSolverString = "IPOPT";
 #ifndef USE_IPOPT_FOR_MMA_SUBPROBLEM
         tSubproblemSolverString = "KSAL";
-        const bool tProblemIsNotNearlyFeasible = !(mDataMng->isProblemNearlyFeasible());
-        if (tProblemIsNotNearlyFeasible)
-        {
-            mSubProblemSolver->setMaxNumOuterIterations(20);
-        }
-        else
-        {
-            mSubProblemSolver->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
-            mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
-        }
+        // const bool tProblemIsNotNearlyFeasible = !(mDataMng->isProblemNearlyFeasible());
+        // if (tProblemIsNotNearlyFeasible)
+        // {
+        //     mSubProblemSolver->setMaxNumOuterIterations(20);
+        // }
+        // else
+        // {
+            // mSubProblemSolver->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
+            // mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
+        // }
         mSubProblemSolver->resetParameters();
 #endif
         mSubProblemSolver->setInitialGuess(mDataMng->getCurrentControls());
@@ -839,10 +836,10 @@ private:
     std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> mConstraints; /*!< constraint criteria interface */
 
     std::shared_ptr<Plato::ApproximationFunctionData<ScalarType, OrdinalType>> mMMAData; /*!< structure with approximation function's data */
-#ifndef USE_IPOPT_FOR_MMA_SUBPROBLEM
-    std::shared_ptr<Plato::AugmentedLagrangian<ScalarType, OrdinalType>> mSubProblemSolver; /*!< MMA subproblem solver */
-#else
+#ifdef USE_IPOPT_FOR_MMA_SUBPROBLEM
     std::shared_ptr<Plato::IpoptMMASubproblemSolver<ScalarType, OrdinalType>> mSubProblemSolver; /*!< MMA subproblem solver */
+#else
+    std::shared_ptr<Plato::AugmentedLagrangian<ScalarType, OrdinalType>> mSubProblemSolver; /*!< MMA subproblem solver */
 #endif
     std::shared_ptr<Plato::MethodMovingAsymptotesDataMng<ScalarType, OrdinalType>> mDataMng; /*!< MMA data manager */
     std::shared_ptr<Plato::MethodMovingAsymptotesOperations<ScalarType, OrdinalType>> mOperations; /*!< interface to MMA core operations */
