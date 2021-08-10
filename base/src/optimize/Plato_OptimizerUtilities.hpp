@@ -65,23 +65,22 @@ namespace Plato
 
 /********************************************************************************/
 template<typename ScalarType, typename OrdinalType>
-inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData, int aInnerLoopDepth = 0)
+inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData, int aInnerLoopDepth)
 /********************************************************************************/
 {
     std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-	      << "aInnerLoopDepth " << aInnerLoopDepth << "  "
-	      << std::endl;
+              << "aInnerLoopDepth " << aInnerLoopDepth << "  "
+              << std::endl;
 
     auto tInputData = aInterface->getInputData();
-    auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
+    auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
 
-    // The top level interface is always passed to the factory. As
-    // such, recursively search for the block which is a series of
-    // nested blocks.
+    // The top level interface is always used. As such, recursively
+    // search for the block which is a series of nested blocks.
     for( int i=0; i<aInnerLoopDepth; ++i )
-        tOptimizationNode = tOptimizationNode.get<Plato::InputData>("Optimizer");
-    
-    Plato::Parse::parseOptimizerStages(tOptimizationNode, aInputData);
+        tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+
+    Plato::Parse::parseOptimizerStages(tOptimizerNode, aInputData);
 
     const OrdinalType tNumConstraints = aInputData.getNumConstraints();
     for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
@@ -97,9 +96,10 @@ inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStage
             aInputData.addConstraintReferenceValue(tConstraintValueName, tReferenceValue);
         }
 
-        // Do some error checking and make sure we have valid constraint values set.  If the user
-        // specified an absolute value rather than a normalized one we need to calculate
-        // the normalized one.
+        // Do some error checking and make sure we have valid
+        // constraint values set.  If the user specified an absolute
+        // value rather than a normalized one we need to calculate the
+        // normalized one.
         bool tAbsoluteWasSet = aInputData.constraintAbsoluteTargetValueWasSet(tConstraintValueName);
         bool tNormalizedWasSet = aInputData.constraintNormalizedTargetValueWasSet(tConstraintValueName);
         bool tReferenceWasSet = aInputData.constraintReferenceValueWasSet(tConstraintValueName);
@@ -108,8 +108,8 @@ inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStage
             double tReferenceTargetValue = aInputData.getConstraintReferenceValue(tConstraintValueName);
             if(tAbsoluteWasSet && tNormalizedWasSet)
             {
-                // If both normalized and absolute target values were set make sure they
-                // are consistent.
+                // If both normalized and absolute target values were
+                // set make sure they are consistent.
                 double tAbsoluteTargetValue = aInputData.getConstraintAbsoluteTargetValue(tConstraintValueName);
                 double tNormalizedTargetValue = aInputData.getConstraintNormalizedTargetValue(tConstraintValueName);
                 double tCalculatedNormalizedValue = tAbsoluteTargetValue / tReferenceTargetValue;

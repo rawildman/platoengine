@@ -92,14 +92,23 @@ public:
     {
         return (Plato::optimizer::algorithm_t::DERIVATIVE_CHECKER);
     }
+
     /******************************************************************************/
     void initialize()
     /******************************************************************************/
     {
         auto tInputData = mInterface->getInputData();
-        auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
-        Plato::Parse::parseOptimizerStages(tOptimizationNode, mInputData);
+        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+
+        // The top level interface is always used. As such,
+        // recursively search for the block which is a series of
+        // nested blocks.
+        for( int i=0; i<this->mInnerLoopDepth; ++i )
+          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+
+        Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }
+
     /******************************************************************************/
     void optimize()
     /******************************************************************************/

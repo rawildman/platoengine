@@ -305,8 +305,8 @@ public:
     std::string getCacheStageName() const;
     void setCacheStageName(const std::string & aInput);
 
-    std::string getUpdateProblemStageName() const;
-    void setUpdateProblemStageName(const std::string & aInput);
+    std::vector<std::string> getUpdateProblemStageNames() const;
+    void setUpdateProblemStageNames(const std::vector<std::string> & aInput);
 
     std::string  getObjectiveValueOutputName() const;
     void setObjectiveValueOutputName(const std::string & aInput);
@@ -543,7 +543,6 @@ private:
     std::string mHessianType;
     std::string mInputFileName;
     std::string mCacheStageName;
-    std::string mUpdateProblemStageName;
     std::string mOutputStageName;
     std::string mObjectiveValueOutputName;
     std::string mObjectiveHessianOutputName;
@@ -574,6 +573,7 @@ private:
     std::vector<std::string> mConstraintValueStageNames;
     std::vector<std::string> mConstraintHessianStageNames;
     std::vector<std::string> mConstraintGradientStageNames;
+    std::vector<std::string> mUpdateProblemStageNames;
 
     std::map<std::string, std::string> mConstraintHessianNames;
     std::map<std::string, std::string> mConstraintGradientNames;

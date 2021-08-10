@@ -374,9 +374,10 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
     // Intercept a regenerate stage compute as it is an internal
     // stage. That is the user does not need to define it.
 
-    // ARS - when should this called 
+    // ARS - when should this called
     if( aStageName == "Regenerate" )
     {
+        // ARS - calling this causes a hang somewhere.
         // this->createSharedData( this->mPerformer->getApplication() );
 
         // ARS - what does it mean to perfrom the "Regenerate"??
@@ -681,6 +682,10 @@ void Interface::createSharedData(Plato::Application* aApplication)
     }
 
     this->exportGraph(tSharedDataInfo, aApplication, tCommunicationData);
+    if(mDataLayer)
+    {
+        delete mDataLayer;
+    }
     mDataLayer = new Plato::DataLayer(tSharedDataInfo, tCommunicationData);
 }
 

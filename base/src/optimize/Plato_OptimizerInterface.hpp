@@ -102,18 +102,43 @@ public:
     virtual void initialize() = 0;
 
     /******************************************************************************//**
+     * @brief
+    **********************************************************************************/
+    std::string getObjectiveValueName() const
+    {
+        return mObjectiveValueName;
+    }
+
+    /******************************************************************************//**
+     * @brief
+    **********************************************************************************/
+    ScalarType getObjectiveValue() const
+    {
+        return mObjectiveValue;
+    }
+
+    /******************************************************************************//**
+     * @brief set the inner loop boolean.
+    **********************************************************************************/
+    void setHasInnerLoop( bool val ) { this->mHasInnerLoop = val; }
+
+    /******************************************************************************//**
      * @brief set the inner loop depth of the optimizer.
     **********************************************************************************/
-    void setInnerLoopDepth( int val ) {  this->mInnerLoopDepth = val; }
+    void setInnerLoopDepth( int val ) { this->mInnerLoopDepth = val; }
 
 protected:
+
+    std::string mObjectiveValueName{""};
+    ScalarType  mObjectiveValue{0};
+
     /******************************************************************************//**
      * @brief boolean to note whether there is an inner optimization loop
     **********************************************************************************/
     bool mHasInnerLoop{false};
 
     /******************************************************************************//**
-     * @brief optimizer inner loop depth (zero is no inner loop)
+     * @brief optimization inner loop depth (zero is the default top loop)
     **********************************************************************************/
     int mInnerLoopDepth{0};
 };

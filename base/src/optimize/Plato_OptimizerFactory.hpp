@@ -101,143 +101,153 @@ public:
     Plato::OptimizerInterface<ScalarType, OrdinalType>*
     create(Plato::Interface* aInterface, MPI_Comm aLocalComm, int aInnerLoopDepth = 0)
     {
-     Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
-     try {
-       auto tInputData = aInterface->getInputData();
+      Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
 
-       if( tInputData.size<Plato::InputData>("Optimizer") > 1 )
-       {
-         Plato::ParsingException tParsingException("Plato::OptimizerFactory: multiple 'Optimizer' definitions");
-         aInterface->registerException(tParsingException);
-       }
-       else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
-       {
-         Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definitions");
-         aInterface->registerException(tParsingException);
-       }
+      try
+      {
+        auto tInputData = aInterface->getInputData();
 
-       auto tOptNode = tInputData.get<Plato::InputData>("Optimizer");
+        if( tInputData.size<Plato::InputData>("Optimizer") > 1 )
+        {
+          Plato::ParsingException tParsingException("Plato::OptimizerFactory: multiple 'Optimizer' definitions");
+          aInterface->registerException(tParsingException);
+        }
+        else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
+        {
+          Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definitions");
+          aInterface->registerException(tParsingException);
+        }
 
-       // The top level interface is always passed to the factory. As
-       // such, recursively search for the block which is a series of
-       // nested blocks.
-       for( int i=0; i<aInnerLoopDepth; ++i )
-           tOptNode = tOptNode.get<Plato::InputData>("Optimizer");
+        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
 
-       std::string tOptPackage = Plato::Get::String(tOptNode, "Package");
-       if( tOptPackage == "OC" )
-       {
-         try {
-           tOptimizer = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "GCMMA" )
-       {
-         try {
-           tOptimizer = new Plato::GloballyConvergentMethodMovingAsymptotesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "MMA" )
-       {
-         try {
-           tOptimizer = new Plato::MethodMovingAsymptotesEngine<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "KSUC" )
-       {
-         try {
-           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_UNCONSTRAINED;
-           tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "KSBC" )
-       {
-         try {
-           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-           tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "KSAL" )
-       {
-         try {
-           tOptimizer = new Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "BCPSO" )
-       {
-         try {
-           tOptimizer = new Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "ALPSO" )
-       {
-         try {
-           tOptimizer = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
+        // The top level interface is always used. As such,
+        // recursively search for the block which is a series of
+        // nested blocks.
+        for( int i=0; i<aInnerLoopDepth; ++i )
+          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+
+        std::string tOptPackage = Plato::Get::String(tOptimizerNode, "Package");
+        if( tOptPackage == "OC" )
+        {
+          try {
+            tOptimizer = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "GCMMA" )
+        {
+          try {
+            tOptimizer = new Plato::GloballyConvergentMethodMovingAsymptotesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "MMA" )
+        {
+          try {
+            tOptimizer = new Plato::MethodMovingAsymptotesEngine<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "KSUC" )
+        {
+          try {
+            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_UNCONSTRAINED;
+            tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "KSBC" )
+        {
+          try {
+            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
+            tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "KSAL" )
+        {
+          try {
+            tOptimizer = new Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "BCPSO" )
+        {
+          try {
+            tOptimizer = new Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "ALPSO" )
+        {
+          try {
+            tOptimizer = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
 #ifdef ENABLE_ROL
-       else if( tOptPackage == "ROL KSAL" )
-       {
-         try {
-           tOptimizer = new Plato::ROLKSALInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "ROL KSBC" )
-       {
-         try {
-           tOptimizer = new Plato::ROLKSBCInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
+        else if( tOptPackage == "ROL KSAL" )
+        {
+          try {
+            tOptimizer = new Plato::ROLKSALInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "ROL KSBC" )
+        {
+          try {
+            tOptimizer = new Plato::ROLKSBCInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
 #endif
-       else if( tOptPackage == "DerivativeChecker" )
-       {
-         try {
-           tOptimizer = new Plato::DiagnosticsInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else if( tOptPackage == "SOParameterStudies" )
-       {
-         try {
-           tOptimizer = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-         } catch(...){aInterface->Catch();}
-       }
-       else
-       {
-           std::stringstream tStringStream;
-           tStringStream << "Plato::OptimizerFactory: "
-	       << tOptPackage << " Unknown." << std::endl
-	       << "Valid options are\n"
-               << "\t OC ... Optimality Criteria\n"
-               << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
-               << "\t MMA ... Method of Moving Asymptotes\n"
-               << "\t KSUC ... Kelley Sachs Unconstrained\n"
-               << "\t KSBC ... Kelley Sachs Bound Constrained\n"
-               << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
-               << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
-               << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
+        else if( tOptPackage == "DerivativeChecker" )
+        {
+          try {
+            tOptimizer = new Plato::DiagnosticsInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else if( tOptPackage == "SOParameterStudies" )
+        {
+          try {
+            tOptimizer = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          } catch(...){aInterface->Catch();}
+        }
+        else
+        {
+          std::stringstream tStringStream;
+          tStringStream
+            << "Plato::OptimizerFactory: "
+            << tOptPackage << " Unknown." << std::endl
+            << "Valid options are\n"
+            << "\t OC ... Optimality Criteria\n"
+            << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
+            << "\t MMA ... Method of Moving Asymptotes\n"
+            << "\t KSUC ... Kelley Sachs Unconstrained\n"
+            << "\t KSBC ... Kelley Sachs Bound Constrained\n"
+            << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
+            << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
+            << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
 #ifdef ENABLE_ROL
-               << "\t ROL KSAL ... Rapid Optimization Library Kelley Sachs Augmented Lagrangian\n"
-               << "\t ROL KSBC ... Rapid Optimization Library Kelley Sachs Bound Constrained\n"
+            << "\t ROL KSAL ... Rapid Optimization Library Kelley Sachs Augmented Lagrangian\n"
+            << "\t ROL KSBC ... Rapid Optimization Library Kelley Sachs Bound Constrained\n"
 #endif
-               << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
-               << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"      << std::endl;
+            << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
+            << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"      << std::endl;
 
-           throw Plato::ParsingException(tStringStream.str());
-       }
-     }
+          throw Plato::ParsingException(tStringStream.str());
+        }
 
-     catch(...)
-     {
-         aInterface->Catch();
-         tOptimizer = nullptr;
-     }
+        // The depth and inner llop boolean are used by the engine
+        // objective to determine the nesting.
 
-     // Set the loop depth so the optimizer knows where to
-     // find the correct block in the input data.
-     tOptimizer->setInnerLoopDepth( aInnerLoopDepth );
+        // Set the loop depth so the optimizer knows where to
+        // find the correct block in the input data.
+        tOptimizer->setInnerLoopDepth( aInnerLoopDepth );
 
-     return (tOptimizer);
-   }
+        // Now check for an inner optimizer block.
+        tOptimizer->
+          setHasInnerLoop(tOptimizerNode.size<Plato::InputData>("Optimizer") > 0);
+      }
+
+      catch(...)
+      {
+        aInterface->Catch();
+        tOptimizer = nullptr;
+      }
+
+      return (tOptimizer);
+    }
 
 private:
     OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);

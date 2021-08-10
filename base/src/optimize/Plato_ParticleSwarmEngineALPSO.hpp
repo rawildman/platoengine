@@ -202,6 +202,13 @@ private:
     {
         auto tInputData = mInterface->getInputData();
         auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+
+        // The top level interface is always used. As such,
+        // recursively search for the block which is a series of
+        // nested blocks.
+        for( int i=0; i<this->mInnerLoopDepth; ++i )
+          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+
         Plato::ParticleSwarmParser<ScalarType, OrdinalType> tParserPSO;
         mObjFuncStageName = tParserPSO.getObjectiveStageName(tOptimizerNode);
         mConstraintStageNames = tParserPSO.getConstraintStageNames(tOptimizerNode);

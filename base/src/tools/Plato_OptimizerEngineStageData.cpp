@@ -102,7 +102,7 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mHessianType("disabled"),
         mInputFileName(),
         mCacheStageName(),
-        mUpdateProblemStageName(),
+        mUpdateProblemStageNames(),
         mOutputStageName(),
         mObjectiveValueOutputName(),
         mObjectiveHessianOutputName(),
@@ -868,16 +868,16 @@ void OptimizerEngineStageData::setCacheStageName(const std::string & aInput)
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getUpdateProblemStageName() const
+std::vector< std::string > OptimizerEngineStageData::getUpdateProblemStageNames() const
 /******************************************************************************/
 {
-    return (mUpdateProblemStageName);
+    return (mUpdateProblemStageNames);
 }
 /******************************************************************************/
-void OptimizerEngineStageData::setUpdateProblemStageName(const std::string & aInput)
+void OptimizerEngineStageData::setUpdateProblemStageNames(const std::vector< std::string > & aInput)
 /******************************************************************************/
 {
-    mUpdateProblemStageName = aInput;
+    mUpdateProblemStageNames = aInput;
 }
 
 /******************************************************************************/
