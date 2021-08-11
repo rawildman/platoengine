@@ -100,6 +100,7 @@ private:
             aData.mMemorySpace = this->memorySpace(tOptionsNode);
             aData.mPrintMMADiagnostics = this->outputDiagnostics(tOptionsNode);
             aData.mPrintAugLagSubProbDiagnostics = this->outputSubProblemDiagnostics(tOptionsNode);
+            aData.mUseIpoptForMMASubproblem = this->useIpoptForMMASubproblem(tOptionsNode);
 
             aData.mUpdateFrequency = this->updateFrequency(tOptionsNode);
             aData.mNumControlVectors = this->numControlVectors(tOptionsNode);
@@ -152,6 +153,21 @@ private:
         if(aOptionsNode.size<std::string>("OutputSubProblemDiagnostics"))
         {
             tOuput = Plato::Get::Bool(aOptionsNode, "OutputSubProblemDiagnostics");
+        }
+        return (tOuput);
+    }
+
+    /******************************************************************************//**
+     * @brief Parse whether to use IPOPT to solve MMA subproblem
+     * @param [in] aOptimizerNode data structure with optimization related input options
+     * @return use IPOPT for MMA subproblem flag, default = false
+    **********************************************************************************/
+    bool useIpoptForMMASubproblem(const Plato::InputData & aOptionsNode)
+    {
+        bool tOuput = false;
+        if(aOptionsNode.size<std::string>("UseIpoptForMMASubproblem"))
+        {
+            tOuput = Plato::Get::Bool(aOptionsNode, "UseIpoptForMMASubproblem");
         }
         return (tOuput);
     }

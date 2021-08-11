@@ -2716,11 +2716,12 @@ void append_constraint_gradient_stage_for_topology_problem
 
 /******************************************************************************/
 void append_compute_constraint_gradient_operation
-(const std::string &aPerformer,
+(const XMLGen::Constraint &aConstraint,
+ const std::string &aPerformer,
  pugi::xml_node &aParent)
 {
     auto tOperationNode = aParent.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient", aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient " + aConstraint.id(), aPerformer}, tOperationNode);
 }
 /******************************************************************************/
 
@@ -2847,7 +2848,7 @@ void append_constraint_gradient_stage_for_shape_problem
         XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
         XMLGen::append_reinitialize_on_change_operation(tService.performer(), tStageNode);
         auto tOuterOperationNode = tStageNode.append_child("Operation");
-        append_compute_constraint_gradient_operation(tService.performer(), tOuterOperationNode);
+        append_compute_constraint_gradient_operation(tConstraint, tService.performer(), tOuterOperationNode);
         append_compute_shape_sensitivity_on_change_operation(tOuterOperationNode);
         append_compute_constraint_sensitivity_operation(tService.performer(), tSharedDataName, tStageNode);
         append_copy_value_operation(tFirstPlatoMainPerformer, tSharedDataName, tStageOutputName, tStageNode);
@@ -2911,12 +2912,12 @@ void append_method_moving_asymptotes_options
     std::vector<std::string> tKeys = { "MaxNumOuterIterations", "MoveLimit", "AsymptoteExpansion", "AsymptoteContraction",
          "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance", "OutputSubProblemDiagnostics", 
          "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", "SubProblemFeasibilityTolerance", 
-         "UpdateFrequency" };
+         "UpdateFrequency", "UseIpoptForMMASubproblem"};
     std::vector<std::string> tValues = {aXMLMetaData.optimization_parameters().max_iterations(), aXMLMetaData.optimization_parameters().mma_move_limit(), aXMLMetaData.optimization_parameters().mma_asymptote_expansion(),
         aXMLMetaData.optimization_parameters().mma_asymptote_contraction(), aXMLMetaData.optimization_parameters().mma_max_sub_problem_iterations(), aXMLMetaData.optimization_parameters().mma_control_stagnation_tolerance(),
         aXMLMetaData.optimization_parameters().mma_objective_stagnation_tolerance(), aXMLMetaData.optimization_parameters().mma_output_subproblem_diagnostics(), aXMLMetaData.optimization_parameters().mma_sub_problem_initial_penalty(),
         aXMLMetaData.optimization_parameters().mma_sub_problem_penalty_multiplier(), aXMLMetaData.optimization_parameters().mma_sub_problem_feasibility_tolerance(),
-        aXMLMetaData.optimization_parameters().problem_update_frequency() };
+        aXMLMetaData.optimization_parameters().problem_update_frequency(), aXMLMetaData.optimization_parameters().mma_use_ipopt_sub_problem_solver() };
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
     auto tOptionsNode = aParentNode.append_child("Options");
     XMLGen::append_children(tKeys, tValues, tOptionsNode);

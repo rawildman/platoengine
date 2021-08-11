@@ -63,7 +63,6 @@ endif()
 include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
-
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
 ## Compilers cannot be changed after the 'project()' command below:
@@ -175,6 +174,11 @@ if( AMFILTER_ENABLED )
     set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
+if ( IPOPT_ENABLED )
+    message( "-- Compiling with IPOPT to solve MMA subproblem " )
+    add_definitions(-DENABLE_IPOPT_FOR_MMA_SUBPROBLEM)
+    set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ipopt)
+endif()
 
 add_subdirectory(base/src)
 add_subdirectory(base/src/analyze)

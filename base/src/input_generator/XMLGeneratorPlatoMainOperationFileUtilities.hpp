@@ -41,6 +41,15 @@ bool is_volume_constraint_defined_and_computed_by_platomain
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**
+ * \fn get_platomain_volume_constraint_id
+ * \brief Return the id of volume constraint if platomain is the performer
+ * \param [in] aXMLMetaData Plato problem input data
+ * \return constraint id
+**********************************************************************************/
+std::string get_platomain_volume_constraint_id
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
  * \fn append_filter_options_to_operation
  * \brief Append filter options to PUGI XML document.
  * \param [in]     aXMLMetaData Plato problem input data

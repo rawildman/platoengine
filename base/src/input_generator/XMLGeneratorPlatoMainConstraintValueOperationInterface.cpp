@@ -20,7 +20,7 @@ void append_compute_constraint_value_operation_platomain
  pugi::xml_node& aParentNode)
 {
     auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value", aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value " + aConstraint.id(), aPerformer}, tOperationNode);
 
     if(aDesignVariableName != "")
     {
@@ -50,7 +50,7 @@ void append_compute_constraint_value_operation_platoanalyze
  pugi::xml_node& aParentNode)
 {
     auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value", aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Value " + aConstraint.id(), aPerformer}, tOperationNode);
 
     if(aDesignVariableName != "")
     {
@@ -66,7 +66,7 @@ void append_compute_constraint_value_operation_platoanalyze
 
     auto tSharedDataName = std::string("Criterion Value - ") + tIdentifierString;
     auto tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Constraint Value", tSharedDataName}, tOutputNode);
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Constraint Value " + aConstraint.id(), tSharedDataName}, tOutputNode);
 }
 
 void append_compute_constraint_value_operation_sierra_sd

@@ -73,6 +73,7 @@ public:
     **********************************************************************************/
     explicit MethodMovingAsymptotesDataMng(const std::shared_ptr<Plato::DataFactory<ScalarType, OrdinalType>> &aDataFactory) :
         mFeasibilityMeasure(std::numeric_limits<ScalarType>::max()),
+        mNearlyFeasibleTolerance(0.001),
         mNormObjectiveGradient(std::numeric_limits<ScalarType>::max()),
         mCurrentObjectiveValue(std::numeric_limits<ScalarType>::max()),
         mPreviousObjectiveValue(std::numeric_limits<ScalarType>::max()),
@@ -253,6 +254,18 @@ public:
     void setCurrentConstraintValue(const OrdinalType &aIndex, const ScalarType &aValue)
     {
         (*mCurrentConstraintValues)[aIndex] = aValue;
+    }
+
+    /******************************************************************************//**
+     * @brief Return whether the problem is nearly feasible
+     * @return flag indicating whether the constraints are close to satified
+    **********************************************************************************/
+    bool isProblemNearlyFeasible() const
+    {
+        for (OrdinalType tIndex = 0; tIndex < this->getNumConstraints(); ++tIndex)
+            if ((*mCurrentConstraintValues)[tIndex] > mNearlyFeasibleTolerance)
+                return false;
+        return true;
     }
 
     /******************************************************************************//**
@@ -788,6 +801,7 @@ private:
 
 private:
     ScalarType mFeasibilityMeasure; /*!< current feasibility measure */
+    ScalarType mNearlyFeasibleTolerance; /*!< nearly feasibile tolerance */
     ScalarType mNormObjectiveGradient; /*!< current norm of the objective function gradient */
     ScalarType mCurrentObjectiveValue; /*!< current objective value */
     ScalarType mPreviousObjectiveValue; /*!< previous objective value */
