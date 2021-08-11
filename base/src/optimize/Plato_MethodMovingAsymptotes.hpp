@@ -484,24 +484,6 @@ private:
 
         if (mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
         {
-            auto tNumberOfMPIRanks = mDataMng->getCommWrapper().size();
-            if (tNumberOfMPIRanks != 1)
-            {
-                // Note this method of throwing an error is used instead of THROWERR because
-                // runs with multiple performers were "hanging" from the use of THROWERR.
-                std::string tErrorString = std::string("IPOPT can currently only be used to solve MMA Subproblems when 1 MPI process is used for PlatoMain.")
-                + " You attempted to run PlatoMain with " + std::to_string(tNumberOfMPIRanks) + " MPI processes."
-                + " Please rerun your problem with a single MPI process for PlatoMain or compile platoengine without ipopt.";
-                if (mDataMng->getCommWrapper().myProcID() == 0)
-                {
-                    std::cout << std::string("\nFILE: ") + __FILE__ \
-                            + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-                            + std::string("\nLINE:") + std::to_string(__LINE__) \
-                            + std::string("\nMESSAGE: ") + tErrorString << std::endl << std::flush;
-                    MPI_Abort(mDataMng->getCommWrapper().getComm(), 1);
-                }
-                MPI_Barrier(mDataMng->getCommWrapper().getComm());
-            }
 #ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
             mSubProblemSolverIPOPT = std::make_shared<Plato::IpoptMMASubproblemSolver<ScalarType, OrdinalType>>(mObjAppxFunc, mConstrAppxFuncs, aDataFactory);
 #endif
@@ -782,6 +764,24 @@ private:
         {
             tSubproblemSolverString = "IPOPT";
 #ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+            auto tNumberOfMPIRanks = mDataMng->getCommWrapper().size();
+            if (tNumberOfMPIRanks != 1)
+            {
+                // Note this method of throwing an error is used instead of THROWERR because
+                // runs with multiple performers were "hanging" from the use of THROWERR.
+                std::string tErrorString = std::string("IPOPT can currently only be used to solve MMA Subproblems when 1 MPI process is used for PlatoMain.")
+                + " You attempted to run PlatoMain with " + std::to_string(tNumberOfMPIRanks) + " MPI processes."
+                + " Please rerun your problem with a single MPI process for PlatoMain or set the option to use IPOPT for the MMA subproblem to false.";
+                if (mDataMng->getCommWrapper().myProcID() == 0)
+                {
+                    std::cout << std::string("\nFILE: ") + __FILE__ \
+                            + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
+                            + std::string("\nLINE:") + std::to_string(__LINE__) \
+                            + std::string("\nMESSAGE: ") + tErrorString << std::endl << std::flush;
+                    MPI_Abort(mDataMng->getCommWrapper().getComm(), 1);
+                }
+                MPI_Barrier(mDataMng->getCommWrapper().getComm());
+            }
             mSubProblemSolverIPOPT->setInitialGuess(mDataMng->getCurrentControls());
             mSubProblemSolverIPOPT->setControlLowerBounds(mDataMng->getSubProblemControlLowerBounds());
             mSubProblemSolverIPOPT->setControlUpperBounds(mDataMng->getSubProblemControlUpperBounds());
