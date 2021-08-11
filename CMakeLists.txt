@@ -63,7 +63,6 @@ endif()
 include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
-include_directories( "/home/jbruss/spack/opt/spack/linux-ubuntu18.04-skylake_avx512/gcc-7.5.0/ipopt-3.12.8-btvqvm6d6oyzwbqnxipgwa26jyvredkl/include" )
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
 ## Compilers cannot be changed after the 'project()' command below:

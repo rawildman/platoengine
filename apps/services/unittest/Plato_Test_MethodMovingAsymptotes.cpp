@@ -846,7 +846,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_RosenbrockRadius)
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
 
-#ifdef USE_IPOPT_FOR_MMA_SUBPROBLEM
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
 TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_IPOPT)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
@@ -862,6 +862,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_IPOPT)
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
     //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mUseIpoptForMMASubproblem = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -5.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -1.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -2.0 /* values */);
@@ -887,7 +888,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_IPOPT)
     PlatoTest::printMultiVector(*tOutputs.mSolution);
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
-#else
+#endif
+
 TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_KSAL)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
@@ -927,9 +929,9 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_KSAL)
     PlatoTest::printMultiVector(*tOutputs.mSolution);
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
-#endif
 
-#ifdef USE_IPOPT_FOR_MMA_SUBPROBLEM
+
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
 TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_IPOPT)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
@@ -945,6 +947,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_IPOPT)
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
     //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mUseIpoptForMMASubproblem = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -3.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -0.4 /* values */);
@@ -970,7 +973,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_IPOPT)
     PlatoTest::printMultiVector(*tOutputs.mSolution);
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
-#else
+#endif
+
 TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_KSAL)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
@@ -1011,7 +1015,6 @@ TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_KSAL)
     PlatoTest::printMultiVector(*tOutputs.mSolution);
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
-#endif
 
 TEST(PlatoTest, MethodMovingAsymptotes_CircleRadius)
 {
