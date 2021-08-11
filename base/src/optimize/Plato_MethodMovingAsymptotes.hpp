@@ -769,6 +769,12 @@ private:
     **********************************************************************************/
     void solveSubProblem()
     {
+        if (!mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+        {
+            PRINTERR("User Requested IPOPT for MMA subproblem but PlatoEngine was not built with IPOPT!\n")
+            std::cout << std::flush;
+            MPI_Abort(mDataMng->getCommWrapper().getComm(), 1); // THROWERR just causes plato to hang
+        }
         Teuchos::TimeMonitor LocalTimer(*mTimer);
         double tStartTime = mTimer->wallTime();
         std::string tSubproblemSolverString = "";
