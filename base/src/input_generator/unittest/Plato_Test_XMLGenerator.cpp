@@ -2207,6 +2207,7 @@ TEST(PlatoTestXMLGenerator, appendMMAOptions_topology)
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_control_stagnation_tolerance(), "1e-6");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_objective_stagnation_tolerance(), "1e-8");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_feasibility_tolerance(), "1e-8");
+    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_use_ipopt_sub_problem_solver(), "false");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_output_subproblem_diagnostics(), "false");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_penalty_multiplier(), "1.025");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_initial_penalty(), "0.0015");
@@ -2218,9 +2219,9 @@ TEST(PlatoTestXMLGenerator, appendMMAOptions_topology)
     std::vector<std::string> tKeys = {"MoveLimit", "AsymptoteExpansion", "AsymptoteContraction", 
                    "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance",
                    "OutputSubProblemDiagnostics", "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", 
-                   "SubProblemFeasibilityTolerance", "UpdateFrequency"};
+                   "SubProblemFeasibilityTolerance", "UpdateFrequency", "UseIpoptForMMASubproblem"};
     std::vector<std::string> tValues = {"0.5", "1.2", "0.7", "50", "1e-6", "1e-8", "false", "0.0015",
-                                        "1.025", "1e-8", "5"};
+                                        "1.025", "1e-8", "5", "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptionsNode);
 }
 
@@ -2248,6 +2249,7 @@ TEST(PlatoTestXMLGenerator, appendMMAOptions_shape)
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_control_stagnation_tolerance(), "-1");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_objective_stagnation_tolerance(), "-1");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_feasibility_tolerance(), "1e-8");
+    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_use_ipopt_sub_problem_solver(), "false");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_output_subproblem_diagnostics(), "false");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_penalty_multiplier(), "1.025");
     EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_initial_penalty(), "0.0015");
@@ -2259,9 +2261,9 @@ TEST(PlatoTestXMLGenerator, appendMMAOptions_shape)
     std::vector<std::string> tKeys = {"MoveLimit", "AsymptoteExpansion", "AsymptoteContraction", 
                    "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance",
                    "OutputSubProblemDiagnostics", "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", 
-                   "SubProblemFeasibilityTolerance", "UpdateFrequency"};
+                   "SubProblemFeasibilityTolerance", "UpdateFrequency", "UseIpoptForMMASubproblem"};
     std::vector<std::string> tValues = {"0.5", "1.2", "0.7", "50", "-1", "-1", "false", "0.0015",
-                                        "1.025", "1e-8", "5"};
+                                        "1.025", "1e-8", "5", "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptionsNode);
 }
 

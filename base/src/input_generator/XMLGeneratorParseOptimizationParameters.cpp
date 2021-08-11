@@ -59,6 +59,7 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "mma_sub_problem_penalty_multiplier", { { {"mma_sub_problem_penalty_multiplier"}, ""}, "1.025" } });
     mTags.insert({ "mma_output_subproblem_diagnostics", { { {"mma_output_subproblem_diagnostics"}, ""}, "false" } });
     mTags.insert({ "mma_sub_problem_feasibility_tolerance", { { {"mma_sub_problem_feasibility_tolerance"}, ""}, "1e-8" } });
+    mTags.insert({ "mma_use_ipopt_sub_problem_solver", { { {"mma_use_ipopt_sub_problem_solver"}, ""}, "false" } });
     mTags.insert({ "mma_control_stagnation_tolerance", { { {"mma_control_stagnation_tolerance"}, ""}, "1e-6" } });
     mTags.insert({ "mma_objective_stagnation_tolerance", { { {"mma_objective_stagnation_tolerance"}, ""}, "1e-8" } });
     mTags.insert({ "oc_control_stagnation_tolerance", { { {"oc_control_stagnation_tolerance"}, ""}, "1e-2" } });

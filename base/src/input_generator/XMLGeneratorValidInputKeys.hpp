@@ -1410,6 +1410,7 @@ struct ValidOptimizationParameterKeys
      "mma_sub_problem_initial_penalty",
      "mma_sub_problem_penalty_multiplier",
      "mma_sub_problem_feasibility_tolerance",
+     "mma_use_ipopt_sub_problem_solver",
      "mma_control_stagnation_tolerance",
      "mma_objective_stagnation_tolerance",
      "mma_output_subproblem_diagnostics",
