@@ -178,7 +178,7 @@ endif()
 
 if ( IPOPT_ENABLED )
     message( "-- Compiling with IPOPT to solve MMA subproblem " )
-    add_definitions(-DUSE_IPOPT_FOR_MMA_SUBPROBLEM)
+    add_definitions(-DENABLE_IPOPT_FOR_MMA_SUBPROBLEM)
     set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ipopt)
 endif()
 

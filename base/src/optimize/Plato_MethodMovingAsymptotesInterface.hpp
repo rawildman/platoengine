@@ -86,6 +86,7 @@ inline void set_mma_algorithm_inputs(const Plato::AlgorithmInputsMMA<ScalarType,
     aAlgorithm.setSubProblemBoundsScaling(aInputs.mSubProblemBoundsScaling);
     aAlgorithm.setAsymptoteContractionParameter(aInputs.mAsymptoteContraction);
     aAlgorithm.setAugLagSubProbPenaltyMultiplier(aInputs.mAugLagSubProbPenaltyMultiplier);
+    aAlgorithm.setWhetherToUseIpoptForMMASubproblem(aInputs.mUseIpoptForMMASubproblem);
 
     aAlgorithm.setOptimalityTolerance(aInputs.mOptimalityTolerance);
     aAlgorithm.setFeasibilityTolerance(aInputs.mFeasibilityTolerance);
