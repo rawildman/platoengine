@@ -86,16 +86,14 @@ set(PLATO_INCLUDES)
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
-set(CMAKE_CXX_FLAGS_DEBUG "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   # Clang specific flags
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # gnu specific flags
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lgfortran")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lgfortran")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lgfortran")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
   # intel specific flags
 else()
