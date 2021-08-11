@@ -223,6 +223,8 @@ public:
     **********************************************************************************/
     void setConstraintNormalizationParams(const Plato::Vector<ScalarType, OrdinalType>& aInput)
     {
+        if (aInput.size() == static_cast<OrdinalType>(0)) return;
+        if (mConstraintNormalization->size() == static_cast<OrdinalType>(0)) return;
         mConstraintNormalization->update(static_cast<ScalarType>(1.0), aInput, static_cast<ScalarType>(0.0));
     }
 
@@ -738,6 +740,11 @@ public:
     **********************************************************************************/
     void computeFeasibilityMeasure()
     {
+        if (mCurrentConstraintValues->size() == static_cast<OrdinalType>(0))
+        {
+            mFeasibilityMeasure = static_cast<ScalarType>(0.0);
+            return;
+        }
         mConstraintWork->update(static_cast<ScalarType>(1), *mCurrentConstraintValues, static_cast<ScalarType>(0));
         mConstraintWork->modulus();
         mFeasibilityMeasure = mDualReductionOps->max(*mConstraintWork);
@@ -786,7 +793,7 @@ private:
         const OrdinalType tNumConstraints = this->getNumConstraints();
         if(tNumConstraints <= static_cast<OrdinalType>(0))
         {
-            THROWERR(std::string("INVALID NUMBER OF CONSTRAINTS ") + std::to_string(tNumConstraints) + ". THE NUMBER OF CONSTRAINTS SHOULD BE A POSITIVE NUMBER.\n")
+            //THROWERR(std::string("INVALID NUMBER OF CONSTRAINTS ") + std::to_string(tNumConstraints) + ". THE NUMBER OF CONSTRAINTS SHOULD BE A POSITIVE NUMBER.\n")
         }
 
         mConstraintNormalization->fill(1.0);
