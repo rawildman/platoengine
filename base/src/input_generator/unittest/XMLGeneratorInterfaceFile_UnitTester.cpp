@@ -1626,7 +1626,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     // CONSTRAINT GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tValues = {"Compute Constraint Gradient", "platomain_1", "", ""};
+    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Topology"}, tOpInputs);
@@ -1899,7 +1899,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     // CONSTRAINT GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tValues = {"Compute Constraint Gradient", "platomain_1", "", ""};
+    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Topology"}, tOpInputs);

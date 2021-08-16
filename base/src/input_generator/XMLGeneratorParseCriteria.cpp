@@ -75,6 +75,8 @@ void ParseCriteria::allocate()
     mTags.insert({ "scmm_mass_weight", { { {"scmm_mass_weight"}, ""}, "1.0" } });
 
     mTags.insert({ "stress_p_norm_exponent", { { {"stress_p_norm_exponent"}, ""}, "6.0" } });
+    mTags.insert({ "mechanical_weighting_factor", { { {"mechanical_weighting_factor"}, ""}, "1.0" } });
+    mTags.insert({ "thermal_weighting_factor", { { {"thermal_weighting_factor"}, ""}, "1.0" } });
     mTags.insert({ "local_measure", { { {"local_measure"}, ""}, "vonmises" } });
     mTags.insert({ "spatial_weighting_function", { { {"spatial_weighting_function"}, ""}, "1.0" } }); // function of x, y, and z
     mTags.insert({ "material_penalty_model", { { {"material_penalty_model"}, ""}, "simp" } });

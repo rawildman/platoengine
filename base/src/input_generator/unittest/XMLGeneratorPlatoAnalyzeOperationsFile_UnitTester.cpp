@@ -114,6 +114,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationsXmlFile)
 
     XMLGen::Output tOutputMetadata;
     tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
     XMLGen::write_plato_analyze_operation_xml_file(tMetaData);

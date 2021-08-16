@@ -482,12 +482,6 @@ void append_visualization_to_plato_analyze_operation
         return;
     }
 
-    // output is disabled 
-    if(aMetaData.mOutputMetaData[0].isOutputDisabled())
-    {
-        return;
-    }
-
     std::vector<std::string> tNativeOutputList;
     for (auto &tOutputMetadata : aMetaData.mOutputMetaData)
     {
