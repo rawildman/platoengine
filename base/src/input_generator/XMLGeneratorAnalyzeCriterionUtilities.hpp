@@ -277,6 +277,35 @@ pugi::xml_node append_pnorm_criterion
 }
 
 /******************************************************************************//**
+ * \fn append_thermomechanical_compliance_criterion
+ * \tparam Criterion criterion metadata
+ * \brief Append thermomechanical compliance function parameters to criterion parameter list.
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_thermomechanical_compliance_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tCriterion = XMLGen::Private::append_scalar_function_criterion(aCriterion, aParentNode);
+    if(tCriterion.empty())
+    {
+        THROWERR("Append Thermomechanical Compliance Criterion: Criterion parameter list is empty. Most likely, "
+            + "there was an error appending the scalar function criterion.")
+    }
+
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Mechanical Weighting Factor", "double", aCriterion.mechanicalWeightingFactor()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+
+    tValues = {"Thermal Weighting Factor", "double", aCriterion.thermalWeightingFactor()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+
+    return tCriterion;
+}
+
+/******************************************************************************//**
  * \fn append_stress_constrained_mass_minimization_criterion_parameters
  * \brief Append stress constrained mass_minimization criterion input parameters \n
  * to criterion parameter list.
