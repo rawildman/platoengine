@@ -1485,10 +1485,6 @@ inline void append_deterministic_write_output_operation
         }
     }
     pugi::xml_node tCurParentNode = aParentNode;
-    if(tNumPlatoAnalyzeOutputs > 1)
-    {
-        tCurParentNode = aParentNode.append_child("Operation");
-    }
 
     for(auto &tOutputMetadata : aMetaData.mOutputMetaData)
     {
