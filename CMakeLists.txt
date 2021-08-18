@@ -60,7 +60,7 @@ if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
 
-include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
+include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
 ###########################  Compiler setup ###################################
