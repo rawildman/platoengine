@@ -64,21 +64,52 @@ namespace Plato
 {
 
 /********************************************************************************/
-template<typename ScalarType, typename OrdinalType>
-inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData, int aInnerLoopDepth)
+inline const Plato::InputData
+getOptimizerNode(Plato::Interface* aInterface,
+                 const std::vector<size_t> & aOptimizerIndex)
 /********************************************************************************/
 {
-    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "aInnerLoopDepth " << aInnerLoopDepth << "  "
-              << std::endl;
+    // Get the parent of the first optimizer node. Note the name is
+    // used recursively below.
+    auto tOptimizerNode = aInterface->getInputData();
 
-    auto tInputData = aInterface->getInputData();
-    auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+    // Make sure there is a top level optimizer.
+    if( tOptimizerNode.size<Plato::InputData>("Optimizer") == 0 )
+    {
+        return Plato::InputData();
+    }
 
-    // The top level interface is always used. As such, recursively
-    // search for the block which is a series of nested blocks.
-    for( int i=0; i<aInnerLoopDepth; ++i )
-        tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+    // The top level input data node is always used. As such,
+    // recursively search for the block which is a series of
+    // nested blocks.
+    for( size_t i=0; i<aOptimizerIndex.size(); ++i )
+    {
+        size_t nOptimizers =
+            tOptimizerNode.size<Plato::InputData>("Optimizer");
+
+        // Make sure the serial optimizer at this level is valid.
+        if( aOptimizerIndex[i] >= nOptimizers )
+        {
+            return Plato::InputData();
+        }
+
+        // Get the serial optimizer at this level and index.
+        tOptimizerNode =
+          tOptimizerNode.get<Plato::InputData>("Optimizer",
+                                               aOptimizerIndex[i]);
+    }
+
+    return tOptimizerNode;
+}
+
+/********************************************************************************/
+template<typename ScalarType, typename OrdinalType>
+inline void initialize(Plato::Interface* aInterface,
+                       Plato::OptimizerEngineStageData & aInputData,
+                       std::vector<size_t> aOptimizerIndex)
+/********************************************************************************/
+{
+    auto tOptimizerNode = getOptimizerNode(aInterface, aOptimizerIndex);
 
     Plato::Parse::parseOptimizerStages(tOptimizerNode, aInputData);
 
