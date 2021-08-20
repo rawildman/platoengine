@@ -139,16 +139,26 @@ int main(int aArgc, char *aArgv[])
 
     writeSplashScreen();
 
-    Plato::OptimizerInterface<double>* tOptimizer = nullptr;
     try
     {
         Plato::OptimizerFactory<double> tOptimizerFactory;
-        tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
-        if(tOptimizer)
+        Plato::OptimizerInterface<double>* tOptimizer =
+          tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
+
+	// There should be at least one optimizer but there can be
+	// more. These additional optimizers can be in serial or
+	// nested.
+        while( tOptimizer != nullptr )
         {
             tOptimizer->optimize();
+
+            // Delete the current optimizer and check for another.
+            delete tOptimizer;
+
+            tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
         }
-        else
+
+        // else
         {
             tPlatoInterface->handleExceptions();
         }
@@ -165,10 +175,6 @@ int main(int aArgc, char *aArgv[])
     if(tPlatoInterface)
     {
         delete tPlatoInterface;
-    }
-    if(tOptimizer)
-    {
-        delete tOptimizer;
     }
 
     safeExit();

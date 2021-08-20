@@ -167,6 +167,15 @@ public:
     {
         assert(mInterface != nullptr);
 
+        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+                  << "optimizerIndex " << "  ";
+
+        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
+          std::cerr << this->mOptimizerIndex[i] << "  ";
+
+        std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+                  << std::endl;
+
         this->setControls(aControl);
 
         // Tell performers to cache the state
@@ -267,15 +276,15 @@ public:
     }
 
     /******************************************************************************//**
+     * @brief set the index of the optimizer.
+    **********************************************************************************/
+  void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
+
+    /******************************************************************************//**
      * @brief set the inner loop boolean if the optimizer has an inner
      * loop
     **********************************************************************************/
     void setHasInnerLoop( bool val ) { this->mHasInnerLoop = val; }
-
-    /******************************************************************************//**
-     * @brief set the inner loop depth of the optimizer.
-    **********************************************************************************/
-    void setInnerLoopDepth( int val ) { this->mInnerLoopDepth = val; }
 
 private:
     /******************************************************************************//**
@@ -311,17 +320,6 @@ private:
         mParameterList->set(tControlName, mControl.data());
     }
 
-public:
-    std::string getObjectiveValueName() const
-    {
-        return mObjectiveValueName;
-    }
-
-    ScalarType getObjectiveValue() const
-    {
-        return mObjectiveValue;
-    }
-
 private:
     std::vector<ScalarType> mVector; /*!< local copy of a descent direction vector */
     std::vector<ScalarType> mControl; /*!< local copy of the control variables */
@@ -332,11 +330,8 @@ private:
     Plato::OptimizerEngineStageData mEngineInputData; /*!< Parsed input data */
     std::shared_ptr<Teuchos::ParameterList> mParameterList; /*!< parameter list with data to be communicated through the PLATO Engine interface */
 
+    std::vector<size_t> mOptimizerIndex;
     bool mHasInnerLoop{false};
-    int  mInnerLoopDepth{0};
-
-    std::string mObjectiveValueName{""};
-    ScalarType  mObjectiveValue{0};
 
 private:
     EngineObjective(const Plato::EngineObjective<ScalarType, OrdinalType>&);

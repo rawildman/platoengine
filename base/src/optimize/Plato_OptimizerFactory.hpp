@@ -95,36 +95,60 @@ public:
      * @brief Construct interface to optimization algorithm
      * @param [in] aInterface PLATO Engine interface
      * @param [in] aLocalComm local MPI communicator
-     * @param [in] aInnerLoopDepth depth (if any) of the optimize inner loop.
      * @return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
     Plato::OptimizerInterface<ScalarType, OrdinalType>*
-    create(Plato::Interface* aInterface, MPI_Comm aLocalComm, int aInnerLoopDepth = 0)
+    create(Plato::Interface* aInterface,
+           MPI_Comm aLocalComm,
+           std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
+           )
     {
       Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
 
       try
       {
-        auto tInputData = aInterface->getInputData();
+        Plato::InputData tOptimizerNode;
 
-        if( tInputData.size<Plato::InputData>("Optimizer") > 1 )
+        // Requesting a specific optimizer.
+        if( aOptimizerIndex.size() )
         {
-          Plato::ParsingException tParsingException("Plato::OptimizerFactory: multiple 'Optimizer' definitions");
-          aInterface->registerException(tParsingException);
+            tOptimizerNode =
+                Plato::getOptimizerNode(aInterface, aOptimizerIndex);
+
+            if( tOptimizerNode.empty() )
+            {
+                Plato::ParsingException tParsingException("Plato::OptimizerFactory: requesting a 'Optimizer' definition that does not exist");
+                aInterface->registerException(tParsingException);
+            }
         }
-        else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
+        // Previous optimizer index specified, increment the last
+        // index and attempt to serially read the next optimizer.
+        else if( mOptimizerIndex.size() )
         {
-          Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definitions");
-          aInterface->registerException(tParsingException);
+            aOptimizerIndex = mOptimizerIndex;
+
+            ++aOptimizerIndex[aOptimizerIndex.size()-1];
+
+            tOptimizerNode =
+                Plato::getOptimizerNode(aInterface, aOptimizerIndex);
+
+            if( tOptimizerNode.empty() )
+                return (nullptr);
         }
+        // No previously read optimizer so start a new index vector.
+        else
+        {
+            aOptimizerIndex.push_back(0);
 
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+            tOptimizerNode =
+                Plato::getOptimizerNode(aInterface, aOptimizerIndex);
 
-        // The top level interface is always used. As such,
-        // recursively search for the block which is a series of
-        // nested blocks.
-        for( int i=0; i<aInnerLoopDepth; ++i )
-          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+            if( tOptimizerNode.empty() )
+            {
+                Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definition");
+                aInterface->registerException(tParsingException);
+            }
+        }
 
         std::string tOptPackage = Plato::Get::String(tOptimizerNode, "Package");
         if( tOptPackage == "OC" )
@@ -228,16 +252,14 @@ public:
           throw Plato::ParsingException(tStringStream.str());
         }
 
-        // The depth and inner llop boolean are used by the engine
+        // The index and inner loop boolean are used by the engine
         // objective to determine the nesting.
-
-        // Set the loop depth so the optimizer knows where to
-        // find the correct block in the input data.
-        tOptimizer->setInnerLoopDepth( aInnerLoopDepth );
+        tOptimizer->setOptimizerIndex( aOptimizerIndex );
 
         // Now check for an inner optimizer block.
         tOptimizer->
-          setHasInnerLoop(tOptimizerNode.size<Plato::InputData>("Optimizer") > 0);
+            setHasInnerLoop(tOptimizerNode.size<Plato::InputData>("Optimizer"));
+        mOptimizerIndex = aOptimizerIndex;
       }
 
       catch(...)
@@ -253,6 +275,8 @@ private:
     OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
 
     Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
+
+    std::vector<size_t> mOptimizerIndex;
 };
 // class OptimizerFactory
 

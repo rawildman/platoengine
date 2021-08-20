@@ -166,14 +166,7 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::InputDataBCPSO<ScalarType, OrdinalType> & aInput)
     {
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
-
-        // The top level interface is always used. As such,
-        // recursively search for the block which is a series of
-        // nested blocks.
-        for( int i=0; i<this->mInnerLoopDepth; ++i )
-          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+	auto tOptimizerNode = this->getOptimizerNode(mInterface);
 
         Plato::ParticleSwarmParser<ScalarType, OrdinalType> tParserPSO;
         mObjFuncStageName = tParserPSO.getObjectiveStageName(tOptimizerNode);
@@ -243,9 +236,8 @@ private:
         const OrdinalType tPARTICLE_INDEX = 0;
         const OrdinalType tNumControls = (*aOutput.mParticles)[tPARTICLE_INDEX].size();
 
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
-        auto tBoundsNode = tOptimizerNode.get<Plato::InputData>("BoundConstraint");
+	auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tBoundsNode = tOptimizerNode.template get<Plato::InputData>("BoundConstraint");
 
         std::vector<ScalarType> tLowerBounds = Plato::Get::Doubles(tBoundsNode, "Lower");
         aOutput.mParticlesLowerBounds = aFactory.createVector(mComm, tNumControls, mInterface);

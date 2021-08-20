@@ -99,18 +99,11 @@ public:
     /******************************************************************************/
     {
         Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
-                                                   this->mInnerLoopDepth);
+                                                   this->mOptimizerIndex);
 
         // NOTE: Plato::initialize calls Plato::Parse::parseOptimizerStages
         // As such, the code below seems to be redunant.
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
-
-        // The top level interface is always used. As such,
-        // recursively search for the block which is a series of
-        // nested blocks.
-        for( int i=0; i<this->mInnerLoopDepth; ++i )
-          tOptimizerNode = tOptimizerNode.get<Plato::InputData>("Optimizer");
+	auto tOptimizerNode = this->getOptimizerNode(mInterface);
 
         Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }

@@ -391,7 +391,7 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Set output diagnostics flag for augmented Lagrangian subproblem. 
+     * @brief Set output diagnostics flag for augmented Lagrangian subproblem.
      * @param [out] aInput boolean flag
     **********************************************************************************/
     void outputSubProblemDiagnostics(const bool aInput)
@@ -641,6 +641,12 @@ private:
         const bool tIsContinuationEnabled = mProblemUpdateFrequency > static_cast<OrdinalType>(0);
         const auto IterationCountOneBase = mIterationCount + static_cast<OrdinalType>(1);
         bool tPerformContinuation = tIsContinuationEnabled ? (IterationCountOneBase % mProblemUpdateFrequency) == static_cast<OrdinalType>(0) : false;
+
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+              << "tIsContinuationEnabled " << tIsContinuationEnabled << "  "
+              << "tPerformContinuation " << tPerformContinuation << "  "
+              << std::endl;
+
         if (tPerformContinuation)
         {
             mObjective->updateProblem(mDataMng->getCurrentControls());

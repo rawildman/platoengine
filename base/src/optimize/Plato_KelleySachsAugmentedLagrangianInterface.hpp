@@ -108,7 +108,7 @@ public:
     void initialize()
     {
         Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
-                                                   this->mInnerLoopDepth);
+                                                   this->mOptimizerIndex);
     }
 
     /******************************************************************************//**

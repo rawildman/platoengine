@@ -49,6 +49,9 @@
 #ifndef PLATO_OPTIMIZERINTERFACE_HPP_
 #define PLATO_OPTIMIZERINTERFACE_HPP_
 
+#include "Plato_Interface.hpp"
+#include "Plato_OptimizerUtilities.hpp"
+
 namespace Plato
 {
 
@@ -102,45 +105,39 @@ public:
     virtual void initialize() = 0;
 
     /******************************************************************************//**
-     * @brief
+     * @brief get the optimizer node based on the index.
     **********************************************************************************/
-    std::string getObjectiveValueName() const
+    Plato::InputData getOptimizerNode(Plato::Interface* aInterface)
     {
-        return mObjectiveValueName;
+        return Plato::getOptimizerNode(aInterface, mOptimizerIndex);
     }
 
     /******************************************************************************//**
-     * @brief
+     * @brief set the index of the optimizer.
     **********************************************************************************/
-    ScalarType getObjectiveValue() const
-    {
-        return mObjectiveValue;
-    }
+  void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
+
+    /******************************************************************************//**
+     * @brief get the index of the optimizer.
+    **********************************************************************************/
+    std::vector<size_t> getOptimizerIndex() { return mOptimizerIndex; }
 
     /******************************************************************************//**
      * @brief set the inner loop boolean.
     **********************************************************************************/
-    void setHasInnerLoop( bool val ) { this->mHasInnerLoop = val; }
-
-    /******************************************************************************//**
-     * @brief set the inner loop depth of the optimizer.
-    **********************************************************************************/
-    void setInnerLoopDepth( int val ) { this->mInnerLoopDepth = val; }
+    void setHasInnerLoop( bool val ) { mHasInnerLoop = val; }
 
 protected:
 
-    std::string mObjectiveValueName{""};
-    ScalarType  mObjectiveValue{0};
+    /******************************************************************************//**
+     * @brief optimizer index when there is multiple optimizers
+    **********************************************************************************/
+    std::vector<size_t> mOptimizerIndex;
 
     /******************************************************************************//**
-     * @brief boolean to note whether there is an inner optimization loop
+     * @brief boolean indicating an inner optimizer loop is present
     **********************************************************************************/
     bool mHasInnerLoop{false};
-
-    /******************************************************************************//**
-     * @brief optimization inner loop depth (zero is the default top loop)
-    **********************************************************************************/
-    int mInnerLoopDepth{0};
 };
 // class OptimizerInterface
 

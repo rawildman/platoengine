@@ -71,18 +71,19 @@ namespace Plato
 
 template<typename ScalarType, typename OrdinalType>
 ScalarType
-Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+Plato::EngineObjective<ScalarType, OrdinalType>::
+value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 {
     assert(mInterface != nullptr);
 
     std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "mInnerLoopDepth " << this->mInnerLoopDepth << "  "
-              << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-              << std::endl;
+              << "optimizerIndex " << "  ";
 
-    // Used to initialize the outloop objective value. If there is no
-    // inner loop it is set to zero.
-    ScalarType tInnerLoopObjectiveValue = 0;
+    for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
+        std::cerr << this->mOptimizerIndex[i] << "  ";
+
+    std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+              << std::endl;
 
     // Check to see if there is a nested inner loop which should be
     // executed before the outer loop.
@@ -91,43 +92,45 @@ Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<
         MPI_Comm tLocalComm;
         mInterface->getLocalComm(tLocalComm);
 
-	// For the inner loop use the factory to create the optimizer.
+        // ARS - Before the inner loop executes what needs to come
+        // from the outer loop?
+
+        // ARS - Update the shared data.
+
+        // Read the first optimizer for the inner loop.
+        std::vector< size_t > tOptimizerIndex = this->mOptimizerIndex;
+        tOptimizerIndex.push_back(0);
+
+        // For the inner loop use the factory to create the optimizer.
         Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
-        Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer =
-            tOptimizerFactory.create(mInterface, tLocalComm,
-                                     this->mInnerLoopDepth+1);
+        Plato::OptimizerInterface<ScalarType, OrdinalType>*
+            tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
+                                                  tOptimizerIndex );
 
-        if(tOptimizer)
+        while( tOptimizer != nullptr )
         {
             tOptimizer->optimize();
 
-            // ARS - Completed the inner loop - now what??
-
-            // Get the objective name and value from the inner loop
-            // and store it in the parameter list.
-            std::string tInnerLoopObjectiveValueName = tOptimizer->getObjectiveValueName();
-            tInnerLoopObjectiveValue =                 tOptimizer->getObjectiveValue();
-
-            mParameterList->set(tInnerLoopObjectiveValueName,
-                                &tInnerLoopObjectiveValue);
-
-	    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-		      << "tInnerLoopObjectiveValueName  " << tInnerLoopObjectiveValueName << "  "
-		      << "tInnerLoopObjectiveValue  " << tInnerLoopObjectiveValue << "  "
-		      << std::endl;
-
+            // ARS - Completed the inner loop, what needs to get to
+            // the outer loop?
 
             // ********* Regenerate the data?? ********* //
             std::string tMyStageName("Regenerate");
             std::vector<std::string> tStageNames;
             tStageNames.push_back(tMyStageName);
 
-            mInterface->compute(tStageNames, *mParameterList);
+            // mInterface->compute(tStageNames, *mParameterList);
+
+            // Delete the current optimizer and check for another.
+            delete tOptimizer;
+
+            tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm);
         }
-        else
+
+        // else
         {
-            mInterface->handleExceptions();
+            // mInterface->handleExceptions();
         }
     }
 
@@ -137,10 +140,11 @@ Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<
     this->setControls(aControl);
 
     // ********* Set view to objective function value ********* //
-    mObjectiveValueName = mEngineInputData.getObjectiveValueOutputName();
-    mObjectiveValue = tInnerLoopObjectiveValue;
+    std::string tObjectiveValueName =
+      mEngineInputData.getObjectiveValueOutputName();
+    ScalarType tObjectiveValue = 0;
 
-    mParameterList->set(mObjectiveValueName, &mObjectiveValue);
+    mParameterList->set(tObjectiveValueName, &tObjectiveValue);
 
     // ********* Compute objective function value ********* //
     std::string tMyStageName = mEngineInputData.getObjectiveValueStageName();
@@ -153,11 +157,11 @@ Plato::EngineObjective<ScalarType, OrdinalType>::value(const Plato::MultiVector<
 
     std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
               << "tMyStageName  " << tMyStageName << "  "
-              << "mObjectiveValueName  " << mObjectiveValueName << "  "
-              << "mObjectiveValue  " << mObjectiveValue << "  "
+              << "tObjectiveValueName  " << tObjectiveValueName << "  "
+              << "tObjectiveValue  " << tObjectiveValue << "  "
               << std::endl;
 
-    return (mObjectiveValue);
+    return (tObjectiveValue);
 }
 
 } // namespace Plato
