@@ -93,6 +93,11 @@ public:
     }
 
     /******************************************************************************//**
+     * @brief boolean indicating whether multiple optimizers are supported.
+    **********************************************************************************/
+    virtual bool supportsMultipleOptimizers() { return true; };
+
+    /******************************************************************************//**
      * @brief Return the algorithm type
      * @return algorithm type
     **********************************************************************************/

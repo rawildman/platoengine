@@ -69,6 +69,20 @@ getOptimizerNode(Plato::Interface* aInterface,
                  const std::vector<size_t> & aOptimizerIndex)
 /********************************************************************************/
 {
+    // The optimizer index is a vector of indices. The size of the
+    // vector less 1 denotes the number of nesting levels. Each index
+    // is the serial index of the optimizer block.
+
+    // A basic run with one optimizer block would have a vector of
+    // {0}. A simple nested run with one nested optimizer would
+    // have a vector of {0} for the outer optimizer and {0,0} for
+    // the inner optimizer.
+
+    // More complicated vector for the inner most optimizer would be
+    // {2,1,0} which denotes the outer most third serial optimizer
+    // {2}, of which its second serial inner loop is wanted {2,1}, of
+    // which its first inner loop is wanted {2,1,0},
+
     // Get the parent of the first optimizer node. Note the name is
     // used recursively below.
     auto tOptimizerNode = aInterface->getInputData();

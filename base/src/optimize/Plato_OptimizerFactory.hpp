@@ -95,6 +95,7 @@ public:
      * @brief Construct interface to optimization algorithm
      * @param [in] aInterface PLATO Engine interface
      * @param [in] aLocalComm local MPI communicator
+     * @param [in] aOptimizerIndex the specific optimizer block
      * @return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
     Plato::OptimizerInterface<ScalarType, OrdinalType>*
@@ -109,7 +110,22 @@ public:
       {
         Plato::InputData tOptimizerNode;
 
-        // Requesting a specific optimizer.
+        // The optimizer index is a vector of indices. The size of the
+        // vector less 1 denotes the number of nesting levels. Each
+        // index is the serial index of the optimizer block.
+
+        // A basic run with one optimizer block would have a vector of
+        // {0}. A simple nested run with one nested optimizer would
+        // have a vector of {0} for the outer optimizer and {0,0} for
+        // the inner optimizer.
+
+        // A more complicated vector for the inner most optimizer would
+        // be {2,1,0} which denotes the outer most third serial
+        // optimizer {2}, of which its second serial inner loop is
+        // wanted {2,1}, of which its first inner loop is wanted
+        // {2,1,0},
+
+        // Requesting a specific optimizer node via an argument.
         if( aOptimizerIndex.size() )
         {
             tOptimizerNode =
@@ -122,7 +138,8 @@ public:
             }
         }
         // Previous optimizer index specified, increment the last
-        // index and attempt to serially read the next optimizer.
+        // index which stored and attempt to serially read the next
+        // optimizer.
         else if( mOptimizerIndex.size() )
         {
             aOptimizerIndex = mOptimizerIndex;
@@ -135,7 +152,8 @@ public:
             if( tOptimizerNode.empty() )
                 return (nullptr);
         }
-        // No previously read optimizer so start a new index vector.
+        // No previously read optimizer so start a new index vector
+        // and attempt to read the very first optimizer block.
         else
         {
             aOptimizerIndex.push_back(0);
@@ -150,7 +168,10 @@ public:
             }
         }
 
+        // For the optimizer block get the package which denotes the
+        // optimizer.
         std::string tOptPackage = Plato::Get::String(tOptimizerNode, "Package");
+
         if( tOptPackage == "OC" )
         {
           try {
@@ -252,13 +273,43 @@ public:
           throw Plato::ParsingException(tStringStream.str());
         }
 
+        size_t nNestedOptimizers =
+            tOptimizerNode.size<Plato::InputData>("Optimizer");
+
+        // Make sure the optimizer requested supports serial and nested
+        // optimizers.
+        if( tOptimizer->supportsMultipleOptimizers() == false &&
+            (aOptimizerIndex.size() > 1 ||
+             aOptimizerIndex.back() > 0 ||
+             nNestedOptimizers > 0) )
+        {
+            std::stringstream tStringStream;
+            tStringStream
+                << "Plato::OptimizerFactory: "
+                << tOptPackage << " Does not support mutliple optimizers. ";
+
+            if( aOptimizerIndex.size() > 1 ||
+                aOptimizerIndex.back() > 0 )
+            tStringStream << "The optimizer requested has serial optimizers. ";
+
+            if( nNestedOptimizers > 0 )
+              tStringStream << "The optimizer requested has nested optimizers. ";
+
+            tStringStream << "Contact the Plato developement team."
+                << std::endl;
+
+            throw Plato::ParsingException(tStringStream.str());
+        }
+
         // The index and inner loop boolean are used by the engine
-        // objective to determine the nesting.
+        // objective to determine any possible the nesting.
         tOptimizer->setOptimizerIndex( aOptimizerIndex );
 
         // Now check for an inner optimizer block.
-        tOptimizer->
-            setHasInnerLoop(tOptimizerNode.size<Plato::InputData>("Optimizer"));
+        tOptimizer->setHasInnerLoop(nNestedOptimizers > 0);
+
+        // Store the index of the current optimizer so to be able to
+        // read additional serial optimizers.
         mOptimizerIndex = aOptimizerIndex;
       }
 

@@ -141,21 +141,27 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
+        // There should be at least one optimizer but there can be
+        // more. These additional optimizers can be in serial or
+        // nested. The while loop coupled with factory processes
+        // optimizers that are serial. Nested optimizers are processed
+        // via the EngineObjective.
         Plato::OptimizerFactory<double> tOptimizerFactory;
-        Plato::OptimizerInterface<double>* tOptimizer =
-          tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
+        Plato::OptimizerInterface<double>* tOptimizer;
 
-	// There should be at least one optimizer but there can be
-	// more. These additional optimizers can be in serial or
-	// nested.
-        while( tOptimizer != nullptr )
+        // Note: When frist called, the factory will look for the
+        // first optimizer block. Subsequent calls will look for the
+        // next optimizer block if it exists.
+        while((tOptimizer = tOptimizerFactory.create(tPlatoInterface,
+                                                     tLocalComm)) != nullptr)
         {
             tOptimizer->optimize();
 
-            // Delete the current optimizer and check for another.
-            delete tOptimizer;
+            // ARS - Should anything be done before deleting the
+            // current optimizer? That is what needs to get to the
+            // next optimizer?
 
-            tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
+            delete tOptimizer;
         }
 
         // else

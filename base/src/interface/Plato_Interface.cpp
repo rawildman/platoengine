@@ -282,7 +282,7 @@ void Interface::perform()
 void Interface::perform(Plato::Stage* aStage)
 /******************************************************************************/
 {
-    Console::Status("Stage: (" + mPerformer->myName() + ") " + aStage->getName());
+    // Console::Status("Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
     // transmits input data
     //
@@ -293,6 +293,7 @@ void Interface::perform(Plato::Stage* aStage)
     Plato::Operation* tOperation = aStage->getNextOperation();
     while(tOperation)
     {
+        // Console::Status("  Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
 
         tOperation->sendInput();
 
@@ -368,25 +369,33 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
 /******************************************************************************/
 {
     std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "StageName  '" << aStageName << "'"
-              << std::endl;
+              << "StageName  '" << aStageName << "'";
 
     // Intercept a regenerate stage compute as it is an internal
     // stage. That is the user does not need to define it.
 
-    // ARS - when should this called
+    // ARS - when should this be called??
     if( aStageName == "Regenerate" )
     {
         // ARS - calling this causes a hang somewhere.
         // this->createSharedData( this->mPerformer->getApplication() );
 
-        // ARS - what does it mean to perfrom the "Regenerate"??
-        // this->perform("Regenerate");
+        // ARS - where does the "Regenerate" stage live??
+        Plato::Stage* tStage = getStage("Regenerate");
+        this->perform(tStage);
     }
     else
     {
-        // find the requested stage
+        // Find the requested stage
         Plato::Stage* tStage = getStage(aStageName);
+
+	if( tStage == nullptr )
+	{
+	    std::stringstream tMsg;
+	    tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
+	    Plato::ParsingException tParsingException(tMsg.str());
+	    registerException(tParsingException);
+	}
 
         // Unpack input arguments into Plato::SharedData
         //
@@ -395,6 +404,8 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
         {
             exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
         }
+
+	std::cerr << " Performing ... ";
 
         this->perform(tStage);
 
@@ -405,6 +416,8 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
         {
             importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
         }
+
+	std::cerr << "Done." << std::endl;
     }
 }
 
@@ -729,6 +742,10 @@ int Interface::size(const std::string & aName) const
 /******************************************************************************/
 {
     int tLength = 0;
+
+    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+	      << "'" << aName  << "'" << std::endl;
+
     Plato::SharedData* tSharedData = mDataLayer->getSharedData(aName);
     if(tSharedData)
     {

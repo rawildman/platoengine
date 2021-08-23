@@ -127,8 +127,12 @@ public:
     **********************************************************************************/
     void setHasInnerLoop( bool val ) { mHasInnerLoop = val; }
 
-protected:
+    /******************************************************************************//**
+     * @brief boolean indicating whether multiple optimizers are supported.
+    **********************************************************************************/
+    virtual bool supportsMultipleOptimizers() { return false; };
 
+protected:
     /******************************************************************************//**
      * @brief optimizer index when there is multiple optimizers
     **********************************************************************************/
@@ -138,6 +142,7 @@ protected:
      * @brief boolean indicating an inner optimizer loop is present
     **********************************************************************************/
     bool mHasInnerLoop{false};
+
 };
 // class OptimizerInterface
 

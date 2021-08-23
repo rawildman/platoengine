@@ -97,23 +97,32 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 
         // ARS - Update the shared data.
 
-        // Read the first optimizer for the inner loop.
+        // Get the optimizer for index for this objective (i.e. the
+        // outer loop). So to read the first optimizer for the inner
+        // loop add an additional index, 0.
         std::vector< size_t > tOptimizerIndex = this->mOptimizerIndex;
         tOptimizerIndex.push_back(0);
 
         // For the inner loop use the factory to create the optimizer.
         Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
+        // Read the first inner optimizer.
         Plato::OptimizerInterface<ScalarType, OrdinalType>*
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
                                                   tOptimizerIndex );
+        if( tOptimizer == nullptr )
+        {
+            mInterface->handleExceptions();
+        }
 
-        while( tOptimizer != nullptr )
+        // Do the optimization and check for another serial optimizer.
+        do
         {
             tOptimizer->optimize();
 
-            // ARS - Completed the inner loop, what needs to get to
-            // the outer loop?
+            // ARS - Should anything be done before deleting the
+            // current optimizer? That is what needs to get to the
+            // next optimizer?
 
             // ********* Regenerate the data?? ********* //
             std::string tMyStageName("Regenerate");
@@ -122,19 +131,16 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 
             // mInterface->compute(tStageNames, *mParameterList);
 
-            // Delete the current optimizer and check for another.
+            // Delete the current optimizer.
             delete tOptimizer;
 
+            // Check for another serial optimizer.
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm);
         }
-
-        // else
-        {
-            // mInterface->handleExceptions();
-        }
+        while( tOptimizer != nullptr );
     }
 
-    // Normal evaluation of the objective.
+    // Normal evaluation of the outer objective.
 
     // ********* Set view to each control vector entry ********* //
     this->setControls(aControl);
