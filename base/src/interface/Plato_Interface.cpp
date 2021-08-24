@@ -368,9 +368,6 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
-    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "StageName  '" << aStageName << "'";
-
     // Intercept a regenerate stage compute as it is an internal
     // stage. That is the user does not need to define it.
 
@@ -389,13 +386,13 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
         // Find the requested stage
         Plato::Stage* tStage = getStage(aStageName);
 
-	if( tStage == nullptr )
-	{
-	    std::stringstream tMsg;
-	    tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
-	    Plato::ParsingException tParsingException(tMsg.str());
-	    registerException(tParsingException);
-	}
+        if( tStage == nullptr )
+        {
+            std::stringstream tMsg;
+            tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
+            Plato::ParsingException tParsingException(tMsg.str());
+            registerException(tParsingException);
+        }
 
         // Unpack input arguments into Plato::SharedData
         //
@@ -404,8 +401,6 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
         {
             exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
         }
-
-	std::cerr << " Performing ... ";
 
         this->perform(tStage);
 
@@ -416,8 +411,6 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
         {
             importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
         }
-
-	std::cerr << "Done." << std::endl;
     }
 }
 
@@ -742,9 +735,6 @@ int Interface::size(const std::string & aName) const
 /******************************************************************************/
 {
     int tLength = 0;
-
-    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-	      << "'" << aName  << "'" << std::endl;
 
     Plato::SharedData* tSharedData = mDataLayer->getSharedData(aName);
     if(tSharedData)

@@ -54,6 +54,7 @@
 #include <cassert>
 
 #include "Plato_Interface.hpp"
+#include "Plato_Console.hpp"
 #include "Plato_Criterion.hpp"
 #include "Plato_DataFactory.hpp"
 #include "Plato_MultiVector.hpp"
@@ -76,14 +77,14 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 {
     assert(mInterface != nullptr);
 
-    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "optimizerIndex " << "  ";
+    // std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+    //           << "optimizerIndex " << "  ";
 
-    for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-        std::cerr << this->mOptimizerIndex[i] << "  ";
+    // for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
+    //     std::cerr << this->mOptimizerIndex[i] << "  ";
 
-    std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-              << std::endl;
+    // std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+    //           << std::endl;
 
     // Check to see if there is a nested inner loop which should be
     // executed before the outer loop.
@@ -140,7 +141,28 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         while( tOptimizer != nullptr );
     }
 
-    // Normal evaluation of the outer objective.
+    // Normal evaluation of the objective.
+
+    // If there is a name then report what optimizer is being computed.
+    if( !mOptimizerName.empty() )
+    {
+        std::stringstream tConsoleStream;
+        tConsoleStream << "Computing Engine Objective for Optimizer : "
+                       << this->mOptimizerName << "  "
+                       << "Optimizer Index " << " {";
+
+        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
+        {
+            tConsoleStream << this->mOptimizerIndex[i];
+
+            if( i < this->mOptimizerIndex.size()-1 )
+              tConsoleStream << ", ";
+            else
+              tConsoleStream << "}";
+        }
+
+        Plato::Console::Alert(tConsoleStream.str());
+    }
 
     // ********* Set view to each control vector entry ********* //
     this->setControls(aControl);
@@ -160,12 +182,6 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
     tStageNames.push_back(tMyStageName);
 
     mInterface->compute(tStageNames, *mParameterList);
-
-    std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-              << "tMyStageName  " << tMyStageName << "  "
-              << "tObjectiveValueName  " << tObjectiveValueName << "  "
-              << "tObjectiveValue  " << tObjectiveValue << "  "
-              << std::endl;
 
     return (tObjectiveValue);
 }

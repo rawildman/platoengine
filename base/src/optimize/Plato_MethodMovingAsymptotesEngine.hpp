@@ -132,14 +132,14 @@ public:
     **********************************************************************************/
     void optimize()
     {
-        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-                  << "optimizerIndex " << "  ";
+        // std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
+        //           << "optimizerIndex " << "  ";
 
-        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-          std::cerr << this->mOptimizerIndex[i] << "  ";
+        // for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
+        //   std::cerr << this->mOptimizerIndex[i] << "  ";
 
-        std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-                  << std::endl;
+        // std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
+        //           << std::endl;
 
         // ARS - for some reason if this check is made from an inner
         // loop it hangs. There is *I believe* an MPI_Allreduce issue.
@@ -195,15 +195,6 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> & aInput)
     {
-        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-                  << "optimizerIndex " << "  ";
-
-        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-          std::cerr << this->mOptimizerIndex[i] << "  ";
-
-        std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-                  << std::endl;
-
         auto tOptimizerNode = this->getOptimizerNode(mInterface);
         Plato::MethodMovingAsymptotesParser<ScalarType, OrdinalType> tParser;
 
@@ -374,17 +365,13 @@ private:
         aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface);
         aObjective->allocateControlContainers(aNumControls);
 
-        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-                  << "optimizerIndex " << "  ";
+        // Let the engine objective know the current loop depth and if
+        // there is an inner loop as well as a name.
 
-        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-          std::cerr << this->mOptimizerIndex[i] << "  ";
-
-        std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-                  << std::endl;
-
-        // Let the engine objective know if there is an inner loop and
-        // the current loop depth.
+        // NOTE: This data really should automatically be set when the
+        // objective engine is created. But that would require the
+        // optimizer be passed in the EngineObjective constructor.
+        aObjective->setOptimizerName ( this->mOptimizerName );
         aObjective->setOptimizerIndex( this->mOptimizerIndex );
         aObjective->setHasInnerLoop  ( this->mHasInnerLoop );
 

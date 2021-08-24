@@ -301,6 +301,13 @@ public:
             throw Plato::ParsingException(tStringStream.str());
         }
 
+        // Find the optional name - helpful when there are multiple
+        // optimizers.
+        if( tOptimizerNode.size<std::string>("Name") )
+        {
+            tOptimizer->setOptimizerName( Plato::Get::String(tOptimizerNode, "Name") );
+        }
+
         // The index and inner loop boolean are used by the engine
         // objective to determine any possible the nesting.
         tOptimizer->setOptimizerIndex( aOptimizerIndex );

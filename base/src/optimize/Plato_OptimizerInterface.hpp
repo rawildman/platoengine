@@ -105,12 +105,27 @@ public:
     virtual void initialize() = 0;
 
     /******************************************************************************//**
+     * @brief boolean indicating whether multiple optimizers are supported.
+    **********************************************************************************/
+    virtual bool supportsMultipleOptimizers() { return false; };
+
+    /******************************************************************************//**
      * @brief get the optimizer node based on the index.
     **********************************************************************************/
     Plato::InputData getOptimizerNode(Plato::Interface* aInterface)
     {
         return Plato::getOptimizerNode(aInterface, mOptimizerIndex);
     }
+
+    /******************************************************************************//**
+     * @brief set the optimizer name - Optional.
+    **********************************************************************************/
+    void setOptimizerName( std::string val ) { mOptimizerName = val; }
+
+    /******************************************************************************//**
+     * @brief get the optimizer name.
+    **********************************************************************************/
+    std::string getOptimizerName() { return mOptimizerName; }
 
     /******************************************************************************//**
      * @brief set the index of the optimizer.
@@ -127,14 +142,16 @@ public:
     **********************************************************************************/
     void setHasInnerLoop( bool val ) { mHasInnerLoop = val; }
 
-    /******************************************************************************//**
-     * @brief boolean indicating whether multiple optimizers are supported.
-    **********************************************************************************/
-    virtual bool supportsMultipleOptimizers() { return false; };
-
 protected:
     /******************************************************************************//**
-     * @brief optimizer index when there is multiple optimizers
+     * @brief string containing the optimizer name - Optional
+    **********************************************************************************/
+    std::string mOptimizerName{""};
+
+    /******************************************************************************//**
+     * @brief a vector of indices decribing this optimizer's location
+     * in the input - used when there are multiple optimizers. See
+     * Plato_OptimizerUtilities.hpp and the function getOptimizerNode().
     **********************************************************************************/
     std::vector<size_t> mOptimizerIndex;
 
@@ -142,7 +159,6 @@ protected:
      * @brief boolean indicating an inner optimizer loop is present
     **********************************************************************************/
     bool mHasInnerLoop{false};
-
 };
 // class OptimizerInterface
 

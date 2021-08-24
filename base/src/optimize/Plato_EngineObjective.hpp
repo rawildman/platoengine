@@ -276,9 +276,14 @@ public:
     }
 
     /******************************************************************************//**
+     * @brief set the optimizer name - Optional.
+    **********************************************************************************/
+    void setOptimizerName( std::string val ) { mOptimizerName = val; }
+
+    /******************************************************************************//**
      * @brief set the index of the optimizer.
     **********************************************************************************/
-  void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
+    void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
 
     /******************************************************************************//**
      * @brief set the inner loop boolean if the optimizer has an inner
@@ -330,7 +335,21 @@ private:
     Plato::OptimizerEngineStageData mEngineInputData; /*!< Parsed input data */
     std::shared_ptr<Teuchos::ParameterList> mParameterList; /*!< parameter list with data to be communicated through the PLATO Engine interface */
 
+    /******************************************************************************//**
+     * @brief string containing the optimizer name - Optional
+    **********************************************************************************/
+    std::string mOptimizerName{""};
+
+    /******************************************************************************//**
+     * @brief a vector of indices decribing this optimizer's location
+     * in the input - used when there are multiple optimizers. See
+     * Plato_OptimizerUtilities.hpp and the function getOptimizerNode().
+    **********************************************************************************/
     std::vector<size_t> mOptimizerIndex;
+
+    /******************************************************************************//**
+     * @brief boolean indicating an inner optimizer loop is present
+    **********************************************************************************/
     bool mHasInnerLoop{false};
 
 private:
