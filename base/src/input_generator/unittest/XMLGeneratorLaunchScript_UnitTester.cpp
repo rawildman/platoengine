@@ -950,4 +950,26 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineLinesToMPIRunLaunchScript)
   Plato::system("rm -rf pruneAndRefine.txt");
 }
 
+TEST(PlatoTestXMLGenerator, append_post_optimization_run_lines)
+{
+  XMLGen::InputData tInputData;
+  XMLGen::Run tRun;
+  tRun.id("5");
+  tRun.append("type", "modal_analysis");
+  tRun.append("command", "");
+  std::vector<XMLGen::Run> tRuns;
+  tRuns.push_back(tRun);
+  tInputData.set(tRuns);
+
+  FILE* fp=fopen("appendDecompLine.txt", "w");
+  XMLGen::append_post_optimization_run_lines(tInputData, fp);
+  fclose(fp);
+
+  auto tReadData = XMLGen::read_data_from_file("appendDecompLine.txt");
+  auto tGold = std::string("salinas-imodal_analysis_run_5.i");
+
+  EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+  Plato::system("rm -rf appendDecompLine.txt");
+}
+
 }

@@ -75,6 +75,7 @@
 #include "XMLGeneratorParseOutput.hpp"
 #include "XMLGeneratorParseScenario.hpp"
 #include "XMLGeneratorParseServices.hpp"
+#include "XMLGeneratorParseRun.hpp"
 #include "XMLGeneratorParseMaterial.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorParseObjective.hpp"
@@ -762,6 +763,16 @@ void XMLGenerator::parseScenarios(std::istream &aInputFile)
 }
 
 /******************************************************************************/
+void XMLGenerator::parseRuns(std::istream &aInputFile)
+/******************************************************************************/
+{
+    XMLGen::ParseRun tParseRun;
+    tParseRun.parse(aInputFile);
+    auto tRuns = tParseRun.data();
+    m_InputData.set(tRuns);
+}
+
+/******************************************************************************/
 void XMLGenerator::parseServices(std::istream &aInputFile)
 /******************************************************************************/
 {
@@ -1155,9 +1166,13 @@ void XMLGenerator::parseInputFile()
   this->parseOutput(tInputFile);
   tInputFile.close();
 
-   tInputFile.open(m_InputFilename.c_str()); // open a file
-   this->parseServices(tInputFile);
-   tInputFile.close();
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseServices(tInputFile);
+  tInputFile.close();
+
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseRuns(tInputFile);
+  tInputFile.close();
   
   tInputFile.open(m_InputFilename.c_str()); // open a file
   this->parseScenarios(tInputFile);

@@ -4,6 +4,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -153,6 +154,30 @@ namespace XMLGen
       }
     }
   }
+
+    void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)
+    {
+        // This newline is important because the performer lines always end with a
+        // "\" so that the command continues on the next line so we need to 
+        // add a newline to end the previous command.
+        fprintf(fp, "\n");
+        for(const XMLGen::Run &tCurRun : aInputData.runs())
+        {
+            if(tCurRun.command().empty())
+            {
+                std::string tType = tCurRun.type();
+                if(tType == "modal_analysis")
+                {
+                    std::string tInputDeckName = build_post_optimization_run_input_deck_name(tCurRun);
+                    fprintf(fp, "salinas -i %s\n", tInputDeckName.c_str());
+                }
+            }
+            else
+            {
+                fprintf(fp, "%s\n", tCurRun.command().c_str());
+            }
+        } 
+    }
 
   void append_decomp_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
   {

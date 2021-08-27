@@ -224,6 +224,7 @@ void generate_mpirun_launch_script(const XMLGen::InputData& aInputData)
     {
         XMLGen::append_esp_mpirun_lines(aInputData, tNextPerformerID, fp);
     }
+    XMLGen::append_post_optimization_run_lines(aInputData, fp);
 
     fclose(fp);
 }

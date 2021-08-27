@@ -53,6 +53,16 @@ void append_solution_block(const XMLGen::InputData &aMetaData,
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
+void append_solution_block_modal_analysis(const XMLGen::InputData &aMetaData,
+                           const XMLGen::Criterion &aCriterion,
+                           std::ostream &outfile) {
+    outfile << "SOLUTION" << std::endl;
+    outfile << "  eigen" << std::endl;
+    outfile << "  nmodes " << aCriterion.num_modes_compute() << std::endl;
+    outfile << "  shift " << aCriterion.eigen_solver_shift() << std::endl;
+    outfile << "END" << std::endl;
+}
+/**************************************************************************/
 void append_parameters_block(const XMLGen::Scenario &aScenario,
                              const XMLGen::Criterion &aCriterion,
                              std::ostream &outfile) {
@@ -341,6 +351,13 @@ void append_outputs_block
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
+void append_outputs_block_modal_analysis
+(std::ostream &outfile)
+{
+    outfile << "OUTPUTS" << std::endl;
+    outfile << "END" << std::endl;
+}
+/**************************************************************************/
 void append_echo_block
 (const XMLGen::Criterion &aCriterion,
  std::ostream &outfile)
@@ -385,6 +402,22 @@ void append_material_blocks
         if (!isModalCriterion(aCriterion)) {
             append_penalty_terms_to_material_block(aMetaData, aCriterion, aScenario, outfile);
         }
+        outfile << "END" << std::endl;
+    }
+}
+/**************************************************************************/
+void append_material_blocks_modal_analysis
+(const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    for(auto &tMaterial : aMetaData.materials)
+    {
+        outfile << "MATERIAL " << tMaterial.id() << std::endl;
+        outfile << "  isotropic" << std::endl;
+        outfile << "  E = " << tMaterial.property("youngs_modulus") << std::endl;
+        outfile << "  nu = " << tMaterial.property("poissons_ratio") << std::endl;
+        if(tMaterial.property("mass_density").empty() == false)
+            outfile << "  density = " << tMaterial.property("mass_density") << std::endl;
         outfile << "END" << std::endl;
     }
 }
@@ -435,6 +468,24 @@ void append_block_blocks
         if(aCriterion.type() == "frf_mismatch")
         {
             outfile << "  inverse_material_type homogeneous" << std::endl;
+        }
+        outfile << "END" << std::endl;
+    }
+}
+/**************************************************************************/
+void append_block_blocks_modal_analysis
+(const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    for(auto &tBlock : aMetaData.blocks)
+    {
+        if(tBlock.block_id.empty() == false)
+        {
+            outfile << "BLOCK " << tBlock.block_id << std::endl;
+        }
+        if(tBlock.material_id.empty() == false)
+        {
+            outfile << "  material " << tBlock.material_id << std::endl;
         }
         outfile << "END" << std::endl;
     }
@@ -897,6 +948,23 @@ void add_input_deck_blocks
     append_loads_block(aMetaData, tCriterion, tScenario, outfile);
     append_boundary_block(aMetaData, tCriterion, tScenario, outfile);
 }
+
+void add_input_deck_blocks_modal_analysis
+(const XMLGen::Run& aRun,
+ const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    XMLGen::Criterion tCriterion = aMetaData.criterion(aRun.criterion());
+
+    append_solution_block_modal_analysis(aMetaData, tCriterion, outfile);
+    append_outputs_block_modal_analysis(outfile);
+    //append_echo_block(tCriterion, outfile);
+    append_material_blocks_modal_analysis(aMetaData, outfile);
+    append_block_blocks_modal_analysis(aMetaData, outfile);
+    append_file_block(aMetaData, outfile);
+    //append_loads_block(aMetaData, tCriterion, tScenario, outfile);
+    //append_boundary_block(aMetaData, tCriterion, tScenario, outfile);
+}
 /******************************************************************************/
 
 // sometimes, people generate Salinas input decks with DOS end-of-line characters - yikes!
@@ -1034,6 +1102,14 @@ void write_sierra_sd_input_deck
 }
 /**************************************************************************/
 
+void write_sierra_sd_modal_input_deck
+(const std::string& aFilename,
+ const XMLGen::Run& aRun,
+ const XMLGen::InputData& aXMLMetaData)
+{
+    std::ofstream outfile(aFilename, std::ofstream::out);
+    add_input_deck_blocks_modal_analysis(aRun, aXMLMetaData, outfile);
+}
 
 }
 // namespace XMLGen

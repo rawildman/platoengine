@@ -89,6 +89,7 @@ protected:
     void parseObjective(std::istream &fin);
     void parseScenarios(std::istream &fin);
     void parseServices(std::istream &fin);
+    void parseRuns(std::istream &fin);
     bool parseConstraints(std::istream &fin);
     bool parseOptimizationParameters(std::istream &fin);
     void parseUncertainties(std::istream &fin);

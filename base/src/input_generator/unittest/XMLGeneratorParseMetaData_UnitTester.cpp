@@ -9,6 +9,7 @@
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
 #include "XMLGeneratorParseOutput.hpp"
+#include "XMLGeneratorParseRun.hpp"
 #include "XMLGeneratorParseScenario.hpp"
 #include "XMLGeneratorParseServices.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
@@ -1209,6 +1210,85 @@ TEST(PlatoTestXMLGenerator, Split)
         auto tIndex = &tValue - &tOutput[0];
         ASSERT_STREQ(tGold[tIndex].c_str(), tValue.c_str());
     }
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorInvalidKeyword)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "bad_keyword bad_value\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorNoType)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorInvalidType)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type bogus_type\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorNoCriterionOrCommand)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_criterion)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "criterion 1\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_NO_THROW(tRunParser.parse(tInputSS));
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_command)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "command salinas -i input.i\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_NO_THROW(tRunParser.parse(tInputSS));
 }
 
 }

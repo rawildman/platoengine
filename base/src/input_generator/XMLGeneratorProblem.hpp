@@ -18,6 +18,7 @@
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 #include "XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 
 namespace XMLGen
 {
@@ -105,6 +106,8 @@ inline void write_optimization_problem
         write_performer_operation_xml_file(tCurMetaData);
         write_performer_input_deck_file(tCurMetaData);
     }
+
+    XMLGen::write_post_optimization_run_files(aMetaData);
 }
 
 }

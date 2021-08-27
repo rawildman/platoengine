@@ -1588,5 +1588,23 @@ struct ValidHeatTransferMechanisms
     std::unordered_set<std::string> mKeys = { "none", "natural", "forced", "mixed" };
 };
 
+struct ValidRunParameterKeys
+{
+    std::vector<std::string> mKeys = 
+    {
+        "type", 
+        "command",
+        "criterion"
+    };
+};
+
+struct ValidRunTypes
+{
+    std::vector<std::string> mKeys = 
+    {
+        "modal_analysis" 
+    };
+};
+
 }
 // namespace XMLGen

@@ -72,6 +72,34 @@ void parse_input_metadata
     }
 }
 
+void parse_input_metadata_with_valid_keyword_checking
+(const std::vector<std::string>& aStopKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::vector<std::string> &aValidKeywords)
+{
+    constexpr int tMAX_CHARS_PER_LINE = 10000;
+    std::vector<char> tBuffer(tMAX_CHARS_PER_LINE);
+    while (!aInputFile.eof())
+    {
+        std::vector<std::string> tTokens;
+        aInputFile.getline(tBuffer.data(), tMAX_CHARS_PER_LINE);
+        XMLGen::parse_tokens(tBuffer.data(), tTokens);
+        XMLGen::to_lower(tTokens);
+
+        std::string tID;
+        if (XMLGen::parse_single_value(tTokens, aStopKeys, tID))
+        {
+            break;
+        }
+        if(!XMLGen::check_for_valid_keyword(tTokens, aValidKeywords))
+        {
+            THROWERR(std::string("Check Keyword: keyword '") + tTokens[0] + std::string("' is not supported"))
+        }
+        XMLGen::parse_tag_values(tTokens, aTags);
+    }
+}
+
 void parse_input_metadata_unlowered
 (const std::vector<std::string>& aStopKeys,
  const std::vector<std::string>& aFindKeys,
@@ -265,6 +293,20 @@ void is_input_keyword_empty
 }
 // function is_input_keyword_empty
 
+bool check_for_valid_keyword
+(const std::vector<std::string>& aInputTokens,
+ const std::vector<std::string>& aValidKeywords)
+{
+    for (auto& tKeyword : aValidKeywords)
+    {
+        if(tKeyword == aInputTokens[0])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool tokens_match
 (const std::vector<std::string>& aInputTokens,
  const std::vector<std::string>& aTargetKey)
@@ -407,6 +449,19 @@ bool transform_boolean_key(const std::string& aInput)
     return tFlag;
 }
 // function transform_boolean_key
+
+bool check_run_type(const std::string& aInput)
+{
+    XMLGen::ValidRunTypes tValidTypes;
+    for(auto& tCurRunType : tValidTypes.mKeys)
+    {
+        if(tCurRunType == aInput)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 std::string check_physics_keyword(const std::string& aInput)
 {
