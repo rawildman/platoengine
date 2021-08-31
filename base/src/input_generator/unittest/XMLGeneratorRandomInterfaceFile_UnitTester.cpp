@@ -2826,7 +2826,6 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOC_Options)
     // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"Options", "Convergence"};
     std::vector<std::string> tGoldValues = {"",""};
-
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
     auto tConvergenceNode = tOptimizerNode.child("Convergence");
     tGoldKeys = {"MaxIterations"};

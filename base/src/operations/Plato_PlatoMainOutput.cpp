@@ -251,7 +251,7 @@ void PlatoMainOutput::operator()()
                 tTheCommand << "echo save " << mRestartFieldName << " >> commands.txt;";
                 tTheCommand << "echo end >> commands.txt;";
                 tTheCommand << "algebra " << tInputFilename << " restart_" << tIntegerTime << ".exo < commands.txt > algebra.txt";
-                std::cout << "\nExecuting system call: " << tTheCommand.str() << "\n";
+            //    std::cout << "\nExecuting system call: " << tTheCommand.str() << "\n";
                 Plato::system(tTheCommand.str().c_str());
             }
         }

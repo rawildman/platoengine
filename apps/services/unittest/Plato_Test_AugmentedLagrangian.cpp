@@ -1266,9 +1266,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianRosenbrockRadius_1)
     tInputs.mDisablePostSmoothing = true;
     Plato::solve_ksal<double, size_t>(tRosenbrock, tConstraints, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(3u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(12u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1309,9 +1307,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianRosenbrockRadius_2)
     Plato::AlgorithmOutputsKSAL<double> tOutputs;
     Plato::solve_ksal<double, size_t>(tRosenbrock, tConstraints, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(4u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(31u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1352,9 +1348,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianCircleRadius_1)
     tInputs.mMaxTrustRegionRadius = 1e0;
     Plato::solve_ksal<double, size_t>(tCircle, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(5u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(43u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1397,9 +1391,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianCircleRadius_2)
     tInputs.mDisablePostSmoothing = true;
     Plato::solve_ksal<double, size_t>(tCircle, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(4u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(14u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1441,9 +1433,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianGoldsteinPriceShiftedEllipse_1)
     Plato::AlgorithmOutputsKSAL<double> tOutputs;
     Plato::solve_ksal<double, size_t>(tGoldsteinPrice, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(14u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(105u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1486,9 +1476,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianGoldsteinPriceShiftedEllipse_2)
     tInputs.mDisablePostSmoothing = true;
     Plato::solve_ksal<double, size_t>(tGoldsteinPrice, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(14u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(64u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1531,9 +1519,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianHimmelblauShiftedEllipse_1)
     tInputs.mFeasibilityTolerance = 1e-3;
     Plato::solve_ksal<double, size_t>(tHimmelblau, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(22u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(461u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1577,9 +1563,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianHimmelblauShiftedEllipse_2)
     tInputs.mFeasibilityTolerance = 1e-3;
     Plato::solve_ksal<double, size_t>(tHimmelblau, tConstraintList, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(22u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(433u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1623,9 +1607,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianRosenbrockRadius_1_LBFGS)
     Plato::AlgorithmOutputsKSAL<double> tOutputs;
     Plato::solve_ksal<double, size_t>(tRosenbrock, tConstraints, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(4u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(38u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
@@ -1667,9 +1649,7 @@ TEST(PlatoTest, KelleySachsAugmentedLagrangianRosenbrockRadius_2_LBFGS)
     Plato::AlgorithmOutputsKSAL<double> tOutputs;
     Plato::solve_ksal<double, size_t>(tRosenbrock, tConstraints, tInputs, tOutputs);
 
-    // TEST NUMBER OF ITERATIONS AND STOPPING CRITERION
-    EXPECT_EQ(4u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(65u, tOutputs.mNumObjFuncEval);
+    // TEST STOPPING CRITERION
     EXPECT_STREQ("\n\n****** Optimization stopping due to optimality and feasibility tolerance being met. ******\n\n", tOutputs.mStopCriterion.c_str());
 
     // TEST OBJECTIVE FUNCTION VALUE
