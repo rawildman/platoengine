@@ -48,6 +48,7 @@
 #include "Plato_FreeFunctions.hpp"
 
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <cstddef>
 #include <iterator>

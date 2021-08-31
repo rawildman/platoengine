@@ -7,7 +7,11 @@
 
 #include "MeshManager.hpp"
 
+#ifdef BUILD_IN_SIERRA
+#include <percept/PerceptMesh.hpp>
+#else
 #include <PerceptMesh.hpp>
+#endif
 #include "PruneMeshAPISTK.hpp"
 #include "PruneMeshAPI.hpp"
 
