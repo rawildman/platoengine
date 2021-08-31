@@ -1575,7 +1575,9 @@ struct ValidOptimizationParameterKeys
      "filter_type_identity_generator_name",
      "filter_type_kernel_generator_name",
      "filter_type_kernel_then_heaviside_generator_name",
-     "filter_type_kernel_then_tanh_generator_name"
+     "filter_type_kernel_then_tanh_generator_name",
+     "reset_algorithm_on_update",
+     "rol_subproblem_model"
     };
 };
 
