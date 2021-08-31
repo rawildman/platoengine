@@ -219,11 +219,40 @@ void append_write_output_to_plato_analyze_operation
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn append_filter_control_to_plato_analyze_helmholtz_operation
+ * \brief Append filter control to the plato analyze operation xml file for helmholtz
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_filter_control_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_filter_gradient_to_plato_analyze_helmholtz_operation
+ * \brief Append filter gradient to the plato analyze operation xml file for helmholtz
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_filter_gradient_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
  * \fn write_plato_analyze_operation_xml_file
  * \brief Write Plato Analyze operations to plato_analyze_operation.xml file.
  * \param [in] aMetaData Plato problem input data
 **********************************************************************************/
 void write_plato_analyze_operation_xml_file
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn write_plato_analyze_helmholtz_operation_xml_file
+ * \brief Write Plato Analyze operations to plato_analyze_operation.xml file.
+ * Specialized for Plato Analyze instance that is a helmholtz filter.
+ * \param [in] aMetaData Plato problem input data
+**********************************************************************************/
+void write_plato_analyze_helmholtz_operation_xml_file
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**
@@ -235,6 +264,36 @@ void write_plato_analyze_operation_xml_file
  * \param [in/out] aDocument    pugi::xml_document
 **********************************************************************************/
 void write_amgx_input_file(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn write_default_amgx_input_file
+ * \brief Write AMGX input .json file. This file is used to assign values for the \n
+ * linear solver parameters. Interested readers can find more information on AMGX \n
+ * in \see{https://github.com/NVIDIA/AMGX}.
+ * \param [in]     aMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void write_default_amgx_input_file(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn write_amgx_input_file_for_plasticity
+ * \brief Write AMGX input .json file. This file is used to assign values for the \n
+ * linear solver parameters. Interested readers can find more information on AMGX \n
+ * in \see{https://github.com/NVIDIA/AMGX}.
+ * \param [in]     aMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void write_amgx_input_file_for_plasticity(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn write_amgx_input_file_for_thermoplasticity
+ * \brief Write AMGX input .json file. This file is used to assign values for the \n
+ * linear solver parameters. Interested readers can find more information on AMGX \n
+ * in \see{https://github.com/NVIDIA/AMGX}.
+ * \param [in]     aMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void write_amgx_input_file_for_thermoplasticity(const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
  * \fn append_mesh_map_data

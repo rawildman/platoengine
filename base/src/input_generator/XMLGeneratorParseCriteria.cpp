@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
@@ -44,7 +45,15 @@ std::string check_criterion_type_key
     auto tValue = tValidKeys.value(aKeyword);
     if(tValue.empty())
     {
-        THROWERR(std::string("Check Criterion type Key: Criterion type '") + tValue + "' is not supported.")
+        auto tMsg = std::string("Input criterion keyword '") + aKeyword + "' is not defined in the list of supported Plato criterion. Supported Plato criterion options are: ";
+        const auto& tKeys = tValidKeys.list();
+        for(const auto& tKey : tKeys)
+        {
+            size_t tIndex = &tKey - &tKeys[0];
+            auto tDelimiter = (tIndex + 1u) == tKeys.size() ? ".\n" : ", ";
+            tMsg = tMsg + tKey + tDelimiter;
+        }
+        THROWERR(tMsg)
     }
     return tValue;
 }
@@ -66,11 +75,19 @@ void ParseCriteria::allocate()
     mTags.insert({ "scmm_mass_weight", { { {"scmm_mass_weight"}, ""}, "1.0" } });
 
     mTags.insert({ "stress_p_norm_exponent", { { {"stress_p_norm_exponent"}, ""}, "6.0" } });
+    mTags.insert({ "mechanical_weighting_factor", { { {"mechanical_weighting_factor"}, ""}, "1.0" } });
+    mTags.insert({ "thermal_weighting_factor", { { {"thermal_weighting_factor"}, ""}, "1.0" } });
+    mTags.insert({ "local_measure", { { {"local_measure"}, ""}, "vonmises" } });
+    mTags.insert({ "spatial_weighting_function", { { {"spatial_weighting_function"}, ""}, "1.0" } }); // function of x, y, and z
     mTags.insert({ "material_penalty_model", { { {"material_penalty_model"}, ""}, "simp" } });
     mTags.insert({ "material_penalty_exponent", { { {"material_penalty_exponent"}, ""}, "3.0" } });
     mTags.insert({ "minimum_ersatz_material_value", { { {"minimum_ersatz_material_value"}, ""}, "" } });
     mTags.insert({ "criterion_ids", { { {"criterion_ids"}, ""}, "" } });
     mTags.insert({ "criterion_weights", { { {"criterion_weights"}, ""}, "" } });
+    mTags.insert({ "location_names", { { {"location_names"}, ""}, "" } });
+    mTags.insert({ "blocks", { { {"blocks"}, ""}, "" } });
+    mTags.insert({ "conductivity_ratios", { { {"conductivity_ratios"}, ""}, "" } });
+
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     mTags.insert({ "volume_misfit_target", { { {"volume_misfit_target"}, ""}, "" } });
     mTags.insert({ "relative_stress_limit", { { {"relative_stress_limit"}, ""}, "" } });
@@ -93,7 +110,45 @@ void ParseCriteria::allocate()
     mTags.insert({ "volume_penalty_divisor", { { {"volume_penalty_divisor"}, ""}, "" } });
     mTags.insert({ "volume_penalty_bias", { { {"volume_penalty_bias"}, ""}, "" } });
     mTags.insert({ "surface_area_sideset_id", { { {"surface_area_sideset_id"}, ""}, "" } });
+
+    // Sierra/SD modal objectives
+    mTags.insert({ "num_modes_compute", { { {"num_modes_compute"}, ""}, "30" } });
+    mTags.insert({ "modes_to_exclude", { { {"modes_to_exclude"}, ""}, "" } });
+    mTags.insert({ "eigen_solver_shift", { { {"eigen_solver_shift"}, ""}, "-1e6" } });
+    mTags.insert({ "camp_solver_tol", { { {"camp_solver_tol"}, ""}, "1e-6" } });
+    mTags.insert({ "camp_max_iter", { { {"camp_max_iter"}, ""}, "1000" } });
+    mTags.insert({ "shape_sideset", { { {"shape_sideset"}, ""}, "" } });
+    mTags.insert({ "ref_data_file", { { {"ref_data_file"}, ""}, "" } });
+    mTags.insert({ "match_nodesets", { { {"match_nodesets"}, ""}, "" } });
 }
+
+void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("modes_to_exclude");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty()) {
+        std::vector<std::string> tModes;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tModes);
+        aMetadata.modesToExclude(tModes);
+    }
+}
+
+void ParseCriteria::setMatchNodesetIDs(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("match_nodesets");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tNodesetIDs;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tNodesetIDs);
+        aMetadata.setMatchNodesetIDs(tNodesetIDs);
+    }
+}
+
 
 void ParseCriteria::setCriterionWeights(XMLGen::Criterion &aMetadata)
 {
@@ -111,7 +166,7 @@ void ParseCriteria::setCriterionWeights(XMLGen::Criterion &aMetadata)
         }
         else
         {
-            THROWERR("Criterion Weights are not defined for composite criterion");
+            THROWERR("Criterion Weights ('criterion_weights' keyword) are not defined for composite criterion with criterion block id '" + aMetadata.id() + "'.");
         }
     }
 }
@@ -132,7 +187,7 @@ void ParseCriteria::setCriterionIDs(XMLGen::Criterion &aMetadata)
         }
         else
         {
-            THROWERR("Criterion IDs are not defined for composite criterion");
+            THROWERR("Criterion IDs ('criterion_ids' keyword) are not defined for composite criterion with criterion block id '" + aMetadata.id() + "'.");
         }
     }
 }
@@ -156,6 +211,8 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionType(aMetadata);
     this->setCriterionIDs(aMetadata);
     this->setCriterionWeights(aMetadata);
+    setModesToExclude(aMetadata);
+    setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
 }
 

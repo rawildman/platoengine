@@ -22,11 +22,11 @@ void append_compute_objective_value_to_plato_analyze_operation
 {
     if(XMLGen::is_any_objective_computed_by_plato_analyze(aMetaData))
     {
-        if(aMetaData.optimization_parameters().optimization_type() == "topology")
+        if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
             append_compute_objective_value_operation_for_topology_problem(aMetaData, aDocument);
         }
-        else if(aMetaData.optimization_parameters().optimization_type() == "shape")
+        else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
             append_compute_objective_value_operation_for_shape_problem(aMetaData, aDocument);
         }
@@ -37,7 +37,7 @@ void append_compute_objective_value_to_plato_analyze_operation
     }
     else
     {
-        THROWERR("Append Compute Objective Value to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+        // User could have two Analyze services and only one needs an objective
     }
 }
 /******************************************************************************/
@@ -155,18 +155,25 @@ void append_compute_constraint_value_operation_for_topology_problem
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    auto tOperation = aDocument.append_child("Operation");
-    XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionValue", "Compute Constraint Value", "My Constraint" }, tOperation);
-    auto tInput = tOperation.append_child("Input");
-    XMLGen::append_children( { "ArgumentName" }, { "Topology" }, tInput);
-    auto tOutput = tOperation.append_child("Output");
-    XMLGen::append_children( { "Argument" }, { "Value" }, tOutput);
-    XMLGen::append_children( { "ArgumentName" }, { "Constraint Value" }, tOutput);
-
-    if(XMLGen::is_robust_optimization_problem(aMetaData))
+    for(auto& tConstraint : aMetaData.constraints)
     {
-        XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
-        XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        auto &tCriterion = aMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        auto tToken = std::string("my_") + tCriterionType + "_criterion_id_" + tCriterion.id();
+
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionValue", "Compute Constraint Value " + tConstraint.id(), tToken }, tOperation);
+        auto tInput = tOperation.append_child("Input");
+        XMLGen::append_children( { "ArgumentName" }, { "Topology" }, tInput);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children( { "Argument" }, { "Value" }, tOutput);
+        XMLGen::append_children( { "ArgumentName" }, { "Constraint Value " + tConstraint.id() }, tOutput);
+
+        if(XMLGen::is_robust_optimization_problem(aMetaData))
+        {
+            XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
+            XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        }
     }
 }
 /******************************************************************************/
@@ -176,18 +183,25 @@ void append_compute_constraint_gradient_operation_for_topology_problem
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    auto tOperation = aDocument.append_child("Operation");
-    XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionGradient", "Compute Constraint Gradient", "My Constraint" }, tOperation);
-    auto tInput = tOperation.append_child("Input");
-    XMLGen::append_children( { "ArgumentName" }, { "Topology" }, tInput);
-    auto tOutput = tOperation.append_child("Output");
-    XMLGen::append_children( { "Argument" }, { "Gradient" }, tOutput);
-    XMLGen::append_children( { "ArgumentName" }, { "Constraint Gradient" }, tOutput);
-
-    if(XMLGen::is_robust_optimization_problem(aMetaData))
+    for(auto& tConstraint : aMetaData.constraints)
     {
-        XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
-        XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        auto &tCriterion = aMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        auto tToken = std::string("my_") + tCriterionType + "_criterion_id_" + tCriterion.id();
+
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionGradient", "Compute Constraint Gradient " + tConstraint.id(), tToken }, tOperation);
+        auto tInput = tOperation.append_child("Input");
+        XMLGen::append_children( { "ArgumentName" }, { "Topology" }, tInput);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children( { "Argument" }, { "Gradient" }, tOutput);
+        XMLGen::append_children( { "ArgumentName" }, { "Constraint Gradient " + tConstraint.id() }, tOutput);
+
+        if(XMLGen::is_robust_optimization_problem(aMetaData))
+        {
+            XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
+            XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        }
     }
 }
 /******************************************************************************/
@@ -225,7 +239,7 @@ void append_reinit_on_change_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aMetaData.optimization_parameters().optimization_type() == "shape")
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
         pugi::xml_node tmp_node = aDocument.append_child("Operation");
         addChild(tmp_node, "Name", "Reinitialize on Change");
@@ -266,11 +280,11 @@ void append_compute_objective_gradient_to_plato_analyze_operation
 {
     if(XMLGen::is_any_objective_computed_by_plato_analyze(aMetaData))
     {
-        if(aMetaData.optimization_parameters().optimization_type() == "topology")
+        if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
             append_compute_objective_gradient_operation_for_topology_problem(aMetaData, aDocument);
         }
-        else if(aMetaData.optimization_parameters().optimization_type() == "shape")
+        else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
             append_compute_objective_gradient_operation_for_shape_problem(aMetaData, aDocument);
         }
@@ -281,7 +295,7 @@ void append_compute_objective_gradient_to_plato_analyze_operation
     }
     else
     {
-        THROWERR("Append Compute Objective Gradient to Plato Analyze Operation: No objectives computed by Plato Analyze.")
+       // User could have two Analyze services and only one needs an objective
     }
 }
 
@@ -292,11 +306,11 @@ void append_compute_constraint_value_to_plato_analyze_operation
 {
     if(XMLGen::is_any_constraint_computed_by_plato_analyze(aXMLMetaData))
     {
-        if(aXMLMetaData.optimization_parameters().optimization_type() == "topology")
+        if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
             append_compute_constraint_value_operation_for_topology_problem(aXMLMetaData, aDocument);
         }
-        else if(aXMLMetaData.optimization_parameters().optimization_type() == "shape")
+        else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
             append_compute_constraint_value_operation_for_shape_problem(aXMLMetaData, aDocument);
         }
@@ -315,11 +329,11 @@ void append_compute_constraint_gradient_to_plato_analyze_operation
 {
     if(XMLGen::is_any_constraint_computed_by_plato_analyze(aXMLMetaData))
     {
-        if(aXMLMetaData.optimization_parameters().optimization_type() == "topology")
+        if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
             append_compute_constraint_gradient_operation_for_topology_problem(aXMLMetaData, aDocument);
         }
-        else if(aXMLMetaData.optimization_parameters().optimization_type() == "shape")
+        else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
             append_compute_constraint_gradient_operation_for_shape_problem(aXMLMetaData, aDocument);
         }
@@ -336,7 +350,7 @@ void append_update_problem_to_plato_analyze_operation
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aMetaData.optimization_parameters().optimization_type() == "shape")
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
         return;
     }
@@ -398,8 +412,8 @@ return_random_material_metadata_for_plato_analyze_operation_xml_file
     {
         auto tMaterial = tSample.material(tID);
         auto tMaterialPropertiesTags = tMaterial.tags();
-        tMap[tID] = std::make_tuple(tMaterial.name(), tMaterial.category(), std::vector<std::pair<std::string, std::string>>());
-        //tMap[tID] = std::make_pair(tMaterial.category(), std::vector<std::pair<std::string, std::string>>());
+        tMap[tID] = std::make_tuple(tMaterial.name(), tMaterial.materialModel(), std::vector<std::pair<std::string, std::string>>());
+        //tMap[tID] = std::make_pair(tMaterial.materialModel(), std::vector<std::pair<std::string, std::string>>());
         for(auto& tTag : tMaterialPropertiesTags)
         {
             auto tMaterialPropertyTag = Plato::tolower(tTag);
@@ -452,6 +466,42 @@ void append_random_traction_vector_to_plato_analyze_operation
 /******************************************************************************/
 
 /******************************************************************************/
+// NOTE: Operation only works with a single analyze performer and deterministic 
+//       problems. Modifcations will be required to support native output for
+//       stochastic and multi-load problems. The define.xml file mechanism used 
+//       for stochastic problems will be needed to correctly assign the output 
+//       directory names for each samples (stochastic problem) or load case 
+//       (multi-load case problem). 
+void append_visualization_to_plato_analyze_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode)
+{
+    // output block is undefined    
+    if(aMetaData.mOutputMetaData.size() == 0)
+    {
+        return;
+    }
+
+    std::vector<std::string> tNativeOutputList;
+    for (auto &tOutputMetadata : aMetaData.mOutputMetaData)
+    {
+        tNativeOutputList.push_back(tOutputMetadata.value("native_service_output"));
+    }
+    auto tItr = std::find(tNativeOutputList.begin(), tNativeOutputList.end(), "true");
+
+    std::string tServiceID = get_plato_analyze_service_id(aMetaData);
+    std::string tNativeOutputDirectoryTag = tServiceID + "_";
+
+    if(tItr != tNativeOutputList.end())
+    {
+        auto tOperationNode = aParentNode.append_child("Operation");
+        XMLGen::append_children({"Function", "Name", "VizDirectory"}, {"Visualization", "Visualization", "native_plato_analyze_" + tNativeOutputDirectoryTag + "output"}, tOperationNode);
+    }
+}
+ // function append_visualization_to_plato_analyze_operation
+ /******************************************************************************/
+
+/******************************************************************************/
 void append_write_output_to_plato_analyze_operation
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
@@ -465,7 +515,7 @@ void append_write_output_to_plato_analyze_operation
     {
         return;
     }
-    if(aMetaData.optimization_parameters().optimization_type() == "shape")
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
         return;
     }
@@ -475,7 +525,7 @@ void append_write_output_to_plato_analyze_operation
     auto tOperationNode = aParentNode.append_child("Operation");
     XMLGen::append_children({"Function", "Name"}, {"WriteOutput", "Write Output"}, tOperationNode);
 
-    if(aMetaData.optimization_parameters().filter_in_engine() == "false")
+    if(!aMetaData.optimization_parameters().filterInEngine())
     {
         auto tOutput = tOperationNode.append_child("Output");
         XMLGen::append_children({"ArgumentName"}, {"Topology"}, tOutput);
@@ -493,6 +543,42 @@ void append_write_output_to_plato_analyze_operation
 /******************************************************************************/
 
 /******************************************************************************/
+void append_filter_control_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimization_type() == "topology")
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children({"Function", "Name"}, {"ApplyHelmholtz", "Filter Control"}, tOperation);
+        auto tInput = tOperation.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Topology"}, tInput);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children({"ArgumentName"}, {"Topology"}, tOutput);
+    }
+}
+// function append_filter_control_to_plato_analyze_helmholtz_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_filter_gradient_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimization_type() == "topology")
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children({"Function", "Name"}, {"ApplyHelmholtzGradient", "Filter Gradient"}, tOperation);
+        auto tInput = tOperation.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Topology"}, tInput);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children({"ArgumentName"}, {"Topology"}, tOutput);
+    }
+}
+// function append_filter_gradient_to_plato_analyze_helmholtz_operation
+/******************************************************************************/
+
+/******************************************************************************/
 void write_plato_analyze_operation_xml_file
 (const XMLGen::InputData& aXMLMetaData)
 {
@@ -500,6 +586,7 @@ void write_plato_analyze_operation_xml_file
     XMLGen::append_include_defines_xml_data(aXMLMetaData, tDocument);
     XMLGen::append_reinit_on_change_data(aXMLMetaData, tDocument);
     XMLGen::append_mesh_map_data(aXMLMetaData, tDocument);
+    XMLGen::append_visualization_to_plato_analyze_operation(aXMLMetaData, tDocument);
     XMLGen::append_write_output_to_plato_analyze_operation(aXMLMetaData, tDocument);
     XMLGen::append_update_problem_to_plato_analyze_operation(aXMLMetaData, tDocument);
     XMLGen::append_compute_objective_value_to_plato_analyze_operation(aXMLMetaData, tDocument);
@@ -513,7 +600,44 @@ void write_plato_analyze_operation_xml_file
 /******************************************************************************/
 
 /******************************************************************************/
+void write_plato_analyze_helmholtz_operation_xml_file
+(const XMLGen::InputData& aXMLMetaData)
+{
+    pugi::xml_document tDocument;
+    XMLGen::append_filter_control_to_plato_analyze_helmholtz_operation(aXMLMetaData, tDocument);
+    XMLGen::append_filter_gradient_to_plato_analyze_helmholtz_operation(aXMLMetaData, tDocument);
+
+    std::string tServiceID = aXMLMetaData.services()[0].id();
+    std::string tFilename = std::string("plato_analyze_") + tServiceID + "_operations.xml";
+    tDocument.save_file(tFilename.c_str(), "  ");
+}
+/******************************************************************************/
+
+/******************************************************************************/
 void write_amgx_input_file(const XMLGen::InputData& aMetaData)
+{
+    std::vector<XMLGen::Scenario> tScenarios = aMetaData.scenarios();
+    bool tAtLeastOneScenarioIncludesPlasticity       = false;
+    bool tAtLeastOneScenarioIncludesThermoplasticity = false;
+    for (unsigned int tIndex = 0; tIndex < tScenarios.size(); ++tIndex)
+    {
+        if (tScenarios[tIndex].physics() == "plasticity")
+            tAtLeastOneScenarioIncludesPlasticity = true;
+        else if (tScenarios[tIndex].physics() == "thermoplasticity")
+            tAtLeastOneScenarioIncludesThermoplasticity = true;
+    }
+    
+    if (tAtLeastOneScenarioIncludesThermoplasticity)
+        XMLGen::write_amgx_input_file_for_thermoplasticity(aMetaData);
+    else if (tAtLeastOneScenarioIncludesPlasticity)
+        XMLGen::write_amgx_input_file_for_plasticity(aMetaData);
+    else
+        XMLGen::write_default_amgx_input_file(aMetaData);
+}
+/******************************************************************************/
+
+/******************************************************************************/
+void write_default_amgx_input_file(const XMLGen::InputData& aMetaData)
 {
     FILE *tFilePointer = fopen("amgx.json", "w");
     if(tFilePointer)
@@ -550,6 +674,130 @@ void write_amgx_input_file(const XMLGen::InputData& aMetaData)
         fprintf(tFilePointer, "\"cycle\": \"W\"\n");
         fprintf(tFilePointer, "},\n");
         fprintf(tFilePointer, "\"solver\": \"PBICGSTAB\",\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+        fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
+        fprintf(tFilePointer, "\"max_iters\": 1000,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
+        fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
+        fprintf(tFilePointer, "\"scope\": \"main\",\n");
+
+        std::string tTolerance = "1e-12";
+        std::string tScenarioID = aMetaData.objective.scenarioIDs[0];
+        auto &tScenario = aMetaData.scenario(tScenarioID);
+        if(tScenario.solverTolerance().length() > 0)
+            tTolerance = tScenario.solverTolerance();
+
+        fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
+        fprintf(tFilePointer, "\"norm\": \"L2\"\n");
+        fprintf(tFilePointer, "}\n");
+        fprintf(tFilePointer, "}\n");
+        fclose(tFilePointer);
+    }
+}
+/******************************************************************************/
+
+/******************************************************************************/
+void write_amgx_input_file_for_plasticity(const XMLGen::InputData& aMetaData)
+{
+    FILE *tFilePointer = fopen("amgx.json", "w");
+    if(tFilePointer)
+    {
+        fprintf(tFilePointer, "{\n");
+        fprintf(tFilePointer, "\"config_version\": 2,\n");
+        fprintf(tFilePointer, "\"solver\": {\n");
+        fprintf(tFilePointer, "\"preconditioner\": {\n");
+        fprintf(tFilePointer, "\"print_grid_stats\": 1,\n");
+        fprintf(tFilePointer, "\"algorithm\": \"AGGREGATION\",\n");
+        fprintf(tFilePointer, "\"print_vis_data\": 0,\n");
+        fprintf(tFilePointer, "\"max_matching_iterations\": 50,\n");
+        fprintf(tFilePointer, "\"max_unassigned_percentage\": 0.01,\n");
+        fprintf(tFilePointer, "\"solver\": \"AMG\",\n");
+        fprintf(tFilePointer, "\"smoother\": {\n");
+        fprintf(tFilePointer, "\"relaxation_factor\": 0.78,\n");
+        fprintf(tFilePointer, "\"scope\": \"jacobi\",\n");
+        fprintf(tFilePointer, "\"solver\": \"MULTICOLOR_GS\",\n");
+        fprintf(tFilePointer, "\"symmetric_GS\": 1,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 0,\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0\n");
+        fprintf(tFilePointer, "},\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+        fprintf(tFilePointer, "\"dense_lu_num_rows\": 128,\n");
+        fprintf(tFilePointer, "\"presweeps\": 1,\n");
+        fprintf(tFilePointer, "\"selector\": \"SIZE_8\",\n");
+        fprintf(tFilePointer, "\"coarse_solver\": \"DENSE_LU_SOLVER\",\n");
+        fprintf(tFilePointer, "\"coarsest_sweeps\": 2,\n");
+        fprintf(tFilePointer, "\"max_iters\": 1,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 0,\n");
+        fprintf(tFilePointer, "\"store_res_history\": 0,\n");
+        fprintf(tFilePointer, "\"scope\": \"amg\",\n");
+        fprintf(tFilePointer, "\"max_levels\": 100,\n");
+        fprintf(tFilePointer, "\"postsweeps\": 1,\n");
+        fprintf(tFilePointer, "\"cycle\": \"W\"\n");
+        fprintf(tFilePointer, "},\n");
+        fprintf(tFilePointer, "\"solver\": \"FGMRES\",\n");
+        fprintf(tFilePointer, "\"gmres_n_restart\": 1000,\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+        fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
+        fprintf(tFilePointer, "\"max_iters\": 1000,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
+        fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
+        fprintf(tFilePointer, "\"scope\": \"main\",\n");
+
+        std::string tTolerance = "1e-12";
+        std::string tScenarioID = aMetaData.objective.scenarioIDs[0];
+        auto &tScenario = aMetaData.scenario(tScenarioID);
+        if(tScenario.solverTolerance().length() > 0)
+            tTolerance = tScenario.solverTolerance();
+
+        fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
+        fprintf(tFilePointer, "\"norm\": \"L2\"\n");
+        fprintf(tFilePointer, "}\n");
+        fprintf(tFilePointer, "}\n");
+        fclose(tFilePointer);
+    }
+}
+/******************************************************************************/
+
+/******************************************************************************/
+void write_amgx_input_file_for_thermoplasticity(const XMLGen::InputData& aMetaData)
+{
+    FILE *tFilePointer = fopen("amgx.json", "w");
+    if(tFilePointer)
+    {
+        fprintf(tFilePointer, "{\n");
+        fprintf(tFilePointer, "\"config_version\": 2,\n");
+        fprintf(tFilePointer, "\"solver\": {\n");
+        fprintf(tFilePointer, "\"preconditioner\": {\n");
+        fprintf(tFilePointer, "\"print_grid_stats\": 1,\n");
+        fprintf(tFilePointer, "\"algorithm\": \"AGGREGATION\",\n");
+        fprintf(tFilePointer, "\"print_vis_data\": 0,\n");
+        fprintf(tFilePointer, "\"max_matching_iterations\": 50,\n");
+        fprintf(tFilePointer, "\"max_unassigned_percentage\": 0.01,\n");
+        fprintf(tFilePointer, "\"solver\": \"AMG\",\n");
+        fprintf(tFilePointer, "\"smoother\": {\n");
+        fprintf(tFilePointer, "\"relaxation_factor\": 0.78,\n");
+        fprintf(tFilePointer, "\"scope\": \"jacobi\",\n");
+        fprintf(tFilePointer, "\"solver\": \"MULTICOLOR_GS\",\n");
+        fprintf(tFilePointer, "\"symmetric_GS\": 0,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 0,\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0\n");
+        fprintf(tFilePointer, "},\n");
+        fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+        fprintf(tFilePointer, "\"dense_lu_num_rows\": 128,\n");
+        fprintf(tFilePointer, "\"presweeps\": 1,\n");
+        fprintf(tFilePointer, "\"selector\": \"SIZE_8\",\n");
+        fprintf(tFilePointer, "\"coarse_solver\": \"DENSE_LU_SOLVER\",\n");
+        fprintf(tFilePointer, "\"coarsest_sweeps\": 2,\n");
+        fprintf(tFilePointer, "\"max_iters\": 1,\n");
+        fprintf(tFilePointer, "\"monitor_residual\": 0,\n");
+        fprintf(tFilePointer, "\"store_res_history\": 0,\n");
+        fprintf(tFilePointer, "\"scope\": \"amg\",\n");
+        fprintf(tFilePointer, "\"max_levels\": 100,\n");
+        fprintf(tFilePointer, "\"postsweeps\": 1,\n");
+        fprintf(tFilePointer, "\"cycle\": \"W\"\n");
+        fprintf(tFilePointer, "},\n");
+        fprintf(tFilePointer, "\"solver\": \"FGMRES\",\n");
+        fprintf(tFilePointer, "\"gmres_n_restart\": 1000,\n");
         fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
         fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
         fprintf(tFilePointer, "\"max_iters\": 1000,\n");

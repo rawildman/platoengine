@@ -73,7 +73,7 @@ void check_mma_inputs(const Plato::OutputDataMMA<ScalarType, OrdinalType> &aData
     try
     {
         Plato::error::is_file_open(aOutputFile);
-        Plato::error::is_vector_empty(aData.mConstraints);
+        //Plato::error::is_vector_empty(aData.mConstraints);
     }
     catch(const std::invalid_argument& tError)
     {
@@ -146,7 +146,7 @@ void print_mma_diagnostics_header(const Plato::OutputDataMMA<ScalarType, Ordinal
 
     if(aData.mConstraints.size() <= static_cast<OrdinalType>(0))
     {
-        THROWERR("CONTAINER WITH CONSTRAINT VALUES IS EMPTY.\n")
+        //THROWERR("CONTAINER WITH CONSTRAINT VALUES IS EMPTY.\n")
     }
 
     aOutputFile << std::scientific << std::setprecision(6) << std::right << "Iter" << std::setw(10) << "F-count"
@@ -187,7 +187,7 @@ void print_mma_diagnostics(const Plato::OutputDataMMA<ScalarType, OrdinalType> &
     {
         THROWERR(tErrorMsg.what())
     }
-    assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
+    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
 
     aOutputFile << std::scientific << std::setprecision(6) << std::right << aData.mNumIter << std::setw(10)
             << aData.mObjFuncCount << std::setw(20) << aData.mObjFuncValue << std::setw(15) << aData.mNormObjFuncGrad

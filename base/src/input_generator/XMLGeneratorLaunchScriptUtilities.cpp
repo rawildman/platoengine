@@ -1,8 +1,10 @@
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "pugixml.hpp"
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -60,9 +62,12 @@ namespace XMLGen
   {
     int tNumRefines = XMLGen::Internal::get_number_of_refines(aInputData);
 
-    bool need_to_transfer_prune_or_refine = tNumRefines > 0 || (aInputData.optimization_parameters().initial_guess_file_name() != ""
-                                                          && aInputData.optimization_parameters().initial_guess_field_name() != "");
+    //bool need_to_transfer_prune_or_refine = tNumRefines > 0 || (aInputData.optimization_parameters().initial_guess_file_name() != ""
+    //                                                      && aInputData.optimization_parameters().initial_guess_field_name() != "");
+    bool need_to_transfer_prune_or_refine = tNumRefines > 0 || aInputData.optimization_parameters().isARestartRun();
+
     if(need_to_transfer_prune_or_refine)
+    //if(aInputData.optimization_parameters().isARestartRun())
     {
       XMLGen::append_prune_and_refine_command(aInputData, fp);
       XMLGen::append_concatenate_mesh_file_lines(aInputData,fp);
@@ -97,15 +102,15 @@ namespace XMLGen
 
     std::string tCommand;
     if(aInputData.m_UseLaunch)
-      tCommand = "launch -n " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
+        tCommand = "launch -n " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
     else
-      tCommand = "mpiexec -np " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
+        tCommand = "mpiexec -np " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
     if(aInputData.optimization_parameters().initial_guess_file_name() != "")
-      tCommand += (" --mesh_with_variable=" + aInputData.optimization_parameters().initial_guess_file_name());
+        tCommand += (" --mesh_with_variable=" + aInputData.optimization_parameters().initial_guess_file_name());
     tCommand += (" --mesh_to_be_pruned=" + aInputData.mesh.name);
     tCommand += (" --result_mesh=" + aInputData.mesh.run_name);
     if(aInputData.optimization_parameters().initial_guess_field_name() != "")
-      tCommand += (" --field_name=" + aInputData.optimization_parameters().initial_guess_field_name());
+        tCommand += (" --field_name=" + aInputData.optimization_parameters().initial_guess_field_name());
     tCommand += (" --number_of_refines=" + tNumRefinesString);
     tCommand += (" --number_of_buffer_layers=" + tNumBufferLayersString);
     tCommand += (" --prune_mesh=" + tPruneString);
@@ -130,10 +135,13 @@ namespace XMLGen
 
   void append_decomp_lines_for_prune_and_refine(const XMLGen::InputData& aInputData, FILE*& fp)
   {
+/*
     int tNumRefines = XMLGen::Internal::get_number_of_refines(aInputData);
     bool need_to_transfer_prune_or_refine = tNumRefines > 0 || (aInputData.optimization_parameters().initial_guess_file_name() != ""
                                                           && aInputData.optimization_parameters().initial_guess_field_name() != "");
     if(need_to_transfer_prune_or_refine)
+*/
+    if(aInputData.optimization_parameters().isARestartRun())
     {
       int tNumberPruneAndRefineProcs = XMLGen::Internal::get_number_of_prune_and_refine_procs(aInputData);
       if(tNumberPruneAndRefineProcs > 1)
@@ -146,6 +154,30 @@ namespace XMLGen
       }
     }
   }
+
+    void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)
+    {
+        // This newline is important because the performer lines always end with a
+        // "\" so that the command continues on the next line so we need to 
+        // add a newline to end the previous command.
+        fprintf(fp, "\n");
+        for(const XMLGen::Run &tCurRun : aInputData.runs())
+        {
+            if(tCurRun.command().empty())
+            {
+                std::string tType = tCurRun.type();
+                if(tType == "modal_analysis")
+                {
+                    std::string tInputDeckName = build_post_optimization_run_input_deck_name(tCurRun);
+                    fprintf(fp, "salinas -i %s\n", tInputDeckName.c_str());
+                }
+            }
+            else
+            {
+                fprintf(fp, "%s\n", tCurRun.command().c_str());
+            }
+        } 
+    }
 
   void append_decomp_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
   {
@@ -186,7 +218,7 @@ namespace XMLGen
         XMLGen::Service tService = aInputData.service(aInputData.objective.serviceIDs[i]);
         if(tService.code() != "plato_analyze")
         {
-            XMLGen::Scenario tScenario = aInputData.scenario(aInputData.objective.scenarioIDs[i]);
+            XMLGen::Criterion tCriterion = aInputData.criterion(aInputData.objective.criteriaIDs[i]);
             std::string num_procs = tService.numberProcessors();
     
             XMLGen::assert_is_positive_integer(num_procs);
@@ -196,8 +228,8 @@ namespace XMLGen
             {
                 if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0)
                   XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
-                if(tScenario.value("ref_frf_file").length() > 0)
-                  XMLGen::append_decomp_line(fp, num_procs, tScenario.value("ref_frf_file"));
+                if(tCriterion.value("ref_data_file").length() > 0)
+                  XMLGen::append_decomp_line(fp, num_procs, tCriterion.value("ref_data_file"));
             }
         }
     }
@@ -232,8 +264,10 @@ namespace XMLGen
     aNextPerformerID++;
     fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
-    if(aInputData.codepaths.plato_main_path.length() != 0)
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.codepaths.plato_main_path.c_str());
+
+    auto tPlatoMainServiceId = aInputData.getFirstPlatoMainId();
+    if(aInputData.service(tPlatoMainServiceId).path().length() != 0)
+      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.service(tPlatoMainServiceId).path().c_str());
     else
       fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoEngineName.c_str());
   }
@@ -391,8 +425,8 @@ namespace XMLGen
     std::string get_prune_and_refine_executable_path(const XMLGen::InputData& aInputData)
     {
       std::string tPruneAndRefineExe = "prune_and_refine";
-      if(aInputData.codepaths.prune_and_refine_path.length() > 0)
-        tPruneAndRefineExe = aInputData.codepaths.prune_and_refine_path;
+      if(aInputData.optimization_parameters().prune_and_refine_path().length() > 0)
+        tPruneAndRefineExe = aInputData.optimization_parameters().prune_and_refine_path();
       return tPruneAndRefineExe;
     }
 

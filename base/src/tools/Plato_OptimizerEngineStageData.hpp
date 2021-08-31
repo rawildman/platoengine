@@ -181,7 +181,7 @@ public:
 
     double getOCGradientTolerance() const;
     void setOCGradientTolerance(const double & aInput);
-  
+
     /******************************************************************************//**
      * @brief Return limited memory storage capacity for LBFG Hessian method
      * @return limited memory storage capacity

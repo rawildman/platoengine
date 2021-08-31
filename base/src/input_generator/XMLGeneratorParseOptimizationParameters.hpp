@@ -75,6 +75,27 @@ private:
     void setFixedSidesetIDs(XMLGen::OptimizationParameters &aMetadata);
 
     /******************************************************************************//**
+     * \fn setFixedBlockDomainValues
+     * \brief Set density values corresponding to the fixed block domains 
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setFixedBlockDomainValues(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setFixedBlockBoundaryValues
+     * \brief Set density values corresponding to the fixed block boundaries 
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setFixedBlockBoundaryValues(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setFixedBlockMaterialStates
+     * \brief Set material state for each fixed block, options are solid and fluid. 
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setFixedBlockMaterialStates(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
      * \fn setMaterialBoxExtents
      * \brief Set the material box extent metadata
      * \param [in] aMetadata optimization parameters metadata
@@ -122,6 +143,41 @@ private:
      * \param [in] aMetadata optimization parameters metadata
     **********************************************************************************/
     void checkROLHessianType(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setMMAStagnationDefaultsForShapeOptimizationProblems
+     * \brief Set MMA stagnation tolerance defaults for shape optimization problems
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setMMAStagnationDefaultsForShapeOptimizationProblems(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setOptimizationType
+     * \brief Set the optimization type for this problem
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setOptimizationType(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setFilterInEngine
+     * \brief Set whether to filter in the engine
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setFilterInEngine(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setEnforceBounds
+     * \brief Set whether to enforce bounds in the engine
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setEnforceBounds(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setNormalizeInAggregator
+     * \brief Set whether to normalize in the aggregator
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setNormalizeInAggregator(XMLGen::OptimizationParameters &aMetadata);
 public:
 
     /******************************************************************************//**

@@ -104,10 +104,14 @@ void SystemCall::operator()()
         {
             for(size_t j=0; j<mInputNames.size(); ++j)
             {
+                Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[j] + "\" Values:");
                 auto tInputArgument = mPlatoApp->getValue(mInputNames[j]);
                 std::vector<double> tCurVector(tInputArgument->size());
                 for(size_t i=0; i<tInputArgument->size(); ++i)
+                {
                     tCurVector[i] = tInputArgument->data()[i];
+                    Plato::Console::Status("Saved: Not set yet; Current: " + std::to_string(tCurVector[i]));
+                }
                 mSavedParameters.push_back(tCurVector);
             }
             tChanged = true;
@@ -117,16 +121,30 @@ void SystemCall::operator()()
         {
             for(size_t j=0; j<mInputNames.size(); ++j)
             {
+                bool tLocalChanged = false;
+                Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[j] + "\" Values:");
                 auto tInputArgument = mPlatoApp->getValue(mInputNames[j]);
                 for(size_t i=0; i<tInputArgument->size(); ++i)
                 {
-                    if(tInputArgument->data()[i] != mSavedParameters[j][i])
+                    double tSavedValue = mSavedParameters[j][i];
+                    double tCurrentValue = tInputArgument->data()[i];
+                    if(tSavedValue != tCurrentValue)
                     {
+                        double tPercentChange = (fabs(tSavedValue-tCurrentValue)/fabs(tSavedValue))*100.0;
+                        char tPercentChangeString[20];
+                        sprintf(tPercentChangeString, "%.1lf", tPercentChange);
+                        Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[j][i]) + "; \tCurrent: " + std::to_string(tInputArgument->data()[i]) + " \t-- CHANGED " + tPercentChangeString + "%");
+                        tLocalChanged = true;
                         tChanged = true;
-                        mSavedParameters[j] = *(tInputArgument);
-                        i = tInputArgument->size();
-                        j = mInputNames.size();
                     }
+                    else
+                    {
+                        Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[j][i]) + "; \tCurrent: " + std::to_string(tInputArgument->data()[i]) + " \t-- NO CHANGE");
+                    }
+                }
+                if(tLocalChanged == true)
+                {
+                    mSavedParameters[j] = *(tInputArgument);
                 }
             }
         }

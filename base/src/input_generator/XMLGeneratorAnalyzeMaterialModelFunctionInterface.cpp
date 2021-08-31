@@ -33,16 +33,43 @@ void append_material_property
  const XMLGen::Material& aMaterial,
  pugi::xml_node& aParentNode)
 {
-    auto tMaterialModelTag = aMaterial.category();
+    auto tMaterialModelTag = aMaterial.materialModel();
     XMLGen::ValidMaterialPropertyKeys tValidKeys;
     auto tValueType = tValidKeys.type(tMaterialModelTag, aMaterialPropertyTag);
     auto tAnalyzeMatPropertyTag = tValidKeys.tag(tMaterialModelTag, aMaterialPropertyTag);
     std::vector<std::string> tKeys = {"name", "type", "value"};
-    auto tMaterialPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aMaterial.value(aMaterialPropertyTag));
+    auto tMaterialPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aMaterial.property(aMaterialPropertyTag));
+/*
+    if(tMaterialPropertyValue == "IGNORE")
+    {
+        std::string tContextString = "Material ID: " + aMaterial.id() + ", Material Model: " + tMaterialModelTag + "\n";
+        PRINTIGNOREINFO(aMaterialPropertyTag, tContextString);
+    }
+*/
     std::vector<std::string> tValues = {tAnalyzeMatPropertyTag, tValueType, tMaterialPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
 }
 // function append_material_property
+
+void append_material_property_array
+(const std::string& aMaterialPropertyTag,
+ const XMLGen::Material& aMaterial,
+ pugi::xml_node& aParentNode)
+{
+    auto tMatPropList = aMaterial.properties(aMaterialPropertyTag);
+    if (!tMatPropList.begin()->empty())
+    {
+        auto tMaterialModelTag = aMaterial.materialModel();
+        XMLGen::ValidMaterialPropertyKeys tValidKeys;
+        auto tValueType = tValidKeys.type(tMaterialModelTag, aMaterialPropertyTag);
+        auto tAnalyzeMatPropertyTag = tValidKeys.tag(tMaterialModelTag, aMaterialPropertyTag);
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        auto tMatPropValues = XMLGen::transform_tokens_for_plato_analyze_input_deck(tMatPropList);
+        std::vector<std::string> tValues = {tAnalyzeMatPropertyTag, tValueType, tMatPropValues};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+    }
+}
+// function append_material_property_array
 
 void append_material_properties_to_plato_analyze_material_model
 (const XMLGen::Material& aMaterial,
@@ -51,7 +78,7 @@ void append_material_properties_to_plato_analyze_material_model
     XMLGen::Private::is_material_property_tags_container_empty(aMaterial);
 
     auto tTags = aMaterial.tags();
-    auto tMaterialModelTag = aMaterial.category();
+    auto tMaterialModelTag = aMaterial.materialModel();
     XMLGen::ValidMaterialPropertyKeys tValidKeys;
     std::vector<std::string> tKeys = {"name", "type", "value"};
     for(auto& tMaterialPropTag : tTags)
@@ -74,6 +101,22 @@ void append_isotropic_linear_elastic_material_to_plato_problem
     XMLGen::append_attributes({"name"}, {"Isotropic Linear Elastic"}, tIsotropicLinearElasticModel);
     XMLGen::Private::append_material_property("poissons_ratio", aMaterial, tIsotropicLinearElasticModel);
     XMLGen::Private::append_material_property("youngs_modulus", aMaterial, tIsotropicLinearElasticModel);
+}
+// function append_isotropic_linear_elastic_material_to_plato_problem
+
+void append_isotropic_linear_thermoelastic_material_to_thermoplasticity_in_plato_problem
+(const XMLGen::Material& aMaterial,
+ pugi::xml_node& aParentNode)
+{
+    auto tElasticModel = aParentNode.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {aMaterial.name()}, tElasticModel);
+    auto tIsotropicLinearThermoelasticModel = tElasticModel.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Isotropic Linear Thermoelastic"}, tIsotropicLinearThermoelasticModel);
+    XMLGen::Private::append_material_property("poissons_ratio", aMaterial, tIsotropicLinearThermoelasticModel);
+    XMLGen::Private::append_material_property("youngs_modulus", aMaterial, tIsotropicLinearThermoelasticModel);
+    XMLGen::Private::append_material_property("thermal_expansivity", aMaterial, tIsotropicLinearThermoelasticModel);
+    XMLGen::Private::append_material_property("thermal_conductivity", aMaterial, tIsotropicLinearThermoelasticModel);
+    XMLGen::Private::append_material_property("reference_temperature", aMaterial, tIsotropicLinearThermoelasticModel);
 }
 // function append_isotropic_linear_elastic_material_to_plato_problem
 
@@ -169,11 +212,60 @@ void append_j2_plasticity_material_to_plato_problem
     // elastic properties
     XMLGen::Private::append_isotropic_linear_elastic_material_to_plato_problem(aMaterial, aParentNode);
     auto tMaterialModel = aParentNode.child("ParameterList");
-    XMLGen::Private::append_material_property("pressure_scaling", aMaterial, tMaterialModel);
     // plastic properties
     XMLGen::Private::append_j2_plasticity_material_properties(aMaterial, tMaterialModel);
 }
 // function append_j2_plasticity_material_to_plato_problem
+
+void append_thermoplasticity_material_to_plato_problem
+(const XMLGen::Material& aMaterial,
+ pugi::xml_node& aParentNode)
+{
+    // thermoelastic properties
+    XMLGen::Private::append_isotropic_linear_thermoelastic_material_to_thermoplasticity_in_plato_problem(aMaterial, aParentNode);
+    auto tMaterialModel = aParentNode.child("ParameterList");
+    // plastic properties
+    XMLGen::Private::append_j2_plasticity_material_properties(aMaterial, tMaterialModel);
+}
+// function append_thermoplasticity_material_to_plato_problem
+
+void append_incompressible_fluid_material_to_plato_problem(
+    const XMLGen::Material &aMaterial,
+    pugi::xml_node &aParentNode)
+{
+    auto tMaterialName = aMaterial.name();
+    auto tMaterialModel = aParentNode.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {tMaterialName}, tMaterialModel);
+
+    // material properties
+    XMLGen::Private::append_material_property("reynolds_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+}
+// function append_incompressible_fluid_material_to_plato_problem
+
+void append_natural_buoyancy_material_to_plato_problem(
+    const XMLGen::Material &aMaterial,
+    pugi::xml_node &aParentNode)
+{
+    auto tMaterialName = aMaterial.name();
+    auto tMaterialModel = aParentNode.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {tMaterialName}, tMaterialModel);
+
+    // material properties
+    XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("prandtl_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("thermal_diffusivity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("kinematic_viscocity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("thermal_conductivity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("reference_temperature", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("characteristic_length", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("thermal_diffusivity_ratio", aMaterial, tMaterialModel);
+
+    // material property arrays
+    XMLGen::Private::append_material_property_array("grashof_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property_array("rayleigh_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property_array("richardson_number", aMaterial, tMaterialModel);
+}
 
 }
 // namespace Private
@@ -220,6 +312,21 @@ void AppendMaterialModelParameters::insert()
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_j2_plasticity_material_to_plato_problem));
     mMap.insert(std::make_pair("j2_plasticity",
       std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_j2_plasticity_material_to_plato_problem, tFuncIndex)));
+    
+    // thermoplasticity material model
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_thermoplasticity_material_to_plato_problem));
+    mMap.insert(std::make_pair("thermoplasticity",
+      std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_thermoplasticity_material_to_plato_problem, tFuncIndex)));
+    
+    // incompressible flow material model
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_incompressible_fluid_material_to_plato_problem));
+    mMap.insert(std::make_pair("incompressible_flow",
+      std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_incompressible_fluid_material_to_plato_problem, tFuncIndex)));
+    
+    // natural buoyancy material model
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_natural_buoyancy_material_to_plato_problem));
+    mMap.insert(std::make_pair("natural_buoyancy",
+      std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_natural_buoyancy_material_to_plato_problem, tFuncIndex)));
 }
 
 void AppendMaterialModelParameters::call(const XMLGen::Material& aMaterial, pugi::xml_node &aParentNode) const
@@ -232,7 +339,7 @@ void AppendMaterialModelParameters::call(const XMLGen::Material& aMaterial, pugi
 
     aMaterial.empty();
 
-    auto tCategory = Plato::tolower(aMaterial.category());
+    auto tCategory = Plato::tolower(aMaterial.materialModel());
     auto tMapItr = mMap.find(tCategory);
     if(tMapItr == mMap.end())
     {

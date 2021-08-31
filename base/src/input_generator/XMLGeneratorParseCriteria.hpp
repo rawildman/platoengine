@@ -48,6 +48,20 @@ private:
     void setCriterionWeights(XMLGen::Criterion& aMetadata);
 
     /******************************************************************************//**
+     * \fn setModesToExclude
+     * \brief Set 'modes_to_exclude' keyword for modal inverse
+     * \param [in/out] aInputFile parsed input metadata
+    **********************************************************************************/
+    void setModesToExclude(XMLGen::Criterion& aMetadata);
+
+    /******************************************************************************//**
+     * \fn setMatchNodesetIDs
+     * \brief Set nodeset ids to be used when matching frf or modal data
+     * \param [in] aScenario Scenario metadata
+    **********************************************************************************/
+    void setMatchNodesetIDs(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
      * \fn setMetaData
      * \brief Set XMLGen::Criterion metadata.
      * \param [in/out] aInputFile parsed input metadata

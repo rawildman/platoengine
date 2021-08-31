@@ -159,11 +159,20 @@ def toExo(meshName, groupAttrs):
 
   callArgs = ['Su2ToExodus', meshBaseName+'.su2', meshBaseName+'.exo']
 
+  # aflr writes faces w/o a capsGroup attribute to MARK 1
+  callArgs.append("mark")
+  callArgs.append("1")
+  callArgs.append("sideset")
+  callArgs.append("remaining_surface")
+
   for entry in groupAttrs:
     if entry["name"] != "solid_group":
       callArgs.append("mark")
       callArgs.append(entry["index"])
-      callArgs.append("sideset")
+      if entry["name"].find("_nodeset") != -1:
+        callArgs.append("nodeset")
+      else :
+        callArgs.append("sideset")
       callArgs.append(entry["name"])
 
   subprocess.call(callArgs)

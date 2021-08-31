@@ -57,6 +57,7 @@
 #include <utility>
 #include <string>
 #include <map>
+#include <tuple>
 
 #include "XMLGenerator.hpp"
 
@@ -70,9 +71,11 @@
 #include "XMLGeneratorProblem.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
+#include "XMLGeneratorParseLoads.hpp"
 #include "XMLGeneratorParseOutput.hpp"
 #include "XMLGeneratorParseScenario.hpp"
 #include "XMLGeneratorParseServices.hpp"
+#include "XMLGeneratorParseRun.hpp"
 #include "XMLGeneratorParseMaterial.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorParseObjective.hpp"
@@ -80,7 +83,6 @@
 #include "XMLGeneratorParseUncertainty.hpp"
 #include "XMLGeneratorParseOptimizationParameters.hpp"
 #include "XMLGeneratorParseEssentialBoundaryCondition.hpp"
-#include "XMLGeneratorParseNaturalBoundaryCondition.hpp"
 
 namespace XMLGen
 {
@@ -116,33 +118,84 @@ XMLGenerator::~XMLGenerator()
 //  * \fn writeInputFiles
 //  * \brief Write input files, i.e. write all the XML files needed by Plato.
 // **********************************************************************************/
-void XMLGenerator::writeInputFiles()
+void XMLGenerator::writeInputFiles
+(XMLGen::InputData& aInputData)
 {
-    //XMLGen::Analyze::write_optimization_problem(m_InputData);
-    XMLGen::Problem::write_optimization_problem(m_InputData, m_PreProcessedInputData);
+    XMLGen::Problem::write_optimization_problem(aInputData, m_PreProcessedInputData);
+}
+
+// /******************************************************************************//**
+//  * \fn checkForProblemSetupErrors
+//  * \brief Check input data for errors
+// **********************************************************************************/
+void XMLGenerator::checkForProblemSetupErrors
+(XMLGen::InputData& aInputData)
+{
+    this->checkForShapeOptimizationSetupErrors(aInputData);
+}
+
+// /******************************************************************************//**
+//  * \fn checkForShapeOptimizationSetupErrors
+//  * \brief Look for errors specific to shape optimization problems
+// **********************************************************************************/
+void XMLGenerator::checkForShapeOptimizationSetupErrors
+(XMLGen::InputData& aInputData)
+{
+    if(aInputData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        std::string tNumDesignVariablesString = aInputData.optimization_parameters().num_shape_design_variables();
+        int tNumDesignVariables = std::atoi(tNumDesignVariablesString.c_str());
+        for(auto tShapeServiceID : aInputData.objective.shapeServiceIDs)
+        {
+            XMLGen::Service tCurService = aInputData.service(tShapeServiceID);
+            std::string tNumProcsString = tCurService.numberProcessors();
+            int tNumProcs = std::atoi(tNumProcsString.c_str());
+            if(tNumProcs > 1 && tNumProcs != tNumDesignVariables)
+            {
+                THROWERR("If using more than one processor in the service that is calculating the shape sensitivities you must use the same number of processors as num_shape_design_variables specified in the optimization_parameters block.");
+            }
+        }
+    }
 }
 
 /******************************************************************************/
 void XMLGenerator::generate()
 /******************************************************************************/
 {
-    parseInputFile();
+    this->parseInputFile();
+    this->finalize(m_InputData);
 
-    if(!runSROMForUncertainVariables())
+    if(!this->runSROMForUncertainVariables(m_InputData))
     {
-        PRINTERR("Failed to expand uncertainties in file generation.")
+        PRINTERR("Failed to expand uncertainties in input file generation.")
     }
 
-    preProcessInputMetaData();
-
-    writeInputFiles();
+    this->preProcessInputMetaData(m_InputData);
+    this->checkForProblemSetupErrors(m_InputData);
+    this->writeInputFiles(m_InputData);
 }
 
 /******************************************************************************/
-void XMLGenerator::expandEssentialBoundaryConditions()
+void XMLGenerator::generate
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
-    m_InputDataWithExpandedEBCs = m_InputData;
+    this->finalize(aInputData);
+    if(!this->runSROMForUncertainVariables(aInputData))
+    {
+        PRINTERR("Failed to expand uncertainties in input file generation.")
+    }
+    this->preProcessInputMetaData(aInputData);
+    this->checkForProblemSetupErrors(m_InputData);
+    this->writeInputFiles(aInputData);
+}
+
+/******************************************************************************/
+void XMLGenerator::expandEssentialBoundaryConditions
+(XMLGen::InputData& aInputData)
+/******************************************************************************/
+{
+    m_InputDataWithExpandedEBCs = aInputData;
     std::vector<XMLGen::EssentialBoundaryCondition> tNewEBCs;
     std::map<int, std::vector<int> > tOldIDToNewIDMap;
     int tNewID = 1;
@@ -181,8 +234,55 @@ void XMLGenerator::determineIfPlatoEngineFilteringIsNeeded()
     if(m_InputDataWithExpandedEBCs.optimization_parameters().needsMeshMap())
     {
         XMLGen::OptimizationParameters tOptimizationParameters = m_InputDataWithExpandedEBCs.optimization_parameters();
-        tOptimizationParameters.filter_in_engine("false");
+        tOptimizationParameters.append("filter_in_engine", "false", false);
         m_InputDataWithExpandedEBCs.set(tOptimizationParameters);
+    }
+}
+
+/******************************************************************************/
+void XMLGenerator::setupHelmholtzFilterService()
+/******************************************************************************/
+{
+    if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_type() == "helmholtz")
+    {
+        // set filter_in_engine to false
+        XMLGen::OptimizationParameters tOptimizationParameters = m_InputData.optimization_parameters();
+        tOptimizationParameters.filter_in_engine("false");
+        m_InputData.set(tOptimizationParameters);
+
+        XMLGen::Service tHelmholtzService;
+        if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_service().length() > 0)
+        {
+            std::string tFilterServiceId = m_InputDataWithExpandedEBCs.optimization_parameters().filter_service();
+            tHelmholtzService = m_InputDataWithExpandedEBCs.service(tFilterServiceId);
+        }
+
+        // fill in service data for helmholtz filter
+        tHelmholtzService.id("helmholtz");
+        tHelmholtzService.code("plato_analyze");
+        tHelmholtzService.numberProcessors("1");
+        tHelmholtzService.updateProblem("false");
+        tHelmholtzService.cacheState("false");
+        
+        // copy objective first scenario for helmholtz performer spatial dimensions
+        std::string tScenarioID = m_InputDataWithExpandedEBCs.objective.scenarioIDs[0];
+        XMLGen::Scenario tCurScenario = m_InputDataWithExpandedEBCs.scenario(tScenarioID);
+
+        // create new input data for helmholtz performer
+        XMLGen::InputData tNewInputData = m_InputDataWithExpandedEBCs;
+        clearInputDataLists(tNewInputData);
+        tNewInputData.append_unique(tHelmholtzService);
+        tNewInputData.append(tCurScenario);
+        loadMaterialData(tNewInputData, m_InputDataWithExpandedEBCs, tScenarioID);
+
+        if(!serviceExists(m_InputData.mPerformerServices, tHelmholtzService))
+        {
+            m_InputData.mPerformerServices.push_back(tHelmholtzService);
+        }
+
+        m_InputData.append_unique(tHelmholtzService); // add Helmholtz service for path
+
+        m_PreProcessedInputData.push_back(tNewInputData);
     }
 }
 
@@ -217,12 +317,14 @@ void XMLGenerator::updateScenariosWithExpandedBoundaryConditions(std::map<int, s
 }
 
 /******************************************************************************/
-void XMLGenerator::preProcessInputMetaData()
+void XMLGenerator::preProcessInputMetaData
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
-    expandEssentialBoundaryConditions();
+    this->expandEssentialBoundaryConditions(aInputData);
     determineIfPlatoEngineFilteringIsNeeded();
-    createCopiesForPerformerCreation();
+    this->createCopiesForPerformerCreation(aInputData);
+    setupHelmholtzFilterService();
 }
 
 /******************************************************************************/
@@ -244,11 +346,13 @@ void XMLGenerator::clearInputDataLists(XMLGen::InputData &aInputData)
 }
 
 /******************************************************************************/
-void XMLGenerator::loadMaterialData(XMLGen::InputData &aNewInputData, 
-                                     const std::string &aScenarioID)
+void XMLGenerator::loadMaterialData
+(XMLGen::InputData &aNewInputData,
+ const XMLGen::InputData &aOriginalInputData,
+ const std::string &aScenarioID)
 /******************************************************************************/
 {
-    for(auto &tMaterial : m_InputData.materials)
+    for(auto &tMaterial : aOriginalInputData.materials)
     {
         bool tFound = false;
         for(auto &tExistingMaterial : aNewInputData.materials)
@@ -267,26 +371,28 @@ void XMLGenerator::loadMaterialData(XMLGen::InputData &aNewInputData,
 }
 
 /******************************************************************************/
-void XMLGenerator::loadObjectiveData(XMLGen::InputData &aNewInputData, 
-                                     const std::string &aScenarioID,
-                                     const std::string &aServiceID,
-                                     const std::string &aShapeServiceID)
+void XMLGenerator::loadObjectiveData
+(XMLGen::InputData &aNewInputData,
+ const XMLGen::InputData &aOriginalInputData,
+ const std::string &aScenarioID,
+ const std::string &aServiceID,
+ const std::string &aShapeServiceID)
 /******************************************************************************/
 {
-    for(size_t j=0; j<m_InputData.objective.scenarioIDs.size(); j++)
+    for(size_t j=0; j<aOriginalInputData.objective.scenarioIDs.size(); j++)
     {
-        std::string tTempScenarioID = m_InputData.objective.scenarioIDs[j];
-        std::string tTempServiceID = m_InputData.objective.serviceIDs[j];
+        std::string tTempScenarioID = aOriginalInputData.objective.scenarioIDs[j];
+        std::string tTempServiceID = aOriginalInputData.objective.serviceIDs[j];
         std::string tTempShapeServiceID = "";
-        if(m_InputData.objective.scenarioIDs.size() == m_InputData.objective.shapeServiceIDs.size())
+        if(aOriginalInputData.objective.scenarioIDs.size() == aOriginalInputData.objective.shapeServiceIDs.size())
         {
-            tTempShapeServiceID = m_InputData.objective.shapeServiceIDs[j];
+            tTempShapeServiceID = aOriginalInputData.objective.shapeServiceIDs[j];
         }
         if(tTempScenarioID == aScenarioID && tTempServiceID == aServiceID &&
            tTempShapeServiceID == aShapeServiceID)
         {
-            std::string tTempCriterionID = m_InputData.objective.criteriaIDs[j];
-            std::string tWeight = m_InputData.objective.weights[j];
+            std::string tTempCriterionID = aOriginalInputData.objective.criteriaIDs[j];
+            std::string tWeight = aOriginalInputData.objective.weights[j];
             aNewInputData.objective.serviceIDs.push_back(tTempServiceID);
             if(aShapeServiceID != "")
             {
@@ -300,12 +406,14 @@ void XMLGenerator::loadObjectiveData(XMLGen::InputData &aNewInputData,
 }
 
 /******************************************************************************/
-void XMLGenerator::loadConstraintData(XMLGen::InputData &aNewInputData, 
-                                     const std::string &aScenarioID,
-                                     const std::string &aServiceID)
+void XMLGenerator::loadConstraintData
+(XMLGen::InputData &aNewInputData,
+ const XMLGen::InputData &aOriginalInputData,
+ const std::string &aScenarioID,
+ const std::string &aServiceID)
 /******************************************************************************/
 {
-    for(auto &tConstraint : m_InputData.constraints)
+    for(auto &tConstraint : aOriginalInputData.constraints)
     {
         std::string tTempScenarioID = tConstraint.scenario();
         std::string tTempServiceID = tConstraint.service();
@@ -318,11 +426,13 @@ void XMLGenerator::loadConstraintData(XMLGen::InputData &aNewInputData,
 }
 
 /******************************************************************************/
-void XMLGenerator::loadOutputData(XMLGen::InputData &aNewInputData, 
-                                  const std::string &aServiceID)
+void XMLGenerator::loadOutputData
+(XMLGen::InputData &aNewInputData,
+ const XMLGen::InputData &aOriginalInputData,
+ const std::string &aServiceID)
 /******************************************************************************/
 {
-    for(auto &tOutput : m_InputData.mOutputMetaData)
+    for(auto &tOutput : aOriginalInputData.mOutputMetaData)
     {
         if(tOutput.serviceID() == aServiceID)
         {
@@ -334,7 +444,8 @@ void XMLGenerator::loadOutputData(XMLGen::InputData &aNewInputData,
 
 /******************************************************************************/
 void XMLGenerator::createCopiesForMultiPerformerCase
-(std::set<std::tuple<std::string,std::string,std::string>> &aObjectiveScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>> &aObjectiveScenarioServiceTuples)
 /******************************************************************************/
 {
     for(auto &tTuple : aObjectiveScenarioServiceTuples)
@@ -357,7 +468,7 @@ void XMLGenerator::createCopiesForMultiPerformerCase
         clearInputDataLists(tNewInputData);
 
         // Add back in relevant materials
-        loadMaterialData(tNewInputData, tScenarioID);
+        this->loadMaterialData(tNewInputData, aInputData, tScenarioID);
 
         // Add back in relevant scenario and serivce data.
         tNewInputData.append(tCurScenario);
@@ -368,31 +479,32 @@ void XMLGenerator::createCopiesForMultiPerformerCase
         }
         
         // Add back in the relevant objective data.
-        loadObjectiveData(tNewInputData, tScenarioID, tServiceID, tShapeServiceID);
+        this->loadObjectiveData(tNewInputData, aInputData, tScenarioID, tServiceID, tShapeServiceID);
 
         // Add back in the relevant constraint data.
-        loadConstraintData(tNewInputData, tScenarioID, tServiceID);
+        this->loadConstraintData(tNewInputData, aInputData, tScenarioID, tServiceID);
 
         // Add output block data
-        loadOutputData(tNewInputData, tServiceID);
+        this->loadOutputData(tNewInputData, aInputData, tServiceID);
 
         m_PreProcessedInputData.push_back(tNewInputData);
 
-        m_InputData.mPerformerServices.push_back(m_InputData.service(tServiceID));
+        aInputData.mPerformerServices.push_back(aInputData.service(tServiceID));
         if(tShapeServiceID != "")
         {
-            m_InputData.mPerformerServices.push_back(m_InputData.service(tShapeServiceID));
+            aInputData.mPerformerServices.push_back(aInputData.service(tShapeServiceID));
         }
     }
 }
 
 /******************************************************************************/
-void XMLGenerator::verifyAllServicesAreTheSame()
+void XMLGenerator::verifyAllServicesAreTheSame
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
     int tCntr = 0;
     std::string tFirstServiceID = "";
-    for(auto tServiceID : m_InputData.objective.serviceIDs)
+    for(auto tServiceID : aInputData.objective.serviceIDs)
     {
         if(tCntr == 0)
         {
@@ -425,10 +537,12 @@ bool XMLGenerator::serviceExists(std::vector<XMLGen::Service> &aServiceList, XML
 
 /******************************************************************************/
 void XMLGenerator::createObjectiveCopiesForMultiLoadCase
-(std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
 /******************************************************************************/
 {
-    verifyAllServicesAreTheSame();
+    this->verifyAllServicesAreTheSame(aInputData);
+
     XMLGen::InputData tNewInputData = m_InputDataWithExpandedEBCs;
     clearInputDataLists(tNewInputData);
     for(auto &tTuple : aObjectiveScenarioServiceTuples)
@@ -446,7 +560,7 @@ void XMLGenerator::createObjectiveCopiesForMultiLoadCase
         }
 
         // Add back in relevant materials
-        loadMaterialData(tNewInputData, tScenarioID);
+        this->loadMaterialData(tNewInputData, aInputData, tScenarioID);
 
         // Add back in relevant scenario and serivce data.
         tNewInputData.append_unique(tCurScenario);
@@ -457,23 +571,23 @@ void XMLGenerator::createObjectiveCopiesForMultiLoadCase
         }
         
         // Add back in the relevant objective data.
-        loadObjectiveData(tNewInputData, tScenarioID, tServiceID, tShapeServiceID);
+        this->loadObjectiveData(tNewInputData, aInputData, tScenarioID, tServiceID, tShapeServiceID);
 
         // Add back in the relevant constraint data.
-        loadConstraintData(tNewInputData, tScenarioID, tServiceID);
+        this->loadConstraintData(tNewInputData, aInputData, tScenarioID, tServiceID);
 
         // Add output block data
-        loadOutputData(tNewInputData, tServiceID);
+        this->loadOutputData(tNewInputData, aInputData, tServiceID);
 
-        if(!serviceExists(m_InputData.mPerformerServices, tCurService))
+        if(!serviceExists(aInputData.mPerformerServices, tCurService))
         {
-            m_InputData.mPerformerServices.push_back(tCurService);
+            aInputData.mPerformerServices.push_back(tCurService);
         }
         if(tShapeServiceID != "")
         {
-            if(!serviceExists(m_InputData.mPerformerServices, tCurShapeService))
+            if(!serviceExists(aInputData.mPerformerServices, tCurShapeService))
             {
-                m_InputData.mPerformerServices.push_back(tCurService);
+                aInputData.mPerformerServices.push_back(tCurService);
             }
         }
     }
@@ -482,18 +596,19 @@ void XMLGenerator::createObjectiveCopiesForMultiLoadCase
 
 /******************************************************************************/
 void XMLGenerator::findObjectiveScenarioServiceTuples
-(std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
 /******************************************************************************/
 {
-    for(size_t i=0; i<m_InputData.objective.scenarioIDs.size(); i++)
+    for(size_t i=0; i<aInputData.objective.scenarioIDs.size(); i++)
     {
-        std::string tScenarioID = m_InputData.objective.scenarioIDs[i];
-        std::string tServiceID = m_InputData.objective.serviceIDs[i];
-        std::string tCriterionID = m_InputData.objective.criteriaIDs[i];
+        std::string tScenarioID = aInputData.objective.scenarioIDs[i];
+        std::string tServiceID = aInputData.objective.serviceIDs[i];
+        std::string tCriterionID = aInputData.objective.criteriaIDs[i];
         std::string tShapeServiceID = "";
-        if(m_InputData.objective.shapeServiceIDs.size() == m_InputData.objective.scenarioIDs.size())
+        if(aInputData.objective.shapeServiceIDs.size() == aInputData.objective.scenarioIDs.size())
         {
-            tShapeServiceID = m_InputData.objective.shapeServiceIDs[i];
+            tShapeServiceID = aInputData.objective.shapeServiceIDs[i];
         }
 
         std::tuple<std::string,std::string,std::string> tCurTuple = std::make_tuple(tScenarioID,tServiceID,tShapeServiceID);
@@ -506,13 +621,14 @@ void XMLGenerator::findObjectiveScenarioServiceTuples
 
 /******************************************************************************/
 void XMLGenerator::findConstraintScenarioServiceTuples
-(std::set<std::tuple<std::string,std::string,std::string>>& aConstraintScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>>& aConstraintScenarioServiceTuples)
 /******************************************************************************/
 {
-    for(auto &tConstraint : m_InputData.constraints)
+    for(auto &tConstraint : aInputData.constraints)
     {
         std::string tServiceID = tConstraint.service();
-        auto &tService = m_InputData.service(tServiceID);
+        auto &tService = aInputData.service(tServiceID);
         if(tService.code() != "platomain") // platomain will be added elsewhere
         {
             std::string tScenarioID = tConstraint.scenario();
@@ -530,25 +646,27 @@ void XMLGenerator::findConstraintScenarioServiceTuples
 
 /******************************************************************************/
 void XMLGenerator::createInputDataCopiesForObjectivePerformers
-(std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>>& aObjectiveScenarioServiceTuples)
 /******************************************************************************/
 {
-    if(m_InputData.objective.multi_load_case == "true")
+    if(aInputData.objective.multi_load_case == "true")
     {
-        createObjectiveCopiesForMultiLoadCase(aObjectiveScenarioServiceTuples);
+        createObjectiveCopiesForMultiLoadCase(aInputData, aObjectiveScenarioServiceTuples);
     }
     else
     {
-        createCopiesForMultiPerformerCase(aObjectiveScenarioServiceTuples);
+        this->createCopiesForMultiPerformerCase(aInputData, aObjectiveScenarioServiceTuples);
     }
 }
 
 /******************************************************************************/
 void XMLGenerator::createInputDataCopiesForConstraintPerformers
-(std::set<std::tuple<std::string,std::string,std::string>>& aConstraintScenarioServiceTuples)
+(XMLGen::InputData& aInputData,
+ std::set<std::tuple<std::string,std::string,std::string>>& aConstraintScenarioServiceTuples)
 /******************************************************************************/
 {
-    createCopiesForMultiPerformerCase(aConstraintScenarioServiceTuples);
+    this->createCopiesForMultiPerformerCase(aInputData, aConstraintScenarioServiceTuples);
 }
 
 /******************************************************************************/
@@ -584,39 +702,42 @@ void XMLGenerator::removeDuplicateTuplesFromConstraintList
 }
 
 /******************************************************************************/
-void XMLGenerator::createCopiesForPerformerCreation()
+void XMLGenerator::createCopiesForPerformerCreation
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
     std::set<std::tuple<std::string,std::string,std::string>> tObjectiveScenarioServiceTuples;
     std::set<std::tuple<std::string,std::string,std::string>> tConstraintScenarioServiceTuples;
-    findObjectiveScenarioServiceTuples(tObjectiveScenarioServiceTuples);
-    findConstraintScenarioServiceTuples(tConstraintScenarioServiceTuples);
-    removeDuplicateTuplesFromConstraintList(tObjectiveScenarioServiceTuples, tConstraintScenarioServiceTuples);
-    createInputDataCopiesForObjectivePerformers(tObjectiveScenarioServiceTuples);
-    createInputDataCopiesForConstraintPerformers(tConstraintScenarioServiceTuples);
+    this->findObjectiveScenarioServiceTuples(aInputData, tObjectiveScenarioServiceTuples);
+    this->findConstraintScenarioServiceTuples(aInputData, tConstraintScenarioServiceTuples);
+    this->removeDuplicateTuplesFromConstraintList(tObjectiveScenarioServiceTuples, tConstraintScenarioServiceTuples);
+    this->createInputDataCopiesForObjectivePerformers(aInputData, tObjectiveScenarioServiceTuples);
+    this->createInputDataCopiesForConstraintPerformers(aInputData, tConstraintScenarioServiceTuples);
 }
 
 /******************************************************************************/
-bool XMLGenerator::runSROMForUncertainVariables()
+bool XMLGenerator::runSROMForUncertainVariables
+(XMLGen::InputData &aInputData)
 /******************************************************************************/
 {
-    if(m_InputData.uncertainties.size() > 0)
+    if(aInputData.uncertainties.size() > 0)
     {
-        Plato::srom::solve(m_InputData);
-        this->setNumPerformers();
+        Plato::srom::solve(aInputData);
+        this->setNumPerformers(aInputData);
     }
 
     return true;
 }
 
 /******************************************************************************/
-void XMLGenerator::setNumPerformers()
+void XMLGenerator::setNumPerformers
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
-    auto &tService = m_InputData.service(m_InputData.objective.serviceIDs[0]); 
-    m_InputData.m_UncertaintyMetaData.numPerformers = std::stoi(tService.numberProcessors());
+    auto &tService = aInputData.service(aInputData.objective.serviceIDs[0]);
+    aInputData.m_UncertaintyMetaData.numPerformers = std::stoi(tService.numberProcessors());
 
-    if (m_InputData.mRandomMetaData.numSamples() % m_InputData.m_UncertaintyMetaData.numPerformers != 0)
+    if (aInputData.mRandomMetaData.numSamples() % aInputData.m_UncertaintyMetaData.numPerformers != 0)
     {
         THROWERR("Set Number for Performers: Number of samples must divide evenly into number of ranks.");
     }
@@ -642,6 +763,16 @@ void XMLGenerator::parseScenarios(std::istream &aInputFile)
 }
 
 /******************************************************************************/
+void XMLGenerator::parseRuns(std::istream &aInputFile)
+/******************************************************************************/
+{
+    XMLGen::ParseRun tParseRun;
+    tParseRun.parse(aInputFile);
+    auto tRuns = tParseRun.data();
+    m_InputData.set(tRuns);
+}
+
+/******************************************************************************/
 void XMLGenerator::parseServices(std::istream &aInputFile)
 /******************************************************************************/
 {
@@ -664,9 +795,9 @@ void XMLGenerator::parseObjective(std::istream &aInputFile)
 bool XMLGenerator::parseLoads(std::istream &fin)
 /******************************************************************************/
 {
-    XMLGen::ParseNaturalBoundaryCondition tParseNaturalBoundaryCondition;
-    tParseNaturalBoundaryCondition.parse(fin);
-    m_InputData.loads = tParseNaturalBoundaryCondition.data();
+    XMLGen::ParseLoad tParseLoad;
+    tParseLoad.parse(fin);
+    m_InputData.loads = tParseLoad.data();
     return true;
 }
 
@@ -761,956 +892,8 @@ bool XMLGenerator::parseOptimizationParameters(std::istream &fin)
     {
       THROWERR("Failed to parse an optimization_parameters block.")
     }
-#if 0
-  // Initialize variables
-  this->initializePlatoProblemOptions();
 
-  std::string tStringValue;
-  std::vector<std::string> tInputStringList;
-  // read each line of the file
-  while (!fin.eof())
-  {
-    // read an entire line into memory
-    char buf[MAX_CHARS_PER_LINE];
-    fin.getline(buf, MAX_CHARS_PER_LINE);
-    std::vector<std::string> tokens;
-    XMLGen::parseTokens(buf, tokens);
-
-    // process the tokens
-    if(tokens.size() > 0)
-    {
-      for(size_t j=0; j<tokens.size(); ++j)
-        tokens[j] = toLower(tokens[j]);
-
-      if(parseSingleValue(tokens, tInputStringList = {"begin","optimization","parameters"}, tStringValue))
-      {
-        // found optimization parameters
-        while (!fin.eof())
-        {
-          fin.getline(buf, MAX_CHARS_PER_LINE);
-          tokens.clear();
-          XMLGen::parseTokens(buf, tokens);
-          // process the tokens
-          if(tokens.size() > 0)
-          {
-            std::vector<std::string> unlowered_tokens = tokens;
-
-            for(size_t j=0; j<tokens.size(); ++j)
-              tokens[j] = toLower(tokens[j]);
-
-            if(parseSingleValue(tokens, tInputStringList = {"end","optimization","parameters"}, tStringValue))
-            {
-              break;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"begin","material_box"}, tStringValue))
-            {
-              while (!fin.eof())
-              {
-                fin.getline(buf, MAX_CHARS_PER_LINE);
-                tokens.clear();
-                XMLGen::parseTokens(buf, tokens);
-                // process the tokens
-                if(tokens.size() > 0)
-                {
-                  for(size_t j=0; j<tokens.size(); ++j)
-                    tokens[j] = toLower(tokens[j]);
-
-                  if(parseSingleValue(tokens, tInputStringList = {"end","material_box"}, tStringValue))
-                  {
-                    if(m_InputData.optimizer.levelset_material_box_min == "" ||
-                        m_InputData.optimizer.levelset_material_box_max == "")
-                    {
-                      std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: Not enough info in \"material_box\" block.\n";
-                      return false;
-                    }
-                    break;
-                  }
-                  else if(parseSingleValue(tokens, tInputStringList = {"min", "coords"}, tStringValue))
-                  {
-                    if(tokens.size() != 5)
-                    {
-                      std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: Wrong number of params in \"min coords\" line.\n";
-                      return false;
-                    }
-                    for(size_t j=2; j<5; ++j)
-                    {
-                      m_InputData.optimizer.levelset_material_box_min += tokens[j];
-                      if(j<4)
-                        m_InputData.optimizer.levelset_material_box_min += " ";
-                    }
-                  }
-                  else if(parseSingleValue(tokens, tInputStringList = {"max", "coords"}, tStringValue))
-                  {
-                    if(tokens.size() != 5)
-                    {
-                      std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: Wrong number of params in \"max coords\" line.\n";
-                      return false;
-                    }
-                    for(size_t j=2; j<5; ++j)
-                    {
-                      m_InputData.optimizer.levelset_material_box_max += tokens[j];
-                      if(j<4)
-                        m_InputData.optimizer.levelset_material_box_max += " ";
-                    }
-                  }
-                }
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"objective","number","standard","deviations"}, tStringValue))
-            {
-              if(tokens.size() < 5)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"objective number standard deviations\" keywords.\n";
-                return false;
-              }
-              m_InputData.optimizer.objective_number_standard_deviations = tokens[4];
-            }
-            // else if(parseSingleValue(tokens, tInputStringList = {"output", "standard","deviations"}, tStringValue))
-            // {
-            //   if(tokens.size() < 4)
-            //   {
-            //     std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No outputs specified after \"output standard deviations\" keywords.\n";
-            //     return false;
-            //   }
-            //   for(size_t j=3; j<tokens.size(); ++j)
-            //   {
-            //     m_InputData.mStandardDeviations.push_back(tokens[j]);
-            //   }
-            // }
-            else if(parseSingleValue(tokens, tInputStringList = {"initial","density","value"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"initial density value\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.initial_density_value = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"optimization","type"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"optimization type\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.optimization_type = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"csm","file"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"csm file\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.csm_filename = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"normalize_in_aggregator"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"normalize_in_aggregator\" keyword.\n";
-                return false;
-              }
-              m_InputData.optimizer.mNormalizeInAggregator = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"create","levelset","spheres"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"create levelset spheres\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.create_levelset_spheres = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"write","restart","file"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"write restart file\" keyword(s).\n";
-                return false;
-              }
-              if(tStringValue == "true")
-                m_InputData.optimizer.write_restart_file = "True";
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"levelset","initialization","method"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"levelset initialization method\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.levelset_initialization_method = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"max","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"max iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.max_iterations = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"restart","iteration"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"restart iteration\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.restart_iteration = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"initial","guess","filename"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"initial guess filename\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.initial_guess_filename = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"initial","guess","field","name"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"initial guess field name\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.initial_guess_field_name = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"prune","mesh"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"prune mesh\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.prune_mesh = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"number","buffer","layers"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"number buffer layers\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.number_buffer_layers = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"number","prune","and","refine","processors"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"number prune and refine processors\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.number_prune_and_refine_processors = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"number","refines"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"number refines\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.number_refines = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"verbose"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"verbose\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mVerbose = XMLGen::to_lower(tStringValue);
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","move","limit"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma move limit\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAMoveLimit = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","control","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma control stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAControlStagnationTolerance = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","objective","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma objective stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAObjectiveStagnationTolerance = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","asymptote","expansion"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma asymptote expansion\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAAsymptoteExpansion = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","asymptote","contraction"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma asymptote contraction\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAAsymptoteContraction = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","max","sub","problem","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma max sub problem iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAMaxNumSubProblemIterations = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"mma","max","trust","region","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"mma max trust region iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMMAMaxTrustRegionIterations = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","max","trust","region","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks max trust region iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMaxTrustRegionIterations = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","trust","region","expansion","factor"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks trust region expansion factor\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mTrustRegionExpansionFactor = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","trust","region","contraction","factor"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks trust region contraction factor\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mTrustRegionContractionFactor = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","outer","gradient","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks outer gradient tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterGradientToleranceKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","outer","stationarity","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks outer stationarity tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterStationarityToleranceKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","outer","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks outer stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterStagnationToleranceKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","outer","control","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks outer control stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterControlStagnationToleranceKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","disable","post","smoothing"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks disable post smoothing\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mDisablePostSmoothingKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","outer","actual","reduction","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks outer actual reduction tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterActualReductionToleranceKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","trust","region","ratio","low"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks trust region ratio low\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mTrustRegionRatioLowKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","trust","region","ratio","mid"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks trust region ratio mid\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mTrustRegionRatioMidKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","trust","region","ratio","high"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks trust region ratio high\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mTrustRegionRatioUpperKS = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","initial","radius","scale"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks initial radius scale\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mInitialRadiusScale = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks","max","radius","scale"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks max radius scale\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMaxRadiusScale = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"problem","update","frequency"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"problem update frequency\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mProblemUpdateFrequency = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","max","inner","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma max inner iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMaxInnerIterationsGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","inner","kkt","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma inner kkt tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mInnerKKTtoleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","inner","control","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma inner control stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mInnerControlStagnationToleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","outer","kkt","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma outer kkt tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterKKTtoleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","outer","control","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma control stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterControlStagnationToleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","outer","objective","stagnation","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma outer objective stagnation tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterObjectiveStagnationToleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","outer","stationarity","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma outer stationarity tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mOuterStationarityToleranceGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"gcmma","initial","moving","asymptotes","scale","factor"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"gcmma initial moving asymptotes scale factor\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mInitialMovingAsymptotesScaleFactorGCMMA = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"levelset","sphere","packing", "factor"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"levelset sphere packing factor\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.levelset_sphere_packing_factor = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"levelset","sphere","radius"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"levelset sphere radius\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.levelset_sphere_radius = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"levelset","nodesets"}, tStringValue))
-            {
-              if(tokens.size() < 3)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"levelset nodesets\" keyword(s).\n";
-                return false;
-              }
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                m_InputData.optimizer.levelset_nodesets.push_back(tokens[j]);
-              }
-            }
-            // else if(parseSingleValue(tokens, tInputStringList = {"output","frequency"}, tStringValue))
-            // {
-            //   if(tStringValue == "")
-            //   {
-            //     std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"output frequency\" keyword(s).\n";
-            //     return false;
-            //   }
-            //   m_InputData.output_frequency = tStringValue;
-            // }
-            // else if(parseSingleValue(tokens, tInputStringList = {"output","method"}, tStringValue))
-            // {
-            //   if(tokens.size() < 3)
-            //   {
-            //     std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"output method\" keyword(s).\n";
-            //     return false;
-            //   }
-            //   m_InputData.output_method = tokens[2];
-            //   for(size_t j=3; j<tokens.size(); ++j)
-            //   {
-            //     m_InputData.output_method += " ";
-            //     m_InputData.output_method += tokens[j];
-            //   }
-            // }
-            else if(parseSingleValue(tokens, tInputStringList = {"fixed","blocks"}, tStringValue))
-            {
-              if(tokens.size() < 3)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"fixed blocks\" keyword(s).\n";
-                return false;
-              }
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                m_InputData.optimizer.fixed_block_ids.push_back(tokens[j]);
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"fixed","sidesets"}, tStringValue))
-            {
-              if(tokens.size() < 3)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"fixed sidesets\" keyword(s).\n";
-                return false;
-              }
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                m_InputData.optimizer.fixed_sideset_ids.push_back(tokens[j]);
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"fixed","nodesets"}, tStringValue))
-            {
-              if(tokens.size() < 3)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"fixed nodesets\" keyword(s).\n";
-                return false;
-              }
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                m_InputData.optimizer.fixed_nodeset_ids.push_back(tokens[j]);
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","type"}, tStringValue))
-            {
-              // retrieve input
-              m_InputData.optimizer.filter_type = "";
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                if(j!=2)
-                {
-                  m_InputData.optimizer.filter_type += " ";
-                }
-                m_InputData.optimizer.filter_type += tokens[j];
-              }
-
-              // check input is valid
-              if(m_InputData.optimizer.filter_type != m_InputData.optimizer.m_filterType_identity_generatorName &&
-                  m_InputData.optimizer.filter_type != m_InputData.optimizer.m_filterType_kernel_generatorName &&
-                  m_InputData.optimizer.filter_type != m_InputData.optimizer.m_filterType_kernelThenHeaviside_generatorName &&
-                  m_InputData.optimizer.filter_type != m_InputData.optimizer.m_filterType_kernelThenTANH_generatorName)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: \"filter type\" did not match allowed types which include:\n\t"
-                  <<"\""<<m_InputData.optimizer.m_filterType_identity_generatorName<<"\","
-                  <<"\""<<m_InputData.optimizer.m_filterType_kernel_generatorName<<"\","
-                  <<"\""<<m_InputData.optimizer.m_filterType_kernelThenHeaviside_generatorName<<"\""
-                  <<"\""<<m_InputData.optimizer.m_filterType_kernelThenTANH_generatorName<<"\""
-                  <<".\n";
-                return false;
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","heaviside","min"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter heaviside min\" keyword(s).\n";
-                return false;
-              }
-              if(m_InputData.optimizer.filter_heaviside_min!="")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: \"filter heaviside scale\" and \"filter heaviside min\" both specified.\n"
-                  <<"\tOnly specify one of them. \"max/min/update\" are for updating continuation problems. \"scale\" is used otherwise.\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_heaviside_min = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","heaviside","update"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter heaviside update\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_heaviside_update = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","heaviside","max"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter heaviside max\" keyword(s).\n";
-                return false;
-              }
-              if(m_InputData.optimizer.filter_heaviside_max!="")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: \"filter heaviside scale\" and \"filter heaviside max\" both specified."
-                  <<"\tOnly specify one of them. \"max/min/update\" are for updating continuation problems. \"scale\" is used otherwise.\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_heaviside_max = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","heaviside","scale"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter heaviside scale\" keyword(s).\n";
-                return false;
-              }
-              if(m_InputData.optimizer.filter_heaviside_min!="")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: \"filter heaviside scale\" and \"filter heaviside min\" both specified."
-                  <<"\tOnly specify one of them. \"max/min/update\" are for updating continuation problems. \"scale\" is used otherwise.\n";
-                return false;
-              }
-              if(m_InputData.optimizer.filter_heaviside_max!="")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: \"filter heaviside scale\" and \"filter heaviside max\" both specified."
-                  <<"\tOnly specify one of them. \"max/min/update\" are for updating continuation problems. \"scale\" is used otherwise.\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_heaviside_min = tStringValue;
-              m_InputData.optimizer.filter_heaviside_max = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","radial","power"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter power\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_power = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","radius","scale"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter radius scale\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_radius_scale = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","radius","absolute"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter radius absolute\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_radius_absolute = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","projection","start","iteration"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter projection start iteration\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_projection_start_iteration = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","projection","update","interval"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter projection update interval\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_projection_update_interval = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"filter","use","additive","continuation"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"filter use additive continuation\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.filter_use_additive_continuation = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"algorithm"}, tStringValue))
-            {
-              if(tokens.size() < 2)
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"algorithm\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.optimization_algorithm = tokens[1];
-              for(size_t j=2; j<tokens.size(); ++j)
-              {
-                m_InputData.optimizer.optimization_algorithm += " ";
-                m_InputData.optimizer.optimization_algorithm += tokens[j];
-              }
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"discretization"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"discretization\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.discretization = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"check","gradient"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"check gradient\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.check_gradient = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"check","hessian"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"check hessian\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.check_hessian = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"hessian","type"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"hessian type\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mHessianType = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"limited","memory","storage"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"limited memory storage\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mLimitedMemoryStorage = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"use","mean","norm"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"use mean norm\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mUseMeanNorm = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"al","penalty","parameter"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"al penalty parameter\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mAugLagPenaltyParam = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"feasibility","tolerance"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"feasibility tolerance\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mFeasibilityTolerance = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"al","penalty","scale","factor"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"al penalty scale factor\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mAugLagPenaltyParamScale = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"al","max","subproblem","iterations"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"al max subproblem iterations\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMaxNumAugLagSubProbIter = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"max","trust","region","radius"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"max trust region radius\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMaxTrustRegionRadius = tStringValue;
-            }
-            else if(parseSingleValue(tokens, tInputStringList = {"ks", "min","trust","region","radius"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: No value specified after \"ks min trust region radius\" keyword(s).\n";
-                return false;
-              }
-              m_InputData.optimizer.mMinTrustRegionRadius = tStringValue;
-            }
-            else
-            {
-              PrintUnrecognizedTokens(tokens);
-              std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: Unrecognized keyword.\n";
-              return false;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // If there is a restart iteration but no filename specified then we will
-  // assume we are coming from the gui and we will use the default "restart_XXX.exo"
-  // filename, iteration 1 from the file, and field name "optimizationdofs".
-  if(m_InputData.optimizer.restart_iteration != "" &&
-      m_InputData.optimizer.restart_iteration != "0")
-  {
-    if(m_InputData.optimizer.initial_guess_filename == "" &&
-        m_InputData.optimizer.initial_guess_field_name == "")
-    {
-      // This block indicates that we are coming from the gui so only the
-      // restart iteration was specified.  We will fill in the other values
-      // based on what we know the gui will be providing for the run.
-      m_InputData.optimizer.initial_guess_filename = "restart_" + m_InputData.optimizer.restart_iteration + ".exo";
-      m_InputData.optimizer.restart_iteration = "1";
-      m_InputData.optimizer.initial_guess_field_name = "optimizationdofs";
-    }
-    else if(m_InputData.optimizer.initial_guess_filename == "" &&
-            m_InputData.optimizer.initial_guess_field_name != "")
-    {
-      m_InputData.optimizer.initial_guess_filename = "restart_" + m_InputData.optimizer.restart_iteration + ".exo";
-      m_InputData.optimizer.restart_iteration = "1";
-    }
-    else
-    {
-      // This block indicates that the user is manually setting up the
-      // restart file and so we depend on him having specified a filename
-      // and field name.  If either of these is empty we need to error out.
-      if(m_InputData.optimizer.initial_guess_field_name == "" ||
-          m_InputData.optimizer.initial_guess_filename == "")
-      {
-        std::cout << "ERROR:XMLGenerator:parseOptimizationParameters: You must specify a valid initial guess mesh filename and a valid field name on that mesh from which initial values will be obtained.\n";
-        return false;
-      }
-    }
-  }
-
-  // // If "use normalization in aggregator" was not specified choose a default value based on
-  // // the optimization algorithm.
-  // if(m_InputData.mUseNormalizationInAggregator.length() == 0)
-  // {
-  //   if(m_InputData.optimization_algorithm == "ksal" ||
-  //       m_InputData.optimization_algorithm == "rol ksal")
-  //   {
-  //     m_InputData.mUseNormalizationInAggregator = "true";
-  //   }
-  //   else
-  //   {
-  //     m_InputData.mUseNormalizationInAggregator = "false";
-  //   }
-  // }
-#endif
-
-  return true;
+    return true;
 }
 
 /******************************************************************************/
@@ -1799,114 +982,6 @@ bool XMLGenerator::parseMesh(std::istream &fin)
   return true;
 }
 /******************************************************************************/
-bool XMLGenerator::parseCodePaths(std::istream &fin)
-/******************************************************************************/
-{
-  std::string tStringValue;
-  std::vector<std::string> tInputStringList;
-
-  // read each line of the file
-  while (!fin.eof())
-  {
-    // read an entire line into memory
-    char buf[MAX_CHARS_PER_LINE];
-    fin.getline(buf, MAX_CHARS_PER_LINE);
-    std::vector<std::string> tokens;
-    XMLGen::parseTokens(buf, tokens);
-
-    // process the tokens
-    if(tokens.size() > 0)
-    {
-      for(size_t j=0; j<tokens.size(); ++j)
-        tokens[j] = toLower(tokens[j]);
-
-      if(parseSingleValue(tokens, tInputStringList = {"begin","paths"}, tStringValue))
-      {
-        // found mesh block
-        while (!fin.eof())
-        {
-          fin.getline(buf, MAX_CHARS_PER_LINE);
-          tokens.clear();
-          XMLGen::parseTokens(buf, tokens);
-          // process the tokens
-          if(tokens.size() > 0)
-          {
-            std::vector<std::string> unlowered_tokens = tokens;
-
-            for(size_t j=0; j<tokens.size(); ++j)
-              tokens[j] = toLower(tokens[j]);
-
-            if(parseSingleValue(tokens, tInputStringList = {"end","paths"}, tStringValue))
-            {
-              break;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","sierra_sd"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code sierra_sd\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.sierra_sd_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","platomain"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code platomain\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.plato_main_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","lightmp"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code lightmp\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.lightmp_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","prune_and_refine"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code prune_and_refine\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.prune_and_refine_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","albany"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code albany\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.albany_path = tStringValue;
-            }
-            else if(parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"code","plato_analyze"}, tStringValue))
-            {
-              if(tStringValue == "")
-              {
-                std::cout << "ERROR:XMLGenerator:parseCodePaths: No value specified after \"code plato_analyze\" keywords.\n";
-                return false;
-              }
-              m_InputData.codepaths.plato_analyze_path = tStringValue;
-            }
-            else
-            {
-              PrintUnrecognizedTokens(tokens);
-              std::cout << "ERROR:XMLGenerator:parseCodePaths: Unrecognized keyword.\n";
-              return false;
-            }
-          }
-        }
-      }
-    }
-  }
-  return true;
-}
 
 /******************************************************************************/
 bool XMLGenerator::parseBlocks(std::istream &fin)
@@ -2068,10 +1143,6 @@ void XMLGenerator::parseInputFile()
   tInputFile.close();
 
   tInputFile.open(m_InputFilename.c_str()); // open a file
-  parseCodePaths(tInputFile);
-  tInputFile.close();
-
-  tInputFile.open(m_InputFilename.c_str()); // open a file
   parseMaterials(tInputFile);
   tInputFile.close();
 
@@ -2095,32 +1166,55 @@ void XMLGenerator::parseInputFile()
   this->parseOutput(tInputFile);
   tInputFile.close();
 
-   tInputFile.open(m_InputFilename.c_str()); // open a file
-   this->parseServices(tInputFile);
-   tInputFile.close();
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseServices(tInputFile);
+  tInputFile.close();
+
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseRuns(tInputFile);
+  tInputFile.close();
   
   tInputFile.open(m_InputFilename.c_str()); // open a file
   this->parseScenarios(tInputFile);
   tInputFile.close();
+}
 
+void XMLGenerator::finalize
+(XMLGen::InputData& aInputData)
+{
+  this->finalizeScenarios(aInputData);
+  this->finalizeMeshMetaData(aInputData);
+}
+
+void XMLGenerator::finalizeScenarios
+(XMLGen::InputData& aInputData)
+{
+  auto tDiscretization = aInputData.optimization_parameters().discretization();
+
+  for(auto& tScenario : aInputData.mScenarios)
+  {
+    tScenario.append("discretization", tDiscretization);
+  }
+}
+
+void XMLGenerator::finalizeMeshMetaData
+(XMLGen::InputData& aInputData)
+{
     // If we will need to run the prune_and_refine executable for any
-    // reason we need to have our "run" mesh name not be the same
-    // as the input mesh name.
-    int tNumRefines = 0;
-    if(m_InputData.optimization_parameters().number_refines() != "")
-        tNumRefines = std::atoi(m_InputData.optimization_parameters().number_refines().c_str());
-    if(tNumRefines > 0 ||
-        (m_InputData.optimization_parameters().initial_guess_file_name() != "" && m_InputData.optimization_parameters().initial_guess_field_name() != ""))
+    // reason (restart flag should tell us this since prune_and_refine
+    // is used for the initial guess field transfer) our "run" mesh name 
+    // can not be the same as the input mesh name.
+    if(aInputData.optimization_parameters().isARestartRun())
     {
-        m_InputData.mesh.run_name_without_extension = m_InputData.mesh.name_without_extension + "_mod";
-        m_InputData.mesh.run_name = m_InputData.mesh.run_name_without_extension;
-        if(m_InputData.mesh.file_extension != "")
-            m_InputData.mesh.run_name += m_InputData.mesh.file_extension;
+        aInputData.mesh.run_name_without_extension = aInputData.mesh.name_without_extension + "_mod";
+        aInputData.mesh.run_name = aInputData.mesh.run_name_without_extension;
+        if(aInputData.mesh.file_extension != "")
+            aInputData.mesh.run_name += aInputData.mesh.file_extension;
     }
     else
     {
-        m_InputData.mesh.run_name = m_InputData.mesh.name;
-        m_InputData.mesh.run_name_without_extension = m_InputData.mesh.name_without_extension;
+        aInputData.mesh.run_name = aInputData.mesh.name;
+        aInputData.mesh.run_name_without_extension = aInputData.mesh.name_without_extension;
     }
 }
 

@@ -125,12 +125,12 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
     tParser.parse(tInputData, tInputsOne);
 
     // ********* TEST: OPTIONS NODE NOT DEFINE -> USE DEFAULT PARAMETERS *********
-    EXPECT_FALSE(tInputsOne.mPrintDiagnostics);
+    EXPECT_FALSE(tInputsOne.mPrintMMADiagnostics);
     EXPECT_EQ(0u, tInputsOne.mUpdateFrequency);
     EXPECT_EQ(500u, tInputsOne.mMaxNumSolverIter);
     EXPECT_EQ(1u, tInputsOne.mNumControlVectors);
     EXPECT_EQ(50u, tInputsOne.mMaxNumTrustRegionIter);
-    EXPECT_EQ(100u, tInputsOne.mMaxNumSubProblemIter);
+    EXPECT_EQ(50u, tInputsOne.mMaxNumSubProblemIter);
     EXPECT_EQ(Plato::MemorySpace::HOST, tInputsOne.mMemorySpace);
 
     const double tTolerance = 1e-6;
@@ -138,7 +138,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
     EXPECT_NEAR(0.5, tInputsOne.mMoveLimit, tTolerance);
     EXPECT_NEAR(1.2, tInputsOne.mAsymptoteExpansion, tTolerance);
     EXPECT_NEAR(0.7, tInputsOne.mAsymptoteContraction, tTolerance);
-    EXPECT_NEAR(1.0, tInputsOne.mInitialAugLagPenalty, tTolerance);
+    EXPECT_NEAR(0.0015, tInputsOne.mInitialAugLagPenalty, tTolerance);
     EXPECT_NEAR(0.5, tInputsOne.mInitialAymptoteScaling, tTolerance);
     EXPECT_NEAR(0.1, tInputsOne.mSubProblemBoundsScaling, tTolerance);
     EXPECT_NEAR(1e-6, tInputsOne.mOptimalityTolerance, tTolerance);
@@ -151,18 +151,18 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
     EXPECT_TRUE(tOptions.empty());
     tParser.parse(tOptions, tInputsOne);
 
-    EXPECT_FALSE(tInputsOne.mPrintDiagnostics);
+    EXPECT_FALSE(tInputsOne.mPrintMMADiagnostics);
     EXPECT_EQ(0u, tInputsOne.mUpdateFrequency);
     EXPECT_EQ(500u, tInputsOne.mMaxNumSolverIter);
     EXPECT_EQ(1u, tInputsOne.mNumControlVectors);
     EXPECT_EQ(50u, tInputsOne.mMaxNumTrustRegionIter);
-    EXPECT_EQ(100u, tInputsOne.mMaxNumSubProblemIter);
+    EXPECT_EQ(50u, tInputsOne.mMaxNumSubProblemIter);
     EXPECT_EQ(Plato::MemorySpace::HOST, tInputsOne.mMemorySpace);
 
     EXPECT_NEAR(0.5, tInputsOne.mMoveLimit, tTolerance);
     EXPECT_NEAR(1.2, tInputsOne.mAsymptoteExpansion, tTolerance);
     EXPECT_NEAR(0.7, tInputsOne.mAsymptoteContraction, tTolerance);
-    EXPECT_NEAR(1.0, tInputsOne.mInitialAugLagPenalty, tTolerance);
+    EXPECT_NEAR(0.0015, tInputsOne.mInitialAugLagPenalty, tTolerance);
     EXPECT_NEAR(0.5, tInputsOne.mInitialAymptoteScaling, tTolerance);
     EXPECT_NEAR(0.1, tInputsOne.mSubProblemBoundsScaling, tTolerance);
     EXPECT_NEAR(1e-6, tInputsOne.mOptimalityTolerance, tTolerance);
@@ -195,7 +195,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
 
     tParser.parse(tOptimizerNodeOne, tInputsOne);
 
-    EXPECT_FALSE(tInputsOne.mPrintDiagnostics);
+    EXPECT_FALSE(tInputsOne.mPrintMMADiagnostics);
+    EXPECT_FALSE(tInputsOne.mPrintAugLagSubProbDiagnostics);
     EXPECT_EQ(5u, tInputsOne.mUpdateFrequency);
     EXPECT_EQ(100u, tInputsOne.mMaxNumSolverIter);
     EXPECT_EQ(2u, tInputsOne.mNumControlVectors);
@@ -206,7 +207,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
     EXPECT_NEAR(0.55, tInputsOne.mMoveLimit, tTolerance);
     EXPECT_NEAR(1.3, tInputsOne.mAsymptoteExpansion, tTolerance);
     EXPECT_NEAR(0.85, tInputsOne.mAsymptoteContraction, tTolerance);
-    EXPECT_NEAR(2.0, tInputsOne.mInitialAugLagPenalty, tTolerance);
+    EXPECT_NEAR(0.0015, tInputsOne.mInitialAugLagPenalty, tTolerance);
     EXPECT_NEAR(0.25, tInputsOne.mInitialAymptoteScaling, tTolerance);
     EXPECT_NEAR(0.2, tInputsOne.mSubProblemBoundsScaling, tTolerance);
     EXPECT_NEAR(1e-2, tInputsOne.mOptimalityTolerance, tTolerance);
@@ -232,7 +233,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
 
     tParser.parse(tOptimizerNodeTwo, tInputsTwo);
 
-    EXPECT_FALSE(tInputsTwo.mPrintDiagnostics);
+    EXPECT_FALSE(tInputsTwo.mPrintMMADiagnostics);
     EXPECT_EQ(5u, tInputsTwo.mUpdateFrequency);
     EXPECT_EQ(1u, tInputsTwo.mNumControlVectors);
     EXPECT_EQ(100u, tInputsTwo.mMaxNumSolverIter);
@@ -241,9 +242,9 @@ TEST(PlatoTest, MethodMovingAsymptotes_Parser)
     EXPECT_EQ(Plato::MemorySpace::HOST, tInputsTwo.mMemorySpace);
 
     EXPECT_NEAR(0.55, tInputsTwo.mMoveLimit, tTolerance);
-    EXPECT_NEAR(1.01, tInputsTwo.mAsymptoteExpansion, tTolerance);
-    EXPECT_NEAR(0.99, tInputsTwo.mAsymptoteContraction, tTolerance);
-    EXPECT_NEAR(2.0, tInputsTwo.mInitialAugLagPenalty, tTolerance);
+    EXPECT_NEAR(1.2, tInputsTwo.mAsymptoteExpansion, tTolerance);
+    EXPECT_NEAR(0.7, tInputsTwo.mAsymptoteContraction, tTolerance);
+    EXPECT_NEAR(0.0015, tInputsTwo.mInitialAugLagPenalty, tTolerance);
     EXPECT_NEAR(0.5, tInputsTwo.mInitialAymptoteScaling, tTolerance);
     EXPECT_NEAR(0.1, tInputsTwo.mSubProblemBoundsScaling, tTolerance);
     EXPECT_NEAR(1e-6, tInputsTwo.mOptimalityTolerance, tTolerance);
@@ -780,7 +781,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_5Bars)
     const size_t tNumControls = 5;
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
-    tInputs.mObjectiveStagnationTolerance = 1e-4;
+    //tInputs.mPrintMMADiagnostics = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 1.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 10.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 5.0 /* values */);
@@ -790,12 +791,12 @@ TEST(PlatoTest, MethodMovingAsymptotes_5Bars)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
-    ASSERT_EQ(7u, tOutputs.mNumSolverIter);
+    ASSERT_EQ(9u, tOutputs.mNumSolverIter);
     ASSERT_NEAR(1.33996, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
-    tGold(0,0) = 6.016016667; tGold(0,1) = 5.309054073; tGold(0,2) = 4.494354659; tGold(0,3) = 3.501440931; tGold(0,4) = 2.152814957;
-    PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution);
+    tGold(0,0) = 6.016020337; tGold(0,1) = 5.309110081; tGold(0,2) = 4.49438973; tGold(0,3) = 3.501469461; tGold(0,4) = 2.15267005;
+    PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution, tTolerance);
 
     // ********* PRINT SOLUTION *********
     std::cout << "NUMBER OF ITERATIONS = " << tOutputs.mNumSolverIter << "\n" << std::flush;
@@ -819,7 +820,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_RosenbrockRadius)
     const size_t tNumControls = 2;
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
-    tInputs.mMoveLimit = 0.05;
+    //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mMoveLimit = 0.1;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 2.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 1.0 /* values */);
@@ -829,7 +831,6 @@ TEST(PlatoTest, MethodMovingAsymptotes_RosenbrockRadius)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
-    ASSERT_EQ(77u, tOutputs.mNumSolverIter);
     ASSERT_NEAR(0.0456748, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
@@ -845,7 +846,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_RosenbrockRadius)
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
 
-TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse)
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_IPOPT)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
     std::shared_ptr<Plato::Himmelblau<double>> tObjective = std::make_shared<Plato::Himmelblau<double>>();
@@ -859,6 +861,50 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse)
     const size_t tNumControls = 2;
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
+    //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mUseIpoptForMMASubproblem = true;
+    tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -5.0 /* values */);
+    tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -1.0 /* values */);
+    tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -2.0 /* values */);
+    tInputs.mConstraintNormalizationParams = std::make_shared<Plato::StandardVector<double>>(tNumConstraints, 2 /* values */);
+    Plato::AlgorithmOutputsMMA<double> tOutputs;
+    Plato::solve_mma<double, size_t>(tObjective, tConstraintList, tInputs, tOutputs);
+
+    // ********* TEST SOLUTION *********
+    const double tTolerance = 1e-4;
+
+    ASSERT_EQ(58u, tOutputs.mNumSolverIter);
+    ASSERT_NEAR(2.015748318794602e-09, tOutputs.mObjFuncValue, tTolerance);
+    ASSERT_TRUE((*tOutputs.mConstraints)[0] < tTolerance);
+    Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
+    tGold(0,0) = -3.779304853; tGold(0,1) = -3.283187463;
+    PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution);
+
+    // ********* PRINT SOLUTION *********
+    std::cout << "NUMBER OF ITERATIONS = " << tOutputs.mNumSolverIter << "\n" << std::flush;
+    std::cout << "BEST OBJECTIVE VALUE = " << tOutputs.mObjFuncValue << "\n" << std::flush;
+    std::cout << "BEST CONSTRAINT VALUE = " << (*tOutputs.mConstraints)[0] << "\n" << std::flush;
+    std::cout << "SOLUTION\n" << std::flush;
+    PlatoTest::printMultiVector(*tOutputs.mSolution);
+    std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
+}
+#endif
+
+TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_KSAL)
+{
+    // ********* SET OBJECTIVE AND COSNTRAINT *********
+    std::shared_ptr<Plato::Himmelblau<double>> tObjective = std::make_shared<Plato::Himmelblau<double>>();
+    std::shared_ptr<Plato::ShiftedEllipse<double>> tConstraint = std::make_shared<Plato::ShiftedEllipse<double>>();
+    tConstraint->specify(-2., 2., -3., 3.);
+    std::shared_ptr<Plato::CriterionList<double>> tConstraintList = std::make_shared<Plato::CriterionList<double>>();
+    tConstraintList->add(tConstraint);
+
+    // ********* SOLVE OPTIMIZATION PROBLEM *********
+    const size_t tNumVectors = 1;
+    const size_t tNumControls = 2;
+    const size_t tNumConstraints = 1;
+    Plato::AlgorithmInputsMMA<double> tInputs;
+    //tInputs.mPrintMMADiagnostics = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -5.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -1.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -2.0 /* values */);
@@ -868,11 +914,11 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 5e-4;
-    ASSERT_EQ(121u, tOutputs.mNumSolverIter);
+    ASSERT_EQ(166u, tOutputs.mNumSolverIter);
     ASSERT_NEAR(2.40362, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
-    tGold(0,0) = -3.984413902; tGold(0,1) = -3.369074813;
+    tGold(0,0) = -3.984397039; tGold(0,1) = -3.369040142;
     PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution);
 
     // ********* PRINT SOLUTION *********
@@ -884,7 +930,9 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse)
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
 
-TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse)
+
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_IPOPT)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
     std::shared_ptr<Plato::GoldsteinPrice<double>> tObjective = std::make_shared<Plato::GoldsteinPrice<double>>();
@@ -898,6 +946,8 @@ TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse)
     const size_t tNumControls = 2;
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
+    //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mUseIpoptForMMASubproblem = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -3.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -0.4 /* values */);
@@ -907,7 +957,50 @@ TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
-    ASSERT_EQ(36u, tOutputs.mNumSolverIter);
+
+    ASSERT_EQ(74u, tOutputs.mNumSolverIter);
+    ASSERT_NEAR(30.0, tOutputs.mObjFuncValue, tTolerance);
+    ASSERT_TRUE((*tOutputs.mConstraints)[0] < tTolerance);
+    Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
+    tGold(0,0) = -0.6; tGold(0,1) = -0.4;
+    PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution, tTolerance);
+
+    // ********* PRINT SOLUTION *********
+    std::cout << "NUMBER OF ITERATIONS = " << tOutputs.mNumSolverIter << "\n" << std::flush;
+    std::cout << "BEST OBJECTIVE VALUE = " << tOutputs.mObjFuncValue << "\n" << std::flush;
+    std::cout << "BEST CONSTRAINT VALUE = " << (*tOutputs.mConstraints)[0] << "\n" << std::flush;
+    std::cout << "SOLUTION\n" << std::flush;
+    PlatoTest::printMultiVector(*tOutputs.mSolution);
+    std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
+}
+#endif
+
+TEST(PlatoTest, MethodMovingAsymptotes_GoldsteinPriceShiftedEllipse_KSAL)
+{
+    // ********* SET OBJECTIVE AND COSNTRAINT *********
+    std::shared_ptr<Plato::GoldsteinPrice<double>> tObjective = std::make_shared<Plato::GoldsteinPrice<double>>();
+    std::shared_ptr<Plato::ShiftedEllipse<double>> tConstraint = std::make_shared<Plato::ShiftedEllipse<double>>();
+    tConstraint->specify(0., 1., .5, 1.5);
+    std::shared_ptr<Plato::CriterionList<double>> tConstraintList = std::make_shared<Plato::CriterionList<double>>();
+    tConstraintList->add(tConstraint);
+
+    // ********* SOLVE OPTIMIZATION PROBLEM *********
+    const size_t tNumVectors = 1;
+    const size_t tNumControls = 2;
+    const size_t tNumConstraints = 1;
+    Plato::AlgorithmInputsMMA<double> tInputs;
+    //tInputs.mPrintMMADiagnostics = true;
+    tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -3.0 /* values */);
+    tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.0 /* values */);
+    tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, -0.4 /* values */);
+    tInputs.mConstraintNormalizationParams = std::make_shared<Plato::StandardVector<double>>(tNumConstraints, 2 /* values */);
+    Plato::AlgorithmOutputsMMA<double> tOutputs;
+    Plato::solve_mma<double, size_t>(tObjective, tConstraintList, tInputs, tOutputs);
+
+    // ********* TEST SOLUTION *********
+    const double tTolerance = 1e-4;
+
+    ASSERT_EQ(8u, tOutputs.mNumSolverIter);
     ASSERT_NEAR(3, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
@@ -936,6 +1029,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_CircleRadius)
     const size_t tNumControls = 2;
     const size_t tNumConstraints = 1;
     Plato::AlgorithmInputsMMA<double> tInputs;
+    //tInputs.mPrintMMADiagnostics = true;
     tInputs.mLowerBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.0 /* values */);
     tInputs.mUpperBounds = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 2.0 /* values */);
     tInputs.mInitialGuess = std::make_shared<Plato::StandardMultiVector<double>>(tNumVectors, tNumControls, 0.5 /* values */);
@@ -945,11 +1039,11 @@ TEST(PlatoTest, MethodMovingAsymptotes_CircleRadius)
 
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
-    ASSERT_EQ(11u, tOutputs.mNumSolverIter);
+    ASSERT_EQ(8u, tOutputs.mNumSolverIter);
     ASSERT_NEAR(2.678, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
-    tGold(0,0) =  0.3115706212; tGold(0,1) = 0.950222216;
+    tGold(0,0) =  0.3115704953; tGold(0,1) = 0.9502230404;
     PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution, tTolerance);
 
     // ********* PRINT SOLUTION *********
@@ -1007,13 +1101,13 @@ TEST(DISABLED_PlatoTest, MethodMovingAsymptotes_MinComplianceVolumeConstraint)
     // ********* TEST SOLUTION *********
     const double tTolerance = 1e-4;
     ASSERT_EQ(50, tOutputs.mNumSolverIter);
-    ASSERT_NEAR(0.142172, tOutputs.mObjFuncValue, tTolerance);
+    ASSERT_NEAR(0.143372, tOutputs.mObjFuncValue, tTolerance);
     ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     std::vector<double> tGoldData = PlatoTest::get_topology_optimization_gold();
     Plato::StandardMultiVector<double, int> tGold(tNumVectors, tGoldData);
     int tIndex = 0;
     tGold.setData(tIndex, tGoldData);
-    PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution, tTolerance);
+    //PlatoTest::checkMultiVectorData(tGold, *tOutputs.mSolution, tTolerance);
 
     // ********* PRINT SOLUTION *********
     std::cout << "NUMBER OF ITERATIONS = " << tOutputs.mNumSolverIter << "\n" << std::flush;

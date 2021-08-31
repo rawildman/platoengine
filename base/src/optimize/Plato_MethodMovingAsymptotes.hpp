@@ -48,10 +48,17 @@
 
 #pragma once
 
+#include <Teuchos_TimeMonitor.hpp>
+#include <Teuchos_Time.hpp>
 #include "Plato_Console.hpp"
 #include "Plato_DataFactory.hpp"
 #include "Plato_CriterionList.hpp"
+
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+#include "IpoptMMASubproblemSolver.hpp"
+#endif
 #include "Plato_AugmentedLagrangian.hpp"
+
 #include "Plato_MethodMovingAsymptotesIO.hpp"
 #include "Plato_MethodMovingAsymptotesDataMng.hpp"
 #include "Plato_MethodMovingAsymptotesCriterion.hpp"
@@ -82,7 +89,7 @@ public:
         mMaxNumTrustRegionIterations(50),
         mMaxNumSubProblemIterations(100),
         mInitialAugLagPenalty(1),
-        mAugLagPenaltyMultiplier(1.1),
+        mAugLagPenaltyMultiplier(1.025),
         mOptimalityTolerance(1e-6),
         mFeasibilityTolerance(1e-4),
         mControlStagnationTolerance(1e-6),
@@ -91,9 +98,11 @@ public:
         mObjective(aObjective),
         mConstraints(aConstraints),
         mMMAData(std::make_shared<Plato::ApproximationFunctionData<ScalarType, OrdinalType>>(aDataFactory)),
+        mUserRequestedIpoptSubproblemOptimizer(true),
         mDataMng(std::make_shared<Plato::MethodMovingAsymptotesDataMng<ScalarType, OrdinalType>>(aDataFactory)),
         mOperations(std::make_shared<Plato::MethodMovingAsymptotesOperations<ScalarType, OrdinalType>>(aDataFactory)),
-        mConstrAppxFuncList(std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>())
+        mConstrAppxFuncList(std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>()),
+        mTimer(Teuchos::TimeMonitor::getNewTimer("PlatoMain: MMA Optimizer"))
     {
         this->initialize(aDataFactory);
     }
@@ -228,6 +237,15 @@ public:
     }
 
     /******************************************************************************//**
+     * @brief Set whether to use IPOPT to solve the MMA subproblem
+     * @param [in] aInput bool = true for IPOPT and false for KSAL
+    **********************************************************************************/
+    void setWhetherToUseIpoptForMMASubproblem(const OrdinalType& aInput)
+    {
+        mUserRequestedIpoptSubproblemOptimizer = aInput;
+    }
+
+    /******************************************************************************//**
      * @brief Set maximum number of trust region iterations
      * @param [in] aInput maximum number of trust region iterations
     **********************************************************************************/
@@ -294,7 +312,7 @@ public:
      * @brief Set reduction parameter for augmented Lagrangian penalty
      * @param [in] aInput reduction parameter for augmented Lagrangian penalty
     **********************************************************************************/
-    void setAugLagPenaltyReduction(const ScalarType& aInput)
+    void setAugLagSubProbPenaltyMultiplier(const ScalarType& aInput)
     {
         mAugLagPenaltyMultiplier = aInput;
     }
@@ -315,6 +333,15 @@ public:
     void setFeasibilityTolerance(const ScalarType& aInput)
     {
         mFeasibilityTolerance = aInput;
+    }
+
+    /******************************************************************************//**
+     * @brief Set feasibility tolerance for augmened Lagrangian subproblem.
+     * @param [in] aInput feasibility tolerance
+    **********************************************************************************/
+    void setSubProblemFeasibilityTolerance(const ScalarType& aInput)
+    {
+        mSubProblemFeasibilityTolerance = aInput;
     }
 
     /******************************************************************************//**
@@ -382,6 +409,25 @@ public:
     }
 
     /******************************************************************************//**
+     * @brief Set output diagnostics flag for augmented Lagrangian subproblem. 
+     * @param [out] aInput boolean flag
+    **********************************************************************************/
+    void outputSubProblemDiagnostics(const bool aInput)
+    {
+        if(aInput == true)
+        {
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+            if (mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+                mSubProblemSolverIPOPT->enableDiagnostics();
+            else
+                mSubProblemSolverKSAL->enableDiagnostics();
+#else
+            mSubProblemSolverKSAL->enableDiagnostics();
+#endif          
+        }
+    }
+
+    /******************************************************************************//**
      * @brief Gather 2D container of optimal optimization variables
      * @param [out] aInput reference to 2D container of optimal optimization variables
     **********************************************************************************/
@@ -435,7 +481,15 @@ private:
     void initialize(const std::shared_ptr<Plato::DataFactory<ScalarType, OrdinalType>> &aDataFactory)
     {
         this->initializeApproximationFunctions(aDataFactory);
-        mSubProblemSolver = std::make_shared<Plato::AugmentedLagrangian<ScalarType, OrdinalType>>(mObjAppxFunc, mConstrAppxFuncList, aDataFactory);
+
+        if (mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+        {
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+            mSubProblemSolverIPOPT = std::make_shared<Plato::IpoptMMASubproblemSolver<ScalarType, OrdinalType>>(mObjAppxFunc, mConstrAppxFuncs, aDataFactory);
+#endif
+        }
+
+        mSubProblemSolverKSAL = std::make_shared<Plato::AugmentedLagrangian<ScalarType, OrdinalType>>(mObjAppxFunc, mConstrAppxFuncList, aDataFactory);
     }
 
     /******************************************************************************//**
@@ -443,13 +497,21 @@ private:
     **********************************************************************************/
     void setSubProblemOptions()
     {
-        mSubProblemSolver->disablePostSmoothing();
-        mSubProblemSolver->setPenaltyParameter(mInitialAugLagPenalty);
-        mSubProblemSolver->setFeasibilityTolerance(mFeasibilityTolerance);
-        mSubProblemSolver->setControlStagnationTolerance(mControlStagnationTolerance);
-        mSubProblemSolver->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
-        mSubProblemSolver->setPenaltyParameterScaleFactor(mAugLagPenaltyMultiplier);
-        mSubProblemSolver->setMaxNumTrustRegionSubProblemIterations(mMaxNumTrustRegionIterations);
+        if (mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+        {
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+            mSubProblemSolverIPOPT->setMaxNumSubproblemIterations(mMaxNumSubProblemIterations);
+            mSubProblemSolverIPOPT->setFeasibilityTolerance(mSubProblemFeasibilityTolerance);
+#endif
+        }
+        //mSubProblemSolverKSAL->setAugLagActualReductionTolerance(-1.0);
+        mSubProblemSolverKSAL->setFeasibilityTolerance(mSubProblemFeasibilityTolerance);
+        mSubProblemSolverKSAL->disablePostSmoothing();
+        mSubProblemSolverKSAL->setPenaltyParameter(mInitialAugLagPenalty);
+        mSubProblemSolverKSAL->setControlStagnationTolerance(mControlStagnationTolerance);
+        mSubProblemSolverKSAL->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
+        mSubProblemSolverKSAL->setPenaltyParameterScaleFactor(mAugLagPenaltyMultiplier);
+        mSubProblemSolverKSAL->setMaxNumTrustRegionSubProblemIterations(mMaxNumTrustRegionIterations);
     }
 
     /******************************************************************************//**
@@ -689,12 +751,68 @@ private:
     **********************************************************************************/
     void solveSubProblem()
     {
-        mSubProblemSolver->resetParameters();
-        mSubProblemSolver->setInitialGuess(mDataMng->getCurrentControls());
-        mSubProblemSolver->setControlLowerBounds(mDataMng->getSubProblemControlLowerBounds());
-        mSubProblemSolver->setControlUpperBounds(mDataMng->getSubProblemControlUpperBounds());
-        mSubProblemSolver->solve();
-        mSubProblemSolver->getSolution(mDataMng->getCurrentControls());
+        if (!mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+        {
+            PRINTERR("User Requested IPOPT for MMA subproblem but PlatoEngine was not built with IPOPT!\n")
+            std::cout << std::flush;
+            MPI_Abort(mDataMng->getCommWrapper().getComm(), 1); // THROWERR just causes plato to hang
+        }
+        Teuchos::TimeMonitor LocalTimer(*mTimer);
+        double tStartTime = mTimer->wallTime();
+        std::string tSubproblemSolverString = "";
+        if (mIpoptAvailableForSubproblem && mUserRequestedIpoptSubproblemOptimizer)
+        {
+            tSubproblemSolverString = "IPOPT";
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+            auto tNumberOfMPIRanks = mDataMng->getCommWrapper().size();
+            if (tNumberOfMPIRanks != 1)
+            {
+                // Note this method of throwing an error is used instead of THROWERR because
+                // runs with multiple performers were "hanging" from the use of THROWERR.
+                std::string tErrorString = std::string("IPOPT can currently only be used to solve MMA Subproblems when 1 MPI process is used for PlatoMain.")
+                + " You attempted to run PlatoMain with " + std::to_string(tNumberOfMPIRanks) + " MPI processes."
+                + " Please rerun your problem with a single MPI process for PlatoMain or set the option to use IPOPT for the MMA subproblem to false.";
+                if (mDataMng->getCommWrapper().myProcID() == 0)
+                {
+                    std::cout << std::string("\nFILE: ") + __FILE__ \
+                            + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
+                            + std::string("\nLINE:") + std::to_string(__LINE__) \
+                            + std::string("\nMESSAGE: ") + tErrorString << std::endl << std::flush;
+                    MPI_Abort(mDataMng->getCommWrapper().getComm(), 1);
+                }
+                MPI_Barrier(mDataMng->getCommWrapper().getComm());
+            }
+            mSubProblemSolverIPOPT->setInitialGuess(mDataMng->getCurrentControls());
+            mSubProblemSolverIPOPT->setControlLowerBounds(mDataMng->getSubProblemControlLowerBounds());
+            mSubProblemSolverIPOPT->setControlUpperBounds(mDataMng->getSubProblemControlUpperBounds());
+            mSubProblemSolverIPOPT->solve();
+            mSubProblemSolverIPOPT->getSolution(mDataMng->getCurrentControls());
+#endif
+        }
+        else
+        {
+            tSubproblemSolverString = "KSAL";
+            // const bool tProblemIsNotNearlyFeasible = !(mDataMng->isProblemNearlyFeasible());
+            // if (tProblemIsNotNearlyFeasible)
+            // {
+            //     mSubProblemSolverKSAL->setMaxNumOuterIterations(20);
+            // }
+            // else
+            // {
+                // mSubProblemSolverKSAL->setMaxNumOuterIterations(mMaxNumSubProblemIterations);
+                // mSubProblemSolverKSAL->setPenaltyParameter(mInitialAugLagPenalty);
+            // }
+            mSubProblemSolverKSAL->resetParameters();
+            mSubProblemSolverKSAL->setInitialGuess(mDataMng->getCurrentControls());
+            mSubProblemSolverKSAL->setControlLowerBounds(mDataMng->getSubProblemControlLowerBounds());
+            mSubProblemSolverKSAL->setControlUpperBounds(mDataMng->getSubProblemControlUpperBounds());
+            mSubProblemSolverKSAL->solve();
+            mSubProblemSolverKSAL->getSolution(mDataMng->getCurrentControls());
+        }
+        double tElapsedTime = mTimer->wallTime() - tStartTime;
+        if (mPrintDiagnostics && mDataMng->getCommWrapper().myProcID() == 0)
+            std::cout << "MMA Subproblem Solve (Performed With " << tSubproblemSolverString << ") Required " 
+                      << tElapsedTime << " Seconds." << std::endl;
     }
 
     /******************************************************************************//**
@@ -734,7 +852,7 @@ private:
     }
 
 private:
-    bool mPrintDiagnostics; /*!< flag to enable output (default=false) */
+    bool mPrintDiagnostics; /*!< output MMA diagnostics to text file (default=false) */
     std::ofstream mOutputStream; /*!< output string stream with diagnostics */
 
     OrdinalType mIterationCount; /*!< number of optimization iterations */
@@ -748,6 +866,7 @@ private:
     ScalarType mAugLagPenaltyMultiplier; /*!< augmented Lagragian penalty reduction parameter */
     ScalarType mOptimalityTolerance; /*!< tolerance on the norm of the objective gradient - primary stopping tolerance */
     ScalarType mFeasibilityTolerance; /*!< feasibility tolerance - primary stopping tolerance */
+    ScalarType mSubProblemFeasibilityTolerance = 1e-8; /*!< feasibility tolerance for augmented Lagrangian subproblem */
     ScalarType mControlStagnationTolerance; /*!< control stagnation tolerance - secondary stopping tolerance */
     ScalarType mObjectiveStagnationTolerance; /*!< objective stagnation tolerance - secondary stopping tolerance */
     Plato::algorithm::stop_t mStoppingCriterion; /*!< stopping criterion */
@@ -758,13 +877,22 @@ private:
     std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> mConstraints; /*!< constraint criteria interface */
 
     std::shared_ptr<Plato::ApproximationFunctionData<ScalarType, OrdinalType>> mMMAData; /*!< structure with approximation function's data */
-    std::shared_ptr<Plato::AugmentedLagrangian<ScalarType, OrdinalType>> mSubProblemSolver; /*!< MMA subproblem solver */
+    bool mUserRequestedIpoptSubproblemOptimizer;
+#ifdef ENABLE_IPOPT_FOR_MMA_SUBPROBLEM
+    const bool mIpoptAvailableForSubproblem = true;
+    std::shared_ptr<Plato::IpoptMMASubproblemSolver<ScalarType, OrdinalType>> mSubProblemSolverIPOPT; /*!< MMA subproblem IPOPT solver */
+#else
+    const bool mIpoptAvailableForSubproblem = false;
+#endif
+    std::shared_ptr<Plato::AugmentedLagrangian<ScalarType, OrdinalType>> mSubProblemSolverKSAL; /*!< MMA subproblem KSAL solver */
     std::shared_ptr<Plato::MethodMovingAsymptotesDataMng<ScalarType, OrdinalType>> mDataMng; /*!< MMA data manager */
     std::shared_ptr<Plato::MethodMovingAsymptotesOperations<ScalarType, OrdinalType>> mOperations; /*!< interface to MMA core operations */
 
     std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> mConstrAppxFuncList; /*!< list of constraint criteria */
     std::shared_ptr<Plato::MethodMovingAsymptotesCriterion<ScalarType, OrdinalType>> mObjAppxFunc; /*!< objective criterion approximation function */
     std::vector<std::shared_ptr<Plato::MethodMovingAsymptotesCriterion<ScalarType, OrdinalType>>> mConstrAppxFuncs; /*!< list of constraint criteria approximation function */
+
+    Teuchos::RCP<Teuchos::Time> mTimer;
 
 private:
     MethodMovingAsymptotes(const Plato::MethodMovingAsymptotes<ScalarType, OrdinalType> & aRhs);

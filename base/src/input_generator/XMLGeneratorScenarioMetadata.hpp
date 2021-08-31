@@ -24,7 +24,6 @@ private:
     std::unordered_map<std::string, std::string> mMetaData; /*!< Scenario metadata, map< tag, value > */
     std::vector<std::string> mLoadIDs;
     std::vector<std::string> mBCIDs;
-    std::vector<std::string> mFRFMatchNodesetIDs;
 
 // private member functions
 private:
@@ -60,20 +59,6 @@ public:
      * \param [in] input load IDs 
     **********************************************************************************/
     void setLoadIDs(std::vector<std::string>& aLoadIDs) {mLoadIDs = aLoadIDs;};
-
-    /******************************************************************************//**
-     * \fn frfMatchNodesetIDs
-     * \brief Return nodeset ids for matching frfs
-     * \return mFRFMatchNodesetIDs
-    **********************************************************************************/
-    std::vector<std::string> frfMatchNodesetIDs() const {return mFRFMatchNodesetIDs;};
-
-    /******************************************************************************//**
-     * \fn setFRFMatchNodesetIDs
-     * \brief Set nodeset ids for matching frfs
-     * \param [in] input nodeset IDs 
-    **********************************************************************************/
-    void setFRFMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mFRFMatchNodesetIDs = aNodesetIDs;};
 
     /******************************************************************************//**
      * \fn bcIDs
@@ -346,10 +331,45 @@ public:
 
     /******************************************************************************//**
      * \fn weightMassScaleFactor
+     * \brief Set string value for Sierra/SD weight/mass scale factor
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void weightMassScaleFactor(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn weightMassScaleFactor
      * \brief Return string value Sierra/SD weight/mass scale factor
      * \return value
     **********************************************************************************/
     std::string weightMassScaleFactor() const;
+
+    /******************************************************************************//**
+     * \fn pressureScaling
+     * \brief Set string value for keyword 'pressure_scaling'.
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void pressureScaling(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn pressureScaling
+     * \brief Return string value for keyword 'pressure_scaling'.
+     * \return value
+    **********************************************************************************/
+    std::string pressureScaling() const;
+
+    /******************************************************************************//**
+     * \fn temperatureScaling
+     * \brief Set string value for keyword 'temperature_scaling'.
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void temperatureScaling(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn temperatureScaling
+     * \brief Return string value for keyword 'temperature_scaling'.
+     * \return value
+    **********************************************************************************/
+    std::string temperatureScaling() const;
     
     std::string frequency_min() const {return this->getValue("frequency_min"); }
     std::string frequency_max() const {return this->getValue("frequency_max"); }
@@ -358,7 +378,6 @@ public:
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }
     std::string convert_to_tet10() const {return this->getValue("convert_to_tet10"); }
-    std::string ref_frf_file() const {return this->getValue("ref_frf_file"); }
 
 };
 // struct Scenario

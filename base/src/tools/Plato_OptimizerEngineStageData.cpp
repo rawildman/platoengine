@@ -1511,6 +1511,7 @@ void OptimizerEngineStageData::setKSTrustRegionRatioUpper(const double& aInput)
 {
     mKSTrustRegionRatioUpper = aInput;
 }
+
 bool OptimizerEngineStageData::getResetAlgorithmOnUpdate() const
 {
     return mResetAlgorithmOnUpdate;

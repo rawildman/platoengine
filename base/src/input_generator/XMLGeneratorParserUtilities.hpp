@@ -60,6 +60,37 @@ void parse_input_metadata
  XMLGen::MetaDataTags& aTags);
 
 /******************************************************************************//**
+ * \fn parse_input_metadata_with_valid_keyword_checking
+ * \brief Parse input metadata and set token-value pairs in XMLGen::MetaDataTags map.
+ * \param [in]  aStopKeys   keys used to denote end of the parameter block to be parsed
+ * \param [in]  aInputFile  input file string
+ * \param [out] aTags       map from property tag to pair< pair<token,input_value>, default> >
+ * \param [in] aValidKeywords list of valid keywords
+**********************************************************************************/
+void parse_input_metadata_with_valid_keyword_checking
+(const std::vector<std::string>& aStopKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::vector<std::string> &aValidKeywords);
+
+/******************************************************************************//**
+ * \fn parse_input_metadata_unlowered
+ * \brief Parse input metadata, set token-value pairs in XMLGen::MetaDataTags map,
+ * and return unlowered token value.
+ * \param [in]  aStopKeys   keys used to denote end of the parameter block to be parsed
+ * \param [in]  aFindKeys   keys used to denote the unlowered value to return
+ * \param [in]  aInputFile  input file string
+ * \param [out] aTags       map from property tag to pair< pair<token,input_value>, default> >
+ * \param [out] aOutputString unlowered token value
+**********************************************************************************/
+void parse_input_metadata_unlowered
+(const std::vector<std::string>& aStopKeys,
+ const std::vector<std::string>& aFindKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::string& aOutputString);
+
+/******************************************************************************//**
  * \fn parse_single_value
  * \brief Return matching keyword if input token matches target token.
  * \param [in]  aTokens   input token
@@ -68,8 +99,20 @@ void parse_input_metadata
 **********************************************************************************/
 bool parse_single_value
 (const std::vector<std::string> &aTokens,
- const std::vector<std::string> &aTarget,
+ const std::vector<std::string> &aTargetTokens,
  std::string &aKeyword);
+
+/******************************************************************************//**
+ * \fn parse_single_value_index
+ * \brief Return index of keyword after target token.
+ * \param [in]  aTokens   input token
+ * \param [in]  aTarget   target token
+ * \param [out] aKeyword  matching keyword
+**********************************************************************************/
+bool parse_single_value_index
+(const std::vector<std::string> &aTokens,
+ const std::vector<std::string> &aTargetTokens,
+ int &aIndex);
 
 /******************************************************************************//**
  * \fn to_lower
@@ -206,6 +249,14 @@ bool transform_boolean_key(const std::string& aInput);
 std::string check_physics_keyword(const std::string& aInput);
 
 /******************************************************************************//**
+ * \fn check_run_type
+ * \brief Return false if the input type is not valid
+ * \param [in] aInput 'type' keyword
+ * \return true or false
+**********************************************************************************/
+bool check_run_type(const std::string& aInput);
+
+/******************************************************************************//**
  * \fn check_spatial_dimensions_keyword
  * \brief Throw error if 'dimensions' keyword value is not supported.
  * \param [in] aInput 'dimensions' keyword
@@ -227,6 +278,16 @@ void is_metadata_block_id_valid(const std::vector<std::string>& aTokens);
  * \param [in] aTokens list of tokens
 **********************************************************************************/
 bool parseTokens(char *buffer, std::vector<std::string> &tokens);
+
+/******************************************************************************//**
+ * \fn check_for_valid_keyword
+ * \brief check to see if the input keyword matches a valid option
+ * \param [in] aInputTokens the parsed line/tokens from the input deck
+ * \param [in] aValidKeywords list of valid keywords
+**********************************************************************************/
+bool check_for_valid_keyword
+(const std::vector<std::string>& aInputTokens,
+ const std::vector<std::string>& aValidKeywords);
 
 }
 // namespace XMLGen

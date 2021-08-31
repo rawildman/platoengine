@@ -6,7 +6,10 @@ set(${LIB_NAME}_SOURCES
     PlatoEngine_KernelFilter.cpp
     PlatoEngine_KernelThenHeavisideFilter.cpp
     PlatoEngine_KernelThenTANHFilter.cpp
+    PlatoEngine_ProjectionHeavisideFilter.cpp
+    PlatoEngine_ProjectionTANHFilter.cpp
     PlatoEngine_AbstractKernelThenFilter.cpp
+    PlatoEngine_AbstractProjectionFilter.cpp
     PlatoEngine_AbstractFilter.cpp
     PlatoEngine_FilterFactory.cpp
     PlatoEngine_IdentityFilter.cpp
@@ -15,11 +18,19 @@ set(${LIB_NAME}_HEADERS
     PlatoEngine_KernelFilter.hpp
     PlatoEngine_KernelThenHeavisideFilter.hpp
     PlatoEngine_KernelThenTANHFilter.hpp
+    PlatoEngine_ProjectionHeavisideFilter.hpp
+    PlatoEngine_ProjectionTANHFilter.hpp
     PlatoEngine_AbstractKernelThenFilter.hpp
+    PlatoEngine_AbstractProjectionFilter.hpp
     PlatoEngine_AbstractFilter.hpp
     PlatoEngine_FilterFactory.hpp
     PlatoEngine_IdentityFilter.hpp
     )
+
+if( AMFILTER_ENABLED )
+    set(${LIB_NAME}_SOURCES ${${LIB_NAME}_SOURCES} PlatoEngine_KernelThenStructuredAMFilter.cpp)
+    set(${LIB_NAME}_HEADERS ${${LIB_NAME}_HEADERS} PlatoEngine_KernelThenStructuredAMFilter.hpp)
+endif()
 
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 

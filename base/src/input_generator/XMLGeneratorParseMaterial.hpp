@@ -69,6 +69,13 @@ private:
     void insertElasticOrthoProperties();
 
     /******************************************************************************//**
+     * \fn insertIncompressibleFlowProperties
+     * \brief Build map from plato input file material property keyword to keyword-value \n 
+     *        pair used for incompressible fluid flow applications.
+    **********************************************************************************/
+    void insertIncompressibleFluidFlowProperties();
+
+    /******************************************************************************//**
      * \fn setCode
      * \brief Set 'code' keyword, default = 'plato_analyze'.
      * \param [in/out] aInputFile parsed input metadata

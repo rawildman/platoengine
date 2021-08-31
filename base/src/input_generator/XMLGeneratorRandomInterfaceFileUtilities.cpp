@@ -53,13 +53,13 @@ void append_multiperformer_criterion_shared_data
             XMLGen::append_multiperformer_shared_data(tKeys, tValues, aDocument);
 
         // shared data - nondeterministic criterion gradient
-            if(aXMLMetaData.optimization_parameters().optimization_type() == "topology")
+            if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
             {
                 tTag = aCriterion + " Gradient {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}";
                 tValues = { tTag, "Scalar", "Nodal Field", "IGNORE", tOwnerName, tFirstPlatoMainPerformer };
                 XMLGen::append_multiperformer_shared_data(tKeys, tValues, aDocument);
             }
-            else if(aXMLMetaData.optimization_parameters().optimization_type() == "shape")
+            else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
             {
                 tTag = aCriterion + " Gradient {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}";
                 tValues = { tTag, "Scalar", "Global", aXMLMetaData.optimization_parameters().num_shape_design_variables(), tOwnerName, tFirstPlatoMainPerformer };
@@ -130,7 +130,7 @@ void append_multiperformer_topology_shared_data
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().optimization_type() == "shape")
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
         return;
     }
@@ -267,12 +267,23 @@ void append_update_problem_stage_for_nondeterministic_usecase
         {
             continue;
         }
+        const bool tServiceIsPlatoMain = (tService.code() == "platomain");
+
         auto tStageNode = aDocument.append_child("Stage");
         XMLGen::append_children( { "Name" }, { "Update Problem" }, tStageNode);
-        auto tPerformerName = tService.performer() + "_{PerformerIndex}";
+        auto tPerformerName = tServiceIsPlatoMain ? tService.performer() : tService.performer() + "_{PerformerIndex}";
         std::vector<std::string> tKeys = { "Name", "PerformerName" };
         std::vector<std::string> tValues = { "Update Problem", tPerformerName };
-        XMLGen::append_nondeterministic_operation(tKeys, tValues, tStageNode);
+
+        if (tServiceIsPlatoMain)
+        {
+            auto tOperationNode = tStageNode.append_child("Operation");
+            XMLGen::append_children(tKeys, tValues, tOperationNode);
+        }
+        else
+        {
+            XMLGen::append_nondeterministic_operation(tKeys, tValues, tStageNode);
+        }
     }
 }
 // function append_update_problem_stage_for_nondeterministic_usecase
