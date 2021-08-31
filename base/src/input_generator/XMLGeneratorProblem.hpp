@@ -18,6 +18,7 @@
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 #include "XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 
 namespace XMLGen
 {
@@ -38,7 +39,14 @@ inline void write_performer_operation_xml_file
     {
         if(aMetaData.services()[0].code() == "plato_analyze")
         {
-            XMLGen::write_plato_analyze_operation_xml_file(aMetaData);
+            if(aMetaData.services()[0].id() == "helmholtz")
+            {
+                XMLGen::write_plato_analyze_helmholtz_operation_xml_file(aMetaData);
+            }
+            else
+            {
+                XMLGen::write_plato_analyze_operation_xml_file(aMetaData);
+            }
         }
         else if(aMetaData.services()[0].code() == "sierra_sd")
         {
@@ -59,7 +67,14 @@ inline void write_performer_input_deck_file
     {
         if(aMetaData.services()[0].code() == "plato_analyze")
         {
-            XMLGen::write_plato_analyze_input_deck_file(aMetaData);
+            if(aMetaData.services()[0].id() == "helmholtz")
+            {
+                XMLGen::write_plato_analyze_helmholtz_input_deck_file(aMetaData);
+            }
+            else
+            {
+                XMLGen::write_plato_analyze_input_deck_file(aMetaData);
+            }
         }
         else if(aMetaData.services()[0].code() == "sierra_sd")
         {
@@ -91,6 +106,8 @@ inline void write_optimization_problem
         write_performer_operation_xml_file(tCurMetaData);
         write_performer_input_deck_file(tCurMetaData);
     }
+
+    XMLGen::write_post_optimization_run_files(aMetaData);
 }
 
 }

@@ -74,7 +74,7 @@ PSL_TEST(Vector,allocation)
     EXPECT_EQ(tVec3(2), 1);
 
     Point p(0, tTemp);
-    EXPECT_NO_THROW(Vector(p));
+    EXPECT_NO_THROW(Vector tVec9(p));
 
     Vector tVec4(tTemp);
     EXPECT_EQ(tVec4(0), 0);

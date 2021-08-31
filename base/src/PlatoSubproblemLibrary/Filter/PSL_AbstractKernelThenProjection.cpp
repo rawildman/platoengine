@@ -93,11 +93,13 @@ void AbstractKernelThenProjection::advance_continuation()
 {
     m_current_heaviside_parameter = std::min(m_current_heaviside_parameter * m_heaviside_parameter_continuation_scale,
                                              m_max_heaviside_parameter);
+    std::cout << "INFO: KernelThenProjectionFilter advanced continuation on parameters." << std::endl; 
 }
 void AbstractKernelThenProjection::additive_advance_continuation()
 {
     m_current_heaviside_parameter = std::min(m_current_heaviside_parameter + m_heaviside_parameter_continuation_scale,
                                              m_max_heaviside_parameter);
+    std::cout << "INFO: KernelThenProjectionFilter advanced additive continuation on parameters." << std::endl; 
 }
 
 void AbstractKernelThenProjection::check_input_data()

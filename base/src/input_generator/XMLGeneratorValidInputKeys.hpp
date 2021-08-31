@@ -68,7 +68,9 @@ struct ValidCriterionParameterKeys
         "type", 
         "normalize", 
         "normalization_value",
-        "stress_p_norm_exponent", 
+        "stress_p_norm_exponent",
+        "mechanical_weighting_factor",
+        "thermal_weighting_factor",
         "material_penalty_model", 
         "material_penalty_exponent", 
         "minimum_ersatz_material_value",
@@ -83,7 +85,11 @@ struct ValidCriterionParameterKeys
         "criterion_weights",
         "relative_stress_limit",
         "relaxed_stress_ramp_factor",
-        "location_name",
+        "conductivity_ratios",
+        "location_names",
+        "blocks",
+        "local_measure",
+        "spatial_weighting_function",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -103,7 +109,16 @@ struct ValidCriterionParameterKeys
         "volume_penalty_power",
         "volume_penalty_divisor",
         "volume_penalty_bias",
-        "surface_area_sideset_id"
+        "surface_area_sideset_id",
+        // SD modal objectives
+        "num_modes_compute",
+        "modes_to_exclude",
+        "eigen_solver_shift",
+        "camp_solver_tol",
+        "camp_max_iter",
+        "shape_sideset",
+        "ref_data_file",
+        "match_nodesets"
     };
 };
 
@@ -176,6 +191,7 @@ private:
         "plastic_work",
         "thermoplasticity_thermal_energy",
         "volume", 
+        "volume_average", 
         "mass", 
         "CG_x", 
         "CG_y", 
@@ -202,7 +218,11 @@ private:
         "compliance_and_volume_min",
         "surface_pressure",
         "surface_temperature",
-        "flow_rate"
+        "flow_rate",
+        "fluid_thermal_compliance",
+        "maximize_fluid_thermal_flux",
+        "modal_matching",
+        "modal_projection_error"
     };
 
 public:
@@ -216,6 +236,14 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
+
+    /******************************************************************************//**
+     * \fn size
+     * \brief Return const reference to criteria list.
+     * \return criteria list
+    **********************************************************************************/
+    const decltype(mKeys)& list() const
+    { return mKeys; }
 };
 // struct ValidCriterionTypeKeys
 
@@ -485,36 +513,59 @@ public:
 struct ValidPhysicsKeys
 {
 private:
-    /*!<
-     * \brief Valid plato input deck physics keywords.
-     **/
-    std::vector<std::string> mKeys =
+     /******************************************************************************//**
+     * \brief Map from valid simulation usecase to principal material state. Fluid 
+     *  usecases can have both fluid and solid material states in a single run. 
+     *  However, the principal material state for a fluids application is the fluid state.
+     **********************************************************************************/
+    std::unordered_map<std::string, std::string> mKeys =
     { 
-        "steady_state_mechanics", 
-        "transient_mechanics", 
-        "steady_state_thermal", 
-        "transient_thermal", 
-        "steady_state_electrical", 
-        "steady_state_thermomechanics",
-        "transient_thermomechanics",
-        "steady_state_electromechanics",
-        "plasticity", 
-        "thermoplasticity",
-        "frequency_response_function",
-        "steady_state_incompressible_fluids"
+        {"steady_state_mechanics", "solid"},
+        {"transient_mechanics", "solid"}, 
+        {"steady_state_thermal", "solid"}, 
+        {"transient_thermal", "solid"}, 
+        {"steady_state_electrical", "solid"}, 
+        {"steady_state_thermomechanics", "solid"},
+        {"transient_thermomechanics", "solid"},
+        {"steady_state_electromechanics", "solid"},
+        {"plasticity", "solid"},
+        {"thermoplasticity", "solid"},
+        {"frequency_response_function", "solid"},
+        {"modal_response", "solid"},
+        {"steady_state_incompressible_fluids", "fluid"}
     };
-
 
 public:
     /******************************************************************************//**
-     * \fn value
-     * \brief Return supported physics keyword.
-     * \param [in] aKey input file keyword
-     * \return supported physics keyword. If key is not supported, return an empty string.
+     * \fn physics
+     * \brief Return supported simulation physics.
+     * \param [in] aKey keyword
+     * \return supported simulation physics keyword, if not supported, return empty string.
     **********************************************************************************/
-    std::string value(const std::string& aKey) const
+    std::string physics(const std::string& aKey) const
     {
-        return (XMLGen::return_supported_value(aKey, mKeys));
+        auto tItr = mKeys.find(aKey);
+        if(tItr == mKeys.end())
+        {
+            return ("");
+        }
+        return tItr->first;
+    }
+
+    /******************************************************************************//**
+     * \fn material_state
+     * \brief Return principal material state given a supported simulation usecase.
+     * \param [in] aKey supported simulation usecase
+     * \return principal material state, if simulation usecase is not supported, return empty string.
+    **********************************************************************************/
+    std::string material_state(const std::string& aKey) const
+    {
+        auto tItr = mKeys.find(aKey);
+        if(tItr == mKeys.end())
+        {
+            return ("");
+        }
+        return tItr->second;
     }
 };
 // struct ValidPhysicsKeys
@@ -717,6 +768,33 @@ public:
     }
 };
 // struct ValidFilterKeys
+
+struct ValidProjectionKeys
+{
+private:
+    /*!<
+     * valid filters \n
+     * \brief map from light-input file key to Plato main operation XML file key, i.e. map<light_input_file_key,plato_main_operation_file_key>
+     **/
+    std::unordered_map<std::string, std::string> mKeys = 
+    { 
+        {"heaviside", "ProjectionHeaviside"}, 
+        {"tanh", "ProjectionTANH"} 
+    };
+
+public:
+    /******************************************************************************//**
+     * \fn value
+     * \brief Return projection keyword supported by Plato Engine.
+     * \param [in] aKey input file keyword
+     * \return supported projection keyword. If key is not supported, return an empty string.
+    **********************************************************************************/
+    std::string value(const std::string& aKey) const
+    {
+        return (XMLGen::return_supported_value(aKey, mKeys));
+    }
+};
+// struct ValidProjectionKeys
 
 struct ValidAnalyzeOutputKeys
 {
@@ -1209,6 +1287,7 @@ struct ValidAnalyzeCriteriaKeys
     {
         { "composite", { "Composite", false } },
         { "volume", { "Volume", false } },
+        { "volume_average", { "Volume Average Criterion", false } },
         { "elastic_work", { "Elastic Work", false } },
         { "plastic_work", { "Plastic Work", false } },
         { "total_work", { "Total Work", false } },
@@ -1219,6 +1298,7 @@ struct ValidAnalyzeCriteriaKeys
         { "effective_energy", { "Effective Energy", true } },
         { "stress_constraint", { "Stress Constraint", false } },
         { "stress_constraint_general", { "Stress Constraint General", false } },
+        { "stress_constraint_quadratic", { "Stress Constraint Quadratic", false } },
         { "stress_and_mass", { "Stress Constraint General", false } },
         { "thermal_compliance", { "Internal Thermal Energy", false } },
         { "flux_p-norm", { "Flux P-Norm", false } },
@@ -1226,6 +1306,8 @@ struct ValidAnalyzeCriteriaKeys
         { "surface_temperature", { "Average Surface Temperature", false } },
         { "surface_pressure", { "Average Surface Pressure", false } },
         { "flow_rate", { "Flow Rate", false } },
+        { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
+        { "fluid_thermal_compliance", { "Thermal Compliance", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys
@@ -1405,6 +1487,7 @@ struct ValidOptimizationParameterKeys
      "mma_sub_problem_initial_penalty",
      "mma_sub_problem_penalty_multiplier",
      "mma_sub_problem_feasibility_tolerance",
+     "mma_use_ipopt_sub_problem_solver",
      "mma_control_stagnation_tolerance",
      "mma_objective_stagnation_tolerance",
      "mma_output_subproblem_diagnostics",
@@ -1430,14 +1513,20 @@ struct ValidOptimizationParameterKeys
      "fixed_block_ids",
      "fixed_sideset_ids",
      "fixed_nodeset_ids",
+     "fixed_block_domain_values",
+     "fixed_block_boundary_values",
+     "fixed_block_material_states",
      "levelset_nodesets",
      "number_prune_and_refine_processors",
+     "prune_and_refine_path",
      "number_buffer_layers",
      "prune_mesh",
      "optimization_algorithm",
      "check_gradient",
      "check_hessian",
      "filter_type",
+     "filter_service",
+     "projection_type",
      "filter_power",
      "gcmma_inner_kkt_tolerance",
      "gcmma_outer_kkt_tolerance",
@@ -1497,6 +1586,24 @@ struct ValidOptimizationParameterKeys
 struct ValidHeatTransferMechanisms
 {
     std::unordered_set<std::string> mKeys = { "none", "natural", "forced", "mixed" };
+};
+
+struct ValidRunParameterKeys
+{
+    std::vector<std::string> mKeys = 
+    {
+        "type", 
+        "command",
+        "criterion"
+    };
+};
+
+struct ValidRunTypes
+{
+    std::vector<std::string> mKeys = 
+    {
+        "modal_analysis" 
+    };
 };
 
 }

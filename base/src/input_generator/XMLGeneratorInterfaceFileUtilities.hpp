@@ -90,6 +90,29 @@ void append_topology_shared_data
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_helmholtz_topology_shared_data
+ * \brief Append topology shared data for helmholtz filter to interface.xml file.
+ * \param [in]     aXMLMetaData Plato problem input metadata
+ * \param [in/out] aParentNode    parent xml node
+**********************************************************************************/
+void append_helmholtz_topology_shared_data
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_projection_helmholtz_topology_shared_data
+ * \brief Append topology and filtered control shared data for helmholtz filter
+ * with projection to interface.xml file.
+ * \param [in]     aXMLMetaData Plato problem input metadata
+ * \param [in/out] aTopologyNode         topology shared data parent xml node
+ * \param [in/out] aFilteredControlNode  filtered control shared data xml node
+**********************************************************************************/
+void append_projection_helmholtz_topology_shared_data
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aTopologyNode,
+ pugi::xml_node& aFilteredControlNode);
+
+/******************************************************************************//**
  * \fn append_shared_data
  * \brief Append shared data to interface.xml file.
  * \param [in]     aXMLMetaData Plato problem input metadata
@@ -150,12 +173,12 @@ void append_objective_gradient_stage
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
- * \fn append_write_ouput_operation
+ * \fn append_write_output_operation
  * \brief Append write output operation to output stage.
  * \param [in]     aMetaData    Plato problem input data
  * \param [in/out] aDocument    pugi::xml_document
 **********************************************************************************/
-void append_write_ouput_operation
+void append_write_output_operation
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode);
 
@@ -318,6 +341,23 @@ void append_reinitialize_on_change_operation
 void append_design_parameters_shared_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn do_tet10_conversion
+ * \brief determine whether we are using tet10 conversion
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+bool do_tet10_conversion(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn append_tet10_conversion_operation
+ * \brief Append operation for converting to tet10
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_tet10_conversion_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
  * \fn append_constraint_stage_for_topology_problem
@@ -504,6 +544,18 @@ void append_enforce_bounds_operation
  * \param [in/out] aParentNode     pugi::xml_node
 **********************************************************************************/
 void append_filter_criterion_gradient_operation
+(const XMLGen::InputData& aXMLMetaData,
+ const std::string& aInputSharedDataName,
+ const std::string& aOutputSharedDataName,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_helmholtz_filter_criterion_gradient_operation
+ * \brief Append helmholtz filter criterion gradient operation to PUGI XML document.
+ * \param [in]     aSharedDataName criterion gradient shared data name
+ * \param [in/out] aParentNode     pugi::xml_node
+**********************************************************************************/
+void append_helmholtz_filter_criterion_gradient_operation
 (const XMLGen::InputData& aXMLMetaData,
  const std::string& aInputSharedDataName,
  const std::string& aOutputSharedDataName,

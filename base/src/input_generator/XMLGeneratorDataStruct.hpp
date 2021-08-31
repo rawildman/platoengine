@@ -17,6 +17,7 @@
 #include "XMLGeneratorRandomMetadata.hpp"
 #include "XMLGeneratorBoundaryMetadata.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
+#include "XMLGeneratorRunMetadata.hpp"
 #include "XMLGeneratorScenarioMetadata.hpp"
 #include "XMLGeneratorConstraintMetadata.hpp"
 #include "XMLGeneratorMaterialMetadata.hpp"
@@ -59,16 +60,6 @@ struct Block
     std::string element_type;
 };
 
-struct CodePaths
-{
-    std::string plato_main_path;
-    std::string lightmp_path;
-    std::string sierra_sd_path;
-    std::string albany_path;
-    std::string plato_analyze_path;
-    std::string prune_and_refine_path;
-};
-
 struct Mesh
 {
     std::string name;
@@ -89,6 +80,7 @@ struct InputData
 {
 private:
     std::vector<XMLGen::Service> mServices;
+    std::vector<XMLGen::Run> mRuns;
     std::vector<XMLGen::Criterion> mCriteria;
     XMLGen::OptimizationParameters mOptimizationParameters;
 
@@ -222,6 +214,20 @@ public:
             if(tService.code() == "platomain")
             {
                 tReturnValue = tService.performer();
+                break;
+            }
+        }
+        return tReturnValue;
+    }
+
+    std::string getFirstPlatoMainId() const
+    {
+        std::string tReturnValue = "";
+        for(auto& tService : mServices)
+        {
+            if(tService.code() == "platomain")
+            {
+                tReturnValue = tService.id();
                 break;
             }
         }
@@ -370,6 +376,15 @@ public:
         }
         mServices.push_back(aService);
     }
+    // Runs
+    void set(const std::vector<XMLGen::Run>& aRuns)
+    {
+        mRuns = aRuns;
+    }
+    const std::vector<XMLGen::Run>& runs() const
+    {
+        return mRuns;
+    }
     // Criteria access
     const XMLGen::Criterion& criterion(const std::string& aID) const
     {
@@ -434,7 +449,6 @@ public:
     std::vector<XMLGen::Block> blocks;
     std::vector<XMLGen::Load> loads;
     XMLGen::Mesh mesh;
-    XMLGen::CodePaths codepaths;
     std::vector<XMLGen::Uncertainty> uncertainties;
     std::vector<XMLGen::Output> mOutputMetaData;
     XMLGen::Arch m_Arch;

@@ -176,9 +176,12 @@ std::string transform_tokens_for_plato_analyze_input_deck
     for(auto tItr = aTokens.begin(); tItr != tEndIterator; ++tItr)
     {
         auto tIndex = std::distance(aTokens.begin(), tItr);
-        tOutput += aTokens[tIndex] + ", ";
+        tOutput += aTokens[tIndex] + ",";
     }
     tOutput += aTokens[tEndIndex] + "}";
+
+    std::replace(tOutput.begin(), tOutput.end(), ' ', ','); // guard against the possibility of white spaces between two consecutive number characters
+
     return tOutput;
 }
 // function transform_tokens_for_plato_analyze_input_deck
@@ -244,7 +247,7 @@ void append_self_adjoint_parameter_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
-    XMLGen::is_objective_container_empty(aXMLMetaData);
+    //XMLGen::is_objective_container_empty(aXMLMetaData);
 
     std::string tIsSelfAdjoint = "false";
     if(aXMLMetaData.objective.criteriaIDs.size() == 1u)
@@ -504,22 +507,7 @@ void append_constraint_criteria_to_criteria_list
     {
         return;
     }
-    auto tContraintFunctions = XMLGen::return_list_of_constraint_functions(aXMLMetaData);
-    if(tContraintFunctions.size() > 1)
-    {
-        auto tConstraint = aParentNode.append_child("ParameterList");
-        XMLGen::append_weighted_sum_constraint_to_plato_problem(aXMLMetaData, tConstraint);
-        XMLGen::append_functions_to_weighted_sum_constraint(aXMLMetaData, tContraintFunctions, tConstraint);
-        XMLGen::append_weights_to_weighted_sum_constraint(aXMLMetaData, tConstraint);
-        XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
-    }
-    else
-    {
-        auto tConstraint = XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
-        // Change the name to "My Constraint"
-        tConstraint.remove_attribute("name");
-        XMLGen::append_attributes({"name"}, {"My Constraint"}, tConstraint);
-    }
+    XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
 }
 // function append_constraint_criteria_to_criteria_list
 /**********************************************************************************/
@@ -554,7 +542,7 @@ void append_spatial_model_to_plato_problem
         auto tCurDomain = tDomains.append_child("ParameterList");
         XMLGen::append_attributes({"name"}, {std::string("Block ") + tBlock.block_id}, tCurDomain);
         std::vector<std::string> tKeys = {"name", "type", "value"};
-        std::vector<std::string> tValues = {"Element Block", "string", std::string("block_") + tBlock.block_id};
+        std::vector<std::string> tValues = {"Element Block", "string", tBlock.name};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
 
         auto tMaterials = aXMLMetaData.materials;
@@ -953,6 +941,53 @@ void write_plato_analyze_input_deck_file
     tDocument.save_file(tFilename.c_str(), "  ");
 }
 // function write_plato_analyze_input_deck_file
+/**********************************************************************************/
+
+/**********************************************************************************/
+void write_plato_analyze_helmholtz_input_deck_file
+(const XMLGen::InputData& aXMLMetaData)
+{
+    pugi::xml_document tDocument;
+
+    // problem
+    XMLGen::append_problem_description_to_plato_analyze_input_deck(aXMLMetaData, tDocument);
+
+    // plato problem
+    auto tProblem = tDocument.child("ParameterList");
+    auto tPlatoProblem = tProblem.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Plato Problem"}, tPlatoProblem);
+
+    // physics 
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Physics", "string", "Helmholtz Filter"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPlatoProblem);
+
+    // pde constraint
+    tValues = {"PDE Constraint", "string", "Helmholtz Filter"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPlatoProblem);
+
+    // spatial model
+    XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
+
+    // length scale
+    auto tLengthScale = tPlatoProblem.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Length Scale"}, tLengthScale);
+    tKeys = {"name", "type", "value"};
+
+    auto tLengthScaleValue = aXMLMetaData.optimization_parameters().filter_radius_absolute();
+    if(tLengthScaleValue.empty())
+    {
+        THROWERR("Filter radius absolute is not set. This is needed for Helmholtz filter")
+    }
+
+    tValues = {"Length Scale", "double", tLengthScaleValue};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLengthScale);
+
+    std::string tServiceID = aXMLMetaData.services()[0].id();
+    std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
+    tDocument.save_file(tFilename.c_str(), "  ");
+}
+// function write_plato_analyze_helmholtz_input_deck_file
 /**********************************************************************************/
 
 /**********************************************************************************/

@@ -60,8 +60,7 @@ if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
 
-include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-
+include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
 ###########################  Compiler setup ###################################
@@ -124,7 +123,6 @@ endif()
 if("${CMAKE_BUILD_TYPE}" STREQUAL Release)
   add_definitions( -DNDEBUG)
 elseif("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
-add_compile_options(-Wall -Werror -Wno-unused-result)
 endif()
 
 if( GEOMETRY )
@@ -174,6 +172,11 @@ if( AMFILTER_ENABLED )
     set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
+if ( IPOPT_ENABLED )
+    message( "-- Compiling with IPOPT to solve MMA subproblem " )
+    add_definitions(-DENABLE_IPOPT_FOR_MMA_SUBPROBLEM)
+    set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ipopt)
+endif()
 
 add_subdirectory(base/src)
 add_subdirectory(base/src/analyze)

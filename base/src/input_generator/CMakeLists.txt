@@ -10,6 +10,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseServices.cpp
                       XMLGeneratorOutputMetadata.cpp 
                       XMLGeneratorParseObjective.cpp
+                      XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorParseMaterial.cpp
                       XMLGeneratorParseEssentialBoundaryCondition.cpp
                       XMLGeneratorParseCriteria.cpp
@@ -45,6 +46,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                       XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.cpp
                       XMLGeneratorUtilities.cpp
+                      XMLGeneratorRunMetadata.cpp
+                      XMLGeneratorParseRun.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -59,6 +62,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorBoundaryMetadata.hpp
                       XMLGeneratorMaterialMetadata.hpp 
                       XMLGeneratorCriterionMetadata.hpp 
+                      XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorConstraintMetadata.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
                       XMLGeneratorPlatoAnalyzeProblem.hpp 
@@ -103,6 +107,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorParseServices.hpp 
                       XMLGeneratorParseConstraint.hpp 
                       XMLGeneratorParseUncertainty.hpp
+                      XMLGeneratorRunMetadata.hpp
+                      XMLGeneratorParseRun.hpp
                       )
 
 find_package(MPI)

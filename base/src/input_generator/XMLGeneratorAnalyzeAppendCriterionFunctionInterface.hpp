@@ -22,12 +22,22 @@ void append_incompressible_fluids_scalar_functions
     // surface pressure
     auto tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("surface_pressure",
-    std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
 
     // surface temperature
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("surface_temperature",
-    std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+
+    // maximize_fluid_thermal_flux
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
+    aMap.insert(std::make_pair("maximize_fluid_thermal_flux", 
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
+
+    // fluid_thermal_compliance
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionT>));
+    aMap.insert(std::make_pair("fluid_thermal_compliance", 
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionT>, tFuncIndex)));
 }
 // function append_incompressible_fluids_scalar_functions
 
@@ -75,6 +85,11 @@ private:
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_stress_constrained_mass_minimization_criterion));
         mMap.insert(std::make_pair("stress_constraint_general",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_stress_constrained_mass_minimization_criterion, tFuncIndex)));
+        
+        // stress_constraint_quadratic
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_stress_constrained_mass_minimization_criterion));
+        mMap.insert(std::make_pair("stress_constraint_quadratic",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_stress_constraint_quadratic_criterion, tFuncIndex)));
 
         // stress p-norm
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_pnorm_criterion<CriterionType>));
@@ -94,7 +109,7 @@ private:
         // thermo-elastic energy
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionType>));
         mMap.insert(std::make_pair("thermomechanical_compliance",
-          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionType>, tFuncIndex)));
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_thermomechanical_compliance_criterion<CriterionType>, tFuncIndex)));
 
         // electro-elastic energy
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionType>));
@@ -126,6 +141,11 @@ private:
         mMap.insert(std::make_pair("thermoplasticity_thermal_energy",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionType>, tFuncIndex)));
         
+        // volume_average
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_volume_average_criterion<CriterionType>));
+        mMap.insert(std::make_pair("volume_average",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_volume_average_criterion<CriterionType>, tFuncIndex)));
+        
         // incompressible fluids
         XMLGen::Private::append_incompressible_fluids_scalar_functions<CriterionType>(mMap);
     }
@@ -144,8 +164,8 @@ public:
      * \fn call
      * \tparam CriterionType criterion function metadata C++ structure type
      * \brief Append criterion function parameters to plato_analyze_input_deck.xml file.
-     * \param [in]     Criterion    criterion metadata
-     * \param [in/out] aParentNode  pugi::xml_node
+     * \param [in]  aCriterion   criterion metadata
+     * \param [out] aParentNode  pugi::xml_node
     **********************************************************************************/
     pugi::xml_node call(const CriterionType& aCriterion, pugi::xml_node &aParentNode) const
     {

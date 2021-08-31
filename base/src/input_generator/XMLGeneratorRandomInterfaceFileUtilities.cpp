@@ -267,12 +267,23 @@ void append_update_problem_stage_for_nondeterministic_usecase
         {
             continue;
         }
+        const bool tServiceIsPlatoMain = (tService.code() == "platomain");
+
         auto tStageNode = aDocument.append_child("Stage");
         XMLGen::append_children( { "Name" }, { "Update Problem" }, tStageNode);
-        auto tPerformerName = tService.performer() + "_{PerformerIndex}";
+        auto tPerformerName = tServiceIsPlatoMain ? tService.performer() : tService.performer() + "_{PerformerIndex}";
         std::vector<std::string> tKeys = { "Name", "PerformerName" };
         std::vector<std::string> tValues = { "Update Problem", tPerformerName };
-        XMLGen::append_nondeterministic_operation(tKeys, tValues, tStageNode);
+
+        if (tServiceIsPlatoMain)
+        {
+            auto tOperationNode = tStageNode.append_child("Operation");
+            XMLGen::append_children(tKeys, tValues, tOperationNode);
+        }
+        else
+        {
+            XMLGen::append_nondeterministic_operation(tKeys, tValues, tStageNode);
+        }
     }
 }
 // function append_update_problem_stage_for_nondeterministic_usecase

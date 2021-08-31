@@ -87,6 +87,7 @@ struct AlgorithmInputsMMA
 
     bool mPrintMMADiagnostics = false; /*!< flag to enable problem statistics output (default=false) */
     bool mPrintAugLagSubProbDiagnostics = false; /*!< output augmented Lagrangian subproblem diagnostics to text file (default=false) */
+    bool mUseIpoptForMMASubproblem = false; /*!< use IPOPT to solve MMA Subproblem (default=false) */
     std::string mOutputStageName = ""; /*!< output stage name */
 
     OrdinalType mUpdateFrequency = 0; /*!< continuation frequency (default = disabled = 0) */
