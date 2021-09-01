@@ -8,7 +8,11 @@
 #ifndef ISO_PRUNE_MAIN_MESHMANAGER_HPP_
 #define ISO_PRUNE_MAIN_MESHMANAGER_HPP_
 
+#ifdef BUILD_IN_SIERRA
+#include <percept/PerceptMesh.hpp>
+#else
 #include <PerceptMesh.hpp>
+#endif
 #include "Teuchos_CommandLineProcessor.hpp"
 #include "PruneMeshAPISTK.hpp"
 

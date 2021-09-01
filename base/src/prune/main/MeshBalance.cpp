@@ -6,18 +6,13 @@
  */
 
 #include "MeshBalance.hpp"
-#include <ZoltanPartition.hpp>
+#ifdef BUILD_IN_SIERRA
+#include <percept/stk_rebalance/Rebalance.hpp>
+#include <percept/stk_rebalance/ZoltanPartition.hpp>
+#else
 #include <Rebalance.hpp>
-/*
-#include <PerceptMesh.hpp>
-#include <adapt/UniformRefinerPattern.hpp>
-#include <adapt/UniformRefiner.hpp>
-#include <adapt/RefinerUtil.hpp>
-#include <adapt/UniformRefinerPattern_def.hpp>
-#include <stk_rebalance/Rebalance.hpp>
-#include <stk_rebalance/Partition.hpp>
-*/
-
+#include <ZoltanPartition.hpp>
+#endif
 
     MeshBalance::MeshBalance()
     {
