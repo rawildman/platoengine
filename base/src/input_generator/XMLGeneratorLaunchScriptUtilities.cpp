@@ -299,6 +299,7 @@ namespace XMLGen
 
   void determine_plato_engine_name(const XMLGen::InputData& aInputData, std::string& aPlatoEngineName)
   {
+/*
       bool tAtLeastOneSierraSDPhysicsPerformer = false;
       bool tAllPhysicsPerformersAreSierraSD = true;
       for(auto &tCurService : aInputData.services())
@@ -329,8 +330,9 @@ namespace XMLGen
      }
      else
      {
+*/
          aPlatoEngineName = "PlatoMain";   
-     }
+ //    }
   }
 
   namespace Internal
