@@ -61,18 +61,6 @@
 
 #include <Kokkos_Macros.hpp>
 
-#ifdef KOKKOS_HAVE_CUDA
-#define LAMBDA_EXPRESSION [=] __device__
-#else
-#define LAMBDA_EXPRESSION [=]
-#endif
-
-#ifdef KOKKOS_HAVE_CUDA
-#define DEVICE_TYPE __device__
-#else
-#define DEVICE_TYPE
-#endif
-
 using MemSpace = Kokkos::DefaultExecutionSpace::memory_space;
 
 namespace Plato {
@@ -199,7 +187,7 @@ class PointGrid
       auto t_o = m_o;
       auto t_d = m_d;
       auto t_numPoints = m_numPoints;
-      Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numPoints),LAMBDA_EXPRESSION(int pointIndex)
+      Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numPoints),KOKKOS_LAMBDA(int pointIndex)
       {
         int t_i[SpaceDim] = {0};
         for(int i=0; i<SpaceDim; i++){
@@ -260,7 +248,7 @@ class SphereArray {
           auto t_insideValue = m_insideValue;
           auto t_outsideValue = m_outsideValue;
           auto t_sphereCoords = m_sphereCoords;
-          Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numPoints),LAMBDA_EXPRESSION(int pointIndex)
+          Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numPoints),KOKKOS_LAMBDA(int pointIndex)
           {
             a_field(pointIndex) = t_outsideValue;
             ScalarType t_pointCoord[SpaceDim];
@@ -397,7 +385,7 @@ class MovingLeastSquares {
       int t_numPoints = a_pointValues.size();
       auto t_coords = m_coords;
       auto t_radius = m_radius;
-      Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numNodes),LAMBDA_EXPRESSION(int nodeIndex)
+      Kokkos::parallel_for(Kokkos::RangePolicy<int>(0,t_numNodes),KOKKOS_LAMBDA(int nodeIndex)
       {
         ScalarType t_nodeCoord[SpaceDim];
         for(int iDim=0; iDim<SpaceDim; iDim++){
@@ -443,7 +431,7 @@ class MovingLeastSquares {
       for(int t_pointIndex=0; t_pointIndex<tNumPoints; t_pointIndex++){
         ScalarType tReturnVal(0.0);
         typedef typename ScalarArray<ScalarType>::size_type size_type;
-        Kokkos::parallel_reduce( Kokkos::RangePolicy<>(0,a_nodeValues.size()), LAMBDA_EXPRESSION( const size_type & aNodeIndex, ScalarType& aLocalResult)
+        Kokkos::parallel_reduce( Kokkos::RangePolicy<>(0,a_nodeValues.size()), KOKKOS_LAMBDA( const size_type & aNodeIndex, ScalarType& aLocalResult)
         {
            // buffer the node coordinate (X_k)
            ScalarType t_nodeCoord[SpaceDim];

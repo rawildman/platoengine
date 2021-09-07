@@ -52,18 +52,6 @@
 #include <Kokkos_Core.hpp>
 #include <Kokkos_Macros.hpp>
 
-#ifdef KOKKOS_HAVE_CUDA
-#define LAMBDA_EXPRESSION [=] __device__
-#else
-#define LAMBDA_EXPRESSION [=]
-#endif
-
-#ifdef KOKKOS_HAVE_CUDA
-#define DEVICE_TYPE __device__
-#else
-#define DEVICE_TYPE
-#endif
-
 namespace Plato
 {
 
