@@ -1596,6 +1596,7 @@ struct ValidRunParameterKeys
     {
         "type", 
         "command",
+        "service",
         "criterion"
     };
 };
