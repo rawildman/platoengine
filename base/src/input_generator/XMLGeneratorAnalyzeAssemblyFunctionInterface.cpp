@@ -33,7 +33,7 @@ void append_tied_assembly_to_plato_problem
 {
     std::vector<std::string> tKeys = {"name", "type", "value"};
 
-    auto tAssemblyName = "Tied Assembly Using PBC Multipoint Constraint";
+    std::string tAssemblyName = "Tied Assembly " + aAssembly.id() + " Using PBC Multipoint Constraint";
     auto tAssemblyParentNode = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {tAssemblyName}, tAssemblyParentNode);
 
