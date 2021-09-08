@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "Plato_FreeFunctions.hpp"
 #include "XMLG_Macros.hpp"
@@ -25,11 +25,35 @@ struct Criterion
 private:
     std::string mID; /*!< criterion identification number */
     std::string mType;  /*!< criterion type */
-    std::unordered_map<std::string, std::string> mMetaData; /*!< Scenario metadata, map< tag, value > */
+    std::unordered_map<std::string, std::vector<std::string> > mMetaData; /*!< Scenario metadata, map< tag, vector<values> > */
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
+    std::vector<std::string> mModesToExclude;
+    std::vector<std::string> mMatchNodesetIDs;
+
+    std::string mReport;
 
 public:
+    /******************************************************************************//**
+     * \fn report
+     * \brief Return accumulated report, which will be outputed in the plato report text file.
+     * \return report
+    **********************************************************************************/
+    std::string report() const
+    {
+        return mReport;
+    }
+
+    /******************************************************************************//**
+     * \fn report
+     * \brief Append input report to criteria report.
+     * \param [in] aInput message to be appended to criterion report.
+    **********************************************************************************/
+    void report(const std::string& aInput) const
+    {
+        mReport + "\nPlato Input Deck Report: " + aInput;
+    }
+
     /******************************************************************************//**
      * \fn id
      * \brief Return criterion identification number.
@@ -73,15 +97,32 @@ public:
     /******************************************************************************//**
      * \fn value
      * \brief If criterion metadata is defined, return its value; else, return an empty string.
-     * \param [in]  aTag    criterion metadata
-     * \return criterion metadata value
+     * \param [in]  aTag     parameter tag
+     * \param [in] aPosition parameter position in array
+     * \return parameter value
     **********************************************************************************/
-    std::string value(const std::string& aTag) const
+    std::string value(const std::string& aTag, size_t aPosition = 0) const
     {
         auto tTag = Plato::tolower(aTag);
         auto tItr = mMetaData.find(tTag);
-        auto tOutput = tItr == mMetaData.end() ? "" : tItr->second;
-        return tOutput;
+        if(tItr == mMetaData.end())
+        {
+            return "";
+        }
+        return tItr->second[aPosition];
+    }
+
+    /******************************************************************************//**
+     * \fn values
+     * \brief Return values.
+     * \param [in] aTag parameter tag
+     * \return parameter values, return empty array if tag is not defined.
+    **********************************************************************************/
+    std::vector<std::string> values(const std::string& aTag) const
+    {
+        auto tTag = Plato::tolower(aTag);
+        auto tItr = mMetaData.find(tTag);
+        return ( tItr == mMetaData.end() ? std::vector<std::string>() : tItr->second );
     }
 
     /******************************************************************************//**
@@ -97,7 +138,7 @@ public:
             THROWERR(std::string("XML Generator Scenario Metadata: Parameter with tag '") + aTag + "' is empty.")
         }
         auto tTag = Plato::tolower(aTag);
-        mMetaData[aTag] = aValue;
+        mMetaData[aTag].push_back(aValue);
     }
 
     /******************************************************************************//**
@@ -158,6 +199,46 @@ public:
     std::string pnormExponent() const
     {
         return (this->value("stress_p_norm_exponent"));
+    }
+
+    /******************************************************************************//**
+     * \fn mechanical_weighting_factor
+     * \brief Set string value for keyword 'mechanical_weighting_factor'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void mechanicalWeightingFactor(const std::string& aInput)
+    {
+        this->append("mechanical_weighting_factor", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn mechanical_weighting_factor
+     * \brief Return string value for keyword 'mechanical_weighting_factor'.
+     * \return value
+     **********************************************************************************/
+    std::string mechanicalWeightingFactor() const
+    {
+        return (this->value("mechanical_weighting_factor"));
+    }
+
+    /******************************************************************************//**
+     * \fn thermalWeightingFactor
+     * \brief Set string value for keyword 'thermal_weighting_factor'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void thermalWeightingFactor(const std::string& aInput)
+    {
+        this->append("thermal_weighting_factor", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn thermalWeightingFactor
+     * \brief Return string value for keyword 'thermal_weighting_factor'.
+     * \return value
+     **********************************************************************************/
+    std::string thermalWeightingFactor() const
+    {
+        return (this->value("thermal_weighting_factor"));
     }
 
     /******************************************************************************//**
@@ -281,6 +362,26 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn spatial_weighting_function
+     * \brief Return string value for keyword 'spatial_weighting_function'.
+     * \return value
+     **********************************************************************************/
+    std::string spatialWeightingFunction() const
+    {
+        return (this->value("spatial_weighting_function"));
+    }
+
+    /******************************************************************************//**
+     * \fn local_measure
+     * \brief Return string value for keyword 'local_measure'.
+     * \return value
+     **********************************************************************************/
+    std::string localMeasure() const
+    {
+        return (this->value("local_measure"));
+    }
+
+    /******************************************************************************//**
      * \fn criterionIDs
      * \brief Set ID strings for composite criteria
      * \param [in] aInput list of IDs
@@ -320,6 +421,63 @@ public:
         return this->mCriterionWeights;
     }
 
+    /******************************************************************************//**
+     * \fn modesToExclude
+     * \brief Set list of modes to be excluded by modal inverse
+     * \param [in] aInput list of IDs
+     **********************************************************************************/
+    void modesToExclude(const std::vector<std::string>& aInput)
+    {
+        this->mModesToExclude = aInput;
+    }
+
+    /******************************************************************************//**
+     * \fn modesToExclude
+     * \brief Return list of modes to be excluded by modal inverse
+     * \return value
+     **********************************************************************************/
+    std::vector<std::string> modesToExclude() const
+    {
+        return this->mModesToExclude;
+    }
+
+    /******************************************************************************//**
+     * \fn shapeSideset
+     * \brief Set string value for Sierra/SD shape sideset
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void shapeSideset(const std::string& aInput) {
+        this->append("shape_sideset", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn weightMassScaleFactor
+     * \brief Return string value Sierra/SD shape sideset
+     * \return value
+    **********************************************************************************/
+    std::string shapeSideset() const {
+        return (this->value("shape_sideset"));
+    }
+
+    std::string ref_data_file() const {
+        return this->value("ref_data_file");
+    }
+
+    /******************************************************************************//**
+     * \fn matchNodesetIDs
+     * \brief Return nodeset ids for matching frfs or eigen
+     * \return mMatchNodesetIDs
+    **********************************************************************************/
+    std::vector<std::string> matchNodesetIDs() const {return mMatchNodesetIDs;};
+
+    /******************************************************************************//**
+     * \fn setMatchNodesetIDs
+     * \brief Set nodeset ids for matching frfs or eigen
+     * \param [in] input nodeset IDs 
+    **********************************************************************************/
+    void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
+
+
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     std::string volume_misfit_target() const { return this->value("volume_misfit_target"); }
     std::string scmm_constraint_exponent() const { return this->value("scmm_constraint_exponent"); }
@@ -344,6 +502,12 @@ public:
     std::string volume_penalty_bias() const { return this->value("volume_penalty_bias"); }
     std::string surface_area_sideset_id() const { return this->value("surface_area_sideset_id"); }
 
+    // Sierra/SD modal objectives
+    std::string num_modes_compute() const { return this->value("num_modes_compute"); }
+    std::vector<std::string> modes_to_exclude() const { return mModesToExclude; }
+    std::string eigen_solver_shift() const { return this->value("eigen_solver_shift"); }
+    std::string camp_solver_tol() const { return this->value("camp_solver_tol"); }
+    std::string camp_max_iter() const { return this->value("camp_max_iter"); }
 };
 // struct Criterion
 

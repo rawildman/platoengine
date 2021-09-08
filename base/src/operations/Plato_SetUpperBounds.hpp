@@ -1,5 +1,5 @@
 /*
- //@HEADER
+ //\HEADER
  // *************************************************************************
  //   Plato Engine v.1.0: Copyright 2018, National Technology & Engineering
  //                    Solutions of Sandia, LLC (NTESS).
@@ -34,10 +34,10 @@
  // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  //
- // Questions? Contact the Plato team (plato3D-help@sandia.gov)
+ // Questions? Contact the Plato team (plato3D-help\sandia.gov)
  //
  // *************************************************************************
- //@HEADER
+ //\HEADER
  */
 
 /*
@@ -49,6 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
+#include "Plato_OperationMetadata.hpp"
 
 class PlatoApp;
 
@@ -58,40 +59,93 @@ namespace Plato
 class InputData;
 
 /******************************************************************************//**
- * @brief Compute design variables' upper bound
+ * \brief Compute design variables' upper bound
 **********************************************************************************/
 class SetUpperBounds : public Plato::LocalOp
 {
 public:
     /******************************************************************************//**
-     * @brief Constructor
-     * @param [in] aPlatoApp PLATO application
-     * @param [in] aNode input XML data
+     * \brief Constructor
+     * \param [in] aPlatoApp PLATO application
+     * \param [in] aNode input XML data
     **********************************************************************************/
     SetUpperBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
     /******************************************************************************//**
-     * @brief perform local operation - compute upper bounds
+     * \brief perform local operation - compute upper bounds
     **********************************************************************************/
     void operator()();
 
     /******************************************************************************//**
-     * @brief Return local operation's argument list
-     * @param [out] aLocalArgs argument list
+     * \brief Return local operation's argument list
+     * \param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
 private:
-    int mOutputSize; /*!< output field length */
+    /******************************************************************************//**
+     * \brief Initialize upper bound vector. 
+     * \param [in,out] aToData vector to upper bound vector
+    **********************************************************************************/
+    void initializeUpperBoundVector(double* aToData);
 
-    std::string mInputName; /*!< input argument name */
-    std::string mOutputName; /*!< output argument name */
-    std::string mDiscretization; /*!< topology/design representation, levelset or density */
+    /******************************************************************************//**
+     * \brief Parse member data
+     * \param [in] aNode XML metadata for this operation
+    **********************************************************************************/
+    void parseMemberData(Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Parse node and side sets metadata.
+     * \param [in] aNode XML metadata for this operation
+    **********************************************************************************/
+    void parseEntitySets(Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Parse fixed block metadata.
+     * \param [in] aNode XML metadata for this operation
+    **********************************************************************************/
+    void parseFixedBlocks(Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Parse operation input and output arguments.
+     * \param [in] aNode XML metadata for this operation
+    **********************************************************************************/
+    void parseOperationArguments(Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Update upper bound vector based on fixed entities. This function is only
+     *        used for Density-Based Topology Optimization Problems (DBTOP).
+     * \param [in,out] aToData vector to upper bound vector
+    **********************************************************************************/
+    void updateUpperBoundsBasedOnFixedEntitiesForDBTOP(double* aToData);
+
+    /******************************************************************************//**
+     * \brief Update upper bound vector based on fixed entities for Levelset Topology 
+     *        Optimization Problems (LSTOP).
+     * \param [in,out] aToData vector to upper bound vector
+    **********************************************************************************/
+    void updateUpperBoundsBasedOnFixedEntitiesForLSTOP(double* aToData);
+
+    /******************************************************************************//**
+     * \brief Set upper bound vector for density-based topology optimization problems.
+     * \param [in] aMetadata fixed blocks metadata
+     * \param [in,out] aToData lower bound vector
+    **********************************************************************************/
+    void updateUpperBoundsForDensityProblems
+    (const Plato::FixedBlock::Metadata& aMetadata, double* aToData);
+
+private:
+    int mOutputSize = 0; /*!< output field length */
+    int mUpperBoundVectorLength = 0; /*!< upper bound vector length */
+
+    std::string mInputArgumentName; /*!< input argument name */
+    std::string mOutputArgumentName; /*!< output argument name */
+    std::string mDiscretization; /*!< topology/design representation, levelset or density , default = 'density' */
+    std::string mMaterialUseCase; /*!< main material state use case for the problem, default = 'solid' */
+    
     Plato::data::layout_t mOutputLayout; /*!< output field data layout */
-
-    std::vector<int> mFixedBlocks; /*!< fixed blocks' identifiers */
-    std::vector<int> mFixedSidesets; /*!< fixed blocks' sideset identifiers */
-    std::vector<int> mFixedNodesets; /*!< fixed blocks' nodeset identifiers */
+    Plato::FixedBlock::Metadata mFixedBlockMetadata; /*!< data describing fixed blocks */
 };
 // class SetUpperBounds;
 

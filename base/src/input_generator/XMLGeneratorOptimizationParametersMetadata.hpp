@@ -12,6 +12,12 @@
 
 namespace XMLGen
 {
+    enum OptimizationType
+    {
+        OT_TOPOLOGY=0,
+        OT_SHAPE,
+        OT_UNKNOWN
+    };
 
 /******************************************************************************//**
  * \struct OptimizationParameters
@@ -19,13 +25,28 @@ namespace XMLGen
 **********************************************************************************/
 struct OptimizationParameters
 {
+    struct ValueData
+    {
+        bool mIsDefault;
+        std::string mValue;
+    };
+
 // private member data
 private:
-    std::unordered_map<std::string, std::string> mMetaData; /*!< OptimizationParameters metadata, map< tag, value > */
+    bool mNormalizeInAggregator = false;
+    bool mEnforceBounds = false;
+    bool mFilterInEngine = true;
+    OptimizationType mOptimizationType = OT_TOPOLOGY;
+    bool mIsARestartRun = false;
+    std::unordered_map<std::string, ValueData> mMetaData; /*!< OptimizationParameters metadata, map< tag, value > */
+    //std::unordered_map<std::string, std::string> mMetaData; /*!< OptimizationParameters metadata, map< tag, value > */
     std::vector<std::string> mLevelsetNodesets;
     std::vector<std::string> mFixedBlockIDs;
     std::vector<std::string> mFixedSidesetIDs;
     std::vector<std::string> mFixedNodesetIDs;
+    std::vector<std::string> mFixedBlockDomainValues;
+    std::vector<std::string> mFixedBlockBoundaryValues;
+    std::vector<std::string> mFixedBlockMaterialStates;
     std::vector<std::string> mSymmetryPlaneOrigin;
     std::vector<std::string> mSymmetryPlaneNormal;
 
@@ -50,6 +71,71 @@ private:
     bool getBool(const std::string& aTag) const;
 
 public:
+    /******************************************************************************//**
+     * \fn normalizeInAggregator
+     * \brief Return whether to normalize in the aggregator
+     * \return whether to normalize in the aggregator
+    **********************************************************************************/
+    bool normalizeInAggregator() const { return mNormalizeInAggregator; }
+
+    /******************************************************************************//**
+     * \fn normalizeInAggregator
+     * \brief Set whether to normalize in the aggregator
+    **********************************************************************************/
+    void normalizeInAggregator(const bool& aVal) { mNormalizeInAggregator = aVal; }
+
+    /******************************************************************************//**
+     * \fn enforceBounds
+     * \brief Return whether to enforce bounds in the engine
+     * \return whether to enforce bounds in the engine
+    **********************************************************************************/
+    bool enforceBounds() const { return mEnforceBounds; }
+
+    /******************************************************************************//**
+     * \fn enforceBounds
+     * \brief Set whether to enforce bounds in engine type
+    **********************************************************************************/
+    void enforceBounds(const bool& aVal) { mEnforceBounds = aVal; }
+
+    /******************************************************************************//**
+     * \fn filterInEngine
+     * \brief Return whether to filter in the engine
+     * \return whether to filter in engine
+    **********************************************************************************/
+    bool filterInEngine() const { return mFilterInEngine; }
+
+    /******************************************************************************//**
+     * \fn filterInEngine
+     * \brief Set whether to filter in engine type
+    **********************************************************************************/
+    void filterInEngine(const bool& aVal) { mFilterInEngine = aVal; }
+
+    /******************************************************************************//**
+     * \fn optimizationType
+     * \brief Return the optimization type
+     * \return optimization type
+    **********************************************************************************/
+    OptimizationType optimizationType() const { return mOptimizationType; }
+
+    /******************************************************************************//**
+     * \fn optimizationType
+     * \brief Set optimization type
+    **********************************************************************************/
+    void optimizationType(const OptimizationType& aVal) { mOptimizationType = aVal; }
+
+    /******************************************************************************//**
+     * \fn isARestartRun
+     * \brief Return whether this is a restart run or not
+     * \return whether this is a restart run or not
+    **********************************************************************************/
+    bool isARestartRun() const { return mIsARestartRun; }
+
+    /******************************************************************************//**
+     * \fn isARestartRun
+     * \brief Set whether this is a restart run or not
+    **********************************************************************************/
+    void isARestartRun(const bool& aVal) { mIsARestartRun = aVal; }
+
     /******************************************************************************//**
      * \fn symmetryNormal
      * \brief Return scenario symmetry plane normal
@@ -99,8 +185,9 @@ public:
      * \brief Append parameter to metadata.
      * \param [in] aTag   parameter tag
      * \param [in] aValue parameter value
+     * \param [in] aIsDefault parameter specifying whether this is a default or user set value
     **********************************************************************************/
-    void append(const std::string& aTag, const std::string& aValue);
+    void append(const std::string& aTag, const std::string& aValue, const bool& aIsDefault=false);
 
     /******************************************************************************//**
      * \fn mesh_map_filter_radius 
@@ -121,80 +208,78 @@ public:
      * \brief Set the fixed block ids
      * \param [in] aFixedBlockIDs vector of strings with fixed block ids
     **********************************************************************************/
-    void setFixedBlockIDs(const std::vector<std::string> &aFixedBlockIDs)
-    {
-        mFixedBlockIDs = aFixedBlockIDs;
-    }
-
-    /******************************************************************************//**
-     * \fn addLevelsetNodeset
-     * \brief Add a levelset nodeset id to the levelset nodeset id list
-     * \param [in] aLevelsetNodesetID string with the levelset nodeset id
-    **********************************************************************************/
-    void addLevelsetNodeset(const std::string &aLevelsetNodesetID)
-    {
-        mLevelsetNodesets.push_back(aLevelsetNodesetID);
-    }
-
-    /******************************************************************************//**
-     * \fn addFixedNodesetID
-     * \brief Add a fixed nodeset id to the fixed nodeset id list
-     * \param [in] aFixedNodesetID string with the fixed nodeset id
-    **********************************************************************************/
-    void addFixedNodesetID(const std::string &aFixedNodesetID)
-    {
-        mFixedNodesetIDs.push_back(aFixedNodesetID);
-    }
-
-    /******************************************************************************//**
-     * \fn addFixedSidesetID
-     * \brief Add a fixed sideset id to the fixed sideset id list
-     * \param [in] aFixedSidesetID string with the fixed sideset id
-    **********************************************************************************/
-    void addFixedSidesetID(const std::string &aFixedSidesetID)
-    {
-        mFixedSidesetIDs.push_back(aFixedSidesetID);
-    }
-
-    /******************************************************************************//**
-     * \fn addFixedBlockID
-     * \brief Add a fixed block id to the fixed block id list
-     * \param [in] aFixedBlockID string with the fixed block id
-    **********************************************************************************/
-    void addFixedBlockID(const std::string &aFixedBlockID)
-    {
-        mFixedBlockIDs.push_back(aFixedBlockID);
-    }
+    void setFixedBlockIDs(const std::vector<std::string> &aFixedBlockIDs) { mFixedBlockIDs = aFixedBlockIDs; }
 
     /******************************************************************************//**
      * \fn setFixedSidesetIDs
      * \brief Set the fixed sideset ids
      * \param [in] aFixedSidesetIDs vector of strings with fixed sideset ids
     **********************************************************************************/
-    void setFixedSidesetIDs(const std::vector<std::string> &aFixedSidesetIDs)
-    {
-        mFixedSidesetIDs = aFixedSidesetIDs;
-    }
+    void setFixedSidesetIDs(const std::vector<std::string> &aFixedSidesetIDs) { mFixedSidesetIDs = aFixedSidesetIDs; }
 
     /******************************************************************************//**
      * \fn setFixedNodesetIDs
      * \brief Set the fixed nodeset ids
      * \param [in] aFixedNodesetIDs vector of strings with fixed nodeset ids
     **********************************************************************************/
-    void setFixedNodesetIDs(const std::vector<std::string> &aFixedNodesetIDs)
-    {
-        mFixedNodesetIDs = aFixedNodesetIDs;
-    }
+    void setFixedNodesetIDs(const std::vector<std::string> &aFixedNodesetIDs) { mFixedNodesetIDs = aFixedNodesetIDs; }
+
+    /******************************************************************************//**
+     * \fn setFixedBlockDomainValues
+     * \brief Set density values for the nodes associated with the fixed block domains. 
+     *        assign to the domain.
+     * \param [in] aFixedBlockDomainValues list of homogeneous density values 
+    **********************************************************************************/
+    void setFixedBlockDomainValues(const std::vector<std::string> &aFixedBlockDomainValues) { mFixedBlockDomainValues = aFixedBlockDomainValues; }
+
+    /******************************************************************************//**
+     * \fn setFixedBlockBoundaryValues
+     * \brief Set density values for the nodes associated with the fixed block boundaries.
+     * \param [in] aFixedBlockBoundaryValues list of homogeneous density values 
+    **********************************************************************************/
+    void setFixedBlockBoundaryValues(const std::vector<std::string> &aFixedBlockBoundaryValues) { mFixedBlockBoundaryValues = aFixedBlockBoundaryValues; }
+
+    /******************************************************************************//**
+     * \fn setFixedBlockMaterialStates
+     * \brief Set material state (options: solid and fluid) for each fixed block. 
+     * \param [in] aFixedBlockMaterialStates list of material states 
+    **********************************************************************************/
+    void setFixedBlockMaterialStates(const std::vector<std::string> &aFixedBlockMaterialStates) { mFixedBlockMaterialStates = aFixedBlockMaterialStates; }
 
     /******************************************************************************//**
      * \fn setLevelsetNodesets
      * \brief Set the levelset nodeset ids
      * \param [in] aLevelsetNodesets vector of strings with levelset nodeset ids
     **********************************************************************************/
-    void setLevelsetNodesets(const std::vector<std::string> &aLevelsetNodesets)
-    {
-        mLevelsetNodesets = aLevelsetNodesets;
-    }
+    void setLevelsetNodesets(const std::vector<std::string> &aLevelsetNodesets) { mLevelsetNodesets = aLevelsetNodesets; }
+
+    /******************************************************************************//**
+     * \fn addFixedBlockID
+     * \brief Add a fixed block id to the fixed block id list
+     * \param [in] aFixedBlockID string with the fixed block id
+    **********************************************************************************/
+    void addFixedBlockID(const std::string &aFixedBlockID) { mFixedBlockIDs.push_back(aFixedBlockID); }
+
+    /******************************************************************************//**
+     * \fn addFixedNodesetID
+     * \brief Add a fixed nodeset id to the fixed nodeset id list
+     * \param [in] aFixedNodesetID string with the fixed nodeset id
+    **********************************************************************************/
+    void addFixedNodesetID(const std::string &aFixedNodesetID) {  mFixedNodesetIDs.push_back(aFixedNodesetID); }
+
+    /******************************************************************************//**
+     * \fn addFixedSidesetID
+     * \brief Add a fixed sideset id to the fixed sideset id list
+     * \param [in] aFixedSidesetID string with the fixed sideset id
+    **********************************************************************************/
+    void addFixedSidesetID(const std::string &aFixedSidesetID) { mFixedSidesetIDs.push_back(aFixedSidesetID); }
+
+    /******************************************************************************//**
+     * \fn addLevelsetNodeset
+     * \brief Add a levelset nodeset id to the levelset nodeset id list
+     * \param [in] aLevelsetNodesetID string with the levelset nodeset id
+    **********************************************************************************/
+    void addLevelsetNodeset(const std::string &aLevelsetNodesetID) { mLevelsetNodesets.push_back(aLevelsetNodesetID); }
 
     /******************************************************************************//**
      * \fn needsMeshMap 
@@ -203,12 +288,12 @@ public:
     **********************************************************************************/
     bool needsMeshMap() const;
 
-
     // Functions to get member values
     std::string optimization_algorithm() const {return value("optimization_algorithm");} 
     std::string normalize_in_aggregator() const {return value("normalize_in_aggregator");} 
     std::string number_refines() const {return value("number_refines");}
     std::string number_prune_and_refine_processors() const {return value("number_prune_and_refine_processors");}
+    std::string prune_and_refine_path() const {return value("prune_and_refine_path");}
     std::string number_buffer_layers() const {return value("number_buffer_layers");}
     std::string prune_mesh() const {return value("prune_mesh");}
     std::string num_shape_design_variables() const {return value("num_shape_design_variables");}
@@ -222,7 +307,7 @@ public:
     std::string derivative_checker_final_superscript() const {return value("derivative_checker_final_superscript");}
     std::string max_iterations() const {return value("max_iterations");}
     std::string filter_in_engine() const {return value("filter_in_engine");}
-    void filter_in_engine(const std::string& aValue) { append("filter_in_engine", aValue); }
+    void filter_in_engine(const std::string& aValue) { append("filter_in_engine", aValue, true); }
     std::string output_method() const {return value("output_method");}
     std::string discretization() const {return value("discretization");}
     std::string initial_density_value() const {return value("initial_density_value");}
@@ -237,12 +322,20 @@ public:
     std::vector<std::string> fixed_block_ids() const {return mFixedBlockIDs;}
     std::vector<std::string> fixed_nodeset_ids() const {return mFixedNodesetIDs;}
     std::vector<std::string> fixed_sideset_ids() const {return mFixedSidesetIDs;}
+    std::vector<std::string> fixed_block_domain_values() const {return mFixedBlockDomainValues;}
+    std::vector<std::string> fixed_block_boundary_values() const {return mFixedBlockBoundaryValues;}
+    std::vector<std::string> fixed_block_material_states() const {return mFixedBlockMaterialStates;}
     std::string mma_move_limit() const {return value("mma_move_limit");}
     std::string mma_asymptote_expansion() const {return value("mma_asymptote_expansion");}
     std::string mma_asymptote_contraction() const {return value("mma_asymptote_contraction");}
     std::string mma_max_sub_problem_iterations() const {return value("mma_max_sub_problem_iterations");}
+    std::string mma_sub_problem_initial_penalty() const {return value("mma_sub_problem_initial_penalty");}
+    std::string mma_sub_problem_penalty_multiplier() const {return value("mma_sub_problem_penalty_multiplier");}
+    std::string mma_sub_problem_feasibility_tolerance() const {return value("mma_sub_problem_feasibility_tolerance");}
+    std::string mma_use_ipopt_sub_problem_solver() const {return value("mma_use_ipopt_sub_problem_solver");}
     std::string mma_control_stagnation_tolerance() const {return value("mma_control_stagnation_tolerance");}
     std::string mma_objective_stagnation_tolerance() const {return value("mma_objective_stagnation_tolerance");}
+    std::string mma_output_subproblem_diagnostics() const {return value("mma_output_subproblem_diagnostics");}
     std::string ks_trust_region_expansion_factor() const {return value("ks_trust_region_expansion_factor");}
     std::string ks_trust_region_contraction_factor() const {return value("ks_trust_region_contraction_factor");}
     std::string ks_max_trust_region_iterations() const {return value("ks_max_trust_region_iterations");}
@@ -275,6 +368,8 @@ public:
     std::string filter_heaviside_update() const {return value("filter_heaviside_update");}
     std::string filter_heaviside_max() const {return value("filter_heaviside_max");}
     std::string filter_type() const {return value("filter_type");}
+    std::string filter_service() const {return value("filter_service");}
+    std::string projection_type() const {return value("projection_type");}
     std::string write_restart_file() const {return value("write_restart_file");}
     std::string output_frequency() const {return value("output_frequency");}
     std::string gcmma_max_inner_iterations() const {return value("gcmma_max_inner_iterations");}
@@ -293,7 +388,8 @@ public:
     std::string oc_control_stagnation_tolerance() const {return value("oc_control_stagnation_tolerance");}
     std::string oc_objective_stagnation_tolerance() const {return value("oc_objective_stagnation_tolerance");}
     std::string oc_gradient_tolerance() const {return value("oc_gradient_tolerance");}
-
+    std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
+    std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
 
 };
 // struct OptimizationParameters

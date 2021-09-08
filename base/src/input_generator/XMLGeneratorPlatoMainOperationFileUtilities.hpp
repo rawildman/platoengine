@@ -41,12 +41,31 @@ bool is_volume_constraint_defined_and_computed_by_platomain
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**
+ * \fn get_platomain_volume_constraint_id
+ * \brief Return the id of volume constraint if platomain is the performer
+ * \param [in] aXMLMetaData Plato problem input data
+ * \return constraint id
+**********************************************************************************/
+std::string get_platomain_volume_constraint_id
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
  * \fn append_filter_options_to_operation
  * \brief Append filter options to PUGI XML document.
  * \param [in]     aXMLMetaData Plato problem input data
  * \param [in/out] aParentNode  pugi::xml_node
 **********************************************************************************/
 void append_filter_options_to_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node &aParentNode);
+
+/******************************************************************************//**
+ * \fn append_projection_options_to_operation
+ * \brief Append projection options to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+void append_projection_options_to_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node &aParentNode);
 
@@ -266,6 +285,16 @@ void append_csm_mesh_output_to_plato_main_operation
  * \param [in/out] aDocument  pugi::xml_document
 **********************************************************************************/
 void append_initialize_geometry_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_tet10_conversion_operation_to_plato_main_operation
+ * \brief Append operation for converting to tet10
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument  pugi::xml_document
+**********************************************************************************/
+void append_tet10_conversion_operation_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument);
 

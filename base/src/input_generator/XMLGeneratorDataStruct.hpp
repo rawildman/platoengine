@@ -17,12 +17,13 @@
 #include "XMLGeneratorRandomMetadata.hpp"
 #include "XMLGeneratorBoundaryMetadata.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
+#include "XMLGeneratorRunMetadata.hpp"
 #include "XMLGeneratorScenarioMetadata.hpp"
 #include "XMLGeneratorConstraintMetadata.hpp"
 #include "XMLGeneratorMaterialMetadata.hpp"
 #include "XMLGeneratorEssentialBoundaryConditionMetadata.hpp"
-#include "XMLGeneratorNaturalBoundaryConditionMetadata.hpp"
 #include "XMLGeneratorAssemblyMetadata.hpp"
+#include "XMLGeneratorLoadMetadata.hpp"
 #include "XMLGeneratorUncertaintyMetadata.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorOptimizationParametersMetadata.hpp"
@@ -60,108 +61,6 @@ struct Block
     std::string element_type;
 };
 
-struct CodePaths
-{
-    std::string plato_main_path;
-    std::string lightmp_path;
-    std::string sierra_sd_path;
-    std::string albany_path;
-    std::string plato_analyze_path;
-    std::string prune_and_refine_path;
-};
-
-/*
-struct OptimizationParameters
-{
-    std::string levelset_material_box_min;
-    std::string levelset_material_box_max;
-    std::string initial_density_value;
-    std::string optimization_type;
-    std::string csm_filename;
-    std::string create_levelset_spheres;
-    std::string write_restart_file;
-    std::string levelset_initialization_method;
-    std::string max_iterations;
-    std::string restart_iteration;
-    std::string initial_guess_filename;
-    std::string initial_guess_field_name;
-    std::string prune_mesh;
-    std::string number_buffer_layers;
-    std::string number_prune_and_refine_processors;
-    std::string number_refines;
-    std::string mVerbose = "false";
-    std::string mMMAMoveLimit;
-    std::string mNormalizeInAggregator = "";
-    std::string mMMAControlStagnationTolerance;
-    std::string mMMAObjectiveStagnationTolerance;
-    std::string mMMAAsymptoteExpansion;
-    std::string mMMAAsymptoteContraction;
-    std::string mMMAMaxNumSubProblemIterations;
-    std::string mMMAMaxTrustRegionIterations;
-    std::string mMaxTrustRegionIterations;
-    std::string mTrustRegionExpansionFactor;
-    std::string mTrustRegionContractionFactor;
-    std::string mOuterGradientToleranceKS;
-    std::string mOuterStationarityToleranceKS;
-    std::string mOuterStagnationToleranceKS;
-    std::string mOuterControlStagnationToleranceKS;
-    std::string mDisablePostSmoothingKS;
-    std::string mOuterActualReductionToleranceKS;
-    std::string mTrustRegionRatioLowKS;
-    std::string mTrustRegionRatioMidKS;
-    std::string mTrustRegionRatioUpperKS;
-    std::string mInitialRadiusScale;
-    std::string mMaxRadiusScale;
-    std::string mProblemUpdateFrequency;
-    std::string mMaxInnerIterationsGCMMA;
-    std::string mInnerKKTtoleranceGCMMA;
-    std::string mInnerControlStagnationToleranceGCMMA;
-    std::string mOuterKKTtoleranceGCMMA;
-    std::string mOuterControlStagnationToleranceGCMMA;
-    std::string mOuterObjectiveStagnationToleranceGCMMA;
-    std::string mOuterStationarityToleranceGCMMA;
-    std::string mInitialMovingAsymptotesScaleFactorGCMMA;
-    std::string levelset_sphere_packing_factor;
-    std::string levelset_sphere_radius;
-    std::vector<std::string> levelset_nodesets;
-    std::vector<std::string> fixed_block_ids;
-    std::vector<std::string> fixed_sideset_ids;
-    std::vector<std::string> fixed_nodeset_ids;
-    std::string filter_type;
-    std::string m_filterType_identity_generatorName;
-    std::string m_filterType_kernel_generatorName;
-    std::string m_filterType_kernelThenHeaviside_generatorName;
-    std::string m_filterType_kernelThenTANH_generatorName;
-    std::string filter_heaviside_min;
-    std::string filter_heaviside_update;
-    std::string filter_heaviside_max;
-    std::string filter_power;
-    std::string filter_radius_scale;
-    std::string filter_radius_absolute;
-    std::string filter_projection_start_iteration;
-    std::string filter_projection_update_interval;
-    std::string filter_use_additive_continuation;
-    std::string optimization_algorithm;
-    std::string discretization;
-    std::string check_gradient;
-    std::string check_hessian;
-    std::string mHessianType;
-    std::string mLimitedMemoryStorage;
-    std::string mUseMeanNorm;
-    std::string mAugLagPenaltyParam;
-    std::string mFeasibilityTolerance;
-    std::string mAugLagPenaltyParamScale;
-    std::string mMaxNumAugLagSubProbIter;
-    std::string mMaxTrustRegionRadius;
-    std::string mDerivativeCheckerFinalSuperscript = "8";
-    std::string mDerivativeCheckerInitialSuperscript = "1";
-    std::string mMinTrustRegionRadius;
-    std::string output_frequency;
-    std::string output_method;
-    std::string objective_number_standard_deviations;
-};
-*/
-
 struct Mesh
 {
     std::string name;
@@ -181,16 +80,16 @@ struct UncertaintyMetaData
 struct InputData
 {
 private:
-    std::vector<XMLGen::Scenario> mScenarios;
     std::vector<XMLGen::Service> mServices;
+    std::vector<XMLGen::Run> mRuns;
     std::vector<XMLGen::Criterion> mCriteria;
     XMLGen::OptimizationParameters mOptimizationParameters;
 
 public:
     
-    std::vector<XMLGen::NaturalBoundaryCondition> scenarioLoads(const std::string& aID) const
+    std::vector<XMLGen::Load> scenarioLoads(const std::string& aID) const
     {
-        std::vector<XMLGen::NaturalBoundaryCondition> tScenarioLoads;
+        std::vector<XMLGen::Load> tScenarioLoads;
         auto &tScenario = scenario(aID);
         for(auto &tLoadID : tScenario.loadIDs())
         {
@@ -248,27 +147,6 @@ public:
         return tConcretizedCriteria;
     }
 
-    bool normalizeInAggregator() const
-    {
-        bool tReturnValue = false;
-
-        // First try to determine based off of algorithm
-        if(mOptimizationParameters.optimization_algorithm() == "ksal" ||
-           mOptimizationParameters.optimization_algorithm() == "ksbc" ||
-           mOptimizationParameters.optimization_algorithm() == "oc")
-        {
-            tReturnValue = true;
-        }   
-
-        // User-set flag trumps everything else
-        if(mOptimizationParameters.normalize_in_aggregator() != "")
-        {
-            tReturnValue = (XMLGen::to_lower(mOptimizationParameters.normalize_in_aggregator()) == "true");
-        }
-
-        return tReturnValue;
-    }
-
     bool needToDoWeightingInAggregator() const
     {
         return (objective.type == "weighted_sum") || (objective.criteriaIDs.size() > 1);
@@ -299,7 +177,7 @@ public:
     bool needToAggregate() const
     {
         bool tReturnValue = false;
-        if(normalizeInAggregator())
+        if(mOptimizationParameters.normalizeInAggregator())
         {
             tReturnValue = true;
         }
@@ -337,6 +215,20 @@ public:
             if(tService.code() == "platomain")
             {
                 tReturnValue = tService.performer();
+                break;
+            }
+        }
+        return tReturnValue;
+    }
+
+    std::string getFirstPlatoMainId() const
+    {
+        std::string tReturnValue = "";
+        for(auto& tService : mServices)
+        {
+            if(tService.code() == "platomain")
+            {
+                tReturnValue = tService.id();
                 break;
             }
         }
@@ -392,6 +284,10 @@ public:
         return mScenarios[tIndex];
     }
     const std::vector<XMLGen::Scenario>& scenarios() const
+    {
+        return mScenarios;
+    }
+    std::vector<XMLGen::Scenario>& scenarios()
     {
         return mScenarios;
     }
@@ -481,6 +377,15 @@ public:
         }
         mServices.push_back(aService);
     }
+    // Runs
+    void set(const std::vector<XMLGen::Run>& aRuns)
+    {
+        mRuns = aRuns;
+    }
+    const std::vector<XMLGen::Run>& runs() const
+    {
+        return mRuns;
+    }
     // Criteria access
     const XMLGen::Criterion& criterion(const std::string& aID) const
     {
@@ -538,14 +443,14 @@ public:
     }
 
     XMLGen::Objective objective;
+    std::vector<XMLGen::Scenario> mScenarios;
     std::vector<XMLGen::Constraint> constraints;
     std::vector<XMLGen::Material> materials;
     std::vector<XMLGen::EssentialBoundaryCondition> ebcs;
     std::vector<XMLGen::Block> blocks;
-    std::vector<XMLGen::NaturalBoundaryCondition> loads;
     std::vector<XMLGen::Assembly> assemblies;
+    std::vector<XMLGen::Load> loads;
     XMLGen::Mesh mesh;
-    XMLGen::CodePaths codepaths;
     std::vector<XMLGen::Uncertainty> uncertainties;
     std::vector<XMLGen::Output> mOutputMetaData;
     XMLGen::Arch m_Arch;
@@ -553,23 +458,6 @@ public:
     XMLGen::RandomMetaData mRandomMetaData;
     XMLGen::UncertaintyMetaData m_UncertaintyMetaData;
     std::vector<XMLGen::Service> mPerformerServices;
-
-    // // miscelaneous data that may be unused
-    // int num_shape_design_variables;
-    // std::string csm_tesselation_filename;
-    // std::string csm_exodus_filename;
-    // std::string volume_fraction;
-    // std::vector<std::string> mShapeDesignVariableValues;
-    // bool m_HasUncertainties;
-    // bool m_RequestedVonMisesOutput;
-    // std::string m_filterType_identity_XMLName;
-    // std::string m_filterType_kernel_XMLName;
-    // std::string m_filterType_kernelThenHeaviside_XMLName;
-    // std::string m_filterType_kernelThenTANH_XMLName;
-    
-    // // I think these are going to be handled somewhere other than the optimizer
-    // std::vector<std::string> mStandardDeviations;
-    // std::string mUseNormalizationInAggregator;
 };
 
 

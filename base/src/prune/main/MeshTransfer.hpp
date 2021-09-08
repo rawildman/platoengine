@@ -9,8 +9,13 @@
 #define ISO_PRUNE_MAIN_MESHTRANSFER_HPP_
 
 #include "MeshManager.hpp"
+#ifdef BUILD_IN_SIERRA
 #include <percept/xfer/STKMeshTransferSetup.hpp>
 #include <percept/PerceptMesh.hpp>
+#else
+#include <STKMeshTransferSetup.hpp>
+#include <PerceptMesh.hpp>
+#endif
 
 class MeshTransfer
 {

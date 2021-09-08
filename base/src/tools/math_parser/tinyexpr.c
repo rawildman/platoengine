@@ -80,6 +80,14 @@ typedef struct state {
 #define IS_CLOSURE(TYPE) (((TYPE) & TE_CLOSURE0) != 0)
 #define ARITY(TYPE) ( ((TYPE) & (TE_FUNCTION0 | TE_CLOSURE0)) ? ((TYPE) & 0x00000007) : 0 )
 #define NEW_EXPR(type, ...) new_expr((type), (const te_expr*[]){__VA_ARGS__})
+ 
+#ifdef __GNUC__
+# if (__GNUC__ == 11)
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Warray-bounds"
+#   define SIERRA_GCC_POP_DIAG
+# endif
+#endif
 
 static te_expr *new_expr(const int type, const te_expr *parameters[]) {
     const int arity = ARITY(type);
@@ -390,6 +398,10 @@ static te_expr *base(state *s) {
 
     return ret;
 }
+ 
+#ifdef SIERRA_GCC_POP_DIAG
+#pragma GCC diagnostic pop
+#endif
 
 
 static te_expr *power(state *s) {

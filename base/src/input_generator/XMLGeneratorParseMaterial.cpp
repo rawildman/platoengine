@@ -38,7 +38,7 @@ void ParseMaterial::insertElasticProperties()
 {
     mTags.insert({ "mass_density", { { {"mass_density"}, ""}, "" } });
     mTags.insert({ "youngs_modulus", { { {"youngs_modulus"}, ""}, "" } });
-    mTags.insert({ "poissons_ratio", { { {"poissons_ratio"}, ""}, "" } });
+    mTags.insert({ "poissons_ratio", { { {"poissons_ratio"}, ""}, "0.3" } });
 }
 
 void ParseMaterial::insertElasticOrthoProperties()
@@ -82,6 +82,22 @@ void ParseMaterial::insertPlasticProperties()
     mTags.insert({ "plastic_properties_minimum_ersatz", { { {"plastic_properties_minimum_ersatz"}, ""}, "" } });
 }
 
+void ParseMaterial::insertIncompressibleFluidFlowProperties()
+{
+    mTags.insert({ "prandtl_number", { { {"prandtl_number"}, ""}, "" } });
+    mTags.insert({ "grashof_number", { { {"grashof_number"}, ""}, "" } });   
+    mTags.insert({ "reynolds_number", { { {"reynolds_number"}, ""}, "" } });
+    mTags.insert({ "rayleigh_number", { { {"rayleigh_number"}, ""}, "" } });
+    mTags.insert({ "richardson_number", { { {"richardson_number"}, ""}, "" } });
+    mTags.insert({ "thermal_conductivity", { { {"thermal_conductivity"}, ""}, "" } });
+    mTags.insert({ "reference_temperature", { { {"reference_temperature"}, ""}, "" } });
+    mTags.insert({ "characteristic_length", { { {"characteristic_length"}, ""}, "" } });    
+    mTags.insert({ "impermeability_number", { { {"impermeability_number"}, ""}, "100" } });
+    mTags.insert({ "thermal_diffusivity", { { {"thermal_diffusivity"}, ""}, "2.1117e-5" } });
+    mTags.insert({ "kinematic_viscocity", { { {"kinematic_viscocity"}, ""}, "1.5111e-5" } });
+    mTags.insert({ "thermal_diffusivity_ratio", { { {"thermal_diffusivity_ratio"}, ""}, "" } });
+}
+
 void ParseMaterial::allocate()
 {
     mTags.clear();
@@ -92,6 +108,7 @@ void ParseMaterial::allocate()
     this->insertPlasticProperties();
     this->insertElectricProperties();
     this->insertElasticOrthoProperties();
+    this->insertIncompressibleFluidFlowProperties();
 }
 
 void ParseMaterial::setCode(XMLGen::Material& aMetadata)
@@ -144,7 +161,14 @@ void ParseMaterial::setMaterialProperties(XMLGen::Material& aMetadata)
 
         if(!tItr->second.first.second.empty())
         {
-            aMetadata.property(tKeyword, tItr->second.first.second);
+            aMetadata.property(tKeyword, tItr->second.first.second, false);
+        }
+        else
+        {
+            if(!tItr->second.second.empty())
+            {
+                aMetadata.property(tKeyword, tItr->second.second, true);
+            }
         }
     }
     this->checkMaterialProperties(aMetadata);
@@ -171,12 +195,12 @@ void ParseMaterial::setPenaltyExponent(XMLGen::Material& aMetadata)
     {
         if(aMetadata.code().compare("plato_analyze") != 0)
         {
-            aMetadata.property("penalty_exponent", "3.0");
+            aMetadata.property("penalty_exponent", "3.0", true);
         }
     }
     else
     {
-        aMetadata.property("penalty_exponent", tItr->second.first.second);
+        aMetadata.property("penalty_exponent", tItr->second.first.second, false);
     }
 }
 

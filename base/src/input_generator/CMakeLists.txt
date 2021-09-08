@@ -3,16 +3,17 @@
 ###############################################################################
 SET(XMLGenerator_SRCS XMLGenerator_Main.cpp 
                       XMLGenerator.cpp
+                      XMLGeneratorParseLoads.cpp
                       XMLGeneratorParseOutput.cpp
                       XMLGeneratorParseScenario.cpp
                       XMLGeneratorParseOptimizationParameters.cpp
                       XMLGeneratorParseServices.cpp
                       XMLGeneratorOutputMetadata.cpp 
                       XMLGeneratorParseObjective.cpp
+                      XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorParseMaterial.cpp
                       XMLGeneratorParseEssentialBoundaryCondition.cpp
                       XMLGeneratorParseAssembly.cpp
-                      XMLGeneratorParseNaturalBoundaryCondition.cpp
                       XMLGeneratorParseCriteria.cpp
                       XMLGeneratorParseConstraint.cpp
                       XMLGeneratorParserUtilities.cpp
@@ -37,8 +38,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorSierraSDOperationsFileUtilities.cpp
                       XMLGeneratorSierraSDInputDeckUtilities.cpp
                       XMLGeneratorLaunchScriptUtilities.cpp
-                      XMLGeneratorAnalyzeNaturalBCFunctionInterface.cpp
-                      XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.cpp
+                      XMLGeneratorAnalyzeLoadFunctionInterface.cpp
+                      XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
@@ -47,6 +48,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                       XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.cpp
                       XMLGeneratorUtilities.cpp
+                      XMLGeneratorRunMetadata.cpp
+                      XMLGeneratorParseRun.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -61,6 +64,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorBoundaryMetadata.hpp
                       XMLGeneratorMaterialMetadata.hpp 
                       XMLGeneratorCriterionMetadata.hpp 
+                      XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorConstraintMetadata.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
                       XMLGeneratorAssemblyMetadata.hpp
@@ -82,8 +86,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorSierraSDInputDeckUtilities.hpp
                       XMLGeneratorLaunchScriptUtilities.hpp
                       # XMLGeneratorAnalyzeCriterionUtilities.hpp
-                      XMLGeneratorAnalyzeNaturalBCFunctionInterface.hpp
-                      XMLGeneratorAnalyzeNaturalBCTagFunctionInterface.hpp
+                      XMLGeneratorAnalyzeLoadFunctionInterface.hpp
+                      XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentiallBCTagFunctionInterface.hpp
                       XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp
@@ -108,6 +112,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorParseServices.hpp 
                       XMLGeneratorParseConstraint.hpp 
                       XMLGeneratorParseUncertainty.hpp
+                      XMLGeneratorRunMetadata.hpp
+                      XMLGeneratorParseRun.hpp
                       )
 
 find_package(MPI)
@@ -131,7 +137,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 # actual target:
 set(PLATOMAIN_LIBS ${PLATO_LIBRARIES} ${Plato_EXTRA_LINK_FLAGS})
 add_executable(XMLGenerator ${XMLGenerator_SRCS})
-target_link_libraries(XMLGenerator ${PLATOMAIN_LIBS} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
+target_link_libraries(XMLGenerator ${PLATOMAIN_LIBS} ${Trilinos_LIBRARIES} )
 #set(INTERFACEXMLCHECKER_BINARY ${CMAKE_BINARY_DIR}/base/src/input_checkers/XMLGenerator PARENT_SCOPE)
 
 if( CMAKE_INSTALL_PREFIX )

@@ -93,7 +93,6 @@ public:
 
         ScalarType tOutput;
         Kokkos::Max<ScalarType> tMaxReducer(tOutput);
-
         Kokkos::parallel_reduce("KokkosReductionOperations::max",
                                 Kokkos::RangePolicy<>(0, tSize),
                                 KOKKOS_LAMBDA(const OrdinalType & aIndex, ScalarType & aValue){
@@ -116,7 +115,6 @@ public:
 
         ScalarType tOutput;
         Kokkos::Min<ScalarType> tMinReducer(tOutput);
-
         Kokkos::parallel_reduce("KokkosReductionOperations::min",
                                 Kokkos::RangePolicy<>(0, tSize),
                                 KOKKOS_LAMBDA(const OrdinalType & aIndex, ScalarType & aValue){

@@ -439,6 +439,11 @@ public:
     **********************************************************************************/
     void computeNormConstraintVector()
     {
+        if (mCurrentConstraintValues->getNumVectors() == static_cast<OrdinalType>(0))
+        {
+            mNormConstraints = static_cast<ScalarType>(0.0);
+            return;
+        }
         Plato::update(static_cast<ScalarType>(1), *mCurrentConstraintValues, static_cast<ScalarType>(0), *mDualWorkMultiVec);
 
         const OrdinalType tNumVectors = mDualWorkMultiVec->getNumVectors();
@@ -698,6 +703,7 @@ public:
     void evaluateConstraint(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                             Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
     {
+        if (mConstraints->size() == static_cast<OrdinalType>(0)) return;
         // Evaluate inequality constraints, h(\mathbf{u}(\mathbf{z}),\mathbf{z})
         const OrdinalType tNumVectors = aOutput.getNumVectors();
         for(OrdinalType tVectorIndex = 0; tVectorIndex < tNumVectors; tVectorIndex++)
@@ -866,6 +872,7 @@ private:
         const ScalarType tOneOverPenalty = static_cast<ScalarType>(1.) / mPenaltyParameter;
 
         const OrdinalType tNumConstraints = mConstraints->size();
+        if (tNumConstraints == static_cast<OrdinalType>(0)) return;
         const Plato::MultiVector<ScalarType, OrdinalType> & tMyConstraintGrad = (*mCurrentCostraintGrad)[tDUAL_VEC_INDEX];
         for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
         {
@@ -926,6 +933,7 @@ private:
     void updateConstraintsStateData()
     {
         const OrdinalType tNumConstraints = mConstraints->size();
+        if (tNumConstraints == static_cast<OrdinalType>(0)) return;
         assert(tNumConstraints == mCurrentCostraintGrad->size());
 
         const OrdinalType tVECTOR_INDEX = 0;

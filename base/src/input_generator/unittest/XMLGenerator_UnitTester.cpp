@@ -103,6 +103,13 @@ void XMLGenerator_UnitTester::publicParseObjective(std::istream &sin)
 }
 
 /******************************************************************************/
+void XMLGenerator_UnitTester::publicParseConstraints(std::istream &sin)
+/******************************************************************************/
+{
+    parseConstraints(sin);
+}
+
+/******************************************************************************/
 void XMLGenerator_UnitTester::publicParseCriteria(std::istream &sin)
 /******************************************************************************/
 {
@@ -152,13 +159,6 @@ void XMLGenerator_UnitTester::publicParseMaterials(std::istream &sin)
 }
 
 /******************************************************************************/
-bool XMLGenerator_UnitTester::publicParseCodePaths(std::istream &sin)
-/******************************************************************************/
-{
-    return parseCodePaths(sin);
-}
-
-/******************************************************************************/
 bool XMLGenerator_UnitTester::publicParseMesh(std::istream &sin)
 /******************************************************************************/
 {
@@ -166,10 +166,11 @@ bool XMLGenerator_UnitTester::publicParseMesh(std::istream &sin)
 }
 
 /******************************************************************************/
-bool XMLGenerator_UnitTester::publicRunSROMForUncertainVariables()
+bool XMLGenerator_UnitTester::publicRunSROMForUncertainVariables
+(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
-    return runSROMForUncertainVariables();
+    return runSROMForUncertainVariables(aInputData);
 }
 
 /******************************************************************************/
@@ -186,10 +187,6 @@ void XMLGenerator_UnitTester::clearInputData()
     m_InputData.mesh.name="";
     m_InputData.mesh.name_without_extension="";
     m_InputData.blocks.clear();
-    m_InputData.codepaths.plato_main_path="";
-    m_InputData.codepaths.lightmp_path="";
-    m_InputData.codepaths.sierra_sd_path="";
-    m_InputData.codepaths.albany_path="";
 }
 
 std::string XMLGenerator_UnitTester::getBCApplicationType(const std::string &aBCID)
