@@ -1684,37 +1684,42 @@ void parseOptimizerStages(const Plato::InputData & aOptimizerNode, Plato::Optimi
     {
         // Allow for one or more update problem stages.
 
-  // <UpdateProblemStage>
-  //   <Name>Update Shape 1</Name>
-  // </UpdateProblemStage>
+        // There are two possible schemas the first is to have each
+        // stage in separate blocks. NOT USED.
 
-  // <UpdateProblemStage>
-  //   <Name>Update Shape 2</Name>
-  // </UpdateProblemStage>
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 1</Name>
+        // </UpdateProblemStage>
 
-        auto tUPSNodes =
-          aOptimizerNode.getByName<Plato::InputData>("UpdateProblemStage");
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 2</Name>
+        // </UpdateProblemStage>
 
-        std::vector< std::string > tUpdateProblemStageNames;
+        // auto tUPSNodes =
+        //   aOptimizerNode.getByName<Plato::InputData>("UpdateProblemStage");
 
-        for(auto tUPSNode=tUPSNodes.begin(); tUPSNode!=tUPSNodes.end(); ++tUPSNode)
-        {
-            std::string tStageName = tUPSNode->get<std::string>("Name");
-            tUpdateProblemStageNames.push_back(tStageName);
-        }
+        // std::vector< std::string > tUpdateProblemStageNames;
 
-  // <UpdateProblemStage>
-  //   <Name>Update Shape 1</Name>
-  //   <Name>Update Shape 2</Name>
-  // </UpdateProblemStage>
+        // for(auto tUPSNode=tUPSNodes.begin(); tUPSNode!=tUPSNodes.end(); ++tUPSNode)
+        // {
+        //     std::string tStageName = tUPSNode->get<std::string>("Name");
+        //     tUpdateProblemStageNames.push_back(tStageName);
+        // }
 
-        // auto tUPSNode =
-        //     aOptimizerNode.get<Plato::InputData>("UpdateProblemStage");
+        // The second is to have all the stages under one block.
 
-        // std::vector<std::string> tUpdateProblemStageNames =
-        //     tUPSNode.getByName<std::string>("Name");
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 1</Name>
+        //   <Name>Update Shape 2</Name>
+        // </UpdateProblemStage>
 
-        // aOptimizerEngineStageData.setUpdateProblemStageNames(tUpdateProblemStageNames);
+        auto tUPSNode =
+            aOptimizerNode.get<Plato::InputData>("UpdateProblemStage");
+
+        std::vector<std::string> tUpdateProblemStageNames =
+            tUPSNode.getByName<std::string>("Name");
+
+        aOptimizerEngineStageData.setUpdateProblemStageNames(tUpdateProblemStageNames);
     }
 
     Plato::Parse::parseInitialGuess(aOptimizerNode, aOptimizerEngineStageData);
