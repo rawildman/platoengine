@@ -60,8 +60,9 @@ public:
     LocalApp(int aArgc, char **aArgv);
     virtual ~LocalApp();
 
-    void finalize();
     void initialize();
+    void reinitialize() {};
+    void finalize() {};
     void compute(const std::string & aOperationName);
     void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
     void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
@@ -253,12 +254,6 @@ void LocalApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vec
 }
 
 /******************************************************************************/
-void LocalApp::finalize()
-{
-}
-/******************************************************************************/
-
-/******************************************************************************/
 void LocalApp::initialize()
 /******************************************************************************/
 {
@@ -373,7 +368,7 @@ void LocalApp::compute(const std::string & aOperationName)
     m_forcingVector->PutScalar(0.0);
     m_statics->computeExternalForces(*m_forcingVector, /*currentTime=*/0.0);
 
-    // compute stiffness 
+    // compute stiffness
     m_statics->buildStiffnessMatrix(*m_stiffnessMatrix, *topology, m_penaltyModel);
     m_statics->applyConstraints(*m_stiffnessMatrix, *m_forcingVector, /*currentTime=*/0.0);
 
@@ -463,4 +458,3 @@ LocalApp::LocalApp(int aArgc, char **aArgv) :
 
     m_lightmp = new LightMP(tInputFile);
 }
-

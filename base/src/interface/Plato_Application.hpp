@@ -70,6 +70,7 @@ public:
 
     virtual void finalize() = 0;
     virtual void initialize() = 0;
+    virtual void reinitialize() = 0;
     virtual void compute(const std::string & aOperationName) = 0;
     virtual void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) = 0;
     virtual void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) = 0;
