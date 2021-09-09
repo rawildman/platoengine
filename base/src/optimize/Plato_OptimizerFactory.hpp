@@ -95,7 +95,7 @@ public:
      * @brief Construct interface to optimization algorithm
      * @param [in] aInterface PLATO Engine interface
      * @param [in] aLocalComm local MPI communicator
-     * @param [in] aOptimizerIndex the specific optimizer block
+     * @param [in] aOptimizerIndex the index of a specific optimizer block
      * @return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
     Plato::OptimizerInterface<ScalarType, OrdinalType>*
@@ -110,22 +110,23 @@ public:
       {
         Plato::InputData tOptimizerNode;
 
-        // The optimizer index is a vector of indices. The size of the
-        // vector less 1 denotes the number of nesting levels. Each
-        // index is the serial index of the optimizer block.
+        // The optimizer block index is a vector of indices. The size
+        // of the vector less 1 denotes the number of nesting
+        // levels. Each index is the serial index of the optimizer
+        // block.
 
         // A basic run with one optimizer block would have a vector of
-        // {0}. A simple nested run with one nested optimizer would
-        // have a vector of {0} for the outer optimizer and {0,0} for
-        // the inner optimizer.
+        // {0}. A simple nested run with one nested optimizer block
+        // would have a vector of {0} for the outer optimizer block
+        // and {0,0} for the inner optimizer block.
 
-        // A more complicated vector for the inner most optimizer would
-        // be {2,1,0} which denotes the outer most third serial
-        // optimizer {2}, of which its second serial inner loop is
-        // wanted {2,1}, of which its first inner loop is wanted
-        // {2,1,0},
+        // A more complicated vector for the inner most optimizer
+        // block would be {2,1,0} which denotes the outer most third
+        // serial optimizer block {2}, of which its second serial
+        // inner loop optimizer block is wanted {2,1}, of which its
+        // first inner loop optimizer block is wanted {2,1,0},
 
-        // Requesting a specific optimizer node via an argument.
+        // Requesting a specific optimizer block via an argument.
         if( aOptimizerIndex.size() )
         {
             tOptimizerNode =
@@ -137,9 +138,9 @@ public:
                 aInterface->registerException(tParsingException);
             }
         }
-        // Previous optimizer index specified, increment the last
-        // index which stored and attempt to serially read the next
-        // optimizer.
+        // Previous optimizer block index specified, increment the
+        // last index which stored and attempt to serially read the
+        // next optimizer block.
         else if( mOptimizerIndex.size() )
         {
             aOptimizerIndex = mOptimizerIndex;
@@ -302,7 +303,7 @@ public:
         }
 
         // Find the optional name - helpful when there are multiple
-        // optimizers.
+        // optimizer blocks.
         if( tOptimizerNode.size<std::string>("Name") )
         {
             tOptimizer->setOptimizerName( Plato::Get::String(tOptimizerNode, "Name") );
@@ -315,8 +316,8 @@ public:
         // Now check for an inner optimizer block.
         tOptimizer->setHasInnerLoop(nNestedOptimizers > 0);
 
-        // Store the index of the current optimizer so to be able to
-        // read additional serial optimizers.
+        // Store the index of the current optimizer block so to be
+        // able to read additional serial optimizer blocks.
         mOptimizerIndex = aOptimizerIndex;
       }
 

@@ -98,16 +98,17 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 
         // ARS - Update the shared data.
 
-        // Get the optimizer for index for this objective (i.e. the
-        // outer loop). So to read the first optimizer for the inner
-        // loop add an additional index, 0.
+        // Get the optimizer block index for this objective (i.e. the
+        // outer loop). To read the first optimizer block for the
+        // inner loop add an additional index, 0 which increases the
+        // inner loop depth.
         std::vector< size_t > tOptimizerIndex = this->mOptimizerIndex;
         tOptimizerIndex.push_back(0);
 
         // For the inner loop use the factory to create the optimizer.
         Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
-        // Read the first inner optimizer.
+        // Create the first inner loop optimizer.
         Plato::OptimizerInterface<ScalarType, OrdinalType>*
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
                                                   tOptimizerIndex );
@@ -135,7 +136,11 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
             // Delete the current optimizer.
             delete tOptimizer;
 
-            // Check for another serial optimizer.
+            // Check for another serial optimizer block. Note the
+            // index does not need to passed as the factory stores the
+            // index of last optimizer block read and will
+            // automatically increment it to get the next serial
+            // optimizer block.
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm);
         }
         while( tOptimizer != nullptr );
