@@ -1419,6 +1419,16 @@ TEST(PlatoTestXMLGenerator, parseMesh)
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseMesh(iss), true);
     EXPECT_EQ(tester.getMeshName(), "file.gen");
+    stringInput = "begin mesh\n"
+            "name file.gen\n"
+            "auxiliary aux.gen\n"
+            "end mesh\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseMesh(iss), true);
+    EXPECT_EQ(tester.getAuxiliaryMeshName(), "aux.gen");
 }
 
 TEST(PlatoTestXMLGenerator, parseBlocks)

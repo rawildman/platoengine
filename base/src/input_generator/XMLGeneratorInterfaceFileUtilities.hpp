@@ -360,6 +360,33 @@ void append_tet10_conversion_operation
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn append_join_mesh_operation
+ * \brief Append operation for joining auxiliary and primary mesh
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_join_mesh_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_rename_mesh_operation
+ * \brief Append operation for overwriting ESP mesh with joined mesh
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_rename_mesh_operation
+(const std::string &aFirstPlatoMainPerformer, 
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn have_auxiliary_mesh
+ * \brief determine whether we have an auxiliary mesh (to be joined to an ESP mesh)
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+bool have_auxiliary_mesh(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
  * \fn append_constraint_stage_for_topology_problem
  * \brief Append constaint stage for topology optimization problem
  * \param [in]     aXMLMetaData Plato problem input data
