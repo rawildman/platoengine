@@ -141,11 +141,11 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
-        // There should be at least one optimizer but there can be
-        // more. These additional optimizers can be in serial or
-        // nested. The while loop coupled with factory processes
-        // optimizers that are serial. Nested optimizers are processed
-        // via the EngineObjective.
+        // There should be at least one optimizer block but there can
+        // be more. These additional optimizer blocks can be in serial
+        // or nested. The while loop coupled with factory processes
+        // optimizer blocks that are serial. Nested optimizer blocks
+        // are processed recursively via the EngineObjective.
         Plato::OptimizerFactory<double> tOptimizerFactory;
         Plato::OptimizerInterface<double>* tOptimizer;
 
