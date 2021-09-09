@@ -82,17 +82,25 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
-
 private:
-    std::string mStringCommand;
+    virtual void executeCommand(const std::vector<std::string> &arguments);
+
     std::vector<std::string> mInputNames;
     std::vector<std::vector<double> > mSavedParameters;
     std::vector<std::string> mArguments;
     bool mOnChange;
     bool mAppendInput;
-
+protected:
+    std::string mStringCommand;
 };
 // class SystemCall;
+
+class SystemCallMPI : public SystemCall {
+public:
+SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode) : SystemCall(aPlatoApp, aNode) { }
+private:
+void executeCommand(const std::vector<std::string> &arguments) override;
+};
 
 }
 // namespace Plato

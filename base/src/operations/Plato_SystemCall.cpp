@@ -48,6 +48,7 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <mpi.h>
 
 #include "PlatoApp.hpp"
 #include "Plato_Parser.hpp"
@@ -162,12 +163,10 @@ void SystemCall::operator()()
 
     if(tPerformSystemCall)
     {
-        // collect arguments
-        std::stringstream commandPlusArgs;
-        commandPlusArgs << mStringCommand << " ";
+        std::vector<std::string> arguments;
         for(auto& tArgumentName : mArguments)
         {
-            commandPlusArgs << tArgumentName << " ";
+            arguments.push_back(tArgumentName);
         }
         if(mAppendInput)
         {
@@ -176,13 +175,43 @@ void SystemCall::operator()()
                 auto tInputArgument = mPlatoApp->getValue(tInputName);
                 for(size_t i=0; i<tInputArgument->size(); ++i)
                 {
-                    commandPlusArgs << std::setprecision(16) << tInputArgument->data()[i] << " ";
+                    std::stringstream dataString;
+                    dataString << std::setprecision(16) << tInputArgument->data()[i];
+                    arguments.push_back(dataString.str());
                 }
             }
         }
 
-        // make system call
-        Plato::system(commandPlusArgs.str().c_str());
+        executeCommand(arguments);
+    }
+}
+
+void SystemCall::executeCommand(const std::vector<std::string> &arguments)
+{
+    std::string cmd = mStringCommand;
+    for(const auto &s : arguments) {
+        cmd += " " + s;
+    }
+    Plato::system(cmd.c_str());
+}
+
+void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)
+{
+    std::vector<char*> argumentPointers;
+
+    for(const auto &a : arguments) {
+        const int lengthWithNullTerminator = a.length() + 1;
+        char *p = new char [lengthWithNullTerminator];
+        std::copy_n(a.c_str(), lengthWithNullTerminator, p);
+        argumentPointers.push_back(p);
+    }
+    argumentPointers.push_back(nullptr);
+
+    MPI_Comm intercom;
+    MPI_Comm_spawn(mStringCommand.c_str(), argumentPointers.data(), 1, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &intercom, MPI_ERRCODES_IGNORE);
+
+    for(auto p : argumentPointers) {
+        delete [] p;
     }
 }
 
