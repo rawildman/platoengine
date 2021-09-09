@@ -96,7 +96,7 @@
 #include <string>
 #include <vector>
 
-typedef struct { 
+typedef struct {
   std::vector<std::string> plotName;
   std::vector<int> plotIndex;
   VarIndex varIndex;
@@ -104,8 +104,8 @@ typedef struct {
 
 void setupSolver( pugi::xml_node& config, AztecOO&, int&, Real&, DistributedCrsMatrix* A=NULL );
 
-/*! 
-  LightMP is a top level class that manages the mesh, data, IO, etc.  
+/*!
+  LightMP is a top level class that manages the mesh, data, IO, etc.
 */
 class LightMP{
   public:
@@ -178,9 +178,6 @@ class LightMP{
 
 };
 
-using namespace std;
-using namespace Intrepid;
-
 /******************************************************************************/
 template <class myType>
 void LightMP::integrateOnElement(myType *mpdata, myType* eldata)
@@ -199,10 +196,10 @@ void LightMP::integrateOnElement(myType *mpdata, myType* eldata)
     if( elblock.getNumElem() == 0 ) continue;
 
     Intrepid::FieldContainer<int>& bfc = mc.getBlockDataMap(ib);
-    FieldContainer<double>& cubWeights = elblock.getCubatureWeights();
+    Intrepid::FieldContainer<double>& cubWeights = elblock.getCubatureWeights();
     Real elementMeasure = 0.0;
     int numCubPoints = elblock.getNumIntPoints();
-    for (int ipoint=0; ipoint<numCubPoints; ipoint++) 
+    for (int ipoint=0; ipoint<numCubPoints; ipoint++)
       elementMeasure += cubWeights(ipoint);
 
     // *** Element loop ***
@@ -218,7 +215,5 @@ void LightMP::integrateOnElement(myType *mpdata, myType* eldata)
     }
   }
 }
-
-
 
 #endif

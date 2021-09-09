@@ -3,23 +3,22 @@
 #include <string>
 #include <exception>
 #include <vector>
-using namespace std;
 
-class ParsingException : public exception
+class ParsingException : public std::exception
 {
   public:
-    ParsingException(string d);
+    ParsingException(std::string d);
 };
 
-class IOException : public exception
+class IOException : public std::exception
 {
   public:
-    IOException(string file, string description);
+    IOException(std::string file, std::string description);
 };
 
-class RunTimeError : public exception
+class RunTimeError : public std::exception
 {
   public:
-    RunTimeError(string d);
+    RunTimeError(std::string d);
 };
 #endif

@@ -57,29 +57,6 @@
 #include "ml_MultiLevelPreconditioner.h"
 
 /******************************************************************************/
-LightMP::~LightMP()
-/******************************************************************************/
-{
-  if(myMeshOutput) delete myMeshOutput;
-  if(myDataContainer) delete myDataContainer;
-  if(myMesh) delete myMesh;
-  if(myMaterialContainer) delete myMaterialContainer;
-}
-
-/******************************************************************************/
-void LightMP::init()
-/******************************************************************************/
-{
-  //  myMeshOutput = new ExodusIO();
-  myDataContainer = new DataContainer();
-  myMaterialContainer = nullptr;
-
-  currentTime = 0.0;
-  plotIndex = 0;
-  mWriteTimeStepDuringSetup = true;
-}
-
-/******************************************************************************/
 LightMP::LightMP() :
         myMesh(nullptr),
         myDataContainer(nullptr),
@@ -99,35 +76,7 @@ LightMP::LightMP() :
 }
 
 /******************************************************************************/
-void LightMP::Parse(string inputfile)
-/******************************************************************************/
-{
-    myInputTree = std::make_shared<pugi::xml_document>();
-    myInputTree->load_file(inputfile.c_str());
-    Setup();
-}
-
-/******************************************************************************/
-void LightMP::Setup()
-/******************************************************************************/
-{
-  
-    ParseFunctions();
-
-    // parse and create the mesh object, myMesh
-    ParseMesh();
-
-    // parse and create the materials in myMaterialContainer
-    ParseMaterials();
-
-    ParseOutput();
-    ParseControl();
-
-    
-}
-
-/******************************************************************************/
-LightMP::LightMP(string inputfile) :
+LightMP::LightMP(std::string inputfile) :
         myMesh(nullptr),
         myDataContainer(nullptr),
         myMaterialContainer(nullptr),
@@ -167,10 +116,90 @@ LightMP::LightMP(std::shared_ptr<pugi::xml_document> inputTree) :
 }
 
 /******************************************************************************/
+LightMP::~LightMP()
+/******************************************************************************/
+{
+  if(myMeshOutput) delete myMeshOutput;
+  if(myDataContainer) delete myDataContainer;
+  if(myMesh) delete myMesh;
+  if(myMaterialContainer) delete myMaterialContainer;
+}
+
+/******************************************************************************/
+void LightMP::init()
+/******************************************************************************/
+{
+  //  myMeshOutput = new ExodusIO();
+  myDataContainer = new DataContainer();
+  myMaterialContainer = nullptr;
+
+  currentTime = 0.0;
+  plotIndex = 0;
+  mWriteTimeStepDuringSetup = true;
+}
+
+/******************************************************************************/
+void LightMP::Parse(std::string inputfile)
+/******************************************************************************/
+{
+  myInputTree = std::make_shared<pugi::xml_document>();
+  myInputTree->load_file(inputfile.c_str());
+  Setup();
+}
+
+/******************************************************************************/
+void LightMP::Setup()
+/******************************************************************************/
+{
+  ParseFunctions();
+
+  // parse and create the mesh object, myMesh
+  ParseMesh();
+
+  // parse and create the materials in myMaterialContainer
+  ParseMaterials();
+
+  ParseOutput();
+  ParseControl();
+}
+
+/******************************************************************************/
+bool LightMP::ParseFunctions()
+/******************************************************************************/
+{
+  return true;
+}
+
+/******************************************************************************/
+bool LightMP::ParseMesh()
+/******************************************************************************/
+{
+#ifdef VERBOSE_DEBUG_LOCATION
+  _print_entering_location(__AXSIS_FUNCTION_NAMER__);
+#endif //VERBOSE_DEBUG_LOCATION
+
+  // read mesh specification block
+  pugi::xml_node meshspec = myInputTree->child("mesh");
+
+  std::string meshType = Plato::Parse::getString(meshspec,"type");
+  if( meshType == "unstructured" )
+    myMesh = new UnsMesh( myDataContainer );
+  else if( meshType == "structured" )
+    myMesh = new StrMesh( myDataContainer );
+
+  myMesh->parseMesh(meshspec);
+
+  myDataContainer->setNumNodes(myMesh->getNumNodes());
+  myDataContainer->setNumElems(myMesh->getNumElems());
+
+  return true;
+
+}
+
+/******************************************************************************/
 bool LightMP::ParseMaterials()
 /******************************************************************************/
 {
-
   int ntopos = Plato::Parse::numChildren(*myInputTree, "material_topology");
   int nmatls = Plato::Parse::numChildren(*myInputTree, "material");
 
@@ -198,86 +227,28 @@ bool LightMP::ParseMaterials()
 }
 
 /******************************************************************************/
-Real LightMP::advanceTime()
-/******************************************************************************/
-{
-  myDataContainer->advanceState();
-  currentTime += timeStep;
-  stepIndex++;
-
-  return currentTime;
-}
-
-
-/******************************************************************************/
-bool LightMP::ParseFunctions()
-/******************************************************************************/
-{
- return true;
-}
-
-/******************************************************************************/
-bool LightMP::ParseMesh()
-/******************************************************************************/
-{
-#ifdef VERBOSE_DEBUG_LOCATION
-  _print_entering_location(__AXSIS_FUNCTION_NAMER__);
-#endif //VERBOSE_DEBUG_LOCATION
-
-  // read mesh specification block
-  pugi::xml_node meshspec = myInputTree->child("mesh");
- 
-  string meshType = Plato::Parse::getString(meshspec,"type");
-  if( meshType == "unstructured" )
-    myMesh = new UnsMesh( myDataContainer );
-  else if( meshType == "structured" )
-    myMesh = new StrMesh( myDataContainer );
-
-  myMesh->parseMesh(meshspec);
-
-  myDataContainer->setNumNodes(myMesh->getNumNodes());
-  myDataContainer->setNumElems(myMesh->getNumElems());
-
-  return true;
-
-}
-
-/******************************************************************************/
-void LightMP::ParseControl()
-/******************************************************************************/
-{
-  pugi::xml_node control = myInputTree->child("control");
-  if( control ){
-    pugi::xml_node timespec = control.child("time");
-    termTime = Plato::Parse::getDouble( timespec, "end" );
-    timeStep = Plato::Parse::getDouble( timespec, "timestep" );
-    stepIndex = Plato::Parse::getInt( timespec, "starting_step");
-  }
-}
-  
-/******************************************************************************/
 void LightMP::ParseOutput()
 /******************************************************************************/
 {
   pugi::xml_node output = myInputTree->child("output");
   if( output ){
 
-    string append = Plato::Parse::getString(output, "append");
+    std::string append = Plato::Parse::getString(output, "append");
     if( append == "true" ) appendOutput = true;
     else appendOutput = false;
 
     string outputfile;
 
     // determine file basename
-    string outfilename = Plato::Parse::getString(output,"file");
+    std::string outfilename = Plato::Parse::getString(output,"file");
     outputfile = Plato::Parse::getString(output,"file");
 
     // determine format and create the file
-    string fileformat = Plato::Parse::getString(output,"format");
+    std::string fileformat = Plato::Parse::getString(output,"format");
     if( fileformat == "exodus" || fileformat == "format_not_set" ){
         outputfile += ".exo";
-        ostringstream buffer;
-        ostringstream zeros;
+        std::ostringstream buffer;
+        std::ostringstream zeros;
         buffer << outputfile;
         int my_pid = WorldComm.GetPID();
         int my_sze = WorldComm.GetSize();
@@ -307,17 +278,42 @@ void LightMP::ParseOutput()
         MeshIO::Type outputType;
         if( appendOutput ) outputType = MeshIO::WRITE;
         else outputType = MeshIO::CLOBBER;
-        myMeshOutput->initMeshIO( myMesh, 
+        myMeshOutput->initMeshIO( myMesh,
                                   myDataContainer,
                                   outputfile.c_str(),
                                   outputType);
-        
+
     }
     else {
         throw ParsingException("unrecognized output format");
     }
   }
 }
+
+/******************************************************************************/
+void LightMP::ParseControl()
+/******************************************************************************/
+{
+  pugi::xml_node control = myInputTree->child("control");
+  if( control ){
+    pugi::xml_node timespec = control.child("time");
+    termTime = Plato::Parse::getDouble( timespec, "end" );
+    timeStep = Plato::Parse::getDouble( timespec, "timestep" );
+    stepIndex = Plato::Parse::getInt( timespec, "starting_step");
+  }
+}
+
+/******************************************************************************/
+Real LightMP::advanceTime()
+/******************************************************************************/
+{
+  myDataContainer->advanceState();
+  currentTime += timeStep;
+  stepIndex++;
+
+  return currentTime;
+}
+
 /******************************************************************************/
 void LightMP::WriteOutput()
 /******************************************************************************/
@@ -368,7 +364,7 @@ void LightMP::writeNodeData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
 {
   AbstractData& ad = *d;
   DataType dt = ad.getDataType();
-  string base = ad.getName();
+  std::string base = ad.getName();
   if( dt == RealType ){
     Real *data; ad.getData( data );
     assert( plotvar.plotIndex.size() == 1 );
@@ -387,7 +383,7 @@ void LightMP::writeNodeData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
     io->writeNodePlot(vx, plotvar.plotIndex[0], timestep);
     io->writeNodePlot(vy, plotvar.plotIndex[1], timestep);
     io->writeNodePlot(vz, plotvar.plotIndex[2], timestep);
- 
+
     delete [] vx;
     delete [] vy;
     delete [] vz;
@@ -400,9 +396,9 @@ void LightMP::writeElemData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
 {
   AbstractData& ad = *d;
   DataType dt = ad.getDataType();
-  string base = ad.getName();
+  std::string base = ad.getName();
   if( dt == RealType ){
-    Real *data; 
+    Real *data;
     if( ad.getCentering() == MATPNT ){
       int numElems = myDataContainer->getNumElems();
       data = new Real [numElems];
@@ -414,7 +410,7 @@ void LightMP::writeElemData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
     io->writeElemPlot(data, plotvar.plotIndex[0], timestep);
   } else if( dt == VectorType ){
     int numElems = myDataContainer->getNumElems();
-    Vector *data; 
+    Vector *data;
     if( ad.getCentering() == MATPNT ){
       data = new Vector [numElems];
       Vector* mpdata; ad.getData( mpdata );
@@ -432,8 +428,8 @@ void LightMP::writeElemData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
     io->writeElemPlot(vx, plotvar.plotIndex[0], timestep);
     io->writeElemPlot(vy, plotvar.plotIndex[1], timestep);
     io->writeElemPlot(vz, plotvar.plotIndex[2], timestep);
- 
-    if( ad.getCentering() == MATPNT ) 
+
+    if( ad.getCentering() == MATPNT )
       delete [] data;
     delete [] vx;
     delete [] vy;
@@ -441,7 +437,7 @@ void LightMP::writeElemData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
 
   } else if( dt == SymTensorType ){
     int numElems = myDataContainer->getNumElems();
-    SymTensor *data; 
+    SymTensor *data;
     if( ad.getCentering() == MATPNT ){
       data = new SymTensor [numElems];
       SymTensor* mpdata; ad.getData( mpdata );
@@ -468,7 +464,7 @@ void LightMP::writeElemData(MeshIO* io, AbstractData* d, PlotVariable& plotvar, 
     io->writeElemPlot(vyz, plotvar.plotIndex[3], timestep);
     io->writeElemPlot(vxz, plotvar.plotIndex[4], timestep);
     io->writeElemPlot(vxy, plotvar.plotIndex[5], timestep);
- 
+
     if( ad.getCentering() == MATPNT )
       delete [] data;
     delete [] vxx;
@@ -537,11 +533,11 @@ bool LightMP::initPlot()
 /******************************************************************************/
 bool LightMP::initPlotVars(MeshIO* io)
 /******************************************************************************/
-{ 
+{
 #ifdef DEBUG_LOCATION
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
 #endif //DEBUG_LOCATION
-  
+
 
   // find plot variables in data container
   int total_num_vars = myDataContainer->getNumVariables();
@@ -549,9 +545,9 @@ bool LightMP::initPlotVars(MeshIO* io)
     AbstractData& d = *(myDataContainer->getAbstractVariable(var));
     if(d.isPlottable()) addPlotVariable( &d, var );
   }
-  
+
   // extract list of variable names and assign plot numbers for output
-  vector<string> elemPlots, nodePlots;
+  std::vector<std::string> elemPlots, nodePlots;
   int nodePlotNumber = 0, elemPlotNumber = 0;
   int nvars = myPlotVars.size();
   for(int ivar=0; ivar<nvars; ivar++){
@@ -594,10 +590,10 @@ void LightMP::addPlotVariable( AbstractData* d, VarIndex index)
   myPlotVars.push_back(addplot);
   PlotVariable& newplot = myPlotVars.back();
   newplot.varIndex = index;
-  vector<string>&  names = newplot.plotName;
+  std::vector<std::string>&  names = newplot.plotName;
 
   DataType dt = d->getDataType();
-  string base = d->getName();
+  std::string base = d->getName();
   if( dt == RealType ){
     names.push_back( base );
   } else if( dt == VectorType ){
@@ -609,7 +605,7 @@ void LightMP::addPlotVariable( AbstractData* d, VarIndex index)
     name = base + "Z";
     names.push_back( name );
   } else if( dt == TensorType ){
-    string name;
+    std::string name;
     name = base + "XX";
     names.push_back( name );
     name = base + "YY";
@@ -629,7 +625,7 @@ void LightMP::addPlotVariable( AbstractData* d, VarIndex index)
     name = base + "YX";
     names.push_back( name );
   } else if( dt == SymTensorType ){
-    string name;
+    std::string name;
     name = base + "XX";
     names.push_back( name );
     name = base + "YY";
@@ -662,7 +658,7 @@ bool LightMP::closePlot(MeshIO *io)
 }
 
 /******************************************************************************/
-void setupSolver( pugi::xml_node& config, AztecOO& solver, 
+void setupSolver( pugi::xml_node& config, AztecOO& solver,
                            int& iterations, Real& tolerance,
                            DistributedCrsMatrix* A)
 /******************************************************************************/
@@ -681,18 +677,18 @@ void setupSolver( pugi::xml_node& config, AztecOO& solver,
       MLList.set("max levels",6);
       MLList.set("increasing or decreasing","increasing");
       MLList.set("aggregation: type", "Uncoupled");
-  
-      // smoother is Chebyshev. Example file 
+
+      // smoother is Chebyshev. Example file
       // `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use
       // AZTEC's preconditioners as smoothers
-  
+
       MLList.set("smoother: type","Chebyshev");
       MLList.set("smoother: sweeps",3);
       MLList.set("smoother: pre or post", "both");
       MLList.set("coarse: type","Amesos-KLU");
 
-      ML_Epetra::MultiLevelPreconditioner* MLPrec = 
-        new ML_Epetra::MultiLevelPreconditioner( 
+      ML_Epetra::MultiLevelPreconditioner* MLPrec =
+        new ML_Epetra::MultiLevelPreconditioner(
              *(A->getEpetraCrsMatrix()), MLList);
 
       solver.SetPrecOperator(MLPrec);
@@ -711,5 +707,3 @@ void setupSolver( pugi::xml_node& config, AztecOO& solver,
       solver.SetAztecOption(AZ_solver, AZ_gmres);
     }
 }
-
-

@@ -1,21 +1,20 @@
 #include "exception_handling.hpp"
 #include "communicator.hpp"
 
-ParsingException::ParsingException(string description)
+ParsingException::ParsingException(std::string description)
 {
-  pXcout << "Input error " << endl;
-  pXcout << description << endl;
+  pXcout << "Input error " << std::endl;
+  pXcout << description << std::endl;
 }
 
-IOException::IOException(string file, string description)
+IOException::IOException(std::string file, std::string description)
 {
-  pXcout << "!!! Problem reading exodus file " << file << endl;
-  pXcout << description << endl;
+  pXcout << "!!! Problem reading exodus file " << file << std::endl;
+  pXcout << description << std::endl;
 }
 
 RunTimeError::RunTimeError(string d)
 {
-  pXcout << "Run time error :" << endl;
-  pXcout << d << endl;
+  pXcout << "Run time error :" << std::endl;
+  pXcout << d << std::endl;
 }
-

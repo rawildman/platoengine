@@ -50,6 +50,7 @@
 #include "data_container.hpp"
 #include "communicator.hpp"
 
+using namespace Intrepid;
 
 // TODO: unkloodge the natural boundary condition implementation!
 
@@ -111,13 +112,13 @@ SolidStatics::SolidStatics(SystemContainer& sys, LightMP& ren)
    // tangent will be provided.
 
    DataContainer& dc = *myDataContainer;
-   
+
    bool plottable = true;
    int numStates = 2;
-   STRESS = dc.registerVariable(SymTensorType, "cauchy stress", 
+   STRESS = dc.registerVariable(SymTensorType, "cauchy stress",
                                 MATPNT, plottable, numStates);
 
-   STRAIN_INCREMENT = dc.registerVariable(SymTensorType, "strain increment", 
+   STRAIN_INCREMENT = dc.registerVariable(SymTensorType, "strain increment",
                                           MATPNT, plottable);
 
    TOTAL_DX = dc.registerVariable( RealType, "total dx", NODE, plottable);
@@ -132,7 +133,7 @@ SolidStatics::SolidStatics(SystemContainer& sys, LightMP& ren)
      total_dy[i] = 0.0;
      total_dz[i] = 0.0;
    }
-    
+
 
    dc.getVariable( "dispx", DISPX );
    dc.getVariable( "dispy", DISPY );
@@ -142,7 +143,7 @@ SolidStatics::SolidStatics(SystemContainer& sys, LightMP& ren)
 
 /******************************************************************************/
 void SolidStatics::
-computeInternalEnergy( DistributedVector* topology,  
+computeInternalEnergy( DistributedVector* topology,
                        Plato::PenaltyModel* penaltyModel,
                        double* ie, DistributedVector* iegradient)
 /******************************************************************************/
@@ -186,7 +187,7 @@ computeInternalEnergy( DistributedVector* topology,
 
       // Evaluate basis values and gradients at cubature points
       int numFieldsG = elblock.getBasis().getCardinality();
-      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim); 
+      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim);
       elblock.getBasis().getValues(Grads, cubPoints, OPERATOR_GRAD);
 
       FieldContainer<double> Gvals(numFieldsG, numCubPoints);
@@ -195,7 +196,7 @@ computeInternalEnergy( DistributedVector* topology,
       // Settings and data structures for mass and stiffness matrices
       typedef CellTools<double>  CellTools;
       typedef FunctionSpaceTools fst;
-      int numCells = 1; 
+      int numCells = 1;
 
       // Container for nodes
       FieldContainer<double> Nodes(numCells, numNodesPerElem, spaceDim);
@@ -228,9 +229,9 @@ computeInternalEnergy( DistributedVector* topology,
         CellTools::setJacobianInv(JacobInv, Jacobian );
         CellTools::setJacobianDet(JacobDet, Jacobian );
 
-        // transform to physical coordinates 
+        // transform to physical coordinates
         fst::HGRADtransformGRAD<double>(GradsTransformed, JacobInv, Grads);
-      
+
         // compute weighted measure
         fst::computeCellMeasure<double>(weightedMeasure, JacobDet, cubWeights);
 
@@ -280,7 +281,7 @@ computeInternalEnergy( DistributedVector* topology,
 /******************************************************************************/
 void SolidStatics::
 buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
-                      const DistributedVector& topology, 
+                      const DistributedVector& topology,
                       Plato::PenaltyModel*     penaltyModel )
 /******************************************************************************/
 {
@@ -301,7 +302,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
       Topological::Element& elblock = *(myMesh.getElemBlk(ib));
 
       p0cout << "block " << ib+1 << endl;
-  
+
       // not all blocks will be present on all processors
       if( elblock.getNumElem() == 0 ) continue;
 
@@ -316,7 +317,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
 
       // Evaluate basis values and gradients at cubature points
       int numFieldsG = elblock.getBasis().getCardinality();
-      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim); 
+      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim);
       elblock.getBasis().getValues(Grads, cubPoints, OPERATOR_GRAD);
 
       FieldContainer<double> Gvals(numFieldsG, numCubPoints);
@@ -328,7 +329,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
       // Settings and data structures for mass and stiffness matrices
       typedef CellTools<double>  CellTools;
       typedef FunctionSpaceTools fst;
-      int numCells = 1; 
+      int numCells = 1;
 
       // Container for nodes
       FieldContainer<double> Nodes(numCells, numNodesPerElem, spaceDim);
@@ -342,7 +343,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
       FieldContainer<double> GradsTransformedWeighted(numCells, numFieldsG, numCubPoints, spaceDim);
       // Container for cubature points in physical space
 
-      FieldContainer<double> B(numCells, numFieldsG*dofsPerNode, numCubPoints, voigtSize); // 1 x 24 x 8 x 6  
+      FieldContainer<double> B(numCells, numFieldsG*dofsPerNode, numCubPoints, voigtSize); // 1 x 24 x 8 x 6
       FieldContainer<double> CB(numCells, numFieldsG*dofsPerNode, numCubPoints, voigtSize); // 1 x 24 x 8 x 6
       FieldContainer<double> CBWeighted(numCells, numFieldsG*dofsPerNode, numCubPoints, voigtSize); // 1 x 24 x 8 x 6
       FieldContainer<double> BCB(numCells, numFieldsG*dofsPerNode, numCubPoints, numFieldsG*dofsPerNode); // 1 x 24 x 8 x 24
@@ -379,9 +380,9 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
         CellTools::setJacobianInv(JacobInv, Jacobian );
         CellTools::setJacobianDet(JacobDet, Jacobian );
 
-        // transform to physical coordinates 
+        // transform to physical coordinates
         fst::HGRADtransformGRAD<double>(GradsTransformed, JacobInv, Grads);
-      
+
         // compute weighted measure
         fst::computeCellMeasure<double>(weightedMeasure, JacobDet, cubWeights);
 
@@ -417,10 +418,10 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
         // compute C:B
         CB.initialize(0.0);
         for(int cubPoint=0; cubPoint<numCubPoints; cubPoint++){
- 
+
           mc.getCurrentTangent(ib, iel, cubPoint, C, STRESS, STRAIN_INCREMENT);
           FieldContainer<double>& c = *C;
-              
+
           // determine if the cubature point is within the level-set function
           for(int i=0; i<voigtSize; i++){
             for(int j=0; j<numFieldsG*dofsPerNode; j++){
@@ -435,7 +436,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
 
         // compute B_transpose:C:B
         BCB.initialize(0.0);
-        for(int cubPoint=0; cubPoint<numCubPoints; cubPoint++){ 
+        for(int cubPoint=0; cubPoint<numCubPoints; cubPoint++){
           for(int i=0; i<numFieldsG*dofsPerNode; i++){
             for(int j=0; j<numFieldsG*dofsPerNode; j++){
               for(int k=0; k<voigtSize; k++){
@@ -476,7 +477,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
           FieldContainer<double>& hg = *hourglassModes;
           for( int imode=0; imode<nHourglassModes; imode++) {
             FieldContainer<double> gamma(numFieldsG);
-            
+
             // node location: Nodes(0,inode,idim)
             // gradient matrix: GradsTransformed(0, inode, ipoint, idim)
             double* projection = new double[3];
@@ -495,7 +496,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
             }
 
             // gamma = 1/8 ( mode - (mode x)Bx - (mode y)By - (mode z)Bz)
-            // Kstabilize = gamma^T gamma 
+            // Kstabilize = gamma^T gamma
             for (int iNode = 0; iNode < numFieldsG; iNode++){
               for (int jNode = 0; jNode < numFieldsG; jNode++){
                 for (int iDof = 0; iDof < dofsPerNode; iDof++){
@@ -517,7 +518,7 @@ buildStiffnessMatrix( DistributedCrsMatrix&    stiffMatrix,
     return;
 }
 /******************************************************************************/
-void SolidStatics::computeExternalForces( DistributedVector& forcingVector, 
+void SolidStatics::computeExternalForces( DistributedVector& forcingVector,
                                           Real time )
 /******************************************************************************/
 {
@@ -539,7 +540,7 @@ void SolidStatics::computeExternalForces( DistributedVector& forcingVector,
     }
 }
 /******************************************************************************/
-void SolidStatics::computeInternalForces( DistributedVector& forcingVector, 
+void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
                                           Real time )
 /******************************************************************************/
 {
@@ -574,14 +575,14 @@ void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
 
       // Evaluate basis values and gradients at cubature points
       int numFieldsG = elblock.getBasis().getCardinality();
-      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim); 
+      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim);
       elblock.getBasis().getValues(Grads, cubPoints, OPERATOR_GRAD);
 
 
       // Settings and data structures for mass and stiffness matrices
       typedef CellTools<double>  CellTools;
       typedef FunctionSpaceTools fst;
-      int numCells = 1; 
+      int numCells = 1;
 
       // Container for nodes
       FieldContainer<double> Nodes(numCells, numNodesPerElem, spaceDim);
@@ -614,9 +615,9 @@ void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
         CellTools::setJacobianInv(JacobInv, Jacobian );
         CellTools::setJacobianDet(JacobDet, Jacobian );
 
-        // transform to physical coordinates 
+        // transform to physical coordinates
         fst::HGRADtransformGRAD<double>(GradsTransformed, JacobInv, Grads);
-      
+
         // compute weighted measure
         fst::computeCellMeasure<double>(weightedMeasure, JacobDet, cubWeights);
 
@@ -627,11 +628,11 @@ void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
 
           int dataIndex =  mc.getDataIndex(ib, iel, ipoint);
           Real *elStress; stress[dataIndex].extractData(elStress);
-          
+
           for(int inode=0; inode<numFieldsG; inode++){
             for(int idim=0; idim<spaceDim; idim++)
               for(int jdim=0; jdim<spaceDim; jdim++)
-                localForce(inode, idim) 
+                localForce(inode, idim)
                   -= GradsTransformed(icell, inode, ipoint, jdim) * elStress[tvmap[idim][jdim]] * weightedMeasure(icell, ipoint);
           }
         }
@@ -645,8 +646,8 @@ void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
 }
 
 /******************************************************************************/
-void SolidStatics::applyConstraints( DistributedCrsMatrix& stiffMatrix, 
-                                     DistributedVector& forcingVector, 
+void SolidStatics::applyConstraints( DistributedCrsMatrix& stiffMatrix,
+                                     DistributedVector& forcingVector,
                                      Real time )
 /******************************************************************************/
 {
@@ -754,13 +755,13 @@ void SolidStatics::updateMaterialState( Real time )
 
       // Evaluate basis values and gradients at cubature points
       int numFieldsG = elblock.getBasis().getCardinality();
-      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim); 
+      FieldContainer<double> Grads(numFieldsG, numCubPoints, spaceDim);
       elblock.getBasis().getValues(Grads, cubPoints, OPERATOR_GRAD);
 
       // Settings and data structures for mass and stiffness matrices
       typedef CellTools<double>  CellTools;
       typedef FunctionSpaceTools fst;
-      int numCells = 1; 
+      int numCells = 1;
 
       // Container for nodes
       FieldContainer<double> Nodes(numCells, numNodesPerElem, spaceDim);
@@ -797,9 +798,9 @@ void SolidStatics::updateMaterialState( Real time )
         CellTools::setJacobianInv(JacobInv, Jacobian );
         CellTools::setJacobianDet(JacobDet, Jacobian );
 
-        // transform to physical coordinates 
+        // transform to physical coordinates
         fst::HGRADtransformGRAD<double>(GradsTransformed, JacobInv, Grads);
-      
+
         // compute weighted measure
         fst::computeCellMeasure<double>(weightedMeasure, JacobDet, cubWeights);
 
@@ -810,15 +811,15 @@ void SolidStatics::updateMaterialState( Real time )
           for(int inode=0; inode<numFieldsG; inode++){
             for( int ivgt=0; ivgt<nVoigt; ivgt++){
               int idim = voigtStride[ivgt][0], jdim = voigtStride[ivgt][1];
-              fc_strain_inc(icell, ipoint, idim, jdim ) += 
+              fc_strain_inc(icell, ipoint, idim, jdim ) +=
                 0.5*(GradsTransformed(icell, inode, ipoint, idim)*Disps(icell, inode, jdim)
                     +GradsTransformed(icell, inode, ipoint, jdim)*Disps(icell, inode, idim));
             }
           }
         }
-         
+
         for(int ipoint=0; ipoint<numCubPoints; ipoint++){
- 
+
           // update strain measure
           int dataIndex =  mc.getDataIndex(ib, iel, ipoint);
           Real *elStrain_inc; strain_inc[dataIndex].extractData(elStrain_inc);
@@ -856,9 +857,8 @@ void SolidStatics::updateDisplacement( DistributedVector& x,
   // solve
   solver.Iterate( niters, tolerance );
 
-  // exchange boundary data 
+  // exchange boundary data
   x.Import();
   x.DisAssemble();
 
 }
-

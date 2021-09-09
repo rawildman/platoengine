@@ -49,7 +49,7 @@
 
 
 /******************************************************************************/
-DefaultMaterialContainer::DefaultMaterialContainer(pugi::xml_node& xml_data) 
+DefaultMaterialContainer::DefaultMaterialContainer(pugi::xml_node& xml_data)
                          : MaterialContainer(xml_data)
 /******************************************************************************/
 {
@@ -74,7 +74,7 @@ DefaultMaterialContainer::DefaultMaterialContainer(pugi::xml_node& xml_data)
         }
       }
       if( !found ){
-        stringstream err;
+        std::stringstream err;
         err << "material " << matId << " not found.";
         throw ParsingException(err.str() );
       }
@@ -88,11 +88,11 @@ void MaterialContainer::initializeDataMap()
 {
 
   bool plottable = true;
-  MATERIAL_ID = dataContainer->registerVariable( RealType, "material id", 
+  MATERIAL_ID = dataContainer->registerVariable( RealType, "material id",
                                                  MATPNT, plottable );
   Real* matdata;
   dataContainer->getVariable(MATERIAL_ID, matdata);
-  
+
   int dataIndex = 0;
   int numBlocks = dataMesh->getNumElemBlks();
   for(int iblock=0; iblock<numBlocks; iblock++){
@@ -107,7 +107,7 @@ void MaterialContainer::initializeDataMap()
         dmap(ielem, ipoint) = dataIndex++;
       }
   }
-}   
+}
 
 /******************************************************************************/
 void DefaultMaterialContainer::initializeMaterialTopology()
@@ -125,7 +125,7 @@ void DefaultMaterialContainer::initializeMaterialTopology()
         topo(ielem, ipoint) = matIndex;
       }
   }
-}   
+}
 
 
 /******************************************************************************/
@@ -152,7 +152,7 @@ MaterialContainer* MCFactory::create(pugi::xml_node& xml_data)
 }
 
 /******************************************************************************/
-void MaterialContainer::setMaterialTopology( DataMesh* mesh, 
+void MaterialContainer::setMaterialTopology( DataMesh* mesh,
                                              DataContainer* dc,
                                              pugi::xml_node& node)
 /******************************************************************************/
@@ -185,7 +185,7 @@ void MaterialContainer::setMaterialTopology( DataMesh* mesh,
 }
 
 /******************************************************************************/
-void MaterialContainer::getCurrentTangent(int iblock, int ielement, int ipoint, 
+void MaterialContainer::getCurrentTangent(int iblock, int ielement, int ipoint,
                                           Intrepid::FieldContainer<double>*& C,
                                           VarIndex f, VarIndex x)
 /******************************************************************************/
@@ -193,7 +193,7 @@ void MaterialContainer::getCurrentTangent(int iblock, int ielement, int ipoint,
   int matIndex = myMaterialTopology[iblock](ielement, ipoint);
   int dataIndex = myDataMap[iblock](ielement, ipoint);
   myMaterials[matIndex]->getCurrentTangent(dataIndex, dataContainer, C, f, x);
-  
+
 }
 /******************************************************************************/
 void MaterialContainer::updateMaterialState(int iblock, int ielement, int ipoint)
@@ -204,7 +204,7 @@ void MaterialContainer::updateMaterialState(int iblock, int ielement, int ipoint
   myMaterials[matIndex]->updateMaterialState(dataIndex, dataContainer);
 }
 /******************************************************************************/
-void MaterialContainer::updateMaterialState(int iblock, int ielement, int ipoint, 
+void MaterialContainer::updateMaterialState(int iblock, int ielement, int ipoint,
                                             VarIndex var)
 /******************************************************************************/
 {
@@ -247,14 +247,14 @@ void MaterialContainer::SetUp(DataMesh* mesh, DataContainer* dc, pugi::xml_node&
 
 #include "linear_elastic.hpp"
 
-typedef struct{ string name; NewModelFP model; } ModelPair;
+typedef struct{ std::string name; NewModelFP model; } ModelPair;
 
 /******************************************************************************/
 Material::Material( pugi::xml_node& matspec, int id )
 /******************************************************************************/
 {
   // add models here
-  vector<ModelPair> models;
+  std::vector<ModelPair> models;
   models.push_back( (ModelPair){"linear_elastic",            NewIsotropicElastic3D} );
 
   // parse crystal basis
@@ -262,7 +262,7 @@ Material::Material( pugi::xml_node& matspec, int id )
   if( basisSpec ){
     int nangles = Plato::Parse::numChildren( basisSpec, "euler_angles" );
     if( nangles != 3 ){
-        stringstream err;
+        std::stringstream err;
         err << "Three euler angles required. " << nangles << " given.";
         throw ParsingException(err.str() );
     }
@@ -296,7 +296,7 @@ Material::Material( pugi::xml_node& matspec, int id )
     crystalBasis[TENSOR::YY] = 1.0;
     crystalBasis[TENSOR::ZZ] = 1.0;
   }
-  
+
 
   int ntypemodels = models.size();
   for(int imat=0; imat<ntypemodels; imat++){

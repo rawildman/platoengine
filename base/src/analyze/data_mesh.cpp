@@ -13,10 +13,6 @@
 #include <ostream>
 #include <sstream>
 #include <math.h>
-using std::ostringstream;
-using std::cout;
-using std::endl;
-
 
 DataMesh::DataMesh()
 {
@@ -109,9 +105,9 @@ DataMesh::~DataMesh()
   delete [] commElemProcIds;
 
   delete [] nodeCmapNodeCnts;
-  delete [] nodeCmapIds;     
+  delete [] nodeCmapIds;
   delete [] elemCmapElemCnts;
-  delete [] elemCmapIds;     
+  delete [] elemCmapIds;
 
   for(unsigned int i=0; i<myElemBlk.size(); i++){
     if(myElemBlk[i]) delete myElemBlk[i];
@@ -130,8 +126,8 @@ DataMesh::registerNodeSet(int ids, int number_in_set)
   ns.id = ids;
   ns.numNodes = number_in_set;
 
-  ostringstream fullname;
-  string name("Node_Set_");
+  std::ostringstream fullname;
+  std::string name("Node_Set_");
 
   fullname << name << ns.id;
 
@@ -139,10 +135,10 @@ DataMesh::registerNodeSet(int ids, int number_in_set)
     ns.NODE_LIST = -1;
   } else {
 
-    ns.NODE_LIST = myData->registerVariable( IntType, 
-  					   fullname.str().c_str(),
-  					   NODE,
-  					   ns.numNodes ); 
+    ns.NODE_LIST = myData->registerVariable( IntType,
+                                           fullname.str().c_str(),
+                                           NODE,
+                                           ns.numNodes );
   }
 
   nodeSets.push_back(ns);
@@ -178,34 +174,34 @@ DataMesh::registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_
 
     ss.nodesPerFace = nodes_per_face;
 
-    ostringstream fullname;
+    std::ostringstream fullname;
     string name("FaceID_Side_Set_");
     fullname << name << ss.id;
 
     ss.FACE_ID_LIST = myData->registerVariable( IntType,
-	  				      fullname.str().c_str(),
-					      NODE,
-					      ss.numSides ); 
-    
+                                              fullname.str().c_str(),
+                                              NODE,
+                                              ss.numSides );
+
     name = "Elem_Side_Set_";
     fullname << name << ss.id;
     ss.ELEM_ID_LIST = myData->registerVariable( IntType,
-					      fullname.str().c_str(),
-					      NODE,
-					      ss.numSides ); 
+                                              fullname.str().c_str(),
+                                              NODE,
+                                              ss.numSides );
 
     name = "Face_Node_Side_Set_";
     fullname << name << ss.id;
-    ss.FACE_NODE_LIST = myData->registerVariable( IntType, 
+    ss.FACE_NODE_LIST = myData->registerVariable( IntType,
                                                   fullname.str().c_str(),
                                                   UNSET,
                                                   ss.numSides*ss.nodesPerFace);
-    
+
   }
-  string name("Side_Set_");
-  ostringstream fullname;
+  std::string name("Side_Set_");
+  std::ostringstream fullname;
   fullname << name << ss.id;
-  ss.setName = fullname.str();  
+  ss.setName = fullname.str();
   sideSets.push_back(ss);
 
   return true;
@@ -295,7 +291,7 @@ UnsMesh::addElemBlk( Topological::Element* eb )
   myElemBlk.push_back(eb);
 }
 
-Topological::Element* 
+Topological::Element*
 DataMesh::getElemBlk( int number )
 {
   return myElemBlk[number];
@@ -326,38 +322,38 @@ DataMesh::registerData()
 
 
   XMATCOOR       = dc->registerVariable( RealType,
-					 "XMATCOOR",
-					 NODE,
-					 numNodes ); 
-  
+                                         "XMATCOOR",
+                                         NODE,
+                                         numNodes );
+
 
   YMATCOOR       = dc->registerVariable( RealType,
-					 "YMATCOOR",
-					 NODE,
-					 numNodes ); 
-  
+                                         "YMATCOOR",
+                                         NODE,
+                                         numNodes );
+
   if(myDimensions == 3) {
     ZMATCOOR       = dc->registerVariable( RealType,
-  					   "ZMATCOOR",
-					   NODE,
-					   numNodes );
+                                           "ZMATCOOR",
+                                           NODE,
+                                           numNodes );
   }
 
-  XMATCOOR0      = dc->registerVariable(RealType, 
-                                        "XMATCOOR0", 
-                                        NODE, 
+  XMATCOOR0      = dc->registerVariable(RealType,
+                                        "XMATCOOR0",
+                                        NODE,
                                         numNodes);
 
-  YMATCOOR0      = dc->registerVariable(RealType, 
+  YMATCOOR0      = dc->registerVariable(RealType,
                                         "YMATCOOR0",
-                                        NODE, 
+                                        NODE,
                                         numNodes);
 
   if(myDimensions == 3) {
     ZMATCOOR0      = dc->registerVariable( RealType,
-  					   "ZMATCOOR0",
-					   NODE,
-					   numNodes );
+                                           "ZMATCOOR0",
+                                           NODE,
+                                           numNodes );
   }
 
   return true;
@@ -383,7 +379,7 @@ void DataMesh::Connect(int* node_gid_list, int block_index, int nlid_in_blk)
   Topological::Element* elem = myElemBlk[block_index];
   int Nnpe = elem->getNnpe();
   int* conn = elem->getNodeConnect() + nlid_in_blk*Nnpe;
-  for(int i=0;i<Nnpe;i++) 
+  for(int i=0;i<Nnpe;i++)
     node_gid_list[i] = conn[i];
 }
 
@@ -393,7 +389,7 @@ int StrMesh::indexMap(int i, int j, int k, int I, int J, int K)
 {
    if( indexOrdering == Cstyle )
      return K*J*i + K*j + k;
-   else 
+   else
      return i + I*j + I*J*k;
 }
 
@@ -402,14 +398,14 @@ bool StrMesh::parseMesh(pugi::xml_node& input)
 //*********************************************************************
 {
 
-  string ordering = Plato::Parse::getString( input, "index_ordering" );
-  if( ordering == "C" ) 
+  std::string ordering = Plato::Parse::getString( input, "index_ordering" );
+  if( ordering == "C" )
     indexOrdering = Cstyle;
-  else if( ordering == "Fortran" ) 
+  else if( ordering == "Fortran" )
     indexOrdering = FortranStyle;
   else
     throw ParsingException("Unrecognized index ordering.  Specify C or Fortran.");
-  
+
   if( Plato::Parse::numChildren( input, "intervals" ) != 3 )
     throw ParsingException("'intervals' must be length 3");
 
@@ -420,7 +416,7 @@ bool StrMesh::parseMesh(pugi::xml_node& input)
   interval_node = interval_node.next_sibling("intervals");
   numGlobalElementsInZ = Plato::Parse::getInt(interval_node, "interval");
 
-  string nodeLocations = Plato::Parse::getString(input, "node_locations");
+  std::string nodeLocations = Plato::Parse::getString(input, "node_locations");
   if( nodeLocations == "external" ){
     nodeLocationsExternal = true;
     xBegin = 0.0; xEnd   = 0.0;
@@ -453,19 +449,19 @@ bool StrMesh::parseMesh(pugi::xml_node& input)
   WorldComm.getElementDomain( 0, numGlobalElementsInX, iBegin, iEnd );
   WorldComm.getElementDomain( 1, numGlobalElementsInY, jBegin, jEnd );
   WorldComm.getElementDomain( 2, numGlobalElementsInZ, kBegin, kEnd );
-  
+
   numLocalElementsInX = iEnd - iBegin;
   numLocalElementsInY = jEnd - jBegin;
   numLocalElementsInZ = kEnd - kBegin;
   numElems = numLocalElementsInX * numLocalElementsInY * numLocalElementsInZ;
- 
+
   numLocalNodesInX = numLocalElementsInX + 1;
   numLocalNodesInY = numLocalElementsInY + 1;
   numLocalNodesInZ = numLocalElementsInZ + 1;
   numNodes = numLocalNodesInX * numLocalNodesInY * numLocalNodesInZ;
 
   /****  CREATE SINGLE BLOCK **********************************************/
-  // for now, StrMesh is single-block.  
+  // for now, StrMesh is single-block.
   if( Plato::Parse::numChildren( input, "block" ) != 1 )
     throw ParsingException("Virtual mesh capability is single block. One (and only one) block spec required.");
 
@@ -698,7 +694,7 @@ int StrMesh::getBlockId(int blk)
 }
 
 //*********************************************************************
-bool StrMesh::readNodePlot(Real* data, string name)
+bool StrMesh::readNodePlot(Real* data, std::string name)
 //*********************************************************************
 {
     return false;
@@ -720,7 +716,7 @@ const char* StrMesh::getElemTypeInBlk(int blk)
 }
 
 //*********************************************************************
-bool UnsMesh::readNodePlot(Real* data, string name)
+bool UnsMesh::readNodePlot(Real* data, std::string name)
 //*********************************************************************
 {
     myMeshInput->readNodePlot(data, name);
@@ -738,7 +734,7 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
 #endif //VERBOSE_DEBUG_LOCATION
 
   // create new meshIO object for input
-  string meshformat = Plato::Parse::getString(meshspec,"format");
+  std::string meshformat = Plato::Parse::getString(meshspec,"format");
 
   bool ignore_node_map = Plato::Parse::getBool(meshspec,"ignore_node_map");
   bool ignore_elem_map = Plato::Parse::getBool(meshspec,"ignore_element_map");
@@ -750,9 +746,9 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
       myMeshInput = new NemesisIO();
     }
 
-    string filename = Plato::Parse::getString(meshspec,"mesh");
-    ostringstream zeros;
-    ostringstream buffer;
+    std::string filename = Plato::Parse::getString(meshspec,"mesh");
+    std::ostringstream zeros;
+    std::ostringstream buffer;
     if( WorldComm.GetSize() == 1 ) {
       buffer << filename;
       filename = buffer.str();
@@ -786,7 +782,7 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
     myMeshInput->setIgnoreElemMap(ignore_elem_map);
     myMeshInput->setMode(MeshIO::READ);
   } else {
-    stringstream msg;
+    std::stringstream msg;
     msg << "Fatal Error: Unknown unstructured mesh format <" << meshformat
         << "> requested...";
     throw ParsingException(msg.str());
@@ -796,13 +792,13 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
   myMeshInput->setMesh(this);
   if(!myMeshInput->openMeshIO())
   {
-    stringstream msg;
+    std::stringstream msg;
     msg << "Fatal Error: Couldn't open mesh file " << myMeshInput->getName();
     throw ParsingException(msg.str());
   }
   myMeshInput->readMeshIO();
 
-  // element blocks are created by the meshInput object, but not initialized 
+  // element blocks are created by the meshInput object, but not initialized
   // with the integration scheme.  So...
   int nblocks = myElemBlk.size();
   pugi::xml_node defaultInt = meshspec.child("integration");
@@ -813,26 +809,26 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
       intg = blockspec.child("integration");
     myElemBlk[ib]->setIntegrationMethod( intg );
   }
-  
+
 
   return true;
 }
 
-int  
+int
 DataMesh::getNnpeInBlk(int blk)
 {
   int nnpe = myElemBlk[blk]->getNnpe();
   return nnpe;
 }
 
-int 
+int
 UnsMesh::getBlockIndex(int blk_id)
 {
   int nblocks = myElemBlk.size();
   for(int iblock=0; iblock<nblocks; iblock++){
     if( myElemBlk[iblock]->getBlockId() == blk_id) return iblock;
   }
-    
+
   pXcout << "Error: block with id " << blk_id << " not found." << endl;
   return -1;
 }
@@ -845,11 +841,11 @@ UnsMesh::getBlockId(int blk)
   return id;
 }
 
-int* 
+int*
 UnsMesh::getElemToNodeConnInBlk(int blk)
 {
   int* pnc = myElemBlk[blk]->getNodeConnect();
-  return pnc; 
+  return pnc;
 }
 
 const char*
@@ -881,9 +877,6 @@ bool ParseBlocks(DataMesh* data_mesh, cfg_t* cfg) {
   }
 
   return true;
-  
+
 }
 #endif
-
-
-
