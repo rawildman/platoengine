@@ -55,6 +55,7 @@
 #include "Plato_SystemCall.hpp"
 #include "Plato_Aggregator.hpp"
 #include "Plato_DesignVolume.hpp"
+#include "Plato_Reinitialize.hpp"
 #include "Plato_EnforceBounds.hpp"
 #include "Plato_UpdateProblem.hpp"
 #include "Plato_ComputeVolume.hpp"
