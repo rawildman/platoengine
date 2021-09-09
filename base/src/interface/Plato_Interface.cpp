@@ -284,69 +284,78 @@ void Interface::perform(Plato::Stage* aStage)
 {
     // Console::Status("Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
-    // transmits input data
-    //
-    aStage->begin();
-
-    // any local operations?
-    //
-    Plato::Operation* tOperation = aStage->getNextOperation();
-    while(tOperation)
+    // Intercept this stage as it is an internal stage. That is the
+    // user does not need to define it.
+    if( aStage->getName() == "Update Shared Data" )
     {
-        // Console::Status("  Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
-
-        tOperation->sendInput();
-
-        // copy data from Plato::SharedData buffers to hostedCode data containers
-        //
-        std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
-        for(std::string tName : tOperationInputDataNames)
-        {
-            try
-            {
-                tOperation->importData(tName, mDataLayer->getSharedData(tName));
-            }
-            catch(...)
-            {
-                mExceptionHandler->Catch();
-            }
-            mExceptionHandler->handleExceptions();
-        }
-
-        try
-        {
-            tOperation->compute();
-        }
-        catch(...)
-        {
-            mExceptionHandler->Catch();
-        }
-        mExceptionHandler->handleExceptions();
-
-        // copy data from hostedCode data containers to Plato::SharedData buffers
-        //
-        std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
-        for(std::string tName : tOperationOutputDataNames)
-        {
-            try
-            {
-                tOperation->exportData(tName, mDataLayer->getSharedData(tName));
-            }
-            catch(...)
-            {
-                mExceptionHandler->Catch();
-            }
-            mExceptionHandler->handleExceptions();
-        }
-
-        tOperation->sendOutput();
-
-        tOperation = aStage->getNextOperation();
+        this->createSharedData( mPerformer->getApplication() );
     }
+    else
+    {
+        // transmits input data
+        //
+        aStage->begin();
 
-    // transmits output data
-    //
-    aStage->end();
+        // any local operations?
+        //
+        Plato::Operation* tOperation = aStage->getNextOperation();
+        while(tOperation)
+        {
+            // Console::Status("  Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
+
+            tOperation->sendInput();
+
+            // copy data from Plato::SharedData buffers to hostedCode data containers
+            //
+            std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
+            for(std::string tName : tOperationInputDataNames)
+            {
+                try
+                {
+                    tOperation->importData(tName, mDataLayer->getSharedData(tName));
+                }
+                catch(...)
+                {
+                    mExceptionHandler->Catch();
+                }
+                mExceptionHandler->handleExceptions();
+            }
+
+            try
+            {
+                tOperation->compute();
+            }
+            catch(...)
+            {
+                mExceptionHandler->Catch();
+            }
+            mExceptionHandler->handleExceptions();
+
+            // copy data from hostedCode data containers to Plato::SharedData buffers
+            //
+            std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
+            for(std::string tName : tOperationOutputDataNames)
+            {
+                try
+                {
+                    tOperation->exportData(tName, mDataLayer->getSharedData(tName));
+                }
+                catch(...)
+                {
+                    mExceptionHandler->Catch();
+                }
+                mExceptionHandler->handleExceptions();
+            }
+
+            tOperation->sendOutput();
+
+            tOperation = aStage->getNextOperation();
+        }
+
+        // transmits output data
+        //
+        aStage->end();
+    }
 }
 
 void Interface::finalize()
@@ -368,49 +377,33 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
-    // Intercept a regenerate stage compute as it is an internal
-    // stage. That is the user does not need to define it.
+    // Find the requested stage
+    Plato::Stage* tStage = getStage(aStageName);
 
-    // ARS - when should this be called??
-    if( aStageName == "Regenerate" )
+    if( tStage == nullptr )
     {
-        // ARS - calling this causes a hang somewhere.
-        // this->createSharedData( this->mPerformer->getApplication() );
-
-        // ARS - where does the "Regenerate" stage live??
-        Plato::Stage* tStage = getStage("Regenerate");
-        this->perform(tStage);
+        std::stringstream tMsg;
+        tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
+        Plato::ParsingException tParsingException(tMsg.str());
+        registerException(tParsingException);
     }
-    else
+
+    // Unpack input arguments into Plato::SharedData
+    //
+    std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
+    for(std::string tName : tStageInputDataNames)
     {
-        // Find the requested stage
-        Plato::Stage* tStage = getStage(aStageName);
+        exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+    }
 
-        if( tStage == nullptr )
-        {
-            std::stringstream tMsg;
-            tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
-            Plato::ParsingException tParsingException(tMsg.str());
-            registerException(tParsingException);
-        }
+    this->perform(tStage);
 
-        // Unpack input arguments into Plato::SharedData
-        //
-        std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
-        for(std::string tName : tStageInputDataNames)
-        {
-            exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
-        }
-
-        this->perform(tStage);
-
-        // Unpack output arguments from Plato::SharedData
-        //
-        std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
-        for(std::string tName : tStageOutputDataNames)
-        {
-            importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
-        }
+    // Unpack output arguments from Plato::SharedData
+    //
+    std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
+    for(std::string tName : tStageOutputDataNames)
+    {
+        importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
     }
 }
 
@@ -489,6 +482,15 @@ void Interface::createStages()
     {
         Plato::StageInputDataMng tStageInputDataMng;
         Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
+        Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+        mStages.push_back(tNewStage);
+    }
+
+    // Add the internal stages. That is stages that the user does not
+    // need to define.
+    {
+        Plato::StageInputDataMng tStageInputDataMng;
+        tStageInputDataMng.add("Update Shared Data");
         Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
         mStages.push_back(tNewStage);
     }
@@ -688,6 +690,7 @@ void Interface::createSharedData(Plato::Application* aApplication)
     }
 
     this->exportGraph(tSharedDataInfo, aApplication, tCommunicationData);
+
     if(mDataLayer)
     {
         delete mDataLayer;
