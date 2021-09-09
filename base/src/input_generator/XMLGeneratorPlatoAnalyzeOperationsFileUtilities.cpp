@@ -136,16 +136,23 @@ void append_compute_constraint_value_operation_for_shape_problem
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    auto tOperation = aDocument.append_child("Operation");
-    XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionValue", "Compute Constraint Value", "My Constraint" }, tOperation);
-    auto tOutput = tOperation.append_child("Output");
-    XMLGen::append_children( { "Argument" }, { "Value" }, tOutput);
-    XMLGen::append_children( { "ArgumentName" }, { "Constraint Value" }, tOutput);
-
-    if(XMLGen::is_robust_optimization_problem(aMetaData))
+    for(auto& tConstraint : aMetaData.constraints)
     {
-        XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
-        XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        auto &tCriterion = aMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        auto tToken = std::string("my_") + tCriterionType + "_criterion_id_" + tCriterion.id();
+
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionValue", "Compute Constraint Value " + tConstraint.id(), tToken }, tOperation);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children( { "Argument" }, { "Value" }, tOutput);
+        XMLGen::append_children( { "ArgumentName" }, { "Constraint Value " + tConstraint.id() }, tOutput);
+
+        if(XMLGen::is_robust_optimization_problem(aMetaData))
+        {
+            XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
+            XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        }
     }
 }
 /******************************************************************************/
@@ -211,26 +218,33 @@ void append_compute_constraint_gradient_operation_for_shape_problem
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    auto tOperation = aDocument.append_child("Operation");
-    XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionX", "Compute Constraint Gradient", "My Constraint" }, tOperation);
-
-    if(XMLGen::is_robust_optimization_problem(aMetaData))
+    for(auto& tConstraint : aMetaData.constraints)
     {
-        XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
-        XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
-    }
+        auto &tCriterion = aMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        auto tToken = std::string("my_") + tCriterionType + "_criterion_id_" + tCriterion.id();
 
-    pugi::xml_node tmp_node = aDocument.append_child("Operation");
-    addChild(tmp_node, "Name", "Compute Constraint Sensitivity");
-    addChild(tmp_node, "Function", "MapCriterionGradientX");
-    addChild(tmp_node, "Criterion", "My Constraint");
-    pugi::xml_node tForNode = tmp_node.append_child("For");
-    tForNode.append_attribute("var") = "I";
-    tForNode.append_attribute("in") = "Parameters";
-    pugi::xml_node tmp_node1 = tForNode.append_child("Input");
-    addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
-    tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
+        auto tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children( { "Function", "Name", "Criterion" }, { "ComputeCriterionX", "Compute Constraint Gradient " + tConstraint.id(), tToken }, tOperation);
+
+        if(XMLGen::is_robust_optimization_problem(aMetaData))
+        {
+            XMLGen::append_random_traction_vector_to_plato_analyze_operation(aMetaData, tOperation);
+            XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
+        }
+
+        pugi::xml_node tmp_node = aDocument.append_child("Operation");
+        addChild(tmp_node, "Name", "Compute Constraint Sensitivity");
+        addChild(tmp_node, "Function", "MapCriterionGradientX");
+        addChild(tmp_node, "Criterion", tToken);
+        pugi::xml_node tForNode = tmp_node.append_child("For");
+        tForNode.append_attribute("var") = "I";
+        tForNode.append_attribute("in") = "Parameters";
+        pugi::xml_node tmp_node1 = tForNode.append_child("Input");
+        addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
+        tmp_node1 = tmp_node.append_child("Output");
+        addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
+    }
 }
 /******************************************************************************/
 

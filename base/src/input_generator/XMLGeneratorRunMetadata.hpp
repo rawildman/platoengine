@@ -92,6 +92,15 @@ public:
     {
         return value("criterion");
     }
+
+    /******************************************************************************//**
+     * \fn service
+     * \brief Return the service string.
+     **********************************************************************************/
+    std::string service() const
+    {
+        return value("service");
+    }
 };
 // struct Run
 
