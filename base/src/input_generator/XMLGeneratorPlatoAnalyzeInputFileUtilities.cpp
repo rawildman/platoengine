@@ -983,23 +983,26 @@ void append_assemblies_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
-    check_valid_assembly_parent_blocks(aXMLMetaData);
-
-    XMLGen::AppendAssembly tFuncInterface;
-
-    std::vector<XMLGen::Scenario> tScenarioList;
-    get_scenario_list_from_objectives_and_constraints(aXMLMetaData, tScenarioList);
-    for (auto &tScenario : tScenarioList)
+    if(aXMLMetaData.assemblies.size() > 0)
     {
-        auto tAssembly = aParentNode.append_child("ParameterList");
-        std::string tBlockTitle = "Multipoint Constraints";
-        XMLGen::append_attributes({"name"}, {tBlockTitle}, tAssembly);
+        check_valid_assembly_parent_blocks(aXMLMetaData);
 
-        std::vector<XMLGen::Assembly> tAssemblyVector;
-        get_assembly_vector_for_scenario(aXMLMetaData, tScenario, tAssemblyVector);
-        for (auto &assembly : tAssemblyVector)
+        XMLGen::AppendAssembly tFuncInterface;
+
+        std::vector<XMLGen::Scenario> tScenarioList;
+        get_scenario_list_from_objectives_and_constraints(aXMLMetaData, tScenarioList);
+        for (auto &tScenario : tScenarioList)
         {
-            tFuncInterface.call(assembly, tAssembly);
+            auto tAssembly = aParentNode.append_child("ParameterList");
+            std::string tBlockTitle = "Multipoint Constraints";
+            XMLGen::append_attributes({"name"}, {tBlockTitle}, tAssembly);
+
+            std::vector<XMLGen::Assembly> tAssemblyVector;
+            get_assembly_vector_for_scenario(aXMLMetaData, tScenario, tAssemblyVector);
+            for (auto &assembly : tAssemblyVector)
+            {
+                tFuncInterface.call(assembly, tAssembly);
+            }
         }
     }
 }

@@ -205,7 +205,7 @@ void append_filter_options_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document &aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().filterInEngine() &&
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
        aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         XMLGen::ValidFilterKeys tValidFilterKeys;

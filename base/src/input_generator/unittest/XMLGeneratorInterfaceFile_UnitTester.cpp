@@ -577,7 +577,7 @@ TEST(PlatoTestXMLGenerator, AppendAggregateObjectiveGradientOperation_non_multi_
     auto tOutput = tInput.next_sibling("Output");
     ASSERT_FALSE(tOutput.empty());
     ASSERT_STREQ("Output", tOutput.name());
-    tValues = {"Field", "Objective Gradient"};
+    tValues = {"Field", "Aggregate Gradient"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
 }
 
@@ -608,7 +608,7 @@ TEST(PlatoTestXMLGenerator, AppendAggregateObjectiveGradientOperation_multi_load
     auto tOutput = tInput.next_sibling("Output");
     ASSERT_FALSE(tOutput.empty());
     ASSERT_STREQ("Output", tOutput.name());
-    tValues = {"Field", "Objective Gradient"};
+    tValues = {"Field", "Aggregate Gradient"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
 }
 
@@ -1651,7 +1651,7 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtzAndProjection)
 
     tSharedData = tSharedData.next_sibling("SharedData");
     tKeys = {"Name", "Type", "Layout", "OwnerName", "UserName", "UserName"};
-    tValues = {"Projected Gradient - criterion_3_service_2_scenario_14", "Scalar", "Nodal Field", "platomain_1", "platomain_1", "plato_analyze_helmholtz"};
+    tValues = {"Projected Objective Gradient", "Scalar", "Nodal Field", "platomain_1", "platomain_1", "plato_analyze_helmholtz"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tSharedData = tSharedData.next_sibling("Performer");
@@ -2107,7 +2107,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
     tOpInputs = tOpInputs.next_sibling("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Gradient", "Criterion Gradient - criterion_3_service_1_scenario_"}, tOpInputs);
     tOpOutputs = tOperation.child("Output");
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Filtered Gradient", "Projected Gradient - criterion_3_service_1_scenario_"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Filtered Gradient", "Projected Constraint Gradient 18"}, tOpOutputs);
 
     // FILTER GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
@@ -2115,7 +2115,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
     tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Projected Gradient - criterion_3_service_1_scenario_"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Projected Constraint Gradient 18"}, tOpInputs);
     tOpOutputs = tOperation.child("Output");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Constraint Gradient 18"}, tOpOutputs);
 

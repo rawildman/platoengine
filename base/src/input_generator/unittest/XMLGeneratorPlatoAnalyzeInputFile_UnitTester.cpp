@@ -2061,7 +2061,7 @@ TEST(PlatoTestXMLGenerator, AppendAssembly_CategoryFixed)
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
-        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "0.0"} };
+        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0,0.0,0.0}"}, {"Value", "double", "0.0"} };
     std::vector<std::string> tGoldParameterListNames =
         {"Tied Assembly 1 Using PBC Multipoint Constraint"};
 
@@ -2146,9 +2146,9 @@ TEST(PlatoTestXMLGenerator, AppendAssembliesToPlatoAnalyzeInputDeck)
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
-        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "0.0"}, 
-          {"Type", "string", "PBC"}, {"Child", "string", "ns_2"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0, 0.0, 0.0}"}, {"Value", "double", "2.4"},
-          {"Type", "string", "PBC"}, {"Child", "string", "ns_5"}, {"Parent", "string", "Block 3"}, {"Vector", "Array(double)", "{1.0, -0.01, 80.0}"}, {"Value", "double", "0.0"} };
+        { {"Type", "string", "PBC"}, {"Child", "string", "ns_1"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0,0.0,0.0}"}, {"Value", "double", "0.0"}, 
+          {"Type", "string", "PBC"}, {"Child", "string", "ns_2"}, {"Parent", "string", "Block 2"}, {"Vector", "Array(double)", "{0.0,0.0,0.0}"}, {"Value", "double", "2.4"},
+          {"Type", "string", "PBC"}, {"Child", "string", "ns_5"}, {"Parent", "string", "Block 3"}, {"Vector", "Array(double)", "{1.0,-0.01,80.0}"}, {"Value", "double", "0.0"} };
     std::vector<std::string> tGoldParameterListNames =
         {"Tied Assembly 1 Using PBC Multipoint Constraint",
          "Tied Assembly 2 Using PBC Multipoint Constraint",
