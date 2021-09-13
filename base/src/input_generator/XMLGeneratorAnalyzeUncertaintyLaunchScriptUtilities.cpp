@@ -41,7 +41,7 @@ inline void append_plato_analyze_code_path
     // Add kokkos-device setting if requested.
     if(aDeviceID != "")
     {
-        fprintf(aFile, "--kokkos-device=%s ", aDeviceID.c_str());
+        fprintf(aFile, "--kokkos-device-id=%s ", aDeviceID.c_str());
     }
 
     // Add the input deck syntax.
