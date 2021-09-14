@@ -858,7 +858,14 @@ void append_aggregate_objective_gradient_operation_for_non_multi_load_case
     }
 
     auto tOperationOutput = aParentNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Aggregate Gradient"}, tOperationOutput);
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Aggregate Gradient"}, tOperationOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Objective Gradient"}, tOperationOutput);
+    }
 }
 /******************************************************************************/
 
@@ -893,7 +900,14 @@ void append_aggregate_objective_gradient_operation_for_multi_load_case
     }
 
     auto tOperationOutput = aParentNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Aggregate Gradient"}, tOperationOutput);
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Aggregate Gradient"}, tOperationOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {aType, "Objective Gradient"}, tOperationOutput);
+    }
 }
 /******************************************************************************/
 
