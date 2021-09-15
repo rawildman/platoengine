@@ -149,6 +149,10 @@ void Stage::update(const Plato::StageInputDataMng & aStageInputData,
 		   const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
+    // If the shared data is recreated then the stage and its
+    // operations must be updated so to have the new links to the
+    // shared data.
+
     // Clear the input and output data.
     m_inputData.clear();
     m_outputData.clear();

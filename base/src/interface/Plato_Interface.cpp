@@ -292,9 +292,9 @@ void Interface::perform(Plato::Stage* aStage)
 
         this->createSharedData( mPerformer->getApplication() );
 
-        // After creating the shared data all of the stage (and their
-        // operations) need to be updated to have the new links to the
-        // shared data.
+        // After creating the shared data all of the stages and their
+        // operations need to be updated so to have the new links to
+        // the shared data.
         this->updateStages();
     }
     else
@@ -442,7 +442,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
 {
     if(aApplication == nullptr)
     {
-        registerException(Plato::ParsingException("Failed to create Performer"));
+        registerException(Plato::ParsingException("Failed to create Application"));
     }
     mExceptionHandler->handleExceptions();
 
@@ -509,6 +509,9 @@ void Interface::createStages()
 void Interface::updateStages()
 /******************************************************************************/
 {
+    // After creating the shared data all of the stages and their
+    // operations need to be updated so to have the new links to
+    // the shared data.
     auto tStages = mInputData.getByName<Plato::InputData>("Stage");
 
     for(auto tStageNode=tStages.begin(); tStageNode!=tStages.end(); ++tStageNode)
