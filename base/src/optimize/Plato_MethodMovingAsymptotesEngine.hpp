@@ -144,7 +144,7 @@ public:
         // ARS - for some reason if this check is made from an inner
         // loop it hangs. There is *I believe* an MPI_Allreduce issue.
         if( this->mOptimizerIndex.size() == 1 )
-          mInterface->handleExceptions();
+            mInterface->handleExceptions();
 
         this->initialize();
 
