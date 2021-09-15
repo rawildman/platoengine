@@ -68,10 +68,15 @@ class OperationInputDataMng;
 class Operation
 {
 public:
-    virtual ~Operation();
     Operation(const ::Plato::OperationInputDataMng & aOperationDataMng,
               const std::shared_ptr<::Plato::Performer> aPerformer,
               const std::vector<::Plato::SharedData*>& aSharedData);
+
+    virtual ~Operation();
+
+    virtual void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
+                        const std::shared_ptr<::Plato::Performer> aPerformer,
+                        const std::vector<::Plato::SharedData*>& aSharedData) = 0;
 
     virtual void sendInput();
     virtual void sendOutput();
@@ -85,9 +90,11 @@ public:
     std::vector<std::string> getInputDataNames() const;
     std::vector<std::string> getOutputDataNames() const;
 
-    void 
+    void
     setParameterValue(std::string paramName, double paramValue)
-      { m_parameters[paramName]->setData({1,paramValue}); }
+    {
+        m_parameters[paramName]->setData({1,paramValue});
+    }
 
 protected:
 
@@ -101,19 +108,20 @@ protected:
       const std::string m_operation;
       double m_value;
       public:
-        Parameter(std::string& name, std::string& op, double value=0.0) : 
+        Parameter(std::string& name, std::string& op, double value=0.0) :
           m_name(name), m_operation(op), m_value(value){}
 
         // required (pure virtual in SharedData base class)
         int size() const {return 1;}
         std::string myName() const {return m_name;}
         std::string myContext() const {return m_operation;}
-        Plato::data::layout_t myLayout() const 
+        Plato::data::layout_t myLayout() const
          {return Plato::data::layout_t::SCALAR_PARAMETER;}
         void transmitData(){assert(0);}
         void setData(const std::vector<double> & aData) {m_value = aData[0];}
         void getData(std::vector<double> & aData) const {aData[0] = m_value;}
     };
+
     std::map<std::string,Plato::SharedData*> m_parameters;
 
     std::shared_ptr<Performer> m_performer;

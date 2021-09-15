@@ -71,11 +71,14 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     const int tNumSubOperations = aOperationDataMng.getNumOperations();
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+        const std::string & tPerformerName =
+          aOperationDataMng.getPerformerName(tSubOperationIndex);
+
         if(aPerformer->myName() != tPerformerName)
         {
              continue;
         }
+
         m_operationName = aOperationDataMng.getOperationName(tPerformerName);
 
         auto tAllParamsData = aOperationDataMng.get<Plato::InputData>("Parameters");
@@ -97,10 +100,13 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
         const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+
+        // Get the input shared data.
         const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
         for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
         {
-            const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
+            const std::string & tSharedDataName =
+              aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
             Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
@@ -116,10 +122,13 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 throw Plato::ParsingException(tErrorMessage.str());
             }
         }
+
+        // Get the output shared data.
         const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
         for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
         {
-            const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
+            const std::string & tSharedDataName =
+              aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
             Plato::SharedData *tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
@@ -142,19 +151,22 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     //
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+        const std::string & tPerformerName =
+          aOperationDataMng.getPerformerName(tSubOperationIndex);
+
         if(aPerformer->myName() == tPerformerName)
         {
             m_performer = aPerformer;
         }
+
         if(m_performer != nullptr)
         {
-
-            // A local performer is participating in this operation, so parse the input
-            // and output argument multimaps
+            // A local performer is participating in this operation,
+            // so parse the input and output argument multimaps
             //
             m_operationName = aOperationDataMng.getOperationName(tPerformerName);
 
+            // Get the inputs.
             const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
             for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
             {
@@ -169,6 +181,8 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                     }
                 }
             }
+
+            // Get the outputs.
             const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
             for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
             {
@@ -187,4 +201,68 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
         }
     }
 }
+
+/******************************************************************************/
+void MultiOperation::
+update(const Plato::OperationInputDataMng & aOperationDataMng,
+       const std::shared_ptr<Plato::Performer> aPerformer,
+       const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // Clear the input and output data.
+    m_inputData.clear();
+    m_outputData.clear();
+
+    const int tNumSubOperations = aOperationDataMng.getNumOperations();
+
+    // collect arrays of all input and output SharedData
+    //
+    for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
+    {
+        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+
+        // Get the input shared data.
+        const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
+        for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
+        {
+            const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
+            Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+            if(tSharedData != nullptr)
+            {
+                if(std::count(m_inputData.begin(), m_inputData.end(), tSharedData) == 0)
+                {
+                    m_inputData.push_back(tSharedData);
+                }
+            }
+            else
+            {
+                std::stringstream tErrorMessage;
+                tErrorMessage << "Plato::Operation: requested field ('" << tSharedDataName << "') that doesn't exist.";
+                throw Plato::ParsingException(tErrorMessage.str());
+            }
+        }
+
+        // Get the output shared data.
+        const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
+        for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
+        {
+            const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
+            Plato::SharedData *tSharedData = Utils::byName(aSharedData, tSharedDataName);
+            if(tSharedData != nullptr)
+            {
+                if(std::count(m_outputData.begin(), m_outputData.end(), tSharedData) == 0)
+                {
+                    m_outputData.push_back(tSharedData);
+                }
+            }
+            else
+            {
+                std::stringstream tErrorMessage;
+                tErrorMessage << "Plato::Operation: requested field ('" << tSharedDataName << "') that doesn't exist.";
+                throw Plato::ParsingException(tErrorMessage.str());
+            }
+        }
+    }
+}
+
 } // End namespace Plato

@@ -84,6 +84,7 @@ SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
         }
     }
 
+    // Get the input shared data.
     const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
     for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
     {
@@ -91,6 +92,8 @@ SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
         const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
         this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
     }
+
+    // Get the output shared data.
     const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
     for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
     {
@@ -102,6 +105,39 @@ SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     if(aPerformer->myName() == tPerformerName)
     {
         m_performer = aPerformer;
+    }
+}
+
+
+/******************************************************************************/
+void SingleOperation::
+update(const Plato::OperationInputDataMng & aOperationDataMng,
+       const std::shared_ptr<Plato::Performer> aPerformer,
+       const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // Clear the input and output data.
+    m_inputData.clear();
+    m_outputData.clear();
+
+    const std::string & tPerformerName = aOperationDataMng.getPerformerName();
+
+    // Get the input shared data.
+    const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
+    for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
+    {
+        const std::string & tArgumentName = aOperationDataMng.getInputArgument(tPerformerName, tInputIndex);
+        const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
+        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
+    }
+
+    // Get the output shared data.
+    const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
+    for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
+    {
+        const std::string & tArgumentName = aOperationDataMng.getOutputArgument(tPerformerName, tOutputIndex);
+        const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
+        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_outputData);
     }
 }
 } // End namespace Plato

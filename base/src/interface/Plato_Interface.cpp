@@ -282,13 +282,20 @@ void Interface::perform()
 void Interface::perform(Plato::Stage* aStage)
 /******************************************************************************/
 {
-    // Console::Status("Stage: (" + mPerformer->myName() + ") " + aStage->getName());
+    // Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
     // Intercept this stage as it is an internal stage. That is the
     // user does not need to define it.
     if( aStage->getName() == "Update Shared Data" )
     {
+        Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
+
         this->createSharedData( mPerformer->getApplication() );
+
+        // After creating the shared data all of the stage (and their
+        // operations) need to be updated to have the new links to the
+        // shared data.
+        this->updateStages();
     }
     else
     {
@@ -301,7 +308,7 @@ void Interface::perform(Plato::Stage* aStage)
         Plato::Operation* tOperation = aStage->getNextOperation();
         while(tOperation)
         {
-            // Console::Status("  Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
+            // Console::Status("Perform Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
 
             tOperation->sendInput();
 
@@ -377,6 +384,8 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
+    // Console::Status("Compute Stage: (" + mPerformer->myName() + ") " + aStageName);
+
     // Find the requested stage
     Plato::Stage* tStage = getStage(aStageName);
 
@@ -493,6 +502,39 @@ void Interface::createStages()
         tStageInputDataMng.add("Update Shared Data");
         Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
         mStages.push_back(tNewStage);
+    }
+}
+
+/******************************************************************************/
+void Interface::updateStages()
+/******************************************************************************/
+{
+    auto tStages = mInputData.getByName<Plato::InputData>("Stage");
+
+    for(auto tStageNode=tStages.begin(); tStageNode!=tStages.end(); ++tStageNode)
+    {
+        Plato::StageInputDataMng tStageInputDataMng;
+        Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
+
+        Plato::Stage* tStage =
+          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+
+        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+    }
+
+    // Update the internal stages. That is stages that the user does not
+    // need to define.
+    {
+        // This update is really a no-op as there is no shared data.
+        // The update is done though for consistancy (and as an
+        // example for future internal stages).
+
+        Plato::StageInputDataMng tStageInputDataMng;
+        tStageInputDataMng.add("Update Shared Data");
+        Plato::Stage* tStage =
+          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+
+        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
     }
 }
 

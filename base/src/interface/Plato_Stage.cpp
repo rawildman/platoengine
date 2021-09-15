@@ -77,6 +77,7 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         currentOperationIndex()
 /******************************************************************************/
 {
+    // Get the input shared data.
     int tNumInputs = aStageInputData.getNumInputs();
     for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
     {
@@ -97,6 +98,7 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
     // TODO: find input SharedValues
     //
 
+    // Get the output shared data.
     int tNumOutputs = aStageInputData.getNumOutputs();
     for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
     {
@@ -117,7 +119,7 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
     // TODO: find output SharedValues
     //
 
-    // parse/create Operations
+    // Parse/Create Operations
     //
     Plato::OperationFactory opFactory;
 
@@ -127,7 +129,6 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         const Plato::OperationInputDataMng & tOperationDataMng = aStageInputData.getOperationInputData(m_name, tOperationIndex);
         m_operations.push_back(opFactory.create(tOperationDataMng, aPerformer, aSharedData));
     }
-
 }
 
 /******************************************************************************/
@@ -140,6 +141,69 @@ Stage::~Stage()
         delete m_operations[operation_index];
     }
     m_operations.clear();
+}
+
+/******************************************************************************/
+void Stage::update(const Plato::StageInputDataMng & aStageInputData,
+		   const std::shared_ptr<Plato::Performer> aPerformer,
+		   const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // Clear the input and output data.
+    m_inputData.clear();
+    m_outputData.clear();
+
+    // Get the input shared data.
+    int tNumInputs = aStageInputData.getNumInputs();
+    for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
+    {
+        std::string tSharedDataName = aStageInputData.getInput(m_name, tInputIndex);
+        Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+        if(tSharedData)
+        {
+            m_inputData.push_back(tSharedData);
+        }
+        else
+        {
+            std::stringstream tErrorMessage;
+            tErrorMessage << "While parsing Stage '" << m_name << "', requested SharedData ('" << tSharedDataName << "') which doesn't exist.";
+            throw Plato::ParsingException(tErrorMessage.str());
+        }
+    }
+
+    // TODO: find input SharedValues
+    //
+
+    // Get the output shared data.
+    int tNumOutputs = aStageInputData.getNumOutputs();
+    for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
+    {
+        std::string tSharedDataName = aStageInputData.getOutput(m_name, tOutputIndex);
+        Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+        if(tSharedData)
+        {
+            m_outputData.push_back(tSharedData);
+        }
+        else
+        {
+            std::stringstream tErrorMessage;
+            tErrorMessage << "While parsing Stage '" << m_name << "', requested SharedData ('" << tSharedDataName << "') which doesn't exist.";
+            throw Plato::ParsingException(tErrorMessage.str());
+        }
+    }
+
+    // TODO: find output SharedValues
+    //
+
+    // Update the operations.
+    const size_t num_operations = m_operations.size();
+    for(size_t tOperationIndex = 0u; tOperationIndex < num_operations; tOperationIndex++)
+    {
+        const Plato::OperationInputDataMng & tOperationDataMng =
+	  aStageInputData.getOperationInputData(m_name, tOperationIndex);
+
+        m_operations[tOperationIndex]->update(tOperationDataMng, aPerformer, aSharedData);
+    }
 }
 
 /******************************************************************************/
@@ -165,6 +229,7 @@ std::vector<std::string> Stage::getOutputDataNames() const
     }
     return tNames;
 }
+
 /******************************************************************************/
 void Stage::begin()
 /******************************************************************************/

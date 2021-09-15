@@ -140,6 +140,7 @@ private:
     int getStageIndex(std::string aStageName) const;
 
     void createStages();
+    void updateStages();
     void createPerformers();
     void createSharedData(Plato::Application* aApplication);
 

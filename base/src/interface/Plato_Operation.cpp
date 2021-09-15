@@ -68,11 +68,19 @@ Operation(const ::Plato::OperationInputDataMng & aOperationDataMng,
         m_performer(nullptr),
         m_operationName(),
         m_inputData(),
-        m_outputData() { }
+        m_outputData()
 /******************************************************************************/
+{
+}
 
 /******************************************************************************/
-void 
+Operation::~Operation()
+/******************************************************************************/
+{
+}
+
+/******************************************************************************/
+void
 Operation::
 addArgument(const std::string & tArgumentName,
             const std::string & tSharedDataName,
@@ -100,13 +108,6 @@ addArgument(const std::string & tArgumentName,
         tErrorMessage << "Plato::Operation: requested field ('" << tSharedDataName << "') that doesn't exist.";
         throw Plato::ParsingException(tErrorMessage.str());
     }
-}
-
-/******************************************************************************/
-Operation::~Operation()
-/******************************************************************************/
-{
-
 }
 
 /******************************************************************************/
@@ -156,9 +157,9 @@ getOutputDataNames() const
 }
 
 /******************************************************************************/
-void 
+void
 Operation::
-compute()    
+compute()
 /******************************************************************************/
 {
   if(m_performer)
@@ -172,7 +173,7 @@ compute()
 }
 
 /******************************************************************************/
-void 
+void
 Operation::
 importData(std::string aSharedDataName, SharedData* aImportData)
 /******************************************************************************/
@@ -186,7 +187,7 @@ importData(std::string aSharedDataName, SharedData* aImportData)
 }
 
 /******************************************************************************/
-void 
+void
 Operation::
 exportData(std::string aSharedDataName, SharedData* aExportData)
 /******************************************************************************/
@@ -200,7 +201,7 @@ exportData(std::string aSharedDataName, SharedData* aExportData)
 }
 
 /******************************************************************************/
-std::string 
+std::string
 Operation::
 getPerformerName() const
 /******************************************************************************/
@@ -209,7 +210,7 @@ getPerformerName() const
 }
 
 /******************************************************************************/
-std::string 
+std::string
 Operation::
 getOperationName() const
 /******************************************************************************/
