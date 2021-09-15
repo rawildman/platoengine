@@ -5,6 +5,7 @@
  *      Author: tzirkle
  */
 
+#include <cstdio>
 #include "MeshRefine.hpp"
 
     MeshRefine::MeshRefine()
@@ -16,7 +17,12 @@
     {
         PerceptMesh & tPerceptMesh = tMeshManager.get_output_percept();
 
-        tPerceptMesh.reopen();
+        char tTempFilename[100];
+        static int gCntr=0;
+        sprintf(tTempFilename, "tmp_file_name_%d.e", gCntr);
+        gCntr++;
+        tPerceptMesh.reopen(tTempFilename);
+        remove(tTempFilename);
 
         stk::mesh::PartVector parts;
         tPerceptMesh.get_parts_of_rank(tPerceptMesh.element_rank(), parts);
