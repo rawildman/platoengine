@@ -167,15 +167,6 @@ public:
     {
         assert(mInterface != nullptr);
 
-        std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-                  << "optimizerIndex " << "  ";
-
-        for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-          std::cerr << this->mOptimizerIndex[i] << "  ";
-
-        std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-                  << std::endl;
-
         this->setControls(aControl);
 
         // Tell performers to cache the state
