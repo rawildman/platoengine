@@ -414,7 +414,14 @@ void ParseOptimizationParameters::setFilterInEngine(XMLGen::OptimizationParamete
     std::string tValue = aMetadata.filter_in_engine();
     if(tValue == "true")
     {
-        aMetadata.filterInEngine(true);
+        if(aMetadata.filter_type() == "helmholtz")
+        {
+            aMetadata.filterInEngine(false);
+        }
+        else
+        {
+            aMetadata.filterInEngine(true);
+        }
     }
     else if(tValue == "false")
     {

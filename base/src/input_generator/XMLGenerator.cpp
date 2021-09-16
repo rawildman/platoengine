@@ -240,16 +240,11 @@ void XMLGenerator::determineIfPlatoEngineFilteringIsNeeded()
 }
 
 /******************************************************************************/
-void XMLGenerator::setupHelmholtzFilterService()
+void XMLGenerator::setupHelmholtzFilterService(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
     if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_type() == "helmholtz")
     {
-        // set filter_in_engine to false
-        XMLGen::OptimizationParameters tOptimizationParameters = m_InputData.optimization_parameters();
-        tOptimizationParameters.filter_in_engine("false");
-        m_InputData.set(tOptimizationParameters);
-
         XMLGen::Service tHelmholtzService;
         if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_service().length() > 0)
         {
@@ -275,12 +270,12 @@ void XMLGenerator::setupHelmholtzFilterService()
         tNewInputData.append(tCurScenario);
         loadMaterialData(tNewInputData, m_InputDataWithExpandedEBCs, tScenarioID);
 
-        if(!serviceExists(m_InputData.mPerformerServices, tHelmholtzService))
+        if(!serviceExists(aInputData.mPerformerServices, tHelmholtzService))
         {
-            m_InputData.mPerformerServices.push_back(tHelmholtzService);
+            aInputData.mPerformerServices.push_back(tHelmholtzService);
         }
 
-        m_InputData.append_unique(tHelmholtzService); // add Helmholtz service for path
+        aInputData.append_unique(tHelmholtzService); // add Helmholtz service for path
 
         m_PreProcessedInputData.push_back(tNewInputData);
     }
@@ -324,7 +319,7 @@ void XMLGenerator::preProcessInputMetaData
     this->expandEssentialBoundaryConditions(aInputData);
     determineIfPlatoEngineFilteringIsNeeded();
     this->createCopiesForPerformerCreation(aInputData);
-    setupHelmholtzFilterService();
+    setupHelmholtzFilterService(aInputData);
 }
 
 /******************************************************************************/
