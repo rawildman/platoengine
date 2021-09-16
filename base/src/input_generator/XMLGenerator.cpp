@@ -58,6 +58,7 @@
 #include <string>
 #include <map>
 #include <tuple>
+#include <unistd.h>
 
 #include "XMLGenerator.hpp"
 
@@ -967,6 +968,26 @@ bool XMLGenerator::parseMesh(std::istream &fin)
                 // I don't know when this case will ever occur
                 m_InputData.mesh.name_without_extension = m_InputData.mesh.name;
               }
+            }
+            else if (parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"auxiliary"}, tStringValue))
+            {
+              if(tStringValue == "")
+              {
+                std::cout << "ERROR:XMLGenerator:parseMesh: No value specified after \"auxiliary\" keyword.\n";
+                return false;
+              }
+              m_InputData.mesh.auxiliary_mesh_name = tStringValue;
+
+              // get temporary filename that won't overwrite anything now
+              // using mkstemp because compiler warns about tmpnam
+              char joinedMeshName[] = "joined_mesh_XXXXXX";
+              int fd = mkstemp(joinedMeshName);
+
+              // at this point, we have touched the file,
+              // but go ahead and close it because we are just generating the name here
+              close(fd);
+
+              m_InputData.mesh.joined_mesh_name = std::string(joinedMeshName);
             }
             else
             {

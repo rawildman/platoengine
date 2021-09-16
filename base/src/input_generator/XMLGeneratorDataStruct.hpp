@@ -67,6 +67,8 @@ struct Mesh
     std::string run_name;
     std::string run_name_without_extension;
     std::string file_extension;
+    std::string auxiliary_mesh_name;
+    std::string joined_mesh_name;
 };
 
 struct UncertaintyMetaData

@@ -213,6 +213,14 @@ void PlatoApp::initialize()
                 continue;
             }
 
+            tFunctions.push_back("SystemCallMPI");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::SystemCallMPI(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("EnforceBounds");
             if(tStrFunction == tFunctions.back())
             {
