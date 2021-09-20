@@ -95,22 +95,17 @@ public:
     virtual void optimize() = 0;
 
     /******************************************************************************//**
-     * @brief Deallocate memory
-    **********************************************************************************/
-    virtual void finalize() = 0;
-
-    /******************************************************************************//**
-     * @brief Allocate memory
+     * @brief Initialize the optimizer
     **********************************************************************************/
     virtual void initialize() = 0;
 
     /******************************************************************************//**
-     * @brief boolean indicating whether multiple optimizers are supported.
+     * @brief Finalize the optimizer
     **********************************************************************************/
-    virtual bool supportsMultipleOptimizers() { return false; };
+    virtual void finalize() = 0;
 
     /******************************************************************************//**
-     * @brief get the optimizer node based on the index.
+     * @brief Get the optimizer node based on the index.
     **********************************************************************************/
     Plato::InputData getOptimizerNode(Plato::Interface* aInterface)
     {
@@ -118,45 +113,85 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief set the optimizer name - Optional.
+     * @brief Set the optimizer name - Optional.
     **********************************************************************************/
     void setOptimizerName( std::string val ) { mOptimizerName = val; }
 
     /******************************************************************************//**
-     * @brief get the optimizer name.
+     * @brief Get the optimizer name.
     **********************************************************************************/
-    std::string getOptimizerName() { return mOptimizerName; }
+    std::string getOptimizerName() const { return mOptimizerName; }
 
     /******************************************************************************//**
-     * @brief set the index of the optimizer.
+     * @brief Set the index of the optimizer.
+
+     // The optimizer block index is a vector of indices. The size of
+     // the vector less 1 denotes the number of nesting levels. Each
+     // index is the serial index of the optimizer block.
+
+     // A basic run with one optimizer block would have a vector of
+     // {0}. A simple nested run with one nested optimizer block would
+     // have a vector of {0} for the outer optimizer block and {0,0}
+     // for the inner optimizer block.
+
+     // A more complicated vector for the inner most optimizer block
+     // would be {2,1,0} which denotes the outer most third serial
+     // optimizer block {2}, of which its second serial inner loop
+     // optimizer block is wanted {2,1}, of which its first inner loop
+     // optimizer block is wanted {2,1,0},
+
     **********************************************************************************/
   void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
 
     /******************************************************************************//**
-     * @brief get the index of the optimizer.
+     * @brief Get the index of the optimizer.
     **********************************************************************************/
-    std::vector<size_t> getOptimizerIndex() { return mOptimizerIndex; }
+    std::vector<size_t> getOptimizerIndex() const { return mOptimizerIndex; }
 
     /******************************************************************************//**
-     * @brief set the inner loop boolean.
+     * @brief Set the inner loop boolean.
     **********************************************************************************/
     void setHasInnerLoop( bool val ) { mHasInnerLoop = val; }
 
+    /******************************************************************************//**
+     * @brief Get the inner loop boolean.
+    **********************************************************************************/
+    bool getHasInnerLoop() const { return mHasInnerLoop; }
+
+    /******************************************************************************//**
+     * @brief True if this optimizer is the last top level serial
+     * optimizer to be executed.
+    **********************************************************************************/
+    void lastOptimizer( bool val ) { mLastOptimizer = val; }
+
+    /******************************************************************************//**
+     * @brief True if this optimizer is the last top level serial
+     * optimizer to be executed.
+    **********************************************************************************/
+    bool lastOptimizer() { return mLastOptimizer; }
+
 protected:
     /******************************************************************************//**
-     * @brief string containing the optimizer name - Optional
+     * @brief String containing the optimizer name - Optional
     **********************************************************************************/
     std::string mOptimizerName{""};
 
     /******************************************************************************//**
-     * @brief a vector of indices decribing this optimizer's location
+     * @brief Vector of indices decribing this optimizer's location
      * in the input - used when there are multiple optimizers. See
      * Plato_OptimizerUtilities.hpp and the function getOptimizerNode().
     **********************************************************************************/
     std::vector<size_t> mOptimizerIndex;
 
     /******************************************************************************//**
-     * @brief boolean indicating an inner optimizer loop is present
+     * @brief Boolean indicating if this optimizer is the last top
+     * level serial optimizer to be executed and can issue a
+     * finialize/terminate operation.
+    **********************************************************************************/
+    bool mLastOptimizer{false};
+
+    /******************************************************************************//**
+     * @brief Boolean indicating an inner optimizer loop is present
     **********************************************************************************/
     bool mHasInnerLoop{false};
 };
