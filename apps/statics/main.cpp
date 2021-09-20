@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 
     try
     {
-        platoInterface->registerPerformer(myApp);
+        platoInterface->registerApplication(myApp);
     }
     catch(...)
     {
