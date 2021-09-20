@@ -138,9 +138,9 @@ public:
                 aInterface->registerException(tParsingException);
             }
         }
-        // Previous optimizer block index specified, increment the
-        // last index which stored and attempt to serially read the
-        // next optimizer block.
+        // A previous optimizer block index was specified. Increment
+        // the last index which was stored and attempt to serially
+        // read the next optimizer block.
         else if( mOptimizerIndex.size() )
         {
             aOptimizerIndex = mOptimizerIndex;
@@ -269,51 +269,42 @@ public:
             << "\t ROL KSBC ... Rapid Optimization Library Kelley Sachs Bound Constrained\n"
 #endif
             << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
-            << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"      << std::endl;
+            << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
+            << std::endl;
+
+          // Dump a console message as exception handling cannot be
+          // done because of the serial / recursive nature of the
+          // optimizers.
+          Console::Status("OptimizerFactory: " + tStringStream.str());
 
           throw Plato::ParsingException(tStringStream.str());
-        }
-
-        size_t nNestedOptimizers =
-            tOptimizerNode.size<Plato::InputData>("Optimizer");
-
-        // Make sure the optimizer requested supports serial and nested
-        // optimizers.
-        if( tOptimizer->supportsMultipleOptimizers() == false &&
-            (aOptimizerIndex.size() > 1 ||
-             aOptimizerIndex.back() > 0 ||
-             nNestedOptimizers > 0) )
-        {
-            std::stringstream tStringStream;
-            tStringStream
-                << "Plato::OptimizerFactory: "
-                << tOptPackage << " Does not support mutliple optimizers. ";
-
-            if( aOptimizerIndex.size() > 1 ||
-                aOptimizerIndex.back() > 0 )
-            tStringStream << "The optimizer requested has serial optimizers. ";
-
-            if( nNestedOptimizers > 0 )
-              tStringStream << "The optimizer requested has nested optimizers. ";
-
-            tStringStream << "Contact the Plato developement team."
-                << std::endl;
-
-            throw Plato::ParsingException(tStringStream.str());
         }
 
         // Find the optional name - helpful when there are multiple
         // optimizer blocks.
         if( tOptimizerNode.size<std::string>("Name") )
         {
-            tOptimizer->setOptimizerName( Plato::Get::String(tOptimizerNode, "Name") );
+          std::string tName = Plato::Get::String(tOptimizerNode, "Name");
+
+          tOptimizer->setOptimizerName( tName );
+        }
+
+        // Check to see if this optimizer is the last top level serial
+        // optimizer which will issue a finialize/terminate operation.
+        if( aOptimizerIndex.size() == 1 &&
+            aOptimizerIndex[0] ==
+            aInterface->getInputData().size<Plato::InputData>("Optimizer") - 1 )
+        {
+          tOptimizer->lastOptimizer( true );
         }
 
         // The index and inner loop boolean are used by the engine
-        // objective to determine any possible the nesting.
+        // objective to manage addtional optimizers.
         tOptimizer->setOptimizerIndex( aOptimizerIndex );
 
-        // Now check for an inner optimizer block.
+        size_t nNestedOptimizers =
+          tOptimizerNode.size<Plato::InputData>("Optimizer");
+
         tOptimizer->setHasInnerLoop(nNestedOptimizers > 0);
 
         // Store the index of the current optimizer block so to be
@@ -324,6 +315,9 @@ public:
       catch(...)
       {
         aInterface->Catch();
+        // Exception handling cannot be done because of the serial /
+        // recursive nature of the optimizers so finalize (terminate).
+        aInterface->finalize();
         tOptimizer = nullptr;
       }
 
