@@ -48,19 +48,13 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
-#include <memory>
-#include <cassert>
+#include <vector>
 
 #include "Plato_Interface.hpp"
 #include "Plato_Console.hpp"
-#include "Plato_Criterion.hpp"
-#include "Plato_DataFactory.hpp"
 #include "Plato_MultiVector.hpp"
-#include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerFactory.hpp"
-#include "Plato_OptimizerEngineStageData.hpp"
 
 namespace Plato
 {
@@ -77,15 +71,6 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
 {
     assert(mInterface != nullptr);
 
-    // std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-    //           << "optimizerIndex " << "  ";
-
-    // for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-    //     std::cerr << this->mOptimizerIndex[i] << "  ";
-
-    // std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-    //           << std::endl;
-
     // Check to see if there is a nested inner loop which should be
     // executed before the outer loop.
     if( this->mHasInnerLoop )
@@ -93,45 +78,26 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         MPI_Comm tLocalComm;
         mInterface->getLocalComm(tLocalComm);
 
-        // ARS - Before the inner loop executes what needs to come
-        // from the outer loop?
-
-        // ARS - Update the shared data.
+        // For the inner loop use the factory to create the optimizer.
+        Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
         // Get the optimizer block index for this objective (i.e. the
         // outer loop). To read the first optimizer block for the
         // inner loop add an additional index, 0 which increases the
-        // inner loop depth.
+        // inner loop depth. By passing the specific optimizer index
+        // to the factory the first inner optimizer will be created.
         std::vector< size_t > tOptimizerIndex = this->mOptimizerIndex;
         tOptimizerIndex.push_back(0);
-
-        // For the inner loop use the factory to create the optimizer.
-        Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
         // Create the first inner loop optimizer.
         Plato::OptimizerInterface<ScalarType, OrdinalType>*
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
                                                   tOptimizerIndex );
-        if( tOptimizer == nullptr )
-        {
-            mInterface->handleExceptions();
-        }
 
         // Do the optimization and check for another serial optimizer.
-        do
+        while( tOptimizer != nullptr )
         {
             tOptimizer->optimize();
-
-            // ARS - Should anything be done before deleting the
-            // current optimizer? That is what needs to get to the
-            // next optimizer?
-
-            // ********* Regenerate the data?? ********* //
-            std::string tMyStageName("Regenerate");
-            std::vector<std::string> tStageNames;
-            tStageNames.push_back(tMyStageName);
-
-            // mInterface->compute(tStageNames, *mParameterList);
 
             // Delete the current optimizer.
             delete tOptimizer;
@@ -143,7 +109,6 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
             // optimizer block.
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm);
         }
-        while( tOptimizer != nullptr );
     }
 
     // Normal evaluation of the objective.

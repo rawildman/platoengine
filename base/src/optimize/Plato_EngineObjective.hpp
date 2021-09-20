@@ -59,7 +59,7 @@
 #include "Plato_MultiVector.hpp"
 #include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
-#include "Plato_OptimizerFactory.hpp"
+#include "Plato_OptimizerInterface.hpp"
 
 namespace Plato
 {
@@ -76,7 +76,8 @@ public:
     **********************************************************************************/
     explicit EngineObjective(const Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
                              const Plato::OptimizerEngineStageData & aInputData,
-                             Plato::Interface* aInterface = nullptr) :
+                             Plato::Interface* aInterface,
+                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mControl(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mGradient(std::vector<ScalarType>(aDataFactory.getNumControls())),
@@ -85,6 +86,15 @@ public:
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())
     {
+
+        // This data is used to manage the serial and nesting
+        // optimization when calling the value method.
+        if( aOptInterface )
+        {
+            mOptimizerName  = aOptInterface->getOptimizerName();
+            mOptimizerIndex = aOptInterface->getOptimizerIndex();
+            mHasInnerLoop   = aOptInterface->getHasInnerLoop();
+        }
     }
 
     /******************************************************************************//**
@@ -93,7 +103,8 @@ public:
      * @param [in] aInterface PLATO Engine interface
     **********************************************************************************/
     explicit EngineObjective(const Plato::OptimizerEngineStageData & aInputData,
-                             Plato::Interface* aInterface = nullptr) :
+                             Plato::Interface* aInterface,
+                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(),
             mControl(),
             mGradient(),
@@ -102,6 +113,14 @@ public:
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())
     {
+        // This data is used to manage the serial and nesting
+        // optimization when calling the value method.
+        if( aOptInterface )
+        {
+            mOptimizerName  = aOptInterface->getOptimizerName();
+            mOptimizerIndex = aOptInterface->getOptimizerIndex();
+            mHasInnerLoop   = aOptInterface->getHasInnerLoop();
+        }
     }
 
     /******************************************************************************//**
