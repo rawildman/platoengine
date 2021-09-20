@@ -206,10 +206,6 @@ void ExceptionHandler::registerException(const Plato::TerminateSignal & aTermina
 void ExceptionHandler::handleExceptions()
 /******************************************************************************/
 {
-    // if(mErrorStatus > 0)
-    // {
-    //     this->printAcout();
-    // }
     int tOutput = 0;
     MPI_Allreduce(&mErrorStatus, &tOutput, 1, MPI_INT, MPI_SUM, mGlobalComm);
     if(tOutput > 0)
