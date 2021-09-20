@@ -107,7 +107,8 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Notifies PLATO Engine that optimization problem finished.
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
@@ -119,8 +120,6 @@ public:
     **********************************************************************************/
     void optimize()
     {
-        mInterface->handleExceptions();
-
         // PARSE INPUT DATA
         Plato::InputDataALPSO<ScalarType, OrdinalType> tInputsALPSO;
         this->parseOptimizerOptions(tInputsALPSO);
@@ -149,8 +148,6 @@ public:
         // SOLVE OPTIMIZATION PROBLEM
         Plato::OutputDataALPSO<ScalarType, OrdinalType> tOutputsALPSO;
         Plato::solve_alpso<ScalarType, OrdinalType>(tObjective, tConstraints, tInputsALPSO, tOutputsALPSO);
-
-        this->finalize();
     }
 
 private:

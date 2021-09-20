@@ -112,8 +112,6 @@ public:
     void optimize()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -151,10 +149,12 @@ public:
 
         // ********* CHECK OBJECTIVE FUNCTION ********* //
         this->doParameterStudies(tDataFactory, *tInitialGuess, tParameterStudies);
-
-        this->finalize();
     }
-    /******************************************************************************/
+
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
     /******************************************************************************/
     {
@@ -200,7 +200,7 @@ private:
                                 Plato::SOParameterStudies<ScalarType, OrdinalType> & aParameterStudies)
     /******************************************************************************/
     {
-        Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, mInputData, mInterface);
+      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, mInputData, mInterface, this);
         this->parseConstraintReferenceValues();
         //std::string tMyName = mInputData.getConstraintValueName(0);
         Plato::EngineConstraint<ScalarType, OrdinalType> tConstraint(0, aDataFactory, mInputData, mInterface);

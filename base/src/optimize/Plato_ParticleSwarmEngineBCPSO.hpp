@@ -103,7 +103,8 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Notify PLATO Engine that optimization problem is done.
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
@@ -115,8 +116,6 @@ public:
     **********************************************************************************/
     void optimize()
     {
-        mInterface->handleExceptions();
-
         // PARSE INPUT DATA
         Plato::InputDataBCPSO<ScalarType, OrdinalType> tInputsBCPSO;
         this->parseOptimizerOptions(tInputsBCPSO);
@@ -138,8 +137,6 @@ public:
         // SOLVE OPTIMIZATION PROBLEM
         Plato::OutputDataBCPSO<ScalarType, OrdinalType> tOutputsBCPSO;
         Plato::solve_bcpso<ScalarType, OrdinalType>(tObjective, tInputsBCPSO, tOutputsBCPSO);
-
-        this->finalize();
     }
 
 private:

@@ -113,8 +113,6 @@ public:
     void optimize()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         /****************************** GET NUMBER OF DESIGN VARIABLES ******************************/
@@ -162,11 +160,14 @@ public:
 
         /******************************** SOLVE OPTIMIZATION PROBLEM ********************************/
         this->solve(tOptimizationProblem);
-
-        this->finalize();
     }
 
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
+    /******************************************************************************/
     {
         mInterface->finalize();
     }

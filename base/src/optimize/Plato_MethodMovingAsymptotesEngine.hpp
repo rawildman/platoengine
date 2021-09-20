@@ -93,11 +93,6 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief boolean indicating whether multiple optimizers are supported.
-    **********************************************************************************/
-    virtual bool supportsMultipleOptimizers() { return true; };
-
-    /******************************************************************************//**
      * @brief Return the algorithm type
      * @return algorithm type
     **********************************************************************************/
@@ -116,36 +111,11 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Notify PLATO Engine that optimization problem is done.
-    **********************************************************************************/
-    void finalize()
-    {
-        // OUTPUT SOLUTION
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        // DEALLOCATE MEMORY
-        mInterface->finalize();
-    }
-
-    /******************************************************************************//**
      * @brief Solve optimization problem using the MMA optimization algorithm
     **********************************************************************************/
     void optimize()
     {
-        // std::cerr << __FILE__ << "  " << __FUNCTION__ << "  " << __LINE__ << "  "
-        //           << "optimizerIndex " << "  ";
-
-        // for( size_t i=0; i<this->mOptimizerIndex.size(); ++i )
-        //   std::cerr << this->mOptimizerIndex[i] << "  ";
-
-        // std::cerr << "mHasInnerLoop " << this->mHasInnerLoop << "  "
-        //           << std::endl;
-
-        // ARS - for some reason if this check is made from an inner
-        // loop it hangs. There is *I believe* an MPI_Allreduce issue.
-        if( this->mOptimizerIndex.size() == 1 )
-            mInterface->handleExceptions();
-
+        // INITIALIZE 
         this->initialize();
 
         // PARSE INPUT DATA
@@ -180,12 +150,15 @@ public:
         // SOLVE OPTIMIZATION PROBLEM
         Plato::AlgorithmOutputsMMA<ScalarType, OrdinalType> tOutputs;
         Plato::solve_mma<ScalarType, OrdinalType>(tObjective, tConstraints, tInputs, tOutputs);
+    }
 
-        // Only finalize if an outer loop.
-        if( this->mOptimizerIndex.size() == 1 )
-        {
-            this->finalize();
-        }
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
+    void finalize()
+    {
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -362,18 +335,8 @@ private:
                             std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>>& aConstraints)
     {
         // SET OBJECTIVE FUNCTION
-        aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface);
+        aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface, this);
         aObjective->allocateControlContainers(aNumControls);
-
-        // Let the engine objective know the current loop depth and if
-        // there is an inner loop as well as a name.
-
-        // NOTE: This data really should automatically be set when the
-        // objective engine is created. But that would require the
-        // optimizer be passed in the EngineObjective constructor.
-        aObjective->setOptimizerName ( this->mOptimizerName );
-        aObjective->setOptimizerIndex( this->mOptimizerIndex );
-        aObjective->setHasInnerLoop  ( this->mHasInnerLoop );
 
         // SET CONSTRAINTS
         aConstraints = std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>();

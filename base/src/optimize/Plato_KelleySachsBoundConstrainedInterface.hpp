@@ -111,8 +111,6 @@ public:
     void optimize()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -136,7 +134,7 @@ public:
 
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-                std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, mInputData, mInterface);
+	  std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, mInputData, mInterface, this);
         std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> tCriterionList =
                 std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>();
         tCriterionList->add(tObjective);
@@ -150,18 +148,16 @@ public:
         Plato::KelleySachsBoundConstrained<ScalarType, OrdinalType> tAlgorithm(tDataFactory, tDataMng, tStageMng);
         this->setParameters(tAlgorithm);
         tAlgorithm.solve();
-
-        // ********* OUTPUT SOLUTION *********
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        this->finalize();
     }
 
-    /******************************************************************************/
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
     /******************************************************************************/
     {
-        mInterface->finalize();
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:

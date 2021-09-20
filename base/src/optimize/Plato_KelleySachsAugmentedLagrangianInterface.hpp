@@ -116,8 +116,6 @@ public:
     **********************************************************************************/
     void optimize()
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -141,19 +139,15 @@ public:
 
         // ********* SOLVE OPTIMIZATION PROBLEM ********* //
         this->solveOptimizationProblem(tDataFactory, tDataMng);
-
-        // ********* OUTPUT SOLUTION *********
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        this->finalize();
     }
 
     /******************************************************************************//**
-     * @brief Notification from optimizer stating that problem has been solved.
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
-        mInterface->finalize();
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -188,7 +182,7 @@ private:
     {
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-                std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface);
+	  std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
 
         // ********* ALLOCATE CONSTRAINT LIST ********* //
         const OrdinalType tNumConstraints = mInputData.getNumConstraints();
