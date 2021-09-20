@@ -188,7 +188,7 @@ void Interface::broadcastStageIndex(int & aStageIndex)
         Plato::TerminateSignal tTerminateSignal(tMsg.str());
         registerException(tTerminateSignal);
     }
-    handleExceptions();
+    this->handleExceptions();
 }
 
 /******************************************************************************/
@@ -255,14 +255,58 @@ Interface::getStage()
 }
 
 /******************************************************************************/
+void Interface::optimize()
+/******************************************************************************/
+{
+  // Note: this method is a stub and is a reminder that the try loop
+  // in Plato_Main.cpp should really be encapsulated and be part of
+  // the interface. However doing so pulls all of the optimizers into
+  // the interface library. It also requires the optimizer library be
+  // included when building Analyze_MPMD. Future works is to refactor.
+
+  /*
+    // This handleException matches the one in Interface::perform().
+    this->handleExceptions();
+
+    // There should be at least one optimizer block but there can
+    // be more. These additional optimizer blocks can be in serial
+    // or nested. The while loop coupled with factory processes
+    // optimizer blocks that are serial. Nested optimizer blocks
+    // are processed recursively via the EngineObjective.
+    Plato::OptimizerFactory<double> tOptimizerFactory;
+    Plato::OptimizerInterface<double>* tOptimizer = nullptr;
+
+    // Note: When frist called, the factory will look for the
+    // first optimizer block. Subsequent calls will look for the
+    // next optimizer block if it exists.
+    while((tOptimizer =
+           tOptimizerFactory.create(this, mLocalComm)) != nullptr)
+    {
+        tOptimizer->optimize();
+
+        // If the last optimizer do any final stages before deleting
+        // it. This call goes to the optimizer and then back to the
+        // interface finalize with possibly a stage to compute.
+        if( tOptimizer->lastOptimizer() )
+        {
+            tOptimizer->finalize();
+        }
+
+        delete tOptimizer;
+    }
+  */
+}
+
+/******************************************************************************/
 void Interface::perform()
 /******************************************************************************/
 {
-    mExceptionHandler->handleExceptions();
+    // This handleException matches the one in Plato_Main.cpp main().
+    this->handleExceptions();
 
     while(this->isDone() == false)
     {
-        // performers 'hang' here until a new stage is established
+        // Performers 'hang' here until a new stage is established
         Plato::Stage* tStage = this->getStage();
 
         // 'Terminate' stage is nullptr
@@ -272,7 +316,6 @@ void Interface::perform()
         }
 
         this->perform(tStage);
-
     }
 
     mPerformer->finalize();
@@ -325,7 +368,7 @@ void Interface::perform(Plato::Stage* aStage)
                 {
                     mExceptionHandler->Catch();
                 }
-                mExceptionHandler->handleExceptions();
+                this->handleExceptions();
             }
 
             try
@@ -336,7 +379,7 @@ void Interface::perform(Plato::Stage* aStage)
             {
                 mExceptionHandler->Catch();
             }
-            mExceptionHandler->handleExceptions();
+            this->handleExceptions();
 
             // copy data from hostedCode data containers to Plato::SharedData buffers
             //
@@ -351,7 +394,7 @@ void Interface::perform(Plato::Stage* aStage)
                 {
                     mExceptionHandler->Catch();
                 }
-                mExceptionHandler->handleExceptions();
+                this->handleExceptions();
             }
 
             tOperation->sendOutput();
@@ -365,8 +408,18 @@ void Interface::perform(Plato::Stage* aStage)
     }
 }
 
-void Interface::finalize()
+/******************************************************************************/
+void Interface::finalize( std::string aStageName )
+/******************************************************************************/
 {
+    // Typically a stage for writing the solution to the output file.
+    if(aStageName.empty() == false)
+    {
+        Teuchos::ParameterList tParameterList;
+        this->compute(aStageName, tParameterList);
+    }
+
+    // At this point all optimizers have completed so terminate.
     this->getStage("Terminate");
 }
 
@@ -444,7 +497,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         registerException(Plato::ParsingException("Failed to create Application"));
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 
     try
     {
@@ -454,7 +507,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 
     if(mPerformer)
     {
@@ -469,7 +522,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 
     try
     {
@@ -479,7 +532,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 }
 
 /******************************************************************************/

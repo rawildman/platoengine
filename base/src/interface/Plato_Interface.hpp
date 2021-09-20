@@ -81,8 +81,8 @@ enum stage_index_t
 };
 
 /**
- * This class provides an interface between PlatoEngine and the 
- * hosted codes. 
+ * This class provides an interface between PlatoEngine and the
+ * hosted codes.
  */
 
 /******************************************************************************/
@@ -98,15 +98,14 @@ public:
     Interface(const int & aCommID, const std::string & a_XML_String, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
     virtual ~Interface();
 
+    void registerApplication(Plato::Application* aApplication);
+
     // optimizer interface
-    void finalize();
+    void optimize();
+    void perform();
     void compute(const std::string & stageName, Teuchos::ParameterList & aArguments);
     void compute(const std::vector<std::string> & stageNames, Teuchos::ParameterList & aArguments);
-
-    // TODO: deprecate this function.  'registerPerformer' is misleading.  
-    void registerPerformer(Plato::Application* aApplication){ this->registerApplication(aApplication); }
-    void registerApplication(Plato::Application* aApplication);
-    void perform();
+    void finalize( std::string aStageName = std::string() );
 
     // data motion
     int size(const std::string & aName) const;
