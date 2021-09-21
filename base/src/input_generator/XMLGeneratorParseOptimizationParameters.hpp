@@ -131,6 +131,20 @@ private:
     void autoFillRestartParameters(XMLGen::OptimizationParameters &aMetadata);
 
     /******************************************************************************//**
+     * \fn checkROLSubProblemModel
+     * \brief Auto populate ROL subproblem parameter based on user input
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void checkROLSubProblemModel(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
+     * \fn checkROLHessianType
+     * \brief Auto populate hessian type parameter based on user input
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void checkROLHessianType(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
      * \fn setMMAStagnationDefaultsForShapeOptimizationProblems
      * \brief Set MMA stagnation tolerance defaults for shape optimization problems
      * \param [in] aMetadata optimization parameters metadata

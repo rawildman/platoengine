@@ -58,6 +58,7 @@
 #include <string>
 #include <map>
 #include <tuple>
+#include <unistd.h>
 
 #include "XMLGenerator.hpp"
 
@@ -75,6 +76,7 @@
 #include "XMLGeneratorParseOutput.hpp"
 #include "XMLGeneratorParseScenario.hpp"
 #include "XMLGeneratorParseServices.hpp"
+#include "XMLGeneratorParseRun.hpp"
 #include "XMLGeneratorParseMaterial.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorParseObjective.hpp"
@@ -239,16 +241,11 @@ void XMLGenerator::determineIfPlatoEngineFilteringIsNeeded()
 }
 
 /******************************************************************************/
-void XMLGenerator::setupHelmholtzFilterService()
+void XMLGenerator::setupHelmholtzFilterService(XMLGen::InputData& aInputData)
 /******************************************************************************/
 {
     if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_type() == "helmholtz")
     {
-        // set filter_in_engine to false
-        XMLGen::OptimizationParameters tOptimizationParameters = m_InputData.optimization_parameters();
-        tOptimizationParameters.filter_in_engine("false");
-        m_InputData.set(tOptimizationParameters);
-
         XMLGen::Service tHelmholtzService;
         if(m_InputDataWithExpandedEBCs.optimization_parameters().filter_service().length() > 0)
         {
@@ -274,12 +271,12 @@ void XMLGenerator::setupHelmholtzFilterService()
         tNewInputData.append(tCurScenario);
         loadMaterialData(tNewInputData, m_InputDataWithExpandedEBCs, tScenarioID);
 
-        if(!serviceExists(m_InputData.mPerformerServices, tHelmholtzService))
+        if(!serviceExists(aInputData.mPerformerServices, tHelmholtzService))
         {
-            m_InputData.mPerformerServices.push_back(tHelmholtzService);
+            aInputData.mPerformerServices.push_back(tHelmholtzService);
         }
 
-        m_InputData.append_unique(tHelmholtzService); // add Helmholtz service for path
+        aInputData.append_unique(tHelmholtzService); // add Helmholtz service for path
 
         m_PreProcessedInputData.push_back(tNewInputData);
     }
@@ -323,7 +320,7 @@ void XMLGenerator::preProcessInputMetaData
     this->expandEssentialBoundaryConditions(aInputData);
     determineIfPlatoEngineFilteringIsNeeded();
     this->createCopiesForPerformerCreation(aInputData);
-    setupHelmholtzFilterService();
+    setupHelmholtzFilterService(aInputData);
 }
 
 /******************************************************************************/
@@ -762,6 +759,16 @@ void XMLGenerator::parseScenarios(std::istream &aInputFile)
 }
 
 /******************************************************************************/
+void XMLGenerator::parseRuns(std::istream &aInputFile)
+/******************************************************************************/
+{
+    XMLGen::ParseRun tParseRun;
+    tParseRun.parse(aInputFile);
+    auto tRuns = tParseRun.data();
+    m_InputData.set(tRuns);
+}
+
+/******************************************************************************/
 void XMLGenerator::parseServices(std::istream &aInputFile)
 /******************************************************************************/
 {
@@ -956,6 +963,26 @@ bool XMLGenerator::parseMesh(std::istream &fin)
                 // I don't know when this case will ever occur
                 m_InputData.mesh.name_without_extension = m_InputData.mesh.name;
               }
+            }
+            else if (parseSingleUnLoweredValue(tokens, unlowered_tokens, tInputStringList = {"auxiliary"}, tStringValue))
+            {
+              if(tStringValue == "")
+              {
+                std::cout << "ERROR:XMLGenerator:parseMesh: No value specified after \"auxiliary\" keyword.\n";
+                return false;
+              }
+              m_InputData.mesh.auxiliary_mesh_name = tStringValue;
+
+              // get temporary filename that won't overwrite anything now
+              // using mkstemp because compiler warns about tmpnam
+              char joinedMeshName[] = "joined_mesh_XXXXXX";
+              int fd = mkstemp(joinedMeshName);
+
+              // at this point, we have touched the file,
+              // but go ahead and close it because we are just generating the name here
+              close(fd);
+
+              m_InputData.mesh.joined_mesh_name = std::string(joinedMeshName);
             }
             else
             {
@@ -1155,9 +1182,13 @@ void XMLGenerator::parseInputFile()
   this->parseOutput(tInputFile);
   tInputFile.close();
 
-   tInputFile.open(m_InputFilename.c_str()); // open a file
-   this->parseServices(tInputFile);
-   tInputFile.close();
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseServices(tInputFile);
+  tInputFile.close();
+
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  this->parseRuns(tInputFile);
+  tInputFile.close();
   
   tInputFile.open(m_InputFilename.c_str()); // open a file
   this->parseScenarios(tInputFile);

@@ -356,10 +356,6 @@ inline void append_plottable_option
  pugi::xml_node &aParentNode)
 {
     auto tOutputQoIs = aOutput.outputIDs();
-    if(tOutputQoIs.empty())
-    {
-        return;
-    }
 
     auto tValidAnalyzeOutputKeywords = XMLGen::Private::transform_analyze_output_keywords(tOutputQoIs);
     auto tTransformQoIIDs = XMLGen::transform_tokens(tValidAnalyzeOutputKeywords);

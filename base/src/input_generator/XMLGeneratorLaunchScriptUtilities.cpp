@@ -4,6 +4,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -154,6 +155,45 @@ namespace XMLGen
     }
   }
 
+    void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)
+    {
+        // This newline is important because the performer lines always end with a
+        // "\" so that the command continues on the next line so we need to 
+        // add a newline to end the previous command.
+        fprintf(fp, "\n");
+        for(const XMLGen::Run &tCurRun : aInputData.runs())
+        {
+            if(tCurRun.command().empty())
+            {
+                std::string tType = tCurRun.type();
+                if(tType == "modal_analysis")
+                {
+                    int tNumProcs = 1;
+                    std::string tServiceID = tCurRun.service();
+                    if(!tServiceID.empty())
+                    {
+                        XMLGen::Service tService = aInputData.service(tServiceID);
+                        std::string tNumProcsString = tService.numberProcessors(); 
+                        tNumProcs = std::atoi(tNumProcsString.c_str());
+                        if(tNumProcs > 1)
+                        {
+                            append_decomp_line(fp, tNumProcs, aInputData.mesh.run_name);
+                        }
+                    }
+                    std::string tInputDeckName = build_post_optimization_run_input_deck_name(tCurRun);
+                    std::string tLaunchString, tTempNumProcsString;
+                    XMLGen::determine_mpi_launch_strings(aInputData,tLaunchString,tTempNumProcsString);
+                    fprintf(fp, "%s %s %d salinas -i %s\n", tLaunchString.c_str(), tTempNumProcsString.c_str(), 
+                                                         tNumProcs, tInputDeckName.c_str());
+                }
+            }
+            else
+            {
+                fprintf(fp, "%s\n", tCurRun.command().c_str());
+            }
+        } 
+    }
+
   void append_decomp_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
   {
     std::map<std::string,int> hasBeenDecompedForThisNumberOfProcessors;
@@ -274,6 +314,7 @@ namespace XMLGen
 
   void determine_plato_engine_name(const XMLGen::InputData& aInputData, std::string& aPlatoEngineName)
   {
+/*
       bool tAtLeastOneSierraSDPhysicsPerformer = false;
       bool tAllPhysicsPerformersAreSierraSD = true;
       for(auto &tCurService : aInputData.services())
@@ -304,8 +345,9 @@ namespace XMLGen
      }
      else
      {
+*/
          aPlatoEngineName = "PlatoMain";   
-     }
+ //    }
   }
 
   namespace Internal

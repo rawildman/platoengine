@@ -68,7 +68,9 @@ struct ValidCriterionParameterKeys
         "type", 
         "normalize", 
         "normalization_value",
-        "stress_p_norm_exponent", 
+        "stress_p_norm_exponent",
+        "mechanical_weighting_factor",
+        "thermal_weighting_factor",
         "material_penalty_model", 
         "material_penalty_exponent", 
         "minimum_ersatz_material_value",
@@ -857,11 +859,11 @@ private:
                 {"plastic_strain", "plastic strain"}, 
                 {"cauchy_stress", "cauchy stress"},
                 {"backstress", "backstress"}, 
-                {"dispx", "Solution X"}, 
-                {"dispy", "Solution Y"}, 
-                {"dispz", "Solution Z"},
+                {"dispx", "Displacement X"}, 
+                {"dispy", "Displacement Y"}, 
+                {"dispz", "Displacement Z"},
                 {"principal_stresses", "principal stresses"}, 
-                {"temperature", "Solution"} 
+                {"temperature", "Temperature"} 
             }
         },
         { "sierra_sd", 
@@ -1485,6 +1487,7 @@ struct ValidOptimizationParameterKeys
      "mma_sub_problem_initial_penalty",
      "mma_sub_problem_penalty_multiplier",
      "mma_sub_problem_feasibility_tolerance",
+     "mma_use_ipopt_sub_problem_solver",
      "mma_control_stagnation_tolerance",
      "mma_objective_stagnation_tolerance",
      "mma_output_subproblem_diagnostics",
@@ -1572,7 +1575,9 @@ struct ValidOptimizationParameterKeys
      "filter_type_identity_generator_name",
      "filter_type_kernel_generator_name",
      "filter_type_kernel_then_heaviside_generator_name",
-     "filter_type_kernel_then_tanh_generator_name"
+     "filter_type_kernel_then_tanh_generator_name",
+     "reset_algorithm_on_update",
+     "rol_subproblem_model"
     };
 };
 
@@ -1583,6 +1588,25 @@ struct ValidOptimizationParameterKeys
 struct ValidHeatTransferMechanisms
 {
     std::unordered_set<std::string> mKeys = { "none", "natural", "forced", "mixed" };
+};
+
+struct ValidRunParameterKeys
+{
+    std::vector<std::string> mKeys = 
+    {
+        "type", 
+        "command",
+        "service",
+        "criterion"
+    };
+};
+
+struct ValidRunTypes
+{
+    std::vector<std::string> mKeys = 
+    {
+        "modal_analysis" 
+    };
 };
 
 }

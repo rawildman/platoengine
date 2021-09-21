@@ -488,6 +488,9 @@ public:
     double getKSTrustRegionRatioUpper() const;
     void setKSTrustRegionRatioUpper(const double& aInput);
 
+    bool getResetAlgorithmOnUpdate() const;
+    void setResetAlgorithmOnUpdate(const bool& aInput);
+
 private:
     bool mMeanNorm;
     bool mCheckGradient;
@@ -496,6 +499,7 @@ private:
     bool mOutputControlToFile;
     bool mOutputDiagnosticsToFile;
     bool mDisablePostSmoothing;
+    bool mResetAlgorithmOnUpdate;
 
     int mGCMMAMaxInnerIterations;
     double mInitialMovingAsymptoteScaleFactor;

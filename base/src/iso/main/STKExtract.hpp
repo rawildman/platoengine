@@ -68,10 +68,7 @@
     class STKExtract
     {
     public:
-      STKExtract() : 
-         mAvailableFormats({"EXODUS","STL"}),
-         mMeshAPIIn(nullptr),
-         mMeshAPIOut(nullptr) {}
+      STKExtract();
       ~STKExtract();
       bool create_mesh_apis_read_from_file(stk::ParallelMachine *comm,
                              std::string meshIn,

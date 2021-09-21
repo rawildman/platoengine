@@ -231,12 +231,16 @@ public:
     {
         if(aInput.getNumVectors() <= static_cast<OrdinalType>(0))
         {
-            THROWERR("NUMBER OF INPUT VECTORS SHOULD BE A POSITIVE NUMBER GREATER THAN ZERO. THE NUMBER OF INPUT VECTORS IS SET TO " + std::to_string(aInput.getNumVectors()) + "\n")
+            mNumDuals = 0;
+            mDual = nullptr;
+            return;
+            //THROWERR("NUMBER OF INPUT VECTORS SHOULD BE A POSITIVE NUMBER GREATER THAN ZERO. THE NUMBER OF INPUT VECTORS IS SET TO " + std::to_string(aInput.getNumVectors()) + "\n")
         }
 
         const OrdinalType tVectorIndex = 0;
         mNumDuals = aInput[tVectorIndex].size();
-        assert(mNumDuals > static_cast<OrdinalType>(0));
+        //assert(mNumDuals > static_cast<OrdinalType>(0));
+        if (mNumDuals <= static_cast<OrdinalType>(0)) return;
         mDual = aInput.create();
     }
 
@@ -246,7 +250,8 @@ public:
     **********************************************************************************/
     void allocateDual(const Plato::Vector<ScalarType, OrdinalType> & aInput, OrdinalType aNumVectors = 1)
     {
-        assert(aInput.size() > static_cast<OrdinalType>(0));
+        //assert(aInput.size() > static_cast<OrdinalType>(0));
+        if (aInput.size() <= static_cast<OrdinalType>(0)) return;
         mNumDuals = aInput.size();
         mDual = std::make_shared<Plato::StandardMultiVector<ScalarType, OrdinalType>>(aNumVectors, aInput);
     }

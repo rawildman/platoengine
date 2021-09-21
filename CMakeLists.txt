@@ -60,8 +60,7 @@ if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
 
-include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-
+include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
 ###########################  Compiler setup ###################################
@@ -87,16 +86,14 @@ set(PLATO_INCLUDES)
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
-set(CMAKE_CXX_FLAGS_DEBUG "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   # Clang specific flags
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # gnu specific flags
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lgfortran")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lgfortran")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lgfortran")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
   # intel specific flags
 else()
@@ -175,6 +172,11 @@ if( AMFILTER_ENABLED )
     set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
+if ( IPOPT_ENABLED )
+    message( "-- Compiling with IPOPT to solve MMA subproblem " )
+    add_definitions(-DENABLE_IPOPT_FOR_MMA_SUBPROBLEM)
+    set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ipopt)
+endif()
 
 add_subdirectory(base/src)
 add_subdirectory(base/src/analyze)

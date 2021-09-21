@@ -28,7 +28,7 @@ std::vector<size_t> OrthogonalGridUtilities::computeNumElementsInEachDirection(c
 
 size_t OrthogonalGridUtilities::getSerializedIndex(const size_t& i, const size_t& j, const size_t& k) const
 {
-    if(i < 0 || j < 0 || k < 0 || i > mNumElementsInEachDirection[0] || j > mNumElementsInEachDirection[1] || k > mNumElementsInEachDirection[2])
+    if(i > mNumElementsInEachDirection[0] || j > mNumElementsInEachDirection[1] || k > mNumElementsInEachDirection[2])
     {
         throw(std::out_of_range("OrthogonalGridUtilities: Index in each direction must be between zero and number of grid elements"));
     }
@@ -223,7 +223,7 @@ std::vector<std::vector<size_t>> OrthogonalGridUtilities::getContainingGridEleme
 
 std::vector<size_t> OrthogonalGridUtilities::getSurroundingIndices(const size_t& aDim, const Vector& aXYZPoint) const
 {
-    if(aDim < 0 || aDim > 2)
+    if(aDim > 2)
         throw(std::domain_error("OrthogonalGridUtilities: Provided index must be between 0 and 2"));
 
     Vector tUVWCoordinates = computePointUVWCoordinates(aXYZPoint);
@@ -302,9 +302,9 @@ void OrthogonalGridUtilities::checkIndexFormat(const std::vector<std::vector<siz
 
     std::vector<size_t> tIndex0 = aContainingElementIndicies[0];
 
-    if(tIndex0[0] < 0 || tIndex0[0] >= mNumElementsInEachDirection[0]
-       || tIndex0[1] < 0 || tIndex0[1] >= mNumElementsInEachDirection[1]
-       || tIndex0[2] < 0 || tIndex0[2] >= mNumElementsInEachDirection[2])
+    if(tIndex0[0] >= mNumElementsInEachDirection[0]
+       || tIndex0[1] >= mNumElementsInEachDirection[1]
+       || tIndex0[2] >= mNumElementsInEachDirection[2])
     {
         throw(std::out_of_range("OrthogonalGridUtilities: provided indices must be between zero and the number of grid elements in each dimension"));
     }
@@ -372,7 +372,7 @@ Vector OrthogonalGridUtilities::computeGridPointUVWCoordinates(const std::vector
     
     for(size_t i = 0; i < 3; ++i)
     {
-        if(aIndex[i] < 0 || aIndex[i] > tDimensions[i] - 1)
+        if(aIndex[i] > tDimensions[i] - 1)
             throw(std::out_of_range("OrthogonalGridUtilities::computeGridPointUVWCoordinates: Index must be between zero and number of elements in each direction"));
     }
     

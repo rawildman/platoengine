@@ -332,6 +332,7 @@ public:
     std::string mma_sub_problem_initial_penalty() const {return value("mma_sub_problem_initial_penalty");}
     std::string mma_sub_problem_penalty_multiplier() const {return value("mma_sub_problem_penalty_multiplier");}
     std::string mma_sub_problem_feasibility_tolerance() const {return value("mma_sub_problem_feasibility_tolerance");}
+    std::string mma_use_ipopt_sub_problem_solver() const {return value("mma_use_ipopt_sub_problem_solver");}
     std::string mma_control_stagnation_tolerance() const {return value("mma_control_stagnation_tolerance");}
     std::string mma_objective_stagnation_tolerance() const {return value("mma_objective_stagnation_tolerance");}
     std::string mma_output_subproblem_diagnostics() const {return value("mma_output_subproblem_diagnostics");}
@@ -387,7 +388,8 @@ public:
     std::string oc_control_stagnation_tolerance() const {return value("oc_control_stagnation_tolerance");}
     std::string oc_objective_stagnation_tolerance() const {return value("oc_objective_stagnation_tolerance");}
     std::string oc_gradient_tolerance() const {return value("oc_gradient_tolerance");}
-
+    std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
+    std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
 
 };
 // struct OptimizationParameters

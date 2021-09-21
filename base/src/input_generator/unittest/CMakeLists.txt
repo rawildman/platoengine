@@ -13,6 +13,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorAnalyzeUncertaintyLaunchScript_UnitTester.cpp
                                       XMLGeneratorParseMetaData_UnitTester.cpp
                                       XMLGeneratorInterfaceFile_UnitTester.cpp
+                                      ../XMLGeneratorPostOptimizationRunFileUtilities.cpp
                                       XMLGeneratorRandomInterfaceFile_UnitTester.cpp
                                       XMLGeneratorPlatoMainInputDeckFile_UnitTester.cpp
                                       XMLGeneratorPlatoMainOperationFile_UnitTester.cpp
@@ -27,7 +28,9 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParseMaterial.cpp
                                       ../XMLGeneratorParseCriteria.cpp
                                       ../XMLGeneratorOutputMetadata.cpp
+                                      ../XMLGeneratorRunMetadata.cpp
                                       ../XMLGeneratorParseObjective.cpp
+                                      ../XMLGeneratorParseRun.cpp
                                       ../XMLGeneratorParseEssentialBoundaryCondition.cpp
                                       ../XMLGeneratorParseLoads.cpp
                                       ../XMLGeneratorParseConstraint.cpp
@@ -74,8 +77,7 @@ endif()
 set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/base/src/tools ..)
 INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
-set(PlatoXMLGenerator_UnitTester_LIBS ${GTEST_BOTH_LIBRARIES} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} PlatoParser )
-#set(PlatoXMLGenerator_UnitTester_LIBS ${GTEST_BOTH_LIBRARIES} PlatoParser PlatoExceptions ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} )
+set(PlatoXMLGenerator_UnitTester_LIBS ${GTEST_LIBRARY} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES} PlatoParser )
 add_executable(PlatoXMLGenerator_UnitTester ${PlatoXMLGenerator_UnitTester_SRCS})
 target_link_libraries(PlatoXMLGenerator_UnitTester ${PlatoXMLGenerator_UnitTester_LIBS})
 add_test(NAME PlatoXMLGenerator_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/input_generator/unittest/PlatoXMLGenerator_UnitTester)

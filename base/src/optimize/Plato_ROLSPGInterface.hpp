@@ -1,7 +1,7 @@
 /*
- * Plato_ROLKSALInterface.hpp
+ * Plato_ROLSPGInterface.hpp
  *
- *  Created on: Feb 8, 2018
+ *  Created on: May 3, 2021
  */
 
 /*
@@ -46,8 +46,8 @@
 //@HEADER
 */
 
-#ifndef PLATO_ROLKSALINTERFACE_HPP_
-#define PLATO_ROLKSALINTERFACE_HPP_
+#ifndef PLATO_ROLSPGINTERFACE_HPP_
+#define PLATO_ROLSPGINTERFACE_HPP_
 
 #include <mpi.h>
 
@@ -60,8 +60,7 @@
 #include "Teuchos_XMLParameterListHelpers.hpp"
 
 #include "ROL_Bounds.hpp"
-#include "ROL_OptimizationSolver.hpp"
-#include "ROL_OptimizationProblem.hpp"
+#include "ROL_Solver.hpp"
 
 #include "Plato_Parser.hpp"
 #include "Plato_Interface.hpp"
@@ -77,11 +76,11 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class ROLKSALInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class ROLSPGInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
-    ROLKSALInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
+    ROLSPGInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
             mComm(aComm),
             mInterface(aInterface),
             mInputData(Plato::OptimizerEngineStageData())
@@ -90,7 +89,7 @@ public:
     }
 
     /******************************************************************************/
-    virtual ~ROLKSALInterface()
+    virtual ~ROLSPGInterface()
     /******************************************************************************/
     {
     }
@@ -99,7 +98,7 @@ public:
     Plato::optimizer::algorithm_t type() const
     /******************************************************************************/
     {
-        return (Plato::optimizer::algorithm_t::ROL_KSAL);
+        return (Plato::optimizer::algorithm_t::ROL_SPG);
     }
 
     /******************************************************************************/
@@ -160,7 +159,10 @@ public:
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(mInputData, mInterface));
         Teuchos::RCP<ROL::Constraint<ScalarType>> tInequality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(mInputData, mInterface));
-        ROL::OptimizationProblem<ScalarType> tOptimizationProblem(tObjective, tControls, tControlBoundsMng, tInequality, tDual);
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = 
+            ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
+        tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
+        tOptimizationProblem->addLinearConstraint("Constraint", tInequality, tDual);
 
         /******************************** SOLVE OPTIMIZATION PROBLEM ********************************/
         this->solve(tOptimizationProblem);
@@ -274,7 +276,7 @@ private:
     }
 
     /******************************************************************************/
-    void printControl(ROL::OptimizationProblem<ScalarType> & aOptimizationProblem)
+    void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
         int tMyRank = -1;
@@ -287,7 +289,7 @@ private:
             {
                 std::ofstream tOutputFile;
                 tOutputFile.open("ROL_control_output.txt");
-                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem.getSolutionVector();
+                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem->getPrimalOptimizationVector();
                 Plato::DistributedVectorROL<ScalarType> & tSolution =
                         dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(tSolutionPtr.operator*());
                 std::vector<ScalarType> & tData = tSolution.vector();
@@ -301,28 +303,30 @@ private:
     }
 
     /******************************************************************************/
-    void solve(ROL::OptimizationProblem<ScalarType> & aOptimizationProblem)
+    void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
-        std::stringbuf tBuffer;
-        std::ostream tOutputStream(&tBuffer);
+        //std::stringbuf tBuffer;
+        //std::ostream tOutputStream(&tBuffer);
         std::string tFileName = mInputData.getInputFileName();
         Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
         Teuchos::updateParametersFromXmlFile(tFileName, tParameterList.ptr());
+        aOptimizationProblem->setProjectionAlgorithm(*tParameterList);
+        aOptimizationProblem->finalize(false, true, std::cout);
         if(mInputData.getCheckGradient() == true)
         {
             /**************************** CHECK DERIVATIVES ****************************/
-            aOptimizationProblem.check(tOutputStream);
+            aOptimizationProblem->check(true, std::cout);
         }
         else
         {
             /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
-            ROL::OptimizationSolver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            tOptimizer.solve(tOutputStream);
+            ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
+            tOptimizer.solve(std::cout);
         }
 
         // ********* Print Diagnostics and Control ********* //
-        this->output(tBuffer);
+        //this->output(tBuffer);
         this->printControl(aOptimizationProblem);
     }
 
@@ -379,10 +383,10 @@ public:
     Plato::OptimizerEngineStageData mInputData;
 
 private:
-    ROLKSALInterface(const Plato::ROLKSALInterface<ScalarType> & aRhs);
-    Plato::ROLKSALInterface<ScalarType> & operator=(const Plato::ROLKSALInterface<ScalarType> & aRhs);
+    ROLSPGInterface(const Plato::ROLSPGInterface<ScalarType> & aRhs);
+    Plato::ROLSPGInterface<ScalarType> & operator=(const Plato::ROLSPGInterface<ScalarType> & aRhs);
 };
 
 } // namespace Plato
 
-#endif /* PLATO_ROLKSALINTERFACE_HPP_ */
+#endif /* PLATO_ROLSPGINTERFACE_HPP_ */

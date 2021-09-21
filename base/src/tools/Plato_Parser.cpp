@@ -1627,7 +1627,11 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             double tOCGradientTolerance = Plato::Get::Double(tOptionsNode, "OCGradientTolerance");
             aOptimizerEngineStageData.setOCGradientTolerance(tOCGradientTolerance);
         }
-
+        if(tOptionsNode.size<std::string>("ResetAlgorithmOnUpdate"))
+        {
+            bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
+            aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
+        }
     }
 }
 

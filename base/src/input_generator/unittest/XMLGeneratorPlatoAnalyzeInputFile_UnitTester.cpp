@@ -260,7 +260,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermoMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -301,7 +301,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsElectroMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -343,7 +343,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsHeatConduction)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -400,7 +400,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientThermoMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -459,7 +459,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Hyperbolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -524,7 +524,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsStabilizedMechanics)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -589,7 +589,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPlasticity)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_TRUE(tParameter.empty());
+    ASSERT_FALSE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -3078,12 +3078,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsToPlatoAnalyzeInputDeck_ErrorInvalidPhy
     ASSERT_THROW(XMLGen::append_physics_to_plato_analyze_input_deck(tXMLMetaData, tDocument), std::runtime_error);
 }
 
-TEST(PlatoTestXMLGenerator, AppendSelfAdjointParameterToPlatoProblem_ErrorEmptyObjective)
-{
-    XMLGen::InputData tXMLMetaData;
-    pugi::xml_document tDocument;
-    ASSERT_THROW(XMLGen::append_self_adjoint_parameter_to_plato_problem(tXMLMetaData, tDocument), std::runtime_error);
-}
 
 TEST(PlatoTestXMLGenerator, AppendSelfAdjointParameterToPlatoProblem_ErrorInvalidCriterion)
 {
@@ -3829,6 +3823,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintCriteriaToCriteriaList)
     XMLGen::Constraint tConstraint;
     tConstraint.scenario("1"); 
     tConstraint.service("1"); 
+    tConstraint.id("3"); 
     tConstraint.criterion("1"); 
     tConstraint.weight("0.5"); 
     tXMLMetaData.constraints.push_back(tConstraint);
@@ -3841,7 +3836,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintCriteriaToCriteriaList)
     auto tParamList = tCriteriaList.child("ParameterList");
     ASSERT_FALSE(tParamList.empty());
     ASSERT_STREQ("ParameterList", tParamList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"My Constraint"}, tParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"my_stress_p-norm_criterion_id_1"}, tParamList);
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues = { {"Type", "string", "Scalar Function"}, {"Scalar Function Type", "string", "Stress P-Norm"}, {}, {"Exponent", "double", "6"} };
@@ -3849,6 +3844,82 @@ TEST(PlatoTestXMLGenerator, AppendConstraintCriteriaToCriteriaList)
 
     auto tChild = tParamList.child("Parameter");
     std::vector<std::string> tGoldChildName = {"Parameter", "Parameter", "ParameterList", "Parameter"};
+    auto tGoldChildItr = tGoldChildName.begin();
+    while(!tChild.empty())
+    {
+        ASSERT_FALSE(tChild.empty());
+        ASSERT_STREQ(tGoldChildItr->c_str(), tChild.name());
+        if (tGoldChildItr->compare("Parameter") == 0)
+        {
+            // TEST PARAMETER CHILDREN, SKIP PENALTY FUNCTION CHILDREN (TEST BELOW)
+            PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValuesItr.operator*(), tChild);
+        }
+        tChild = tChild.next_sibling();
+        std::advance(tGoldValuesItr, 1);
+        std::advance(tGoldChildItr, 1);
+    }
+
+    auto tPenaltyModel = tParamList.child("Penalty Function");
+    tGoldValues = { {"Type", "string", "SIMP"}, {"Exponent", "double", "3.0"}, {"Minimum Value", "double", "1e-9"} };
+    tGoldValuesItr = tGoldValues.begin();
+    tChild = tPenaltyModel.child("Parameter");
+    while(!tChild.empty())
+    {
+        ASSERT_FALSE(tChild.empty());
+        ASSERT_STREQ("Parameter", tChild.name());
+        PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValuesItr.operator*(), tChild);
+        tChild = tChild.next_sibling();
+        std::advance(tGoldValuesItr, 1);
+    }
+}
+
+TEST(PlatoTestXMLGenerator, AppendThermomechanicalCriteriaToCriteriaList)
+{
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("thermomechanical_compliance");
+    tCriterion.id("1");
+    tCriterion.mechanicalWeightingFactor("0.5");
+    tCriterion.thermalWeightingFactor("0.0");
+    tCriterion.materialPenaltyExponent("3.0");
+    tCriterion.minErsatzMaterialConstant("1e-8");
+    tXMLMetaData.append(tCriterion);
+
+    XMLGen::Service tService;
+    tService.code("plato_analyze");
+    tService.id("1");
+    tXMLMetaData.append(tService);
+
+    XMLGen::Scenario tScenario;
+    tScenario.physics("steady_state_thermomechanics");
+    tScenario.id("1");
+    tXMLMetaData.append(tScenario);
+
+    XMLGen::Constraint tConstraint;
+    tConstraint.scenario("1"); 
+    tConstraint.service("1"); 
+    tConstraint.id("3"); 
+    tConstraint.criterion("1"); 
+    tConstraint.weight("0.5"); 
+    tXMLMetaData.constraints.push_back(tConstraint);
+
+    pugi::xml_document tDocument;
+    auto tCriteriaList = tDocument.append_child("ParameterList");
+    XMLGen::append_constraint_criteria_to_criteria_list(tXMLMetaData, tCriteriaList);
+
+    // TEST MY CONSTRAINT
+    auto tParamList = tCriteriaList.child("ParameterList");
+    ASSERT_FALSE(tParamList.empty());
+    ASSERT_STREQ("ParameterList", tParamList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"my_thermomechanical_compliance_criterion_id_1"}, tParamList);
+
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::vector<std::string>> tGoldValues = { {"Type", "string", "Scalar Function"}, {"Scalar Function Type", "string", "Internal Thermoelastic Energy"}, {}, {"Mechanical Weighting Factor", "double", "0.5"}, {"Thermal Weighting Factor", "double", "0.0"} };
+    auto tGoldValuesItr = tGoldValues.begin();
+
+    auto tChild = tParamList.child("Parameter");
+    std::vector<std::string> tGoldChildName = {"Parameter", "Parameter", "ParameterList", "Parameter", "Parameter"};
     auto tGoldChildItr = tGoldChildName.begin();
     while(!tChild.empty())
     {

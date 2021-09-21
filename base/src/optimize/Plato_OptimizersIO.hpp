@@ -246,7 +246,7 @@ void print_ccsa_diagnostics_header(const Plato::OutputDataCCSA<ScalarType, Ordin
     {
         THROWERR(tErrorMsg.what())
     }
-    assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
+    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
 
     aOutputFile << std::scientific << std::setprecision(6) << std::right << "Iter" << std::setw(10) << "F-count"
             << std::setw(14) << "F(X)" << std::setw(16) << "Norm(F')" << std::setw(10);
@@ -286,7 +286,7 @@ void print_ccsa_diagnostics(const Plato::OutputDataCCSA<ScalarType, OrdinalType>
     {
         THROWERR(tErrorMsg.what())
     }
-    assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
+    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
 
     aOutputFile << std::scientific << std::setprecision(6) << std::right << aData.mNumIter << std::setw(10)
             << aData.mObjFuncCount << std::setw(20) << aData.mObjFuncValue << std::setw(15) << aData.mNormObjFuncGrad
@@ -360,7 +360,7 @@ void print_oc_diagnostics(const Plato::OutputDataOC<ScalarType, OrdinalType>& aD
     {
         THROWERR(tErrorMsg.what())
     }
-    assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
+    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
 
     aOutputFile << std::scientific << std::setprecision(6) << std::right << aData.mNumIter << std::setw(10)
             << aData.mObjFuncCount << std::setw(20) << aData.mObjFuncValue << std::setw(15) << aData.mNormObjFuncGrad
@@ -419,7 +419,7 @@ void print_ksal_diagnostics_header(const Plato::OutputDataKSAL<ScalarType, Ordin
     try
     {
         Plato::error::is_file_open(aOutputFile);
-        Plato::error::is_vector_empty(aData.mConstraintValues);
+        //Plato::error::is_vector_empty(aData.mConstraintValues);
     }
     catch(const std::invalid_argument& tErrorMsg)
     {
@@ -466,7 +466,7 @@ void print_ksal_outer_diagnostics(const Plato::OutputDataKSAL<ScalarType, Ordina
     try
     {
         Plato::error::is_file_open(aOutputFile);
-        Plato::error::is_vector_empty(aData.mConstraintValues);
+        //Plato::error::is_vector_empty(aData.mConstraintValues);
     }
     catch(const std::invalid_argument& tErrorMsg)
     {
@@ -520,7 +520,7 @@ void print_ksal_inner_diagnostics(const Plato::OutputDataKSBC<ScalarType, Ordina
                 << "*" << std::setw(15) << "*" << std::setw(15) << "*" << std::setw(15);
 
     // ******** DIAGNOSTICS FOR CONSTRAINTS ********
-    assert(aData.mNumConstraints != static_cast<OrdinalType>(0));
+    //assert(aData.mNumConstraints != static_cast<OrdinalType>(0));
     for(OrdinalType tIndex = 0; tIndex < aData.mNumConstraints; tIndex++)
     {
         const OrdinalType tWidth = tIndex != (aData.mNumConstraints - static_cast<OrdinalType>(1)) ? 15 : 13;

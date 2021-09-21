@@ -89,6 +89,7 @@ protected:
     void parseObjective(std::istream &fin);
     void parseScenarios(std::istream &fin);
     void parseServices(std::istream &fin);
+    void parseRuns(std::istream &fin);
     bool parseConstraints(std::istream &fin);
     bool parseOptimizationParameters(std::istream &fin);
     void parseUncertainties(std::istream &fin);
@@ -116,7 +117,7 @@ private:
 
     void preProcessInputMetaData(XMLGen::InputData& aInputData);
     void determineIfPlatoEngineFilteringIsNeeded();
-    void setupHelmholtzFilterService();
+    void setupHelmholtzFilterService(XMLGen::InputData& aInputData);
     void expandEssentialBoundaryConditions(XMLGen::InputData& aInputData);
     void updateScenariosWithExpandedBoundaryConditions(std::map<int, std::vector<int> > aOldIDToNewIDMap);
 

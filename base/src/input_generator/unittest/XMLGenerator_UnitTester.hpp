@@ -128,6 +128,7 @@ public:
     std::string getCheckGradient() {return m_InputData.optimization_parameters().check_gradient();}
     std::string getCheckHessian() {return m_InputData.optimization_parameters().check_hessian();}
     std::string getMeshName() {return m_InputData.mesh.name;}
+    std::string getAuxiliaryMeshName() {return m_InputData.mesh.auxiliary_mesh_name;}
     void clearInputData();
     XMLGen::InputData* exposeInputData() {return &m_InputData;}
     

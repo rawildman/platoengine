@@ -25,6 +25,8 @@ namespace XMLGen
   void append_prune_and_refine_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp);
   void determine_mpi_env_and_separation_strings(std::string& envString, std::string& separationString);
   void determine_mpi_launch_strings(const XMLGen::InputData& aInputData, std::string& aLaunchString, std::string& aNumProcsString);
+  void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp);
+
   
   namespace Internal
   {

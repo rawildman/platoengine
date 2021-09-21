@@ -4,7 +4,10 @@
  *  Created on: May 28, 2020
  */
 
+#include <cstdlib>
 #include <fstream>
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
@@ -57,6 +60,10 @@ void write_plato_main_operations_xml_file
     if (XMLGen::do_tet10_conversion(aMetaData)) {
         XMLGen::append_tet10_conversion_operation_to_plato_main_operation(aMetaData, tDocument);
     }
+    if (XMLGen::have_auxiliary_mesh(aMetaData)) {
+        XMLGen::append_mesh_join_operation_to_plato_main_operation(aMetaData, tDocument);
+        XMLGen::append_mesh_rename_operation_to_plato_main_operation(aMetaData, tDocument);
+    }
 
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
@@ -105,6 +112,30 @@ bool is_volume_constraint_defined_and_computed_by_platomain
     return tIsVolumeDefinedAndComputedByPlatoMain;
 }
 //function is_volume_constraint_defined_and_computed_by_platomain
+/******************************************************************************/
+
+/******************************************************************************/
+std::string get_platomain_volume_constraint_id
+(const XMLGen::InputData& aXMLMetaData)
+{
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        auto tCriterion = aXMLMetaData.criterion(tConstraint.criterion());
+        auto tType = Plato::tolower(tCriterion.type());
+        auto tService = aXMLMetaData.service(tConstraint.service());
+        auto tCode = Plato::tolower(tService.code());
+
+        auto tIsVolumeConstraintDefined = tType.compare("volume") == 0;
+        auto tIsVolumeComputedByPlatoMain = tCode.compare("platomain") == 0;
+        bool tIsVolumeDefinedAndComputedByPlatoMain = tIsVolumeConstraintDefined && tIsVolumeComputedByPlatoMain;
+        if (tIsVolumeDefinedAndComputedByPlatoMain == true)
+        {
+            return tConstraint.id();
+        }
+    }
+    THROWERR("Volume constraint was assumed to be computed by platomain but was not.")
+}
+//function get_platomain_volume_constraint_id
 /******************************************************************************/
 
 /******************************************************************************/
@@ -181,7 +212,7 @@ void append_filter_options_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document &aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().filterInEngine() &&
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
        aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         XMLGen::ValidFilterKeys tValidFilterKeys;
@@ -829,6 +860,59 @@ void append_tet10_conversion_operation_to_plato_main_operation
     }
 }
 
+void append_mesh_join_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string auxiliaryMeshFile(aXMLMetaData.mesh.auxiliary_mesh_name);
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCallMPI");
+        addChild(operationNode, "Name", "JoinMesh On Change");
+        addChild(operationNode, "Command", "ejoin");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "Argument", "-output");
+        addChild(operationNode, "Argument", joinedMeshFile);
+        addChild(operationNode, "Argument", exodusFile);
+        addChild(operationNode, "Argument", auxiliaryMeshFile);
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
+void append_mesh_rename_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        std::stringstream moveCmd;
+        moveCmd << "while lsof -u $USER | grep " << joinedMeshFile << "; do sleep 1; done; ";
+        moveCmd << "/bin/cp " << joinedMeshFile << " " << exodusFile;
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCall");
+        addChild(operationNode, "Name", "RenameMesh On Change");
+        addChild(operationNode, "Command", moveCmd.str());
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
 /******************************************************************************/
 void append_update_geometry_on_change_operation_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
@@ -1169,9 +1253,11 @@ void append_compute_volume_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};
@@ -1201,9 +1287,11 @@ void append_compute_volume_gradient_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};

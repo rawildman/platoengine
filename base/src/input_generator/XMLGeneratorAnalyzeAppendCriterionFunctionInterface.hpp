@@ -109,7 +109,7 @@ private:
         // thermo-elastic energy
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionType>));
         mMap.insert(std::make_pair("thermomechanical_compliance",
-          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionType>, tFuncIndex)));
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_thermomechanical_compliance_criterion<CriterionType>, tFuncIndex)));
 
         // electro-elastic energy
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionType>));

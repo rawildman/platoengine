@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <fstream>
+#include <ostream>
 #include <sstream>
 #include <sys/stat.h>
 
 #include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
 
 namespace XMLGen
@@ -50,6 +52,16 @@ void append_solution_block(const XMLGen::InputData &aMetaData,
         outfile << "  shift " << aCriterion.eigen_solver_shift() << std::endl;
     }
     outfile << "  solver gdsw" << std::endl;
+    outfile << "END" << std::endl;
+}
+/**************************************************************************/
+void append_solution_block_modal_analysis(const XMLGen::InputData &aMetaData,
+                           const XMLGen::Criterion &aCriterion,
+                           std::ostream &outfile) {
+    outfile << "SOLUTION" << std::endl;
+    outfile << "  eigen" << std::endl;
+    outfile << "  nmodes " << aCriterion.num_modes_compute() << std::endl;
+    outfile << "  shift " << aCriterion.eigen_solver_shift() << std::endl;
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
@@ -341,6 +353,13 @@ void append_outputs_block
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
+void append_outputs_block_modal_analysis
+(std::ostream &outfile)
+{
+    outfile << "OUTPUTS" << std::endl;
+    outfile << "END" << std::endl;
+}
+/**************************************************************************/
 void append_echo_block
 (const XMLGen::Criterion &aCriterion,
  std::ostream &outfile)
@@ -385,6 +404,22 @@ void append_material_blocks
         if (!isModalCriterion(aCriterion)) {
             append_penalty_terms_to_material_block(aMetaData, aCriterion, aScenario, outfile);
         }
+        outfile << "END" << std::endl;
+    }
+}
+/**************************************************************************/
+void append_material_blocks_modal_analysis
+(const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    for(auto &tMaterial : aMetaData.materials)
+    {
+        outfile << "MATERIAL " << tMaterial.id() << std::endl;
+        outfile << "  isotropic" << std::endl;
+        outfile << "  E = " << tMaterial.property("youngs_modulus") << std::endl;
+        outfile << "  nu = " << tMaterial.property("poissons_ratio") << std::endl;
+        if(tMaterial.property("mass_density").empty() == false)
+            outfile << "  density = " << tMaterial.property("mass_density") << std::endl;
         outfile << "END" << std::endl;
     }
 }
@@ -435,6 +470,24 @@ void append_block_blocks
         if(aCriterion.type() == "frf_mismatch")
         {
             outfile << "  inverse_material_type homogeneous" << std::endl;
+        }
+        outfile << "END" << std::endl;
+    }
+}
+/**************************************************************************/
+void append_block_blocks_modal_analysis
+(const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    for(auto &tBlock : aMetaData.blocks)
+    {
+        if(tBlock.block_id.empty() == false)
+        {
+            outfile << "BLOCK " << tBlock.block_id << std::endl;
+        }
+        if(tBlock.material_id.empty() == false)
+        {
+            outfile << "  material " << tBlock.material_id << std::endl;
         }
         outfile << "END" << std::endl;
     }
@@ -849,6 +902,21 @@ void append_boundary_block
     }
     outfile << "END" << std::endl;
 }
+
+void append_contact_block(const XMLGen::InputData& aMetaData,
+                          std::ostream &outfile)
+{
+    if (XMLGen::have_auxiliary_mesh(aMetaData)) {
+        outfile << "begin contact definition" << std::endl
+                << "    skin all blocks = on" << std::endl
+                << "    begin interaction defaults" << std::endl
+                << "        general contact = on" << std::endl
+                << "        friction model = tied" << std::endl
+                << "    end interaction defaults" << std::endl
+                << "end" << std::endl;
+    }
+}
+
 /**************************************************************************/
 bool extractMetaDataForWritingSDInputDeck(const XMLGen::InputData &aMetaData,
                                           XMLGen::Service &tService,
@@ -893,9 +961,27 @@ void add_input_deck_blocks
     append_material_blocks(aMetaData, tCriterion, tScenario, outfile);
     append_block_blocks(aMetaData, tCriterion, tScenario, outfile);
     append_topology_optimization_block(aMetaData, tCriterion, tScenario, outfile);
+    append_contact_block(aMetaData, outfile);
     append_file_block(aMetaData, outfile);
     append_loads_block(aMetaData, tCriterion, tScenario, outfile);
     append_boundary_block(aMetaData, tCriterion, tScenario, outfile);
+}
+
+void add_input_deck_blocks_modal_analysis
+(const XMLGen::Run& aRun,
+ const XMLGen::InputData& aMetaData,
+ std::ostream &outfile)
+{
+    XMLGen::Criterion tCriterion = aMetaData.criterion(aRun.criterion());
+
+    append_solution_block_modal_analysis(aMetaData, tCriterion, outfile);
+    append_outputs_block_modal_analysis(outfile);
+    //append_echo_block(tCriterion, outfile);
+    append_material_blocks_modal_analysis(aMetaData, outfile);
+    append_block_blocks_modal_analysis(aMetaData, outfile);
+    append_file_block(aMetaData, outfile);
+    //append_loads_block(aMetaData, tCriterion, tScenario, outfile);
+    //append_boundary_block(aMetaData, tCriterion, tScenario, outfile);
 }
 /******************************************************************************/
 
@@ -1011,6 +1097,7 @@ void augment_sierra_sd_input_deck_with_plato_problem_description(const XMLGen::I
     }
 
     append_topology_optimization_block(aXMLMetaData, tCriterion, tScenario, outfile);
+    append_contact_block(aXMLMetaData, outfile);
 }
 
 void write_sierra_sd_input_deck
@@ -1034,6 +1121,14 @@ void write_sierra_sd_input_deck
 }
 /**************************************************************************/
 
+void write_sierra_sd_modal_input_deck
+(const std::string& aFilename,
+ const XMLGen::Run& aRun,
+ const XMLGen::InputData& aXMLMetaData)
+{
+    std::ofstream outfile(aFilename, std::ofstream::out);
+    add_input_deck_blocks_modal_analysis(aRun, aXMLMetaData, outfile);
+}
 
 }
 // namespace XMLGen

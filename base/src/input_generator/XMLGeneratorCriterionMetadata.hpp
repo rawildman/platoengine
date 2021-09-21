@@ -202,6 +202,46 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn mechanical_weighting_factor
+     * \brief Set string value for keyword 'mechanical_weighting_factor'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void mechanicalWeightingFactor(const std::string& aInput)
+    {
+        this->append("mechanical_weighting_factor", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn mechanical_weighting_factor
+     * \brief Return string value for keyword 'mechanical_weighting_factor'.
+     * \return value
+     **********************************************************************************/
+    std::string mechanicalWeightingFactor() const
+    {
+        return (this->value("mechanical_weighting_factor"));
+    }
+
+    /******************************************************************************//**
+     * \fn thermalWeightingFactor
+     * \brief Set string value for keyword 'thermal_weighting_factor'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void thermalWeightingFactor(const std::string& aInput)
+    {
+        this->append("thermal_weighting_factor", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn thermalWeightingFactor
+     * \brief Return string value for keyword 'thermal_weighting_factor'.
+     * \return value
+     **********************************************************************************/
+    std::string thermalWeightingFactor() const
+    {
+        return (this->value("thermal_weighting_factor"));
+    }
+
+    /******************************************************************************//**
      * \fn scmmPenaltyExpansionMultiplier
      * \brief Set string value for keyword 'scmm_penalty_expansion_multiplier'.
      * \param [in] aInput string value

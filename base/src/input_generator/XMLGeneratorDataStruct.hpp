@@ -17,6 +17,7 @@
 #include "XMLGeneratorRandomMetadata.hpp"
 #include "XMLGeneratorBoundaryMetadata.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
+#include "XMLGeneratorRunMetadata.hpp"
 #include "XMLGeneratorScenarioMetadata.hpp"
 #include "XMLGeneratorConstraintMetadata.hpp"
 #include "XMLGeneratorMaterialMetadata.hpp"
@@ -66,6 +67,8 @@ struct Mesh
     std::string run_name;
     std::string run_name_without_extension;
     std::string file_extension;
+    std::string auxiliary_mesh_name;
+    std::string joined_mesh_name;
 };
 
 struct UncertaintyMetaData
@@ -79,6 +82,7 @@ struct InputData
 {
 private:
     std::vector<XMLGen::Service> mServices;
+    std::vector<XMLGen::Run> mRuns;
     std::vector<XMLGen::Criterion> mCriteria;
     XMLGen::OptimizationParameters mOptimizationParameters;
 
@@ -373,6 +377,15 @@ public:
             }
         }
         mServices.push_back(aService);
+    }
+    // Runs
+    void set(const std::vector<XMLGen::Run>& aRuns)
+    {
+        mRuns = aRuns;
+    }
+    const std::vector<XMLGen::Run>& runs() const
+    {
+        return mRuns;
     }
     // Criteria access
     const XMLGen::Criterion& criterion(const std::string& aID) const
