@@ -159,7 +159,6 @@ public:
                 mParameterIndex = (int)value[0];
             }
         }
-
     }
 
     /******************************************************************************//**
@@ -195,5 +194,4 @@ private:
     Plato::TimersTree* mTimersTree;
 
     bool hasChanged();
-
 };
