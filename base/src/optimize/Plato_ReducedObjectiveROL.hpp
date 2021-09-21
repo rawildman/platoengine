@@ -110,6 +110,7 @@ public:
      * \param [in] aFlag indicates if vector of design variables was updated
      * \param [in] aIteration outer loop optimization iteration
     **********************************************************************************/
+    using ROL::Objective<ScalarType>::update;
     void update(const ROL::Vector<ScalarType> & aControl, ROL::UpdateType aUpdateType, int aIteration = -1)
     //void update(const ROL::Vector<ScalarType> & aControl, bool aFlag, int aIteration = -1)
     {
