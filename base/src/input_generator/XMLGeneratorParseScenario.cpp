@@ -67,6 +67,20 @@ void ParseScenario::setBCIDs(XMLGen::Scenario &aMetadata)
     }
 }
 
+void ParseScenario::setAssemblyIDs(XMLGen::Scenario &aMetadata)
+{
+    auto tItr = mTags.find("assemblies");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tAssemblyIDs;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tAssemblyIDs);
+        aMetadata.setAssemblyIDs(tAssemblyIDs);
+    }
+}
+
 void ParseScenario::checkTags(XMLGen::Scenario& aScenario)
 {
     this->checkPhysics(aScenario);
@@ -113,6 +127,7 @@ void ParseScenario::allocate()
 
     mTags.insert({ "loads", { { {"loads"}, ""}, "" } });
     mTags.insert({ "boundary_conditions", { { {"boundary_conditions"}, ""}, "" } });
+    mTags.insert({ "assemblies", { { {"assemblies"}, ""}, "" } });
     mTags.insert({ "weight_mass_scale_factor", { { {"weight_mass_scale_factor"}, ""}, "" } });
 
     mTags.insert({ "frequency_min", { { {"frequency_min"}, ""}, "" } });
@@ -214,6 +229,7 @@ void ParseScenario::parse(std::istream &aInputFile)
             this->setTags(tScenario);
             this->setLoadIDs(tScenario);
             this->setBCIDs(tScenario);
+            this->setAssemblyIDs(tScenario);
             tScenario.id(tScenarioBlockID);
             this->checkTags(tScenario);
             mData.push_back(tScenario);

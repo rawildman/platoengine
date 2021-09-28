@@ -15,6 +15,7 @@
 #include "XMLGeneratorAnalyzeAppendCriterionFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
+#include "XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp"
 
 namespace XMLGen
 {
@@ -314,6 +315,7 @@ void append_plato_problem_to_plato_analyze_input_deck
     XMLGen::append_material_models_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
     XMLGen::append_loads_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
     XMLGen::append_essential_boundary_conditions_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
+    XMLGen::append_assemblies_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
 }
 // function append_plato_problem_to_plato_analyze_input_deck
 /**********************************************************************************/
@@ -572,6 +574,7 @@ void append_spatial_model_to_plato_problem
 }
 // function append_spatial_model_to_plato_problem
 /**********************************************************************************/
+
 /**********************************************************************************/
 void append_material_model_to_plato_problem
 (const std::vector<XMLGen::Material>& aMaterials,
@@ -817,6 +820,27 @@ void get_ebc_vector_for_scenario
 /**********************************************************************************/
 
 /**********************************************************************************/
+void get_assembly_vector_for_scenario
+(const XMLGen::InputData& aXMLMetaData,
+ const XMLGen::Scenario &aScenario,
+ std::vector<XMLGen::Assembly> &aAssemblyVector)
+{
+    for(auto &tAssemblyID : aScenario.assemblyIDs())
+    {
+        for(size_t i=0; i<aXMLMetaData.assemblies.size(); ++i)
+        {
+            if(aXMLMetaData.assemblies[i].value("id").compare(tAssemblyID) == 0)
+            {
+                aAssemblyVector.push_back(aXMLMetaData.assemblies[i]);
+                break;
+            }
+        }
+    }
+}
+// function get_assembly_vector_for_scenario
+/**********************************************************************************/
+
+/**********************************************************************************/
 void append_random_loads_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
@@ -924,6 +948,65 @@ void append_essential_boundary_conditions_to_plato_analyze_input_deck(
     }
 }
 // function append_essential_boundary_conditions_to_plato_analyze_input_deck
+/**********************************************************************************/
+
+/**********************************************************************************/
+void check_valid_assembly_parent_blocks
+(const XMLGen::InputData& aXMLMetaData)
+{
+    for(auto& tAssembly : aXMLMetaData.assemblies)
+    {
+        auto tBlocks = aXMLMetaData.blocks;
+        bool tBlockFound = false;
+
+        for(auto tBlk : tBlocks)
+        {
+            if(tBlk.block_id == tAssembly.parent_block())
+            {
+                tBlockFound = true;
+                break;
+            }
+
+        }
+        if(!tBlockFound)
+        {
+            THROWERR("Append Assembly to Plato Analyze Input Deck: Assembly " + tAssembly.id() + 
+                    " lists parent block with id " + tAssembly.parent_block() + " but no block with ID " + tAssembly.parent_block() + " exists")
+        }
+    }
+}
+// function check_valid_assembly_parent_blocks
+/**********************************************************************************/
+
+/**********************************************************************************/
+void append_assemblies_to_plato_analyze_input_deck
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode)
+{
+    if(aXMLMetaData.assemblies.size() > 0)
+    {
+        check_valid_assembly_parent_blocks(aXMLMetaData);
+
+        XMLGen::AppendAssembly tFuncInterface;
+
+        std::vector<XMLGen::Scenario> tScenarioList;
+        get_scenario_list_from_objectives_and_constraints(aXMLMetaData, tScenarioList);
+        for (auto &tScenario : tScenarioList)
+        {
+            auto tAssembly = aParentNode.append_child("ParameterList");
+            std::string tBlockTitle = "Multipoint Constraints";
+            XMLGen::append_attributes({"name"}, {tBlockTitle}, tAssembly);
+
+            std::vector<XMLGen::Assembly> tAssemblyVector;
+            get_assembly_vector_for_scenario(aXMLMetaData, tScenario, tAssemblyVector);
+            for (auto &assembly : tAssemblyVector)
+            {
+                tFuncInterface.call(assembly, tAssembly);
+            }
+        }
+    }
+}
+// function append_assemblies_to_plato_analyze_input_deck
 /**********************************************************************************/
 
 /**********************************************************************************/
