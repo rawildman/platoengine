@@ -642,7 +642,7 @@ namespace PlatoTestGeometryMLS
     auto mappedValuesHost = Kokkos::create_mirror_view(mappedValues);
     Kokkos::deep_copy(mappedValuesHost, mappedValues);
 
-    EXPECT_NEAR(/*Gold=*/ 0.0027358850269484326, /*Result=*/ mappedValuesHost(0), /*tTolerance=*/1e-14);
+    EXPECT_NEAR(/*Gold=*/ 0.00099108394798743597, /*Result=*/ mappedValuesHost(0), /*tTolerance=*/1e-14);
 
 #ifdef NOPE
     std::ofstream pointsStream;
