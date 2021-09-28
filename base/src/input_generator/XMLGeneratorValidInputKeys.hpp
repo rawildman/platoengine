@@ -859,11 +859,11 @@ private:
                 {"plastic_strain", "plastic strain"}, 
                 {"cauchy_stress", "cauchy stress"},
                 {"backstress", "backstress"}, 
-                {"dispx", "Solution X"}, 
-                {"dispy", "Solution Y"}, 
-                {"dispz", "Solution Z"},
+                {"dispx", "Displacement X"}, 
+                {"dispy", "Displacement Y"}, 
+                {"dispz", "Displacement Z"},
                 {"principal_stresses", "principal stresses"}, 
-                {"temperature", "Solution"} 
+                {"temperature", "Temperature"} 
             }
         },
         { "sierra_sd", 
@@ -1596,6 +1596,7 @@ struct ValidRunParameterKeys
     {
         "type", 
         "command",
+        "service",
         "criterion"
     };
 };

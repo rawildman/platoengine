@@ -168,8 +168,23 @@ namespace XMLGen
                 std::string tType = tCurRun.type();
                 if(tType == "modal_analysis")
                 {
+                    int tNumProcs = 1;
+                    std::string tServiceID = tCurRun.service();
+                    if(!tServiceID.empty())
+                    {
+                        XMLGen::Service tService = aInputData.service(tServiceID);
+                        std::string tNumProcsString = tService.numberProcessors(); 
+                        tNumProcs = std::atoi(tNumProcsString.c_str());
+                        if(tNumProcs > 1)
+                        {
+                            append_decomp_line(fp, tNumProcs, aInputData.mesh.run_name);
+                        }
+                    }
                     std::string tInputDeckName = build_post_optimization_run_input_deck_name(tCurRun);
-                    fprintf(fp, "salinas -i %s\n", tInputDeckName.c_str());
+                    std::string tLaunchString, tTempNumProcsString;
+                    XMLGen::determine_mpi_launch_strings(aInputData,tLaunchString,tTempNumProcsString);
+                    fprintf(fp, "%s %s %d salinas -i %s\n", tLaunchString.c_str(), tTempNumProcsString.c_str(), 
+                                                         tNumProcs, tInputDeckName.c_str());
                 }
             }
             else

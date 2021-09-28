@@ -221,8 +221,8 @@ private:
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
-        //std::stringbuf tBuffer;
-        //std::ostream tOutputStream(&tBuffer);
+        std::stringbuf tBuffer;
+        std::ostream tOutputStream(&tBuffer);
         std::string tFileName = mInputData.getInputFileName();
         Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
         Teuchos::updateParametersFromXmlFile(tFileName, tParameterList.ptr());
@@ -247,7 +247,7 @@ private:
                     tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
                 }
                 ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-                tOptimizer.solve(std::cout);
+                tOptimizer.solve(tOutputStream);
                 ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState = 
                        ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
                 tCurDelta = tAlgorithmState->searchSize;
@@ -256,7 +256,7 @@ private:
         }
 
         // ********* Print Diagnostics and Control ********* //
-        //this->output(tBuffer);
+        this->output(tBuffer);
         this->printControl(aOptimizationProblem);
     }
 

@@ -40,6 +40,7 @@ void ParseRun::allocate()
     mTags.clear();
     mTags.insert({ "type", { { {"type"}, ""}, "" } });
     mTags.insert({ "criterion", { { {"criterion"}, ""}, "" } });
+    mTags.insert({ "service", { { {"service"}, ""}, "" } });
     mTags.insert({ "command", { { {"command"}, ""}, "" } });
 }
 

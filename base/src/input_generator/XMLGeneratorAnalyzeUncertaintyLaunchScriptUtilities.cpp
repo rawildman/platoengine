@@ -41,7 +41,7 @@ inline void append_plato_analyze_code_path
     // Add kokkos-device setting if requested.
     if(aDeviceID != "")
     {
-        fprintf(aFile, "--kokkos-device=%s ", aDeviceID.c_str());
+        fprintf(aFile, "--kokkos-device-id=%s ", aDeviceID.c_str());
     }
 
     // Add the input deck syntax.
@@ -210,6 +210,9 @@ void generate_mpirun_launch_script(const XMLGen::InputData& aInputData)
     if(aInputData.optimization_parameters().optimizationType() == XMLGen::OT_SHAPE)
     {
         XMLGen::append_esp_initialization_line(aInputData, fp);
+        if (XMLGen::have_auxiliary_mesh(aInputData)) {
+            XMLGen::append_join_mesh_operation_line(aInputData, fp);
+        }
         if (do_tet10_conversion(aInputData)) {
             XMLGen::append_tet10_conversion_operation_line(fp);
         }
@@ -335,7 +338,18 @@ void append_esp_initialization_line(const XMLGen::InputData& aInputData, FILE* a
 
 void append_tet10_conversion_operation_line(FILE* aFile)
 {
-    fprintf(aFile, "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off\n");
+    fprintf(aFile, "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off; \\\n");
+}
+
+void append_join_mesh_operation_line(const XMLGen::InputData& aInputData, FILE *aFile)
+{
+    const std::string exodusFile(aInputData.optimization_parameters().csm_exodus_file());
+    const std::string auxiliaryMeshFile(aInputData.mesh.auxiliary_mesh_name);
+    const std::string joinedMeshFile(aInputData.mesh.joined_mesh_name);
+
+    fprintf(aFile, "ejoin -output %s %s %s && /bin/cp %s %s; \\\n",
+    joinedMeshFile.data(), exodusFile.data(), auxiliaryMeshFile.data(),
+    joinedMeshFile.data(), exodusFile.data());
 }
 
 }

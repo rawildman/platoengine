@@ -8,6 +8,7 @@ namespace XMLGen
 {
     void append_esp_initialization_line(const XMLGen::InputData& aInputData, FILE* aFile);
     void append_tet10_conversion_operation_line(FILE* aFile);
+    void append_join_mesh_operation_line(const XMLGen::InputData& aInputData, FILE *aFile);
     void append_esp_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& aFile);
     void generate_launch_script(const XMLGen::InputData& aInputData);
     void generate_summit_launch_scripts(const XMLGen::InputData& aInputData);

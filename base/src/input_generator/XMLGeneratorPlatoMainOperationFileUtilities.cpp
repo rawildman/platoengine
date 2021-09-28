@@ -4,7 +4,10 @@
  *  Created on: May 28, 2020
  */
 
+#include <cstdlib>
 #include <fstream>
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
@@ -56,6 +59,10 @@ void write_plato_main_operations_xml_file
     XMLGen::append_enforce_bounds_operation_to_plato_main_operation(aMetaData, tDocument);
     if (XMLGen::do_tet10_conversion(aMetaData)) {
         XMLGen::append_tet10_conversion_operation_to_plato_main_operation(aMetaData, tDocument);
+    }
+    if (XMLGen::have_auxiliary_mesh(aMetaData)) {
+        XMLGen::append_mesh_join_operation_to_plato_main_operation(aMetaData, tDocument);
+        XMLGen::append_mesh_rename_operation_to_plato_main_operation(aMetaData, tDocument);
     }
 
     tDocument.save_file("plato_main_operations.xml", "  ");
@@ -846,6 +853,59 @@ void append_tet10_conversion_operation_to_plato_main_operation
         addChild(operationNode, "Function", "SystemCall");
         addChild(operationNode, "Name", "ToTet10 On Change");
         addChild(operationNode, "Command", "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
+void append_mesh_join_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string auxiliaryMeshFile(aXMLMetaData.mesh.auxiliary_mesh_name);
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCallMPI");
+        addChild(operationNode, "Name", "JoinMesh On Change");
+        addChild(operationNode, "Command", "ejoin");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "Argument", "-output");
+        addChild(operationNode, "Argument", joinedMeshFile);
+        addChild(operationNode, "Argument", exodusFile);
+        addChild(operationNode, "Argument", auxiliaryMeshFile);
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
+void append_mesh_rename_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        std::stringstream moveCmd;
+        moveCmd << "while lsof -u $USER | grep " << joinedMeshFile << "; do sleep 1; done; ";
+        moveCmd << "/bin/cp " << joinedMeshFile << " " << exodusFile;
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCall");
+        addChild(operationNode, "Name", "RenameMesh On Change");
+        addChild(operationNode, "Command", moveCmd.str());
         addChild(operationNode, "OnChange", "true");
         addChild(operationNode, "AppendInput", "false");
         auto tInputNode = operationNode.append_child("Input");
