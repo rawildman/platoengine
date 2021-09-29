@@ -305,5 +305,15 @@ void append_mesh_map_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument);
 
+/******************************************************************************//**
+ * \fn append_visualization_to_plato_analyze_operation
+ * \brief Append output related info to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_visualization_to_plato_analyze_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode);
+
 }
 // namespace XMLGen

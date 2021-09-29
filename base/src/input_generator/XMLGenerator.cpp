@@ -437,6 +437,13 @@ void XMLGenerator::loadOutputData
             break;
         } 
     }
+    if(aNewInputData.mOutputMetaData.size() == 0)
+    {
+        // push an empty output meta data objective onto the list
+        XMLGen::Output tOutput;
+        tOutput.disableOutput();
+        aNewInputData.mOutputMetaData.push_back(tOutput);
+    }
 }
 
 /******************************************************************************/

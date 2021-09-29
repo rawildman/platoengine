@@ -491,7 +491,7 @@ void append_visualization_to_plato_analyze_operation
  pugi::xml_node& aParentNode)
 {
     // output block is undefined    
-    if(aMetaData.mOutputMetaData.size() == 0)
+    if(aMetaData.mOutputMetaData.size() == 0 || aMetaData.mOutputMetaData[0].isOutputDisabled())
     {
         return;
     }
