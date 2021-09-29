@@ -3332,7 +3332,7 @@ void append_rol_step_block(const XMLGen::InputData& aXMLMetaData,
     n5.append_attribute("name") = "Cauchy Point";
     addNTVParameter(n5, "Maximum Number of Reduction Steps", "int", "10");
     addNTVParameter(n5, "Maximum Number of Expansion Steps", "int", "10");
-    addNTVParameter(n5, "Initial Step Size", "double", "3.0");
+    addNTVParameter(n5, "Initial Step Size", "double", aXMLMetaData.optimization_parameters().rol_lin_more_cauchy_initial_step_size());
     addNTVParameter(n5, "Normalize Initial Step Size", "bool", "false");
     addNTVParameter(n5, "Reduction Rate", "double", "0.5");
     addNTVParameter(n5, "Expansion Rate", "double", "5.0");
