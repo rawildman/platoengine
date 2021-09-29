@@ -148,6 +148,7 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "optimization_type", { { {"optimization_type"}, ""}, "topology" } });
     mTags.insert({ "reset_algorithm_on_update", { { {"reset_algorithm_on_update"}, ""}, "false" } });
     mTags.insert({ "rol_subproblem_model", { { {"rol_subproblem_model"}, ""}, "" } });
+    mTags.insert({ "rol_lin_more_cauchy_initial_step_size", { { {"rol_lin_more_cauchy_initial_step_size"}, ""}, "3.0" } });
     mTags.insert({ "filter_type_identity_generator_name", { { {"filter_type_identity_generator_name"}, ""}, "identity" } });
     mTags.insert({ "filter_type_kernel_generator_name", { { {"filter_type_kernel_generator_name"}, ""}, "kernel" } });
     mTags.insert({ "filter_type_kernel_then_heaviside_generator_name", { { {"filter_type_kernel_then_heaviside_generator_name"}, ""}, "kernel_then_heaviside" } });

@@ -390,6 +390,7 @@ public:
     std::string oc_gradient_tolerance() const {return value("oc_gradient_tolerance");}
     std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
     std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
+    std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
 
 };
 // struct OptimizationParameters
