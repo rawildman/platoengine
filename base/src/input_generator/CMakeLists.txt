@@ -13,6 +13,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorParseMaterial.cpp
                       XMLGeneratorParseEssentialBoundaryCondition.cpp
+                      XMLGeneratorParseAssembly.cpp
                       XMLGeneratorParseCriteria.cpp
                       XMLGeneratorParseConstraint.cpp
                       XMLGeneratorParserUtilities.cpp
@@ -41,6 +42,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
                       XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
@@ -65,6 +67,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorConstraintMetadata.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
+                      XMLGeneratorAssemblyMetadata.hpp
                       XMLGeneratorPlatoAnalyzeProblem.hpp 
                       XMLGeneratorProblem.hpp 
                       XMLGeneratorDefinesFileUtilities.hpp 
@@ -87,6 +90,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentiallBCTagFunctionInterface.hpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp
                       # XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp
                       # XMLGeneratorAnalyzeAppendCriterionFunctionInterface.hpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp
@@ -98,6 +102,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorUtilities.hpp
                       XMLGeneratorParseOutput.hpp 
                       XMLGeneratorParseMaterial.hpp 
+                      XMLGeneratorParseAssembly.hpp 
                       XMLGeneratorParseEssentialBoundaryCondition.hpp 
                       XMLGeneratorParseCriteria.hpp 
                       XMLGeneratorParseObjective.hpp 

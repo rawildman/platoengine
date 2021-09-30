@@ -1150,6 +1150,7 @@ TEST(PlatoTestXMLGenerator, AppendROLStepBlock_LinearConstraint)
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_algorithm", "rol_linear_constraint");
     tOptimizationParameters.append("rol_subproblem_model", "lin_more");
+    tOptimizationParameters.append("rol_lin_more_cauchy_initial_step_size", "4.5");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1189,6 +1190,21 @@ TEST(PlatoTestXMLGenerator, AppendROLStepBlock_LinearConstraint)
     ASSERT_FALSE(tParameter.empty());
     PlatoTestXMLGenerator::test_attributes({"name","type","value"}, 
                                            {"Maximum Number of Minor Iterations", "int", "0"}, tParameter);
+    tParameterList = tParameterList.child("ParameterList");
+    ASSERT_FALSE(tParameterList.empty());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Cauchy Point"}, tParameterList);
+    tParameter = tParameterList.child("Parameter");
+    ASSERT_FALSE(tParameter.empty());
+    PlatoTestXMLGenerator::test_attributes({"name","type","value"}, 
+                                           {"Maximum Number of Reduction Steps", "int", "10"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    ASSERT_FALSE(tParameter.empty());
+    PlatoTestXMLGenerator::test_attributes({"name","type","value"}, 
+                                           {"Maximum Number of Expansion Steps", "int", "10"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    ASSERT_FALSE(tParameter.empty());
+    PlatoTestXMLGenerator::test_attributes({"name","type","value"}, 
+                                           {"Initial Step Size", "double", "4.5"}, tParameter);
 }
 
 TEST(PlatoTestXMLGenerator, AppendROLStepBlock_BoundConstrained)

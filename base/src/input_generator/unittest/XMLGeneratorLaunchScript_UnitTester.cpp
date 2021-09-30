@@ -966,6 +966,7 @@ TEST(PlatoTestXMLGenerator, append_post_optimization_run_lines)
   tInputData.set(tRuns);
   tInputData.append(tService);
   tInputData.mesh.run_name = "mesh.exo";
+  tInputData.m_UseLaunch = true;
 
   FILE* fp=fopen("appendDecompLine.txt", "w");
   XMLGen::append_post_optimization_run_lines(tInputData, fp);

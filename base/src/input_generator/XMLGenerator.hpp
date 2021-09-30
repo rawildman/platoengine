@@ -78,6 +78,7 @@ protected:
     bool parseLoads(std::istream &fin);
     void getTokensFromLine(std::istream &fin, std::vector<std::string>& tokens);
     void parseBoundaryConditions(std::istream &fin);
+    bool parseAssemblies(std::istream &fin);
     bool runSROMForUncertainVariables(XMLGen::InputData& aInputData);
     void setNumPerformers(XMLGen::InputData& aInputData);
     void parseInputFile();

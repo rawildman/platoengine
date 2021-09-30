@@ -84,6 +84,7 @@
 #include "XMLGeneratorParseUncertainty.hpp"
 #include "XMLGeneratorParseOptimizationParameters.hpp"
 #include "XMLGeneratorParseEssentialBoundaryCondition.hpp"
+#include "XMLGeneratorParseAssembly.hpp"
 
 namespace XMLGen
 {
@@ -798,6 +799,16 @@ bool XMLGenerator::parseLoads(std::istream &fin)
 }
 
 /******************************************************************************/
+bool XMLGenerator::parseAssemblies(std::istream &fin)
+/******************************************************************************/
+{
+    XMLGen::ParseAssembly tParseAssembly;
+    tParseAssembly.parse(fin);
+    m_InputData.assemblies = tParseAssembly.data();
+    return true;
+}
+
+/******************************************************************************/
 void XMLGenerator::getTokensFromLine(std::istream &fin, std::vector<std::string>& tokens)
 /******************************************************************************/
 {
@@ -1144,6 +1155,10 @@ void XMLGenerator::parseInputFile()
 
   tInputFile.open(m_InputFilename.c_str()); // open a file
   parseLoads(tInputFile);
+  tInputFile.close();
+
+  tInputFile.open(m_InputFilename.c_str()); // open a file
+  parseAssemblies(tInputFile);
   tInputFile.close();
 
   tInputFile.open(m_InputFilename.c_str()); // open a file
