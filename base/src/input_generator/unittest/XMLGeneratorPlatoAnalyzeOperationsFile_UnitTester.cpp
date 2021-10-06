@@ -975,6 +975,15 @@ TEST(PlatoTestXMLGenerator, AppendDeterminsiticQoI_InvalidKey)
     ASSERT_THROW(tOutputMetadata.appendDeterminsiticQoI("fluid pressure", "fpressure"), std::runtime_error);
 }
 
+TEST(PlatoTestXMLGenerator, AppendVisualizationToPlatoAnalyzeOperation_NoOutputBlock)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tInputData;
+    ASSERT_NO_THROW(XMLGen::append_visualization_to_plato_analyze_operation(tInputData, tDocument));
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_ErrorEmptyUpdateFrequencyKey)
 {
     pugi::xml_document tDocument;
