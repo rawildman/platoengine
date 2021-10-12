@@ -261,16 +261,11 @@ void XMLGenerator::setupHelmholtzFilterService(XMLGen::InputData& aInputData)
         tHelmholtzService.updateProblem("false");
         tHelmholtzService.cacheState("false");
         
-        // copy objective first scenario for helmholtz performer spatial dimensions
-        std::string tScenarioID = m_InputDataWithExpandedEBCs.objective.scenarioIDs[0];
-        XMLGen::Scenario tCurScenario = m_InputDataWithExpandedEBCs.scenario(tScenarioID);
-
-        // create new input data for helmholtz performer
+        // set helmholtz service
         XMLGen::InputData tNewInputData = m_InputDataWithExpandedEBCs;
-        clearInputDataLists(tNewInputData);
+        std::vector<XMLGen::Service> tEmptyServiceList;
+        tNewInputData.set(tEmptyServiceList);
         tNewInputData.append_unique(tHelmholtzService);
-        tNewInputData.append(tCurScenario);
-        loadMaterialData(tNewInputData, m_InputDataWithExpandedEBCs, tScenarioID);
 
         if(!serviceExists(aInputData.mPerformerServices, tHelmholtzService))
         {
