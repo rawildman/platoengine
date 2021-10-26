@@ -451,7 +451,7 @@ public:
     }
 
     /******************************************************************************//**
-     * \fn weightMassScaleFactor
+     * \fn shapeSideset
      * \brief Return string value Sierra/SD shape sideset
      * \return value
     **********************************************************************************/
