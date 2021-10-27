@@ -198,7 +198,7 @@ void append_problem_description_to_plato_analyze_input_deck
     if (tSpatialDim == tValidKeys.mKeys.end())
     {
         THROWERR(std::string("Append Problem Description to Plato Analyze Input Deck: Invalid spatial dimensions '")
-            + aXMLMetaData.scenario(0u).dimensions() + "'.  Only three and two dimensional problems are supported in Plato Analyze.")
+            + aXMLMetaData.scenario(0u).dimensions() + "'.  Only three- and two-dimensional problems are supported in Plato Analyze.")
     }
     XMLGen::check_input_mesh_file_keyword(aXMLMetaData);
 
