@@ -5,7 +5,9 @@
  */
 
 #include <algorithm>
+#include <sstream>
 
+#include "XMLG_Macros.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
@@ -92,6 +94,17 @@ void ParseCriteria::allocate()
     insertTag("location_names");
     insertTag("blocks");
     insertTag("conductivity_ratios");
+
+    insertTag("mass");
+    insertTag("cgx");
+    insertTag("cgy");
+    insertTag("cgz");
+    insertTag("ixx");
+    insertTag("iyy");
+    insertTag("izz");
+    insertTag("iyz");
+    insertTag("ixz");
+    insertTag("ixy");
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     insertTag("volume_misfit_target");
@@ -216,6 +229,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionType(aMetadata);
     this->setCriterionIDs(aMetadata);
     this->setCriterionWeights(aMetadata);
+    this->setMassProperties(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
@@ -232,6 +246,45 @@ void ParseCriteria::checkUniqueIDs()
     if(!XMLGen::unique(tIDs))
     {
         THROWERR("Parse Criteria: Criterion block identification numbers, i.e. IDs, are not unique.  Criterion block IDs must be unique.")
+    }
+}
+
+void ParseCriteria::setMassProperties(XMLGen::Criterion& aCriterion)
+{
+    if(aCriterion.type() == "mass_properties")
+    {
+        const std::vector<std::string> massProperties = {"Mass", "CGx", "CGy", "CGz", "Ixx", "Iyy", "Izz", "Ixz", "Iyz", "Ixy"};
+
+        for(auto &property : massProperties) {
+            auto tItr = mTags.find(XMLGen::to_lower(property));
+
+            if (tItr != mTags.end()) {
+                std::string tValues = tItr->second.first.second;
+                if (tValues.empty()) continue;
+
+                std::vector<std::string> tTokens;
+                char tValuesBuffer[10000];
+                strcpy(tValuesBuffer, tValues.c_str());
+                XMLGen::parse_tokens(tValuesBuffer, tTokens);
+
+                if (tTokens[0] != "gold" || tTokens[2] != "weight" || tTokens.size() != 4) {
+                    std::stringstream errorstream;
+                    errorstream << "Parse Criteria: expected syntax for mass properties is '"
+                        << property << " gold [goldValue] weight [weightValue]'" << std::endl; 
+                    THROWERR(errorstream.str());
+                }
+
+                std::istringstream goldStream(tTokens[1]);
+                double goldValue;
+                goldStream >> goldValue;
+
+                std::istringstream weightStream(tTokens[3]);
+                double weight;
+                weightStream >> weight;
+
+                aCriterion.setMassProperty(property, goldValue, weight);
+            }
+        }
     }
 }
 

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <sstream>
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
@@ -450,6 +451,57 @@ pugi::xml_node append_volume_average_criterion
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
 
     XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
+    return tObjective;
+}
+
+/******************************************************************************//**
+ * \fn append_mass_properties_criterion
+ * \brief Append mass properties criterion to criterion parameter list.
+ * \tparam Criterion criterion metadata
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_mass_properties_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Type", "string", "Mass Properties"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    std::stringstream properties, goldValues, weights;
+    properties << "{";
+    goldValues << "{";
+    weights << "{";
+    const auto &p = aCriterion.getMassProperties();
+    for(auto pi=p.begin();pi!=p.end();pi++) {
+        properties << (*pi).first;
+        goldValues << (*pi).second.first;
+        weights << (*pi).second.second;
+        if (pi != --p.end()) {
+            properties << ",";
+            goldValues << ",";
+            weights << ",";
+        }
+    }
+    properties << "}";
+    goldValues << "}";
+    weights << "}";
+
+    tValues = {"Properties", "Array(string)", properties.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Gold Values", "Array(double)", goldValues.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Weights", "Array(double)", weights.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
     return tObjective;
 }
 

@@ -118,7 +118,18 @@ struct ValidCriterionParameterKeys
         "camp_max_iter",
         "shape_sideset",
         "ref_data_file",
-        "match_nodesets"
+        "match_nodesets",
+        // mass properties
+        "mass",
+        "cgx", 
+        "cgy", 
+        "cgz", 
+        "ixx", 
+        "iyy", 
+        "izz", 
+        "ixz", 
+        "iyz", 
+        "ixy"
     };
 };
 
@@ -192,7 +203,7 @@ private:
         "thermoplasticity_thermal_energy",
         "volume", 
         "volume_average", 
-        "mass", 
+        "mass",
         "effective_energy", 
         "surface_area", 
         "flux_p-norm", 
@@ -213,7 +224,8 @@ private:
         "fluid_thermal_compliance",
         "maximize_fluid_thermal_flux",
         "modal_matching",
-        "modal_projection_error"
+        "modal_projection_error",
+        "mass_properties"
     };
 
 public:
@@ -1298,7 +1310,8 @@ struct ValidAnalyzeCriteriaKeys
         { "surface_pressure", { "Average Surface Pressure", false } },
         { "flow_rate", { "Flow Rate", false } },
         { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
-        { "fluid_thermal_compliance", { "Thermal Compliance", false } }
+        { "fluid_thermal_compliance", { "Thermal Compliance", false } },
+        { "mass_properties", { "Mass Properties", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys
