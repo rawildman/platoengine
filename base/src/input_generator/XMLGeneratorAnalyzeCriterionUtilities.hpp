@@ -15,6 +15,9 @@ namespace XMLGen
 namespace Private
 {
 
+template<typename CriterionT>
+pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode);
+
 template<typename Criterion>
 void append_block_list
 (const Criterion& aCriterion,
@@ -188,12 +191,9 @@ pugi::xml_node append_surface_scalar_function_criterion
  pugi::xml_node&   aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tCriterionNode = appendCriterionNode(aCriterion, aParentNode);
 
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tCriterionNode = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tCriterionNode);
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"}; tValues = {"Type", "string", "Scalar Function"};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
@@ -227,11 +227,9 @@ pugi::xml_node append_scalar_function_criterion
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
     auto tCriterionLinearFlag = XMLGen::Private::is_criterion_linear(aCriterion);
 
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tScalarFunction = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tScalarFunction);
+    auto tScalarFunction = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"}; tValues = {"Type", "string", "Scalar Function"};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
@@ -356,11 +354,9 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
  pugi::xml_node& aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tObjective = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tObjective);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     // append stress constrained mass minimization scalar function
     tKeys = {"name", "type", "value"};
@@ -384,11 +380,9 @@ inline void append_stress_constraint_quadratic_criterion
  pugi::xml_node& aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tObjective = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tObjective);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"};
     tValues = {"Type", "string", "Scalar Function"};
@@ -438,11 +432,9 @@ pugi::xml_node append_volume_average_criterion
  pugi::xml_node& aParentNode)
 {
     XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tObjective = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tObjective);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"};
     tValues = {"Type", "string", "Volume Average Criterion"};
@@ -459,6 +451,17 @@ pugi::xml_node append_volume_average_criterion
 
     XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
     return tObjective;
+}
+
+template<typename CriterionT>
+pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
+{
+    std::string tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
+    pugi::xml_node tCriterionNode = aParentNode.append_child("ParameterList");
+    std::vector<std::string> tKeys = {"name"};
+    std::vector<std::string> tValues = {tName};
+    XMLGen::append_attributes(tKeys, tValues, tCriterionNode);
+    return tCriterionNode;
 }
 
 }
