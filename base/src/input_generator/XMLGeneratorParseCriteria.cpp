@@ -5,7 +5,9 @@
  */
 
 #include <algorithm>
+#include <sstream>
 
+#include "XMLG_Macros.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
@@ -58,68 +60,84 @@ std::string check_criterion_type_key
     return tValue;
 }
 
+void ParseCriteria::insertTag(std::string keyword, std::string defaultValue)
+{
+    mTags.insert({keyword, { { {keyword}, ""}, defaultValue } });
+}
+
 void ParseCriteria::allocate()
 {
     mTags.clear();
 
     // core properties
-    mTags.insert({ "type", { { {"type"}, ""}, "" } });
-    mTags.insert({ "normalize", { { {"normalize"}, ""}, "false" } });
-    mTags.insert({ "normalization_value", { { {"normalization_value"}, ""}, "1.0" } });
-    mTags.insert({ "stress_limit", { { {"stress_limit"}, ""}, "" } });
-    mTags.insert({ "scmm_initial_penalty", { { {"scmm_initial_penalty"}, ""}, "" } });
-    mTags.insert({ "scmm_penalty_expansion_multiplier", { { {"scmm_penalty_expansion_multiplier"}, ""}, "" } });
-    mTags.insert({ "scmm_constraint_exponent", { { {"scmm_constraint_exponent"}, ""}, "" } });
-    mTags.insert({ "scmm_penalty_upper_bound", { { {"scmm_penalty_upper_bound"}, ""}, "" } });
-    mTags.insert({ "scmm_stress_weight", { { {"scmm_stress_weight"}, ""}, "1.0" } });
-    mTags.insert({ "scmm_mass_weight", { { {"scmm_mass_weight"}, ""}, "1.0" } });
+    insertTag("type");
+    insertTag("normalize", "false");
+    insertTag("normalization_value", "1.0");
+    insertTag("stress_limit");
+    insertTag("scmm_initial_penalty");
+    insertTag("scmm_penalty_expansion_multiplier");
+    insertTag("scmm_constraint_exponent");
+    insertTag("scmm_penalty_upper_bound");
+    insertTag("scmm_stress_weight", "1.0");
+    insertTag("scmm_mass_weight", "1.0");
 
-    mTags.insert({ "stress_p_norm_exponent", { { {"stress_p_norm_exponent"}, ""}, "6.0" } });
-    mTags.insert({ "mechanical_weighting_factor", { { {"mechanical_weighting_factor"}, ""}, "1.0" } });
-    mTags.insert({ "thermal_weighting_factor", { { {"thermal_weighting_factor"}, ""}, "1.0" } });
-    mTags.insert({ "local_measure", { { {"local_measure"}, ""}, "vonmises" } });
-    mTags.insert({ "spatial_weighting_function", { { {"spatial_weighting_function"}, ""}, "1.0" } }); // function of x, y, and z
-    mTags.insert({ "material_penalty_model", { { {"material_penalty_model"}, ""}, "simp" } });
-    mTags.insert({ "material_penalty_exponent", { { {"material_penalty_exponent"}, ""}, "3.0" } });
-    mTags.insert({ "minimum_ersatz_material_value", { { {"minimum_ersatz_material_value"}, ""}, "" } });
-    mTags.insert({ "criterion_ids", { { {"criterion_ids"}, ""}, "" } });
-    mTags.insert({ "criterion_weights", { { {"criterion_weights"}, ""}, "" } });
-    mTags.insert({ "location_names", { { {"location_names"}, ""}, "" } });
-    mTags.insert({ "blocks", { { {"blocks"}, ""}, "" } });
-    mTags.insert({ "conductivity_ratios", { { {"conductivity_ratios"}, ""}, "" } });
+    insertTag("stress_p_norm_exponent", "6.0");
+    insertTag("mechanical_weighting_factor", "1.0");
+    insertTag("thermal_weighting_factor", "1.0");
+    insertTag("local_measure", "vonmises");
+    insertTag("spatial_weighting_function", "1.0"); // function of x, y, and z
+    insertTag("material_penalty_model", "simp");
+    insertTag("material_penalty_exponent", "3.0");
+    insertTag("minimum_ersatz_material_value");
+    insertTag("criterion_ids");
+    insertTag("criterion_weights");
+    insertTag("location_names");
+    insertTag("blocks");
+    insertTag("conductivity_ratios");
+
+    insertTag("mass");
+    insertTag("cgx");
+    insertTag("cgy");
+    insertTag("cgz");
+    insertTag("ixx");
+    insertTag("iyy");
+    insertTag("izz");
+    insertTag("iyz");
+    insertTag("ixz");
+    insertTag("ixy");
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
-    mTags.insert({ "volume_misfit_target", { { {"volume_misfit_target"}, ""}, "" } });
-    mTags.insert({ "relative_stress_limit", { { {"relative_stress_limit"}, ""}, "" } });
-    mTags.insert({ "relaxed_stress_ramp_factor", { { {"relaxed_stress_ramp_factor"}, ""}, "" } });
-    mTags.insert({ "limit_power_min", { { {"limit_power_min"}, ""}, "" } });
-    mTags.insert({ "limit_power_max", { { {"limit_power_max"}, ""}, "" } });
-    mTags.insert({ "limit_power_feasible_bias", { { {"limit_power_feasible_bias"}, ""}, "" } });
-    mTags.insert({ "limit_power_feasible_slope", { { {"limit_power_feasible_slope"}, ""}, "" } });
-    mTags.insert({ "limit_power_infeasible_bias", { { {"limit_power_infeasible_bias"}, ""}, "" } });
-    mTags.insert({ "limit_power_infeasible_slope", { { {"limit_power_infeasible_slope"}, ""}, "" } });
-    mTags.insert({ "limit_reset_subfrequency", { { {"limit_reset_subfrequency"}, ""}, "" } });
-    mTags.insert({ "limit_reset_count", { { {"limit_reset_count"}, ""}, "" } });
-    mTags.insert({ "inequality_allowable_feasibility_upper", { { {"inequality_allowable_feasibility_upper"}, ""}, "" } });
-    mTags.insert({ "inequality_feasibility_scale", { { {"inequality_feasibility_scale"}, ""}, "" } });
-    mTags.insert({ "inequality_infeasibility_scale", { { {"inequality_infeasibility_scale"}, ""}, "" } });
-    mTags.insert({ "stress_inequality_power", { { {"stress_inequality_power"}, ""}, "" } });
-    mTags.insert({ "stress_favor_final", { { {"stress_favor_final"}, ""}, "" } });
-    mTags.insert({ "stress_favor_updates", { { {"stress_favor_updates"}, ""}, "" } });
-    mTags.insert({ "volume_penalty_power", { { {"volume_penalty_power"}, ""}, "" } });
-    mTags.insert({ "volume_penalty_divisor", { { {"volume_penalty_divisor"}, ""}, "" } });
-    mTags.insert({ "volume_penalty_bias", { { {"volume_penalty_bias"}, ""}, "" } });
-    mTags.insert({ "surface_area_sideset_id", { { {"surface_area_sideset_id"}, ""}, "" } });
+    insertTag("volume_misfit_target");
+    insertTag("relative_stress_limit");
+    insertTag("relaxed_stress_ramp_factor");
+    insertTag("limit_power_min");
+    insertTag("limit_power_max");
+    insertTag("limit_power_feasible_bias");
+    insertTag("limit_power_feasible_slope");
+    insertTag("limit_power_infeasible_bias");
+    insertTag("limit_power_infeasible_slope");
+    insertTag("limit_reset_subfrequency");
+    insertTag("limit_reset_count");
+    insertTag("inequality_allowable_feasibility_upper");
+    insertTag("inequality_feasibility_scale");
+    insertTag("inequality_infeasibility_scale");
+    insertTag("stress_inequality_power");
+    insertTag("stress_favor_final");
+    insertTag("stress_favor_updates");
+    insertTag("volume_penalty_power");
+    insertTag("volume_penalty_divisor");
+    insertTag("volume_penalty_bias");
+    insertTag("surface_area_sideset_id");
 
     // Sierra/SD modal objectives
-    mTags.insert({ "num_modes_compute", { { {"num_modes_compute"}, ""}, "30" } });
-    mTags.insert({ "modes_to_exclude", { { {"modes_to_exclude"}, ""}, "" } });
-    mTags.insert({ "eigen_solver_shift", { { {"eigen_solver_shift"}, ""}, "-1e6" } });
-    mTags.insert({ "camp_solver_tol", { { {"camp_solver_tol"}, ""}, "1e-6" } });
-    mTags.insert({ "camp_max_iter", { { {"camp_max_iter"}, ""}, "1000" } });
-    mTags.insert({ "shape_sideset", { { {"shape_sideset"}, ""}, "" } });
-    mTags.insert({ "ref_data_file", { { {"ref_data_file"}, ""}, "" } });
-    mTags.insert({ "match_nodesets", { { {"match_nodesets"}, ""}, "" } });
+    insertTag("num_modes_compute", "30");
+    insertTag("modes_to_exclude");
+    insertTag("eigen_solver_shift", "-1e6");
+    insertTag("camp_solver_tol", "1e-6");
+    insertTag("camp_max_iter", "1000");
+    insertTag("shape_sideset");
+    insertTag("ref_data_file");
+    insertTag("match_nodesets");
 }
 
 void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
@@ -211,6 +229,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionType(aMetadata);
     this->setCriterionIDs(aMetadata);
     this->setCriterionWeights(aMetadata);
+    this->setMassProperties(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
@@ -227,6 +246,45 @@ void ParseCriteria::checkUniqueIDs()
     if(!XMLGen::unique(tIDs))
     {
         THROWERR("Parse Criteria: Criterion block identification numbers, i.e. IDs, are not unique.  Criterion block IDs must be unique.")
+    }
+}
+
+void ParseCriteria::setMassProperties(XMLGen::Criterion& aCriterion)
+{
+    if(aCriterion.type() == "mass_properties")
+    {
+        const std::vector<std::string> massProperties = {"Mass", "CGx", "CGy", "CGz", "Ixx", "Iyy", "Izz", "Ixz", "Iyz", "Ixy"};
+
+        for(auto &property : massProperties) {
+            auto tItr = mTags.find(XMLGen::to_lower(property));
+
+            if (tItr != mTags.end()) {
+                std::string tValues = tItr->second.first.second;
+                if (tValues.empty()) continue;
+
+                std::vector<std::string> tTokens;
+                char tValuesBuffer[10000];
+                strcpy(tValuesBuffer, tValues.c_str());
+                XMLGen::parse_tokens(tValuesBuffer, tTokens);
+
+                if (tTokens[0] != "gold" || tTokens[2] != "weight" || tTokens.size() != 4) {
+                    std::stringstream errorstream;
+                    errorstream << "Parse Criteria: expected syntax for mass properties is '"
+                        << property << " gold [goldValue] weight [weightValue]'" << std::endl; 
+                    THROWERR(errorstream.str());
+                }
+
+                std::istringstream goldStream(tTokens[1]);
+                double goldValue;
+                goldStream >> goldValue;
+
+                std::istringstream weightStream(tTokens[3]);
+                double weight;
+                weightStream >> weight;
+
+                aCriterion.setMassProperty(property, goldValue, weight);
+            }
+        }
     }
 }
 

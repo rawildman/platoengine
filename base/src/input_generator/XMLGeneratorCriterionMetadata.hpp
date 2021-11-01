@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 
 #include "Plato_FreeFunctions.hpp"
 #include "XMLG_Macros.hpp"
@@ -30,6 +31,7 @@ private:
     std::vector<std::string> mCriterionIDs;
     std::vector<std::string> mModesToExclude;
     std::vector<std::string> mMatchNodesetIDs;
+    std::map<std::string, std::pair<double,double>> mMassProperties;
 
     std::string mReport;
 
@@ -451,7 +453,7 @@ public:
     }
 
     /******************************************************************************//**
-     * \fn weightMassScaleFactor
+     * \fn shapeSideset
      * \brief Return string value Sierra/SD shape sideset
      * \return value
     **********************************************************************************/
@@ -477,6 +479,14 @@ public:
     **********************************************************************************/
     void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
 
+    void setMassProperty(std::string property, double goldValue, double weight) {
+        mMassProperties[property] = std::make_pair(goldValue, weight);
+    }
+
+    const std::map<std::string, std::pair<double,double>>& getMassProperties() const
+    {
+        return mMassProperties;
+    }
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     std::string volume_misfit_target() const { return this->value("volume_misfit_target"); }

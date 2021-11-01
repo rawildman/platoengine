@@ -478,6 +478,71 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
     ASSERT_STREQ("3", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
 }
 
+TEST(PlatoTestXMLGenerator, ParseCriteria_MassProperties)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type mass_properties\n"
+        "Mass Gold 0.0664246 Weight 1.0\n"
+        "Ixx Gold 3.7079 Weight 1.0\n"
+        "Iyy Gold 2.7113 Weight 1.0\n"
+        "Izz Gold 4.2975 Weight 1.0\n"
+        "CGx Gold 4.1376 Weight 1.0\n"
+        "CGy Gold 5.6817 Weight 1.0\n"
+        "CGz Gold 2.9269 Weight 1.0\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("mass_properties", tCriterionMetaData[0].type().c_str());
+
+    auto massProperties = tCriterionMetaData[0].getMassProperties();
+
+    std::map<std::string, std::pair<double,double>>::const_iterator p;
+
+    p = massProperties.find("Mass");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 0.0664246);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Ixx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 3.7079);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Iyy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.7113);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Izz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.2975);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.1376);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 5.6817);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.9269);
+    ASSERT_EQ((*p).second.second, 1.0);
+}
+
+
 TEST(PlatoTestXMLGenerator, ParseCriteria_ThreeCriteria)
 {
     std::string tStringInput =

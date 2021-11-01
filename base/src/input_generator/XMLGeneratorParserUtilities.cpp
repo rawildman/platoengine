@@ -199,21 +199,8 @@ bool parse_single_value_index
 
 std::string to_lower(const std::string &aInput)
 {
-    char tBuffer[500];
-    std::string tOutput;
-    if (aInput.size() > 500)
-    {
-        tOutput = "";
-    }
-    else
-    {
-        for (size_t tIndex = 0; tIndex < aInput.size(); ++tIndex)
-        {
-            tBuffer[tIndex] = tolower(aInput[tIndex]);
-        }
-        tBuffer[aInput.size()] = '\0';
-        tOutput = tBuffer;
-    }
+    std::string tOutput = aInput;
+    std::transform(tOutput.begin(), tOutput.end(), tOutput.begin(), ::tolower);
     return tOutput;
 }
 // function to_lower

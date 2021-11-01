@@ -7,7 +7,7 @@
 
 namespace PlatoTestXMLGenerator {
 
-XMLGen::InputData setUpMetaDataForExistingSDInputDeck(const char *input) {
+XMLGen::InputData setUpMetaDataForExistingSDInputDeck() {
     XMLGen::InputData aXMLMetaData;
 
     XMLGen::Service tService;
@@ -51,7 +51,7 @@ TEST(PlatoTestXMLGenerator, SD_changeSolutionCase)
 
     std::stringstream iDeck(input), oDeck;
 
-    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck(input);
+    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck();
     XMLGen::augment_sierra_sd_input_deck_with_plato_problem_description(aXMLMetaData, iDeck, oDeck);
 
     constexpr char expected_output[] =
@@ -79,7 +79,7 @@ TEST(PlatoTestXMLGenerator, SD_augmentMaterialSection)
 
     std::stringstream iDeck(input), oDeck;
 
-    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck(input);
+    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck();
     XMLGen::augment_sierra_sd_input_deck_with_plato_problem_description(aXMLMetaData, iDeck, oDeck);
 
     constexpr char expected_output[] =
@@ -106,7 +106,7 @@ TEST(PlatoTestXMLGenerator, SD_augmentOutputsSection)
 
     std::stringstream iDeck(input), oDeck;
 
-    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck(input);
+    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck();
     XMLGen::augment_sierra_sd_input_deck_with_plato_problem_description(aXMLMetaData, iDeck, oDeck);
 
     constexpr char expected_output[] =
@@ -131,7 +131,7 @@ TEST(PlatoTestXMLGenerator, SD_augmentEchoSection)
 
     std::stringstream iDeck(input), oDeck;
 
-    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck(input);
+    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck();
     XMLGen::augment_sierra_sd_input_deck_with_plato_problem_description(aXMLMetaData, iDeck, oDeck);
 
     constexpr char expected_output[] =
@@ -171,7 +171,7 @@ TEST(PlatoTestXMLGenerator, SD_deckWithManySections)
 
     std::stringstream iDeck(input), oDeck;
 
-    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck(input);
+    XMLGen::InputData aXMLMetaData = setUpMetaDataForExistingSDInputDeck();
     XMLGen::augment_sierra_sd_input_deck_with_plato_problem_description(aXMLMetaData, iDeck, oDeck);
 
     constexpr char expected_output[] =

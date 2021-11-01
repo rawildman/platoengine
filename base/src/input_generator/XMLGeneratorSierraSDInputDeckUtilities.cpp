@@ -1004,10 +1004,6 @@ bool isEmptyLine(std::string line) {
         return !std::isspace(c);}) == 0;
 }
 
-void makeLowerCase(std::string &str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);    
-}
-
 std::string getFirstTokenInLine(std::string line) {
     std::istringstream stream(line);
     std::string firstToken;
@@ -1016,8 +1012,7 @@ std::string getFirstTokenInLine(std::string line) {
 }
 
 std::string lowerCaseFirstTokenInLine(std::string line) {
-    std::string firstToken = getFirstTokenInLine(line);
-    makeLowerCase(firstToken);
+    std::string firstToken = to_lower(getFirstTokenInLine(line));
     return firstToken;
 }
 

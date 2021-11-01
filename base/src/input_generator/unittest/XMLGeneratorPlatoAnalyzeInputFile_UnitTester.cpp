@@ -19,6 +19,7 @@
 #include "XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
+#include "XMLGeneratorAnalyzeCriterionUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -4565,6 +4566,60 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilter)
     +"</ParameterList></ParameterList>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_All)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("mass_properties");
+    tCriterion.id("1");
+    tCriterion.setMassProperty("Mass", 0.0664246, 1.0);
+    tCriterion.setMassProperty("Ixx", 3.7079, 1.0);
+    tCriterion.setMassProperty("Iyy", 2.7113, 1.0);
+    tCriterion.setMassProperty("Izz", 4.2975, 1.0);
+    tCriterion.setMassProperty("CGx", 4.1376, 1.0);
+    tCriterion.setMassProperty("CGy", 5.6817, 1.0);
+    tCriterion.setMassProperty("CGz", 2.9269, 1.0);
+
+    ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
+    "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGx,CGy,CGz,Ixx,Iyy,Izz,Mass}\"/>"
+    "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{4.1376,5.6817,2.9269,3.7079,2.7113,4.2975,0.0664246}\"/>"
+    "<Parametername=\"Weights\"type=\"Array(double)\"value=\"{1,1,1,1,1,1,1}\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_Subset)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("mass_properties");
+    tCriterion.id("1");
+    tCriterion.setMassProperty("Mass", 0.0664246, 1.0);
+    tCriterion.setMassProperty("Ixx", 3.7079, 1.0);
+    tCriterion.setMassProperty("CGz", 2.9269, 1.0);
+
+    ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
+    "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGz,Ixx,Mass}\"/>"
+    "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{2.9269,3.7079,0.0664246}\"/>"
+    "<Parametername=\"Weights\"type=\"Array(double)\"value=\"{1,1,1}\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
 }
 
 TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeAverageCriteriaToCriteriaList)

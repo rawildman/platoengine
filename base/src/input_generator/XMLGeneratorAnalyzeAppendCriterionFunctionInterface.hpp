@@ -145,7 +145,12 @@ private:
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_volume_average_criterion<CriterionType>));
         mMap.insert(std::make_pair("volume_average",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_volume_average_criterion<CriterionType>, tFuncIndex)));
-        
+
+        // mass_properties
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_mass_properties_criterion<CriterionType>));
+        mMap.insert(std::make_pair("mass_properties",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_mass_properties_criterion<CriterionType>, tFuncIndex)));
+
         // incompressible fluids
         XMLGen::Private::append_incompressible_fluids_scalar_functions<CriterionType>(mMap);
     }
