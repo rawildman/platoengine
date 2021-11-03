@@ -3550,12 +3550,12 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     tXMLMetaData.append(tWeightedSum);
 
     XMLGen::Criterion tCriterion1;
-    tCriterion1.type("surface_pressure");
+    tCriterion1.type("mean_surface_pressure");
     tCriterion1.id("2");
     tCriterion1.append("location_names", "inlet");
     tXMLMetaData.append(tCriterion1);
     XMLGen::Criterion tCriterion2;
-    tCriterion2.type("surface_pressure");
+    tCriterion2.type("mean_surface_pressure");
     tCriterion2.id("3");
     tCriterion2.append("location_names", "outlet");
     tXMLMetaData.append(tCriterion2);
@@ -3597,7 +3597,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Functions", "Array(string)", "{my_surface_pressure_criterion_id_2,my_surface_pressure_criterion_id_3}"};
+    tGoldValues = {"Functions", "Array(string)", "{my_mean_surface_pressure_criterion_id_2,my_mean_surface_pressure_criterion_id_3}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3611,7 +3611,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Pressure"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Pressure"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3625,7 +3625,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Pressure"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Pressure"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3645,12 +3645,12 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     tXMLMetaData.append(tWeightedSum);
 
     XMLGen::Criterion tCriterion1;
-    tCriterion1.type("surface_temperature");
+    tCriterion1.type("mean_surface_temperature");
     tCriterion1.id("2");
     tCriterion1.append("location_names", "inlet");
     tXMLMetaData.append(tCriterion1);
     XMLGen::Criterion tCriterion2;
-    tCriterion2.type("surface_temperature");
+    tCriterion2.type("mean_surface_temperature");
     tCriterion2.id("3");
     tCriterion2.append("location_names", "outlet");
     tXMLMetaData.append(tCriterion2);
@@ -3692,7 +3692,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Functions", "Array(string)", "{my_surface_temperature_criterion_id_2,my_surface_temperature_criterion_id_3}"};
+    tGoldValues = {"Functions", "Array(string)", "{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3706,7 +3706,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Temperature"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Temperature"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3720,7 +3720,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Temperature"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Temperature"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3876,6 +3876,73 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveThermalFluxCriteriaToCriteriaList)
 
     tParameter = tParameter.next_sibling();
     tGoldValues = {"Conductivity Ratios", "Array(double)", "{-40.0}"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+    tParameter = tParameter.next_sibling();
+    ASSERT_TRUE(tParameter.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendObjectiveMeanTemperatureToCriteriaList)
+{
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Criterion tCriterion1;
+    tCriterion1.type("mean_temperature");
+    tCriterion1.id("1");
+    tCriterion1.materialPenaltyExponent("3");
+    tXMLMetaData.append(tCriterion1);
+
+    XMLGen::Service tService;
+    tService.code("plato_analyze");
+    tService.id("1");
+    tXMLMetaData.append(tService);
+
+    XMLGen::Scenario tScenario;
+    tScenario.physics("incompressible_fluids");
+    tScenario.id("1");
+    tXMLMetaData.append(tScenario);
+
+    tXMLMetaData.objective.scenarioIDs.push_back("1");
+    tXMLMetaData.objective.criteriaIDs.push_back("1");
+    tXMLMetaData.objective.serviceIDs.push_back("1");
+
+    pugi::xml_document tDocument;
+    XMLGen::append_criteria_list_to_plato_analyze_input_deck(tXMLMetaData, tDocument);
+    tDocument.save_file("dummy.xml");
+
+    // TEST CRITERIA
+    auto tCriteria = tDocument.child("ParameterList");
+    ASSERT_FALSE(tCriteria.empty());
+    ASSERT_STREQ("ParameterList", tCriteria.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Criteria"}, tCriteria);
+
+    // TEST MY OBJECTIVE CRITERION
+    auto tCriterion = tCriteria.child("ParameterList");
+    ASSERT_FALSE(tCriterion.empty());
+    ASSERT_STREQ("ParameterList", tCriterion.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"My Objective"}, tCriterion);
+
+    // TEST PARAMETERS
+    auto tParameter = tCriterion.child("Parameter");
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::string> tGoldValues = {"Type", "string", "Scalar Function"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+
+    tParameter = tParameter.next_sibling();
+    tGoldValues = {"Scalar Function Type", "string", "Mean Temperature"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+
+    // TEST CRITERION
+    auto tPenalty = tCriterion.child("ParameterList");
+    ASSERT_FALSE(tPenalty.empty());
+    ASSERT_STREQ("ParameterList", tPenalty.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Penalty Function"}, tPenalty);
+
+    tParameter = tPenalty.child("Parameter");
+    tGoldKeys = {"name", "type", "value"};
+    tGoldValues = {"Type", "string", "SIMP"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+    tParameter = tParameter.next_sibling();
+    tGoldValues = {"Exponent", "double", "3"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
     tParameter = tParameter.next_sibling();
     ASSERT_TRUE(tParameter.empty());
