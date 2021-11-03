@@ -1,5 +1,5 @@
 /*
- * Plato_ROLKSBCInterface.hpp
+ * Plato_ROLBoundConstrainedInterface.hpp
  *
  *  Created on: Feb 8, 2018
  */
@@ -46,8 +46,8 @@
 //@HEADER
 */
 
-#ifndef PLATO_ROLKSBCINTERFACE_HPP_
-#define PLATO_ROLKSBCINTERFACE_HPP_
+#ifndef PLATO_ROLBOUNDCONSTRAINEDINTERFACE_HPP_
+#define PLATO_ROLBOUNDCONSTRAINEDINTERFACE_HPP_
 
 #include <mpi.h>
 
@@ -60,8 +60,7 @@
 #include "Teuchos_XMLParameterListHelpers.hpp"
 
 #include "ROL_Bounds.hpp"
-#include "ROL_OptimizationSolver.hpp"
-#include "ROL_OptimizationProblem.hpp"
+#include "ROL_Solver.hpp"
 
 #include "Plato_Parser.hpp"
 #include "Plato_Interface.hpp"
@@ -77,11 +76,11 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class ROLKSBCInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class ROLBoundConstrainedInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
-    ROLKSBCInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
+    ROLBoundConstrainedInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
             mComm(aComm),
             mInterface(aInterface),
             mInputData(Plato::OptimizerEngineStageData())
@@ -90,7 +89,7 @@ public:
     }
 
     /******************************************************************************/
-    virtual ~ROLKSBCInterface()
+    virtual ~ROLBoundConstrainedInterface()
     /******************************************************************************/
     {
     }
@@ -99,7 +98,7 @@ public:
     Plato::optimizer::algorithm_t type() const
     /******************************************************************************/
     {
-        return (Plato::optimizer::algorithm_t::ROL_KSBC);
+        return (Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED);
     }
 
     /******************************************************************************/
@@ -117,48 +116,43 @@ public:
 
         this->initialize();
 
-        /****************************** GET NUMBER OF DESIGN VARIABLES ******************************/
-        const size_t tMY_CONTROL_INDEX = 0;
-        std::string tMyName = mInputData.getControlName(tMY_CONTROL_INDEX);
-        const OrdinalType tMyNumControls = mInterface->size(tMyName);
-
         /************************************ SET CONTROL BOUNDS ************************************/
-        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlLowerBounds =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tMyNumControls));
-        std::vector<ScalarType> tLowerBounds = mInputData.getLowerBoundValues();
-        this->setBounds(tLowerBounds, tControlLowerBounds.operator*());
+        const OrdinalType tCONTROL_VECTOR_INDEX = 0;
+        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::vector<ScalarType> tInputBoundsData(tNumControls);
 
+        // ********* GET LOWER BOUNDS INFORMATION *********
+        Plato::getLowerBoundsInputData(mInputData, mInterface, tInputBoundsData);
+
+        // ********* SET LOWER BOUNDS FOR OPTIMIZER *********
+        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlLowerBounds =
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tNumControls));
+        this->setBounds(tInputBoundsData, tControlLowerBounds.operator*());
+
+        // ********* GET UPPER BOUNDS INFORMATION *********
+        Plato::getUpperBoundsInputData(mInputData, mInterface, tInputBoundsData);
+
+        // ********* SET UPPER BOUNDS FOR OPTIMIZER *********
         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlUpperBounds =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tMyNumControls));
-        std::vector<ScalarType> tUpperBounds = mInputData.getUpperBoundValues();
-        this->setBounds(tUpperBounds, tControlUpperBounds.operator*());
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tNumControls));
+        this->setBounds(tInputBoundsData, tControlUpperBounds.operator*());
+
+        // ********* CREATE BOUND CONSTRAINT FOR OPTIMIZER *********
         Teuchos::RCP<ROL::BoundConstraint<ScalarType>> tControlBoundsMng =
                 Teuchos::rcp(new ROL::Bounds<ScalarType>(tControlLowerBounds, tControlUpperBounds));
 
-        // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
-        Plato::AlgebraFactory<ScalarType, OrdinalType> tLinearAlgebraFactory;
-
-        // ********* ALLOCATE OPTIMIZER'S BASELINE DATA STRUCTURES *********
-        std::shared_ptr<Plato::DataFactory<ScalarType, OrdinalType>> tDataFactory =
-                std::make_shared<Plato::DataFactory<ScalarType, OrdinalType>>();
-        this->allocateBaselineDataStructures(tLinearAlgebraFactory, *tDataFactory);
-        // ********* ALLOCATE OPTIMIZER'S DATA MANAGER *********
-        std::shared_ptr<Plato::OptimalityCriteriaDataMng<ScalarType, OrdinalType>> tDataMng =
-                std::make_shared<Plato::OptimalityCriteriaDataMng<ScalarType, OrdinalType>>(tDataFactory);
-
-        // ********* SET LOWER AND UPPER BOUNDS FOR CONTROLS *********
-        this->setLowerBounds(tLinearAlgebraFactory, *tDataFactory, *tDataMng);
-        this->setUpperBounds(tLinearAlgebraFactory, *tDataFactory, *tDataMng);
-
         /******************************** SET CONTROL INITIAL GUESS *********************************/
         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControls =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tMyNumControls));
-        this->setInitialGuess(tMyName, tControls.operator*());
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(mComm, tNumControls));
+        this->setInitialGuess(tControlName, tControls.operator*());
 
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(mInputData, mInterface));
-        ROL::OptimizationProblem<ScalarType> tOptimizationProblem(tObjective, tControls, tControlBoundsMng);
-
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem =
+             ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
+        tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
+        tOptimizationProblem->finalize(true, true, std::cout);
 
         /******************************** SOLVE OPTIMIZATION PROBLEM ********************************/
         this->solve(tOptimizationProblem);
@@ -172,74 +166,6 @@ public:
     }
 
 private:
-    /******************************************************************************/
-    void allocateBaselineDataStructures(const Plato::AlgebraFactory<ScalarType, OrdinalType> & aAlgebraFactory,
-                                        Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory)
-    /******************************************************************************/
-    {
-        // ********* Allocate control vectors baseline data structures *********
-        const OrdinalType tNumVectors = mInputData.getNumControlVectors();
-        assert(tNumVectors > static_cast<OrdinalType>(0));
-        Plato::StandardMultiVector<ScalarType, OrdinalType> tMultiVector;
-        for(OrdinalType tIndex = 0; tIndex < tNumVectors; tIndex++)
-        {
-            std::string tControlName = mInputData.getControlName(tIndex);
-            const OrdinalType tNumControls = mInterface->size(tControlName);
-            std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                    aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
-            tMultiVector.add(tVector);
-        }
-        aDataFactory.allocateControl(tMultiVector);
-        std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>> tReductionOperations =
-                aAlgebraFactory.createReduction(mComm, mInterface);
-        aDataFactory.allocateControlReductionOperations(*tReductionOperations);
-
-        Plato::CommWrapper tCommWrapper(mComm);
-        aDataFactory.setCommWrapper(tCommWrapper);
-    }
-    /******************************************************************************/
-    void setUpperBounds(const Plato::AlgebraFactory<ScalarType, OrdinalType> & aAlgebraFactory,
-                        Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
-                        Plato::OptimalityCriteriaDataMng<ScalarType, OrdinalType> & aDataMng)
-    /******************************************************************************/
-    {
-        const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
-        std::vector<ScalarType> tInputBoundsData(tNumControls);
-
-        // ********* GET UPPER BOUNDS INFORMATION *********
-        Plato::getUpperBoundsInputData(mInputData, mInterface, tInputBoundsData);
-
-        // ********* SET UPPER BOUNDS FOR OPTIMIZER *********
-        std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tUpperBoundVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
-        aDataFactory.allocateUpperBoundVector(*tUpperBoundVector);
-        Plato::copy(tInputBoundsData, *tUpperBoundVector);
-        aDataMng.setControlUpperBounds(tCONTROL_VECTOR_INDEX, *tUpperBoundVector);
-    }
-
-    /******************************************************************************/
-    void setLowerBounds(const Plato::AlgebraFactory<ScalarType, OrdinalType> & aAlgebraFactory,
-                        Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
-                        Plato::OptimalityCriteriaDataMng<ScalarType, OrdinalType> & aDataMng)
-    /******************************************************************************/
-    {
-        const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
-        std::vector<ScalarType> tInputBoundsData(tNumControls);
-
-        // ********* GET LOWER BOUNDS INFORMATION *********
-        Plato::getLowerBoundsInputData(mInputData, mInterface, tInputBoundsData);
-
-        // ********* SET LOWER BOUNDS FOR OPTIMIZER *********
-        std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tLowerBoundVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
-        aDataFactory.allocateLowerBoundVector(*tLowerBoundVector);
-        Plato::copy(tInputBoundsData, *tLowerBoundVector);
-        aDataMng.setControlLowerBounds(tCONTROL_VECTOR_INDEX, *tLowerBoundVector);
-    }
     /******************************************************************************/
     void output(const std::stringbuf & aBuffer)
     /******************************************************************************/
@@ -265,7 +191,7 @@ private:
     }
 
     /******************************************************************************/
-    void printControl(ROL::OptimizationProblem<ScalarType> & aOptimizationProblem)
+    void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
         int tMyRank = -1;
@@ -278,7 +204,7 @@ private:
             {
                 std::ofstream tOutputFile;
                 tOutputFile.open("ROL_control_output.txt");
-                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem.getSolutionVector();
+                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem->getPrimalOptimizationVector();
                 Plato::DistributedVectorROL<ScalarType> & tSolution =
                         dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(tSolutionPtr.operator*());
                 std::vector<ScalarType> & tData = tSolution.vector();
@@ -292,7 +218,7 @@ private:
     }
 
     /******************************************************************************/
-    void solve(ROL::OptimizationProblem<ScalarType> & aOptimizationProblem)
+    void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
         std::stringbuf tBuffer;
@@ -303,13 +229,30 @@ private:
         if(mInputData.getCheckGradient() == true)
         {
             /**************************** CHECK DERIVATIVES ****************************/
-            aOptimizationProblem.check(tOutputStream);
+            aOptimizationProblem->check(true, std::cout);
         }
         else
         {
             /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
-            ROL::OptimizationSolver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            tOptimizer.solve(tOutputStream);
+            int tNumSolves=1;
+            if(mInputData.getResetAlgorithmOnUpdate())
+            {
+                tNumSolves = mInputData.getMaxNumIterations()/mInputData.getProblemUpdateFrequency();
+            }
+            double tCurDelta;
+            for(int i=0; i<tNumSolves; ++i)
+            {
+                if(i>0)
+                {
+                    tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
+                }
+                ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
+                tOptimizer.solve(tOutputStream);
+                ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState = 
+                       ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
+                tCurDelta = tAlgorithmState->searchSize;
+                std::cout << "Delta: " << tCurDelta << std::endl;
+            }
         }
 
         // ********* Print Diagnostics and Control ********* //
@@ -370,10 +313,10 @@ public:
     Plato::OptimizerEngineStageData mInputData;
 
 private:
-    ROLKSBCInterface(const Plato::ROLKSBCInterface<ScalarType> & aRhs);
-    Plato::ROLKSBCInterface<ScalarType> & operator=(const Plato::ROLKSBCInterface<ScalarType> & aRhs);
+    ROLBoundConstrainedInterface(const Plato::ROLBoundConstrainedInterface<ScalarType> & aRhs);
+    Plato::ROLBoundConstrainedInterface<ScalarType> & operator=(const Plato::ROLBoundConstrainedInterface<ScalarType> & aRhs);
 };
 
 } // namespace Plato
 
-#endif /* PLATO_ROLKSBCINTERFACE_HPP_ */
+#endif /* PLATO_ROLBOUNDCONSTRAINEDINTERFACE_HPP_ */

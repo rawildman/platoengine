@@ -72,6 +72,72 @@ void parse_input_metadata
     }
 }
 
+void parse_input_metadata_with_valid_keyword_checking
+(const std::vector<std::string>& aStopKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::vector<std::string> &aValidKeywords)
+{
+    constexpr int tMAX_CHARS_PER_LINE = 10000;
+    std::vector<char> tBuffer(tMAX_CHARS_PER_LINE);
+    while (!aInputFile.eof())
+    {
+        std::vector<std::string> tTokens;
+        aInputFile.getline(tBuffer.data(), tMAX_CHARS_PER_LINE);
+        XMLGen::parse_tokens(tBuffer.data(), tTokens);
+        XMLGen::to_lower(tTokens);
+
+        std::string tID;
+        if (XMLGen::parse_single_value(tTokens, aStopKeys, tID))
+        {
+            break;
+        }
+        if(!XMLGen::check_for_valid_keyword(tTokens, aValidKeywords))
+        {
+            THROWERR(std::string("Check Keyword: keyword '") + tTokens[0] + std::string("' is not supported"))
+        }
+        XMLGen::parse_tag_values(tTokens, aTags);
+    }
+}
+
+void parse_input_metadata_unlowered
+(const std::vector<std::string>& aStopKeys,
+ const std::vector<std::string>& aFindKeys,
+ std::istream& aInputFile,
+ XMLGen::MetaDataTags& aTags,
+ std::string& aOutputString)
+{
+    constexpr int tMAX_CHARS_PER_LINE = 10000;
+    std::vector<char> tBuffer(tMAX_CHARS_PER_LINE);
+    while (!aInputFile.eof())
+    {
+        std::vector<std::string> tTokens;
+        aInputFile.getline(tBuffer.data(), tMAX_CHARS_PER_LINE);
+        XMLGen::parse_tokens(tBuffer.data(), tTokens);
+        std::vector<std::string> tUnLoweredTokens = tTokens;
+        XMLGen::to_lower(tTokens);
+
+        std::string tID;
+        int tIndex;
+        if (XMLGen::parse_single_value(tTokens, aStopKeys, tID))
+        {
+            break;
+        }
+        else if (XMLGen::parse_single_value_index(tTokens, aFindKeys, tIndex))
+        {
+            aOutputString = tUnLoweredTokens[tIndex];
+            if (aOutputString == "")
+            {
+                THROWERR(std::string("Parse input metadata unlowered: Can't find specified token for desired unlowered key"))
+            }
+        }
+        else
+        {
+            XMLGen::parse_tag_values(tTokens, aTags);
+        }
+    }
+}
+
 bool parse_single_value
 (const std::vector<std::string> &aTokens,
  const std::vector<std::string> &aTargetTokens,
@@ -102,23 +168,39 @@ bool parse_single_value
 }
 // function parse_single_value
 
+bool parse_single_value_index
+(const std::vector<std::string> &aTokens,
+ const std::vector<std::string> &aTargetTokens,
+ int &aIndex)
+{
+    if(aTargetTokens.size() < 1 || aTokens.size() < 1 || aTokens.size() < aTargetTokens.size())
+    {
+        return false;
+    }
+
+    for(auto& tTargetToken : aTargetTokens)
+    {
+        auto tIndex = &tTargetToken - &aTargetTokens[0];
+        if(aTokens[tIndex].compare(tTargetToken))
+        {
+            return false;
+        }
+    }
+
+    if(aTokens.size() == (aTargetTokens.size() + 1u))
+    {
+        auto tIndex = aTargetTokens.size();
+        aIndex = tIndex;
+    }
+
+    return true;
+}
+// function parse_single_value_index
+
 std::string to_lower(const std::string &aInput)
 {
-    char tBuffer[500];
-    std::string tOutput;
-    if (aInput.size() > 500)
-    {
-        tOutput = "";
-    }
-    else
-    {
-        for (size_t tIndex = 0; tIndex < aInput.size(); ++tIndex)
-        {
-            tBuffer[tIndex] = tolower(aInput[tIndex]);
-        }
-        tBuffer[aInput.size()] = '\0';
-        tOutput = tBuffer;
-    }
+    std::string tOutput = aInput;
+    std::transform(tOutput.begin(), tOutput.end(), tOutput.begin(), ::tolower);
     return tOutput;
 }
 // function to_lower
@@ -197,6 +279,20 @@ void is_input_keyword_empty
     }
 }
 // function is_input_keyword_empty
+
+bool check_for_valid_keyword
+(const std::vector<std::string>& aInputTokens,
+ const std::vector<std::string>& aValidKeywords)
+{
+    for (auto& tKeyword : aValidKeywords)
+    {
+        if(tKeyword == aInputTokens[0])
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 bool tokens_match
 (const std::vector<std::string>& aInputTokens,
@@ -341,10 +437,23 @@ bool transform_boolean_key(const std::string& aInput)
 }
 // function transform_boolean_key
 
+bool check_run_type(const std::string& aInput)
+{
+    XMLGen::ValidRunTypes tValidTypes;
+    for(auto& tCurRunType : tValidTypes.mKeys)
+    {
+        if(tCurRunType == aInput)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string check_physics_keyword(const std::string& aInput)
 {
     XMLGen::ValidPhysicsKeys tValidKeys;
-    auto tValue = tValidKeys.value(aInput);
+    auto tValue = tValidKeys.physics(aInput);
     if(tValue.empty())
     {
         THROWERR(std::string("Check Physics Keyword: keyword 'physics' with tag '") + aInput + "' is not supported.")

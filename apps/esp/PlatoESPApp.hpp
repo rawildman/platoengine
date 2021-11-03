@@ -45,8 +45,6 @@
 #include "Plato_ESP.hpp"
 #include "Plato_LocalOperation.hpp"
 #include "Plato_Application.hpp"
-#include "Plato_Interface.hpp"
-#include "Plato_Exceptions.hpp"
 #include "Plato_TimersTree.hpp"
 
 typedef double ScalarType;
@@ -195,94 +193,3 @@ private:
 
 };
 
-#ifndef NDEBUG
-#include <fenv.h>
-#endif
-
-static void safeExit(){
-    MPI_Finalize();
-    exit(0);
-}
-
-namespace Plato {
-/******************************************************************************/
-
-template <typename AppType>
-int Main(int aArgc, char *aArgv[])
-/******************************************************************************/
-{
-#ifndef NDEBUG
-    feclearexcept(FE_ALL_EXCEPT);
-    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
-
-    MPI_Init(&aArgc, (char***) &aArgv);
-
-    ::Plato::Interface* tPlatoInterface = nullptr;
-    try
-    {
-        tPlatoInterface = new ::Plato::Interface();
-    }
-    catch(::Plato::ParsingException& e)
-    {
-        std::cout << e.message() << std::endl;
-        safeExit();
-    }
-    catch(...)
-    {
-        safeExit();
-    }
-
-    MPI_Comm tLocalComm;
-    tPlatoInterface->getLocalComm(tLocalComm);
-
-    AppType *tApp = nullptr;
-    try
-    {
-        if(aArgc > static_cast<int>(1))
-        {
-            tApp = new AppType(aArgc, aArgv, tLocalComm);
-        }
-        else
-        {
-            throw std::logic_error("Input file argument missing");
-        }
-    }
-    catch(...)
-    {
-        tApp = nullptr;
-        tPlatoInterface->Catch();
-    }
-
-    try
-    {
-        tPlatoInterface->registerPerformer(tApp);
-    }
-    catch(...)
-    {
-        safeExit();
-    }
-
-    try
-    {
-      tPlatoInterface->perform();
-    }
-    catch(...)
-    {
-        safeExit();
-    }
-
-    if(tApp)
-    {
-        delete tApp;
-    }
-    if(tPlatoInterface)
-    {
-        delete tPlatoInterface;
-    }
-    safeExit();
-
-    return 0;
-}
-
-}

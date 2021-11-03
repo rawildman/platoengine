@@ -60,8 +60,7 @@ if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
 
-include_directories( ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-
+include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
 
 
 ###########################  Compiler setup ###################################
@@ -87,16 +86,14 @@ set(PLATO_INCLUDES)
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
-set(CMAKE_CXX_FLAGS_DEBUG "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   # Clang specific flags
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # gnu specific flags
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lgfortran")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lgfortran")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lgfortran")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
   # intel specific flags
 else()
@@ -111,7 +108,6 @@ if( UNIT_TESTING )
     set(CMAKE_PREFIX_PATH ${GTEST_HOME} ${CMAKE_PREFIX_PATH})
   endif()
   find_package(GTest REQUIRED)
-  set(PLATO_LIBRARIES ${GTEST_BOTH_LIBRARIES})
   include_directories( ${GTEST_INCLUDE_DIRS} )
 endif()
 
@@ -127,7 +123,6 @@ endif()
 if("${CMAKE_BUILD_TYPE}" STREQUAL Release)
   add_definitions( -DNDEBUG)
 elseif("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
-add_compile_options(-Wall -Werror -Wno-unused-result)
 endif()
 
 if( GEOMETRY )
@@ -177,6 +172,13 @@ if( AMFILTER_ENABLED )
     set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
+if ( IPOPT_ENABLED )
+    message( "-- Compiling with IPOPT to solve MMA subproblem " )
+    add_definitions(-DENABLE_IPOPT_FOR_MMA_SUBPROBLEM)
+    Plato_find_lib ( IPOPT_LIB ON ipopt ${IPOPT_INSTALL_DIR}/lib )
+    set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${IPOPT_LIB})
+    set(PLATO_INCLUDES ${PLATO_INCLUDES} ${IPOPT_INSTALL_DIR}/include)
+endif()
 
 add_subdirectory(base/src)
 add_subdirectory(base/src/analyze)
@@ -213,7 +215,7 @@ endif()
 
 
 if( ENABLE_ISO )
-  add_subdirectory(base/src/iso/main)
+  add_subdirectory(base/src/iso)
 endif()
 
 if( ENABLE_PRUNE )

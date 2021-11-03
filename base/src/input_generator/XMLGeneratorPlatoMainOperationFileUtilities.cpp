@@ -4,11 +4,17 @@
  *  Created on: May 28, 2020
  */
 
+#include <cstdlib>
+#include <fstream>
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorFixedBlockUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeProblem.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 
 namespace XMLGen
 {
@@ -51,6 +57,13 @@ void write_plato_main_operations_xml_file
     XMLGen::append_initialize_geometry_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_enforce_bounds_operation_to_plato_main_operation(aMetaData, tDocument);
+    if (XMLGen::do_tet10_conversion(aMetaData)) {
+        XMLGen::append_tet10_conversion_operation_to_plato_main_operation(aMetaData, tDocument);
+    }
+    if (XMLGen::have_auxiliary_mesh(aMetaData)) {
+        XMLGen::append_mesh_join_operation_to_plato_main_operation(aMetaData, tDocument);
+        XMLGen::append_mesh_rename_operation_to_plato_main_operation(aMetaData, tDocument);
+    }
 
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
@@ -99,6 +112,30 @@ bool is_volume_constraint_defined_and_computed_by_platomain
     return tIsVolumeDefinedAndComputedByPlatoMain;
 }
 //function is_volume_constraint_defined_and_computed_by_platomain
+/******************************************************************************/
+
+/******************************************************************************/
+std::string get_platomain_volume_constraint_id
+(const XMLGen::InputData& aXMLMetaData)
+{
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        auto tCriterion = aXMLMetaData.criterion(tConstraint.criterion());
+        auto tType = Plato::tolower(tCriterion.type());
+        auto tService = aXMLMetaData.service(tConstraint.service());
+        auto tCode = Plato::tolower(tService.code());
+
+        auto tIsVolumeConstraintDefined = tType.compare("volume") == 0;
+        auto tIsVolumeComputedByPlatoMain = tCode.compare("platomain") == 0;
+        bool tIsVolumeDefinedAndComputedByPlatoMain = tIsVolumeConstraintDefined && tIsVolumeComputedByPlatoMain;
+        if (tIsVolumeDefinedAndComputedByPlatoMain == true)
+        {
+            return tConstraint.id();
+        }
+    }
+    THROWERR("Volume constraint was assumed to be computed by platomain but was not.")
+}
+//function get_platomain_volume_constraint_id
 /******************************************************************************/
 
 /******************************************************************************/
@@ -153,19 +190,64 @@ void append_filter_options_to_operation
 /******************************************************************************/
 
 /******************************************************************************/
+void append_projection_options_to_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node &aParentNode)
+{
+    std::vector<std::string> tKeys = {"StartIteration", "UpdateInterval",
+        "UseAdditiveContinuation", "HeavisideMin", "HeavisideUpdate", "HeavisideMax"};
+
+    std::vector<std::string> tValues = {aXMLMetaData.optimization_parameters().filter_projection_start_iteration(), aXMLMetaData.optimization_parameters().filter_projection_update_interval(),
+        aXMLMetaData.optimization_parameters().filter_use_additive_continuation(), aXMLMetaData.optimization_parameters().filter_heaviside_min(),
+        aXMLMetaData.optimization_parameters().filter_heaviside_update(), aXMLMetaData.optimization_parameters().filter_heaviside_max()};
+
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_children(tKeys, tValues, aParentNode);
+}
+// function append_projection_options_to_operation
+/******************************************************************************/
+
+/******************************************************************************/
 void append_filter_options_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document &aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().filterInEngine() &&
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
        aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
-        XMLGen::ValidFilterKeys tValidKeys;
-        auto tValue = tValidKeys.value(aXMLMetaData.optimization_parameters().filter_type());
+        XMLGen::ValidFilterKeys tValidFilterKeys;
+        auto tValue = tValidFilterKeys.value(aXMLMetaData.optimization_parameters().filter_type());
         auto tFilterName = tValue.empty() ? "Kernel" : tValue;
+
+        XMLGen::ValidProjectionKeys tValidProjectionKeys;
+        auto tProjectionName = tValidProjectionKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+
         auto tFilterNode = aDocument.append_child("Filter");
-        XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        if(tProjectionName.empty())
+        {
+            XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        }
+        else
+        {
+            auto tFullName = tFilterName + "_then_" + aXMLMetaData.optimization_parameters().projection_type();
+            tFilterName = tValidFilterKeys.value(tFullName);
+            XMLGen::append_children({"Name"}, {tFilterName}, tFilterNode);
+        }
         XMLGen::append_filter_options_to_operation(aXMLMetaData, tFilterNode);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+
+        if(!tProjectionName.empty())
+        {
+            auto tFilterNode = aDocument.append_child("Filter");
+            XMLGen::append_children({"Name"}, {tProjectionName}, tFilterNode);
+            XMLGen::append_projection_options_to_operation(aXMLMetaData, tFilterNode);
+        }
     }
 }
 // function append_filter_options_to_plato_main_operation
@@ -403,19 +485,28 @@ void append_surface_extraction_to_output_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node &aParentNode)
 {
-    std::string tOutputMethod = aXMLMetaData.optimization_parameters().output_method();
-    if (!tOutputMethod.empty())
+    const std::vector<XMLGen::Scenario> &tScenarios = aXMLMetaData.scenarios();
+    if (tScenarios.empty())
     {
-        auto tSurfaceExtraction = aParentNode.append_child("SurfaceExtraction");
-        std::vector<std::string> tKeys = { "OutputMethod", "Discretization" };
-        std::string tStoredDiscretizationValue = aXMLMetaData.optimization_parameters().discretization();
-        auto tDiscretization = tStoredDiscretizationValue.empty() ? "density" : tStoredDiscretizationValue;
-        std::vector<std::string> tValues = { tOutputMethod, tDiscretization };
-        XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-        XMLGen::append_children(tKeys, tValues, tSurfaceExtraction);
+        THROWERR("Scenarios list is empty. Scenarios list is requested to determine the number of spatial dimensions.")
+    }
 
-        auto tOutput = tSurfaceExtraction.append_child("Output");
-        XMLGen::append_children( { "Format" }, { "Exodus" }, tOutput);
+    if (tScenarios[0].dimensions() == "3")
+    {
+        std::string tOutputMethod = aXMLMetaData.optimization_parameters().output_method();
+        if (!tOutputMethod.empty())
+        {
+            auto tSurfaceExtraction = aParentNode.append_child("SurfaceExtraction");
+            std::vector<std::string> tKeys = {"OutputMethod", "Discretization"};
+            std::string tStoredDiscretizationValue = aXMLMetaData.optimization_parameters().discretization();
+            auto tDiscretization = tStoredDiscretizationValue.empty() ? "density" : tStoredDiscretizationValue;
+            std::vector<std::string> tValues = {tOutputMethod, tDiscretization};
+            XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+            XMLGen::append_children(tKeys, tValues, tSurfaceExtraction);
+
+            auto tOutput = tSurfaceExtraction.append_child("Output");
+            XMLGen::append_children({"Format"}, {"Exodus"}, tOutput);
+        }
     }
 }
 // function append_surface_extraction_to_output_operation
@@ -683,7 +774,8 @@ void append_filter_control_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         auto tOperation = aDocument.append_child("Operation");
         XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Filter Control", "False"}, tOperation);
@@ -691,6 +783,22 @@ void append_filter_control_to_plato_main_operation
         XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"ArgumentName"}, {"Filtered Field"}, tOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+        if(!tProjectionName.empty())
+        {
+            auto tOperation = aDocument.append_child("Operation");
+            XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Project Control", "False"}, tOperation);
+            auto tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
+            auto tOutput = tOperation.append_child("Output");
+            XMLGen::append_children({"ArgumentName"}, {"Filtered Field"}, tOutput);
+        }
     }
 }
 // function append_filter_control_to_plato_main_operation
@@ -715,6 +823,95 @@ void append_initialize_geometry_operation_to_plato_main_operation
 }
 // function append_initialize_geometry_operation_to_plato_main_operation
 /******************************************************************************/
+
+void writeCubitJournalFile(std::string fileName, std::string meshName, std::vector<XMLGen::Block> blockList) {
+    std::ofstream outfile(fileName);
+
+    outfile << "import mesh \"" << meshName << "\" no_geom" << std::endl;
+    for(auto ib : blockList) {
+        outfile << "block " << ib.block_id << " element type tetra10" << std::endl;
+    }
+    outfile << "set exodus netcdf4 off" << std::endl;
+    outfile << "set large exodus file on" << std::endl;
+    outfile << "export mesh \"" << meshName << "\" overwrite" << std::endl;
+
+    outfile.close();
+}
+
+void append_tet10_conversion_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        writeCubitJournalFile("toTet10.jou", exodusFile, blockList);
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCall");
+        addChild(operationNode, "Name", "ToTet10 On Change");
+        addChild(operationNode, "Command", "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
+void append_mesh_join_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string auxiliaryMeshFile(aXMLMetaData.mesh.auxiliary_mesh_name);
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCallMPI");
+        addChild(operationNode, "Name", "JoinMesh On Change");
+        addChild(operationNode, "Command", "ejoin");
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "Argument", "-output");
+        addChild(operationNode, "Argument", joinedMeshFile);
+        addChild(operationNode, "Argument", exodusFile);
+        addChild(operationNode, "Argument", auxiliaryMeshFile);
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
+
+void append_mesh_rename_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        const std::string exodusFile(aXMLMetaData.optimization_parameters().csm_exodus_file());
+        const std::vector<XMLGen::Block> blockList(aXMLMetaData.blocks);
+
+        const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
+
+        std::stringstream moveCmd;
+        moveCmd << "while lsof -u $USER | grep " << joinedMeshFile << "; do sleep 1; done; ";
+        moveCmd << "/bin/cp " << joinedMeshFile << " " << exodusFile;
+
+        pugi::xml_node operationNode = aDocument.append_child("Operation");
+        addChild(operationNode, "Function", "SystemCall");
+        addChild(operationNode, "Name", "RenameMesh On Change");
+        addChild(operationNode, "Command", moveCmd.str());
+        addChild(operationNode, "OnChange", "true");
+        addChild(operationNode, "AppendInput", "false");
+        auto tInputNode = operationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    }
+}
 
 /******************************************************************************/
 void append_update_geometry_on_change_operation_to_plato_main_operation
@@ -764,7 +961,8 @@ void append_filter_gradient_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    if(aXMLMetaData.optimization_parameters().filterInEngine() == true &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
         auto tOperation = aDocument.append_child("Operation");
         XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Filter Gradient", "True"}, tOperation);
@@ -774,6 +972,24 @@ void append_filter_gradient_to_plato_main_operation
         XMLGen::append_children({"ArgumentName"}, {"Gradient"}, tInput);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"ArgumentName"}, {"Filtered Gradient"}, tOutput);
+    }
+    else if(aXMLMetaData.optimization_parameters().filterInEngine() == false &&
+       aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY &&
+       aXMLMetaData.optimization_parameters().filter_type() == "helmholtz")
+    {
+        XMLGen::ValidProjectionKeys tValidKeys;
+        auto tProjectionName = tValidKeys.value(aXMLMetaData.optimization_parameters().projection_type());
+        if(!tProjectionName.empty())
+        {
+            auto tOperation = aDocument.append_child("Operation");
+            XMLGen::append_children({"Function", "Name", "Gradient"}, {"Filter", "Project Gradient", "True"}, tOperation);
+            auto tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Field"}, tInput);
+            tInput = tOperation.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Gradient"}, tInput);
+            auto tOutput = tOperation.append_child("Output");
+            XMLGen::append_children({"ArgumentName"}, {"Filtered Gradient"}, tOutput);
+        }
     }
 }
 // function append_filter_gradient_to_plato_main_operation
@@ -1037,9 +1253,11 @@ void append_compute_volume_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Value " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};
@@ -1069,9 +1287,11 @@ void append_compute_volume_gradient_to_plato_main_operation
 {
     if(XMLGen::is_volume_constraint_defined_and_computed_by_platomain(aXMLMetaData))
     {
+        std::string tConstraintID = XMLGen::get_platomain_volume_constraint_id(aXMLMetaData);
+
         auto tOperation = aDocument.append_child("Operation");
         std::vector<std::string> tKeys = {"Function", "Name", "PenaltyModel"};
-        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient", "SIMP"};
+        std::vector<std::string> tValues = {"ComputeVolume", "Compute Constraint Gradient " + tConstraintID, "SIMP"};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         tKeys = {"ArgumentName"}; tValues = {"Topology"};
@@ -1099,12 +1319,24 @@ void append_fixed_blocks_identification_numbers_to_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
-    if(aXMLMetaData.optimization_parameters().fixed_block_ids().size() > 0)
+    const auto& tOptParams = aXMLMetaData.optimization_parameters();
+    if(tOptParams.fixed_block_ids().size() > 0)
     {
-        auto tFixedBlocks = aParentNode.append_child("FixedBlocks");
-        for(auto& tID : aXMLMetaData.optimization_parameters().fixed_block_ids())
+        XMLGen::FixedBlock::check_fixed_block_arrays(tOptParams);
+
+        auto tFixedBlockIDs = tOptParams.fixed_block_ids();
+        auto tDomainValues = tOptParams.fixed_block_domain_values();
+        auto tBoundaryValues = tOptParams.fixed_block_boundary_values();
+        auto tMaterialStates = tOptParams.fixed_block_material_states();
+
+        for(auto& tID : tFixedBlockIDs)
         {
+            auto tIndex = &tID - &tFixedBlockIDs[0];
+            auto tFixedBlocks = aParentNode.append_child("FixedBlocks");
             XMLGen::append_children({"Index"}, {tID}, tFixedBlocks);
+            XMLGen::append_children({"DomainValue"}, {tDomainValues[tIndex]}, tFixedBlocks);
+            XMLGen::append_children({"BoundaryValue"}, {tBoundaryValues[tIndex]}, tFixedBlocks);
+            XMLGen::append_children({"MaterialState"}, {tMaterialStates[tIndex]}, tFixedBlocks);
         }
     }
 }
@@ -1152,9 +1384,17 @@ void append_set_lower_bounds_to_plato_main_operation
 {
     if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
+        // TODO: THIS CODE ASSUMES THAT ONLY ONE SCENARIO BLOCK IS DEFINED AND WILL NOT WORK 
+        // IF MULTIPLE ANALYZE SCENARIO BLOCKS ARE DEFINED. THIS CODE WILL NEED REFACTORING 
+        // IF THIS USE CASE IS NEEDED IN THE FUTURE.
+        XMLGen::ValidPhysicsKeys tValidPhysicsKeys;
+        auto tPhysics = aXMLMetaData.scenario(0).physics();
+        auto tMainMaterialStateForApplication = tValidPhysicsKeys.material_state(tPhysics);
+
         auto tOperation = aDocument.append_child("Operation");
-        std::vector<std::string> tKeys = {"Function", "Name", "Discretization"};
-        std::vector<std::string> tValues = {"SetLowerBounds", "Compute Lower Bounds", aXMLMetaData.optimization_parameters().discretization()};
+        auto tDiscretization = aXMLMetaData.optimization_parameters().discretization();
+        std::vector<std::string> tKeys = {"Function", "Name", "UseCase", "Discretization"};
+        std::vector<std::string> tValues = {"SetLowerBounds", "Compute Lower Bounds", tMainMaterialStateForApplication, tDiscretization};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         auto tInput = tOperation.append_child("Input");
@@ -1213,9 +1453,17 @@ void append_set_upper_bounds_to_plato_main_operation
 {
     if(aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
     {
+        // TODO: THIS CODE ASSUMES THAT ONLY ONE SCENARIO BLOCK IS DEFINED AND WILL NOT WORK 
+        // IF MULTIPLE ANALYZE SCENARIO BLOCKS ARE DEFINED. THIS CODE WILL NEED REFACTORING 
+        // IF THIS USE CASE IS NEEDED IN THE FUTURE.
+        XMLGen::ValidPhysicsKeys tValidPhysicsKeys;
+        auto tPhysics = aXMLMetaData.scenario(0).physics();
+        auto tMainMaterialStateForApplication = tValidPhysicsKeys.material_state(tPhysics);
+
         auto tOperation = aDocument.append_child("Operation");
-        std::vector<std::string> tKeys = {"Function", "Name", "Discretization"};
-        std::vector<std::string> tValues = {"SetUpperBounds", "Compute Upper Bounds", aXMLMetaData.optimization_parameters().discretization()};
+        auto tDiscretization = aXMLMetaData.optimization_parameters().discretization();
+        std::vector<std::string> tKeys = {"Function", "Name", "UseCase", "Discretization"};
+        std::vector<std::string> tValues = {"SetUpperBounds", "Compute Upper Bounds", tMainMaterialStateForApplication, tDiscretization};
         XMLGen::append_children(tKeys, tValues, tOperation);
 
         auto tInput = tOperation.append_child("Input");

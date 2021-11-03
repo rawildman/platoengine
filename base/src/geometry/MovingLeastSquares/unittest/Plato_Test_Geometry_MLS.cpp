@@ -219,7 +219,7 @@ namespace PlatoTestGeometryMLS
       nodeValues("values", numNodes);
  
     auto pointCoords = mls.getPointCoords();
-    auto numPoints = pointCoords.dimension(0);
+    auto numPoints = pointCoords.extent(0);
     Kokkos::View<double*, Kokkos::DefaultExecutionSpace::memory_space>
       pointValues("values", numPoints);
 
@@ -293,7 +293,7 @@ namespace PlatoTestGeometryMLS
       nodeValues("values", numNodes);
  
     auto pointCoords = mls.getPointCoords();
-    auto numPoints = pointCoords.dimension(0);
+    auto numPoints = pointCoords.extent(0);
     Kokkos::View<double*, Kokkos::DefaultExecutionSpace::memory_space>
       pointValues("values", numPoints);
 
@@ -382,7 +382,7 @@ namespace PlatoTestGeometryMLS
     Kokkos::deep_copy(nodeCoords, nodeCoordsHost);
 
     auto pointCoords = mls.getPointCoords();
-    auto numPoints = pointCoords.dimension(0);
+    auto numPoints = pointCoords.extent(0);
     Kokkos::View<double*, Kokkos::DefaultExecutionSpace::memory_space>
       pointValues("values", numPoints);
  
@@ -493,7 +493,7 @@ namespace PlatoTestGeometryMLS
     Kokkos::deep_copy(nodeCoords, nodeCoordsHost);
 
     auto pointCoords = mls.getPointCoords();
-    auto numPoints = pointCoords.dimension(0);
+    auto numPoints = pointCoords.extent(0);
     Kokkos::View<double*, Kokkos::DefaultExecutionSpace::memory_space>
       pointValues("values", numPoints);
  
@@ -633,7 +633,7 @@ namespace PlatoTestGeometryMLS
     mls.f(porousField, nodeCoords, nodeValues);
 
     auto pointCoords = mls.getPointCoords();
-    auto numPoints = pointCoords.dimension(0);
+    auto numPoints = pointCoords.extent(0);
     Kokkos::View<double*, Kokkos::DefaultExecutionSpace::memory_space>
       mappedValues("values", numPoints);
  
@@ -642,7 +642,7 @@ namespace PlatoTestGeometryMLS
     auto mappedValuesHost = Kokkos::create_mirror_view(mappedValues);
     Kokkos::deep_copy(mappedValuesHost, mappedValues);
 
-    EXPECT_NEAR(/*Gold=*/ 0.0027358850269484326, /*Result=*/ mappedValuesHost(0), /*tTolerance=*/1e-14);
+    EXPECT_NEAR(/*Gold=*/ 0.00099108394798743597, /*Result=*/ mappedValuesHost(0), /*tTolerance=*/1e-14);
 
 #ifdef NOPE
     std::ofstream pointsStream;

@@ -587,21 +587,21 @@ PSL_TEST(OrthogonalGridUtilities, computePointUVWCoordinates)
 
     Vector tXYZPoint({1.0/sqrt(2),1.0/sqrt(2),0});
     Vector tUVWCoords = tUtilities.computePointUVWCoordinates(tXYZPoint);
-    EXPECT_DOUBLE_EQ(tUVWCoords(0),1.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(1),0.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(2),0.0);
+    EXPECT_NEAR(tUVWCoords(0),1.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(1),0.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(2),0.0,1e-16);
 
     tXYZPoint = Vector({-1.0/sqrt(2),1.0/sqrt(2),0});
     tUVWCoords = tUtilities.computePointUVWCoordinates(tXYZPoint);
-    EXPECT_DOUBLE_EQ(tUVWCoords(0),0.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(1),1.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(2),0.0);
+    EXPECT_NEAR(tUVWCoords(0),0.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(1),1.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(2),0.0,1e-16);
 
     tXYZPoint = Vector({0.0,0.0,1.0});
     tUVWCoords = tUtilities.computePointUVWCoordinates(tXYZPoint);
-    EXPECT_DOUBLE_EQ(tUVWCoords(0),0.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(1),0.0);
-    EXPECT_DOUBLE_EQ(tUVWCoords(2),1.0);
+    EXPECT_NEAR(tUVWCoords(0),0.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(1),0.0,1e-16);
+    EXPECT_NEAR(tUVWCoords(2),1.0,1e-16);
 }
 
 PSL_TEST(OrthogonalGridUtilities, computeGridPointUVWCoordinates)

@@ -78,18 +78,19 @@ protected:
     bool parseLoads(std::istream &fin);
     void getTokensFromLine(std::istream &fin, std::vector<std::string>& tokens);
     void parseBoundaryConditions(std::istream &fin);
+    bool parseAssemblies(std::istream &fin);
     bool runSROMForUncertainVariables(XMLGen::InputData& aInputData);
     void setNumPerformers(XMLGen::InputData& aInputData);
     void parseInputFile();
     bool parseMesh(std::istream &fin);
     void parseOutput(std::istream &fin);
-    bool parseCodePaths(std::istream &fin);
     void parseMaterials(std::istream &fin);
     void parseCriteria(std::istream &fin);
     bool parseBlocks(std::istream &fin);
     void parseObjective(std::istream &fin);
     void parseScenarios(std::istream &fin);
     void parseServices(std::istream &fin);
+    void parseRuns(std::istream &fin);
     bool parseConstraints(std::istream &fin);
     bool parseOptimizationParameters(std::istream &fin);
     void parseUncertainties(std::istream &fin);
@@ -117,9 +118,8 @@ private:
 
     void preProcessInputMetaData(XMLGen::InputData& aInputData);
     void determineIfPlatoEngineFilteringIsNeeded();
-
+    void setupHelmholtzFilterService(XMLGen::InputData& aInputData);
     void expandEssentialBoundaryConditions(XMLGen::InputData& aInputData);
-
     void updateScenariosWithExpandedBoundaryConditions(std::map<int, std::vector<int> > aOldIDToNewIDMap);
 
     void loadOutputData

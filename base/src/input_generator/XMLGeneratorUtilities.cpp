@@ -497,5 +497,15 @@ std::string get_salinas_service_id(const XMLGen::InputData& aXMLMetaData)
     return tServiceID;
 }
 
+/******************************************************************************/
+void negate_scalar_values(std::vector<std::string> &aInputs)
+{
+    for (auto &tValue : aInputs)
+    {
+        tValue.insert(0, "-");
+    }
+}
+/******************************************************************************/
+
 }
 // namespace XMLGen

@@ -18,17 +18,27 @@
 #include "Teuchos_CommandLineProcessor.hpp"
 #include "PruneMeshAPISTK.hpp"
 
+#ifdef BUILD_IN_SIERRA
 #include <percept/xfer/STKMeshTransferSetup.hpp>
+#include <percept/PerceptMesh.hpp>
 #include <percept/function/StringFunction.hpp>
 #include <percept/function/FieldFunction.hpp>
+#include <percept/function/ConstantFunction.hpp>
 #include <percept/Percept.hpp>
 #include <percept/Util.hpp>
 #include <percept/ExceptionWatch.hpp>
 #include <percept/GeometryVerifier.hpp>
-#include <percept/function/StringFunction.hpp>
-#include <percept/function/FieldFunction.hpp>
-#include <percept/function/ConstantFunction.hpp>
-#include <percept/PerceptMesh.hpp>
+#else
+#include <STKMeshTransferSetup.hpp>
+#include <PerceptMesh.hpp>
+#include <StringFunction.hpp>
+#include <FieldFunction.hpp>
+#include <Percept.hpp>
+#include <Util.hpp>
+#include <ExceptionWatch.hpp>
+#include <GeometryVerifier.hpp>
+#include <ConstantFunction.hpp>
+#endif
 #include "MeshManager.hpp"
 
 namespace stk

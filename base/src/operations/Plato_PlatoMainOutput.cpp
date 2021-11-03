@@ -57,6 +57,7 @@
 #include "lightmp.hpp"
 
 #include "PlatoApp.hpp"
+#include "Plato_Utils.hpp"
 #include "Plato_PlatoMainOutput.hpp"
 #include "Plato_OperationsUtilities.hpp"
 #include <Plato_FreeFunctions.hpp>
@@ -250,7 +251,7 @@ void PlatoMainOutput::operator()()
                 tTheCommand << "echo save " << mRestartFieldName << " >> commands.txt;";
                 tTheCommand << "echo end >> commands.txt;";
                 tTheCommand << "algebra " << tInputFilename << " restart_" << tIntegerTime << ".exo < commands.txt > algebra.txt";
-                std::cout << "\nExecuting system call: " << tTheCommand.str() << "\n";
+            //    std::cout << "\nExecuting system call: " << tTheCommand.str() << "\n";
                 Plato::system(tTheCommand.str().c_str());
             }
         }
@@ -264,7 +265,8 @@ void PlatoMainOutput::operator()()
                 if(tFile)
                 {
                     char tLastHistFileName[200] = " ";
-                    fscanf(tFile, "%s", tLastHistFileName);
+                    auto tTrash = fscanf(tFile, "%s", tLastHistFileName);
+                    Plato::Utils::ignore_unused(tTrash);
                     fclose(tFile);
                     std::string tNewFilename = "Iteration";
                     std::string tIterationString = "";

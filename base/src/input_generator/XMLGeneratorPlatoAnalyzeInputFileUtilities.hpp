@@ -144,6 +144,18 @@ void get_ebc_vector_for_scenario
  std::vector<XMLGen::EssentialBoundaryCondition> &aEBCVector);
 
 /******************************************************************************//**
+ * \fn get_assembly_vector_for_scenario
+ * \brief Utility function to retrieve the assemblies used in a scenario
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in]     aScenario The scenario of interest
+ * \param [out]    aAssemblyVector  assembly vector to populate
+**********************************************************************************/
+void get_assembly_vector_for_scenario
+(const XMLGen::InputData& aXMLMetaData,
+ const XMLGen::Scenario &aScenario,
+ std::vector<XMLGen::Assembly> &aAssemblyVector);
+
+/******************************************************************************//**
  * \fn append_weighted_sum_objective_to_plato_problem
  * \brief Append weighted sum objective function to plato problem parameter list.
  * \param [in]     aXMLMetaData Plato problem input data
@@ -386,11 +398,37 @@ void append_essential_boundary_conditions_to_plato_analyze_input_deck
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn check_valid_assembly_parent_blocks
+ * \brief check parent block IDs with block IDs stored in input data
+ * \param [in]     aXMLMetaData Plato problem input data
+**********************************************************************************/
+void check_valid_assembly_parent_blocks
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn append_assemblies_to_plato_analyze_input_deck
+ * \brief Append assemblies to problem parameter list.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+void append_assemblies_to_plato_analyze_input_deck
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
  * \fn write_plato_analyze_input_deck_file
  * \brief Write plato analyze input file.
  * \param [in] aXMLMetaData Plato problem input data
 **********************************************************************************/
 void write_plato_analyze_input_deck_file
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn write_plato_analyze_helmholtz_input_deck_file
+ * \brief Write plato analyze input file for helmholtz filter performer.
+ * \param [in] aXMLMetaData Plato problem input data
+**********************************************************************************/
+void write_plato_analyze_helmholtz_input_deck_file
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**

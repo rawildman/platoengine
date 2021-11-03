@@ -83,6 +83,16 @@ std::string Service::code() const
     return (this->getValue("code"));
 }
 
+void Service::path(const std::string& aInput)
+{
+    mMetaData["path"] = aInput;
+}
+
+std::string Service::path() const
+{
+    return (this->getValue("path"));
+}
+
 void Service::deviceIDs(const std::vector<std::string>& aInput)
 {
     mDeviceIDs = aInput;
@@ -237,6 +247,15 @@ bool Service::updateProblem() const
 {
     return (this->getBool("update_problem"));
 }
+
+void Service::existingInputDeck(const std::string& aInput) {
+    mMetaData["existing_input_deck"] = aInput;
+}
+
+std::string Service::existingInputDeck() const {
+    return (this->getValue("existing_input_deck"));
+}
+
 
 }
 // namespace XMLGen

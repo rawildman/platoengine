@@ -955,6 +955,18 @@ void loadFile(pugi::xml_document & aInput)
     }
 }
 
+std::string keyword(
+ const Plato::InputData& aNode,
+ const std::string& aKeyword, 
+ const std::string& aDefault)
+{
+    auto tOutput = Plato::Get::String(aNode, aKeyword);
+    std::transform(tOutput.begin(), tOutput.end(), tOutput.begin(), ::tolower);
+    tOutput = tOutput.empty() ? aDefault : tOutput;
+    return tOutput;
+}
+// function parseKeyword
+
 /******************************************************************************/
 void parseArgumentNameInputs(const Plato::InputData & aInputNode, std::vector<std::string> & aInputs)
 /******************************************************************************/
@@ -1615,7 +1627,11 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             double tOCGradientTolerance = Plato::Get::Double(tOptionsNode, "OCGradientTolerance");
             aOptimizerEngineStageData.setOCGradientTolerance(tOCGradientTolerance);
         }
-
+        if(tOptionsNode.size<std::string>("ResetAlgorithmOnUpdate"))
+        {
+            bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
+            aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
+        }
     }
 }
 

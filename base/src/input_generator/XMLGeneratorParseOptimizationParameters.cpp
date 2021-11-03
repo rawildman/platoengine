@@ -9,6 +9,7 @@
 #include "XMLGeneratorParseOptimizationParameters.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorFixedBlockUtilities.hpp"
 
 namespace XMLGen
 {
@@ -20,7 +21,7 @@ void ParseOptimizationParameters::setTags(XMLGen::OptimizationParameters &aOptim
     {
         if(tValidKeys.mKeys.find(tTag.first) == tValidKeys.mKeys.end())
         {
-            THROWERR("Parse Optimization Parameters: Invalid keyword: " + tTag.first);
+            THROWERR("Parse Optimization Parameters: Invalid keyword '" + tTag.first + "'\n");
         }
 
         if(tTag.second.first.second.empty())
@@ -59,6 +60,7 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "mma_sub_problem_penalty_multiplier", { { {"mma_sub_problem_penalty_multiplier"}, ""}, "1.025" } });
     mTags.insert({ "mma_output_subproblem_diagnostics", { { {"mma_output_subproblem_diagnostics"}, ""}, "false" } });
     mTags.insert({ "mma_sub_problem_feasibility_tolerance", { { {"mma_sub_problem_feasibility_tolerance"}, ""}, "1e-8" } });
+    mTags.insert({ "mma_use_ipopt_sub_problem_solver", { { {"mma_use_ipopt_sub_problem_solver"}, ""}, "false" } });
     mTags.insert({ "mma_control_stagnation_tolerance", { { {"mma_control_stagnation_tolerance"}, ""}, "1e-6" } });
     mTags.insert({ "mma_objective_stagnation_tolerance", { { {"mma_objective_stagnation_tolerance"}, ""}, "1e-8" } });
     mTags.insert({ "oc_control_stagnation_tolerance", { { {"oc_control_stagnation_tolerance"}, ""}, "1e-2" } });
@@ -74,22 +76,31 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "initial_density_value", { { {"initial_density_value"}, ""}, "0.5" } });
     mTags.insert({ "restart_iteration", { { {"restart_iteration"}, ""}, "0" } });
     mTags.insert({ "create_levelset_spheres", { { {"create_levelset_spheres"}, ""}, "" } });
+   
     mTags.insert({ "levelset_material_box_min", { { {"levelset_material_box_min"}, ""}, "" } });
     mTags.insert({ "levelset_material_box_max", { { {"levelset_material_box_max"}, ""}, "" } });
     mTags.insert({ "levelset_sphere_radius", { { {"levelset_sphere_radius"}, ""}, "" } });
     mTags.insert({ "levelset_sphere_packing_factor", { { {"levelset_sphere_packing_factor"}, ""}, "" } });
     mTags.insert({ "levelset_initialization_method", { { {"levelset_initialization_method"}, ""}, "" } });
+    
     mTags.insert({ "fixed_block_ids", { { {"fixed_block_ids"}, ""}, "" } });
     mTags.insert({ "fixed_sideset_ids", { { {"fixed_sideset_ids"}, ""}, "" } });
     mTags.insert({ "fixed_nodeset_ids", { { {"fixed_nodeset_ids"}, ""}, "" } });
+    mTags.insert({ "fixed_block_domain_values", { { {"fixed_block_domain_values"}, ""}, "" } });
+    mTags.insert({ "fixed_block_boundary_values", { { {"fixed_block_boundary_values"}, ""}, "" } });
+    mTags.insert({ "fixed_block_material_states", { { {"fixed_block_material_states"}, ""}, "" } });
+
     mTags.insert({ "levelset_nodesets", { { {"levelset_nodesets"}, ""}, "" } });
     mTags.insert({ "number_prune_and_refine_processors", { { {"number_prune_and_refine_processors"}, ""}, "" } });
+    mTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });
     mTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
     mTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
     mTags.insert({ "optimization_algorithm", { { {"optimization_algorithm"}, ""}, "oc" } });
     mTags.insert({ "check_gradient", { { {"check_gradient"}, ""}, "false" } });
     mTags.insert({ "check_hessian", { { {"check_hessian"}, ""}, "false" } });
     mTags.insert({ "filter_type", { { {"filter_type"}, ""}, "kernel" } });
+    mTags.insert({ "filter_service", { { {"filter_service"}, ""}, "" } });
+    mTags.insert({ "projection_type", { { {"projection_type"}, ""}, "" } });
     mTags.insert({ "filter_power", { { {"filter_power"}, ""}, "1" } });
     mTags.insert({ "gcmma_inner_kkt_tolerance", { { {"gcmma_inner_kkt_tolerance"}, ""}, "" } });
     mTags.insert({ "gcmma_outer_kkt_tolerance", { { {"gcmma_outer_kkt_tolerance"}, ""}, "" } });
@@ -135,6 +146,9 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "filter_use_additive_continuation", { { {"filter_use_additive_continuation"}, ""}, "" } });
     mTags.insert({ "write_restart_file", { { {"write_restart_file"}, ""}, "false" } });
     mTags.insert({ "optimization_type", { { {"optimization_type"}, ""}, "topology" } });
+    mTags.insert({ "reset_algorithm_on_update", { { {"reset_algorithm_on_update"}, ""}, "false" } });
+    mTags.insert({ "rol_subproblem_model", { { {"rol_subproblem_model"}, ""}, "" } });
+    mTags.insert({ "rol_lin_more_cauchy_initial_step_size", { { {"rol_lin_more_cauchy_initial_step_size"}, ""}, "3.0" } });
     mTags.insert({ "filter_type_identity_generator_name", { { {"filter_type_identity_generator_name"}, ""}, "identity" } });
     mTags.insert({ "filter_type_kernel_generator_name", { { {"filter_type_kernel_generator_name"}, ""}, "kernel" } });
     mTags.insert({ "filter_type_kernel_then_heaviside_generator_name", { { {"filter_type_kernel_then_heaviside_generator_name"}, ""}, "kernel_then_heaviside" } });
@@ -246,16 +260,108 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
     this->setFilterInEngine(aMetadata);
     this->setEnforceBounds(aMetadata);
     this->setNormalizeInAggregator(aMetadata);
+    
     this->setFixedBlockIDs(aMetadata);
     this->setFixedSidesetIDs(aMetadata);
     this->setFixedNodesetIDs(aMetadata);
+    this->setFixedBlockDomainValues(aMetadata);
+    this->setFixedBlockBoundaryValues(aMetadata);
+    this->setFixedBlockMaterialStates(aMetadata);
+    XMLGen::FixedBlock::check_fixed_block_metadata(aMetadata);
+
     this->setLevelsetNodesetIDs(aMetadata);
     this->setMaterialBoxExtents(aMetadata);
     this->checkHeavisideFilterParams(aMetadata);
     this->setMeshMapData(aMetadata);
     this->setCSMParameters(aMetadata);
     this->autoFillRestartParameters(aMetadata);
+    this->checkROLSubProblemModel(aMetadata);
+    this->checkROLHessianType(aMetadata);
     this->setMMAStagnationDefaultsForShapeOptimizationProblems(aMetadata);
+}
+
+void ParseOptimizationParameters::checkROLSubProblemModel(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tSubproblemModel = aMetadata.rol_subproblem_model();
+    auto tOptimizationAlgorithm = aMetadata.optimization_algorithm();
+    if(tOptimizationAlgorithm == "rol_linear_constraint")
+    {
+        if(tSubproblemModel.empty())
+        {
+            // default value
+            aMetadata.append("rol_subproblem_model", "lin_more");
+        }
+        else if(tSubproblemModel != "lin_more" && tSubproblemModel != "spg")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid rol_supbproblem value.");
+        }
+    }
+    else if(tOptimizationAlgorithm == "rol_bound_constrained")
+    {
+        if(tSubproblemModel.empty())
+        {
+            // default value
+            aMetadata.append("rol_subproblem_model", "kelley_sachs");
+        }
+        else if(tSubproblemModel != "kelley_sachs" && tSubproblemModel != "lin_more")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid rol_supbproblem value.");
+        }
+    }
+    else if(tOptimizationAlgorithm == "rol_augmented_lagrangian")
+    {
+        if(tSubproblemModel.empty())
+        {
+            // default value
+            aMetadata.append("rol_subproblem_model", "kelley_sachs");
+        }
+        else if(tSubproblemModel != "kelley_sachs" && tSubproblemModel != "lin_more")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid rol_supbproblem value.");
+        }
+    }
+}
+
+void ParseOptimizationParameters::checkROLHessianType(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tHessianType = aMetadata.hessian_type();
+    auto tOptimizationAlgorithm = aMetadata.optimization_algorithm();
+    if(tOptimizationAlgorithm == "rol_linear_constraint")
+    {
+        if(tHessianType.empty())
+        {
+            // default value
+            aMetadata.append("hessian_type", "zero");
+        }
+        else if(tHessianType != "zero" && tHessianType != "finite_difference")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid hessian type.");
+        }
+    }
+    else if(tOptimizationAlgorithm == "rol_bound_constrained")
+    {
+        if(tHessianType.empty())
+        {
+            // default value
+            aMetadata.append("hessian_type", "zero");
+        }
+        else if(tHessianType != "zero" && tHessianType != "finite_difference")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid hessian type.");
+        }
+    }
+    else if(tOptimizationAlgorithm == "rol_augmented_lagrangian")
+    {
+        if(tHessianType.empty())
+        {
+            // default value
+            aMetadata.append("hessian_type", "zero");
+        }
+        else if(tHessianType != "zero" && tHessianType != "finite_difference")
+        {
+            THROWERR("Parse Optimization Parameters: Invalid hessian type.");
+        }
+    }
 }
 
 void ParseOptimizationParameters::setNormalizeInAggregator(XMLGen::OptimizationParameters &aMetadata)
@@ -309,7 +415,14 @@ void ParseOptimizationParameters::setFilterInEngine(XMLGen::OptimizationParamete
     std::string tValue = aMetadata.filter_in_engine();
     if(tValue == "true")
     {
-        aMetadata.filterInEngine(true);
+        if(aMetadata.filter_type() == "helmholtz")
+        {
+            aMetadata.filterInEngine(false);
+        }
+        else
+        {
+            aMetadata.filterInEngine(true);
+        }
     }
     else if(tValue == "false")
     {
@@ -396,11 +509,57 @@ void ParseOptimizationParameters::setFixedNodesetIDs(XMLGen::OptimizationParamet
     std::string tValues = tItr->second.first.second;
     if (tItr != mTags.end() && !tValues.empty())
     {
-        std::vector<std::string> tFixedIDs;
-        char tValuesBuffer[10000];
-        strcpy(tValuesBuffer, tValues.c_str());
-        XMLGen::parse_tokens(tValuesBuffer, tFixedIDs);
-        aMetadata.setFixedNodesetIDs(tFixedIDs);
+        XMLGen::FixedBlock::set_fixed_nodeset_ids(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setFixedSidesetIDs(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("fixed_sideset_ids");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        XMLGen::FixedBlock::set_fixed_sideset_ids(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setFixedBlockIDs(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("fixed_block_ids");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        XMLGen::FixedBlock::set_fixed_block_ids(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setFixedBlockDomainValues(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("fixed_block_domain_values");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        XMLGen::FixedBlock::set_fixed_block_domain_values(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setFixedBlockBoundaryValues(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("fixed_block_boundary_values");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        XMLGen::FixedBlock::set_fixed_block_boundary_values(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setFixedBlockMaterialStates(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("fixed_block_material_states");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        XMLGen::FixedBlock::set_fixed_block_material_states(tValues, aMetadata);
     }
 }
 
@@ -415,34 +574,6 @@ void ParseOptimizationParameters::setLevelsetNodesetIDs(XMLGen::OptimizationPara
         strcpy(tValuesBuffer, tValues.c_str());
         XMLGen::parse_tokens(tValuesBuffer, tIDs);
         aMetadata.setLevelsetNodesets(tIDs);
-    }
-}
-
-void ParseOptimizationParameters::setFixedSidesetIDs(XMLGen::OptimizationParameters &aMetadata)
-{
-    auto tItr = mTags.find("fixed_sideset_ids");
-    std::string tValues = tItr->second.first.second;
-    if (tItr != mTags.end() && !tValues.empty())
-    {
-        std::vector<std::string> tFixedIDs;
-        char tValuesBuffer[10000];
-        strcpy(tValuesBuffer, tValues.c_str());
-        XMLGen::parse_tokens(tValuesBuffer, tFixedIDs);
-        aMetadata.setFixedSidesetIDs(tFixedIDs);
-    }
-}
-
-void ParseOptimizationParameters::setFixedBlockIDs(XMLGen::OptimizationParameters &aMetadata)
-{
-    auto tItr = mTags.find("fixed_block_ids");
-    std::string tValues = tItr->second.first.second;
-    if (tItr != mTags.end() && !tValues.empty())
-    {
-        std::vector<std::string> tFixedBlockIDs;
-        char tValuesBuffer[10000];
-        strcpy(tValuesBuffer, tValues.c_str());
-        XMLGen::parse_tokens(tValuesBuffer, tFixedBlockIDs);
-        aMetadata.setFixedBlockIDs(tFixedBlockIDs);
     }
 }
 

@@ -10,8 +10,10 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseServices.cpp
                       XMLGeneratorOutputMetadata.cpp 
                       XMLGeneratorParseObjective.cpp
+                      XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorParseMaterial.cpp
                       XMLGeneratorParseEssentialBoundaryCondition.cpp
+                      XMLGeneratorParseAssembly.cpp
                       XMLGeneratorParseCriteria.cpp
                       XMLGeneratorParseConstraint.cpp
                       XMLGeneratorParserUtilities.cpp
@@ -40,11 +42,14 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
                       XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                       XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.cpp
                       XMLGeneratorUtilities.cpp
+                      XMLGeneratorRunMetadata.cpp
+                      XMLGeneratorParseRun.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -59,8 +64,10 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorBoundaryMetadata.hpp
                       XMLGeneratorMaterialMetadata.hpp 
                       XMLGeneratorCriterionMetadata.hpp 
+                      XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorConstraintMetadata.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
+                      XMLGeneratorAssemblyMetadata.hpp
                       XMLGeneratorPlatoAnalyzeProblem.hpp 
                       XMLGeneratorProblem.hpp 
                       XMLGeneratorDefinesFileUtilities.hpp 
@@ -83,6 +90,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp
                       XMLGeneratorAnalyzeEssentiallBCTagFunctionInterface.hpp
+                      XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp
                       # XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp
                       # XMLGeneratorAnalyzeAppendCriterionFunctionInterface.hpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp
@@ -94,6 +102,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorUtilities.hpp
                       XMLGeneratorParseOutput.hpp 
                       XMLGeneratorParseMaterial.hpp 
+                      XMLGeneratorParseAssembly.hpp 
                       XMLGeneratorParseEssentialBoundaryCondition.hpp 
                       XMLGeneratorParseCriteria.hpp 
                       XMLGeneratorParseObjective.hpp 
@@ -103,6 +112,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorParseServices.hpp 
                       XMLGeneratorParseConstraint.hpp 
                       XMLGeneratorParseUncertainty.hpp
+                      XMLGeneratorRunMetadata.hpp
+                      XMLGeneratorParseRun.hpp
                       )
 
 find_package(MPI)
@@ -126,7 +137,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 # actual target:
 set(PLATOMAIN_LIBS ${PLATO_LIBRARIES} ${Plato_EXTRA_LINK_FLAGS})
 add_executable(XMLGenerator ${XMLGenerator_SRCS})
-target_link_libraries(XMLGenerator ${PLATOMAIN_LIBS} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
+target_link_libraries(XMLGenerator ${PLATOMAIN_LIBS} ${Trilinos_LIBRARIES} )
 #set(INTERFACEXMLCHECKER_BINARY ${CMAKE_BINARY_DIR}/base/src/input_checkers/XMLGenerator PARENT_SCOPE)
 
 if( CMAKE_INSTALL_PREFIX )

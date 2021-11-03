@@ -17,10 +17,12 @@
 #include "XMLGeneratorRandomMetadata.hpp"
 #include "XMLGeneratorBoundaryMetadata.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
+#include "XMLGeneratorRunMetadata.hpp"
 #include "XMLGeneratorScenarioMetadata.hpp"
 #include "XMLGeneratorConstraintMetadata.hpp"
 #include "XMLGeneratorMaterialMetadata.hpp"
 #include "XMLGeneratorEssentialBoundaryConditionMetadata.hpp"
+#include "XMLGeneratorAssemblyMetadata.hpp"
 #include "XMLGeneratorLoadMetadata.hpp"
 #include "XMLGeneratorUncertaintyMetadata.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
@@ -59,16 +61,6 @@ struct Block
     std::string element_type;
 };
 
-struct CodePaths
-{
-    std::string plato_main_path;
-    std::string lightmp_path;
-    std::string sierra_sd_path;
-    std::string albany_path;
-    std::string plato_analyze_path;
-    std::string prune_and_refine_path;
-};
-
 struct Mesh
 {
     std::string name;
@@ -76,6 +68,8 @@ struct Mesh
     std::string run_name;
     std::string run_name_without_extension;
     std::string file_extension;
+    std::string auxiliary_mesh_name;
+    std::string joined_mesh_name;
 };
 
 struct UncertaintyMetaData
@@ -89,6 +83,7 @@ struct InputData
 {
 private:
     std::vector<XMLGen::Service> mServices;
+    std::vector<XMLGen::Run> mRuns;
     std::vector<XMLGen::Criterion> mCriteria;
     XMLGen::OptimizationParameters mOptimizationParameters;
 
@@ -222,6 +217,20 @@ public:
             if(tService.code() == "platomain")
             {
                 tReturnValue = tService.performer();
+                break;
+            }
+        }
+        return tReturnValue;
+    }
+
+    std::string getFirstPlatoMainId() const
+    {
+        std::string tReturnValue = "";
+        for(auto& tService : mServices)
+        {
+            if(tService.code() == "platomain")
+            {
+                tReturnValue = tService.id();
                 break;
             }
         }
@@ -370,6 +379,15 @@ public:
         }
         mServices.push_back(aService);
     }
+    // Runs
+    void set(const std::vector<XMLGen::Run>& aRuns)
+    {
+        mRuns = aRuns;
+    }
+    const std::vector<XMLGen::Run>& runs() const
+    {
+        return mRuns;
+    }
     // Criteria access
     const XMLGen::Criterion& criterion(const std::string& aID) const
     {
@@ -432,9 +450,9 @@ public:
     std::vector<XMLGen::Material> materials;
     std::vector<XMLGen::EssentialBoundaryCondition> ebcs;
     std::vector<XMLGen::Block> blocks;
+    std::vector<XMLGen::Assembly> assemblies;
     std::vector<XMLGen::Load> loads;
     XMLGen::Mesh mesh;
-    XMLGen::CodePaths codepaths;
     std::vector<XMLGen::Uncertainty> uncertainties;
     std::vector<XMLGen::Output> mOutputMetaData;
     XMLGen::Arch m_Arch;

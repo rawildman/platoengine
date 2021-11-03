@@ -73,6 +73,7 @@ public:
     **********************************************************************************/
     explicit MethodMovingAsymptotesDataMng(const std::shared_ptr<Plato::DataFactory<ScalarType, OrdinalType>> &aDataFactory) :
         mFeasibilityMeasure(std::numeric_limits<ScalarType>::max()),
+        mNearlyFeasibleTolerance(0.001),
         mNormObjectiveGradient(std::numeric_limits<ScalarType>::max()),
         mCurrentObjectiveValue(std::numeric_limits<ScalarType>::max()),
         mPreviousObjectiveValue(std::numeric_limits<ScalarType>::max()),
@@ -222,6 +223,8 @@ public:
     **********************************************************************************/
     void setConstraintNormalizationParams(const Plato::Vector<ScalarType, OrdinalType>& aInput)
     {
+        if (aInput.size() == static_cast<OrdinalType>(0)) return;
+        if (mConstraintNormalization->size() == static_cast<OrdinalType>(0)) return;
         mConstraintNormalization->update(static_cast<ScalarType>(1.0), aInput, static_cast<ScalarType>(0.0));
     }
 
@@ -253,6 +256,18 @@ public:
     void setCurrentConstraintValue(const OrdinalType &aIndex, const ScalarType &aValue)
     {
         (*mCurrentConstraintValues)[aIndex] = aValue;
+    }
+
+    /******************************************************************************//**
+     * @brief Return whether the problem is nearly feasible
+     * @return flag indicating whether the constraints are close to satified
+    **********************************************************************************/
+    bool isProblemNearlyFeasible() const
+    {
+        for (OrdinalType tIndex = 0; tIndex < this->getNumConstraints(); ++tIndex)
+            if ((*mCurrentConstraintValues)[tIndex] > mNearlyFeasibleTolerance)
+                return false;
+        return true;
     }
 
     /******************************************************************************//**
@@ -725,6 +740,11 @@ public:
     **********************************************************************************/
     void computeFeasibilityMeasure()
     {
+        if (mCurrentConstraintValues->size() == static_cast<OrdinalType>(0))
+        {
+            mFeasibilityMeasure = static_cast<ScalarType>(0.0);
+            return;
+        }
         mConstraintWork->update(static_cast<ScalarType>(1), *mCurrentConstraintValues, static_cast<ScalarType>(0));
         mConstraintWork->modulus();
         mFeasibilityMeasure = mDualReductionOps->max(*mConstraintWork);
@@ -773,7 +793,7 @@ private:
         const OrdinalType tNumConstraints = this->getNumConstraints();
         if(tNumConstraints <= static_cast<OrdinalType>(0))
         {
-            THROWERR(std::string("INVALID NUMBER OF CONSTRAINTS ") + std::to_string(tNumConstraints) + ". THE NUMBER OF CONSTRAINTS SHOULD BE A POSITIVE NUMBER.\n")
+            //THROWERR(std::string("INVALID NUMBER OF CONSTRAINTS ") + std::to_string(tNumConstraints) + ". THE NUMBER OF CONSTRAINTS SHOULD BE A POSITIVE NUMBER.\n")
         }
 
         mConstraintNormalization->fill(1.0);
@@ -788,6 +808,7 @@ private:
 
 private:
     ScalarType mFeasibilityMeasure; /*!< current feasibility measure */
+    ScalarType mNearlyFeasibleTolerance; /*!< nearly feasibile tolerance */
     ScalarType mNormObjectiveGradient; /*!< current norm of the objective function gradient */
     ScalarType mCurrentObjectiveValue; /*!< current objective value */
     ScalarType mPreviousObjectiveValue; /*!< previous objective value */

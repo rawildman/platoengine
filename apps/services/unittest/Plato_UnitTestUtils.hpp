@@ -117,7 +117,7 @@ inline void checkMultiVectorData(const Plato::MultiVector<ScalarType, OrdinalTyp
         OrdinalType tNumElements = aInput[tVectorIndex].size();
         for(OrdinalType tElemIndex = 0; tElemIndex < tNumElements; tElemIndex++)
         {
-            ASSERT_NEAR(aInput(tVectorIndex,tElemIndex), aGold(tVectorIndex,tElemIndex), aTolerance);
+            EXPECT_NEAR(aInput(tVectorIndex,tElemIndex), aGold(tVectorIndex,tElemIndex), aTolerance);
         }
     }
 }

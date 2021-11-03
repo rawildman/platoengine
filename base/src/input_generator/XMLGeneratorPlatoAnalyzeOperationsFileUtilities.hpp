@@ -219,11 +219,40 @@ void append_write_output_to_plato_analyze_operation
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn append_filter_control_to_plato_analyze_helmholtz_operation
+ * \brief Append filter control to the plato analyze operation xml file for helmholtz
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_filter_control_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_filter_gradient_to_plato_analyze_helmholtz_operation
+ * \brief Append filter gradient to the plato analyze operation xml file for helmholtz
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_filter_gradient_to_plato_analyze_helmholtz_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
  * \fn write_plato_analyze_operation_xml_file
  * \brief Write Plato Analyze operations to plato_analyze_operation.xml file.
  * \param [in] aMetaData Plato problem input data
 **********************************************************************************/
 void write_plato_analyze_operation_xml_file
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn write_plato_analyze_helmholtz_operation_xml_file
+ * \brief Write Plato Analyze operations to plato_analyze_operation.xml file.
+ * Specialized for Plato Analyze instance that is a helmholtz filter.
+ * \param [in] aMetaData Plato problem input data
+**********************************************************************************/
+void write_plato_analyze_helmholtz_operation_xml_file
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**
@@ -275,6 +304,16 @@ void write_amgx_input_file_for_thermoplasticity(const XMLGen::InputData& aMetaDa
 void append_mesh_map_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_visualization_to_plato_analyze_operation
+ * \brief Append output related info to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_visualization_to_plato_analyze_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode);
 
 }
 // namespace XMLGen

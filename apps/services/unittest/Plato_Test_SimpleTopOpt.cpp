@@ -872,26 +872,24 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_5)
     tInputs.mInitialGuess = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, tValue);
     tInputs.mUpperBounds = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, 1.0 /* base value */);
     tInputs.mLowerBounds = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, 1e-2 /* base value */);
-
-    // ********* SOLVE OPTIMIZATION PROBLEM *********
-    Plato::AlgorithmOutputsKSAL<double> tOutputs;
     tInputs.mDisablePostSmoothing = true;
     tInputs.mControlStagnationTolerance = 1e-2;
     tInputs.mHessianMethod = Plato::Hessian::LBFGS;
+    
+    // ********* SOLVE OPTIMIZATION PROBLEM *********
+    Plato::AlgorithmOutputsKSAL<double> tOutputs;
     Plato::solve_ksal<double, size_t>(tCompliance, tConstraints, tInputs, tOutputs);
 
     // ********* TEST OUTPUT DATA *********
     const double tTolerance = 1e-6;
-    EXPECT_EQ(20u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(261u, tOutputs.mNumObjFuncEval);
-    EXPECT_EQ(102u, tOutputs.mNumObjGradEval);
-    EXPECT_NEAR(0.14957929692374308, tOutputs.mObjFuncValue, tTolerance);
-    EXPECT_NEAR(2.2543639177641239e-07, (*tOutputs.mConstraints)[0], tTolerance);
+    EXPECT_NEAR(0.14966408518051111, tOutputs.mObjFuncValue, tTolerance);
+    EXPECT_NEAR(3.1588752809064147e-06, (*tOutputs.mConstraints)[0], tTolerance);
     EXPECT_STREQ("\n\n****** Optimization stopping due to control (i.e. design variable) stagnation. ******\n\n", tOutputs.mStopCriterion.c_str());
     std::vector<double> tGoldControl = TopoProxy::get_gold_control_ksal_test_five();
 
     for(size_t tIndex = 0; tIndex < tGoldControl.size(); tIndex++)
     {
+        // std::cout << (*tOutputs.mSolution)(0,tIndex) << std::endl;
         EXPECT_NEAR(tGoldControl[tIndex], (*tOutputs.mSolution)(0 /* vector index */, tIndex), tTolerance);
     }
 }

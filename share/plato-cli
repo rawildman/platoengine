@@ -1,5 +1,7 @@
 #!/usr/bin/env spack-python
-## /usr/bin/python3
+
+from __future__ import print_function
+from inspect import currentframe, getframeinfo
 
 import subprocess
 import argparse
@@ -8,12 +10,19 @@ import json
 import sys
 import os
 
-from inspect import currentframe, getframeinfo
-from pathlib import Path
+if sys.version_info >= (3, 4):
+  from pathlib import Path  # Requires pyver >= 34
+
 
 def source_dir():
   filename = getframeinfo(currentframe()).filename
-  parent = Path(filename).resolve().parent
+
+  if sys.version_info >= (3, 4):
+    parent = Path(filename).resolve().parent  # resolve()--> absolute path (no '..', symlinks)
+  else:
+    full_name = os.path.abspath(filename)
+    parent = os.path.dirname(full_name)
+
   return str(parent)
 
 def loadState():
@@ -21,7 +30,8 @@ def loadState():
   fileName = src_dir + "/config.json"
   try:
     f = open(fileName, 'r')
-  except FileNotFoundError:
+  except IOError as e:
+    print(os.strerror(e.errno))  
     return {}
   else:
     data = json.load(f)
@@ -105,11 +115,13 @@ def dictToArgs(dictionary):
   return retVal
 
 def is_file(fileName):
-  inputFile = Path(fileName)
-  if not inputFile.is_file():
-    return False
+  if sys.version_info >= (3, 4):
+    inputFile = Path(fileName)
+    return inputFile.is_file()
   else:
-    return True
+    inputFile = fileName
+    return os.path.isfile(inputFile)
+
 
 def esp_action(args):
 
@@ -125,22 +137,16 @@ def esp_action(args):
     return
 
   argsDict = {'modelNameIn': args.input}
-
   if args.output_model != None:
     argsDict['modelNameOut'] =  args.output_model
-
   if args.output_mesh != None:
     argsDict['meshName'] =  args.output_mesh
-
   if args.min_scale != None:
     argsDict['minScale'] =  args.min_scale
-
   if args.tesselation != None:
     argsDict['etoName'] =  args.tesselation
-
   if args.mesh_scale != None:
     argsDict['meshLengthFactor'] = args.mesh_scale
-
   if args.parameters != None:
     argsDict['parameters'] = args.parameters
 

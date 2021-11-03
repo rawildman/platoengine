@@ -24,7 +24,7 @@ private:
     std::unordered_map<std::string, std::string> mMetaData; /*!< Scenario metadata, map< tag, value > */
     std::vector<std::string> mLoadIDs;
     std::vector<std::string> mBCIDs;
-    std::vector<std::string> mFRFMatchNodesetIDs;
+    std::vector<std::string> mAssemblyIDs;
 
 // private member functions
 private:
@@ -62,20 +62,6 @@ public:
     void setLoadIDs(std::vector<std::string>& aLoadIDs) {mLoadIDs = aLoadIDs;};
 
     /******************************************************************************//**
-     * \fn frfMatchNodesetIDs
-     * \brief Return nodeset ids for matching frfs
-     * \return mFRFMatchNodesetIDs
-    **********************************************************************************/
-    std::vector<std::string> frfMatchNodesetIDs() const {return mFRFMatchNodesetIDs;};
-
-    /******************************************************************************//**
-     * \fn setFRFMatchNodesetIDs
-     * \brief Set nodeset ids for matching frfs
-     * \param [in] input nodeset IDs 
-    **********************************************************************************/
-    void setFRFMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mFRFMatchNodesetIDs = aNodesetIDs;};
-
-    /******************************************************************************//**
      * \fn bcIDs
      * \brief Return scenario boudary condition IDs
      * \return scenario boudary condition IDs
@@ -88,6 +74,20 @@ public:
      * \param [in] input boundary condition IDs 
     **********************************************************************************/
     void setBCIDs(std::vector<std::string>& aBCIDs) {mBCIDs = aBCIDs;};
+
+    /******************************************************************************//**
+     * \fn assemblyIDs
+     * \brief Return scenario assembly IDs
+     * \return scenario assembly IDs
+    **********************************************************************************/
+    std::vector<std::string> assemblyIDs() const {return mAssemblyIDs;};
+
+    /******************************************************************************//**
+     * \fn setAssemblyIDs
+     * \brief Set scenario assembly IDs
+     * \param [in] input assembly IDs 
+    **********************************************************************************/
+    void setAssemblyIDs(std::vector<std::string>& aAssemblyIDs) {mAssemblyIDs = aAssemblyIDs;};
 
     /******************************************************************************//**
      * \fn value
@@ -393,7 +393,6 @@ public:
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }
     std::string convert_to_tet10() const {return this->getValue("convert_to_tet10"); }
-    std::string ref_frf_file() const {return this->getValue("ref_frf_file"); }
 
 };
 // struct Scenario

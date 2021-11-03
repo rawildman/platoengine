@@ -125,7 +125,8 @@ endfunction( Plato_no_src_build )
 
 ###############################################################################
 ## Plato_add_text_to_file( 
-##    FILE_LIST    == Return variable containing filepath to executable.
+##    FILE_TO_MODIFY == File where text will be appended.
+##    STRING_TO_ADD  == String to append to file.
 ## )
 ###############################################################################
 
@@ -134,6 +135,21 @@ function( Plato_add_text_to_file FILE_TO_MODIFY STRING_TO_ADD )
   file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${FILE_TO_MODIFY} ${STRING_TO_ADD})
     
 endfunction(Plato_add_text_to_file)
+
+###############################################################################
+## Plato_add_text_to_file_after_keyword( 
+##    FILE_TO_MODIFY == File where text will be appended.
+##    KEYWORD        == Keyword to search for appending after.
+##    STRING_TO_ADD  == String to append to file.
+## )
+###############################################################################
+
+function( Plato_add_text_to_file_after_keyword FILE_TO_MODIFY KEYWORD STRING_TO_ADD )
+  
+  execute_process(COMMAND sed -i "/${KEYWORD}/a \\  ${STRING_TO_ADD}" ${FILE_TO_MODIFY}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    
+endfunction(Plato_add_text_to_file_after_keyword)
 
 
 ###############################################################################

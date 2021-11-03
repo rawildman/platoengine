@@ -9,16 +9,180 @@
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
 #include "XMLGeneratorParseOutput.hpp"
+#include "XMLGeneratorParseRun.hpp"
 #include "XMLGeneratorParseScenario.hpp"
 #include "XMLGeneratorParseServices.hpp"
 #include "XMLGeneratorParseCriteria.hpp"
 #include "XMLGeneratorParseMaterial.hpp"
 #include "XMLGeneratorParseObjective.hpp"
 #include "XMLGeneratorParseConstraint.hpp"
+#include "XMLGeneratorParseAssembly.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorParseOptimizationParameters.hpp"
+#include "XMLGeneratorFixedBlockUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
+
+TEST(PlatoTestXMLGenerator, CheckFixedBlocksData_Case1)
+{
+    // SET PROBLEM
+    XMLGen::OptimizationParameters tMetadata;
+    std::vector<std::string> tFixedBlockIds = {"1", "2", "3"};
+    tMetadata.setFixedBlockIDs(tFixedBlockIds);
+    XMLGen::FixedBlock::check_fixed_block_metadata(tMetadata);
+
+    // TEST OUTPUT
+    auto tMaterialStates = tMetadata.fixed_block_material_states();
+    ASSERT_EQ(3u, tMaterialStates.size());
+    for(auto& tState : tMaterialStates)
+    {
+        ASSERT_STREQ("solid", tState.c_str());
+    }
+
+    auto tDomainValues = tMetadata.fixed_block_domain_values();
+    ASSERT_EQ(3u, tDomainValues.size());
+    for(auto& tValue : tDomainValues)
+    {
+        ASSERT_STREQ("1.0", tValue.c_str());
+    }
+
+    auto tBoundaryValues = tMetadata.fixed_block_boundary_values();
+    ASSERT_EQ(3u, tBoundaryValues.size());
+    for(auto& tValue : tBoundaryValues)
+    {
+        ASSERT_STREQ("0.5001", tValue.c_str());
+    }
+}
+
+TEST(PlatoTestXMLGenerator, CheckFixedBlocksData_Case2)
+{
+    // SET PROBLEM
+    XMLGen::OptimizationParameters tMetadata;
+    std::vector<std::string> tFixedBlockIds = {"1", "2", "3"};
+    tMetadata.setFixedBlockIDs(tFixedBlockIds);
+    std::vector<std::string> tMaterialStates = {"solid", "fluid", "solid"};
+    tMetadata.setFixedBlockMaterialStates(tMaterialStates);
+
+    // CALL FUNCTION
+    XMLGen::FixedBlock::check_fixed_block_metadata(tMetadata);
+    
+    // TEST OUTPUT
+    std::vector<std::string> tMaterialStatesGold = {"solid", "fluid", "solid"};
+    tMaterialStates = tMetadata.fixed_block_material_states();
+    ASSERT_EQ(3u, tMaterialStates.size());
+    for(auto& tState : tMaterialStates)
+    {
+        auto tIndex = &tState - &tMaterialStates[0];
+        ASSERT_STREQ(tMaterialStatesGold[tIndex].c_str(), tState.c_str());
+    }
+
+    std::vector<std::string> tDomainValuesGold = {"0.0", "1.0", "0.0"};
+    auto tDomainValues = tMetadata.fixed_block_domain_values();
+    ASSERT_EQ(3u, tDomainValues.size());
+    for(auto& tValue : tDomainValues)
+    {
+        auto tIndex = &tValue - &tDomainValues[0];
+        ASSERT_STREQ(tDomainValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+
+    std::vector<std::string> tBoundaryValuesGold = {"0.4999", "0.5001", "0.4999"};
+    auto tBoundaryValues = tMetadata.fixed_block_boundary_values();
+    ASSERT_EQ(3u, tBoundaryValues.size());
+    for(auto& tValue : tBoundaryValues)
+    {
+        auto tIndex = &tValue - &tBoundaryValues[0];
+        ASSERT_STREQ(tBoundaryValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+}
+
+TEST(PlatoTestXMLGenerator, CheckFixedBlocksData_Case3)
+{
+    // SET PROBLEM
+    XMLGen::OptimizationParameters tMetadata;
+    std::vector<std::string> tFixedBlockIds = {"1", "2", "3"};
+    tMetadata.setFixedBlockIDs(tFixedBlockIds);
+    std::vector<std::string> tDomainValues = {"0.9", "0.4", "0.8"};
+    tMetadata.setFixedBlockDomainValues(tDomainValues);
+    std::vector<std::string> tBoundaryValues = {"0.92", "0.43", "0.85"};
+    tMetadata.setFixedBlockBoundaryValues(tBoundaryValues);
+
+    // CALL FUNCTION
+    XMLGen::FixedBlock::check_fixed_block_metadata(tMetadata);
+    
+    // TEST OUTPUT
+    std::vector<std::string> tMaterialStatesGold = {"solid", "solid", "solid"};
+    auto tMaterialStates = tMetadata.fixed_block_material_states();
+    ASSERT_EQ(3u, tMaterialStates.size());
+    for(auto& tState : tMaterialStates)
+    {
+        auto tIndex = &tState - &tMaterialStates[0];
+        ASSERT_STREQ(tMaterialStatesGold[tIndex].c_str(), tState.c_str());
+    }
+
+    std::vector<std::string> tDomainValuesGold = {"0.9", "0.4", "0.8"};
+    tDomainValues = tMetadata.fixed_block_domain_values();
+    ASSERT_EQ(3u, tDomainValues.size());
+    for(auto& tValue : tDomainValues)
+    {
+        auto tIndex = &tValue - &tDomainValues[0];
+        ASSERT_STREQ(tDomainValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+
+    std::vector<std::string> tBoundaryValuesGold = {"0.92", "0.43", "0.85"};
+    tBoundaryValues = tMetadata.fixed_block_boundary_values();
+    ASSERT_EQ(3u, tBoundaryValues.size());
+    for(auto& tValue : tBoundaryValues)
+    {
+        auto tIndex = &tValue - &tBoundaryValues[0];
+        ASSERT_STREQ(tBoundaryValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+}
+
+TEST(PlatoTestXMLGenerator, CheckFixedBlocksData_Case4)
+{
+    // SET PROBLEM
+    XMLGen::OptimizationParameters tMetadata;
+    std::vector<std::string> tFixedBlockIds = {"1", "2", "3"};
+    tMetadata.setFixedBlockIDs(tFixedBlockIds);
+    std::vector<std::string> tDomainValues = {"0.9", "0.4", "0.8"};
+    tMetadata.setFixedBlockDomainValues(tDomainValues);
+    std::vector<std::string> tBoundaryValues = {"0.92", "0.43", "0.85"};
+    tMetadata.setFixedBlockBoundaryValues(tBoundaryValues);
+    std::vector<std::string> tMaterialStates = {"solid", "fluid", "solid"};
+    tMetadata.setFixedBlockMaterialStates(tMaterialStates);
+
+    // CALL FUNCTION
+    XMLGen::FixedBlock::check_fixed_block_metadata(tMetadata);
+    
+    // TEST OUTPUT
+    std::vector<std::string> tMaterialStatesGold = {"solid", "fluid", "solid"};
+    tMaterialStates = tMetadata.fixed_block_material_states();
+    ASSERT_EQ(3u, tMaterialStates.size());
+    for(auto& tState : tMaterialStates)
+    {
+        auto tIndex = &tState - &tMaterialStates[0];
+        ASSERT_STREQ(tMaterialStatesGold[tIndex].c_str(), tState.c_str());
+    }
+
+    std::vector<std::string> tDomainValuesGold = {"0.9", "0.4", "0.8"};
+    tDomainValues = tMetadata.fixed_block_domain_values();
+    ASSERT_EQ(3u, tDomainValues.size());
+    for(auto& tValue : tDomainValues)
+    {
+        auto tIndex = &tValue - &tDomainValues[0];
+        ASSERT_STREQ(tDomainValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+
+    std::vector<std::string> tBoundaryValuesGold = {"0.92", "0.43", "0.85"};
+    tBoundaryValues = tMetadata.fixed_block_boundary_values();
+    ASSERT_EQ(3u, tBoundaryValues.size());
+    for(auto& tValue : tBoundaryValues)
+    {
+        auto tIndex = &tValue - &tBoundaryValues[0];
+        ASSERT_STREQ(tBoundaryValuesGold[tIndex].c_str(), tValue.c_str());
+    }
+}
 
 TEST(PlatoTestXMLGenerator, ParseObjective_ErrorNoType)
 {
@@ -314,6 +478,71 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
     ASSERT_STREQ("3", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
 }
 
+TEST(PlatoTestXMLGenerator, ParseCriteria_MassProperties)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type mass_properties\n"
+        "Mass Gold 0.0664246 Weight 1.0\n"
+        "Ixx Gold 3.7079 Weight 1.0\n"
+        "Iyy Gold 2.7113 Weight 1.0\n"
+        "Izz Gold 4.2975 Weight 1.0\n"
+        "CGx Gold 4.1376 Weight 1.0\n"
+        "CGy Gold 5.6817 Weight 1.0\n"
+        "CGz Gold 2.9269 Weight 1.0\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("mass_properties", tCriterionMetaData[0].type().c_str());
+
+    auto massProperties = tCriterionMetaData[0].getMassProperties();
+
+    std::map<std::string, std::pair<double,double>>::const_iterator p;
+
+    p = massProperties.find("Mass");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 0.0664246);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Ixx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 3.7079);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Iyy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.7113);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Izz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.2975);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.1376);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 5.6817);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.9269);
+    ASSERT_EQ((*p).second.second, 1.0);
+}
+
+
 TEST(PlatoTestXMLGenerator, ParseCriteria_ThreeCriteria)
 {
     std::string tStringInput =
@@ -331,7 +560,7 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_ThreeCriteria)
     tInputSS.str(tStringInput);
 
     XMLGen::ParseCriteria tCriteriaParser;
-    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+    tCriteriaParser.parse(tInputSS);
 
     auto tCriterionMetaData = tCriteriaParser.data();
     ASSERT_EQ(3u, tCriterionMetaData.size());
@@ -812,6 +1041,34 @@ TEST(PlatoTestXMLGenerator, ParseScenario_DefaultMainValues)
     }
 }
 
+TEST(PlatoTestXMLGenerator, ParseScenario_WithAssembly)
+{
+    std::string tStringInput =
+        "begin scenario\n"
+        "   physics steady_state_mechanics\n"
+        "   dimensions 3\n"
+        "   loads 1\n"
+        "   boundary_conditions 1\n"
+        "   assemblies 1\n"
+        "end scenario\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseScenario tScenarioParser;
+    tScenarioParser.parse(tInputSS);
+    auto tScenarios = tScenarioParser.data();
+    int id_counter = 1;
+    for (auto& tScenario : tScenarios)
+    {
+        ASSERT_STREQ(std::string("steady_state_mechanics_" + std::to_string(id_counter++)).c_str(), tScenario.id().c_str());
+        ASSERT_STREQ("steady_state_mechanics", tScenario.value("physics").c_str());
+        ASSERT_STREQ("3", tScenario.value("dimensions").c_str());
+        ASSERT_STREQ("1", tScenario.loadIDs()[0].c_str());
+        ASSERT_STREQ("1", tScenario.bcIDs()[0].c_str());
+        ASSERT_STREQ("1", tScenario.assemblyIDs()[0].c_str());
+    }
+}
+
 TEST(PlatoTestXMLGenerator, ParseService_ErrorInvalidCode)
 {
     std::string tStringInput =
@@ -855,6 +1112,7 @@ TEST(PlatoTestXMLGenerator, ParseService)
     std::string tStringInput =
         "begin service 1\n"
         "code plato_analyze\n"
+        "path /path/to/platoanalyze/build/analyze_MPMD\n"
         "cache_state false\n"
         "update_problem true\n"
         "additive_continuation true\n"
@@ -871,6 +1129,7 @@ TEST(PlatoTestXMLGenerator, ParseService)
     {
         ASSERT_STREQ("1", tService.value("id").c_str());
         ASSERT_STREQ("plato_analyze", tService.value("code").c_str());
+        ASSERT_STREQ("/path/to/platoanalyze/build/analyze_MPMD", tService.value("path").c_str());
         ASSERT_STREQ("false", tService.value("cache_state").c_str());
         ASSERT_STREQ("true", tService.value("update_problem").c_str());
         ASSERT_STREQ("true", tService.value("additive_continuation").c_str());
@@ -1032,6 +1291,202 @@ TEST(PlatoTestXMLGenerator, ParseOutput_RandomOnly)
     }
 }
 
+TEST(PlatoTestXMLGenerator, ParseAssembly_DefaultMainValues)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n"
+        "begin assembly 2\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    tAssemblyParser.parse(tInputSS);
+    auto tAssemblys = tAssemblyParser.data();
+    for (auto& tAssembly : tAssemblys)
+    {
+        ASSERT_STREQ("tied", tAssembly.value("type").c_str());
+        ASSERT_STREQ("ns_1", tAssembly.value("child_nodeset").c_str());
+        ASSERT_STREQ("1", tAssembly.value("parent_block").c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[0].c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[1].c_str());
+        ASSERT_STREQ("0.0", tAssembly.offset()[2].c_str());
+        ASSERT_STREQ("0.0", tAssembly.value("rhs_value").c_str());
+    }
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_ErrorEmptyAssemblyBlock)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_ErrorInvalidAssemblyType)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type hippo\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_ErrorEmptyAssemblyType)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_ErrorEmptyAssemblyChild)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   parent_block 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_ErrorEmptyAssemblyParent)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_NonUniqueIDs)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n"
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_THROW(tAssemblyParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_OneAssembly)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_NO_THROW(tAssemblyParser.parse(tInputSS));
+
+    auto tAssemblyMetaData = tAssemblyParser.data();
+
+    ASSERT_EQ(1u, tAssemblyMetaData.size());
+    ASSERT_STREQ("1", tAssemblyMetaData[0].id().c_str());
+
+    auto tTags = tAssemblyMetaData[0].tags();
+    ASSERT_EQ(5u, tTags.size());
+    ASSERT_STREQ("tied", tAssemblyMetaData[0].property("type").c_str());
+    ASSERT_STREQ("ns_1", tAssemblyMetaData[0].property("child_nodeset").c_str());
+    ASSERT_STREQ("1", tAssemblyMetaData[0].property("parent_block").c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[1].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[2].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].property("rhs_value").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseAssembly_TwoAssembly)
+{
+    std::string tStringInput =
+        "begin assembly 1\n"
+        "   type tied\n"
+        "   child_nodeset ns_1\n"
+        "   parent_block 1\n"
+        "   rhs_value 10.0\n"
+        "end assembly\n"
+        "begin assembly 2\n"
+        "   type tied\n"
+        "   child_nodeset ns_2\n"
+        "   parent_block 4\n"
+        "   offset 1.0 0.0 -0.4\n"
+        "end assembly\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseAssembly tAssemblyParser;
+    ASSERT_NO_THROW(tAssemblyParser.parse(tInputSS));
+
+    auto tAssemblyMetaData = tAssemblyParser.data();
+    ASSERT_EQ(2u, tAssemblyMetaData.size());
+
+    ASSERT_STREQ("1", tAssemblyMetaData[0].id().c_str());
+    ASSERT_STREQ("2", tAssemblyMetaData[1].id().c_str());
+
+    auto tTags = tAssemblyMetaData[0].tags();
+    ASSERT_EQ(5u, tTags.size());
+    ASSERT_STREQ("tied", tAssemblyMetaData[0].property("type").c_str());
+    ASSERT_STREQ("ns_1", tAssemblyMetaData[0].property("child_nodeset").c_str());
+    ASSERT_STREQ("1", tAssemblyMetaData[0].property("parent_block").c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[1].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[0].offset()[2].c_str());
+    ASSERT_STREQ("10.0", tAssemblyMetaData[0].property("rhs_value").c_str());
+
+    tTags = tAssemblyMetaData[1].tags();
+    ASSERT_EQ(5u, tTags.size());
+    ASSERT_STREQ("tied", tAssemblyMetaData[1].property("type").c_str());
+    ASSERT_STREQ("ns_2", tAssemblyMetaData[1].property("child_nodeset").c_str());
+    ASSERT_STREQ("4", tAssemblyMetaData[1].property("parent_block").c_str());
+    ASSERT_STREQ("1.0", tAssemblyMetaData[1].offset()[0].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[1].offset()[1].c_str());
+    ASSERT_STREQ("-0.4", tAssemblyMetaData[1].offset()[2].c_str());
+    ASSERT_STREQ("0.0", tAssemblyMetaData[1].property("rhs_value").c_str());
+}
+
 TEST(PlatoTestXMLGenerator, Split)
 {
     std::string tInput("1 2 3 4 5 6 7 8");
@@ -1045,6 +1500,289 @@ TEST(PlatoTestXMLGenerator, Split)
         auto tIndex = &tValue - &tOutput[0];
         ASSERT_STREQ(tGold[tIndex].c_str(), tValue.c_str());
     }
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_1)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   rol_subproblem_model lin_more\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("lin_more", tOptimizationParametersMetadata[0].rol_subproblem_model().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_2)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_linear_constraint\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("lin_more", tOptimizationParametersMetadata[0].rol_subproblem_model().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_3)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_bound_constrained\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("kelley_sachs", tOptimizationParametersMetadata[0].rol_subproblem_model().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_4)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_augmented_lagrangian\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("kelley_sachs", tOptimizationParametersMetadata[0].rol_subproblem_model().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_5)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_augmented_lagrangian\n"
+        "   rol_subproblem_model dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_6)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_bound_constrained\n"
+        "   rol_subproblem_model dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_subproblem_model_7)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_linear_constraint\n"
+        "   rol_subproblem_model dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_1)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   hessian_type zero\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("zero", tOptimizationParametersMetadata[0].hessian_type().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_2)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_linear_constraint\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("zero", tOptimizationParametersMetadata[0].hessian_type().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_3)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_bound_constrained\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("zero", tOptimizationParametersMetadata[0].hessian_type().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_4)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_augmented_lagrangian\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_NO_THROW(tOptimizationParametersParser.parse(tInputSS));
+    auto tOptimizationParametersMetadata = tOptimizationParametersParser.data();
+    ASSERT_STREQ("zero", tOptimizationParametersMetadata[0].hessian_type().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_5)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_linear_constraint\n"
+        "   hessian_type dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_6)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_bound_constrained\n"
+        "   hessian_type dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseOptimizationParameters_rol_hessian_type_7)
+{
+    std::string tStringInput =
+        "begin optimization_parameters\n"
+        "   optimization_algorithm rol_augmented_lagrangian\n"
+        "   hessian_type dummy\n"
+        "end optimization_parameters\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseOptimizationParameters tOptimizationParametersParser;
+    ASSERT_THROW(tOptimizationParametersParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorInvalidKeyword)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "bad_keyword bad_value\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorNoType)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorInvalidType)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type bogus_type\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_ErrorNoCriterionOrCommand)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_THROW(tRunParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_criterion)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "criterion 1\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_NO_THROW(tRunParser.parse(tInputSS));
+}
+
+TEST(PlatoTestXMLGenerator, ParseRun_command)
+{
+    std::string tStringInput =
+        "begin run 1\n"
+        "type modal_analysis\n"
+        "command salinas -i input.i\n"
+        "end run\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseRun tRunParser;
+    ASSERT_NO_THROW(tRunParser.parse(tInputSS));
 }
 
 }

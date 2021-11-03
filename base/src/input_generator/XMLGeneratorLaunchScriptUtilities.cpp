@@ -1,8 +1,10 @@
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "pugixml.hpp"
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
+#include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -153,6 +155,45 @@ namespace XMLGen
     }
   }
 
+    void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)
+    {
+        // This newline is important because the performer lines always end with a
+        // "\" so that the command continues on the next line so we need to 
+        // add a newline to end the previous command.
+        fprintf(fp, "\n");
+        for(const XMLGen::Run &tCurRun : aInputData.runs())
+        {
+            if(tCurRun.command().empty())
+            {
+                std::string tType = tCurRun.type();
+                if(tType == "modal_analysis")
+                {
+                    int tNumProcs = 1;
+                    std::string tServiceID = tCurRun.service();
+                    if(!tServiceID.empty())
+                    {
+                        XMLGen::Service tService = aInputData.service(tServiceID);
+                        std::string tNumProcsString = tService.numberProcessors(); 
+                        tNumProcs = std::atoi(tNumProcsString.c_str());
+                        if(tNumProcs > 1)
+                        {
+                            append_decomp_line(fp, tNumProcs, aInputData.mesh.run_name);
+                        }
+                    }
+                    std::string tInputDeckName = build_post_optimization_run_input_deck_name(tCurRun);
+                    std::string tLaunchString, tTempNumProcsString;
+                    XMLGen::determine_mpi_launch_strings(aInputData,tLaunchString,tTempNumProcsString);
+                    fprintf(fp, "%s %s %d salinas -i %s\n", tLaunchString.c_str(), tTempNumProcsString.c_str(), 
+                                                         tNumProcs, tInputDeckName.c_str());
+                }
+            }
+            else
+            {
+                fprintf(fp, "%s\n", tCurRun.command().c_str());
+            }
+        } 
+    }
+
   void append_decomp_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
   {
     std::map<std::string,int> hasBeenDecompedForThisNumberOfProcessors;
@@ -192,7 +233,7 @@ namespace XMLGen
         XMLGen::Service tService = aInputData.service(aInputData.objective.serviceIDs[i]);
         if(tService.code() != "plato_analyze")
         {
-            XMLGen::Scenario tScenario = aInputData.scenario(aInputData.objective.scenarioIDs[i]);
+            XMLGen::Criterion tCriterion = aInputData.criterion(aInputData.objective.criteriaIDs[i]);
             std::string num_procs = tService.numberProcessors();
     
             XMLGen::assert_is_positive_integer(num_procs);
@@ -202,8 +243,8 @@ namespace XMLGen
             {
                 if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0)
                   XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
-                if(tScenario.value("ref_frf_file").length() > 0)
-                  XMLGen::append_decomp_line(fp, num_procs, tScenario.value("ref_frf_file"));
+                if(tCriterion.value("ref_data_file").length() > 0)
+                  XMLGen::append_decomp_line(fp, num_procs, tCriterion.value("ref_data_file"));
             }
         }
     }
@@ -238,8 +279,10 @@ namespace XMLGen
     aNextPerformerID++;
     fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
-    if(aInputData.codepaths.plato_main_path.length() != 0)
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.codepaths.plato_main_path.c_str());
+
+    auto tPlatoMainServiceId = aInputData.getFirstPlatoMainId();
+    if(aInputData.service(tPlatoMainServiceId).path().length() != 0)
+      fprintf(fp, "%s plato_main_input_deck.xml \\\n", aInputData.service(tPlatoMainServiceId).path().c_str());
     else
       fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoEngineName.c_str());
   }
@@ -271,6 +314,7 @@ namespace XMLGen
 
   void determine_plato_engine_name(const XMLGen::InputData& aInputData, std::string& aPlatoEngineName)
   {
+/*
       bool tAtLeastOneSierraSDPhysicsPerformer = false;
       bool tAllPhysicsPerformersAreSierraSD = true;
       for(auto &tCurService : aInputData.services())
@@ -301,8 +345,9 @@ namespace XMLGen
      }
      else
      {
+*/
          aPlatoEngineName = "PlatoMain";   
-     }
+ //    }
   }
 
   namespace Internal
@@ -397,8 +442,8 @@ namespace XMLGen
     std::string get_prune_and_refine_executable_path(const XMLGen::InputData& aInputData)
     {
       std::string tPruneAndRefineExe = "prune_and_refine";
-      if(aInputData.codepaths.prune_and_refine_path.length() > 0)
-        tPruneAndRefineExe = aInputData.codepaths.prune_and_refine_path;
+      if(aInputData.optimization_parameters().prune_and_refine_path().length() > 0)
+        tPruneAndRefineExe = aInputData.optimization_parameters().prune_and_refine_path();
       return tPruneAndRefineExe;
     }
 

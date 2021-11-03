@@ -100,6 +100,20 @@ public:
     std::string code() const;
 
     /******************************************************************************//**
+     * \fn path
+     * \brief Set string value for keyword 'path'.
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void path(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn path
+     * \brief Return string value for keyword 'path'.
+     * \return value
+    **********************************************************************************/
+    std::string path() const;
+
+    /******************************************************************************//**
      * \fn numberRanks
      * \brief Set string value for keyword 'number_ranks'.
      * \param [in] aInput string value
@@ -315,6 +329,21 @@ public:
      * \return output bool
     **********************************************************************************/
     bool updateProblem() const;
+
+    /******************************************************************************//**
+     * \fn existingInputDeck
+     * \brief Set string value for keyword 'existing_input_deck'.
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void existingInputDeck(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn existingInputDeck
+     * \brief Return string value for keyword 'existing_input_deck'.
+     * \return output string: non-empty if using an existing input deck
+    **********************************************************************************/
+    std::string existingInputDeck() const;
+
 };
 // struct Service
 

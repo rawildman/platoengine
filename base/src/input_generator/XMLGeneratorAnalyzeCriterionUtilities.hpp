@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <sstream>
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
@@ -14,6 +15,32 @@ namespace XMLGen
 
 namespace Private
 {
+
+template<typename CriterionT>
+pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode);
+
+template<typename Criterion>
+void append_block_list
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tLowerType = Plato::tolower(aCriterion.type());
+    if( tLowerType == "volume" )
+    {
+        auto tElemBlockList = aCriterion.values("blocks");
+        if( !tElemBlockList.empty() )
+        {
+            std::vector<std::string> tKeys = {"name", "type", "value"};
+            auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
+            std::vector<std::string> tValues = {"Element Blocks", "Array(string)", tElemBlocksNames};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+        }
+        else
+        {
+            aCriterion.report("All the element blocks (i.e. full geometry) will be taken into consideration in the volume criterion evaluation.");
+        }
+    }
+}
 
 /******************************************************************************//**
  * \fn is_criterion_supported_in_plato_analyze
@@ -81,39 +108,109 @@ void append_simp_penalty_function
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
 }
 
+template<typename CriterionT>
+std::vector<std::string> set_conductivity_ratios(const CriterionT& aCriterion)
+{
+    auto tConductivityRatios = aCriterion.values("conductivity_ratios");
+    if( tConductivityRatios.empty() )
+    {
+        std::cout << "\n" << std::flush;
+        THROWERR(std::string("Error creating surface scalar function of type '") + aCriterion.type() + "' with criterion id '" 
+            + aCriterion.id() + "'. List of conductivity ratios (i.e. 'conductivity_ratios' keyword) is empty. "
+            + "Conductivity ratios must be defined.")
+    }
+
+    if( tConductivityRatios.size() <= 1 && tConductivityRatios[0].empty() )
+    {
+        auto tLocationNames = aCriterion.values("location_names");
+        tConductivityRatios.resize(tLocationNames.size());
+        std::fill(tConductivityRatios.begin(), tConductivityRatios.end(), "1.0");
+    }
+
+    return tConductivityRatios;
+}
+
+/******************************************************************************//**
+ * \fn check_criterion_location_names_list
+ * \tparam CriterionT criterion metadata
+ * \brief Check if 'location_names' keyword is defined, if not, thorw error to console.
+ * \param [in]  aCriterion   criterion metadata
+ **********************************************************************************/
+template<typename CriterionT>
+void check_criterion_location_names_list
+(const CriterionT& aCriterion)
+{
+    auto tEntitySetNames = aCriterion.values("location_names");
+    if (!tEntitySetNames.empty())
+    {
+        if (tEntitySetNames.size() <= 1 && tEntitySetNames[0].empty())
+        {
+            std::cout << "\n" << std::flush;
+            THROWERR(std::string("Surface scalar function of type '") + aCriterion.type() + "' with criterion id '" + aCriterion.id() 
+                + "' was requested but the location name (i.e. sideset name where the criterion will be evaluated) is not define in the "
+                + "criterion block. User must defined the location name by setting the 'location_names' keyword.")
+        }
+    }
+    else
+    {
+            std::cout << "\n" << std::flush;
+            THROWERR(std::string("Surface scalar function of type '") + aCriterion.type() + "' with criterion id '" + aCriterion.id() 
+                + "' was requested but the location name (i.e. sideset name where the criterion will be evaluated) is not define in the "
+                + "criterion block. User must defined the location name by setting the 'location_names' keyword.")
+    }
+}
+
+template<typename CriterionT>
+void append_conductivity_ratios
+(const CriterionT& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tLowerType = Plato::tolower(aCriterion.type());
+    if( tLowerType == "maximize_fluid_thermal_flux" )
+    {
+        XMLGen::Private::check_criterion_location_names_list(aCriterion);
+        auto tConductivityRatios = XMLGen::Private::set_conductivity_ratios(aCriterion);
+        XMLGen::negate_scalar_values(tConductivityRatios);
+        auto tConductivityRatiosList = XMLGen::transform_tokens_for_plato_analyze_input_deck(tConductivityRatios);
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        std::vector<std::string> tValues = {"Conductivity Ratios", "Array(double)", tConductivityRatiosList};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+    }
+}
+
 /******************************************************************************//**
  * \fn append_surface_scalar_function_criterion
- * \tparam Criterion criterion metadata
+ * \tparam CriterionT criterion metadata
  * \brief Append surface scalar function to criterion parameter list. Surface scalar 
 *         functions are integrated along surfaces. 
  * \param [in]  aCriterion   criterion metadata
  * \param [out] aParentNode  pugi::xml_node
  **********************************************************************************/
-template<typename Criterion>
+template<typename CriterionT>
 pugi::xml_node append_surface_scalar_function_criterion
-(const Criterion& aCriterion,
- pugi::xml_node& aParentNode)
+(const CriterionT& aCriterion,
+ pugi::xml_node&   aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tCriterionNode = appendCriterionNode(aCriterion, aParentNode);
 
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    //auto tName = std::string("my ") + Plato::tolower(aCriterion.category());
-    auto tCriterion = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tCriterion);
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"}; tValues = {"Type", "string", "Scalar Function"};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
     tValues = {"Scalar Function Type", "string", tDesignCriterionName};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
-    auto tSideSetNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(aCriterion.values("location_name"));
-    tValues = {"Sides", "Array(string)", tSideSetNames};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    XMLGen::Private::check_criterion_location_names_list(aCriterion);
+    auto tEntitySetNames = aCriterion.values("location_names");
+    auto tEntitySetList = XMLGen::transform_tokens_for_plato_analyze_input_deck(tEntitySetNames);
+    tValues = {"Sides", "Array(string)", tEntitySetList};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterionNode);
 
-    return tCriterion;
+    XMLGen::Private::append_conductivity_ratios(aCriterion, tCriterionNode);
+
+    return tCriterionNode;
 }
 
 /******************************************************************************//**
@@ -131,24 +228,26 @@ pugi::xml_node append_scalar_function_criterion
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
     auto tCriterionLinearFlag = XMLGen::Private::is_criterion_linear(aCriterion);
 
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    //auto tName = std::string("my ") + Plato::tolower(aCriterion.category());
-    auto tObjective = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tObjective);
+    auto tScalarFunction = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     tKeys = {"name", "type", "value"}; tValues = {"Type", "string", "Scalar Function"};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
+
     if(tCriterionLinearFlag == "true")
     {
         tKeys = {"name", "type", "value"}; tValues = {"Linear", "bool", "true"};
-        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
     }
+
+    XMLGen::Private::append_block_list(aCriterion, tScalarFunction);
+    
     tValues = {"Scalar Function Type", "string", tDesignCriterionName};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
-    XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
-    return tObjective;
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
+    XMLGen::Private::append_simp_penalty_function(aCriterion, tScalarFunction);
+
+    return tScalarFunction;
 }
 
 /******************************************************************************//**
@@ -173,6 +272,35 @@ pugi::xml_node append_pnorm_criterion
     std::vector<std::string> tKeys = {"name", "type", "value"};
     std::vector<std::string> tValues = {"Exponent", "double", aCriterion.pnormExponent()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+    return tCriterion;
+}
+
+/******************************************************************************//**
+ * \fn append_thermomechanical_compliance_criterion
+ * \tparam Criterion criterion metadata
+ * \brief Append thermomechanical compliance function parameters to criterion parameter list.
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_thermomechanical_compliance_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tCriterion = XMLGen::Private::append_scalar_function_criterion(aCriterion, aParentNode);
+    if(tCriterion.empty())
+    {
+        THROWERR("Append Thermomechanical Compliance Criterion: Criterion parameter list is empty. Most likely, "
+            + "there was an error appending the scalar function criterion.")
+    }
+
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Mechanical Weighting Factor", "double", aCriterion.mechanicalWeightingFactor()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+
+    tValues = {"Thermal Weighting Factor", "double", aCriterion.thermalWeightingFactor()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+
     return tCriterion;
 }
 
@@ -227,11 +355,9 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
  pugi::xml_node& aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
-    auto tObjective = aParentNode.append_child("ParameterList");
-    std::vector<std::string> tKeys = {"name"};
-    std::vector<std::string> tValues = {tName};
-    XMLGen::append_attributes(tKeys, tValues, tObjective);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
 
     // append stress constrained mass minimization scalar function
     tKeys = {"name", "type", "value"};
@@ -241,6 +367,153 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
     XMLGen::Private::append_stress_constrained_mass_minimization_criterion_parameters(aCriterion, tObjective);
     return tObjective;
+}
+
+/******************************************************************************//**
+ * \fn append_stress_constraint_quadratic_criterion
+ * \brief Append stress constraint quadratic input parameters \n
+ * to criterion parameter list.
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+ **********************************************************************************/
+inline void append_stress_constraint_quadratic_criterion
+(const XMLGen::Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Type", "string", "Scalar Function"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    tValues = {"Scalar Function Type", "string", tDesignCriterionName};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    std::string tLocalMeasureType = aCriterion.localMeasure();
+    tValues = {"Local Measure", "string", tLocalMeasureType};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Local Measure Limit", "double", aCriterion.stressLimit()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Initial Penalty", "double", aCriterion.scmmInitialPenalty()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Penalty Upper Bound", "double", aCriterion.scmmPenaltyUpperBound()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Penalty Expansion Multiplier", "double", aCriterion.scmmPenaltyExpansionMultiplier()};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"SIMP Penalty", "double", aCriterion.materialPenaltyExponent()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aCriterion.minErsatzMaterialConstant());
+    tValues = {"Min. Ersatz Material", "double", tPropertyValue};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+}
+
+/******************************************************************************//**
+ * \fn append_volume_average_criterion
+ * \brief Append volume average criterion to criterion parameter list.
+ * \tparam Criterion criterion metadata
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_volume_average_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Type", "string", "Volume Average Criterion"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    std::string tLocalMeasureType = aCriterion.localMeasure();
+    tValues = {"Local Measure", "string", tLocalMeasureType};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    std::string tSpatialWeightingFunction = aCriterion.spatialWeightingFunction();
+    tValues = {"Function", "string", tSpatialWeightingFunction};
+    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
+    return tObjective;
+}
+
+/******************************************************************************//**
+ * \fn append_mass_properties_criterion
+ * \brief Append mass properties criterion to criterion parameter list.
+ * \tparam Criterion criterion metadata
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_mass_properties_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
+
+    tKeys = {"name", "type", "value"};
+    tValues = {"Type", "string", "Mass Properties"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    std::stringstream properties, goldValues, weights;
+    properties << "{";
+    goldValues << "{";
+    weights << "{";
+    const auto &p = aCriterion.getMassProperties();
+    for(auto pi=p.begin();pi!=p.end();pi++) {
+        properties << (*pi).first;
+        goldValues << (*pi).second.first;
+        weights << (*pi).second.second;
+        if (pi != --p.end()) {
+            properties << ",";
+            goldValues << ",";
+            weights << ",";
+        }
+    }
+    properties << "}";
+    goldValues << "}";
+    weights << "}";
+
+    tValues = {"Properties", "Array(string)", properties.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Gold Values", "Array(double)", goldValues.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    tValues = {"Weights", "Array(double)", weights.str()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    return tObjective;
+}
+
+template<typename CriterionT>
+pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
+{
+    std::string tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
+    pugi::xml_node tCriterionNode = aParentNode.append_child("ParameterList");
+    std::vector<std::string> tKeys = {"name"};
+    std::vector<std::string> tValues = {tName};
+    XMLGen::append_attributes(tKeys, tValues, tCriterionNode);
+    return tCriterionNode;
 }
 
 }
