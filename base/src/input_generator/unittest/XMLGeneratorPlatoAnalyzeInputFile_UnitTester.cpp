@@ -4655,6 +4655,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_All)
     auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?>"
     "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Linear\"type=\"bool\"value=\"true\"/>"
     "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
     "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGx,CGy,CGz,Ixx,Iyy,Izz,Mass}\"/>"
     "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{4.1376,5.6817,2.9269,3.7079,2.7113,4.2975,0.0664246}\"/>"
@@ -4680,6 +4681,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_Subse
     auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?>"
     "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Linear\"type=\"bool\"value=\"true\"/>"
     "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
     "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGz,Ixx,Mass}\"/>"
     "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{2.9269,3.7079,0.0664246}\"/>"

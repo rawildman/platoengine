@@ -1326,7 +1326,8 @@ struct ValidAnalyzeCriteriaIsLinearKeys
      **/
     std::unordered_map<std::string, std::string> mKeys =
     {
-        { "volume", "true" }
+        { "volume", "true" },
+        { "mass_properties", "true" }
     };
 };
 // ValidAnalyzeCriteriaIsLinearKeys

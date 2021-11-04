@@ -471,6 +471,9 @@ pugi::xml_node append_mass_properties_criterion
 
     std::vector<std::string> tKeys, tValues;
 
+    tKeys = {"name", "type", "value"}; 
+    tValues = {"Linear", "bool", "true"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
     tKeys = {"name", "type", "value"};
     tValues = {"Type", "string", "Mass Properties"};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
