@@ -889,7 +889,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_IPOPT)
 }
 #endif
 
-TEST(PlatoTest, MethodMovingAsymptotes_HimmelblauShiftedEllipse_KSAL)
+TEST(PlatoTest, PERF_MethodMovingAsymptotes_HimmelblauShiftedEllipse_KSAL)
 {
     // ********* SET OBJECTIVE AND COSNTRAINT *********
     std::shared_ptr<Plato::Himmelblau<double>> tObjective = std::make_shared<Plato::Himmelblau<double>>();
@@ -1051,7 +1051,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_CircleRadius)
     std::cout << tOutputs.mStopCriterion.c_str() << "\n" << std::flush;
 }
 
-TEST(DISABLED_PlatoTest, MethodMovingAsymptotes_MinComplianceVolumeConstraint)
+TEST(DISABLED_PlatoTest, PERF_MethodMovingAsymptotes_MinComplianceVolumeConstraint)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const int tNumElementsXDir = 30;

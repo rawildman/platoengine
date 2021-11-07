@@ -462,7 +462,7 @@ TEST(PlatoTest, ProxyVolume)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoOptimalityCriteriaLightInterface)
+TEST(PlatoTest, PERF_SolveStrucTopoOptimalityCriteriaLightInterface)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -522,7 +522,7 @@ TEST(PlatoTest, SolveStrucTopoOptimalityCriteriaLightInterface)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoGloballyConvergentMethodMovingAsymptotesLightInterface)
+TEST(PlatoTest, PERF_SolveStrucTopoGloballyConvergentMethodMovingAsymptotesLightInterface)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -585,7 +585,7 @@ TEST(PlatoTest, SolveStrucTopoGloballyConvergentMethodMovingAsymptotesLightInter
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_1)
+TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_1)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -646,7 +646,7 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_1)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_2)
+TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_2)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -708,7 +708,7 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_2)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_3)
+TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_3)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -771,7 +771,7 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_3)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_4)
+TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_4)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -833,7 +833,7 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_4)
     }
 }
 
-TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_5)
+TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_5)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -894,7 +894,7 @@ TEST(PlatoTest, SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_5)
     }
 }
 
-TEST(PlatoTest, CheckSimpleTopoProxyCriteria)
+TEST(PlatoTest, PERF_CheckSimpleTopoProxyCriteria)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;

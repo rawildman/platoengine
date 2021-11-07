@@ -987,7 +987,7 @@ TEST(PlatoTest, BetaCDF2)
     }
 }
 
-TEST(PlatoTest, PlotBetaCDF)
+TEST(PlatoTest, PERF_PlotBetaCDF)
 {
     // BUILD BETA DISTRIBUTION
     const double tMean = 90;
@@ -1466,7 +1466,7 @@ TEST(PlatoTest, CheckSromConstraintGradient)
     }
 }
 
-TEST(PlatoTest, SolveSromProblem_CorrelatedVars_BetaDistribution)
+TEST(PlatoTest, PERF_SolveSromProblem_CorrelatedVars_BetaDistribution)
 {
     // POSE CORRELATION MATRIX
     Plato::io::MetaData tFileMetaData;
