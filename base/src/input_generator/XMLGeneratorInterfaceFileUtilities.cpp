@@ -1290,16 +1290,24 @@ void append_objective_gradient_stage_for_topology_problem
             auto tInputMetaDataTag = get_filter_objective_criterion_gradient_input_shared_data_name(aXMLMetaData);
             XMLGen::append_helmholtz_filter_criterion_gradient_operation(aXMLMetaData, tInputMetaDataTag, "Objective Gradient", tStageNode);
         }
-        else if(aXMLMetaData.optimization_parameters().filter_type() != "helmholtz" && !aXMLMetaData.needToAggregate())
+        else
         {
-            std::string tCriterionID = tObjective.criteriaIDs[0];
-            std::string tServiceID = tObjective.serviceIDs[0];
-            std::string tScenarioID = tObjective.scenarioIDs[0];
-            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
-            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+            if(aXMLMetaData.needToAggregate())
+            {
+                std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
+                append_copy_field_operation(tFirstPlatoMainPerformer, "Aggregate Gradient", "Objective Gradient", tStageNode);
+            }
+            else
+            {
+                std::string tCriterionID = tObjective.criteriaIDs[0];
+                std::string tServiceID = tObjective.serviceIDs[0];
+                std::string tScenarioID = tObjective.scenarioIDs[0];
+                ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+                auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
 
-            std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
-            append_copy_field_operation(tFirstPlatoMainPerformer, std::string("Criterion Gradient - ") + tIdentifierString, "Objective Gradient", tStageNode);
+                std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
+                append_copy_field_operation(tFirstPlatoMainPerformer, std::string("Criterion Gradient - ") + tIdentifierString, "Objective Gradient", tStageNode);
+            }
         }
     }
 
