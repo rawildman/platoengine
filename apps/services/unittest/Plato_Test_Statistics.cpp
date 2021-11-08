@@ -1491,13 +1491,13 @@ TEST(PlatoTest, PERF_SolveSromProblem_CorrelatedVars_BetaDistribution)
     Plato::SromOutputs<double> tOutput;
     Plato::SromDiagnostics<double> tDiagnostics;
     Plato::AlgorithmInputsKSAL<double> tInputsKSAL;
-    tInputsKSAL.mLimitedMemorySize = 6;
+    tInputsKSAL.mMaxNumAugLagSubProbIter = 40;
     Plato::solve_srom_problem(tStatsInputs, tInputsKSAL, tDiagnostics, tOutput);
 
-    double tTol = 1e-2;
+    double tTol = 1e-1;
     std::vector<std::vector<double>> tGoldSamples =
-        {{22.48753391885498,24.89758085232308,30.34886999333217,29.41033100339423,33.93022475922718},
-         {22.75754703660045,29.70576425719733,29.25288508886058,31.13667083109212,31.43091708700306}};
+        {{22.2702110359294,24.625784769939585,30.283514696287689,31.119422403626974,34.082707831614755},
+         {22.454952744873886,29.939996961565544,29.963549999268857,31.243698312674269,31.771244810363562}};
     for(auto& tRow : tOutput.mSamples)
     {
         auto tRowIndex = &tRow - &tOutput.mSamples[0];
@@ -1507,13 +1507,14 @@ TEST(PlatoTest, PERF_SolveSromProblem_CorrelatedVars_BetaDistribution)
 	    auto tRelativeError = std::abs(tCol - tGoldSamples[tRowIndex][tColIndex]) / tGoldSamples[tRowIndex][tColIndex];
 	    //std::cout << "Sample Relative Error = " << tRelativeError << "\n";
             ASSERT_TRUE(tRelativeError < tTol);
+            //EXPECT_NEAR(tCol, tGoldSamples[tRowIndex][tColIndex], 1e-8);
         }
     }
 
-    tTol = 1e-2;
+    tTol = 1e-1;
     auto tSum = 0.0;
     std::vector<double> tGoldProbabilities =
-        {0.3229842278588252,0.1621807059028493,0.1842816217593431,0.1876962703469281,0.1428344864216799};
+        {0.36427328346298349,0.18023251812901692,0.16822135190923829,0.16282988564085624,0.12442730606869658};
     for(auto& tProb : tOutput.mProbabilities)
     {
         tSum += tProb;
@@ -1521,6 +1522,7 @@ TEST(PlatoTest, PERF_SolveSromProblem_CorrelatedVars_BetaDistribution)
 	auto tRelativeError = std::abs(tProb - tGoldProbabilities[tIndex]) / tGoldProbabilities[tIndex];
 	//std::cout << "Prob Relative Error = " << tRelativeError << "\n";
         ASSERT_TRUE(tRelativeError < tTol);
+        //EXPECT_NEAR(tProb, tGoldProbabilities[tIndex], 1e-8);
     }
     auto tGoldSum = std::accumulate(tGoldProbabilities.begin(), tGoldProbabilities.end(), 0.0);
     EXPECT_NEAR(tGoldSum, tSum, tTol);
