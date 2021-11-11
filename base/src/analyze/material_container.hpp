@@ -62,9 +62,9 @@ class DataMesh;
 
 enum IndexOrdering { COrdering=0, FortranOrdering };
 
-typedef struct{ 
+struct ModelComparator { 
  bool operator() (MaterialModel* a, MaterialModel* b);
-} ModelComparator;
+};
 
 
 typedef MaterialModel* (*NewModelFP)(pugi::xml_node& node);
