@@ -49,6 +49,7 @@ private:
     std::vector<std::string> mFixedBlockMaterialStates;
     std::vector<std::string> mSymmetryPlaneOrigin;
     std::vector<std::string> mSymmetryPlaneNormal;
+    std::vector<std::string> mSymmetryPlaneLocationNames;
 
 // private member functions
 private:
@@ -153,16 +154,23 @@ public:
     /******************************************************************************//**
      * \fn symmetryOrigin
      * \brief Set scenario symmetry plane origin
-     * \param [in] input symmetry plane origin
+     * \param [in] aOrigin symmetry plane origin
     **********************************************************************************/
     void symmetryOrigin(std::vector<std::string>& aOrigin) {mSymmetryPlaneOrigin = aOrigin;}
 
     /******************************************************************************//**
      * \fn symmetryNormal
      * \brief Set scenario symmetry plane normal
-     * \param [in] input symmetry plane normal
+     * \param [in] aNormal symmetry plane normal
     **********************************************************************************/
     void symmetryNormal(std::vector<std::string>& aNormal) {mSymmetryPlaneNormal = aNormal;}
+
+    /******************************************************************************//**
+     * \fn symmetryOrigin
+     * \brief Set entity set location names where symmetry plane constraints are applied.
+     * \param [in] aInput entity set location names
+    **********************************************************************************/
+    void symmetryPlaneLocationNames(std::vector<std::string>& aInput) {mSymmetryPlaneLocationNames = aInput;}
 
     /******************************************************************************//**
      * \fn value
@@ -325,6 +333,7 @@ public:
     std::vector<std::string> fixed_block_domain_values() const {return mFixedBlockDomainValues;}
     std::vector<std::string> fixed_block_boundary_values() const {return mFixedBlockBoundaryValues;}
     std::vector<std::string> fixed_block_material_states() const {return mFixedBlockMaterialStates;}
+    std::vector<std::string> symmetry_plane_location_names() const {return mSymmetryPlaneLocationNames;}
     std::string mma_move_limit() const {return value("mma_move_limit");}
     std::string mma_asymptote_expansion() const {return value("mma_asymptote_expansion");}
     std::string mma_asymptote_contraction() const {return value("mma_asymptote_contraction");}
@@ -359,6 +368,7 @@ public:
     std::string objective_number_standard_deviations() const {return value("objective_number_standard_deviations");}
     std::string filter_radius_scale() const {return value("filter_radius_scale");}
     std::string filter_radius_absolute() const {return value("filter_radius_absolute");}
+    std::string boundary_sticking_penalty() const {return value("boundary_sticking_penalty");}
     std::string filter_projection_start_iteration() const {return value("filter_projection_start_iteration");}
     std::string filter_projection_update_interval() const {return value("filter_projection_update_interval");}
     std::string filter_use_additive_continuation() const {return value("filter_use_additive_continuation");}

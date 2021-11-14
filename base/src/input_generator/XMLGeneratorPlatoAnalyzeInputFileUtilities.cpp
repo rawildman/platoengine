@@ -1055,9 +1055,12 @@ void write_plato_analyze_helmholtz_input_deck_file
     // assemblies
     XMLGen::append_assemblies_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
 
-    // length scale
-    auto tLengthScale = tPlatoProblem.append_child("ParameterList");
-    XMLGen::append_attributes({"name"}, {"Length Scale"}, tLengthScale);
+    // parameters sublist
+    //
+
+    // volume length scale parameter
+    auto tParameters = tPlatoProblem.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Parameters"}, tParameters);
     tKeys = {"name", "type", "value"};
 
     auto tLengthScaleValue = aXMLMetaData.optimization_parameters().filter_radius_absolute();
@@ -1065,9 +1068,23 @@ void write_plato_analyze_helmholtz_input_deck_file
     {
         THROWERR("Filter radius absolute is not set. This is needed for Helmholtz filter")
     }
-
     tValues = {"Length Scale", "double", tLengthScaleValue};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLengthScale);
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
+
+    // surface length scale parameter
+    auto tSurfaceLengthScaleValue = aXMLMetaData.optimization_parameters().boundary_sticking_penalty();
+    tSurfaceLengthScaleValue = tSurfaceLengthScaleValue.empty() ? tLengthScaleValue : tSurfaceLengthScaleValue;
+    tValues = {"Surface Length Scale", "double", tSurfaceLengthScaleValue};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
+
+    // symmetry plane location names
+    auto tSymmetryPlaneLocationNames = aXMLMetaData.optimization_parameters().symmetry_plane_location_names();
+    if( !tSymmetryPlaneLocationNames.empty() )
+    {
+        auto tNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tSymmetryPlaneLocationNames);
+        tValues = {"Symmetry Plane Sides", "Array(string)", tNames};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
+    }
 
     std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";

@@ -125,6 +125,8 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "objective_number_standard_deviations", { { {"objective_number_standard_deviations"}, ""}, "" } });
     mTags.insert({ "filter_radius_scale", { { {"filter_radius_scale"}, ""}, "2.0" } });
     mTags.insert({ "filter_radius_absolute", { { {"filter_radius_absolute"}, ""}, "" } });
+    mTags.insert({ "symmetry_plane_location_names", { { {"symmetry_plane_location_names"}, ""}, "" } });
+    mTags.insert({ "boundary_sticking_penalty", { { {"boundary_sticking_penalty"}, ""}, "" } });
     mTags.insert({ "al_penalty_parameter", { { {"al_penalty_parameter"}, ""}, "" } });
     mTags.insert({ "feasibility_tolerance", { { {"feasibility_tolerance"}, ""}, "" } });
     mTags.insert({ "al_penalty_scale_factor", { { {"al_penalty_scale_factor"}, ""}, "" } });
@@ -277,6 +279,7 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
     this->autoFillRestartParameters(aMetadata);
     this->checkROLSubProblemModel(aMetadata);
     this->checkROLHessianType(aMetadata);
+    this->setSymmetryPlaneLocationNames(aMetadata);
     this->setMMAStagnationDefaultsForShapeOptimizationProblems(aMetadata);
 }
 
@@ -560,6 +563,20 @@ void ParseOptimizationParameters::setFixedBlockMaterialStates(XMLGen::Optimizati
     if (tItr != mTags.end() && !tValues.empty())
     {
         XMLGen::FixedBlock::set_fixed_block_material_states(tValues, aMetadata);
+    }
+}
+
+void ParseOptimizationParameters::setSymmetryPlaneLocationNames(XMLGen::OptimizationParameters &aMetadata)
+{
+    auto tItr = mTags.find("symmetry_plane_location_names");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tNames;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tNames);
+        aMetadata.symmetryPlaneLocationNames(tNames);
     }
 }
 
