@@ -83,16 +83,16 @@ void SetLowerBounds::operator()()
         tOutputField.ExtractView(&tToData);
         mLowerBoundVectorLength = tOutputField.MyLength();
     }
-    else if(mOutputLayout == Plato::data::layout_t::ELEMENT_FIELD)
-    {
-        throw Plato::ParsingException("ELEMENT_FIELD not implemented for SetLowerBounds operation");
-    }
     else if(mOutputLayout == Plato::data::layout_t::SCALAR)
     {
         auto tOutputScalar = mPlatoApp->getValue(mOutputArgumentName);
         mLowerBoundVectorLength = mOutputSize;
         tOutputScalar->resize(mLowerBoundVectorLength);
         tToData = tOutputScalar->data();
+    }
+    else
+    {
+        throw Plato::ParsingException("Only SCALAR, SCALAR_FIELD are implemented for SetLowerBounds operation");
     }
 
     this->initializeLowerBoundVector(tToData);

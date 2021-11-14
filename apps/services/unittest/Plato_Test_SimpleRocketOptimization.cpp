@@ -225,7 +225,7 @@ TEST(PlatoTest, Cylinder)
     EXPECT_NEAR(tArea, 37.699111843077520, tTolerance);
 }
 
-TEST(PlatoTest, GradFreeSimpleRocketOptimization)
+TEST(PlatoTest, PERF_GradFreeSimpleRocketOptimization)
 {
     // define objective
     Plato::AlgebraicRocketInputs<double> tRocketInputs;
@@ -265,7 +265,7 @@ TEST(PlatoTest, GradFreeSimpleRocketOptimization)
     EXPECT_FLOAT_EQ(tBestObjectiveValue, tObjective.evaluate(tBestParameters));
 }
 
-TEST(PlatoTest, GradBasedSimpleRocketOptimizationWithLightInterface)
+TEST(PlatoTest, PERF_GradBasedSimpleRocketOptimizationWithLightInterface)
 {
     // ********* SET NORMALIZATION CONSTANTS *********
     const size_t tNumControls = 2;
@@ -319,7 +319,7 @@ TEST(PlatoTest, GradBasedSimpleRocketOptimizationWithLightInterface)
     std::cout << "StoppingCriterion = " << tOutputs.mStopCriterion.c_str() << std::endl;
 }
 
-TEST(PlatoTest, GradBasedSimpleRocketOptimizationWithLightInterface_LBFGS)
+TEST(PlatoTest, PERF_GradBasedSimpleRocketOptimizationWithLightInterface_LBFGS)
 {
     // ********* SET NORMALIZATION CONSTANTS *********
     const size_t tNumControls = 2;

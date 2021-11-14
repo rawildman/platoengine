@@ -1557,6 +1557,8 @@ struct ValidOptimizationParameterKeys
      "objective_number_standard_deviations",
      "filter_radius_scale",
      "filter_radius_absolute",
+     "symmetry_plane_location_names",
+     "boundary_sticking_penalty",
      "al_penalty_parameter",
      "feasibility_tolerance",
      "al_penalty_scale_factor",

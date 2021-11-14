@@ -2258,7 +2258,7 @@ TEST(PlatoTest, generate_load_sroms_error)
     ASSERT_FALSE(Plato::srom::build_load_sroms(tInputs, tOutputs));
 }
 
-TEST(PlatoTest, generate_load_sroms_both_random_and_deterministic_loads)
+TEST(PlatoTest, PERF_generate_load_sroms_both_random_and_deterministic_loads)
 {
     // SET INPUTS - CREATE FIRST RANDOM LOAD
     Plato::srom::Load tLoad1;
@@ -2415,7 +2415,7 @@ TEST(PlatoTest, generate_load_sroms_both_random_and_deterministic_loads)
     Plato::system("rm -f plato_ksal_algorithm_diagnostics.txt");
 }
 
-TEST(PlatoTest, generate_load_sroms_only_random_loads)
+TEST(PlatoTest, PERF_generate_load_sroms_only_random_loads)
 {
     // SET INPUTS - CREATE FIRST RANDOM LOAD
     Plato::srom::Load tLoad1;

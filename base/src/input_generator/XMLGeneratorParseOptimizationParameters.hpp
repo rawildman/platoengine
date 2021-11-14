@@ -89,6 +89,13 @@ private:
     void setFixedBlockBoundaryValues(XMLGen::OptimizationParameters &aMetadata);
 
     /******************************************************************************//**
+     * \fn setSymmetryPlaneLocationNames
+     * \brief Set entity set location names where symmetry plane are applied.
+     * \param [in] aMetadata optimization parameters metadata
+    **********************************************************************************/
+    void setSymmetryPlaneLocationNames(XMLGen::OptimizationParameters &aMetadata);
+
+    /******************************************************************************//**
      * \fn setFixedBlockMaterialStates
      * \brief Set material state for each fixed block, options are solid and fluid. 
      * \param [in] aMetadata optimization parameters metadata
