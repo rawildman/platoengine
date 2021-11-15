@@ -1111,8 +1111,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers_EmptyService)
 {
     XMLGen::InputData tMetaData;
     pugi::xml_document tDocument;
-    int tID = 0;
-    ASSERT_THROW(XMLGen::append_physics_performers(tMetaData, tID, tDocument), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_physics_performers(tMetaData, tDocument), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers)
@@ -1128,9 +1127,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers)
     tMetaData.mPerformerServices.push_back(tService);
 
     pugi::xml_document tDocument;
-    int tID = 0;
-    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tID, tDocument));
-    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tID, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
@@ -1366,9 +1364,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersWithHelmholtz)
     tMetaData.mPerformerServices.push_back(tService);
 
     pugi::xml_document tDocument;
-    int tID = 0;
-    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tID, tDocument));
-    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tID, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());

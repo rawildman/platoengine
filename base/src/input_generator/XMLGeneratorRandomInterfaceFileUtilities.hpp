@@ -77,12 +77,10 @@ void append_multiperformer_topology_shared_data
  * \fn append_physics_performers_multiperformer_usecase
  * \brief Append physics performers information to PUGI XML document.
  * \param [in]     aXMLMetaData Plato problem input data
- * \param [in]     aNextPerformerID Next available performer id
  * \param [in/out] aDocument    pugi::xml_document
 **********************************************************************************/
 void append_physics_performers_multiperformer_usecase
 (const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aNode);
 
 /******************************************************************************//**

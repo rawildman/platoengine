@@ -162,7 +162,6 @@ void append_multiperformer_topology_shared_data
 /******************************************************************************/
 void append_physics_performers_multiperformer_usecase
 (const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aNode)
 {
     if(aXMLMetaData.services().empty())
@@ -170,6 +169,7 @@ void append_physics_performers_multiperformer_usecase
         THROWERR("Append Physics Performer for a Nondeterministic Use Case: Services list is empty.")
     }
 
+    int tNextPerformerID=1;
     for(auto& tService : aXMLMetaData.services())
     {
         if(tService.code() != "plato_esp")  
@@ -180,8 +180,8 @@ void append_physics_performers_multiperformer_usecase
             if(tID > 0)
             {
                 auto tPerformerNode = aNode.append_child("Performer");
-                XMLGen::append_children( { "PerformerID" }, { std::to_string(aNextPerformerID) }, tPerformerNode);
-                aNextPerformerID++;
+                XMLGen::append_children( { "PerformerID" }, { std::to_string(tNextPerformerID) }, tPerformerNode);
+                tNextPerformerID++;
                 auto tForNode = tPerformerNode.append_child("For");
                 XMLGen::append_attributes( { "var", "in" }, { "PerformerIndex", "Performers" }, tForNode);
                 auto tPerformerName = tService.performer() + "_{PerformerIndex}";

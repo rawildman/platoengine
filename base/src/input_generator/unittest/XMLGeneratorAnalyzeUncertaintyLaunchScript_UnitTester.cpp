@@ -133,7 +133,7 @@ TEST(PlatoTestXMLGenerator, appendSierraSDMPIRunLines_withPath)
   tInputData.mesh.run_name = "dummy_mesh.exo";
   FILE* fp=fopen("appendSierraSDMPIRunLines.txt", "w");
   int tPerformerID = 1;
-  XMLGen::append_sierra_sd_mpirun_commands(tInputData, tPerformerID, fp);
+  XMLGen::append_sierra_sd_mpirun_line(tInputData, tService, tPerformerID, fp);
   fclose(fp);
 
   auto tReadData = XMLGen::read_data_from_file("appendSierraSDMPIRunLines.txt");
@@ -158,7 +158,7 @@ TEST(PlatoTestXMLGenerator, appendAnalyzeHelmholtzMPIRunLines)
   tInputData.mesh.run_name = "dummy_mesh.exo";
   FILE* fp=fopen("appendAnalyzeMPIRunLines.txt", "w");
   int tPerformerID = 3;
-  XMLGen::append_analyze_mpirun_lines(tInputData, tPerformerID, fp);
+  XMLGen::append_analyze_mpirun_line(tInputData, tService, tPerformerID, fp);
   fclose(fp);
 
   auto tReadData = XMLGen::read_data_from_file("appendAnalyzeMPIRunLines.txt");
