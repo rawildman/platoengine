@@ -1073,7 +1073,7 @@ void write_plato_analyze_helmholtz_input_deck_file
 
     // surface length scale parameter
     auto tSurfaceLengthScaleValue = aXMLMetaData.optimization_parameters().boundary_sticking_penalty();
-    tSurfaceLengthScaleValue = tSurfaceLengthScaleValue.empty() ? tLengthScaleValue : tSurfaceLengthScaleValue;
+    tSurfaceLengthScaleValue = tSurfaceLengthScaleValue.empty() ? "1.0" : tSurfaceLengthScaleValue;
     tValues = {"Surface Length Scale", "double", tSurfaceLengthScaleValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
 
