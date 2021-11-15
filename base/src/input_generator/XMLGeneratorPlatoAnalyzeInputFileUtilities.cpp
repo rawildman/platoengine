@@ -1086,6 +1086,20 @@ void write_plato_analyze_helmholtz_input_deck_file
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
     }
 
+    // fixed blocks
+    if( !aXMLMetaData.optimization_parameters().fixed_block_ids().empty() )
+    {
+        auto tFixedBlocks = tPlatoProblem.append_child("ParameterList");
+        XMLGen::append_attributes({"name"}, {"Fixed Domains"}, tFixedBlocks);
+        tKeys = {"name", "type", "value"};
+
+        for(auto& tID : aXMLMetaData.optimization_parameters().fixed_block_ids())
+        {
+            auto tFixedDomain = tFixedBlocks.append_child("ParameterList");
+            XMLGen::append_attributes({"name"}, {"block_" + tID}, tFixedDomain);
+        }
+    }
+
     std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
     tDocument.save_file(tFilename.c_str(), "  ");
