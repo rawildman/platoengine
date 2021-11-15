@@ -89,6 +89,13 @@ private:
     void setMassProperties(XMLGen::Criterion& aCriterion);
 
     /******************************************************************************//**
+     * \fn checkVolumePenaltyExponent
+     * \brief Make sure the default value for material penalty exponent is correct for volume criteria
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion);
+
+    /******************************************************************************//**
      * \fn insertTag
      * \brief Insert a tag, possibly with a default value
      * \param [in] aCriterion criterion metadata
