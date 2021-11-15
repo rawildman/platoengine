@@ -230,6 +230,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionIDs(aMetadata);
     this->setCriterionWeights(aMetadata);
     this->setMassProperties(aMetadata);
+    this->checkVolumePenaltyExponent(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
@@ -284,6 +285,22 @@ void ParseCriteria::setMassProperties(XMLGen::Criterion& aCriterion)
 
                 aCriterion.setMassProperty(property, goldValue, weight);
             }
+        }
+    }
+}
+
+void ParseCriteria::checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion)
+{
+    if(aCriterion.type() == "volume")
+    {
+        auto tItr = mTags.find("material_penalty_exponent");
+
+        // If the user did not specify an exponent for the volume
+        // criterion set it to 1.0 (default was 3.0 which won't 
+        // result in the correct volume calculation).
+        if (tItr->second.first.second.empty())
+        {
+            aCriterion.materialPenaltyExponent("1.0");
         }
     }
 }
