@@ -260,7 +260,7 @@ namespace XMLGen
     fprintf(fp, "decomp -p %d %s\n", num_processors, mesh_file_name.c_str());
   }
 
-  void append_engine_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
+  void append_engine_mpirun_lines(const XMLGen::InputData& aInputData, FILE*& fp)
   {
     std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoEngineName;
 
@@ -272,11 +272,9 @@ namespace XMLGen
     XMLGen::assert_is_positive_integer(num_opt_procs);
 
     // Now add the main mpirun call.
-    fprintf(fp, "%s %s %s %s PLATO_PERFORMER_ID%s%d \\\n", tLaunchString.c_str(), 
+    fprintf(fp, "%s %s %s %s PLATO_PERFORMER_ID%s0 \\\n", tLaunchString.c_str(), 
                                 tNumProcsString.c_str(), num_opt_procs.c_str(),
-                                envString.c_str(),separationString.c_str(),
-                                aNextPerformerID);
-    aNextPerformerID++;
+                                envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
 

@@ -22,11 +22,10 @@ void write_interface_xml_file
 (const XMLGen::InputData& aMetaData)
 {
     pugi::xml_document tDocument;
-    int tNextPerformerID = 0;
 
     XMLGen::append_include_defines_xml_data(aMetaData, tDocument);
     XMLGen::append_console_data(aMetaData, tDocument);
-    XMLGen::append_performer_data(aMetaData, tNextPerformerID, tDocument);
+    XMLGen::append_performer_data(aMetaData, tDocument);
     XMLGen::append_shared_data(aMetaData, tDocument);
     XMLGen::append_stages(aMetaData, tDocument);
     XMLGen::append_optimizer_options(aMetaData, tDocument);
@@ -38,18 +37,19 @@ void write_interface_xml_file
 /******************************************************************************/
 void append_performer_data
 (const XMLGen::InputData& aMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aParentNode)
 {
-    XMLGen::append_plato_main_performer(aMetaData, aNextPerformerID, aParentNode);
+    XMLGen::append_plato_main_performer(aMetaData, aParentNode);
 
     // note: multiperformer use case currently only works with Plato Analyze, and is only used currently with the robust optimization workflow
     if(XMLGen::is_robust_optimization_problem(aMetaData))
-        XMLGen::append_physics_performers_multiperformer_usecase(aMetaData, aNextPerformerID, aParentNode);
+    {
+        XMLGen::append_physics_performers_multiperformer_usecase(aMetaData, aParentNode);
+    }
     else
-        XMLGen::append_physics_performers(aMetaData, aNextPerformerID, aParentNode);
-
-    XMLGen::append_esp_performers(aMetaData, aNextPerformerID, aParentNode);
+    {
+        XMLGen::append_physics_performers(aMetaData, aParentNode);
+    }
 }
 /******************************************************************************/
 
@@ -98,34 +98,8 @@ void append_compute_qoi_statistics_operation
 /******************************************************************************/
 
 /******************************************************************************/
-void append_esp_performers
-(const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
- pugi::xml_node& aParentNode)
-{
-    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
-    {
-        for(auto& tService : aXMLMetaData.mPerformerServices)
-        {
-            if(tService.code() == "plato_esp")
-            {
-                auto tPerformerNode = aParentNode.append_child("Performer");
-                addChild(tPerformerNode, "PerformerID", std::to_string(aNextPerformerID));
-                aNextPerformerID++;
-                auto tForNode = tPerformerNode.append_child("For");
-                tForNode.append_attribute("var") = "I";
-                tForNode.append_attribute("in") = "Parameters";
-                addChild(tForNode, "Name", "plato_esp_{I}");
-            }
-        }
-    }
-}
-/******************************************************************************/
-
-/******************************************************************************/
 void append_physics_performers
 (const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aParentNode)
 {
     if(aXMLMetaData.mPerformerServices.empty())
@@ -133,16 +107,28 @@ void append_physics_performers
         THROWERR("Append Physics Performer: Services list is empty.")
     }
 
+    int tPerformerID=1;
     std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
     for(auto& tService : aXMLMetaData.mPerformerServices)
     {
+        auto tPerformerNode = aParentNode.append_child("Performer");
         if(tService.code() != "plato_esp")
         {
-            auto tPerformerNode = aParentNode.append_child("Performer");
-            std::vector<std::string> tValues = { tService.performer(), tService.code(), std::to_string(aNextPerformerID) };
-            aNextPerformerID++;
+            std::vector<std::string> tValues = { tService.performer(), tService.code(), std::to_string(tPerformerID) };
             XMLGen::append_children( tKeywords, tValues, tPerformerNode);
         }
+        else
+        {
+            if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+            {
+                addChild(tPerformerNode, "PerformerID", std::to_string(tPerformerID));
+                auto tForNode = tPerformerNode.append_child("For");
+                tForNode.append_attribute("var") = "I";
+                tForNode.append_attribute("in") = "Parameters";
+                addChild(tForNode, "Name", "plato_esp_{I}");
+            }
+        }
+        tPerformerID++;
     }
 }
 /******************************************************************************/
@@ -2253,14 +2239,12 @@ void append_control_shared_data
 /******************************************************************************/
 void append_plato_main_performer
 (const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aNode)
 {
     // The platomain optimizer should always be the first service in the list.
     const XMLGen::Service &tService = aXMLMetaData.service(0);
     auto tPerformerNode = aNode.append_child("Performer");
-    XMLGen::append_children( {"Name", "Code", "PerformerID"}, {tService.performer(), tService.code(), std::to_string(aNextPerformerID)}, tPerformerNode);
-    aNextPerformerID++;
+    XMLGen::append_children( {"Name", "Code", "PerformerID"}, {tService.performer(), tService.code(), "0"}, tPerformerNode);
 }
 // function append_plato_main_performer
 /******************************************************************************/

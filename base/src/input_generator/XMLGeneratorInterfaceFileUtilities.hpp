@@ -27,24 +27,20 @@ void write_interface_xml_file
  * \fn append_physics_performers
  * \brief Append physics performers to interface.xml file.
  * \param [in]     aXMLMetaData Plato problem input metadata
- * \param [in]     aNextPerformerID Next available performer id
  * \param [in/out] aParentNode  parent xml node
 **********************************************************************************/
 void append_physics_performers
 (const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
  * \fn append_performer_data
  * \brief Append performers to interface.xml file.
  * \param [in]     aXMLMetaData Plato problem input metadata
- * \param [in]     aNextPerformerID Next available performer id
  * \param [in/out] aParentNode  parent xml node
 **********************************************************************************/
 void append_performer_data
 (const XMLGen::InputData& aMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
@@ -55,18 +51,6 @@ void append_performer_data
 **********************************************************************************/
 void append_console_data
 (const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
- * \fn append_esp_performers
- * \brief Append esp shape derivative performers to interface.xml file.
- * \param [in]     aXMLMetaData Plato problem input metadata
- * \param [in]     aNextPerformerID Next available performer id
- * \param [in/out] aParentNode  parent xml node
-**********************************************************************************/
-void append_esp_performers
-(const XMLGen::InputData& aXMLMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
@@ -274,12 +258,10 @@ void append_control_shared_data
 /******************************************************************************//**
  * \fn append_plato_main_performer
  * \brief Append Plato Main performer information to PUGI XML document.
- * \param [in] aNextPerformerID Next available performer id
  * \param [in/out] aDocument pugi::xml_document
 **********************************************************************************/
 void append_plato_main_performer
 (const XMLGen::InputData& aMetaData,
- int &aNextPerformerID,
  pugi::xml_node& aDocument);
 
 /******************************************************************************//**

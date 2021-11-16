@@ -1073,8 +1073,7 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainPerformer)
     tService.id("1");
     tService.code("platomain");
     tInputData.append(tService);
-    int tID = 0;
-    XMLGen::append_plato_main_performer(tInputData, tID, tDocument);
+    XMLGen::append_plato_main_performer(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -1087,9 +1086,8 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainPerformer)
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase_ErrorEmptyObjectiveList)
 {
     pugi::xml_document tDocument;
-    int tID = 0;
     XMLGen::InputData tInputData;
-    ASSERT_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tID, tDocument), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tDocument), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase)
@@ -1104,9 +1102,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase)
     tService.id("2");
     tService.code("plato_analyze");
     tInputData.append(tService);
-    int tID = 0;
 
-    ASSERT_NO_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tID, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
