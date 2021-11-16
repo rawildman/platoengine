@@ -3609,6 +3609,65 @@ void append_optimization_objective_options
 /******************************************************************************/
 
 /******************************************************************************/
+std::string get_constraint_reference_value_name
+(const XMLGen::InputData& aXMLMetaData,
+ const XMLGen::Constraint &aConstraint)
+{
+    std::string tReturn = "";
+    
+    auto tCriterion = aXMLMetaData.criterion(aConstraint.criterion());
+    if(tCriterion.type() == "volume")
+    {
+        tReturn = "Design Volume";
+    }
+    return tReturn; 
+}
+
+/******************************************************************************/
+void generate_target_value_entries
+(const XMLGen::InputData& aXMLMetaData,
+ const XMLGen::Constraint &aConstraint,
+ std::unordered_map<std::string, std::string> &aKeyToValueMap)
+{
+    auto tCriterion = aXMLMetaData.criterion(aConstraint.criterion());
+    std::string tCriterionType = tCriterion.type();
+    if(tCriterionType == "volume")
+    {
+        if(aConstraint.absoluteTarget().length() > 0)
+        {
+            double tAbsoluteTargetValue = std::atof(aConstraint.absoluteTarget().c_str());
+            if(fabs(tAbsoluteTargetValue) < 1e-16)
+            {
+                THROWERR("You must specify a non-zero volume constraint value.")
+            }
+            aKeyToValueMap["AbsoluteTargetValue"] = aConstraint.absoluteTarget();
+            aKeyToValueMap["ReferenceValue"] = aConstraint.absoluteTarget();
+        }
+        else if(aConstraint.relativeTarget().length() > 0)
+        {
+            double tRelativeTargetValue = std::atof(aConstraint.relativeTarget().c_str());
+            if(fabs(tRelativeTargetValue) < 1e-16)
+            {
+                THROWERR("You must specify a non-zero volume constraint value.")
+            }
+            aKeyToValueMap["NormalizedTargetValue"] = aConstraint.relativeTarget();
+        }
+        else
+            THROWERR("Append Optimization Constraint Options: Constraint target was not set.")
+    }
+    else
+    {
+        if(aConstraint.absoluteTarget().length() == 0)
+        {
+            THROWERR("You must use absolute target values with non-volume constraints.")
+        }
+        double tAbsoluteTargetValue = std::atof(aConstraint.absoluteTarget().c_str());
+        aKeyToValueMap["AbsoluteTargetValue"] = aConstraint.absoluteTarget();
+        aKeyToValueMap["ReferenceValue"] = fabs(tAbsoluteTargetValue) < 1e-16 ? "1.0" : aConstraint.absoluteTarget();
+    }
+}
+
+/******************************************************************************/
 void append_optimization_constraint_options
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
@@ -3620,7 +3679,7 @@ void append_optimization_constraint_options
         {
             tKeyToValueMap =
             { {"ValueName", ""}, {"ValueStageName", ""}, {"GradientName", ""}, {"GradientStageName", ""},
-              {"ReferenceValueName", "Design Volume"} };
+                 {"ReferenceValueName", get_constraint_reference_value_name(aXMLMetaData, tConstraint)} };
         }
         else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
@@ -3632,15 +3691,8 @@ void append_optimization_constraint_options
         tKeyToValueMap.find("ValueStageName")->second = std::string("Compute Constraint Value ") + tConstraint.id();
         tKeyToValueMap.find("GradientName")->second = std::string("Constraint Gradient ") + tConstraint.id();
         tKeyToValueMap.find("GradientStageName")->second = std::string("Compute Constraint Gradient ") + tConstraint.id();
-        if(tConstraint.absoluteTarget().length() > 0)
-        {
-            tKeyToValueMap["AbsoluteTargetValue"] = tConstraint.absoluteTarget();
-            tKeyToValueMap["ReferenceValue"] = tConstraint.absoluteTarget();
-        }
-        else if(tConstraint.relativeTarget().length() > 0)
-            tKeyToValueMap["NormalizedTargetValue"] = tConstraint.relativeTarget();
-        else
-            THROWERR("Append Optimization Constraint Options: Constraint target was not set.")
+
+        generate_target_value_entries(aXMLMetaData, tConstraint, tKeyToValueMap);
 
         auto tKeys = XMLGen::transform_key_tokens(tKeyToValueMap);
         auto tValues = XMLGen::transform_value_tokens(tKeyToValueMap);

@@ -1293,6 +1293,8 @@ std::string OptimizerEngineStageData::getConstraintReferenceValueName(const size
     const std::string & tValueName = mConstraintValueNames[aIndex];
     std::map<std::string, std::string>::const_iterator tIterator;
     tIterator = mConstraintReferenceValueNames.find(tValueName);
+    if(tIterator == mConstraintReferenceValueNames.end())
+        return "";
     return (tIterator->second);
 }
 

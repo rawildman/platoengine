@@ -3170,9 +3170,9 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     ASSERT_THROW(XMLGen::append_optimization_constraint_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    // CASE 1: NORMALIZED TARGET VALUE IS DEFINED
+    // CASE 1: ABSOLUTE TARGET VALUE IS DEFINED
     tOptimizerNode = tDocument.append_child("Optimizer");
-    tXMLMetaData.constraints[0].relativeTarget("1.0");
+    tXMLMetaData.constraints[0].absoluteTarget("1.0");
     XMLGen::append_optimization_constraint_options(tXMLMetaData, tOptimizerNode);
 
     std::vector<std::string> tGoldKeys = {"Constraint"};
@@ -3180,9 +3180,9 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
     auto tConstraintNode = tOptimizerNode.child("Constraint");
     tGoldKeys = {"ValueName", "ValueStageName", "GradientName", "GradientStageName",
-        "ReferenceValueName", "NormalizedTargetValue"};
+        "ReferenceValueName", "AbsoluteTargetValue", "ReferenceValue"};
     tGoldValues = {"Constraint Value 1", "Compute Constraint Value 1", "Constraint Gradient 1",
-        "Compute Constraint Gradient 1", "Design Volume", "1.0"};
+        "Compute Constraint Gradient 1", "", "1.0", "1.0"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintNode);
 }
 
