@@ -4625,11 +4625,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilter)
     // CALL FUNCTION
     ASSERT_NO_THROW(XMLGen::write_plato_analyze_helmholtz_input_deck_file(tXMLMetaData));
     auto tData = XMLGen::read_data_from_file("plato_analyze_helmholtz_input_deck.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/>")
-    +"<Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/>"
-    +"<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/>"
-    +"<ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
-    +"<ParameterListname=\"LengthScale\"><Parametername=\"LengthScale\"type=\"double\"value=\"3.2\"/></ParameterList>"
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"3.2\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList></ParameterList></ParameterList>");
     +"</ParameterList></ParameterList>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
@@ -4688,12 +4684,12 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilterWithF
     ASSERT_NO_THROW(XMLGen::write_plato_analyze_helmholtz_input_deck_file(tXMLMetaData));
     auto tData = XMLGen::read_data_from_file("plato_analyze_helmholtz_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/>")
-    +"<Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/>"
-    +"<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/>"
-    +"<ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList><ParameterListname=\"Block2\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_2\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
-    +"<ParameterListname=\"LengthScale\"><Parametername=\"LengthScale\"type=\"double\"value=\"3.2\"/></ParameterList>"
-    +"<ParameterListname=\"FixedDomains\"><ParameterListname=\"block_2\"/></ParameterList>"
-    +"</ParameterList></ParameterList>";
+      + "<Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/>"
+      + "<Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\">"
+      + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList><ParameterListname=\"Block2\">"
+      + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_2\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
+      + "<ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"3.2\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList>"
+      + "<ParameterListname=\"FixedDomains\"><ParameterListname=\"block_2\"/></ParameterList></ParameterList></ParameterList>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
 }

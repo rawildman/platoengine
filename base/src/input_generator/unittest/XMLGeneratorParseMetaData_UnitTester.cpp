@@ -454,6 +454,7 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_Volume)
     ASSERT_STREQ("volume", tCriterionMetaData[0].type().c_str());
     ASSERT_STREQ("false", tCriterionMetaData[0].value("normalize").c_str());
     ASSERT_STREQ("1.0", tCriterionMetaData[0].value("normalization_value").c_str());
+    ASSERT_STREQ("1.0", tCriterionMetaData[0].value("material_penalty_exponent").c_str());
 
 }
 

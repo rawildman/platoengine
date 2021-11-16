@@ -126,7 +126,7 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "filter_radius_scale", { { {"filter_radius_scale"}, ""}, "2.0" } });
     mTags.insert({ "filter_radius_absolute", { { {"filter_radius_absolute"}, ""}, "" } });
     mTags.insert({ "symmetry_plane_location_names", { { {"symmetry_plane_location_names"}, ""}, "" } });
-    mTags.insert({ "boundary_sticking_penalty", { { {"boundary_sticking_penalty"}, ""}, "" } });
+    mTags.insert({ "boundary_sticking_penalty", { { {"boundary_sticking_penalty"}, ""}, "1.0" } });
     mTags.insert({ "al_penalty_parameter", { { {"al_penalty_parameter"}, ""}, "" } });
     mTags.insert({ "feasibility_tolerance", { { {"feasibility_tolerance"}, ""}, "" } });
     mTags.insert({ "al_penalty_scale_factor", { { {"al_penalty_scale_factor"}, ""}, "" } });
