@@ -217,15 +217,9 @@ private:
         "frf_mismatch", 
         "limit_stress",
         "compliance_and_volume_min",
-<<<<<<< HEAD
         "mean_temperature", 
         "mean_surface_pressure",
         "mean_surface_temperature",
-=======
-        "mean_surface_pressure",
-        "mean_surface_temperature",
-        "mean_temperature",
->>>>>>> develop
         "flow_rate",
         "fluid_thermal_compliance",
         "maximize_fluid_thermal_flux",
