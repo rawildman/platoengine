@@ -667,9 +667,9 @@ private:
     **********************************************************************************/
     void updateState()
     {
+        this->performContinuation();
         this->evaluateObjective();
         this->evaluateConstraints();
-        this->performContinuation();
         mDataMng->computeStoppingMeasures();
         this->printDiagnostics();
     }
@@ -682,6 +682,8 @@ private:
         const bool tIsContinuationEnabled = mProblemUpdateFrequency > static_cast<OrdinalType>(0);
         const auto IterationCountOneBase = mIterationCount + static_cast<OrdinalType>(1);
         bool tPerformContinuation = tIsContinuationEnabled ? (IterationCountOneBase % mProblemUpdateFrequency) == static_cast<OrdinalType>(0) : false;
+
+        tPerformContinuation = true;
         if (tPerformContinuation)
         {
             mObjective->updateProblem(mDataMng->getCurrentControls());

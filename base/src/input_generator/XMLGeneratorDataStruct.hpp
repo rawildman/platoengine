@@ -79,6 +79,7 @@ struct UncertaintyMetaData
   std::vector<size_t> deterministicVariableIndices;
 };
 
+
 struct InputData
 {
 private:
@@ -231,6 +232,20 @@ public:
             if(tService.code() == "platomain")
             {
                 tReturnValue = tService.id();
+                break;
+            }
+        }
+        return tReturnValue;
+    }
+
+    std::string getFirstXTKMainPerformer() const
+    {
+        std::string tReturnValue = "";
+        for(auto& tService : mServices)
+        {
+            if(tService.code() == "xtk")
+            {
+                tReturnValue = tService.performer();
                 break;
             }
         }

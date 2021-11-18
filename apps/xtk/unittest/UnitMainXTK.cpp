@@ -38,7 +38,7 @@
 //
 // *************************************************************************
 //@HEADER
-*/
+ */
 
 /*
  * UnitMain.cpp
@@ -53,6 +53,7 @@
 
 int main(int argc, char **argv)
 {
+
     MPI_Init(&argc, &argv);
 
     testing::InitGoogleTest(&argc, argv);

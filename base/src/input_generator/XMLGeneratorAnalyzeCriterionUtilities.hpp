@@ -108,6 +108,26 @@ void append_simp_penalty_function
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
 }
 
+/******************************************************************************//**
+ * \fn append_no_penalty_function
+ * \tparam MetaData criterion metadata
+ * \brief Append no penalty model parameters to criterion parameter list.
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+ **********************************************************************************/
+template<typename MetaData>
+void append_no_penalty_function
+(const MetaData& aMetadata,
+ pugi::xml_node& aParentNode)
+{
+    auto tPenaltyFunction = aParentNode.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Penalty Function"}, tPenaltyFunction);
+
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Type", "string", "NoPenalty"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
+}
+
 template<typename CriterionT>
 std::vector<std::string> set_conductivity_ratios(const CriterionT& aCriterion)
 {
@@ -245,7 +265,16 @@ pugi::xml_node append_scalar_function_criterion
     
     tValues = {"Scalar Function Type", "string", tDesignCriterionName};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tScalarFunction);
-    XMLGen::Private::append_simp_penalty_function(aCriterion, tScalarFunction);
+
+    std::string tPenaltyMethod = aCriterion.value("material_penalty_model");
+    if(tPenaltyMethod == "none")
+    {
+         XMLGen::Private::append_no_penalty_function(aCriterion, tScalarFunction);
+    }
+    else
+    {
+        XMLGen::Private::append_simp_penalty_function(aCriterion, tScalarFunction);
+    }
 
     return tScalarFunction;
 }
@@ -449,8 +478,17 @@ pugi::xml_node append_volume_average_criterion
     tValues = {"Function", "string", tSpatialWeightingFunction};
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
-
-    XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
+    
+    std::cout<<aCriterion.value("material_penalty_model")<<std::endl;
+    std::string tPenaltyMethod = aCriterion.value("material_penalty_model");
+    if(tPenaltyMethod == "none")
+    {
+         XMLGen::Private::append_no_penalty_function(aCriterion, tObjective);
+    }
+    else
+    {
+        XMLGen::Private::append_simp_penalty_function(aCriterion, tObjective);
+    }
     return tObjective;
 }
 

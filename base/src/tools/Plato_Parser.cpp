@@ -1169,6 +1169,11 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.setUpperBoundValueName(tUpperBoundValueName);
     }
+    std::string tInitialControlName = Plato::Get::String(tOptimizationVariablesNode, "InitialControlSharedDataName");
+    if(tInitialControlName.empty() == false)
+    {
+        aOptimizerEngineStageData.setInitialControlDataName(tInitialControlName);
+    }
     std::string tInitializationStage = Plato::Get::String(tOptimizationVariablesNode, "InitializationStage");
     if(tInitializationStage.empty() == false)
     {

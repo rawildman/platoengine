@@ -864,7 +864,12 @@ TEST(PlatoTestXMLGenerator, AppendUpperBoundsSharedData)
     tService.id("1");
     tService.code("platomain");
     tInputData.append(tService);
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
+    tInputData.set(tOptimizationParameters);
     XMLGen::append_upper_bounds_shared_data(tInputData, tDocument);
+    
 
     // TEST RESULTS AGAINST GOLD VALUES
     std::vector<std::string> tTemp = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
@@ -1253,6 +1258,11 @@ TEST(PlatoTestXMLGenerator, AppendInitialGuessStage)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tInputData;
+    
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("discretization", "density");
+    tInputData.set(tOptimizationParameters);
+
     XMLGen::append_initial_guess_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
@@ -1467,6 +1477,7 @@ TEST(PlatoTestXMLGenerator, AppendUpperBoundStage)
     XMLGen::InputData tInputData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tInputData.set(tOptimizationParameters);
     XMLGen::append_upper_bound_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
@@ -1673,6 +1684,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tInputData.set(tOptimizationParameters);
 
     XMLGen::append_constraint_gradient_stage(tInputData, tDocument);
@@ -2602,6 +2614,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageForNondeterministicUseca
     tOptimizationParameters.append("objective_number_standard_deviations", "3");
     tOptimizationParameters.append("filter_in_engine", "true");
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
 
     // CALL FUNCTION
@@ -3164,6 +3177,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization","density");
     tXMLMetaData.set(tOptimizationParameters);
 
     auto tOptimizerNode = tDocument.append_child("Optimizer");

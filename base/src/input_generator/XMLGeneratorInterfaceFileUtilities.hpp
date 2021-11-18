@@ -52,8 +52,7 @@ void append_performer_data
 void append_console_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
+ /******************************************************************************//**
  * \fn append_qoi_shared_data
  * \brief Append quantities of interest shared data to interface.xml file.
  * \param [in]     aXMLMetaData Plato problem input metadata
@@ -399,6 +398,16 @@ void append_objective_gradient_stage_for_shape_problem
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_objective_gradient_stage_for_topology_problem
+ * \brief Append objective gradient stage for topology optimization problem with levelset discretization
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+ void append_objective_gradient_stage_for_topology_levelset_problem
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
  * \fn append_objective_value_stage_for_topology_problem
  * \brief Append objective value stage for topology optimization problem
  * \param [in]     aXMLMetaData Plato problem input data
@@ -415,6 +424,15 @@ void append_objective_value_stage_for_topology_problem
  * \param [in/out] aParentNode  parent xml node
 **********************************************************************************/
 void append_constraint_gradient_stage_for_topology_problem
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+ /******************************************************************************//**
+ * \fn append_constraint_gradient_stage_for_topology_levelset_problem
+ * \brief Append constaint gradient stage for topology levelset optimization problem
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_constraint_gradient_stage_for_topology_levelset_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument);
 
@@ -507,6 +525,16 @@ void append_constraint_gradient_stage_for_shape_problem
 void append_constraint_stage_for_shape_problem 
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_initial_control_shared_data
+ * \brief Append initial control data - used in levelset to
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+ void append_initial_control_shared_data(
+    const XMLGen::InputData &aMetaData,
+    pugi::xml_document &aDocument);
 
 /******************************************************************************//**
  * \fn append_design_variables_shared_data
@@ -783,6 +811,20 @@ void append_optimization_cache_stage_options
 **********************************************************************************/
 void append_optimization_update_problem_stage_options
 (const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_generate_xtk_model_operation
+ * \brief Append generate model with xtk operation
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in]     aInput Include the operation input data in operation
+ * \param [in]     aOutput Include the operation output data in operation
+ * \param [in/out] aParentNode pugi::xml_node
+**********************************************************************************/
+ void append_generate_xtk_model_operation
+(const XMLGen::InputData& aXMLMetaData,
+ bool aInput,
+ bool aOutput,
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**

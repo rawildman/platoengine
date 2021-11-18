@@ -139,6 +139,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tOptimizationParameters.append("problem_update_frequency", "5");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService0;
@@ -1098,6 +1099,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeObjectiveGradientToPlatoAnalyzeOperatio
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1180,6 +1182,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeConstraintGradientToPlatoAnalyzeOperati
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1440,6 +1443,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomConstraintGradientToPlatoAnalyzeO
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");
@@ -1713,6 +1717,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOp
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");
