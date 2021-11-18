@@ -223,7 +223,7 @@ inline void getInitialGuessInputData(const std::string & aControlName,
     if(tInitializationStageName.empty() == false)
     {
         Teuchos::ParameterList tArguments;
-        tArguments.set(aControlName, aOutput.data());
+        tArguments.set(aInputData.getInitialControlDataName(), aOutput.data());
         aInterface->compute(tInitializationStageName, tArguments);
     }
     else

@@ -484,13 +484,13 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_MassProperties)
     std::string tStringInput =
         "begin criterion 1\n"
         "type mass_properties\n"
-        "Mass Gold 0.0664246 Weight 1.0\n"
-        "Ixx Gold 3.7079 Weight 1.0\n"
-        "Iyy Gold 2.7113 Weight 1.0\n"
-        "Izz Gold 4.2975 Weight 1.0\n"
-        "CGx Gold 4.1376 Weight 1.0\n"
-        "CGy Gold 5.6817 Weight 1.0\n"
-        "CGz Gold 2.9269 Weight 1.0\n"
+        "Mass 0.0664246 Weight 1.0\n"
+        "Ixx 3.7079 Weight 1.0\n"
+        "Iyy 2.7113 Weight 1.0\n"
+        "Izz 4.2975 Weight 1.0\n"
+        "CGx 4.1376 Weight 1.0\n"
+        "CGy 5.6817 Weight 1.0\n"
+        "CGz 2.9269 Weight 1.0\n"
         "end criterion\n";
     std::istringstream tInputSS;
     tInputSS.str(tStringInput);

@@ -688,7 +688,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk"};
 };
 // struct ValidCodeKeys
 

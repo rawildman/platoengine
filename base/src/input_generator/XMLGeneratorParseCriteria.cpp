@@ -268,18 +268,18 @@ void ParseCriteria::setMassProperties(XMLGen::Criterion& aCriterion)
                 strcpy(tValuesBuffer, tValues.c_str());
                 XMLGen::parse_tokens(tValuesBuffer, tTokens);
 
-                if (tTokens[0] != "gold" || tTokens[2] != "weight" || tTokens.size() != 4) {
+                if (tTokens[1] != "weight" || tTokens.size() != 3) {
                     std::stringstream errorstream;
                     errorstream << "Parse Criteria: expected syntax for mass properties is '"
-                        << property << " gold [goldValue] weight [weightValue]'" << std::endl; 
+                        << property << " [propertyValue] weight [weightValue]'" << std::endl; 
                     THROWERR(errorstream.str());
                 }
 
-                std::istringstream goldStream(tTokens[1]);
+                std::istringstream goldStream(tTokens[0]);
                 double goldValue;
                 goldStream >> goldValue;
 
-                std::istringstream weightStream(tTokens[3]);
+                std::istringstream weightStream(tTokens[2]);
                 double weight;
                 weightStream >> weight;
 

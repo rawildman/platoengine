@@ -84,6 +84,8 @@ set(PLATO_INCLUDES)
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
+# set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -fopenmp")
+# set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -fopenmp")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
@@ -108,6 +110,8 @@ if( UNIT_TESTING )
     set(CMAKE_PREFIX_PATH ${GTEST_HOME} ${CMAKE_PREFIX_PATH})
   endif()
   find_package(GTest REQUIRED)
+  message( "-- Google Test Include Dir:  ${GTEST_INCLUDE_DIRS}" )
+  message( "-- Google Test Src Dir:  ${gtest_SOURCE_DIR}" )
   include_directories( ${GTEST_INCLUDE_DIRS} )
 endif()
 
@@ -150,12 +154,7 @@ if( ENABLE_PRUNE )
   add_definitions(-DENABLE_PRUNE)
 endif()
 
-if( XTK_ENABLED )
-    message( "\n-- Including XTK \n" )
-    add_definitions( -DXTK_ENABLED )
-    include(${CMAKE_SOURCE_DIR}/base/src/xtk/xtkinclude.cmake)
-endif()    
-#end XTK stuff
+
 
 if( REGRESSION OR UNIT_TESTING )
     enable_testing()
@@ -209,9 +208,6 @@ add_subdirectory(base/src/input_generator)
 add_subdirectory(base/src/operations)
 add_subdirectory(base/src/Su2ToExodus)
 add_subdirectory(base/src/MarkFaces)
-if(XTK_ENABLED)
-  add_subdirectory(base/src/xtk/)
-endif()   
 
 
 if( ENABLE_ISO )
@@ -236,6 +232,11 @@ endif()
 if( PLATOMAIN )
   message( "-- Compiling PlatoMain " )
   add_subdirectory(apps/services)
+endif()
+
+if(XTK_ENABLED)
+    message( "-- Compiling xtk " )
+    add_subdirectory(apps/xtk)
 endif()
 
 if( PLATOPROXY )
@@ -274,15 +275,6 @@ if( REGRESSION )
     message("-- !! -- PlatoMain is required for regression testing.")
     message("-- !! -- Regression has not been enabled.")
   endif()
-endif()
-
-
-if( XTK_ENABLED )
-   message( "\n-- Compiling with XTK \n" ) 
-    find_package(XTK REQUIRED NAMES)
-    find_library(XTK_COM_Libs NAMES libCOM.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES COM)
-    find_library(XTK_MTK_Libs NAMES libMTK.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES MTK)
-    set(XTK_Libs ${XTK_COM_Libs} ${XTK_MTK_Libs} CACHE FILEPATH "List of library paths." )
 endif()
 
 add_subdirectory(share)

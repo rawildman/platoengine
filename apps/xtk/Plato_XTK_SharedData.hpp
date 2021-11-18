@@ -52,6 +52,10 @@
 
 #include "assert.h"
 #include "Plato_XTK_Application.hpp"
+#include <iomanip>
+#include <iostream>
+#include <cl_Matrix.hpp>
+#include <fn_norm.hpp>
 
 namespace Plato
 {
@@ -68,10 +72,13 @@ public:
                       mName(aName),
                       mLayout(aLayout){};
 
-    int size() const {return mData.size();};
-    std::string myName() const{return mName;};
-    std::string myContext() const { return std::string(); };
-    Plato::data::layout_t myLayout() const {return mLayout;};
+    int                         size() const {return mData.size();};
+    std::string                 myName() const{return mName;};
+    std::string                 myContext() const { return std::string(); };
+    Plato::data::layout_t       myLayout() const {return mLayout;};
+    void                        resize( size_t aSize ) { mData.resize(aSize); };
+    void                        clear() { mData.clear(); }
+    std::vector<double> const & get_data(){return mData;};
 
     void transmitData()
     {
@@ -79,18 +86,45 @@ public:
     }
     void setData(const std::vector<double> & aData)
     {
-        std::copy(aData.begin(),aData.end(),mData.begin());
+        mData.resize(aData.size());
 
+        std::copy(aData.begin(),aData.end(),mData.begin());
     }
+    void setData(const moris::Matrix<moris::DDRMat> & aData)
+    {
+        int tSize = aData.numel();
+        const double* tDataPtr = aData.data();
+
+        mData.resize(tSize);
+
+        std::copy(tDataPtr,tDataPtr+tSize,mData.begin());
+    }
+
     void getData(std::vector<double> & aData) const
     {
         std::copy(mData.begin(),mData.end(),aData.begin());
     }
 
+    double
+    operator()(size_t tIndex)
+    {
+        return mData[tIndex];
+    }
+
+    void
+    print()
+    {
+        for(size_t i = 0; i < mData.size(); i++)
+        {
+            std::cout<<std::setw(9)<<std::right<<i<<" | "<<mData[i]<<std::endl;
+        }
+
+    }
+
 private:
-    Plato::data::layout_t mLayout;
-    std::string           mName;
     std::vector<double>   mData;
+    std::string           mName;
+    Plato::data::layout_t mLayout;
 };
 
 
