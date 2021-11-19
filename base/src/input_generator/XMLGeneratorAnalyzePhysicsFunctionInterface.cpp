@@ -20,14 +20,14 @@ namespace Private
  * \brief Append linear solver options to analyze input deck.
  * \param [out] aParentNode  parent xml node
 **********************************************************************************/
-void append_linear_solver_options(pugi::xml_node &aParentNode)
+void append_linear_solver_options(const XMLGen::Scenario &aScenario, pugi::xml_node &aParentNode)
 {
     auto tLinearSolver = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Linear Solver"}, tLinearSolver);
     std::vector<std::string> tKeys = {"name", "type", "value"};
-    std::vector<std::string> tValues = {"Iterations", "int", "1000"};
+    std::vector<std::string> tValues = {"Iterations", "int", aScenario.solverMaxNumIterations()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
-    tValues = {"Tolerance", "double", "1e-12"};
+    tValues = {"Tolerance", "double", aScenario.solverTolerance()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
     tValues = {"Solver Stack", "string", "Amgx"};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
@@ -154,7 +154,7 @@ void append_hyperbolic_incompressible_cfd_pde_to_analyze_input_deck(
     XMLGen::Private::append_incompressible_cfd_conservation_equations_options(aScenario, aParentNode);
     XMLGen::Private::append_incompressible_cfd_time_integration_options(aScenario, aParentNode);
     XMLGen::Private::append_incompressible_cfd_convergence_options(aScenario, aParentNode);
-    XMLGen::Private::append_linear_solver_options(aParentNode);
+    XMLGen::Private::append_linear_solver_options(aScenario, aParentNode);
 }
 
 /******************************************************************************//**
