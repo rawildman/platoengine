@@ -16,6 +16,7 @@
 #include "XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp"
+#include <string>
 
 namespace XMLGen
 {
@@ -1063,12 +1064,15 @@ void write_plato_analyze_helmholtz_input_deck_file
     XMLGen::append_attributes({"name"}, {"Parameters"}, tParameters);
     tKeys = {"name", "type", "value"};
 
-    auto tLengthScaleValue = aXMLMetaData.optimization_parameters().filter_radius_absolute();
-    if(tLengthScaleValue.empty())
+    auto tPhysicalLengthScaleString = aXMLMetaData.optimization_parameters().filter_radius_absolute();
+    if(tPhysicalLengthScaleString.empty())
     {
         THROWERR("Filter radius absolute is not set. This is needed for Helmholtz filter")
     }
-    tValues = {"Length Scale", "double", tLengthScaleValue};
+    double tPhysicalLengthScaleValue = std::stod(tPhysicalLengthScaleString);
+    double tHelmholtzRadiusFactor = 2.0*std::sqrt(3.0);
+    auto tHelmholtzLengthScaleString = std::to_string(tPhysicalLengthScaleValue/tHelmholtzRadiusFactor);
+    tValues = {"Length Scale", "double", tHelmholtzLengthScaleString};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
 
     // surface length scale parameter
