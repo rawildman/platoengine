@@ -205,6 +205,13 @@ std::vector<XMLGen::Scenario> ParseScenario::data() const
     return mData;
 }
 
+void ParseScenario::setParameters(XMLGen::Scenario& aScenario)
+{
+    this->setLoadIDs(aScenario);
+    this->setBCIDs(aScenario);
+    this->setAssemblyIDs(aScenario);
+}
+
 void ParseScenario::parse(std::istream &aInputFile)
 {
     mData.clear();
@@ -227,9 +234,7 @@ void ParseScenario::parse(std::istream &aInputFile)
             XMLGen::erase_tag_values(mTags);
             XMLGen::parse_input_metadata( { "end", "scenario" }, aInputFile, mTags);
             this->setTags(tScenario);
-            this->setLoadIDs(tScenario);
-            this->setBCIDs(tScenario);
-            this->setAssemblyIDs(tScenario);
+            this->setParameters(tScenario);
             tScenario.id(tScenarioBlockID);
             this->checkTags(tScenario);
             mData.push_back(tScenario);

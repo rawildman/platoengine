@@ -89,6 +89,13 @@ private:
     void checkIDs(XMLGen::Scenario& aScenario);
 
     /******************************************************************************//**
+     * \fn setParameters
+     * \brief Set scenario parameters.
+     * \param [in] aScenario Scenario metadata
+    **********************************************************************************/
+    void setParameters(XMLGen::Scenario& aScenario);
+
+    /******************************************************************************//**
      * \fn checkScenarioID
      * \brief If scenario 'id' keyword is empty, set 'id' to default = 'physics_keyword' 
      * + '0', where 'physics_keyword' denotes the value set for 'physics' keyword.

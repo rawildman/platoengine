@@ -37,6 +37,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tScenario.append("critical_time_step_damping","1e-2");
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
+    tScenario.append("tolerance","1e-12");
+    tScenario.append("max_number_iterations","1000");
     
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
@@ -4626,7 +4628,6 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilter)
     ASSERT_NO_THROW(XMLGen::write_plato_analyze_helmholtz_input_deck_file(tXMLMetaData));
     auto tData = XMLGen::read_data_from_file("plato_analyze_helmholtz_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"0.923760\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList></ParameterList></ParameterList>");
-    +"</ParameterList></ParameterList>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
 }
