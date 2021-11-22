@@ -269,7 +269,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermoMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -310,7 +310,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsElectroMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -352,7 +352,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsHeatConduction)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -409,7 +409,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientThermoMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -468,7 +468,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Hyperbolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -533,7 +533,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsStabilizedMechanics)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -598,7 +598,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPlasticity)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
