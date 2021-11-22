@@ -601,14 +601,6 @@ void AnalyzePhysicsFunctionInterface::call(const XMLGen::Scenario& aScenarioMeta
           const std::vector<XMLGen::Output>& aOutputMetaData,
           pugi::xml_node &aParentNode) const
 {
-/* Scenario doesn't have a code member and we should only be getting in here for plato_analyze anyway.
-    auto tCode = XMLGen::to_lower(aScenarioMetaData.code());
-    if(tCode.compare("plato_analyze") != 0)
-    {
-        return;
-    }
-*/
-
     auto tPhysics = XMLGen::to_lower(aScenarioMetaData.physics());
     auto tMapItr = mMap.find(tPhysics);
     if(tMapItr == mMap.end())
