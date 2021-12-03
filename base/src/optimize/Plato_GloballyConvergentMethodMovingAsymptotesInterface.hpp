@@ -58,9 +58,9 @@
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_EngineObjective.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_PrimalProblemStageMng.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
 #include "Plato_ConservativeConvexSeparableAppxDataMng.hpp"
@@ -86,7 +86,7 @@ struct DefaultParametersGCMMA
 };
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class GloballyConvergentMethodMovingAsymptotesInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class GloballyConvergentMethodMovingAsymptotesInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -105,10 +105,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     /******************************************************************************/
     {
-        return (Plato::optimizer::algorithm_t::GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES);
+        return (Plato::driver::driver_t::GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES);
     }
 
     /******************************************************************************/
@@ -119,7 +119,7 @@ public:
     }
 
     /******************************************************************************/
-    void optimize()
+    void run()
     /******************************************************************************/
     {
         mInterface->handleExceptions();

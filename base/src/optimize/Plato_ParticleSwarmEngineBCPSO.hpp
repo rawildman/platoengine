@@ -50,8 +50,8 @@
 
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_StageInputDataMng.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_ParticleSwarmParser.hpp"
 #include "Plato_GradFreeEngineCriterion.hpp"
 #include "Plato_ParticleSwarmInterfaceBCPSO.hpp"
@@ -63,7 +63,7 @@ namespace Plato
  * @brief PLATO Engine interface for Bound Constrained Particle Swarm Optimization (BCPSO) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class ParticleSwarmEngineBCPSO : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class ParticleSwarmEngineBCPSO : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -90,9 +90,9 @@ public:
      * @brief Return optimization algorithm type
      * @return type
     **********************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     {
-        return (Plato::optimizer::algorithm_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
+        return (Plato::driver::driver_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
     }
 
     /******************************************************************************//**
@@ -113,7 +113,7 @@ public:
     /******************************************************************************//**
      * @brief Solve optimization problem using the BCPSO algorithm
     **********************************************************************************/
-    void optimize()
+    void run()
     {
         mInterface->handleExceptions();
 

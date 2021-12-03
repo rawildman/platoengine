@@ -41,7 +41,7 @@
 */
 
 /*
- * Plato_Optimizer.hpp
+ * Plato_DriverFactory.hpp
  *
  *  Created on: April 19, 2017
  *
@@ -51,7 +51,7 @@
 
 #include <mpi.h>
 
-#include "Plato_OptimizerInterface.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_DiagnosticsInterface.hpp"
 #include "Plato_ParticleSwarmEngineBCPSO.hpp"
 #include "Plato_ParticleSwarmEngineALPSO.hpp"
@@ -68,140 +68,161 @@
 #include "Plato_ROLLinearConstraintInterface.hpp"
 #endif
 
+#ifdef DAKOTADRIVER
+#include "Plato_DakotaDriver.hpp"
+#endif
+
 namespace Plato
 {
 
 /******************************************************************************//**
- * @brief Construct interface to optimization algorithm
+ * \brief Construct interface to optimization algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class OptimizerFactory
+class DriverFactory
 {
 public:
     /******************************************************************************//**
-     * @brief Constructor
+     * \brief Constructor
     **********************************************************************************/
-    OptimizerFactory()
+    DriverFactory()
     {
     }
 
     /******************************************************************************//**
-     * @brief Destructuor
+     * \brief Destructuor
     **********************************************************************************/
-    ~OptimizerFactory()
+    ~DriverFactory()
     {
     }
 
     /******************************************************************************//**
-     * @brief Construct interface to optimization algorithm
-     * @param [in] aInterface PLATO Engine interface
-     * @param [in] aLocalComm local MPI communicator
-     * @return non-const pointer to the optimization algorithm's interface
+     * \brief Construct interface to optimization algorithm
+     * \param [in] aInterface PLATO Engine interface
+     * \param [in] aLocalComm local MPI communicator
+     * \return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
-    Plato::OptimizerInterface<ScalarType, OrdinalType>* create(Plato::Interface* aInterface, MPI_Comm aLocalComm)
+    Plato::DriverInterface<ScalarType, OrdinalType>* create(Plato::Interface* aInterface, MPI_Comm aLocalComm)
     {
-     Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
+     Plato::DriverInterface<ScalarType, OrdinalType>* tDriver = nullptr;
      try {
        auto tInputData = aInterface->getInputData();
 
        if( tInputData.size<Plato::InputData>("Optimizer") > 1 )
        {
-         Plato::ParsingException tParsingException("Plato::OptimizerFactory: multiple 'Optimizer' definitions");
+         Plato::ParsingException tParsingException("Plato::DriverFactory: multiple 'Optimizer' definitions");
          aInterface->registerException(tParsingException);
        }
        if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
        {
-         Plato::ParsingException tParsingException("Plato::OptimizerFactory: missing 'Optimizer' definitions");
-         aInterface->registerException(tParsingException);
+         if( tInputData.size<Plato::InputData>("DakotaDriver") == 1 )
+         {
+#ifdef DAKOTADRIVER
+           try {
+             tDriver = new Plato::DakotaDriver<ScalarType, OrdinalType>(aInterface, aLocalComm);
+             feclearexcept(FE_ALL_EXCEPT);
+           } catch(...){aInterface->Catch(); tDriver = nullptr;}
+           return tDriver;
+#else
+           Plato::ParsingException tParsingException("Plato::DriverFactory: plato was not compiled with dakota");
+           aInterface->registerException(tParsingException);
+#endif
+
+         }
+         else
+         {
+           Plato::ParsingException tParsingException("Plato::DriverFactory: missing 'Optimizer' definitions");
+           aInterface->registerException(tParsingException);
+         }
        }
        auto tOptNode = tInputData.get<Plato::InputData>("Optimizer");
        std::string tOptPackage = Plato::Get::String(tOptNode, "Package");
        if( tOptPackage == "OC" )
        {
          try {
-           tOptimizer = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "GCMMA" )
        {
          try {
-           tOptimizer = new Plato::GloballyConvergentMethodMovingAsymptotesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::GloballyConvergentMethodMovingAsymptotesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "MMA" )
        {
          try {
-           tOptimizer = new Plato::MethodMovingAsymptotesEngine<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::MethodMovingAsymptotesEngine<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "KSUC" )
        {
          try {
-           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_UNCONSTRAINED;
-           tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+           Plato::driver::driver_t tType = Plato::driver::driver_t::KELLEY_SACHS_UNCONSTRAINED;
+           tDriver = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "KSBC" )
        {
          try {
-           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-           tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+           Plato::driver::driver_t tType = Plato::driver::driver_t::KELLEY_SACHS_BOUND_CONSTRAINED;
+           tDriver = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "KSAL" )
        {
          try {
-           tOptimizer = new Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "BCPSO" )
        {
          try {
-           tOptimizer = new Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ALPSO" )
        {
          try {
-           tOptimizer = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
 #ifdef ENABLE_ROL
        else if( tOptPackage == "ROL AugmentedLagrangian" )
        {
          try {
-           tOptimizer = new Plato::ROLAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::ROLAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL BoundConstrained" )
        {
          try {
-           tOptimizer = new Plato::ROLBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::ROLBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL LinearConstraint" )
        {
          try {
-           tOptimizer = new Plato::ROLLinearConstraintInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::ROLLinearConstraintInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
 #endif
        else if( tOptPackage == "DerivativeChecker" )
        {
          try {
-           tOptimizer = new Plato::DiagnosticsInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::DiagnosticsInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "SOParameterStudies" )
        {
          try {
-           tOptimizer = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           tDriver = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
          } catch(...){aInterface->Catch();}
        }
        else
        {
            std::stringstream tStringStream;
-           tStringStream << "Plato::OptimizerFactory: " << tOptPackage << " Unknown." << std::endl
+           tStringStream << "Plato::DriverFactory: " << tOptPackage << " Unknown." << std::endl
            << "Valid options are\n"
            << "\t OC ... Optimality Criteria\n"
            << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
@@ -218,6 +239,9 @@ public:
            << "\t ROL BoundConstrained... Rapid Optimization Library Bound Constrained\n"
            << "\t ROL LinearConstraint... Rapid Optimization Library LinearConstraint\n"
 #endif
+#ifdef DAKOTADRIVER
+           << "\t DakotaDriver... Plato driven by Dakota\n"
+#endif
            << std::endl;
            throw Plato::ParsingException(tStringStream.str());
        }
@@ -227,16 +251,16 @@ public:
         catch(...)
         {
             aInterface->Catch();
-            tOptimizer = nullptr;
+            tDriver = nullptr;
         }
 
-     return (tOptimizer);
+     return (tDriver);
    }
 
 private:
-    OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
-    Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
+    DriverFactory(const Plato::DriverFactory<ScalarType, OrdinalType>&);
+    Plato::DriverFactory<ScalarType, OrdinalType> & operator=(const Plato::DriverFactory<ScalarType, OrdinalType>&);
 };
-// class OptimizerFactory
+// class DriverFactory
 
 } // namespace Plato

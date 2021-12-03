@@ -230,12 +230,13 @@ def updateModel(modelName, paramVals):
   for ip in range(len(paramVals)):
     p = paramVals[ip]
     print "param: " + str(p)
-    f = open('tmp.file', "w")
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
     command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
     print "command: ", command
     subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
     f.close()
-    subprocess.call(['mv', 'tmp.file', modedName])
+    subprocess.call(['mv', tmp_string, modedName])
 
   subprocess.call(['mv', modedName, modelName])
 

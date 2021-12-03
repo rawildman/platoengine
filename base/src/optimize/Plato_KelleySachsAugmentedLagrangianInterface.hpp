@@ -57,9 +57,9 @@
 #include "Plato_CriterionList.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_StandardMultiVector.hpp"
 #include "Plato_AugmentedLagrangian.hpp"
 #include "Plato_LinearCriterionHessian.hpp"
@@ -71,7 +71,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class KelleySachsAugmentedLagrangianInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class KelleySachsAugmentedLagrangianInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -97,9 +97,9 @@ public:
      * @brief Return optimization algorithm used to solve optimization problem
      * @return optimization algorithm type
     **********************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     {
-        return (Plato::optimizer::algorithm_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
+        return (Plato::driver::driver_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
     }
 
     /******************************************************************************//**
@@ -113,7 +113,7 @@ public:
     /******************************************************************************//**
      * @brief Solve optimization problem with Kelley-Sachs augmented Lagrangian (KSAL) algorithm
     **********************************************************************************/
-    void optimize()
+    void run()
     {
         mInterface->handleExceptions();
 

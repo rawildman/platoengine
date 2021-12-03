@@ -51,8 +51,8 @@
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_MethodMovingAsymptotesParser.hpp"
 #include "Plato_MethodMovingAsymptotesInterface.hpp"
@@ -61,16 +61,16 @@ namespace Plato
 {
 
 /******************************************************************************//**
- * @brief PLATO Engine interface for Method of Moving AsymptotesEngine (MMA) algorithm
+ * \brief PLATO Engine interface for Method of Moving AsymptotesEngine (MMA) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class MethodMovingAsymptotesEngine : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class MethodMovingAsymptotesEngine : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
-     * @brief Constructor
-     * @param [in] aInterface PLATO Engine interface
-     * @param [in] aComm local MPI communicator
+     * \brief Constructor
+     * \param [in] aInterface PLATO Engine interface
+     * \param [in] aComm local MPI communicator
     **********************************************************************************/
     explicit MethodMovingAsymptotesEngine(Plato::Interface *aInterface, const MPI_Comm &aComm) :
         mObjFuncStageName(),
@@ -86,23 +86,23 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Destructor
+     * \brief Destructor
     **********************************************************************************/
     virtual ~MethodMovingAsymptotesEngine()
     {
     }
 
     /******************************************************************************//**
-     * @brief Return the algorithm type
-     * @return algorithm type
+     * \brief Return the algorithm type
+     * \return algorithm type
     **********************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     {
-        return (Plato::optimizer::algorithm_t::METHOD_OF_MOVING_ASYMPTOTES);
+        return (Plato::driver::driver_t::METHOD_OF_MOVING_ASYMPTOTES);
     }
 
     /******************************************************************************//**
-     * @brief Read Engine stage inputs
+     * \brief Read Engine stage inputs
     **********************************************************************************/
     void initialize()
     {
@@ -110,7 +110,7 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Notify PLATO Engine that optimization problem is done.
+     * \brief Notify PLATO Engine that optimization problem is done.
     **********************************************************************************/
     void finalize()
     {
@@ -122,9 +122,9 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Solve optimization problem using the MMA optimization algorithm
+     * \brief Solve optimization problem using the MMA optimization algorithm
     **********************************************************************************/
-    void optimize()
+    void run()
     {
         mInterface->handleExceptions();
         this->initialize();
@@ -167,8 +167,8 @@ public:
 
 private:
     /******************************************************************************//**
-     * @brief Parse algorithmic options
-     * @param [in/out] aInputs MMA algorithm inputs
+     * \brief Parse algorithmic options
+     * \param [in/out] aInputs MMA algorithm inputs
     **********************************************************************************/
     void parseOptimizerOptions(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> & aInput)
     {
@@ -183,7 +183,7 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Parse options for objective function stage
+     * \brief Parse options for objective function stage
     **********************************************************************************/
     void parseObjFuncStageOptions()
     {
@@ -200,7 +200,7 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Parse constraint stage options
+     * \brief Parse constraint stage options
     **********************************************************************************/
     void parseConstraintStageOptions()
     {
@@ -223,9 +223,9 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Allocate control and dual container templates
-     * @param [in] aFactory linear algebra and parallel container factory
-     * @param [out] aData MMA algorithm input options
+     * \brief Allocate control and dual container templates
+     * \param [in] aFactory linear algebra and parallel container factory
+     * \param [out] aData MMA algorithm input options
     **********************************************************************************/
     void allocateDataStructures(const Plato::AlgebraFactory<ScalarType, OrdinalType> &aFactory,
                                 Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
@@ -238,9 +238,9 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Allocate template used for optimization variable containers
-     * @param [in] aFactory linear algebra and parallel container factory
-     * @param [out] aData MMA algorithm input options
+     * \brief Allocate template used for optimization variable containers
+     * \param [in] aFactory linear algebra and parallel container factory
+     * \param [out] aData MMA algorithm input options
     **********************************************************************************/
     void allocateControlSets(const Plato::AlgebraFactory<ScalarType, OrdinalType> &aFactory,
                              Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
@@ -260,8 +260,8 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Set bounds on optimization variables
-     * @param [in/out] aData MMA algorithm input options
+     * \brief Set bounds on optimization variables
+     * \param [in/out] aData MMA algorithm input options
     **********************************************************************************/
     void setLowerBounds(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
     {
@@ -275,8 +275,8 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Set bounds on optimization variables
-     * @param [in/out] aData MMA algorithm input options
+     * \brief Set bounds on optimization variables
+     * \param [in/out] aData MMA algorithm input options
     **********************************************************************************/
     void setUpperBounds(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
     {
@@ -290,8 +290,8 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Set constraint normalization parameters
-     * @param [in/out] aData MMA algorithm input options
+     * \brief Set constraint normalization parameters
+     * \param [in/out] aData MMA algorithm input options
     **********************************************************************************/
     void setConstraintNormalizationValues(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
     {
@@ -310,8 +310,8 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Set initial optimization variables, i,e, initial guess
-     * @param [in/out] aData MMA algorithm input options
+     * \brief Set initial optimization variables, i,e, initial guess
+     * \param [in/out] aData MMA algorithm input options
     **********************************************************************************/
     void setInitialGuess(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> &aData)
     {
@@ -327,11 +327,11 @@ private:
     }
 
     /******************************************************************************//**
-     * @brief Set optimization problem criteria
-     * @param [in] aNumControls number of controls per control vector
-     * @param [in] aNumConstraints number of constraints
-     * @param [in/out] aObjective PLATO engine interface for the objective function
-     * @param [in/out] aConstraints PLATO engine interface for the constraints
+     * \brief Set optimization problem criteria
+     * \param [in] aNumControls number of controls per control vector
+     * \param [in] aNumConstraints number of constraints
+     * \param [in/out] aObjective PLATO engine interface for the objective function
+     * \param [in/out] aConstraints PLATO engine interface for the constraints
     **********************************************************************************/
     void setProblemCriteria(const OrdinalType& aNumControls,
                             const OrdinalType& aNumConstraints,

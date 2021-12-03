@@ -109,6 +109,21 @@ inline std::string tolower(const std::string& aInput)
 }
 // function tolower
 
+inline std::vector<std::string>
+tokenize(const std::string& aStr, char tDelimiter = '_')
+{
+    std::stringstream tSringStream(aStr);
+
+    std::string tTemp;
+    std::vector<std::string> tOut;
+    while(std::getline(tSringStream, tTemp, tDelimiter))
+    {
+        tOut.push_back(tTemp);
+    }
+    return tOut;
+}
+// function tokenize
+
 /******************************************************************************//**
  * \fn toupper
  * \brief Convert string to upper case.
@@ -118,5 +133,7 @@ inline std::string tolower(const std::string& aInput)
 std::string toupper(const std::string& aInput);
 
 void system(const char* aString);
+
+int system_with_return(const char* aString);
 
 } // end namespace Plato

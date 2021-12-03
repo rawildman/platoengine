@@ -1,5 +1,5 @@
 /*
- * Plato_OptimizerInterface.hpp
+ * Plato_DriverInterface.hpp
  *
  *  Created on: Oct 30, 2017
  */
@@ -52,10 +52,9 @@
 namespace Plato
 {
 
-struct optimizer
+struct driver
 {
-
-    enum algorithm_t
+    enum driver_t
     {
         OPTIMALITY_CRITERIA = 1,
         METHOD_OF_MOVING_ASYMPTOTES = 2,
@@ -70,29 +69,29 @@ struct optimizer
         PARTICLE_SWARM_OPTMIZATION_ALPSO = 11,
         PARTICLE_SWARM_OPTMIZATION_BCPSO = 12,
         SO_PARAMETER_STUDIES = 13,
-        ROL_LINEAR_CONSTRAINT = 14,
-        ROL_BOUND_CONSTRAINED = 15,
-        ROL_AUGMENTED_LAGRANGIAN = 16
-    }; // enum algorithm_t
-
+        PLATO_DAKOTA_DRIVER = 14,
+        ROL_LINEAR_CONSTRAINT = 15,
+        ROL_BOUND_CONSTRAINED = 16,
+        ROL_AUGMENTED_LAGRANGIAN = 17
+    }; // enum driver_t
 };
-// struct optimizer
+// struct driver
 
 /******************************************************************************//**
  * @brief Abstract interface to optimization algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class OptimizerInterface
+class DriverInterface
 {
 public:
-    virtual ~OptimizerInterface()
+    virtual ~DriverInterface()
     {
     }
 
     /******************************************************************************//**
      * @brief Interface to optimization algorithm - solves optimization problem
     **********************************************************************************/
-    virtual void optimize() = 0;
+    virtual void run() = 0;
 
     /******************************************************************************//**
      * @brief Deallocate memory
@@ -104,7 +103,7 @@ public:
     **********************************************************************************/
     virtual void initialize() = 0;
 };
-// class OptimizerInterface
+// class DriverInterface
 
 } // namespace Plato
 

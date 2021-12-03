@@ -53,13 +53,13 @@
 #include <Kokkos_Core.hpp>
 #endif
 
-#include "PlatoApp.hpp"
-#include "Plato_Interface.hpp"
-#include "Plato_OptimizerInterface.hpp"
-#include "Plato_OptimizerFactory.hpp"
-#include "Plato_Exceptions.hpp"
 #include <iostream>
 #include <sstream>
+
+#include "PlatoApp.hpp"
+#include "Plato_Interface.hpp"
+#include "Plato_Exceptions.hpp"
+#include "Plato_DriverFactory.hpp"
 
 #ifndef NDEBUG
 #include <fenv.h>
@@ -107,7 +107,6 @@ int main(int aArgc, char *aArgv[])
 
     MPI_Comm tLocalComm;
     tPlatoInterface->getLocalComm(tLocalComm);
-    WorldComm.init(tLocalComm);
 
     // Create Plato services application and register it with the Plato interface
     PlatoApp *tPlatoApp = nullptr;
@@ -139,14 +138,14 @@ int main(int aArgc, char *aArgv[])
 
     writeSplashScreen();
 
-    Plato::OptimizerInterface<double>* tOptimizer = nullptr;
+    Plato::DriverInterface<double>* tDriver = nullptr;
     try
     {
-        Plato::OptimizerFactory<double> tOptimizerFactory;
-        tOptimizer = tOptimizerFactory.create(tPlatoInterface, tLocalComm);
-        if(tOptimizer)
+        Plato::DriverFactory<double> tDriverFactory;
+        tDriver = tDriverFactory.create(tPlatoInterface, tLocalComm);
+        if(tDriver)
         {
-            tOptimizer->optimize();
+            tDriver->run();
         }
         else
         {
@@ -166,9 +165,9 @@ int main(int aArgc, char *aArgv[])
     {
         delete tPlatoInterface;
     }
-    if(tOptimizer)
+    if(tDriver)
     {
-        delete tOptimizer;
+        delete tDriver;
     }
 
     safeExit();

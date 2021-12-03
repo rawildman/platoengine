@@ -701,6 +701,7 @@ PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
         mInputfileData("Inputfile Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
 }
 
 PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
@@ -713,6 +714,8 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
         mInputfileData("Inputfile Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
+
     const char* input_char = getenv("PLATO_APP_FILE");
     Plato::Parser* parser = new Plato::PugiParser();
     mAppfileData = parser->parseFile(input_char);
@@ -783,6 +786,8 @@ PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp
         mAppfileData("Input Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
+
     const char* input_char = getenv("PLATO_APP_FILE");
     Plato::Parser* parser = new Plato::PugiParser();
     mAppfileData = parser->parseFile(input_char);

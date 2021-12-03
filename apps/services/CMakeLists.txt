@@ -7,6 +7,8 @@ SET(PlatoMain_HDRS PlatoApp.hpp)
 
 include_directories(${PLATO_INCLUDES})
 
+add_compile_definitions(${Dakota_DEFINES})
+
 # actual target:
 set(PLATOMAIN_LIBS  ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}  
      ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES}
@@ -19,6 +21,15 @@ if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoMain DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 endif()
 
+if( ENABLE_PLATO_SERVICES )
+    SET(PlatoEngineServices_SRCS Plato_Services.cpp PlatoApp.cpp)
+    add_executable(PlatoEngineServices ${PlatoEngineServices_SRCS})
+  target_link_libraries(PlatoEngineServices ${PLATOMAIN_LIBS})
+  set(SERVICES_BINARY ${CMAKE_BINARY_DIR}/apps/services/PlatoEngineServices PARENT_SCOPE)
+  if( CMAKE_INSTALL_PREFIX )
+      install( TARGETS PlatoEngineServices DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+  endif()
+endif()
 
 if (PLATO_ENABLE_SERVICES_PYTHON)
     find_package(Python2 COMPONENTS Development Interpreter)

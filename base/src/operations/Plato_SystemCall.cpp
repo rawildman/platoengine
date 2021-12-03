@@ -58,6 +58,7 @@
 #include "Plato_SystemCall.hpp"
 #include "Plato_OperationsUtilities.hpp"
 #include <Plato_FreeFunctions.hpp>
+#include "Plato_Macros.hpp"
 
 namespace Plato
 {
@@ -192,7 +193,13 @@ void SystemCall::executeCommand(const std::vector<std::string> &arguments)
     for(const auto &s : arguments) {
         cmd += " " + s;
     }
-    Plato::system(cmd.c_str());
+    // make system call
+    auto tExitStatus = Plato::system_with_return(cmd.c_str());
+    if (tExitStatus)
+    {
+        std::string tErrorMessage = std::string("System call ' ") + cmd + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
+        THROWERR(tErrorMessage)
+    }
 }
 
 void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)
@@ -208,7 +215,12 @@ void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)
     argumentPointers.push_back(nullptr);
 
     MPI_Comm intercom;
-    MPI_Comm_spawn(mStringCommand.c_str(), argumentPointers.data(), 1, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &intercom, MPI_ERRCODES_IGNORE);
+    auto tExitStatus = MPI_Comm_spawn(mStringCommand.c_str(), argumentPointers.data(), 1, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &intercom, MPI_ERRCODES_IGNORE);
+    if (tExitStatus != MPI_SUCCESS)
+    {
+        std::string tErrorMessage = std::string("System call ' ") + mStringCommand + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
+        THROWERR(tErrorMessage)
+    }
 
     for(auto p : argumentPointers) {
         delete [] p;

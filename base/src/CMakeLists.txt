@@ -1,4 +1,5 @@
 set(PLATO_INCLUDES ${PLATO_INCLUDES} 
+  ${CMAKE_SOURCE_DIR}/base/src/dakota
   ${CMAKE_SOURCE_DIR}/base/src/analyze
   ${CMAKE_SOURCE_DIR}/base/src/optimize
   ${CMAKE_SOURCE_DIR}/base/src/operations

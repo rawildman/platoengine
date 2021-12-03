@@ -56,12 +56,12 @@ MESSAGE("   Trilinos_DIR = ${Trilinos_DIR}")
 MESSAGE("   Trilinos_VERSION = ${Trilinos_VERSION}")
 MESSAGE("End of Trilinos details\n")
 
+
 if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
 
 include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-
 
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
@@ -73,13 +73,16 @@ set(CMAKE_CXX_COMPILER     ${Trilinos_CXX_COMPILER})
 set(CMAKE_C_COMPILER       ${Trilinos_C_COMPILER})
 set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 
-
-
 ###############################################################################
-project(PlatoEngine) 
+project(PlatoEngine)
 ###############################################################################
 
-set(PLATO_INCLUDES)
+if( DAKOTADRIVER )
+  find_package(Dakota REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
+endif()
+
+set(PLATO_INCLUDES ${CMAKE_SOURCE_DIR}/apps)
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
@@ -142,6 +145,11 @@ endif()
 if( ESP_ENABLED )
   message( "-- Compiling with ESP " )
   add_definitions( -DESP_ENABLED )
+endif()
+
+if( DAKOTADRIVER )
+  message( "-- Compiling Dakota Driver " )
+  add_definitions(-DDAKOTADRIVER)
 endif()
 
 if( ENABLE_ISO )
@@ -224,6 +232,10 @@ if( ESP_ENABLED )
   add_subdirectory(apps/esp)
 endif()
 
+if( DAKOTADRIVER )
+  add_subdirectory(base/src/dakota)
+endif()
+
 if( STK_ENABLED )
   add_subdirectory(base/src/support_structure)
   add_subdirectory(base/src/support_structure/main)
@@ -275,6 +287,14 @@ if( REGRESSION )
     message("-- !! -- PlatoMain is required for regression testing.")
     message("-- !! -- Regression has not been enabled.")
   endif()
+endif()
+
+if( XTK_ENABLED )
+   message( "\n-- Compiling with XTK \n" ) 
+    find_package(XTK REQUIRED NAMES)
+    find_library(XTK_COM_Libs NAMES libCOM.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES COM)
+    find_library(XTK_MTK_Libs NAMES libMTK.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES MTK)
+    set(XTK_Libs ${XTK_COM_Libs} ${XTK_MTK_Libs} CACHE FILEPATH "List of library paths." )
 endif()
 
 add_subdirectory(share)

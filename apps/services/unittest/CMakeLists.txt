@@ -78,6 +78,11 @@ IF( ENABLE_ROL )
     SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} Plato_Test_ROL.cpp)
 ENDIF()
 
+IF( DAKOTADRIVER )
+    SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} Plato_Test_PlatoDakotaDriver.cpp)
+    add_compile_definitions(${Dakota_DEFINES})
+ENDIF()
+
 ###############################################################################
 # Headers:
 ###############################################################################
@@ -126,21 +131,26 @@ set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/tpls/gtest/include
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/VectorKernel
                        )
 
+if( DAKOTADRIVER )
+    SET(PLATOUNIT_INCLUDES ${PLATOUNIT_INCLUDES} ${Dakota_INCLUDE_DIRS})
+endif()
+
 # Copy Input files from source to binary dir
 SET( testFiles "rol_unit_test_inputs.xml")
 Plato_add_test_files("${testFiles}")
 
 
-#set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/../tpls/gtest/include)
 INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
-###INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/../tpls/gtest/include/gtest ${CMAKE_SOURCE_DIR}/../tpls/gtest/include/gtest/internal)
-
 # actual target:
-#set(PLATOMAINUNITTESTER_ADDITIONAL_LIBS ${CMAKE_SOURCE_DIR}/tpls/gtest/build) 
 set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_ADDITIONAL_LIBS} ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} 
                              ${NLOPT_LIBRARY} ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
                              ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
+
+if( DAKOTADRIVER )
+	set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_LIBS} ${Dakota_LIBRARIES} ${Boost_LIBRARIES})
+endif()
+
 add_executable(PlatoMainUnitTester ${PlatoMainUnitTester_SRCS})
 target_link_libraries(PlatoMainUnitTester PlatoApp ${PLATOMAINUNITTESTER_LIBS})
 set(PLATOMAINUNITTESTER_BINARY ${CMAKE_BINARY_DIR}/apps/unittest/PlatoMainUnitTester PARENT_SCOPE)
@@ -149,7 +159,6 @@ add_test(NAME PlatoMainUnitTester COMMAND ${CMAKE_BINARY_DIR}/apps/services/unit
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoMainUnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-#  set(PLATOMAIN_BINARY ${CMAKE_INSTALL_PREFIX}/bin/PlatoMain PARENT_SCOPE)
 endif()
 ###############################################################################
 ###############################################################################
