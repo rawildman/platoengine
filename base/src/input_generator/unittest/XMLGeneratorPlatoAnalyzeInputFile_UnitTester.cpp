@@ -4730,6 +4730,32 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_All)
     Plato::system("rm -f plato_analyze_input_deck.xml");
 }
 
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForDisplacementCriterion)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("displacement");
+    tCriterion.id("3");
+    tCriterion.displacementDirection({"-1.0", "0.0", "0.0"});
+    tCriterion.append("measure_magnitude", "false");
+    tCriterion.append("location_type", "sideset");
+    tCriterion.append("location_name", "ss4");
+
+    ASSERT_NO_THROW(XMLGen::Private::append_displacement_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_displacement_criterion_id_3\">"
+    "<Parametername=\"Type\"type=\"string\"value=\"Solution\"/>"
+    "<Parametername=\"Normal\"type=\"Array(double)\"value=\"{-1.0,0.0,0.0}\"/>"
+    "<Parametername=\"Domain\"type=\"string\"value=\"ss4\"/>"
+    "<Parametername=\"Magnitude\"type=\"bool\"value=\"false\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
+}
+
 TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_Subset)
 {
     pugi::xml_document tDocument;

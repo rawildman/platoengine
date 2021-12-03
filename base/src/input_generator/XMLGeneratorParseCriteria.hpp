@@ -96,6 +96,20 @@ private:
     void checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion);
 
     /******************************************************************************//**
+     * \fn errorCheckDisplacementCriterion
+     * \brief Make sure the correct options are set for displacement type criteria
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void errorCheckDisplacementCriterion(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setDisplacementDirection
+     * \brief Set the displacement direction member variable
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setDisplacementDirection(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
      * \fn insertTag
      * \brief Insert a tag, possibly with a default value
      * \param [in] aCriterion criterion metadata

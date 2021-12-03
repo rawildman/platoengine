@@ -582,15 +582,19 @@ namespace XMLGen
             std::string tServiceID = aInputData.objective.serviceIDs[i];
             std::string tCriterionID = aInputData.objective.criteriaIDs[i];
             std::string tShapeServiceID = "";
-            if (aInputData.objective.shapeServiceIDs.size() == aInputData.objective.scenarioIDs.size())
+            auto &tService = aInputData.service(tServiceID);
+            if (tService.code() != "platomain") // platomain will be added elsewhere
             {
-                tShapeServiceID = aInputData.objective.shapeServiceIDs[i];
-            }
+                if (aInputData.objective.shapeServiceIDs.size() == aInputData.objective.scenarioIDs.size())
+                {
+                    tShapeServiceID = aInputData.objective.shapeServiceIDs[i];
+                }
 
-            std::tuple<std::string, std::string, std::string> tCurTuple = std::make_tuple(tScenarioID, tServiceID, tShapeServiceID);
-            if (aObjectiveScenarioServiceTuples.find(tCurTuple) == aObjectiveScenarioServiceTuples.end())
-            {
-                aObjectiveScenarioServiceTuples.insert(tCurTuple);
+                std::tuple<std::string, std::string, std::string> tCurTuple = std::make_tuple(tScenarioID, tServiceID, tShapeServiceID);
+                if (aObjectiveScenarioServiceTuples.find(tCurTuple) == aObjectiveScenarioServiceTuples.end())
+                {
+                    aObjectiveScenarioServiceTuples.insert(tCurTuple);
+                }
             }
         }
     }

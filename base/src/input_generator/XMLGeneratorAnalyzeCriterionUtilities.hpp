@@ -546,6 +546,37 @@ pugi::xml_node append_mass_properties_criterion
     return tObjective;
 }
 
+/******************************************************************************//**
+ * \fn append_displacement_criterion
+ * \brief Append displacement criterion to criterion parameter list.
+ * \tparam Criterion criterion metadata
+ * \param [in] aCriterion criterion metadata
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+template<typename Criterion>
+pugi::xml_node append_displacement_criterion
+(const Criterion& aCriterion,
+ pugi::xml_node& aParentNode)
+{
+    XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
+    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+
+    std::vector<std::string> tKeys, tValues;
+
+    tKeys = {"name", "type", "value"}; 
+    tValues = {"Type", "string", "Solution"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    std::vector<std::string> tDir = aCriterion.displacementDirection();
+    tValues = {"Normal", "Array(double)", "{" + tDir[0] + "," + tDir[1] + "," + tDir[2] + "}"};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    tValues = {"Domain", "string", aCriterion.location_name()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    tValues = {"Magnitude", "bool", aCriterion.measure_magnitude()};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    return tObjective;
+}
+
 template<typename CriterionT>
 pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
 {

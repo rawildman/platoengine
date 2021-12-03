@@ -458,6 +458,82 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_Volume)
 
 }
 
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_type sideset\n"
+        "location_name ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    tCriteriaParser.parse(tInputSS);
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("22", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("displacement", tCriterionMetaData[0].type().c_str());
+    ASSERT_STREQ("-1", tCriterionMetaData[0].displacementDirection()[0].c_str());
+    ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[1].c_str());
+    ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[2].c_str());
+    ASSERT_STREQ("false", tCriterionMetaData[0].value("measure_magnitude").c_str());
+    ASSERT_STREQ("sideset", tCriterionMetaData[0].value("location_type").c_str());
+    ASSERT_STREQ("ss4", tCriterionMetaData[0].value("location_name").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_displacement_direction)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "measure_magnitude false\n"
+        "location_type sideset\n"
+        "location_name ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_location_type)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_name ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_location_name)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_type sideset\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
 TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
 {
     std::string tStringInput =

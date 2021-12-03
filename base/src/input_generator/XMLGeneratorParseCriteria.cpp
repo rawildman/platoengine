@@ -94,6 +94,10 @@ void ParseCriteria::allocate()
     insertTag("location_names");
     insertTag("blocks");
     insertTag("conductivity_ratios");
+    insertTag("location_type");
+    insertTag("location_name");
+    insertTag("displacement_direction");
+    insertTag("measure_magnitude", "false");
 
     insertTag("mass");
     insertTag("cgx");
@@ -210,6 +214,46 @@ void ParseCriteria::setCriterionIDs(XMLGen::Criterion &aMetadata)
     }
 }
 
+void ParseCriteria::setDisplacementDirection(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "displacement")
+    {
+        auto tItr = mTags.find("displacement_direction");
+        std::string tValues = tItr->second.first.second;
+        if (tItr != mTags.end() && !tValues.empty())
+        {
+            std::vector<std::string> tDirection;
+            char tValuesBuffer[10000];
+            strcpy(tValuesBuffer, tValues.c_str());
+            XMLGen::parse_tokens(tValuesBuffer, tDirection);
+            aMetadata.displacementDirection(tDirection);
+        }
+        else
+        {
+            THROWERR("Displacement direction ('displacement_direction' keyword) is not defined for displacement criterion with criterion block id '" + aMetadata.id() + "'.");
+        }
+    }
+}
+
+void ParseCriteria::errorCheckDisplacementCriterion(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "displacement")
+    {
+        if(aMetadata.location_type().empty())
+        {
+            THROWERR("Displacement criterion must have 'location_type' option set.");
+        }
+        if(aMetadata.location_name().empty())
+        {
+            THROWERR("Displacement criterion must have 'location_name' option set.");
+        }
+        if(aMetadata.displacementDirection().size() == 0)
+        {
+            THROWERR("Displacement criterion must have 'displacement_direction' option set.");
+        }
+    }
+}
+
 void ParseCriteria::setCriterionType(XMLGen::Criterion& aMetadata)
 {
     auto tItr = mTags.find("type");
@@ -231,9 +275,11 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionWeights(aMetadata);
     this->setMassProperties(aMetadata);
     this->checkVolumePenaltyExponent(aMetadata);
+    this->setDisplacementDirection(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
+    this->errorCheckDisplacementCriterion(aMetadata);
 }
 
 void ParseCriteria::checkUniqueIDs()

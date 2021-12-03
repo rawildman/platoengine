@@ -90,6 +90,10 @@ struct ValidCriterionParameterKeys
         "blocks",
         "local_measure",
         "spatial_weighting_function",
+        "location_name",
+        "location_type",
+        "displacement_direction",
+        "measure_magnitude",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -225,7 +229,8 @@ private:
         "maximize_fluid_thermal_flux",
         "modal_matching",
         "modal_projection_error",
-        "mass_properties"
+        "mass_properties",
+        "displacement"
     };
 
 public:
@@ -1312,7 +1317,8 @@ struct ValidAnalyzeCriteriaKeys
         { "flow_rate", { "Flow Rate", false } },
         { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
         { "fluid_thermal_compliance", { "Thermal Compliance", false } },
-        { "mass_properties", { "Mass Properties", false } }
+        { "mass_properties", { "Mass Properties", false } },
+        { "displacement", { "Solution", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys

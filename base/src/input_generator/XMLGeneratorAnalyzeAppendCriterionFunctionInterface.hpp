@@ -156,6 +156,11 @@ private:
         mMap.insert(std::make_pair("mass_properties",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_mass_properties_criterion<CriterionType>, tFuncIndex)));
 
+        // displacement
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_displacement_criterion<CriterionType>));
+        mMap.insert(std::make_pair("displacement",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_displacement_criterion<CriterionType>, tFuncIndex)));
+
         // incompressible fluids
         XMLGen::Private::append_incompressible_fluids_scalar_functions<CriterionType>(mMap);
     }
