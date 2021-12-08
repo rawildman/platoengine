@@ -8,7 +8,7 @@ Plato is designed to enable collaborations with academia, national labs and indu
 # Getting Started
 
 ## Installation
-Plato uses [Spack](https://spack.io/) to facilitate and manage its installation. The Plato build instructions can be located in our [Wiki](https://github.com/platoengine/platoengine/wiki/Spack-Build-Instructions-develop).
+Plato uses [Spack](https://spack.io/) to facilitate and manage its installation. The Plato build instructions can be located in our [Wiki](https://github.com/platoengine/platoengine/wiki/Plato-App).
 
 ### Branches
 There are two main branches of this repository: 
