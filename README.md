@@ -11,7 +11,7 @@ Plato is design to enable collaborations with academia, national labs and indust
 Plato uses [Spack](https://spack.io/) to facilitate and manage its installation. The Plato build instructions can be located in our [Wiki](https://github.com/platoengine/platoengine/wiki/Spack-Build-Instructions-develop).
 
 ### Branches
-There are two main branches of this repository; stable and master. 
+There are two main branches of this repository: 
 * **release-v0.1.0** - Most recent stable release of Plato. It may not be up to date with the latest features but it will be more tested. 
 * **develop** - Constantly changing and may contain bugs. Checkout the develop branch if you are actively developing in Plato or want access to the latest and greatest features in Plato.
 
