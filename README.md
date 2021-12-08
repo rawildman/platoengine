@@ -3,7 +3,7 @@
 <p align="center"><img src="https://github.com/platoengine/platoengine/blob/develop/figures/plato_logo_simple.png" width="400"/></p>
 
 # Description
-Plato is design to enable collaborations with academia, national labs and industries by providing open-source tools for optimization-based design. Plato also provides interfaces to enable plug-n-play insertion of external modeling, analysis and optimization tools. Plato comes with a multi-physics finite element solver suited for optimization, algorithms for gradient-based and gradient-free optimization, and many other tools to enable an unique design experience. 
+Plato is designed to enable collaborations with academia, national labs and industries by providing open-source tools for optimization-based design. Plato also provides interfaces to enable plug-n-play insertion of external modeling, analysis and optimization tools. Plato comes with a multi-physics finite element solver suited for optimization, algorithms for gradient-based and gradient-free optimization, and many other tools to enable a unique design experience. 
 
 # Getting Started
 
