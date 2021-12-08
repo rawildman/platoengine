@@ -1028,6 +1028,32 @@ void write_plato_analyze_input_deck_file
 /**********************************************************************************/
 
 /**********************************************************************************/
+void append_fixed_block_names
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode)
+{
+    if( !aXMLMetaData.optimization_parameters().fixed_block_ids().empty() )
+    {
+        auto tFixedBlocks = aParentNode.append_child("ParameterList");
+        XMLGen::append_attributes({"name"}, {"Fixed Domains"}, tFixedBlocks);
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        
+        auto tFixedBlockIds = aXMLMetaData.optimization_parameters().fixed_block_ids();
+        for(auto& tBlock : aXMLMetaData.blocks)
+        {
+            auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
+            if(tItr != tFixedBlockIds.end())
+            {
+                auto tFixedDomain = tFixedBlocks.append_child("ParameterList");
+                XMLGen::append_attributes({"name"}, {tBlock.name}, tFixedDomain);                
+            }
+        }
+    }
+}
+// function append_fixed_block_names
+/**********************************************************************************/
+
+/**********************************************************************************/
 void write_plato_analyze_helmholtz_input_deck_file
 (const XMLGen::InputData& aXMLMetaData)
 {
@@ -1091,18 +1117,7 @@ void write_plato_analyze_helmholtz_input_deck_file
     }
 
     // fixed blocks
-    if( !aXMLMetaData.optimization_parameters().fixed_block_ids().empty() )
-    {
-        auto tFixedBlocks = tPlatoProblem.append_child("ParameterList");
-        XMLGen::append_attributes({"name"}, {"Fixed Domains"}, tFixedBlocks);
-        tKeys = {"name", "type", "value"};
-
-        for(auto& tID : aXMLMetaData.optimization_parameters().fixed_block_ids())
-        {
-            auto tFixedDomain = tFixedBlocks.append_child("ParameterList");
-            XMLGen::append_attributes({"name"}, {"block_" + tID}, tFixedDomain);
-        }
-    }
+    XMLGen::append_fixed_block_names(aXMLMetaData, tPlatoProblem);
 
     std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
