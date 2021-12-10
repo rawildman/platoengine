@@ -151,7 +151,7 @@ setup_union_set_parameters( const XMLGen::InputData &aInputData,
 
     if ( tUnionMaterialBlockStr.empty() || tUnionVoidBlockStr.empty() )
     {
-        throw ParsingException( "Empty string detected. Levelset discretization requires at least one block to be present in the input file" );
+        THROWERR( "Empty string detected. Levelset discretization requires at least one block to be present in the input file" );
     }
 
     // combine
