@@ -50,8 +50,8 @@ void append_incompressible_cfd_convergence_options(
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("output_frequency"));
     std::vector<std::string> tValues = {"Output Frequency", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
-    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("max_steady_state_iterations"));
-    tValues = {"Maximum Steady State Iterations", "int", tPropertyValue};
+    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_iterations"));
+    tValues = {"Steady State Iterations", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
     tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_tolerance"));
     tValues = {"Steady State Tolerance", "double", tPropertyValue};

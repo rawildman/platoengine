@@ -238,10 +238,42 @@ void append_incompressible_fluid_material_to_plato_problem(
     XMLGen::append_attributes({"name"}, {tMaterialName}, tMaterialModel);
 
     // material properties
+    XMLGen::Private::append_material_property("darcy_number", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("reynolds_number", aMaterial, tMaterialModel);
-    XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+
+    if( aMaterial.property("darcy_number").empty() )
+    {
+        XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+    }
 }
 // function append_incompressible_fluid_material_to_plato_problem
+
+void append_forced_convection_material_to_plato_problem(
+    const XMLGen::Material &aMaterial,
+    pugi::xml_node &aParentNode)
+{
+    auto tMaterialName = aMaterial.name();
+    auto tMaterialModel = aParentNode.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {tMaterialName}, tMaterialModel);
+
+    // scalar material properties
+    XMLGen::Private::append_material_property("darcy_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("prandtl_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("reynolds_number", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("thermal_diffusivity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("kinematic_viscocity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("thermal_conductivity", aMaterial, tMaterialModel);
+
+    if( aMaterial.property("darcy_number").empty() )
+    {
+        XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+    }
+    
+    XMLGen::Private::append_material_property("reference_temperature", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("characteristic_length", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("characteristic_velocity", aMaterial, tMaterialModel);
+}
+// function append_forced_convection_material_to_plato_problem
 
 void append_natural_convection_material_to_plato_problem(
     const XMLGen::Material &aMaterial,
@@ -251,10 +283,15 @@ void append_natural_convection_material_to_plato_problem(
     auto tMaterialModel = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {tMaterialName}, tMaterialModel);
 
-    // material properties
+    // scalar material properties
     XMLGen::Private::append_material_property("darcy_number", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("prandtl_number", aMaterial, tMaterialModel);
-    XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+    
+    if( aMaterial.property("darcy_number").empty() )
+    {
+        XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
+    }
+
     XMLGen::Private::append_material_property("thermal_diffusivity", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("kinematic_viscocity", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("thermal_conductivity", aMaterial, tMaterialModel);
@@ -266,6 +303,7 @@ void append_natural_convection_material_to_plato_problem(
     XMLGen::Private::append_material_property_array("rayleigh_number", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property_array("richardson_number", aMaterial, tMaterialModel);
 }
+// function append_natural_convection_material_to_plato_problem
 
 }
 // namespace Private
@@ -323,6 +361,11 @@ void AppendMaterialModelParameters::insert()
     mMap.insert(std::make_pair("incompressible_flow",
       std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_incompressible_fluid_material_to_plato_problem, tFuncIndex)));
     
+    // forced convection material model
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_forced_convection_material_to_plato_problem));
+    mMap.insert(std::make_pair("forced_convection",
+      std::make_pair((XMLGen::Analyze::MaterialModelFunc)XMLGen::Private::append_forced_convection_material_to_plato_problem, tFuncIndex)));
+
     // natural convection material model
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_natural_convection_material_to_plato_problem));
     mMap.insert(std::make_pair("natural_convection",

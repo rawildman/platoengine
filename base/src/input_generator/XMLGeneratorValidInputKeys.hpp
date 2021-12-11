@@ -593,6 +593,7 @@ private:
         "isotropic_linear_thermoelastic",
         "j2_plasticity",
         "thermoplasticity",
+        "forced_convection",
         "natural_convection",
         "incompressible_flow"};
 
@@ -1097,6 +1098,21 @@ private:
             }
         },
 
+        { "forced_convection",
+            {
+                { "darcy_number", { "Darcy Number", "double" } },
+                { "prandtl_number", { "Prandtl Number", "double" } },
+                { "reynolds_number", { "Reynolds Number", "double"} },
+                { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
+                { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
+                { "thermal_conductivity", { "Thermal Conductivity", "double"} },
+                { "impermeability_number", { "Impermeability Number", "double"} },
+                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "characteristic_length", { "Characteristic Length", "double" } },
+                { "characteristic_velocity", { "Characteristic Velocity", "double" } }
+            }
+        },
+
         { "natural_convection",
             {
                 { "impermeability_number", {"Impermeability Number", "double"} },
@@ -1117,7 +1133,7 @@ private:
             {
                 { "darcy_number", { "Darcy Number", "double" } }, 
                 { "reynolds_number", {"Reynolds Number", "double"} },
-                { "impermeability_number", {"Impermeability Number", "double"} },
+                { "impermeability_number", {"Impermeability Number", "double"} }
             }
         }
     };
