@@ -77,21 +77,21 @@ std::string return_surface_flux_load_name
 }
 // function return_surface_flux_load_name
 
-std::string return_uniform_source_load_name
+std::string return_uniform_thermal_source_load_name
 (const XMLGen::Load& aLoad)
 {
     std::string tOutput;
     if(aLoad.is_random())
     {
-        tOutput = std::string("Random Uniform Source with ID ") + aLoad.id();
+        tOutput = std::string("Random Uniform Thermal Source with ID ") + aLoad.id();
     }
     else
     {
-        tOutput = std::string("Uniform Source with ID ") + aLoad.id();
+        tOutput = std::string("Uniform Thermal Source with ID ") + aLoad.id();
     }
     return tOutput;
 }
-// function return_surface_flux_load_name
+// function return_uniform_thermal_source_load_name
 
 }
 // namespace Private
@@ -125,9 +125,9 @@ void LoadTag::insert()
       std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_surface_flux_load_name, tFuncIndex)));
 
     // uniform source
-    tFuncIndex = std::type_index(typeid(XMLGen::Private::return_uniform_source_load_name));
-    mMap.insert(std::make_pair("uniform_source",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_uniform_source_load_name, tFuncIndex)));
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::return_uniform_thermal_source_load_name));
+    mMap.insert(std::make_pair("uniform_thermal_source",
+      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_uniform_thermal_source_load_name, tFuncIndex)));
 }
 
 std::string LoadTag::call(const XMLGen::Load& aLoad) const

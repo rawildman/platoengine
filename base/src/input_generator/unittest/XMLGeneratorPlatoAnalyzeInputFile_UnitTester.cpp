@@ -35,7 +35,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tScenario.append("steady_state_iterations","500");
     tScenario.append("steady_state_tolerance","1e-5");
     tScenario.append("time_step_safety_factor","0.7");
-    tScenario.append("critical_time_step_damping","1e-2");
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
     tScenario.append("tolerance","1e-12");
@@ -1444,7 +1443,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tXMLMetaData.objective.scenarioIDs.push_back("1");
 
     XMLGen::Load tLoad1;
-    tLoad1.type("uniform_source");
+    tLoad1.type("uniform_thermal_source");
     tLoad1.id("1");
     tLoad1.location_name("block_1");
     std::vector<std::string> tValues = {"2.0"};
@@ -1452,7 +1451,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tXMLMetaData.loads.push_back(tLoad1);
 
     XMLGen::Load tLoad2;
-    tLoad2.type("uniform_source");
+    tLoad2.type("uniform_thermal_source");
     tLoad2.id("2");
     tLoad2.location_name("block_2");
     std::vector<std::string> tValues2 = {"4.0"};
@@ -2850,7 +2849,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Incompres
     XMLGen::Material tMaterial;
     tMaterial.code("plato_analyze");
     tMaterial.name("Water");
-    tMaterial.materialModel("incompressible_flow");
+    tMaterial.materialModel("laminar_flow");
     tMaterial.property("reynolds_number", "400");
     tMaterial.property("impermeability_number", "100");
     tXMLMetaData.materials.push_back(tMaterial);

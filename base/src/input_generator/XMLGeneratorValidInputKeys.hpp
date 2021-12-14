@@ -394,9 +394,9 @@ public:
 struct ValidLoadKeys
 {
     /*!<
-     * \brief Valid plato input deck essential boundary condition keywords.
+     * \brief Valid plato input deck load keywords.
      **/
-    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_source"};
+    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_thermal_source"};
 };
 
 // struct ValidEssentialBoundaryConditionsKeys
@@ -595,7 +595,7 @@ private:
         "thermoplasticity",
         "forced_convection",
         "natural_convection",
-        "incompressible_flow"};
+        "laminar_flow"};
 
 public:
     /******************************************************************************//**
@@ -958,7 +958,7 @@ struct ValidPhysicsLoadCombinations
         },
         {"steady_state_incompressible_fluids", 
             {
-                {"uniform_source", {"Thermal Sources"}},
+                {"uniform_thermal_source", {"Thermal Sources"}},
                 {"traction", {"Momentum Natural Boundary Conditions"}},
                 {"uniform_surface_flux", {"Thermal Natural Boundary Conditions"}}
             }
@@ -1129,7 +1129,7 @@ private:
             }
         },
 
-        { "incompressible_flow",
+        { "laminar_flow",
             {
                 { "darcy_number", { "Darcy Number", "double" } }, 
                 { "reynolds_number", {"Reynolds Number", "double"} },
