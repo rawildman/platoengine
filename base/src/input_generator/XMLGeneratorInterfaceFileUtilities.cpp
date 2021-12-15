@@ -1184,8 +1184,6 @@ void append_objective_gradient_operation
  pugi::xml_node &aParentNode)
 {
     XMLGen::Objective tObjective = aXMLMetaData.objective;
-    bool tMultiObjective = (tObjective.criteriaIDs.size() > 1 &&
-                            tObjective.multi_load_case != "true");
 
     if(tObjective.multi_load_case == "true")
     {
