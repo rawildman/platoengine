@@ -471,7 +471,17 @@ namespace XMLGen
             aInputData.mPerformerServices.push_back(aInputData.service(tServiceID));
             if (tShapeServiceID != "")
             {
-                aInputData.mPerformerServices.push_back(aInputData.service(tShapeServiceID));
+                bool tFound=false;
+                for(auto &tCurService : aInputData.mPerformerServices)
+                {
+                    if(tCurService.id() == tShapeServiceID)
+                    {
+                        tFound = true; 
+                        break;
+                    }
+                }
+                if(!tFound)
+                    aInputData.mPerformerServices.push_back(aInputData.service(tShapeServiceID));
             }
         }
     }

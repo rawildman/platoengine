@@ -203,6 +203,177 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage)
     PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Objective Gradient"}, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage_shape_multi_performer)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create services
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+    tService.id("3");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tService.id("4");
+    tService.code("plato_esp");
+    tMetaData.append(tService);
+
+    // Create a criterion
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("13");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "weighted_sum";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.serviceIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("13");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tObjective.shapeServiceIDs.push_back("4");
+    tObjective.shapeServiceIDs.push_back("4");
+    tMetaData.objective = tObjective;
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
+    tDocument.save_file("dummy.xml");
+
+    // STAGE INPUTS
+    auto tStage = tDocument.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    auto tName = tStage.child("Name");
+    ASSERT_STREQ("Compute Objective Gradient", tName.child_value());
+    auto tInput = tStage.child("Input");
+    ASSERT_STREQ("Input", tInput.name());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Design Parameters"}, tInput);
+    // Update Geometry on Change OPERATION
+    auto tOperation = tStage.child("Operation");
+    std::vector<std::string> tKeys = {"Name", "PerformerName", "Input"};
+    std::vector<std::string> tValues = {"Update Geometry on Change", "platomain_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOpInputs = tOperation.child("Input");
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "Design Parameters"}, tOpInputs);
+
+    // Nested Reinitialize on Change OPERATION
+    auto tOuterOperation = tOperation.next_sibling("Operation");
+    tOperation = tOuterOperation.child("Operation");
+    tKeys = {"Name", "PerformerName", "Input"};
+    tValues = {"Reinitialize on Change", "plato_analyze_2", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.child("Input");
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "Design Parameters"}, tOpInputs);
+    tOperation = tOperation.next_sibling("Operation");
+    tKeys = {"Name", "PerformerName", "Input"};
+    tValues = {"Reinitialize on Change", "plato_analyze_3", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.child("Input");
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "Design Parameters"}, tOpInputs);
+
+    // Nested Compute Objective Gradient operations
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    tOperation = tOuterOperation.child("Operation");
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"Compute Objective Gradient", "plato_analyze_2"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOperation = tOperation.next_sibling("Operation");
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"Compute Objective Gradient", "plato_analyze_3"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOperation = tOperation.next_sibling("For var=\"I\" in=\"Parameters\"");
+    tOperation = tOperation.child("Operation");
+    tKeys = {"Name", "PerformerName", "Parameter", "Input", "Output"};
+    tValues = {"Compute Parameter Sensitivity on Change", "plato_esp_{I}", "", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOperation = tOperation.child("Parameter");
+    tKeys = {"ArgumentName", "ArgumentValue"};
+    tValues = {"Parameter Index", "{I-1}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.next_sibling("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Parameters", "Design Parameters"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpInputs);
+    auto tOpOutputs = tOpInputs.next_sibling("Output");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Parameter Sensitivity", "Parameter Sensitivity {I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpOutputs);
+
+    // Nested Compute Objective Sensitivity operations
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    tOperation = tOuterOperation.child("Operation");
+    tKeys = {"Name", "PerformerName", "For", "Output"};
+    tValues = {"Compute Objective Sensitivity", "plato_analyze_2", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tFor = tOperation.child("For var=\"I\" in=\"Parameters\"");
+    tOpInputs = tFor.child("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpInputs);
+    tOpOutputs = tFor.next_sibling("Output");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Criterion Sensitivity", "Criterion Gradient - criterion_3_service_2_scenario_14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpOutputs);
+
+    tOperation = tOperation.next_sibling("Operation");
+    tKeys = {"Name", "PerformerName", "For", "Output"};
+    tValues = {"Compute Objective Sensitivity", "plato_analyze_3", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tFor = tOperation.child("For var=\"I\" in=\"Parameters\"");
+    tOpInputs = tFor.child("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpInputs);
+    tOpOutputs = tFor.next_sibling("Output");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Criterion Sensitivity", "Criterion Gradient - criterion_3_service_3_scenario_13"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpOutputs);
+
+    // Aggregate Data operation
+    tOperation = tOuterOperation.next_sibling("Operation");
+    tKeys = {"Name", "PerformerName", "Input", "Input", "Output"};
+    tValues = {"Aggregate Data", "platomain_1", "", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.child("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Value 1", "Criterion Gradient - criterion_3_service_2_scenario_14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpInputs);
+    tOpInputs = tOpInputs.next_sibling("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Value 2", "Criterion Gradient - criterion_3_service_3_scenario_13"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpInputs);
+    tOpOutputs = tOpInputs.next_sibling("Output");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Value", "Objective Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOpOutputs);
+
+    // STAGE OUTPUT
+    auto tOutput = tStage.child("Output");
+    ASSERT_STREQ("Output", tOutput.name());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Objective Gradient"}, tOutput);
+}
+
 TEST(PlatoTestXMLGenerator, AppendObjectiveValueStage)
 {
     XMLGen::InputData tMetaData;
@@ -2778,6 +2949,26 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
     auto tOutput = tStage.child("Output");
     ASSERT_STREQ("Output", tOutput.name());
     PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Objective Gradient"}, tOutput);
+}
+
+TEST(PlatoTestXMLGenerator, AppendInitializeGeometryOperation)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_initialize_geometry_operation(tMetaData, tDocument));
+    //tDocument.save_file("xml.txt", " ");
+
+    auto tOperation = tDocument.child("Operation");
+    std::vector<std::string> tKeys = {"Name", "PerformerName"};
+    std::vector<std::string> tValues = {"Initialize Geometry", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 }
 
 // TEST(PlatoTestXMLGenerator, TOLSCriteriaSharedData)
