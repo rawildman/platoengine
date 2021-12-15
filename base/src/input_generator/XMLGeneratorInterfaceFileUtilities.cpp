@@ -1183,25 +1183,15 @@ void append_objective_gradient_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node &aParentNode)
 {
-    pugi::xml_node tParentNode = aParentNode;
     XMLGen::Objective tObjective = aXMLMetaData.objective;
-
-    bool tMultiObjective = (tObjective.criteriaIDs.size() > 1 &&
-                            tObjective.multi_load_case != "true");
-
-    // If there is more than one sub-objective add an
-    // outer "Operation" block so the sub-objectives
-    // will be executed in parallel.
-    if(tMultiObjective)
-        tParentNode = aParentNode.append_child("Operation");
 
     if(tObjective.multi_load_case == "true")
     {
-        append_objective_gradient_operation_for_multi_load_case(aXMLMetaData, tParentNode);
+        append_objective_gradient_operation_for_multi_load_case(aXMLMetaData, aParentNode);
     }
     else
     {
-        append_objective_gradient_operation_for_non_multi_load_case(aXMLMetaData, tParentNode);
+        append_objective_gradient_operation_for_non_multi_load_case(aXMLMetaData, aParentNode);
     }
 }
 /******************************************************************************/
@@ -1299,7 +1289,19 @@ void append_objective_gradient_stage_for_topology_problem
     }
     else
     {
-        XMLGen::append_objective_gradient_operation(aXMLMetaData, tStageNode);
+        pugi::xml_node tParentNode = tStageNode;
+        XMLGen::Objective tObjective = aXMLMetaData.objective;
+
+        bool tMultiObjective = (tObjective.criteriaIDs.size() > 1 &&
+                                tObjective.multi_load_case != "true");
+
+        // If there is more than one sub-objective add an
+        // outer "Operation" block so the sub-objectives
+        // will be executed in parallel.
+        if(tMultiObjective)
+            tParentNode = tParentNode.append_child("Operation");
+
+        XMLGen::append_objective_gradient_operation(aXMLMetaData, tParentNode);
         if(aXMLMetaData.needToAggregate())
         {
             XMLGen::append_aggregate_objective_gradient_operation(aXMLMetaData, tStageNode);
@@ -2668,7 +2670,7 @@ void append_initialize_geometry_operation
 {
     std::string tFirstPlatoMainPerformer = aXMLMetaData.getFirstPlatoMainPerformer();
     auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"},{"Generate XTK Model", tFirstPlatoMainPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"},{"Initialize Geometry", tFirstPlatoMainPerformer}, tOperationNode);
 }
 // function append_initialize_geometry_operation
 /******************************************************************************/
