@@ -394,9 +394,9 @@ public:
 struct ValidLoadKeys
 {
     /*!<
-     * \brief Valid plato input deck essential boundary condition keywords.
+     * \brief Valid plato input deck load keywords.
      **/
-    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_source"};
+    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_thermal_source"};
 };
 
 // struct ValidEssentialBoundaryConditionsKeys
@@ -593,8 +593,9 @@ private:
         "isotropic_linear_thermoelastic",
         "j2_plasticity",
         "thermoplasticity",
-        "natural_buoyancy",
-        "incompressible_flow"};
+        "forced_convection",
+        "natural_convection",
+        "laminar_flow"};
 
 public:
     /******************************************************************************//**
@@ -957,7 +958,7 @@ struct ValidPhysicsLoadCombinations
         },
         {"steady_state_incompressible_fluids", 
             {
-                {"uniform_source", {"Thermal Sources"}},
+                {"uniform_thermal_source", {"Thermal Sources"}},
                 {"traction", {"Momentum Natural Boundary Conditions"}},
                 {"uniform_surface_flux", {"Thermal Natural Boundary Conditions"}}
             }
@@ -1097,9 +1098,25 @@ private:
             }
         },
 
-        { "natural_buoyancy",
+        { "forced_convection",
+            {
+                { "darcy_number", { "Darcy Number", "double" } },
+                { "prandtl_number", { "Prandtl Number", "double" } },
+                { "reynolds_number", { "Reynolds Number", "double"} },
+                { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
+                { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
+                { "thermal_conductivity", { "Thermal Conductivity", "double"} },
+                { "impermeability_number", { "Impermeability Number", "double"} },
+                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "characteristic_length", { "Characteristic Length", "double" } },
+                { "characteristic_velocity", { "Characteristic Velocity", "double" } }
+            }
+        },
+
+        { "natural_convection",
             {
                 { "impermeability_number", {"Impermeability Number", "double"} },
+                { "darcy_number", { "Darcy Number", "double" } }, 
                 { "prandtl_number", { "Prandtl Number", "double" } }, 
                 { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
                 { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
@@ -1108,15 +1125,15 @@ private:
                 { "grashof_number", { "Grashof Number", "Array(double)" } },
                 { "richardson_number", {"Richardson Number", "Array(double)"} },
                 { "rayleigh_number", {"Rayleigh Number", "Array(double)"} },
-                { "thermal_diffusivity_ratio", {"Thermal Diffusivity Ratio", "double"} },
                 { "thermal_conductivity", {"Thermal Conductivity", "double"} }
             }
         },
 
-        { "incompressible_flow",
+        { "laminar_flow",
             {
+                { "darcy_number", { "Darcy Number", "double" } }, 
                 { "reynolds_number", {"Reynolds Number", "double"} },
-                { "impermeability_number", {"Impermeability Number", "double"} },
+                { "impermeability_number", {"Impermeability Number", "double"} }
             }
         }
     };

@@ -50,8 +50,8 @@ void append_incompressible_cfd_convergence_options(
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("output_frequency"));
     std::vector<std::string> tValues = {"Output Frequency", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
-    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("max_steady_state_iterations"));
-    tValues = {"Maximum Steady State Iterations", "int", tPropertyValue};
+    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_iterations"));
+    tValues = {"Steady State Iterations", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
     tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_tolerance"));
     tValues = {"Steady State Tolerance", "double", tPropertyValue};
@@ -74,10 +74,6 @@ void append_incompressible_cfd_time_integration_options(
     
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("time_step_safety_factor"));
     std::vector<std::string> tValues = {"Safety Factor", "double", tPropertyValue};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tTimeIntegration);
-
-    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("critical_time_step_damping"));
-    tValues = {"Critical Time Step Damping", "double", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tTimeIntegration);
 }
 
@@ -135,8 +131,6 @@ void append_incompressible_cfd_conservation_equations_options(
         tValues = {"Source Term Penalty Exponent", "double", aScenario.value("thermal_source_penalty_exponent")};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
         tValues = {"Diffusive Term Penalty Exponent", "double", aScenario.value("thermal_diffusion_penalty_exponent")};
-        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
-        tValues = {"Convective Term Penalty Exponent", "double", aScenario.value("thermal_convection_penalty_exponent")};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
     }
 }

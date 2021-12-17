@@ -2064,7 +2064,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
         "  material 1\n"
         "end block\n"
         "begin material 1\n"
-        "  material_model incompressible_flow\n"
+        "  material_model laminar_flow\n"
         "  reynolds_number 100\n"
         "  impermeability_number 100\n"
         "end material\n"
@@ -2121,7 +2121,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
     tTester.generate(tXMLGenMetadata);
 
     auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_input_deck.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_pressure_criterion_id_2,my_mean_surface_pressure_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_pressure_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfacePressure\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_pressure_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfacePressure\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"none\"/></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"MaximumSteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"ReynoldsNumber\"type=\"double\"value=\"100\"/><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/><ParameterListname=\"PressureEssentialBoundaryConditions\"><ParameterListname=\"PressureBoundaryConditionwithID5appliedtoDofwithtagPRESS\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"outlet\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID3appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"inlet\"/><Parametername=\"Value\"type=\"double\"value=\"1.5\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID4appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"inlet\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_pressure_criterion_id_2,my_mean_surface_pressure_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_pressure_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfacePressure\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_pressure_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfacePressure\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"none\"/></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"SteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"ReynoldsNumber\"type=\"double\"value=\"100\"/><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/><ParameterListname=\"PressureEssentialBoundaryConditions\"><ParameterListname=\"PressureBoundaryConditionwithID5appliedtoDofwithtagPRESS\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"outlet\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID3appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"inlet\"/><Parametername=\"Value\"type=\"double\"value=\"1.5\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID4appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"inlet\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
@@ -2302,7 +2302,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "  material 1\n"
         "end block\n"
         "begin material 1\n"
-        "  material_model incompressible_flow\n"
+        "  material_model laminar_flow\n"
         "  reynolds_number 100\n"
         "  impermeability_number 100\n"
         "end material\n"
@@ -2452,7 +2452,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "  material 1\n"
         "end block\n"
         "begin material 1\n"
-        "  material_model incompressible_flow\n"
+        "  material_model laminar_flow\n"
         "  reynolds_number 100\n"
         "  impermeability_number 100\n"
         "end material\n"
@@ -2509,6 +2509,323 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
     // CALL GENERATE
     auto tXMLGenMetadata = tTester.getInputData();
     ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
+    auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
+    Plato::Utils::ignore_unused(tTrash);
+}
+
+TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
+{
+    // POSE INPUT DATA
+    std::istringstream tIss;
+    std::string tStringInput =
+        "begin service 1\n" 
+        "  code platomain\n"
+        "  number_processors 1\n"
+        "end service\n"
+        "begin service 2\n"
+        "  code plato_analyze\n"
+        "  number_processors 1\n"
+        "end service\n"
+        "begin criterion 1\n"
+        "  type composite\n"
+        "  criterion_ids 2 3\n"
+        "  criterion_weights 1.0 -1.0\n"
+        "end criterion\n"
+        "begin criterion 2\n"
+        "  type mean_surface_temperature\n"
+        "  location_names inlet\n"
+        "end criterion\n"
+        "begin criterion 3\n"
+        "  type mean_surface_temperature\n"
+        "  location_names outlet\n"
+        "end criterion\n"
+        "begin criterion 4\n"
+        "   type volume\n"
+        "end criterion\n"
+        "begin scenario 1\n"
+        "  physics steady_state_incompressible_fluids\n"
+        "  heat_transfer forced\n"
+        "  dimensions 2\n"
+        "  boundary_conditions 1 2 3 4\n"
+        "  material 1\n"
+        "end scenario\n"
+        "begin objective\n"
+        "  scenarios 1\n"
+        "  criteria 1\n"
+        "  services 2\n"
+        "  type weighted_sum\n"
+        "  weights 1\n"
+        "end objective\n"
+        "begin constraint 1\n"
+        "  criterion 4\n"
+        "  relative_target 0.25\n"
+        "  type less_than\n"
+        "  service 1\n"
+        "  scenario 1\n"
+        "end constraint\n"
+        "begin boundary_condition 1\n"
+        "  type zero_value\n"
+        "  location_type nodeset\n"
+        "  location_name no_slip\n"
+        "  degree_of_freedom velx\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 2\n"
+        "  type zero_value\n"
+        "  location_type nodeset\n"
+        "  location_name no_slip\n"
+        "  degree_of_freedom vely\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 3\n"
+        "  type fixed_value\n"
+        "  location_type nodeset\n"
+        "  location_name cold\n"
+        "  degree_of_freedom temp\n"
+        "  value 0\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 4\n"
+        "  type fixed_value\n"
+        "  location_type nodeset\n"
+        "  location_name hot\n"
+        "  degree_of_freedom temp\n"
+        "  value 1\n"
+        "end boundary_condition\n"
+        "begin block 1\n"
+        "  material 1\n"
+        "end block\n"
+        "begin material 1\n"
+        "  material_model forced_convection\n"
+        "  darcy_number 1e-5\n"
+        "  prandtl_number 0.7\n"
+        "  reynolds_number 100\n"
+        "  rayleigh_number 0 1e3\n"
+        "end material\n"
+        "begin optimization_parameters\n"
+        "  optimization_algorithm mma\n"
+        "  discretization density\n"
+        "  max_iterations 50\n"
+        "  filter_radius_scale 1.75\n"
+        "end optimization_parameters\n"
+        "begin mesh\n"
+        "  name bolted_bracket.exo\n"
+        "end mesh\n"
+        "begin paths\n"
+        "  code PlatoMain PlatoMain\n"
+        "  code plato_analyze analyze_MPMD\n"
+        "end paths\n";
+
+    // do parse
+    XMLGenerator_UnitTester tTester;
+    tIss.str(tStringInput);
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseObjective(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseConstraints(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseServices(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseCriteria(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseBCs(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    EXPECT_TRUE(tTester.publicParseBlocks(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    tTester.publicParseScenarios(tIss);
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseMaterials(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
+
+    // CALL GENERATE
+    auto tXMLGenMetadata = tTester.getInputData();
+    tTester.generate(tXMLGenMetadata);
+    
+    auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/>") 
+        + "<Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/>" 
+        + "<Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\">" 
+        + "<Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/>" 
+        + "<Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\">"
+        + "<Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/>"
+        + "<Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/>"
+        + "<Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList>"
+        + "<ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"forced\"/>"
+        + "<ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/>"
+        + "<Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList>"
+        + "<ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/>"
+        + "<Parametername=\"SteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\">"
+        + "<Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList>"
+        + "<ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/>"
+        + "<Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\">"
+        + "<Parametername=\"DarcyNumber\"type=\"double\"value=\"1e-5\"/><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ReynoldsNumber\"type=\"double\"value=\"100\"/>"
+        + "<Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/></ParameterList></ParameterList>"
+        + "<ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/>"
+        + "<ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/>"
+        + "<Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/>"
+        + "</ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/>"
+        + "<Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\">"
+        + "<ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/>"
+        + "<Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/>"
+        + "<Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>";
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+    auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
+    Plato::Utils::ignore_unused(tTrash);
+}
+
+TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumUndefined)
+{
+    // POSE INPUT DATA
+    std::istringstream tIss;
+    std::string tStringInput =
+        "begin service 1\n" 
+        "  code platomain\n"
+        "  number_processors 1\n"
+        "end service\n"
+        "begin service 2\n"
+        "  code plato_analyze\n"
+        "  number_processors 1\n"
+        "end service\n"
+        "begin criterion 1\n"
+        "  type composite\n"
+        "  criterion_ids 2 3\n"
+        "  criterion_weights 1.0 -1.0\n"
+        "end criterion\n"
+        "begin criterion 2\n"
+        "  type mean_surface_temperature\n"
+        "  location_names inlet\n"
+        "end criterion\n"
+        "begin criterion 3\n"
+        "  type mean_surface_temperature\n"
+        "  location_names outlet\n"
+        "end criterion\n"
+        "begin criterion 4\n"
+        "   type volume\n"
+        "end criterion\n"
+        "begin scenario 1\n"
+        "  physics steady_state_incompressible_fluids\n"
+        "  heat_transfer forced\n"
+        "  dimensions 2\n"
+        "  boundary_conditions 1 2 3 4\n"
+        "  material 1\n"
+        "end scenario\n"
+        "begin objective\n"
+        "  scenarios 1\n"
+        "  criteria 1\n"
+        "  services 2\n"
+        "  type weighted_sum\n"
+        "  weights 1\n"
+        "end objective\n"
+        "begin constraint 1\n"
+        "  criterion 4\n"
+        "  relative_target 0.25\n"
+        "  type less_than\n"
+        "  service 1\n"
+        "  scenario 1\n"
+        "end constraint\n"
+        "begin boundary_condition 1\n"
+        "  type zero_value\n"
+        "  location_type nodeset\n"
+        "  location_name no_slip\n"
+        "  degree_of_freedom velx\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 2\n"
+        "  type zero_value\n"
+        "  location_type nodeset\n"
+        "  location_name no_slip\n"
+        "  degree_of_freedom vely\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 3\n"
+        "  type fixed_value\n"
+        "  location_type nodeset\n"
+        "  location_name cold\n"
+        "  degree_of_freedom temp\n"
+        "  value 0\n"
+        "end boundary_condition\n"
+        "begin boundary_condition 4\n"
+        "  type fixed_value\n"
+        "  location_type nodeset\n"
+        "  location_name hot\n"
+        "  degree_of_freedom temp\n"
+        "  value 1\n"
+        "end boundary_condition\n"
+        "begin block 1\n"
+        "  material 1\n"
+        "end block\n"
+        "begin material 1\n"
+        "  material_model forced_convection\n"
+        "  impermeability_number 200\n"
+        "  prandtl_number 0.7\n"
+        "  reynolds_number 100\n"
+        "  rayleigh_number 0 1e3\n"
+        "end material\n"
+        "begin optimization_parameters\n"
+        "  optimization_algorithm mma\n"
+        "  discretization density\n"
+        "  max_iterations 50\n"
+        "  filter_radius_scale 1.75\n"
+        "end optimization_parameters\n"
+        "begin mesh\n"
+        "  name bolted_bracket.exo\n"
+        "end mesh\n"
+        "begin paths\n"
+        "  code PlatoMain PlatoMain\n"
+        "  code plato_analyze analyze_MPMD\n"
+        "end paths\n";
+
+    // do parse
+    XMLGenerator_UnitTester tTester;
+    tIss.str(tStringInput);
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseObjective(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseConstraints(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseServices(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseCriteria(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseBCs(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    EXPECT_TRUE(tTester.publicParseBlocks(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    tTester.publicParseScenarios(tIss);
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseMaterials(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));
+    tIss.clear();
+    tIss.seekg(0);
+    ASSERT_NO_THROW(tTester.publicParseMesh(tIss));
+
+    // CALL GENERATE
+    auto tXMLGenMetadata = tTester.getInputData();
+    tTester.generate(tXMLGenMetadata);
+    
+    auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"forced\"/><ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"SteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ReynoldsNumber\"type=\"double\"value=\"100\"/><Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"200\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/><ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
     Plato::Utils::ignore_unused(tTrash);
 }
@@ -2593,9 +2910,8 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
         "  material 1\n"
         "end block\n"
         "begin material 1\n"
-        "  material_model natural_buoyancy\n"
+        "  material_model natural_convection\n"
         "  prandtl_number 0.7\n"
-        "  thermal_diffusivity_ratio 0.5\n"
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
@@ -2648,10 +2964,10 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
 
     // CALL GENERATE
     auto tXMLGenMetadata = tTester.getInputData();
-    ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
+    tTester.generate(tXMLGenMetadata);
     
     auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_input_deck.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"natural\"/><ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"ConvectiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"MaximumSteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/><Parametername=\"ThermalDiffusivityRatio\"type=\"double\"value=\"0.5\"/><Parametername=\"RayleighNumber\"type=\"Array(double)\"value=\"{0,1e3}\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/><ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"natural\"/><ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"SteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/><Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/><Parametername=\"RayleighNumber\"type=\"Array(double)\"value=\"{0,1e3}\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"/><ParameterListname=\"ThermalSources\"/><ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
@@ -2745,9 +3061,8 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
         "  material 1\n"
         "end block\n"
         "begin material 1\n"
-        "  material_model natural_buoyancy\n"
+        "  material_model natural_convection\n"
         "  prandtl_number 0.7\n"
-        "  thermal_diffusivity_ratio 0.5\n"
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
@@ -2806,7 +3121,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
     ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
     
     auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_input_deck.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"natural\"/><ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"ConvectiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"MaximumSteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/><Parametername=\"ThermalDiffusivityRatio\"type=\"double\"value=\"0.5\"/><Parametername=\"RayleighNumber\"type=\"Array(double)\"value=\"{0,1e3}\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"><ParameterListname=\"UniformSurfaceFluxBoundaryConditionwithID1\"><Parametername=\"Type\"type=\"string\"value=\"Uniform\"/><Parametername=\"Value\"type=\"string\"value=\"-1\"/><Parametername=\"Sides\"type=\"string\"value=\"thermal_flux\"/></ParameterList></ParameterList><ParameterListname=\"ThermalSources\"/><ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"2\"/><Parametername=\"InputMesh\"type=\"string\"value=\"bolted_bracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"IncompressibleFluids\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"Hyperbolic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/><ParameterListname=\"Criteria\"><ParameterListname=\"MyObjective\"><Parametername=\"Type\"type=\"string\"value=\"WeightedSum\"/><Parametername=\"Functions\"type=\"Array(string)\"value=\"{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}\"/><Parametername=\"Weights\"type=\"Array(double)\"value=\"{1.0,-1.0}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_2\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{inlet}\"/></ParameterList><ParameterListname=\"my_mean_surface_temperature_criterion_id_3\"><Parametername=\"Type\"type=\"string\"value=\"ScalarFunction\"/><Parametername=\"ScalarFunctionType\"type=\"string\"value=\"MeanSurfaceTemperature\"/><Parametername=\"Sides\"type=\"Array(string)\"value=\"{outlet}\"/></ParameterList></ParameterList><ParameterListname=\"Hyperbolic\"><Parametername=\"Scenario\"type=\"string\"value=\"Density-BasedTopologyOptimization\"/><Parametername=\"HeatTransfer\"type=\"string\"value=\"natural\"/><ParameterListname=\"EnergyConservation\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"SourceTermPenaltyExponent\"type=\"double\"value=\"3\"/><Parametername=\"DiffusiveTermPenaltyExponent\"type=\"double\"value=\"3\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"TimeIntegration\"><Parametername=\"SafetyFactor\"type=\"double\"value=\"0.7\"/></ParameterList><ParameterListname=\"Convergence\"><Parametername=\"OutputFrequency\"type=\"int\"value=\"1\"/><Parametername=\"SteadyStateIterations\"type=\"int\"value=\"500\"/><Parametername=\"SteadyStateTolerance\"type=\"double\"value=\"1e-3\"/></ParameterList><ParameterListname=\"LinearSolver\"><Parametername=\"Iterations\"type=\"int\"value=\"25\"/><Parametername=\"Tolerance\"type=\"double\"value=\"1e-8\"/><Parametername=\"SolverStack\"type=\"string\"value=\"Amgx\"/></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"material_1\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"material_1\"><Parametername=\"PrandtlNumber\"type=\"double\"value=\"0.7\"/><Parametername=\"ImpermeabilityNumber\"type=\"double\"value=\"100\"/><Parametername=\"ThermalDiffusivity\"type=\"double\"value=\"2.1117e-5\"/><Parametername=\"KinematicViscocity\"type=\"double\"value=\"1.5111e-5\"/><Parametername=\"RayleighNumber\"type=\"Array(double)\"value=\"{0,1e3}\"/></ParameterList></ParameterList><ParameterListname=\"MomentumNaturalBoundaryConditions\"/><ParameterListname=\"ThermalNaturalBoundaryConditions\"><ParameterListname=\"UniformSurfaceFluxBoundaryConditionwithID1\"><Parametername=\"Type\"type=\"string\"value=\"Uniform\"/><Parametername=\"Value\"type=\"string\"value=\"-1\"/><Parametername=\"Sides\"type=\"string\"value=\"thermal_flux\"/></ParameterList></ParameterList><ParameterListname=\"ThermalSources\"/><ParameterListname=\"TemperatureEssentialBoundaryConditions\"><ParameterListname=\"TemperatureBoundaryConditionwithID3appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"cold\"/><Parametername=\"Value\"type=\"double\"value=\"0\"/></ParameterList><ParameterListname=\"TemperatureBoundaryConditionwithID4appliedtoDofwithtagTEMP\"><Parametername=\"Type\"type=\"string\"value=\"FixedValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"hot\"/><Parametername=\"Value\"type=\"double\"value=\"1\"/></ParameterList></ParameterList><ParameterListname=\"VelocityEssentialBoundaryConditions\"><ParameterListname=\"VelocityBoundaryConditionwithID1appliedtoDofwithtagVELX\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"0\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList><ParameterListname=\"VelocityBoundaryConditionwithID2appliedtoDofwithtagVELY\"><Parametername=\"Type\"type=\"string\"value=\"ZeroValue\"/><Parametername=\"Index\"type=\"int\"value=\"1\"/><Parametername=\"Sides\"type=\"string\"value=\"no_slip\"/></ParameterList></ParameterList></ParameterList></ParameterList>");
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
