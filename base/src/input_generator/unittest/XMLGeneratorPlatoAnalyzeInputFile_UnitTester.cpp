@@ -91,11 +91,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tValues = {"Safety Factor", "double", "0.7"};
     PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    ASSERT_FALSE(tParameter.empty());
-    ASSERT_STREQ("Parameter", tParameter.name());
-    tValues = {"Critical Time Step Damping", "double", "1e-2"};
-    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
-    tParameter = tParameter.next_sibling("Parameter");
     ASSERT_TRUE(tParameter.empty());
 
     // TEST CONVERGENCE BLOCK
@@ -1490,7 +1485,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     auto tSourceParamList = tParameterList.child("ParameterList");
     ASSERT_FALSE(tSourceParamList.empty());
     ASSERT_STREQ("ParameterList", tParameterList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Source with ID 1"}, tSourceParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 1"}, tSourceParamList);
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
@@ -1510,7 +1505,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tSourceParamList = tSourceParamList.next_sibling("ParameterList");
     ASSERT_FALSE(tSourceParamList.empty());
     ASSERT_STREQ("ParameterList", tParameterList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Source with ID 2"}, tSourceParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 2"}, tSourceParamList);
 
     tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "string", "4.0"}, {"Element Block", "string", "block_2"} };
     tGoldValuesItr = tGoldValues.begin();
