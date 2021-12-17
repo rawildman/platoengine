@@ -132,8 +132,6 @@ void append_incompressible_cfd_conservation_equations_options(
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
         tValues = {"Diffusive Term Penalty Exponent", "double", aScenario.value("thermal_diffusion_penalty_exponent")};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
-        tValues = {"Convective Term Penalty Exponent", "double", aScenario.value("thermal_convection_penalty_exponent")};
-        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
     }
 }
 
