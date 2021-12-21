@@ -38,7 +38,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
     tScenario.append("tolerance","1e-12");
-    tScenario.append("max_number_iterations","1000");
+    tScenario.append("linear_solver","epetra");
+    tScenario.append("linear_solver_iterations","1000");
     
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
@@ -134,7 +135,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_FALSE(tParameter.empty());
     ASSERT_STREQ("Parameter", tParameter.name());
-    tValues = {"Solver Stack", "string", "Amgx"};
+    tValues = {"Solver Stack", "string", "epetra"};
     PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_TRUE(tParameter.empty());

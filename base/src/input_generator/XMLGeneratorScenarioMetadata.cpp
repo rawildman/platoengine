@@ -210,12 +210,12 @@ std::string Scenario::solverConvergenceCriterion() const
 
 void Scenario::solverMaxNumIterations(const std::string& aInput)
 {
-    mMetaData["max_number_iterations"] = aInput;
+    mMetaData["linear_solver_iterations"] = aInput;
 }
 
 std::string Scenario::solverMaxNumIterations() const
 {
-    return (this->getValue("max_number_iterations"));
+    return (this->getValue("linear_solver_iterations"));
 }
 
 void Scenario::additiveContinuation(const std::string& aInput)
