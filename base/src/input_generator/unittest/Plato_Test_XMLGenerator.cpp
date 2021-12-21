@@ -2639,7 +2639,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
     tTester.publicParseScenarios(tIss);
     tIss.clear();
     tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseMaterials(tIss));
+    tTester.publicParseMaterials(tIss);
     tIss.clear();
     tIss.seekg(0);
     ASSERT_NO_THROW(tTester.publicParseOptimizationParameters(tIss));

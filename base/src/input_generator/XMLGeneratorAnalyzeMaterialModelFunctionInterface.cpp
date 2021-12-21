@@ -269,9 +269,8 @@ void  append_forced_convection_transport_to_plato_problem(
         XMLGen::Private::append_material_property("impermeability_number", aMaterial, tMaterialModel);
     }
     
-    XMLGen::Private::append_material_property("reference_temperature", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("characteristic_length", aMaterial, tMaterialModel);
-    XMLGen::Private::append_material_property("characteristic_velocity", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("temperature_difference", aMaterial, tMaterialModel);
 }
 // function  append_forced_convection_transport_to_plato_problem
 
@@ -295,8 +294,8 @@ void  append_natural_convection_transport_to_plato_problem(
     XMLGen::Private::append_material_property("thermal_diffusivity", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("kinematic_viscocity", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("thermal_conductivity", aMaterial, tMaterialModel);
-    XMLGen::Private::append_material_property("reference_temperature", aMaterial, tMaterialModel);
     XMLGen::Private::append_material_property("characteristic_length", aMaterial, tMaterialModel);
+    XMLGen::Private::append_material_property("temperature_difference", aMaterial, tMaterialModel);
 
     // material property arrays
     XMLGen::Private::append_material_property_array("grashof_number", aMaterial, tMaterialModel);
