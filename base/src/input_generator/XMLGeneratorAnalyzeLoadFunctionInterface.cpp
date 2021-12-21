@@ -95,10 +95,7 @@ void append_uniform_thermal_source_load_to_plato_problem
             + aLoad.location_name() +"'.")
     }
 
-    if (aLoad.is_random())
-        { tValues = {"Value", "double", aLoad.load_values()[0]}; }
-    else
-        { tValues = {"Value", "string", aLoad.load_values()[0]}; }
+    tValues = {"Value", "double", aLoad.load_values()[0]};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tUniformSource);
 
     tValues = {"Element Block", "string", aLoad.location_name()};

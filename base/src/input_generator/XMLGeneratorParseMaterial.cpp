@@ -94,7 +94,7 @@ void ParseMaterial::insertIncompressibleFluidFlowProperties()
     mTags.insert({ "reference_temperature", { { {"reference_temperature"}, ""}, "" } });
     mTags.insert({ "characteristic_length", { { {"characteristic_length"}, ""}, "" } });
     mTags.insert({ "impermeability_number", { { {"impermeability_number"}, ""}, "100" } });
-    mTags.insert({ "characteristic_velocity", { { {"characteristic_vrlocity"}, ""}, "" } });
+    mTags.insert({ "characteristic_velocity", { { {"characteristic_velocity"}, ""}, "" } });
     mTags.insert({ "thermal_diffusivity", { { {"thermal_diffusivity"}, ""}, "2.1117e-5" } });
     mTags.insert({ "kinematic_viscocity", { { {"kinematic_viscocity"}, ""}, "1.5111e-5" } });
 }
