@@ -1489,7 +1489,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
-        { {"Type", "string", "Uniform"}, {"Value", "string", "2.0"}, {"Element Block", "string", "block_1"} };
+        { {"Type", "string", "Uniform"}, {"Value", "double", "2.0"}, {"Element Block", "string", "block_1"} };
     auto tGoldValuesItr = tGoldValues.begin();
     auto tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -1507,7 +1507,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     ASSERT_STREQ("ParameterList", tParameterList.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 2"}, tSourceParamList);
 
-    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "string", "4.0"}, {"Element Block", "string", "block_2"} };
+    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "double", "4.0"}, {"Element Block", "string", "block_2"} };
     tGoldValuesItr = tGoldValues.begin();
     tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -2798,9 +2798,8 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_ForcedCon
     tMaterial.property("darcy_number", "1e-5");
     tMaterial.property("prandtl_number", "0.7");
     tMaterial.property("reynolds_number", "100");
-    tMaterial.property("reference_temperature", "10");
+    tMaterial.property("temperature_difference", "10");
     tMaterial.property("characteristic_length", "0.1");
-    tMaterial.property("characteristic_velocity", "1");
     tMaterial.property("thermal_conductivity", "1.0e-6");
     tMaterial.property("thermal_diffusivity", "2.1117e-5");
     tMaterial.property("kinematic_viscocity", "1.5111e-5");
@@ -2838,11 +2837,9 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_ForcedCon
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Conductivity", "double", "1.0e-6"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Reference Temperature", "double", "10"}, tParameter);
-    tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Characteristic Length", "double", "0.1"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Characteristic Velocity", "double", "1"}, tParameter);
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Temperature Difference", "double", "10"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_TRUE(tParameter.empty());
     // TEST WATER BLOCK END
@@ -2862,7 +2859,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalCo
     tMaterial.materialModel("natural_convection");
     tMaterial.property("darcy_number", "110");
     tMaterial.property("prandtl_number", "17");
-    tMaterial.property("reference_temperature", "10");
+    tMaterial.property("temperature_difference", "10");
     tMaterial.property("characteristic_length", "1");
     tMaterial.property("grashof_number", std::vector<std::string>{"10", "10"} );
     tMaterial.property("richardson_number", std::vector<std::string>{"20", "20"} );
@@ -2902,9 +2899,9 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalCo
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Conductivity", "double", "1.0e-6"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Reference Temperature", "double", "10"}, tParameter);
-    tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Characteristic Length", "double", "1"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Temperature Difference", "double", "10"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Grashof Number", "Array(double)", "{10,10}"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
