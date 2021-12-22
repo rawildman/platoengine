@@ -28,7 +28,7 @@ void append_linear_solver_options(const XMLGen::Scenario &aScenario, pugi::xml_n
     std::vector<std::string> tKeys = {"name", "type", "value"};
     std::vector<std::string> tValues = {"Iterations", "int", aScenario.value("linear_solver_iterations")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
-    tValues = {"Tolerance", "double", aScenario.value("tolerance")};
+    tValues = {"Tolerance", "double", aScenario.value("linear_solver_tolerance")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
     tValues = {"Solver Stack", "string", aScenario.value("linear_solver")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);

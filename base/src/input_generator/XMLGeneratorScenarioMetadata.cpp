@@ -180,12 +180,12 @@ std::string Scenario::newmarkGamma() const
 
 void Scenario::solverTolerance(const std::string& aInput)
 {
-    mMetaData["tolerance"] = aInput;
+    mMetaData["linear_solver_tolerance"] = aInput;
 }
 
 std::string Scenario::solverTolerance() const
 {
-    return (this->getValue("tolerance"));
+    return (this->getValue("linear_solver_tolerance"));
 }
 
 void Scenario::newtonSolverTolerance(const std::string& aInput)

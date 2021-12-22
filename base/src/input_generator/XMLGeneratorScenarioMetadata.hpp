@@ -276,14 +276,14 @@ public:
 
     /******************************************************************************//**
      * \fn solverTolerance
-     * \brief Set string value for keyword 'tolerance'.
+     * \brief Set string value for keyword 'linear_solver_tolerance'.
      * \param [in] aInput string value
     **********************************************************************************/
     void solverTolerance(const std::string& aInput);
 
     /******************************************************************************//**
      * \fn solverTolerance
-     * \brief Return string value for keyword 'tolerance'.
+     * \brief Return string value for keyword 'linear_solver_tolerance'.
      * \return value
     **********************************************************************************/
     std::string solverTolerance() const;
