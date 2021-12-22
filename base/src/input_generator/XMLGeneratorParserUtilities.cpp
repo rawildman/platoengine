@@ -197,6 +197,14 @@ bool parse_single_value_index
 }
 // function parse_single_value_index
 
+std::string to_upper(const std::string &aInput)
+{
+    std::string tOutput = aInput;
+    std::transform(tOutput.begin(), tOutput.end(), tOutput.begin(), ::toupper);
+    return tOutput;
+}
+// function to_upper
+
 std::string to_lower(const std::string &aInput)
 {
     std::string tOutput = aInput;

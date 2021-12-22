@@ -685,6 +685,11 @@ namespace XMLGen
         FILE *tFilePointer = fopen("amgx.json", "w");
         if (tFilePointer)
         {
+            std::string tAMGXSolverType = XMLGen::to_upper(aMetaData.optimization_parameters().amgx_solver_type());
+            std::string tAMGXMaxIterations = aMetaData.optimization_parameters().amgx_max_iterations();
+            std::string tAMGXPrintSolverStats = aMetaData.optimization_parameters().amgx_print_solver_stats() == "true" ? "1" : "0";
+            std::string tTolerance = aMetaData.optimization_parameters().amgx_solver_tolerance();
+
             fprintf(tFilePointer, "{\n");
             fprintf(tFilePointer, "\"config_version\": 2,\n");
             fprintf(tFilePointer, "\"solver\": {\n");
@@ -716,20 +721,13 @@ namespace XMLGen
             fprintf(tFilePointer, "\"postsweeps\": 1,\n");
             fprintf(tFilePointer, "\"cycle\": \"W\"\n");
             fprintf(tFilePointer, "},\n");
-            fprintf(tFilePointer, "\"solver\": \"PBICGSTAB\",\n");
-            fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+            fprintf(tFilePointer, "\"solver\": \"%s\",\n", tAMGXSolverType.c_str());
+            fprintf(tFilePointer, "\"print_solve_stats\": %s,\n", tAMGXPrintSolverStats.c_str());
             fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
-            fprintf(tFilePointer, "\"max_iters\": 1000,\n");
+            fprintf(tFilePointer, "\"max_iters\": %s,\n", tAMGXMaxIterations.c_str());
             fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
             fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
             fprintf(tFilePointer, "\"scope\": \"main\",\n");
-
-            std::string tTolerance = "1e-12";
-            std::string tScenarioID = aMetaData.objective.scenarioIDs[0];
-            auto &tScenario = aMetaData.scenario(tScenarioID);
-            if (tScenario.solverTolerance().length() > 0)
-                tTolerance = tScenario.solverTolerance();
-
             fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
             fprintf(tFilePointer, "\"norm\": \"L2\"\n");
             fprintf(tFilePointer, "}\n");

@@ -401,6 +401,10 @@ public:
     std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
     std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
+    std::string amgx_solver_tolerance() const {return value("amgx_solver_tolerance");}
+    std::string amgx_max_iterations() const {return value("amgx_max_iterations");}
+    std::string amgx_print_solver_stats() const {return value("amgx_print_solver_stats");}
+    std::string amgx_solver_type() const {return value("amgx_solver_type");}
 
 };
 // struct OptimizationParameters
