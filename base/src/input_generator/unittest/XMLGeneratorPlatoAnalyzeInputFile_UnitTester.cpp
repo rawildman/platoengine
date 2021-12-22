@@ -37,7 +37,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tScenario.append("time_step_safety_factor","0.7");
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
-    tScenario.append("tolerance","1e-12");
+    tScenario.append("linear_solver_tolerance","1e-12");
     tScenario.append("linear_solver","epetra");
     tScenario.append("linear_solver_iterations","1000");
     
