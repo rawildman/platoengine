@@ -87,11 +87,10 @@ struct ValidCriterionParameterKeys
         "relaxed_stress_ramp_factor",
         "conductivity_ratios",
         "location_names",
-        "blocks",
+        "location_types",
         "local_measure",
         "spatial_weighting_function",
         "location_name",
-        "location_type",
         "displacement_direction",
         "measure_magnitude",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */

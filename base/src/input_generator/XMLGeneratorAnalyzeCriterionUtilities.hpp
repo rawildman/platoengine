@@ -27,17 +27,17 @@ void append_block_list
     auto tLowerType = Plato::tolower(aCriterion.type());
     if( tLowerType == "volume" )
     {
-        auto tElemBlockList = aCriterion.values("blocks");
+        auto tElemBlockList = aCriterion.values("location_names");
         if( !tElemBlockList.empty() )
         {
             std::vector<std::string> tKeys = {"name", "type", "value"};
             auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
-            std::vector<std::string> tValues = {"Element Blocks", "Array(string)", tElemBlocksNames};
+            std::vector<std::string> tValues = {"Domains", "Array(string)", tElemBlocksNames};
             XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
         }
         else
         {
-            aCriterion.report("All the element blocks (i.e. full geometry) will be taken into consideration in the volume criterion evaluation.");
+            aCriterion.report("All the element blocks will be considered in the volume evaluation.");
         }
     }
 }
@@ -569,7 +569,7 @@ pugi::xml_node append_displacement_criterion
     std::vector<std::string> tDir = aCriterion.displacementDirection();
     tValues = {"Normal", "Array(double)", "{" + tDir[0] + "," + tDir[1] + "," + tDir[2] + "}"};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
-    tValues = {"Domain", "string", aCriterion.location_name()};
+    tValues = {"Domain", "string", aCriterion.location_names()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
     tValues = {"Magnitude", "bool", aCriterion.measure_magnitude()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);

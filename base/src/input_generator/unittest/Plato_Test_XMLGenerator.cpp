@@ -1590,7 +1590,7 @@ TEST(PlatoTestXMLGenerator, SROM_SolveSromProblem_ReadSampleProbPairsFromFile)
     ASSERT_NO_THROW(tTester.publicParseServices(iss));
     iss.clear();
     iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCriteria(iss));
+    tTester.publicParseCriteria(iss);
     iss.clear();
     iss.seekg(0);
     EXPECT_TRUE(tTester.publicParseLoads(iss));

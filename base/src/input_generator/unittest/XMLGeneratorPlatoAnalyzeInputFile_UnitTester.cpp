@@ -1490,7 +1490,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
-        { {"Type", "string", "Uniform"}, {"Value", "double", "2.0"}, {"Element Block", "string", "block_1"} };
+        { {"Type", "string", "Uniform"}, {"Value", "double", "2.0"}, {"Domains", "Array(string)", "{block_1}"} };
     auto tGoldValuesItr = tGoldValues.begin();
     auto tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -1508,7 +1508,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     ASSERT_STREQ("ParameterList", tParameterList.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 2"}, tSourceParamList);
 
-    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "double", "4.0"}, {"Element Block", "string", "block_2"} };
+    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "double", "4.0"}, {"Domains", "Array(string)", "{block_2}"} };
     tGoldValuesItr = tGoldValues.begin();
     tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -4016,7 +4016,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeCriteriaToCriteriaList_DefaultC
     XMLGen::Criterion tCriterion1;
     tCriterion1.type("volume");
     tCriterion1.id("1");
-    tCriterion1.append("blocks", "block_1");
+    tCriterion1.append("location_types", "element_block");
+    tCriterion1.append("location_names", "block_1");
     tCriterion1.append("material_penalty_exponent", "3.0");
     tXMLMetaData.append(tCriterion1);
 
@@ -4061,7 +4062,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeCriteriaToCriteriaList_DefaultC
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Element Blocks", "Array(string)", "{block_1}"};
+    tGoldValues = {"Domains", "Array(string)", "{block_1}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -4793,8 +4794,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForDisplacementCriterio
     tCriterion.id("3");
     tCriterion.displacementDirection({"-1.0", "0.0", "0.0"});
     tCriterion.append("measure_magnitude", "false");
-    tCriterion.append("location_type", "sideset");
-    tCriterion.append("location_name", "ss4");
+    tCriterion.append("location_types", "sideset");
+    tCriterion.append("location_names", "ss4");
 
     ASSERT_NO_THROW(XMLGen::Private::append_displacement_criterion(tCriterion, tDocument));
     tDocument.save_file("plato_analyze_input_deck.xml");
