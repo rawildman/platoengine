@@ -529,7 +529,8 @@ void append_physics_to_plato_analyze_input_deck
 /**********************************************************************************/
 void append_spatial_model_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode)
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz)
 {
     if(aXMLMetaData.blocks.empty())
     {
@@ -540,6 +541,7 @@ void append_spatial_model_to_plato_problem
     XMLGen::append_attributes({"name"}, {"Spatial Model"}, tSpatialModel);
     auto tDomains = tSpatialModel.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Domains"}, tDomains);
+    auto tFixedBlockIds = aXMLMetaData.optimization_parameters().fixed_block_ids();
     for(auto& tBlock : aXMLMetaData.blocks)
     {
         auto tCurDomain = tDomains.append_child("ParameterList");
@@ -571,6 +573,14 @@ void append_spatial_model_to_plato_problem
 
         tValues = {"Material Model", "string", tMaterial.name()};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
+
+        auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
+        if(tItr != tFixedBlockIds.end() && !aIsHelmholtz)
+        {
+            tValues = {"Fixed Control", "bool", "true"};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
+        }
+
     }
 }
 // function append_spatial_model_to_plato_problem
@@ -656,9 +666,10 @@ void append_material_models_to_plato_analyze_input_deck
 /**********************************************************************************/
 void append_spatial_model_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode)
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz)
 {
-    XMLGen::append_spatial_model_to_plato_problem(aXMLMetaData, aParentNode);
+    XMLGen::append_spatial_model_to_plato_problem(aXMLMetaData, aParentNode, aIsHelmholtz);
 }
 // function append_spatial_model_to_plato_analyze_input_deck
 /**********************************************************************************/
@@ -1028,32 +1039,6 @@ void write_plato_analyze_input_deck_file
 /**********************************************************************************/
 
 /**********************************************************************************/
-void append_fixed_block_names
-(const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode)
-{
-    if( !aXMLMetaData.optimization_parameters().fixed_block_ids().empty() )
-    {
-        auto tFixedBlocks = aParentNode.append_child("ParameterList");
-        XMLGen::append_attributes({"name"}, {"Fixed Domains"}, tFixedBlocks);
-        std::vector<std::string> tKeys = {"name", "type", "value"};
-        
-        auto tFixedBlockIds = aXMLMetaData.optimization_parameters().fixed_block_ids();
-        for(auto& tBlock : aXMLMetaData.blocks)
-        {
-            auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
-            if(tItr != tFixedBlockIds.end())
-            {
-                auto tFixedDomain = tFixedBlocks.append_child("ParameterList");
-                XMLGen::append_attributes({"name"}, {tBlock.name}, tFixedDomain);                
-            }
-        }
-    }
-}
-// function append_fixed_block_names
-/**********************************************************************************/
-
-/**********************************************************************************/
 void write_plato_analyze_helmholtz_input_deck_file
 (const XMLGen::InputData& aXMLMetaData)
 {
@@ -1077,13 +1062,11 @@ void write_plato_analyze_helmholtz_input_deck_file
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPlatoProblem);
 
     // spatial model
-    XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
+    bool tIsHelmholtz = true;
+    XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem, tIsHelmholtz);
 
     // assemblies
     XMLGen::append_assemblies_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
-
-    // parameters sublist
-    //
 
     // volume length scale parameter
     auto tParameters = tPlatoProblem.append_child("ParameterList");
@@ -1115,9 +1098,6 @@ void write_plato_analyze_helmholtz_input_deck_file
         tValues = {"Symmetry Plane Sides", "Array(string)", tNames};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
     }
-
-    // fixed blocks
-    XMLGen::append_fixed_block_names(aXMLMetaData, tPlatoProblem);
 
     std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
