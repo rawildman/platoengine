@@ -1359,9 +1359,7 @@ void append_objective_gradient_stage_for_topology_levelset_problem
     XMLGen::append_filter_control_operation(aXMLMetaData, tStageNode);
     XMLGen::append_enforce_bounds_operation(aXMLMetaData, tStageNode);
 
-    std::string tCriterionID = tObjective.criteriaIDs[0];
     std::string tServiceID = tObjective.serviceIDs[0];
-    std::string tScenarioID = tObjective.scenarioIDs[0];
     XMLGen::Service tService = aXMLMetaData.service(tServiceID);
 
     auto tOperationNode = tStageNode.append_child("Operation");
@@ -1396,8 +1394,8 @@ void append_objective_gradient_stage_for_topology_levelset_problem
         }
         else if(aXMLMetaData.optimization_parameters().filter_type() != "helmholtz" && !aXMLMetaData.needToAggregate())
         {
+            tServiceID = tObjective.serviceIDs[0];
             std::string tCriterionID = tObjective.criteriaIDs[0];
-            std::string tServiceID = tObjective.serviceIDs[0];
             std::string tScenarioID = tObjective.scenarioIDs[0];
             ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
             auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
