@@ -16,52 +16,35 @@ namespace XMLGen
 namespace Private
 {
 
+/******************************************************************************//**
+ * \fn append_block_list
+ * \tparam CriterionT criterion metadata type
+ * \brief Append criterion node to paren pugi xml node.
+ * \param [in] aCriterion  criterion metadata
+ * \param [in] aParentNode pugi::xml metadata 
+ * \return parent pugi xml node with criterion input information
+ **********************************************************************************/
 template<typename CriterionT>
-pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode);
+pugi::xml_node append_criterion_node(const CriterionT& aCriterion, pugi::xml_node& aParentNode);
 
-template<typename Criterion>
-void append_block_list
-(const Criterion& aCriterion,
- pugi::xml_node& aParentNode)
-{
-    auto tLowerType = Plato::tolower(aCriterion.type());
-    if( tLowerType == "volume" )
-    {
-        auto tElemBlockList = aCriterion.values("location_names");
-        if( !tElemBlockList.empty() )
-        {
-            std::vector<std::string> tKeys = {"name", "type", "value"};
-            auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
-            std::vector<std::string> tValues = {"Domains", "Array(string)", tElemBlocksNames};
-            XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
-        }
-        else
-        {
-            aCriterion.report("All the element blocks will be considered in the volume evaluation.");
-        }
-    }
-}
+/******************************************************************************//**
+ * \fn append_block_list
+ * \tparam CriterionT criterion metadata type
+ * \brief RAppend element block list to pugi xml node.
+ * \param [in]  aCriterion  criterion metadata
+ * \param [out] aParentNode pugi::xml metadata 
+ **********************************************************************************/
+template<typename CriterionT>
+void append_block_list(const CriterionT& aCriterion, pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
  * \fn is_criterion_supported_in_plato_analyze
- * \tparam Criterion criterion metadata
+ * \tparam CriterionT criterion metadata type
  * \brief Return Plato Analyze's criterion keyword if criterion is supported in Plato Analyze.
  * \param [in] aCriterion criterion metadata
  **********************************************************************************/
-template<typename Criterion>
-std::string is_criterion_supported_in_plato_analyze
-(const Criterion& aCriterion)
-{
-    XMLGen::ValidAnalyzeCriteriaKeys tValidKeys;
-    auto tLowerCriterion = Plato::tolower(aCriterion.type());
-    auto tItr = tValidKeys.mKeys.find(tLowerCriterion);
-    if (tItr == tValidKeys.mKeys.end())
-    {
-        THROWERR(std::string("Is Criterion Supported in Plato Analyze: Criterion '")
-            + tLowerCriterion + "' is not supported.")
-    }
-    return tItr->second.first;
-}
+template<typename CriterionT>
+std::string is_criterion_supported_in_plato_analyze(const CriterionT& aCriterion);
 
 /******************************************************************************//**
  * \fn is_criterion_linear
@@ -212,7 +195,7 @@ pugi::xml_node append_surface_scalar_function_criterion
  pugi::xml_node&   aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tCriterionNode = appendCriterionNode(aCriterion, aParentNode);
+    auto tCriterionNode = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -248,7 +231,7 @@ pugi::xml_node append_scalar_function_criterion
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
     auto tCriterionLinearFlag = XMLGen::Private::is_criterion_linear(aCriterion);
 
-    auto tScalarFunction = appendCriterionNode(aCriterion, aParentNode);
+    auto tScalarFunction = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -384,7 +367,7 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
  pugi::xml_node& aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+    auto tObjective = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -410,7 +393,7 @@ inline void append_stress_constraint_quadratic_criterion
  pugi::xml_node& aParentNode)
 {
     auto tDesignCriterionName = XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+    auto tObjective = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -462,7 +445,7 @@ pugi::xml_node append_volume_average_criterion
  pugi::xml_node& aParentNode)
 {
     XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+    auto tObjective = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -505,7 +488,7 @@ pugi::xml_node append_mass_properties_criterion
  pugi::xml_node& aParentNode)
 {
     XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+    auto tObjective = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -559,7 +542,7 @@ pugi::xml_node append_displacement_criterion
  pugi::xml_node& aParentNode)
 {
     XMLGen::Private::is_criterion_supported_in_plato_analyze(aCriterion);
-    auto tObjective = appendCriterionNode(aCriterion, aParentNode);
+    auto tObjective = append_criterion_node(aCriterion, aParentNode);
 
     std::vector<std::string> tKeys, tValues;
 
@@ -578,7 +561,7 @@ pugi::xml_node append_displacement_criterion
 }
 
 template<typename CriterionT>
-pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
+pugi::xml_node append_criterion_node(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
 {
     std::string tName = std::string("my_") + Plato::tolower(aCriterion.type()) + "_criterion_id_" + aCriterion.id();
     pugi::xml_node tCriterionNode = aParentNode.append_child("ParameterList");
@@ -586,6 +569,43 @@ pugi::xml_node appendCriterionNode(const CriterionT& aCriterion, pugi::xml_node&
     std::vector<std::string> tValues = {tName};
     XMLGen::append_attributes(tKeys, tValues, tCriterionNode);
     return tCriterionNode;
+}
+// function append_criterion_node
+
+template<typename CriterionT>
+void append_block_list(const CriterionT& aCriterion, pugi::xml_node& aParentNode)
+{
+    auto tLowerType = Plato::tolower(aCriterion.type());
+    if( tLowerType == "volume" )
+    {
+        auto tElemBlockList = aCriterion.values("location_names");
+        if( !tElemBlockList.empty() )
+        {
+            std::vector<std::string> tKeys = {"name", "type", "value"};
+            auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
+            std::vector<std::string> tValues = {"Domains", "Array(string)", tElemBlocksNames};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
+        }
+        else
+        {
+            aCriterion.report("All the element blocks will be considered in the volume evaluation.");
+        }
+    }
+}
+// function append_block_list
+
+template<typename CriterionT>
+std::string is_criterion_supported_in_plato_analyze(const CriterionT& aCriterion)
+{
+    XMLGen::ValidAnalyzeCriteriaKeys tValidKeys;
+    auto tLowerCriterion = Plato::tolower(aCriterion.type());
+    auto tItr = tValidKeys.mKeys.find(tLowerCriterion);
+    if (tItr == tValidKeys.mKeys.end())
+    {
+        THROWERR(std::string("Is Criterion Supported in Plato Analyze: Criterion '")
+            + tLowerCriterion + "' is not supported.")
+    }
+    return tItr->second.first;
 }
 
 }
