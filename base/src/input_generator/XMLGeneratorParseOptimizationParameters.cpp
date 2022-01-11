@@ -155,6 +155,10 @@ void ParseOptimizationParameters::allocate()
     mTags.insert({ "filter_type_kernel_generator_name", { { {"filter_type_kernel_generator_name"}, ""}, "kernel" } });
     mTags.insert({ "filter_type_kernel_then_heaviside_generator_name", { { {"filter_type_kernel_then_heaviside_generator_name"}, ""}, "kernel_then_heaviside" } });
     mTags.insert({ "filter_type_kernel_then_tanh_generator_name", { { {"filter_type_kernel_then_tanh_generator_name"}, ""}, "kernel_then_tanh" } });
+    mTags.insert({ "amgx_solver_type", { { {"amgx_solver_type"}, ""}, "pbicgstab" } });
+    mTags.insert({ "amgx_solver_tolerance", { { {"amgx_solver_tolerance"}, ""}, "1e-12" } });
+    mTags.insert({ "amgx_max_iterations", { { {"amgx_max_iterations"}, ""}, "1000" } });
+    mTags.insert({ "amgx_print_solver_stats", { { {"amgx_print_solver_stats"}, ""}, "false" } });
 }
 
 std::vector<XMLGen::OptimizationParameters> ParseOptimizationParameters::data() const 

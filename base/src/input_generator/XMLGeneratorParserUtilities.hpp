@@ -116,6 +116,14 @@ bool parse_single_value_index
 
 /******************************************************************************//**
  * \fn to_lower
+ * \brief Convert lowercase word to uppercase.
+ * \param [in]  aInput  lowercase keyword
+ * \return uppercase keyword
+**********************************************************************************/
+std::string to_upper(const std::string &aInput);
+
+/******************************************************************************//**
+ * \fn to_lower
  * \brief Convert uppercase word to lowercase.
  * \param [in]  aInput  uppercase keyword
  * \return lowercase keyword

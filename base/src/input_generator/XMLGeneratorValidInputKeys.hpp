@@ -1607,6 +1607,10 @@ struct ValidOptimizationParameterKeys
      "filter_type_kernel_generator_name",
      "filter_type_kernel_then_heaviside_generator_name",
      "filter_type_kernel_then_tanh_generator_name",
+     "amgx_solver_tolerance",
+     "amgx_max_iterations",
+     "amgx_solver_type",
+     "amgx_print_solver_stats",
      "reset_algorithm_on_update",
      "rol_subproblem_model",
      "rol_lin_more_cauchy_initial_step_size"
