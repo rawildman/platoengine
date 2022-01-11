@@ -680,15 +680,49 @@ namespace XMLGen
     /******************************************************************************/
 
     /******************************************************************************/
+    void get_amgx_params(const OptimizationParameters &aOptimizationParameters,
+                         std::string &aAMGXSolverType,
+                         std::string &aAMGXMaxIterations,
+                         std::string &aAMGXPrintSolverStats,
+                         std::string &aAMGXTolerance)
+    {
+        std::vector<std::string> tTags = aOptimizationParameters.tags();
+        aAMGXSolverType = "PBICGSTAB";
+        if(std::find(tTags.begin(), tTags.end(), "amgx_solver_type") != tTags.end())
+        {
+            aAMGXSolverType = XMLGen::to_upper(aOptimizationParameters.amgx_solver_type());
+        }
+        aAMGXMaxIterations = "1000";
+        if(std::find(tTags.begin(), tTags.end(), "amgx_max_iterations") != tTags.end())
+        {
+            aAMGXMaxIterations = aOptimizationParameters.amgx_max_iterations();
+        }
+        aAMGXPrintSolverStats = "0";
+        if(std::find(tTags.begin(), tTags.end(), "amgx_print_solver_stats") != tTags.end())
+        {
+            aAMGXPrintSolverStats = aOptimizationParameters.amgx_print_solver_stats() == "true" ? "1" : "0";
+        }
+        aAMGXTolerance = "1e-12";
+        if(std::find(tTags.begin(), tTags.end(), "amgx_solver_tolerance") != tTags.end())
+        {
+            aAMGXTolerance = aOptimizationParameters.amgx_solver_tolerance();
+        }
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
     void write_default_amgx_input_file(const XMLGen::InputData &aMetaData)
     {
         FILE *tFilePointer = fopen("amgx.json", "w");
         if (tFilePointer)
         {
-            std::string tAMGXSolverType = XMLGen::to_upper(aMetaData.optimization_parameters().amgx_solver_type());
-            std::string tAMGXMaxIterations = aMetaData.optimization_parameters().amgx_max_iterations();
-            std::string tAMGXPrintSolverStats = aMetaData.optimization_parameters().amgx_print_solver_stats() == "true" ? "1" : "0";
-            std::string tTolerance = aMetaData.optimization_parameters().amgx_solver_tolerance();
+            std::string tAMGXSolverType;
+            std::string tAMGXMaxIterations;
+            std::string tAMGXPrintSolverStats;
+            std::string tAMGXTolerance;
+
+            get_amgx_params(aMetaData.optimization_parameters(), tAMGXSolverType,
+                 tAMGXMaxIterations, tAMGXPrintSolverStats, tAMGXTolerance);
 
             fprintf(tFilePointer, "{\n");
             fprintf(tFilePointer, "\"config_version\": 2,\n");
@@ -728,7 +762,7 @@ namespace XMLGen
             fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
             fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
             fprintf(tFilePointer, "\"scope\": \"main\",\n");
-            fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
+            fprintf(tFilePointer, "\"tolerance\": %s,\n", tAMGXTolerance.c_str());
             fprintf(tFilePointer, "\"norm\": \"L2\"\n");
             fprintf(tFilePointer, "}\n");
             fprintf(tFilePointer, "}\n");
@@ -743,6 +777,14 @@ namespace XMLGen
         FILE *tFilePointer = fopen("amgx.json", "w");
         if (tFilePointer)
         {
+            std::string tAMGXSolverType;
+            std::string tAMGXMaxIterations;
+            std::string tAMGXPrintSolverStats;
+            std::string tAMGXTolerance;
+
+            get_amgx_params(aMetaData.optimization_parameters(), tAMGXSolverType,
+                 tAMGXMaxIterations, tAMGXPrintSolverStats, tAMGXTolerance);
+
             fprintf(tFilePointer, "{\n");
             fprintf(tFilePointer, "\"config_version\": 2,\n");
             fprintf(tFilePointer, "\"solver\": {\n");
@@ -777,20 +819,13 @@ namespace XMLGen
             fprintf(tFilePointer, "},\n");
             fprintf(tFilePointer, "\"solver\": \"FGMRES\",\n");
             fprintf(tFilePointer, "\"gmres_n_restart\": 1000,\n");
-            fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+            fprintf(tFilePointer, "\"print_solve_stats\": %s,\n", tAMGXPrintSolverStats.c_str());
             fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
-            fprintf(tFilePointer, "\"max_iters\": 1000,\n");
+            fprintf(tFilePointer, "\"max_iters\": %s,\n", tAMGXMaxIterations.c_str());
             fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
             fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
             fprintf(tFilePointer, "\"scope\": \"main\",\n");
-
-            std::string tTolerance = "1e-12";
-            std::string tScenarioID = aMetaData.objective.scenarioIDs[0];
-            auto &tScenario = aMetaData.scenario(tScenarioID);
-            if (tScenario.solverTolerance().length() > 0)
-                tTolerance = tScenario.solverTolerance();
-
-            fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
+            fprintf(tFilePointer, "\"tolerance\": %s,\n", tAMGXTolerance.c_str());
             fprintf(tFilePointer, "\"norm\": \"L2\"\n");
             fprintf(tFilePointer, "}\n");
             fprintf(tFilePointer, "}\n");
@@ -805,6 +840,14 @@ namespace XMLGen
         FILE *tFilePointer = fopen("amgx.json", "w");
         if (tFilePointer)
         {
+            std::string tAMGXSolverType;
+            std::string tAMGXMaxIterations;
+            std::string tAMGXPrintSolverStats;
+            std::string tAMGXTolerance;
+
+            get_amgx_params(aMetaData.optimization_parameters(), tAMGXSolverType,
+                 tAMGXMaxIterations, tAMGXPrintSolverStats, tAMGXTolerance);
+
             fprintf(tFilePointer, "{\n");
             fprintf(tFilePointer, "\"config_version\": 2,\n");
             fprintf(tFilePointer, "\"solver\": {\n");
@@ -839,20 +882,13 @@ namespace XMLGen
             fprintf(tFilePointer, "},\n");
             fprintf(tFilePointer, "\"solver\": \"FGMRES\",\n");
             fprintf(tFilePointer, "\"gmres_n_restart\": 1000,\n");
-            fprintf(tFilePointer, "\"print_solve_stats\": 0,\n");
+            fprintf(tFilePointer, "\"print_solve_stats\": %s,\n", tAMGXPrintSolverStats.c_str());
             fprintf(tFilePointer, "\"obtain_timings\": 0,\n");
-            fprintf(tFilePointer, "\"max_iters\": 1000,\n");
+            fprintf(tFilePointer, "\"max_iters\": %s,\n", tAMGXMaxIterations.c_str());
             fprintf(tFilePointer, "\"monitor_residual\": 1,\n");
             fprintf(tFilePointer, "\"convergence\": \"ABSOLUTE\",\n");
             fprintf(tFilePointer, "\"scope\": \"main\",\n");
-
-            std::string tTolerance = "1e-12";
-            std::string tScenarioID = aMetaData.objective.scenarioIDs[0];
-            auto &tScenario = aMetaData.scenario(tScenarioID);
-            if (tScenario.solverTolerance().length() > 0)
-                tTolerance = tScenario.solverTolerance();
-
-            fprintf(tFilePointer, "\"tolerance\": %s,\n", tTolerance.c_str());
+            fprintf(tFilePointer, "\"tolerance\": %s,\n", tAMGXTolerance.c_str());
             fprintf(tFilePointer, "\"norm\": \"L2\"\n");
             fprintf(tFilePointer, "}\n");
             fprintf(tFilePointer, "}\n");
