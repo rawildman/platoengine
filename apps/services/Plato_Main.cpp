@@ -200,7 +200,7 @@ void writeSplashScreen()
   splash << "#  @@@@@@@@@@@@@@#   @@@@@   &@@@@@@@@@@@@@@      @@@@@@@@   @@@@@@@@@@@@@@@*  #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
-  splash << "#  @@@@@   OPTIMIZATION BASED DESIGN                                           #" << std::endl;
+  splash << "#  @@@@@   OPTIMIZATION-BASED DESIGN                                           #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
   splash << "#  @@@@@   Questions? contact Plato3d-help@sandia.gov                          #" << std::endl;
   splash << "#                                                                              #" << std::endl;
