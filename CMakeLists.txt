@@ -62,6 +62,7 @@ if( ENABLE_ROL )
 endif()
 
 include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
+list(REMOVE_DUPLICATES Trilinos_TPL_LIBRARIES)
 
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
@@ -216,7 +217,7 @@ add_subdirectory(base/src/input_generator)
 add_subdirectory(base/src/operations)
 add_subdirectory(base/src/Su2ToExodus)
 add_subdirectory(base/src/MarkFaces)
-
+add_subdirectory(base/src/geometry/BamG)
 
 if( ENABLE_ISO )
   add_subdirectory(base/src/iso)

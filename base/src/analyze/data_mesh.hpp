@@ -78,6 +78,16 @@ public:
 
   virtual bool parseMesh(pugi::xml_node& mesh_spec) { return false; }
 
+  virtual bool
+  createMesh(
+    std::string aFormat,
+    std::string aFileName,
+    bool aIgnoreNodeMap,
+    bool aIgnoreElemMap
+  ) { return false; }
+
+  virtual void createBlocks(pugi::xml_node& meshspec){}
+
   virtual void Connect(int* node_gid_list, int block_index, int nlid_in_blk);
 
   virtual bool hasContactBlock(){return false; }
@@ -90,11 +100,11 @@ public:
   virtual void setNumNodes( int Nnp );      /*! sets total number of nodes (ghost + owned) on proc */
   virtual DataMeshType getMeshType() { return myMeshType; }
 
-  virtual bool registerNodeSet(int ids, int number_in_set);
+  virtual bool registerNodeSet(int ids, int number_in_set, string aName="");
   virtual int  getNumNodeSets() { int nns = nodeSets.size(); return nns; }
   virtual const vector<DMNodeSet>& getNodeSets() { return nodeSets; }
   virtual DMNodeSet* getNodeSet(int i) { return &nodeSets[i]; };
-  virtual bool registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set);
+  virtual bool registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set, string aName="");
   virtual vector<DMSideSet> getSideSets() { return sideSets; }
   virtual DMSideSet* getSideSet(int i) { return &sideSets[i]; };
   virtual int  getNumSideSets() { int nss = sideSets.size(); return nss; }
@@ -111,8 +121,10 @@ public:
   virtual int  getNumElemBlks() = 0;
   virtual int  getBlockId(int blk) = 0;     // given an index find the id
   virtual int  getBlockIndex(int blk) = 0;  // given an id find the index
+  virtual std::string getBlockName(int blk) = 0;  // given an index find the name
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk) = 0;  // given a block index find the local face graph
   virtual int* getElemToNodeConnInBlk(int blk) = 0;
-  virtual bool readNodePlot(Real*, string) = 0;
+  virtual bool readNodePlot(Real*, string, int time_step=-1) = 0;
   virtual void addElemBlk(Topological::Element*){ return; }
 
   virtual void setDimensions(int);
@@ -204,15 +216,27 @@ public:
 
   virtual bool parseMesh(pugi::xml_node& mesh_spec);
 
+  bool
+  createMesh(
+    std::string aFormat,
+    std::string aFileName,
+    bool aIgnoreNodeMap,
+    bool aIgnoreElemMap
+  );
+
+  void createBlocks(pugi::xml_node& meshspec) override;
+
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
   virtual const char*  getElemTypeInBlk(int blk);
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);
+  virtual std::string getBlockName(int blk);
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
   virtual int* getElemToNodeConnInBlk(int blk);
   virtual void addElemBlk(Topological::Element*);
-  virtual bool readNodePlot(Real*, string);
+  virtual bool readNodePlot(Real*, string, int time_step=-1) override;
 
 protected: //!data
 
@@ -241,8 +265,10 @@ public:
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);
+  virtual std::string getBlockName(int blk);
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
   virtual int* getElemToNodeConnInBlk(int blk);
-  virtual bool readNodePlot(Real*, string);
+  virtual bool readNodePlot(Real*, string, int time_step=-1) override;
 
 protected: //!data
 

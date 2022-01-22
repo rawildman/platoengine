@@ -17,6 +17,7 @@ bool built_MPI_Vector = false;
 
 Communicator::Communicator() : rootPID(0)
 {
+  mySize = 1;
   myIndices = NULL;
   end[0] = -1; begin[0] = -1;
   end[1] = -1; begin[1] = -1;

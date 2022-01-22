@@ -73,22 +73,6 @@ ExodusIO::ExodusIO() :
 ExodusIO::~ExodusIO() 
 {
    closeMeshIO();
-
-    if(myMesh->nodeGlobalIds)
-    {
-        delete[] myMesh->nodeGlobalIds;
-        myMesh->nodeGlobalIds = NULL;
-    }
-    if(myMesh->elemGlobalIds)
-    {
-        delete[] myMesh->elemGlobalIds;
-        myMesh->elemGlobalIds = NULL;
-    }
-    if(myMesh->nodeOwnership)
-    {
-        delete[] myMesh->nodeOwnership;
-        myMesh->nodeOwnership = NULL;
-    }
 }
 
 bool
@@ -181,6 +165,7 @@ ExodusIO::readHeader()
   int  Nel_hex8       = 0;
   int  Nel_hex20      = 0;
   int  Nel_tet4       = 0;
+  int  Nel_tet10      = 0;
   int  num_node_sets  = 0;
   int  num_side_sets  = 0;
   int  Neblock   = 0;
@@ -221,13 +206,23 @@ ExodusIO::readHeader()
     int *node_set_ids = new int[num_node_sets];
     err = ex_get_ids(myFileID, EX_NODE_SET, node_set_ids);
 
+    char** node_set_names = new char*[num_node_sets];
+    for(int i=0; i<num_node_sets; i++)
+       node_set_names[i] = new char[MAX_STR_LENGTH+1];
+
+    err = ex_get_names(myFileID, EX_NODE_SET, node_set_names);
+    if (err) {
+      pXcout << "ERROR: ex_get_names = " << err << endl;
+      return false;
+    }
+
     int num_nodes_in_set;
     int num_dist_in_set;
     for(int i=0; i<num_node_sets; i++) {
       err = ex_get_set_param(myFileID, EX_NODE_SET, node_set_ids[i], &num_nodes_in_set,
                                   &num_dist_in_set);
       // num_dist_in_set is not used - thrown away
-      myMesh->registerNodeSet(node_set_ids[i], num_nodes_in_set);
+      myMesh->registerNodeSet(node_set_ids[i], num_nodes_in_set, node_set_names[i]);
       DMNodeSet *nsi = myMesh->getNodeSet(i);
       if(nsi->numNodes){
         int* nodes;
@@ -238,11 +233,24 @@ ExodusIO::readHeader()
       }
     }
     delete [] node_set_ids;
+    for(int i=0; i<num_node_sets; i++)
+       delete [] node_set_names[i];
+    delete [] node_set_names;
   }
 
   if( num_side_sets > 0 ) {
     int *side_set_ids = new int[num_side_sets];
     err = ex_get_ids(myFileID, EX_SIDE_SET, side_set_ids);
+
+    char** side_set_names = new char*[num_side_sets];
+    for(int i=0; i<num_side_sets; i++)
+       side_set_names[i] = new char[MAX_STR_LENGTH+1];
+
+    err = ex_get_names(myFileID, EX_SIDE_SET, side_set_names);
+    if (err) {
+      pXcout << "ERROR: ex_get_names = " << err << endl;
+      return false;
+    }
 
     int num_side_in_set;
     int num_dist_in_set;
@@ -252,7 +260,7 @@ ExodusIO::readHeader()
                                   &num_dist_in_set);
       err = ex_get_side_set_node_list_len(myFileID, side_set_ids[i], &num_nodes_in_set);
       bool successful = myMesh->registerSideSet(side_set_ids[i], num_side_in_set, 
-                                                num_nodes_in_set);
+                                                num_nodes_in_set, side_set_names[i]);
       if(!successful){
         throw ParsingException("Fatal Error: Sideset registration failed");
       }
@@ -267,56 +275,21 @@ ExodusIO::readHeader()
                                         nodes_per_face, nodes);
 
         int nnpf  = nodes_per_face[0];
-        int *tmp = new int [nnpf];
-        int *node_map = NULL;
-        int *side_map = NULL;
 
-        if(nnpf == 4) { // hex 8 face
-          int hex8_node_map[4] = {0,1,2,3};
-          node_map = new int [4];
-          for(int j=0;j<4;j++) node_map[j] = hex8_node_map[j];
-          int hex8_side_map[6] = {2,1,3,0,4,5};
-          side_map = new int [6];
-          for(int j=0;j<6;j++) side_map[j] = hex8_side_map[j];
-        } else if(nnpf == 8) { // hex 20 face
-          int hex20_node_map[8] = {0,1,2,3,4,5,6,7};
-          node_map = new int [8];
-          for(int j=0;j<8;j++) node_map[j] = hex20_node_map[j];
-          int hex20_side_map[6] = {2,1,3,0,4,5};
-          side_map = new int [6];
-          for(int j=0;j<6;j++) side_map[j] = hex20_side_map[j];
-        } else if (nnpf == 2) { // quad 4 face
-          int quad4_node_map[2] = {0,1};
-          node_map = new int [2];
-          for(int j=0;j<2;j++) node_map[j] = quad4_node_map[j];
-          int quad4_side_map[4] = {2,1,3,0};  // JR: is this right??? internal face # is still goofy
-          side_map = new int [4];
-          for(int j=0;j<4;j++) side_map[j] = quad4_side_map[j];
-        }
-        if(node_map || side_map){
-          for(int iside=0; iside<num_side_in_set; iside++) {
-            sides[iside] = side_map[sides[iside]-1];
-            elems[iside] = elems[iside]-1;
-            for(int inode=0; inode<nnpf; inode++)
-              tmp[node_map[inode]] = nodes[iside*nnpf+inode]-1;
-            for(int inode=0; inode<nnpf; inode++)
-              nodes[iside*nnpf+inode] = tmp[inode];
-          }
-        } else {
           for(int iside=0; iside<num_side_in_set; iside++) {
             sides[iside] -= 1;
             elems[iside] -= 1;
             for(int inode=0; inode<nnpf; inode++)
               nodes[iside*nnpf+inode] -= 1;
           }
-        }
-        delete [] node_map;
-        delete [] side_map;
-        delete [] tmp;
+
         delete [] nodes_per_face;
       }
     }
     delete [] side_set_ids;
+    for(int i=0; i<num_side_sets; i++)
+       delete [] side_set_names[i];
+    delete [] side_set_names;
   }
  
   int *ids = new int[Neblock];
@@ -329,6 +302,16 @@ ExodusIO::readHeader()
   err = ex_get_ids(myFileID, EX_ELEM_BLOCK, ids);
   if (err) {
     pXcout << "ERROR: EX_get_elem_blk_ids = " << err << endl;
+    return false;
+  }
+
+  char** names = new char*[Neblock];
+  for(int i=0; i<Neblock; i++)
+     names[i] = new char[MAX_STR_LENGTH+1];
+
+  err = ex_get_names(myFileID, EX_ELEM_BLOCK, names);
+  if (err) {
+    pXcout << "ERROR: ex_get_names = " << err << endl;
     return false;
   }
 
@@ -347,79 +330,128 @@ ExodusIO::readHeader()
     if (!strncasecmp(elemtype, "NULL",   4)) {
       Topological::NullElement* eb = new Topological::NullElement( 0, 0 );
       eb->setBlockId(ids[i]); 
+      eb->setBlockName(names[i]);
       myMesh->addElemBlk(eb);
     } else if (!strncasecmp(elemtype, "BEAM",   4) ||
                !strncasecmp(elemtype, "BAR2",   4)) {
 //      if(Ndim == 1){
+        vector<vector<int>> tFaceGraph({{0},{1}});
         Topological::Beam* eb = new Topological::Beam( num_elem_in_block, num_attr );
         Nel_truss2+=num_elem_in_block;
         eb->setDataContainer( myData );
         eb->setBlockId(ids[i]);
+        eb->setBlockName(names[i]);
+        eb->setFaceGraph(tFaceGraph);
         eb->registerData();
         myMesh->addElemBlk(eb);
 //      }
     } else if (!strncasecmp(elemtype, "TRI",   3)) {
       if(Ndim == 2){
+        vector<vector<int>> tFaceGraph({{0,1},{1,2},{2,0}});
         Topological::Tri3* eb = new Topological::Tri3( num_elem_in_block, num_attr );
         Nel_tri3+=num_elem_in_block;
         eb->setDataContainer( myData );
         eb->setBlockId(ids[i]);
+        eb->setBlockName(names[i]);
+        eb->setFaceGraph(tFaceGraph);
         eb->registerData();
         myMesh->addElemBlk(eb);
       }
     } else if (!strncasecmp(elemtype, "QUAD4",  5)) {
+      vector<vector<int>> tFaceGraph({{0,1},{1,2},{2,3},{3,0}});
       Topological::Quad4* eb = new Topological::Quad4( num_elem_in_block, num_attr );
       Nel_quad4+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "QUAD8",  5)) {
+      vector<vector<int>> tFaceGraph({{0,1,4},{1,2,5},{2,3,6},{3,0,7}});
       Topological::Quad8* eb = new Topological::Quad8( num_elem_in_block, num_attr );
       Nel_quad4+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "QUAD", 4)) {
+      vector<vector<int>> tFaceGraph({{0,1},{1,2},{2,3},{3,0}});
       Topological::Quad4* eb = new Topological::Quad4( num_elem_in_block, num_attr );
       Nel_quad4+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "SHELL", 5)) {
       pXcout << "!!! Reading SHELL elements from exodus mesh file " << myName << "\n"
 	     << "!!! \tSHELL elements not supported." << endl;
       return false;
+
+    } else if (!strncasecmp(elemtype, "TETRA10",   7)) {
+      vector<vector<int>> tFaceGraph({{0,1,3,4,8,7},{1,2,3,5,9,8},{2,0,3,6,7,9},{0,2,1,6,5,4}});
+      Topological::Tet10* eb = new Topological::Tet10( num_elem_in_block, num_attr );
+      Nel_tet10+=num_elem_in_block;
+      eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setDataContainer( myData );
+      eb->setFaceGraph(tFaceGraph);
+      eb->registerData();
+      myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "TET",   3)) {
+      vector<vector<int>> tFaceGraph({{0,1,3},{1,2,3},{2,0,3},{0,2,1}});
       Topological::Tet4* eb = new Topological::Tet4( num_elem_in_block, num_attr );
       Nel_tet4+=num_elem_in_block;
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
       eb->setDataContainer( myData );
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
 
     } else if (!strncasecmp(elemtype, "HEX8",   4)) {
+      vector<vector<int>> tFaceGraph({{0,1,5,4},{1,2,6,5},{2,3,7,6},{3,0,4,7},{3,2,1,0},{4,5,6,7}});
       Topological::Hex8* eb = new Topological::Hex8( num_elem_in_block, num_attr );
       Nel_hex8+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]); 
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
 
     } else if (!strncasecmp(elemtype, "HEX20",   5)) {
+      vector<vector<int>> tFaceGraph({
+          {0,1,5,4, 8,13,16,12},
+          {1,2,6,5, 9,14,17,13},
+          {2,3,7,6,10,15,18,14},
+          {3,0,4,7,11,12,19,15},
+          {3,2,1,0,10, 9, 8,11},
+          {4,5,6,7,16,17,18,19}});
       Topological::Hex20* eb = new Topological::Hex20( num_elem_in_block, num_attr );
       Nel_hex20+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
     } else if (!strncasecmp(elemtype, "HEX",   3)) {
+      vector<vector<int>> tFaceGraph({{0,1,5,4},{1,2,6,5},{2,3,7,6},{3,0,4,7},{3,2,1,0},{4,5,6,7}});
       Topological::Hex8* eb = new Topological::Hex8( num_elem_in_block, num_attr );
       Nel_hex8+=num_elem_in_block;
       eb->setDataContainer( myData );
       eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
 
@@ -437,12 +469,16 @@ ExodusIO::readHeader()
 
   delete [] ids;
 
+  for(int i=0; i<Neblock; i++)
+     delete [] names[i];
+  delete [] names;
+
   bool filerr = false;
-  int Nel_tot = Nel_tet4 + Nel_truss2 + Nel_tri3 + Nel_quad4 + Nel_quad8 + 
+  int Nel_tot = Nel_tet4 + Nel_tet10 + Nel_truss2 + Nel_tri3 + Nel_quad4 + Nel_quad8 + 
                 Nel_hex8 + Nel_hex20;
   if (Nel_tot == 0 || Nel_tot != Nel) filerr = true;
   if ( (Nel_quad4 + Nel_quad8 + Nel_tri3 + Nel_truss2 > 0) &&
-       (Nel_hex8 + Nel_hex20 + Nel_tet4 == 0) && (Ndim == 3) ) filerr = true;
+       (Nel_hex8 + Nel_hex20 + Nel_tet4 + Nel_tet10 == 0) && (Ndim == 3) ) filerr = true;
   if (filerr) {
     pXcout << "\n\n\t!!!!! Error reading exodus file !!!!!" << endl;
     pXcout << "\t  Ndim       = " << Ndim << endl;;
@@ -567,16 +603,12 @@ ExodusIO::writeHeader()
                << endl;
       } else {
         if(num_side_in_set){
-          int side_map[6] = {4,2,1,3,5,6}; //weirdo-axsis to exodus numbering.
           int* elem_list; myData->getVariable(ss[i].ELEM_ID_LIST, elem_list);
           int* side_list; myData->getVariable(ss[i].FACE_ID_LIST, side_list);
           int* tmpelem = new int [num_side_in_set];
           int* tmpside = new int [num_side_in_set];
           for(int iside=0; iside<num_side_in_set; iside++) {
-            if(num_nodes_per_face == 4)
-              tmpside[iside] = side_map[side_list[iside]];
-            else
-              tmpside[iside] = side_list[iside] + 1;
+            tmpside[iside] = side_list[iside] + 1;
             tmpelem[iside] = elem_list[iside] + 1;
           }
           if( ex_put_set(myFileID, EX_SIDE_SET, side_set_id, tmpelem, tmpside)) {
@@ -714,20 +746,20 @@ ExodusIO::readConn()
 	loconn+=NNPE;
         ++global_element_count;
       }
-    } else if(!strncasecmp(elemtype, "HEX", 3)) {
-      const int NNPE = 8;
-      int* loconn = connect;
-      for( int k=0; k<num_elem_in_block[i]; ++k ) {
-        eb->connectNodes(k, global_element_count, loconn);
-        loconn+=NNPE;
-        ++global_element_count;
-      }
     } else if(!strncasecmp(elemtype, "HEX20", 20)) {
       const int NNPE = 20;
       int* loconn = connect;
       for( int k=0; k<num_elem_in_block[i]; ++k ) {
 	eb->connectNodes(k, global_element_count, loconn);
 	loconn+=NNPE;
+        ++global_element_count;
+      }
+    } else if(!strncasecmp(elemtype, "HEX", 3)) {
+      const int NNPE = 8;
+      int* loconn = connect;
+      for( int k=0; k<num_elem_in_block[i]; ++k ) {
+        eb->connectNodes(k, global_element_count, loconn);
+        loconn+=NNPE;
         ++global_element_count;
       }
     } else if (!strncasecmp(elemtype, "TRUSS",  5)) {
@@ -755,7 +787,17 @@ ExodusIO::readConn()
 	loconn+=NNPE;
         ++global_element_count;
       }
-    } else if (!strncasecmp(elemtype, "TETRA",  5)) {
+    } else if (!strncasecmp(elemtype, "TETRA10", 7) ||
+               !strncasecmp(elemtype, "TET10",  5) ) {
+      const int NNPE = 10;
+      int* loconn = connect;
+      for( int k=0; k<num_elem_in_block[i]; ++k ) {
+	eb->connectNodes(k, global_element_count, loconn);
+	loconn+=NNPE;
+        ++global_element_count;
+      }
+    } else if (!strncasecmp(elemtype, "TETRA", 5) ||
+               !strncasecmp(elemtype, "TET4",  4) ) {
       const int NNPE = 4;
       int* loconn = connect;
       for( int k=0; k<num_elem_in_block[i]; ++k ) {
@@ -936,72 +978,164 @@ ExodusIO::testFile(const char *file_name)
   return err;
 }
 
+/******************************************************************************//**
+* \brief Begin writing new time plane.
+* \param [in] aTimeStep Zero-based index into time steps array
+* \param [in] aTimeValue Time value.  Value must be greater than the previous time value.
+**********************************************************************************/
 bool 
-ExodusIO::writeTime(int time_step, Real time_value)
+ExodusIO::writeTime(int aTimeStep, Real aTimeValue)
 {
-  ex_put_time(myFileID, time_step, &time_value);
+  auto tOneBasedTimeStep = aTimeStep + 1;
+  ex_put_time(myFileID, tOneBasedTimeStep, &aTimeValue);
   return true;
 }
 
-bool
-ExodusIO::writeNodePlot(Real* data, int number, int time_step)
+/******************************************************************************//**
+* \brief Get the number of time steps stored in the exodus database
+**********************************************************************************/
+int
+ExodusIO::getNumSteps()
 {
-  int num_nodes = myMesh->getNumNodes();
-  ex_put_var(myFileID, time_step, EX_NODAL, number+1, 1, num_nodes, data);
+  return ex_inquire_int(myFileID, EX_INQ_TIME);
+}
+
+/******************************************************************************//**
+* \brief Get nodal variable names from the exodus database
+**********************************************************************************/
+std::vector<std::string>
+ExodusIO::getNodeVarNames()
+{
+  std::vector<std::string> tReturnNames;
+
+  int tNumNodeVars;
+  ex_get_variable_param(myFileID, EX_NODAL, &tNumNodeVars);
+
+  char** tNames = new char*[tNumNodeVars];
+  for(int i=0; i<tNumNodeVars; i++)
+    tNames[i] = new char[MAX_STR_LENGTH+1];
+
+  ex_get_variable_names(myFileID, EX_NODAL, tNumNodeVars, tNames);
+
+  for(int i=0; i<tNumNodeVars; i++)
+  {
+    std::string tVarName(tNames[i]);
+    tReturnNames.push_back(tVarName);
+    delete [] tNames[i];
+  }
+  delete [] tNames;
+
+  return tReturnNames;
+}
+
+/******************************************************************************//**
+* \brief Write node plot to exodus mesh
+* \param [in] aData pointer to node data of length numNodes
+* \param [in] aVariableIndex zero-based index into nodal variables array
+* \param [in] aStepIndex zero-based index into time step array
+**********************************************************************************/
+bool
+ExodusIO::writeNodePlot(Real* aData, int aVariableIndex, int aStepIndex)
+{
+  int tNumNodes = myMesh->getNumNodes();
+
+  // index arguments to this function are zero-based.  The exodus API is one-based:
+  auto tOneBasedVariableIndex = aVariableIndex+1;
+  auto tOneBasedStepIndex = aStepIndex+1;
+  ex_put_var(myFileID, tOneBasedStepIndex, EX_NODAL, tOneBasedVariableIndex, /*obj_id=*/1, tNumNodes, aData);
   ex_update(myFileID);
   return true;
 }
 
+/******************************************************************************//**
+* \brief Read node plot from exodus mesh
+* \param [out] aData Pointer to return data
+* \param [in] aVariableName Name of nodal variable to read
+* \param [in] aStepIndex zero-based index into time step array
+**********************************************************************************/
 bool
-ExodusIO::readNodePlot(double* data, string name)
+ExodusIO::readNodePlot(double* aData, string aVariableName, int aStepIndex)
 {
 
-  int num_time_steps;
-  float fdum;
-  char cdum;
-  ex_inquire(myFileID, EX_INQ_TIME, &num_time_steps, &fdum, &cdum);
+  int tNumTimeSteps;
+  float tDummyFloat;
+  char tDummyChar;
+  ex_inquire(myFileID, EX_INQ_TIME, &tNumTimeSteps, &tDummyFloat, &tDummyChar);
 
-  int num_node_vars;
-  ex_get_variable_param(myFileID, EX_NODAL, &num_node_vars);
+  int tReadTimeStep = -1;
+  int tOneBasedStepIndex = aStepIndex+1;
+  if( tOneBasedStepIndex == 0 ) {
+    tReadTimeStep = tNumTimeSteps;
+  } else {
+    if( tOneBasedStepIndex > tNumTimeSteps || tOneBasedStepIndex < 1 )
+    {
+      throw ParsingException("Fatal Error: Requested time step doesn't exist");
+    }
+    tReadTimeStep = tOneBasedStepIndex;
+  }
 
-  char** names = new char*[num_node_vars];
-  for(int i=0; i<num_node_vars; i++)
-     names[i] = new char[MAX_STR_LENGTH+1];
-  ex_get_variable_names(myFileID, EX_NODAL, num_node_vars, names);
+  int tNumNodeVars;
+  ex_get_variable_param(myFileID, EX_NODAL, &tNumNodeVars);
 
-  int varindex=-1;
-  for(int i=0; i<num_node_vars; i++)
-    if(!strncasecmp(names[i],name.c_str(),name.length())) {
-      varindex=i+1;
+  char** tNames = new char*[tNumNodeVars];
+  for(int i=0; i<tNumNodeVars; i++)
+     tNames[i] = new char[MAX_STR_LENGTH+1];
+  ex_get_variable_names(myFileID, EX_NODAL, tNumNodeVars, tNames);
+
+  int tOneBasedVarIndex=-1;
+  for(int i=0; i<tNumNodeVars; i++)
+    if(!strncasecmp(tNames[i],aVariableName.c_str(),aVariableName.length())) {
+      tOneBasedVarIndex=i+1;
       break;
     }
  
-  for(int i=0; i<num_node_vars; i++)
-     delete [] names[i];
-  delete [] names;
+  if (tOneBasedVarIndex < 1)
+  {
+      std::stringstream tMessage;
+      tMessage << "Fatal Error: Requested variable that doesn't exist" << std::endl;
+      tMessage << "Requested: " << aVariableName << std::endl;
+      tMessage << "Available: " << std::endl;
+      for(int iName=0; iName<tNumNodeVars; iName++)
+      {
+          tMessage << "  " << tNames[iName] << std::endl;
+      }
+      throw ParsingException(tMessage.str());
+  }
 
-  if (varindex < 0) return false;
+  for(int i=0; i<tNumNodeVars; i++)
+     delete [] tNames[i];
+  delete [] tNames;
 
-  int num_nodes = myMesh->getNumNodes();
-  ex_get_var(myFileID, num_time_steps, EX_NODAL, varindex, 1, num_nodes, data);
+  int tNumNodes = myMesh->getNumNodes();
+  ex_get_var(myFileID, tReadTimeStep, EX_NODAL, tOneBasedVarIndex, 1, tNumNodes, aData);
 
   return true;
 }
 
+/******************************************************************************//**
+* \brief Write element plot to exodus mesh
+* \param [in] aData pointer to element data of length numElements
+* \param [in] aVariableIndex zero-based index into element variables array
+* \param [in] aStepIndex zero-based index into time step array
+**********************************************************************************/
 bool
-ExodusIO::writeElemPlot(Real* data, int number, int time_step)
+ExodusIO::writeElemPlot(Real* aData, int aVariableIndex, int aStepIndex)
 {
-  int num_elem_blocks = myMesh->getNumElemBlks();
-  Real *offset_data = NULL;
-  int elem_count = 0;
-  for(int i=0; i<num_elem_blocks; i++) {
-    int num_elem_in_block = myMesh->getNumElemInBlk(i);
-    if(num_elem_in_block == 0) continue;
-    int ebid = myMesh->getBlockId(i);
-    offset_data = &data[elem_count];
-    ex_put_var(myFileID, time_step, EX_ELEM_BLOCK, number+1, ebid,
-                    num_elem_in_block, offset_data);
-    elem_count += num_elem_in_block; //assumes all blocks have same data
+  // index arguments to this function are zero-based.  The exodus API is one-based:
+  int tOneBasedVariableIndex = aVariableIndex+1;
+  int tOneBasedStepIndex = aStepIndex+1;
+
+  int tNumElemBlocks = myMesh->getNumElemBlks();
+  Real *tOffsetData = NULL;
+  int tElemCount = 0;
+  for(int iBlock=0; iBlock<tNumElemBlocks; iBlock++) {
+    int tNumElemInBlock = myMesh->getNumElemInBlk(iBlock);
+    if(tNumElemInBlock == 0) continue;
+    int tElemBlockID = myMesh->getBlockId(iBlock);
+    tOffsetData = &aData[tElemCount];
+    ex_put_var(myFileID, tOneBasedStepIndex, EX_ELEM_BLOCK, tOneBasedVariableIndex, tElemBlockID,
+                    tNumElemInBlock, tOffsetData);
+    tElemCount += tNumElemInBlock; //assumes all blocks have same data
   }
   ex_update(myFileID);
   return true;

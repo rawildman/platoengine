@@ -75,7 +75,7 @@ void LightMP::init()
   myMaterialContainer = nullptr;
 
   currentTime = 0.0;
-  plotIndex = 0;
+  mPlotIndex = 0;
   mWriteTimeStepDuringSetup = true;
 }
 
@@ -89,7 +89,7 @@ LightMP::LightMP() :
         myPlotVars(),
         appendOutput(),
         stepIndex(),
-        plotIndex(),
+        mPlotIndex(),
         currentTime(),
         timeStep(),
         termTime()
@@ -136,7 +136,7 @@ LightMP::LightMP(string inputfile) :
         myPlotVars(),
         appendOutput(),
         stepIndex(),
-        plotIndex(),
+        mPlotIndex(),
         currentTime(),
         timeStep(),
         termTime()
@@ -156,7 +156,7 @@ LightMP::LightMP(std::shared_ptr<pugi::xml_document> inputTree) :
         myPlotVars(),
         appendOutput(),
         stepIndex(),
-        plotIndex(),
+        mPlotIndex(),
         currentTime(),
         timeStep(),
         termTime()
@@ -345,7 +345,7 @@ bool LightMP::writePlotVars(MeshIO* io)
 #ifdef DEBUG_LOCATION
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
 #endif //DEBUG_LOCATION
-  io->writeTime(++plotIndex, currentTime);
+  io->writeTime(mPlotIndex, currentTime);
 
   // write data
   size_t num_plot = myPlotVars.size();
@@ -354,10 +354,12 @@ bool LightMP::writePlotVars(MeshIO* io)
     VarIndex vid = plotVar.varIndex;
     AbstractData* d = myDataContainer->getAbstractVariable(vid);
     if( d->getCentering() == NODE )
-      writeNodeData( io, d, plotVar, plotIndex );
+      writeNodeData( io, d, plotVar, mPlotIndex );
     else
-      writeElemData( io, d, plotVar, plotIndex );
+      writeElemData( io, d, plotVar, mPlotIndex );
   }
+
+  mPlotIndex++;
 
   return true;
 }

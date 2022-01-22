@@ -164,7 +164,7 @@ class LightMP{
 
     bool appendOutput;
     int stepIndex;
-    int plotIndex;
+    int mPlotIndex;
     Real currentTime;
     Real timeStep;
     Real termTime;

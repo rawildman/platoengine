@@ -120,7 +120,7 @@ DataMesh::~DataMesh()
 }
 
 bool
-DataMesh::registerNodeSet(int ids, int number_in_set)
+DataMesh::registerNodeSet(int ids, int number_in_set, string aName)
 {
 #ifdef VERBOSE_DEBUG_LOCATION
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
@@ -130,21 +130,30 @@ DataMesh::registerNodeSet(int ids, int number_in_set)
   ns.id = ids;
   ns.numNodes = number_in_set;
 
-  ostringstream fullname;
-  string name("Node_Set_");
-
-  fullname << name << ns.id;
+  string tName;
+  if(aName == "")
+  {
+    ostringstream fullname;
+    string name("Node_Set_");
+    fullname << name << ns.id;
+    tName = fullname.str();
+  }
+  else
+  {
+    tName = aName;
+  }
 
   if(ns.numNodes == 0){
     ns.NODE_LIST = -1;
   } else {
 
     ns.NODE_LIST = myData->registerVariable( IntType, 
-  					   fullname.str().c_str(),
+  					   tName.c_str(),
   					   NODE,
   					   ns.numNodes ); 
   }
 
+  ns.setName = tName;
   nodeSets.push_back(ns);
 
   return true;
@@ -152,7 +161,7 @@ DataMesh::registerNodeSet(int ids, int number_in_set)
 }
 
 bool
-DataMesh::registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set)
+DataMesh::registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set, string aName)
 {
 #ifdef VERBOSE_DEBUG_LOCATION
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
@@ -202,10 +211,20 @@ DataMesh::registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_
                                                   ss.numSides*ss.nodesPerFace);
     
   }
-  string name("Side_Set_");
-  ostringstream fullname;
-  fullname << name << ss.id;
-  ss.setName = fullname.str();  
+
+  string tName;
+  if(aName == "")
+  {
+    string name("Side_Set_");
+    ostringstream fullname;
+    fullname << name << ss.id;
+    tName = fullname.str();
+  }
+  else
+  {
+    tName = aName;
+  }
+  ss.setName = tName;
   sideSets.push_back(ss);
 
   return true;
@@ -698,7 +717,22 @@ int StrMesh::getBlockId(int blk)
 }
 
 //*********************************************************************
-bool StrMesh::readNodePlot(Real* data, string name)
+std::string StrMesh::getBlockName(int blk)
+//*********************************************************************
+{
+  throw ParsingException("This function isn't implemented.");
+  return std::string("oops");
+}
+
+//*********************************************************************
+std::vector<std::vector<int>> StrMesh::getFaceGraph(int blk)
+//*********************************************************************
+{
+  throw ParsingException("This function isn't implemented.");
+}
+
+//*********************************************************************
+bool StrMesh::readNodePlot(Real* data, string name, int time_step)
 //*********************************************************************
 {
     return false;
@@ -720,10 +754,10 @@ const char* StrMesh::getElemTypeInBlk(int blk)
 }
 
 //*********************************************************************
-bool UnsMesh::readNodePlot(Real* data, string name)
+bool UnsMesh::readNodePlot(Real* data, string name, int time_step)
 //*********************************************************************
 {
-    myMeshInput->readNodePlot(data, name);
+    myMeshInput->readNodePlot(data, name, time_step);
     return true;
 }
 
@@ -743,22 +777,45 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
   bool ignore_node_map = Plato::Parse::getBool(meshspec,"ignore_node_map");
   bool ignore_elem_map = Plato::Parse::getBool(meshspec,"ignore_element_map");
 
-  if( meshformat == "exodus") {
-    if( WorldComm.GetSize() == 1 ) {
+  string filename = Plato::Parse::getString(meshspec,"mesh");
+
+  createMesh(meshformat, filename, ignore_node_map, ignore_elem_map);
+
+  createBlocks(meshspec);
+  return true;
+}
+
+//*********************************************************************
+bool
+UnsMesh::createMesh(
+  std::string aFormat,
+  std::string aFileName,
+  bool aIgnoreNodeMap,
+  bool aIgnoreElemMap
+)
+// This routine parses mesh file name and news associated IO object.
+//*********************************************************************
+{
+#ifdef VERBOSE_DEBUG_LOCATION
+  _print_entering_location(__AXSIS_FUNCTION_NAMER__);
+#endif //VERBOSE_DEBUG_LOCATION
+
+  if( aFormat == "exodus") {
+    int tRankSize = WorldComm.GetSize();
+    if( tRankSize == 1 ) {
       myMeshInput = new ExodusIO();
     } else {
       myMeshInput = new NemesisIO();
     }
 
-    string filename = Plato::Parse::getString(meshspec,"mesh");
     ostringstream zeros;
     ostringstream buffer;
-    if( WorldComm.GetSize() == 1 ) {
-      buffer << filename;
-      filename = buffer.str();
+    if( tRankSize == 1 ) {
+      buffer << aFileName;
+      aFileName = buffer.str();
     } else {
       int my_pid = WorldComm.GetPID();
-      int my_sze = WorldComm.GetSize();
+      int my_sze = tRankSize;
       int div = 10;
       int quo = my_sze/div;
       int count = 0;
@@ -777,17 +834,17 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
       for(int i=0;i<count;i++)
         zeros << '0';
       buffer << "./";
-      buffer << filename;
+      buffer << aFileName;
       buffer << "." << my_sze << "." << zeros.str() << my_pid;
-      filename = buffer.str();
+      aFileName = buffer.str();
     }
-    myMeshInput->setName(filename.c_str());
-    myMeshInput->setIgnoreNodeMap(ignore_node_map);
-    myMeshInput->setIgnoreElemMap(ignore_elem_map);
+    myMeshInput->setName(aFileName.c_str());
+    myMeshInput->setIgnoreNodeMap(aIgnoreNodeMap);
+    myMeshInput->setIgnoreElemMap(aIgnoreElemMap);
     myMeshInput->setMode(MeshIO::READ);
   } else {
     stringstream msg;
-    msg << "Fatal Error: Unknown unstructured mesh format <" << meshformat
+    msg << "Fatal Error: Unknown unstructured mesh format <" << aFormat
         << "> requested...";
     throw ParsingException(msg.str());
   }
@@ -802,6 +859,17 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
   }
   myMeshInput->readMeshIO();
 
+  return true;
+}
+
+//*********************************************************************
+void
+UnsMesh::createBlocks(
+    pugi::xml_node& meshspec
+)
+// This routine creates the element blocks
+//*********************************************************************
+{
   // element blocks are created by the meshInput object, but not initialized 
   // with the integration scheme.  So...
   int nblocks = myElemBlk.size();
@@ -813,10 +881,8 @@ UnsMesh::parseMesh(pugi::xml_node& meshspec)
       intg = blockspec.child("integration");
     myElemBlk[ib]->setIntegrationMethod( intg );
   }
-  
-
-  return true;
 }
+  
 
 int  
 DataMesh::getNnpeInBlk(int blk)
@@ -843,6 +909,20 @@ UnsMesh::getBlockId(int blk)
   assert((size_t) blk < myElemBlk.size());
   int id = myElemBlk[blk]->getBlockId();
   return id;
+}
+
+std::string
+UnsMesh::getBlockName(int blk)
+{
+  assert((size_t) blk < myElemBlk.size());
+  return myElemBlk[blk]->getBlockName();
+}
+
+std::vector<std::vector<int>>
+UnsMesh::getFaceGraph(int blk)
+{
+  assert((size_t) blk < myElemBlk.size());
+  return myElemBlk[blk]->getFaceGraph();
 }
 
 int* 
