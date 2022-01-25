@@ -291,7 +291,8 @@ void append_physics_to_plato_analyze_input_deck
 **********************************************************************************/
 void append_spatial_model_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode);
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz = false);
 
 /******************************************************************************//**
  * \fn append_material_model_to_plato_problem
@@ -333,7 +334,8 @@ void append_material_models_to_plato_analyze_input_deck
 **********************************************************************************/
 void append_spatial_model_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode);
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz = false);
 
 /******************************************************************************//**
  * \fn append_material_model_to_plato_analyze_input_deck

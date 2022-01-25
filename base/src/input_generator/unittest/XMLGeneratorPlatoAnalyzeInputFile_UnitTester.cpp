@@ -2444,6 +2444,89 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksT
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 }
 
+TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksOneFixed)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Block tBlock1;
+    tBlock1.block_id = "1";
+    tBlock1.element_type = "tet4";
+    tBlock1.material_id = "1";
+    tBlock1.name = "block_1";
+
+    XMLGen::Block tBlock2;
+    tBlock2.block_id = "2";
+    tBlock2.element_type = "tet4";
+    tBlock2.material_id = "2";
+    tBlock2.name = "block_2";
+
+    tXMLMetaData.blocks.push_back(tBlock1);
+    tXMLMetaData.blocks.push_back(tBlock2);
+
+    XMLGen::Material tMaterial1;
+    tMaterial1.id("1");
+    tMaterial1.code("plato_analyze");
+    tMaterial1.name("adamantium");
+    tMaterial1.materialModel("isotropic_linear_elastic");
+    tMaterial1.property("youngs_modulus", "1e9");
+    tMaterial1.property("poissons_ratio", "0.3");
+
+    XMLGen::Material tMaterial2;
+    tMaterial2.id("2");
+    tMaterial2.code("plato_analyze");
+    tMaterial2.name("carbonadium");
+    tMaterial2.materialModel("isotropic_linear_elastic");
+    tMaterial2.property("youngs_modulus", "1e91");
+    tMaterial2.property("poissons_ratio", "0.29");
+
+    tXMLMetaData.materials.push_back(tMaterial1);
+    tXMLMetaData.materials.push_back(tMaterial2);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    std::vector<std::string> tFixedBlockIds;
+    tFixedBlockIds.push_back("2");
+    tOptimizationParameters.setFixedBlockIDs(tFixedBlockIds);
+    tXMLMetaData.set(tOptimizationParameters);
+
+    ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+
+    auto tSpatialModelList = tDocument.child("ParameterList");
+    ASSERT_FALSE(tSpatialModelList.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Spatial Model"}, tSpatialModelList);
+
+    auto tDomainList = tSpatialModelList.child("ParameterList");
+    ASSERT_FALSE(tDomainList.empty());
+    ASSERT_STREQ("ParameterList", tDomainList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Domains"}, tDomainList);
+
+    auto tSpatialModelParams1 = tDomainList.child("ParameterList");
+    ASSERT_FALSE(tSpatialModelParams1.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelParams1.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams1);
+
+    auto tElementBlock = tSpatialModelParams1.child("Element Block");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
+
+    auto tMaterialModel = tSpatialModelParams1.child("Material Model");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
+
+    auto tSpatialModelParams2 = tSpatialModelParams1.next_sibling();
+    ASSERT_FALSE(tSpatialModelParams2.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelParams2.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 2"}, tSpatialModelParams2);
+
+    tElementBlock = tSpatialModelParams2.child("Element Block");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_2"}, tElementBlock);
+
+    tMaterialModel = tSpatialModelParams2.child("Material Model");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
+
+    auto tFixedControl = tSpatialModelParams2.child("Fixed Control");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tMaterialModel);
+}
+
 TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_MaterialIsNotFromAnalyzePerformer)
 {
     pugi::xml_document tDocument;
@@ -2540,7 +2623,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tMaterialModelsList);
 
     auto tFirstMaterial = tMaterialModelsList.child("ParameterList");
-PlatoTestXMLGenerator::test_attributes({"name"}, {"adamantium"}, tFirstMaterial);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"adamantium"}, tFirstMaterial);
     auto tThermalConduction = tFirstMaterial.child("ParameterList");
     ASSERT_FALSE(tThermalConduction.empty());
     ASSERT_STREQ("ParameterList", tThermalConduction.name());
@@ -3296,7 +3379,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsToPlatoAnalyzeInputDeck_ErrorInvalidPhy
     tXMLMetaData.append(tScenario);
     ASSERT_THROW(XMLGen::append_physics_to_plato_analyze_input_deck(tXMLMetaData, tDocument), std::runtime_error);
 }
-
 
 TEST(PlatoTestXMLGenerator, AppendSelfAdjointParameterToPlatoProblem_ErrorInvalidCriterion)
 {
@@ -4749,8 +4831,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilterWithF
       + "<Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\">"
       + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList><ParameterListname=\"Block2\">"
       + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_2\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
-      + "<ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"0.923760\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList>"
-      + "<ParameterListname=\"FixedDomains\"><ParameterListname=\"block_2\"/></ParameterList></ParameterList></ParameterList>";
+      + "<ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"0.923760\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList></ParameterList></ParameterList>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
 }
