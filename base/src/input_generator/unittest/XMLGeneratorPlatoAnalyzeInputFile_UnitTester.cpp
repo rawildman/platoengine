@@ -38,8 +38,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
     tScenario.append("linear_solver_tolerance","1e-12");
-    tScenario.append("linear_solver","epetra");
-    tScenario.append("linear_solver_iterations","1000");
+    tScenario.append("linear_solver_type","epetra");
+    tScenario.append("linear_solver_max_iterations","1000");
     
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
