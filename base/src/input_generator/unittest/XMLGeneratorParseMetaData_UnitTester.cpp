@@ -1067,7 +1067,11 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithTimeAndSolverBlocks)
         ASSERT_STREQ("160", tScenario.value("max_number_time_steps").c_str());
         ASSERT_STREQ("1.2", tScenario.value("time_step_expansion_multiplier").c_str());
         ASSERT_STREQ("1e-10", tScenario.value("newton_solver_tolerance").c_str());
+<<<<<<< HEAD
         ASSERT_STREQ("20", tScenario.value("linear_solver_max_iterations").c_str());
+=======
+        ASSERT_STREQ("20", tScenario.value("linear_solver_iterations").c_str());
+>>>>>>> develop
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }
@@ -1113,8 +1117,13 @@ TEST(PlatoTestXMLGenerator, ParseScenario_DefaultMainValues)
         ASSERT_STREQ("1.25", tScenario.value("time_step_expansion_multiplier").c_str());
 
         ASSERT_STREQ("1e-8", tScenario.value("linear_solver_tolerance").c_str());
+<<<<<<< HEAD
         ASSERT_STREQ("amgx", tScenario.value("linear_solver_type").c_str());
         ASSERT_STREQ("1000", tScenario.value("linear_solver_max_iterations").c_str());
+=======
+        ASSERT_STREQ("amgx", tScenario.value("linear_solver").c_str());
+        ASSERT_STREQ("1000", tScenario.value("linear_solver_iterations").c_str());
+>>>>>>> develop
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }
