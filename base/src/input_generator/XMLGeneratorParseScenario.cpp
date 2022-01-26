@@ -118,9 +118,10 @@ void ParseScenario::allocate()
     mTags.insert({ "time_step_safety_factor", { { {"time_step_safety_factor"}, ""}, "0.7" } });
     mTags.insert({ "time_step_expansion_multiplier", { { {"time_step_expansion_multiplier"}, ""}, "1.25" } });
 
-    mTags.insert({ "tolerance", { { {"tolerance"}, ""}, "1e-8" } });
+    mTags.insert({ "linear_solver", { { {"linear_solver"}, ""}, "amgx" } });
+    mTags.insert({ "linear_solver_tolerance", { { {"linear_solver_tolerance"}, ""}, "1e-8" } });
     mTags.insert({ "newton_solver_tolerance", { { {"newton_solver_tolerance"}, ""}, "1e-8" } });
-    mTags.insert({ "max_number_iterations", { { {"max_number_iterations"}, ""}, "25" } });
+    mTags.insert({ "linear_solver_iterations", { { {"linear_solver_iterations"}, ""}, "1000" } });
     mTags.insert({ "convergence_criterion", { { {"convergence_criterion"}, ""}, "residual" } });
 
     mTags.insert({ "loads", { { {"loads"}, ""}, "" } });

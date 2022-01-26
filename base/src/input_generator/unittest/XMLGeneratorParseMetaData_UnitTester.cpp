@@ -465,8 +465,8 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement)
         "type displacement\n"
         "displacement_direction -1 0 0\n"
         "measure_magnitude false\n"
-        "location_type sideset\n"
-        "location_name ss4\n"
+        "location_types sideset\n"
+        "location_names ss4\n"
         "end criterion\n";
     std::istringstream tInputSS;
     tInputSS.str(tStringInput);
@@ -482,8 +482,8 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement)
     ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[1].c_str());
     ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[2].c_str());
     ASSERT_STREQ("false", tCriterionMetaData[0].value("measure_magnitude").c_str());
-    ASSERT_STREQ("sideset", tCriterionMetaData[0].value("location_type").c_str());
-    ASSERT_STREQ("ss4", tCriterionMetaData[0].value("location_name").c_str());
+    ASSERT_STREQ("sideset", tCriterionMetaData[0].value("location_types").c_str());
+    ASSERT_STREQ("ss4", tCriterionMetaData[0].value("location_names").c_str());
 }
 
 TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_displacement_direction)
@@ -1044,7 +1044,7 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithTimeAndSolverBlocks)
         "   end time\n"
         "   begin solver\n"
         "     newton_solver_tolerance 1e-10\n"
-        "     max_number_iterations 20\n"
+        "     linear_solver_iterations 20\n"
         "     convergence_criterion residual\n"
         "   end solver\n"
         "end scenario\n";
@@ -1067,7 +1067,7 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithTimeAndSolverBlocks)
         ASSERT_STREQ("160", tScenario.value("max_number_time_steps").c_str());
         ASSERT_STREQ("1.2", tScenario.value("time_step_expansion_multiplier").c_str());
         ASSERT_STREQ("1e-10", tScenario.value("newton_solver_tolerance").c_str());
-        ASSERT_STREQ("20", tScenario.value("max_number_iterations").c_str());
+        ASSERT_STREQ("20", tScenario.value("linear_solver_iterations").c_str());
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }
@@ -1112,8 +1112,9 @@ TEST(PlatoTestXMLGenerator, ParseScenario_DefaultMainValues)
         ASSERT_STREQ("160", tScenario.value("max_number_time_steps").c_str());
         ASSERT_STREQ("1.25", tScenario.value("time_step_expansion_multiplier").c_str());
 
-        ASSERT_STREQ("1e-8", tScenario.value("tolerance").c_str());
-        ASSERT_STREQ("25", tScenario.value("max_number_iterations").c_str());
+        ASSERT_STREQ("1e-8", tScenario.value("linear_solver_tolerance").c_str());
+        ASSERT_STREQ("amgx", tScenario.value("linear_solver").c_str());
+        ASSERT_STREQ("1000", tScenario.value("linear_solver_iterations").c_str());
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }
