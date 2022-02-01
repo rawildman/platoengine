@@ -670,6 +670,10 @@ void append_case
     {
         outfile << "  case = primary_compliance_secondary_volume" << std::endl;
     }
+    else if (aCriterion.type() == "volume_average_von_mises")
+    {
+        outfile << "  case = volume_average_von_mises" << std::endl;
+    }
     else if(isInverseMethodCase(aCriterion))
     {
         outfile << "  case = inverse_methods" << std::endl;
@@ -713,6 +717,10 @@ void append_normalization_parameter
         tNormalizeObjective = false;
     }
     if(aCriterion.type() == "stress_and_mass")
+    {
+        tNormalizeObjective = false;
+    }
+    if(aCriterion.type() == "volume_average_von_mises")
     {
         tNormalizeObjective = false;
     }
