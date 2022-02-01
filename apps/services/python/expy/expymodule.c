@@ -39,8 +39,9 @@
 // *************************************************************************
 //@HEADER
 */
-
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
 #include "exodusII.h"
 
 /*****************************************************************************/
@@ -114,11 +115,12 @@ static void string_array_from_list(PyObject* list, char** array) {
   int length = PyList_Size(list);
   for(i = 0; i < length; i++) {
     PyObject *v = PyList_GetItem(list,i);
-    if(!PyString_Check(v)) {
+    if(!PyUnicode_Check(v)) {
       PyErr_SetString(PyExc_TypeError, "list must contain only strings");
       return;
     }
-    array[i] = PyBytes_AsString(v);
+    PyObject *V = PyUnicode_AsEncodedString(v, "UTF-8", "strict");
+    array[i] = PyBytes_AsString(V);
   }
 }
 
@@ -1224,27 +1226,36 @@ static PyMethodDef expy_methods[] = {
   {NULL,NULL}/* sentinel */
 };
 
+static PyModuleDef expy_module = {
+    PyModuleDef_HEAD_INIT,
+    "expy",                  /* name of module */
+    "exodus python wrapper", /* module documentation, may be NULL */
+    -1,                      /* size of per-interpreter state of the module,
+                                or -1 if the module keeps state in global variables. */
+    expy_methods
+};
 
 /*****************************************************************************/
 // Required initialization function.  This is the only non-static item in the
 // module.  
 /*****************************************************************************/
 PyMODINIT_FUNC
-initexpy(void)
+PyInit_expy(void)
 {
-PyObject *m, *d;
+    PyObject *m;
 
-  /* Initialize the type of the new type object here; doing it here
-   * is required for portability to Windows without requiring C++. */
-  //Exo_Type.ob_type = &PyType_Type;
+    m = PyModule_Create(&expy_module);
 
-  /* Create the module and add the functions */
-  m = Py_InitModule("expy", expy_methods);
+    ExpyErrorObject = PyErr_NewException("expy.error", NULL, NULL);
+    Py_XINCREF(ExpyErrorObject);
+    if (PyModule_AddObject(m, "error", ExpyErrorObject) < 0) {
+        Py_XDECREF(ExpyErrorObject);
+        Py_CLEAR(ExpyErrorObject);
+        Py_DECREF(m);
+        return NULL;
+    }
 
-  /* Add some symbolic constants to the module */
-  d = PyModule_GetDict(m);
-  ExpyErrorObject = PyErr_NewException("expy.error", NULL, NULL);
-  PyDict_SetItemString(d, "error", ExpyErrorObject);
+    return m;
 }
 
 ex_entity_type get_enum_from_var_type(const char * var_type)
