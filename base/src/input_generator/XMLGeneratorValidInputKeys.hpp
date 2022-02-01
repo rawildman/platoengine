@@ -229,7 +229,8 @@ private:
         "modal_matching",
         "modal_projection_error",
         "mass_properties",
-        "displacement"
+        "displacement",
+        "volume_average_von_mises"
     };
 
 public:
