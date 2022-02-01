@@ -87,11 +87,10 @@ struct ValidCriterionParameterKeys
         "relaxed_stress_ramp_factor",
         "conductivity_ratios",
         "location_names",
-        "blocks",
+        "location_types",
         "local_measure",
         "spatial_weighting_function",
         "location_name",
-        "location_type",
         "displacement_direction",
         "measure_magnitude",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
@@ -1107,20 +1106,19 @@ private:
                 { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
                 { "thermal_conductivity", { "Thermal Conductivity", "double"} },
                 { "impermeability_number", { "Impermeability Number", "double"} },
-                { "reference_temperature", { "Reference Temperature", "double" } },
-                { "characteristic_length", { "Characteristic Length", "double" } },
-                { "characteristic_velocity", { "Characteristic Velocity", "double" } }
-            }
+                { "temperature_difference", { "Temperature Difference", "double" } },
+                { "characteristic_length", { "Characteristic Length", "double" } },            }
         },
 
         { "natural_convection",
+        
             {
                 { "impermeability_number", {"Impermeability Number", "double"} },
                 { "darcy_number", { "Darcy Number", "double" } }, 
                 { "prandtl_number", { "Prandtl Number", "double" } }, 
                 { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
                 { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
-                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "temperature_difference", { "Temperature Difference", "double" } },
                 { "characteristic_length", { "Characteristic Length", "double" } },
                 { "grashof_number", { "Grashof Number", "Array(double)" } },
                 { "richardson_number", {"Richardson Number", "Array(double)"} },
