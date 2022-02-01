@@ -1,7 +1,7 @@
 ###################################################################
 ## Python setup                                                  ##
 ###################################################################
-find_package(Python2 COMPONENTS Development Interpreter)
+find_package(Python3 COMPONENTS Development Interpreter)
 
 ###################################################################
 ## Exodus setup                                                  ##
@@ -34,8 +34,8 @@ add_library( expy SHARED ${library_SRCS} )
 set_target_properties( expy PROPERTIES PREFIX "" )
 
 #add libraries:
-target_link_libraries( expy ${Python2_LIBRARIES} ${EXODUS_LIB_PATH} )
-target_include_directories(expy PRIVATE ${Python2_INCLUDE_DIRS} )
+target_link_libraries( expy ${Python3_LIBRARIES} ${EXODUS_LIB_PATH} )
+target_include_directories(expy PRIVATE ${Python3_INCLUDE_DIRS} )
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS expy DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )

@@ -40,7 +40,9 @@
 //@HEADER
 */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
 #include <map>
 #include <vector>
 #include <string>
@@ -237,8 +239,11 @@ PlatoESP_finalize(PlatoESP* self)
     return Py_BuildValue("i", 1);
 }
 
-static PyMethodDef Plato_methods[] = {
-    {NULL}  /* Sentinel */
+static PyModuleDef Plato_module = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "PlatoESP Services",
+    .m_doc = "PlatoESP services module",
+    .m_size = -1,
 };
 
 static void
@@ -396,19 +401,30 @@ static PyTypeObject PlatoESPType = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initPythonPlatoESP(void) 
+PyInit_PythonPlatoESP(void) 
 {
     PyObject* m;
 
-    PlatoESPType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&PlatoESPType) < 0)
-        return;
+    {
+        return NULL;
+    }
 
-    m = Py_InitModule3("PythonPlatoESP", Plato_methods,
-                       "PlatoESP Python interface");
+    m = PyModule_Create(&Plato_module);
+    if (m == NULL)
+    {
+        return NULL;
+    }
 
     Py_INCREF(&PlatoESPType);
-    PyModule_AddObject(m, "PlatoESP", (PyObject *)&PlatoESPType);
+    if (PyModule_AddObject(m, "PlatoESP", (PyObject *)&PlatoESPType) < 0)
+    {
+        Py_DECREF(&PlatoESPType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    return m;
 }
 
 /*****************************************************************************/

@@ -182,12 +182,12 @@ class ExodusDB:
     if inputType == "id":
       if len(self.nodeMap) > 0:
         if self.nodeMap.count(node_id) == 0:
-          print "node id ", node_id, " not found"
+          print( "node id ", node_id, " not found")
           return 0
         else:
           node_index = self.nodeMap.index(node_id)
       else:
-        print "node map not found"
+        print( "node map not found")
     else:
       node_index = node_id
 
@@ -199,7 +199,7 @@ class ExodusDB:
   def Connectivity(self, elem_gid):
 
     if self.elemMap.count(elem_gid) == 0:
-      print "elem id ", elem_gid, " not found"
+      print( "elem id ", elem_gid, " not found")
       return 0
     else:
       elem_index = self.elemMap.index(elem_gid)
@@ -219,10 +219,10 @@ class ExodusDB:
   def getElemDataBE(self, time_step, var_name, block_id, elem_lid):
 
     if time_step >= len(self.varTimes):
-      print "time_step doesn't exist"
+      print( "time_step doesn't exist")
       return 0
     if self.elemVarNames.count(var_name) != 1:
-      print "Variable not found"
+      print( "Variable not found")
       return 0
     else:
       var_index = self.elemVarNames.index(var_name)
@@ -238,10 +238,10 @@ class ExodusDB:
   def getElemData(self, time_step, var_name, elem_gid=-1):
 
     if time_step >= len(self.varTimes):
-      print "time_step doesn't exist"
+      print( "time_step doesn't exist")
       return 0
     if self.elemVarNames.count(var_name) != 1:
-      print "Variable not found"
+      print( "Variable not found")
       return 0
     else:
       var_index = self.elemVarNames.index(var_name)
@@ -249,7 +249,7 @@ class ExodusDB:
     # find in the element map
     if elem_gid >= 0:
       if self.elemMap.count(elem_gid) == 0:
-        print "elem id ", elem_gid, " not found"
+        print( "elem id ", elem_gid, " not found")
         return 0
       else:
         elem_index = self.elemMap.index(elem_gid)
@@ -280,17 +280,17 @@ class ExodusDB:
       
   def getNodeData(self, time_step, var_name, node_id=-1):
     if time_step >= len(self.varTimes):
-      print "time_step doesn't exist"
+      print( "time_step doesn't exist")
       return 0
     if self.nodeVarNames.count(var_name) != 1:
-      print "Variable not found"
+      print( "Variable not found")
       return 0
     else:
       var_index = self.nodeVarNames.index(var_name)
       
     if node_id >= 0:
       if self.nodeMap.count(node_id) == 0:
-        print "node id ", node_id, " not found"
+        print( "node id ", node_id, " not found")
         return 0
       else:
         node_index = self.nodeMap.index(node_id)
