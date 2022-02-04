@@ -272,7 +272,7 @@ namespace XMLGen
     XMLGen::assert_is_positive_integer(num_opt_procs);
 
     // Now add the main mpirun call.
-    fprintf(fp, "%s --oversubscribe %s %s %s PLATO_PERFORMER_ID%s0 \\\n", tLaunchString.c_str(), 
+    fprintf(fp, "%s %s %s %s PLATO_PERFORMER_ID%s0 \\\n", tLaunchString.c_str(), 
                                 tNumProcsString.c_str(), num_opt_procs.c_str(),
                                 envString.c_str(),separationString.c_str());
     fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
@@ -306,6 +306,9 @@ namespace XMLGen
     else
     {
       aLaunchString = "mpiexec";
+#ifdef USING_OPEN_MPI
+      aLaunchString += " --oversubscribe";
+#endif
       aNumProcsString = "-np";
     }
   }
