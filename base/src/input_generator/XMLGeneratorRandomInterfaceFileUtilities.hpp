@@ -74,16 +74,6 @@ void append_multiperformer_topology_shared_data
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
- * \fn append_physics_performers_multiperformer_usecase
- * \brief Append physics performers information to PUGI XML document.
- * \param [in]     aXMLMetaData Plato problem input data
- * \param [in/out] aDocument    pugi::xml_document
-**********************************************************************************/
-void append_physics_performers_multiperformer_usecase
-(const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aNode);
-
-/******************************************************************************//**
  * \fn append_filter_criterion_gradient_samples_operation
  * \brief Append filter criterion gradient samples operation to PUGI XML document.
  * \param [in]     aCriterionName criterion, e.g. objective, constraint, name

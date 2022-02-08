@@ -21,6 +21,16 @@ const char* const DELIMITER = " \t";
 namespace XMLGen
 {
 
+std::string get_compound_scenario_id(const std::vector<std::string> &aScenarioIDs)
+{
+    std::string tReturn = "";
+    for(auto tScenarioID : aScenarioIDs)
+    {
+        tReturn += tScenarioID;
+    }
+    return tReturn;
+}
+
 std::string get_concretized_criterion_identifier_string(ConcretizedCriterion aConcretizedCriterion)
 {
     std::string tCriterionID = std::get<0>(aConcretizedCriterion);
@@ -197,6 +207,21 @@ bool parse_single_value_index
 }
 // function parse_single_value_index
 
+bool parse_target_keyword_index
+(const std::vector<std::string> &aTokens, 
+ const std::string &aTarget,
+ int &aIndex)
+{
+    auto tMyIter = std::find(aTokens.begin(),aTokens.end(),aTarget);
+    if( tMyIter != aTokens.end() )
+    {
+        aIndex = tMyIter - aTokens.begin();
+        return true;
+    }
+    return false;
+} 
+
+// function parse_target_keyword_index
 std::string to_upper(const std::string &aInput)
 {
     std::string tOutput = aInput;

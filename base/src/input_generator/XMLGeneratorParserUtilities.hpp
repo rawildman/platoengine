@@ -25,6 +25,14 @@ using MetaDataTags = std::unordered_map<std::string, std::pair<std::pair<std::ve
 using ConcretizedCriterion = std::tuple<std::string,std::string,std::string>;
 
 /******************************************************************************//**
+ * \fn get_compound_scenario_id
+ * \brief Build a compound scenario id from a list of ids
+ * \param [in] aScenarioIDs  List of ids to build compound id from
+ * \return compound scenatio id
+**********************************************************************************/
+std::string get_compound_scenario_id(const std::vector<std::string> &aScenarioIDs);
+
+/******************************************************************************//**
  * \fn get_concretized_criterion_identifier_string
  * \brief Returns the identifier for a concretized criterion.
  * \param [in] aConcretizedCriterion input concretized criterion 
@@ -112,6 +120,18 @@ bool parse_single_value
 bool parse_single_value_index
 (const std::vector<std::string> &aTokens,
  const std::vector<std::string> &aTargetTokens,
+ int &aIndex);
+
+/******************************************************************************//**
+ * \fn parse_target_keyword_index
+ * \brief Return index of keyword after target token.
+ * \param [in]  aTokens   input tokens
+ * \param [in]  aTarget   target keyword
+ * \param [out] aIndex     index of matching keyword
+**********************************************************************************/
+bool parse_target_keyword_index
+(const std::vector<std::string> &aTokens, 
+ const std::string &aTarget,
  int &aIndex);
 
 /******************************************************************************//**

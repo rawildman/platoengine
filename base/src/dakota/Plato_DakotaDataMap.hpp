@@ -273,6 +273,9 @@ private:
     **********************************************************************************/
     std::string parseMyOutputSharedDataName(Plato::InputData& aOutputNode) const;
 
+    void verifyStageTagsAreUnique(const std::string& aStageTag) const;
+    void verifyStageNamesAreUnique(const std::string& aStageName) const;
+
 private:
     // maps for dakota stages stage, input, and output data
     std::unordered_map< std::string, std::string > mMapFromStageTagToStageName; /*!< map from stage tag to stage names */

@@ -4,8 +4,8 @@ set( LIB_NAMES )
 set( LIB_NAME DakotaDriver )
 set( LIB_NAMES ${LIB_NAMES} ${LIB_NAME} )
 
-set( ${LIB_NAME}_SOURCES Plato_DakotaAppInterface.cpp Plato_DakotaDataMap.cpp)
-set( ${LIB_NAME}_HEADERS Plato_DakotaAppInterface.hpp Plato_DakotaDataMap.hpp Plato_DakotaDriver.hpp)
+set( ${LIB_NAME}_SOURCES Plato_DakotaAppInterface.cpp Plato_DakotaDataMap.cpp Plato_DakotaAppInterfaceUtilities.cpp)
+set( ${LIB_NAME}_HEADERS Plato_DakotaAppInterface.hpp Plato_DakotaDataMap.hpp Plato_DakotaDriver.hpp Plato_DakotaAppInterfaceUtilities.hpp)
 add_compile_definitions(${Dakota_DEFINES})
                         
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES} SYSTEM ${Dakota_INCLUDE_DIRS})

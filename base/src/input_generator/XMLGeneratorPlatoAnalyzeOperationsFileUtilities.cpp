@@ -6,9 +6,9 @@
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
-#include "XMLGeneratorPlatoAnalyzeProblem.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeUtilities.hpp"
+#include "XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp"
 #include "XMLGeneratorMaterialFunctionInterface.hpp"
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 
@@ -280,18 +280,92 @@ namespace XMLGen
     /******************************************************************************/
 
     /******************************************************************************/
-    void append_reinit_on_change_data(const XMLGen::InputData &aMetaData,
-                                      pugi::xml_document &aDocument)
+    void append_compute_criterion_value_operations_for_dakota_problem(const XMLGen::InputData &aMetaData,
+                                                                      pugi::xml_document &aDocument)
     {
-        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+        int tCriteriaCounter = 0;
+        XMLGen::append_compute_objective_criterion_value_operations_for_dakota_problem(aMetaData,aDocument,tCriteriaCounter);
+        XMLGen::append_compute_constraint_criterion_value_operations_for_dakota_problem(aMetaData,aDocument,tCriteriaCounter);
+
+    }
+
+    /******************************************************************************/
+    void append_compute_objective_criterion_value_operations_for_dakota_problem(const XMLGen::InputData &aMetaData,
+                                                                                pugi::xml_document &aDocument,
+                                                                                int& aCriterionNumber)
+    {
+        XMLGen::Objective tObjective = aMetaData.objective;
+        for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
+        {
+            std::string tCriterionID = tObjective.criteriaIDs[i];
+            std::string tServiceID = tObjective.serviceIDs[i];
+            std::string tScenarioID = tObjective.scenarioIDs[i];
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+
+            XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+            aCriterionNumber++;
+        }
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
+    void append_compute_criterion_value_operation_for_dakota_problem(const XMLGen::InputData &aMetaData,
+                                                                     pugi::xml_document &aDocument,
+                                                                     const std::string& aCriterionId,
+                                                                     const std::string& aIdentifierString,
+                                                                     int aCriterionNumber)
+    {
+        auto& tCriterion = aMetaData.criterion(aCriterionId);
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        auto tToken = std::string("my_") + tCriterionType + "_criterion_id_" + tCriterion.id();
+
+        auto tOperation = aDocument.append_child("Operation");
+        auto tOperationName = std::string("Compute Criterion Value - ") + aIdentifierString;
+        XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionValue", tOperationName, tToken}, tOperation);
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children({"Argument"}, {"Value"}, tOutput);
+        auto tArgumentName = std::string("Criterion ") + std::to_string(aCriterionNumber) + std::string(" Value");
+        XMLGen::append_children({"ArgumentName"}, {tArgumentName}, tOutput);
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
+    void append_compute_constraint_criterion_value_operations_for_dakota_problem(const XMLGen::InputData &aMetaData,
+                                                                                pugi::xml_document &aDocument,
+                                                                                int& aCriterionNumber)
+    {
+        for (auto &tConstraint : aMetaData.constraints)
+        {
+            std::string tCriterionID = tConstraint.criterion();
+            std::string tServiceID = tConstraint.service();
+            std::string tScenarioID = tConstraint.scenario();
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+
+            XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+            aCriterionNumber++;
+        }
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
+    void append_reinit_on_change_data(const XMLGen::InputData &aMetaData,
+                                      pugi::xml_document &aDocument,
+                                      const std::string &aName,
+                                      const std::string &aSharedData)
+    {
+        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE ||
+            aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
         {
             pugi::xml_node tmp_node = aDocument.append_child("Operation");
-            addChild(tmp_node, "Name", "Reinitialize on Change");
+            addChild(tmp_node, "Name", aName);
             addChild(tmp_node, "Function", "Reinitialize");
             addChild(tmp_node, "OnChange", "true");
             pugi::xml_node tmp_node1 = tmp_node.append_child("Input");
             addChild(tmp_node1, "ArgumentName", "Parameters");
-            addChild(tmp_node1, "SharedDataName", "Design Parameters");
+            if (!aSharedData.empty())
+                addChild(tmp_node1, "SharedDataName", aSharedData);
         }
     }
     /******************************************************************************/
@@ -628,7 +702,7 @@ namespace XMLGen
     {
         pugi::xml_document tDocument;
         XMLGen::append_include_defines_xml_data(aXMLMetaData, tDocument);
-        XMLGen::append_reinit_on_change_data(aXMLMetaData, tDocument);
+        XMLGen::append_reinit_on_change_data(aXMLMetaData, tDocument, "Reinitialize on Change", "Design Parameters");
         XMLGen::append_mesh_map_data(aXMLMetaData, tDocument);
         XMLGen::append_visualization_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_write_output_to_plato_analyze_operation(aXMLMetaData, tDocument);
@@ -637,6 +711,21 @@ namespace XMLGen
         XMLGen::append_compute_objective_gradient_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_compute_constraint_value_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_compute_constraint_gradient_to_plato_analyze_operation(aXMLMetaData, tDocument);
+        std::string tServiceID = get_plato_analyze_service_id(aXMLMetaData);
+        std::string tFilename = std::string("plato_analyze_") + tServiceID + "_operations.xml";
+        tDocument.save_file(tFilename.c_str(), "  ");
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
+    void write_plato_analyze_operation_xml_file_dakota_problem(const XMLGen::InputData &aXMLMetaData)
+    {
+        pugi::xml_document tDocument;
+        auto tReinitializeName = std::string("reinitialize_on_change_") + aXMLMetaData.services()[0].performer();
+        XMLGen::append_reinit_on_change_data(aXMLMetaData, tDocument, tReinitializeName, "");
+        XMLGen::append_visualization_to_plato_analyze_operation(aXMLMetaData, tDocument);
+        XMLGen::append_write_output_to_plato_analyze_operation(aXMLMetaData, tDocument);
+        XMLGen::append_compute_criterion_value_operations_for_dakota_problem(aXMLMetaData, tDocument);
         std::string tServiceID = get_plato_analyze_service_id(aXMLMetaData);
         std::string tFilename = std::string("plato_analyze_") + tServiceID + "_operations.xml";
         tDocument.save_file(tFilename.c_str(), "  ");

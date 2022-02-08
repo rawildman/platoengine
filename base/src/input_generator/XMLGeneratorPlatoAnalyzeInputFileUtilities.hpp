@@ -274,6 +274,16 @@ void append_constraint_criteria_to_criteria_list
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
+ * \fn append_individual_criteria_to_criteria_list
+ * \brief Append constraint criteria to plato problem parameter list.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  pugi::xml_node
+**********************************************************************************/
+pugi::xml_node append_individual_criteria_to_criteria_list
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
  * \fn append_physics_to_plato_analyze_input_deck
  * \brief Append partial differential equation (pde) to problem parameter list.
  * \param [in]     aXMLMetaData Plato problem input data

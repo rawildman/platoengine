@@ -10,13 +10,19 @@
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
+#include "XMLGeneratorOutputUtilities.hpp"
+#include "XMLGeneratorStagesUtilities.hpp"
+#include "XMLGeneratorSharedDataUtilities.hpp"
+#include "XMLGeneratorPerformersUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeUtilities.hpp"
+#include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorStagesOperationsUtilities.hpp"
+#include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 #include "XMLGeneratorPlatoMainInputFileUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
-#include "XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -258,7 +264,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage_shape_multi_performer)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
-    tDocument.save_file("dummy.xml");
+    //tDocument.save_file("dummy.xml");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -1100,7 +1106,7 @@ TEST(PlatoTestXMLGenerator, AppendDeterministicQoIToPlatoMainOutput_non_multi_lo
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
 
     pugi::xml_document tDocument;
-    XMLGen::append_deterministic_qoi_to_plato_main_output_stage_for_non_multi_load_case(tMetaData, tDocument);
+    XMLGen::append_deterministic_qoi_to_output_operation_in_interface_file_for_non_multi_load_case(tMetaData, tDocument);
     //tDocument.save_file("xml.txt", " ");
 
     auto tInput = tDocument.child("Input");
@@ -1130,7 +1136,7 @@ TEST(PlatoTestXMLGenerator, AppendDeterministicQoIToPlatoMainOutput_multi_load_c
     tMetaData.objective.scenarioIDs.push_back("2");
 
     pugi::xml_document tDocument;
-    XMLGen::append_deterministic_qoi_to_plato_main_output_stage_for_multi_load_case(tMetaData, tDocument);
+    XMLGen::append_deterministic_qoi_to_output_operation_in_interface_file_for_multi_load_case(tMetaData, tDocument);
     //tDocument.save_file("xml.txt", " ");
 
     auto tInput = tDocument.child("Input");
@@ -1284,7 +1290,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers_EmptyService)
 {
     XMLGen::InputData tMetaData;
     pugi::xml_document tDocument;
-    ASSERT_THROW(XMLGen::append_physics_performers(tMetaData, tDocument), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_uniperformer_usecase(tMetaData, tDocument), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers)
@@ -1301,7 +1307,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
-    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_uniperformer_usecase(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
@@ -1538,7 +1544,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersWithHelmholtz)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
-    ASSERT_NO_THROW(XMLGen::append_physics_performers(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_uniperformer_usecase(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
@@ -1657,8 +1663,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveSharedDataWithHelmholtz)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-
-    ASSERT_NO_THROW(XMLGen::append_objective_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_objective_shared_data(tMetaData, tDocument));
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1668,6 +1673,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveSharedDataWithHelmholtz)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tSharedData = tSharedData.next_sibling("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
     tKeys = {"Name", "Type", "Layout", "OwnerName", "UserName", "UserName"};
     tValues = {"Objective Gradient", "Scalar", "Nodal Field", "plato_analyze_helmholtz", "plato_analyze_helmholtz", "platomain_1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
@@ -1704,7 +1710,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintSharedDataWithHelmholtz)
 
     pugi::xml_document tDocument;
 
-    ASSERT_NO_THROW(XMLGen::append_constraint_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_constraint_shared_data(tMetaData, tDocument));
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1758,11 +1764,12 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtz)
     tOptimizationParameters.append("filter_type", "helmholtz");
     tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-
-    ASSERT_NO_THROW(XMLGen::append_criteria_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_criterion_shared_data(tMetaData, tDocument));
+    tDocument.save_file("append_gradient_based_criterion_shared_data.txt");
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1772,6 +1779,7 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtz)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tSharedData = tSharedData.next_sibling("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
     tKeys = {"Name", "Type", "Layout", "OwnerName", "UserName", "UserName"};
     tValues = {"Criterion Gradient - criterion_3_service_2_scenario_14", "Scalar", "Nodal Field", "plato_analyze_2", "platomain_1", "plato_analyze_helmholtz"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
@@ -1817,11 +1825,12 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtzAndProjection)
     tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "tanh");
     tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
 
-    ASSERT_NO_THROW(XMLGen::append_criteria_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_criterion_shared_data(tMetaData, tDocument));
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1837,7 +1846,7 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedDataWithHelmholtzAndProjection)
 
     tSharedData = tSharedData.next_sibling("SharedData");
     tKeys = {"Name", "Type", "Layout", "OwnerName", "UserName", "UserName"};
-    tValues = {"Projected Objective Gradient", "Scalar", "Nodal Field", "platomain_1", "platomain_1", "plato_analyze_helmholtz"};
+    tValues = {"Projected Gradient - criterion_3_service_2_scenario_14", "Scalar", "Nodal Field", "platomain_1", "platomain_1", "plato_analyze_helmholtz"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tSharedData = tSharedData.next_sibling("Performer");
@@ -2070,6 +2079,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageWithHelmholtz)
     tOptimizationParameters.append("filter_type", "helmholtz");
     tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2152,6 +2162,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageWithHelmholtzAndProjection)
     tOptimizationParameters.filterInEngine(false);
     tOptimizationParameters.append("projection_type", "heaviside");
     tOptimizationParameters.optimizationType(XMLGen::OT_TOPOLOGY);
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2339,7 +2350,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintOptions)
     tMetaData.constraints.push_back(tConstraint);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_optimization_constraint_options(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_constraint_options(tMetaData, tDocument));
   
     auto tConstraintNode = tDocument.child("Constraint");
     ASSERT_FALSE(tConstraintNode.empty());
@@ -2393,7 +2404,7 @@ TEST(PlatoTestXMLGenerator, AppendMultipleConstraints)
     tMetaData.constraints.push_back(tConstraint2);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_optimization_constraint_options(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_constraint_options(tMetaData, tDocument));
   
     auto tConstraintNode = tDocument.child("Constraint");
     ASSERT_FALSE(tConstraintNode.empty());
@@ -2586,7 +2597,7 @@ TEST(PlatoTestXMLGenerator, TOLSUpperBoundSD)
 
     pugi::xml_document tDocument;
     XMLGen::append_upper_bounds_shared_data(tMetaData, tDocument);
-    tDocument.save_file("xml_xtk.txt", " ");
+    //tDocument.save_file("xml_xtk.txt", " ");
 
     auto tSD = tDocument.child("SharedData");
     ASSERT_FALSE(tSD.empty());
@@ -2667,7 +2678,7 @@ TEST(PlatoTestXMLGenerator, TOLSLowerBoundSD)
 
     pugi::xml_document tDocument;
     XMLGen::append_lower_bounds_shared_data(tMetaData, tDocument);
-    tDocument.save_file("xml_xtk.txt", " ");
+    //tDocument.save_file("xml_xtk.txt", " ");
 
     auto tSD = tDocument.child("SharedData");
     ASSERT_FALSE(tSD.empty());
@@ -2753,7 +2764,7 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
 
     pugi::xml_document tDocument;
     XMLGen::append_update_problem_stage(tMetaData, tDocument);
-    tDocument.save_file("xml_xtk.txt", " ");
+    //tDocument.save_file("xml_xtk.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -2842,7 +2853,7 @@ TEST(PlatoTestXMLGenerator, TOLSObjGradient)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage_for_topology_levelset_problem(tMetaData, tDocument));
-    tDocument.save_file("xml_xtk.txt", " ");
+    //tDocument.save_file("xml_xtk.txt", " ");
 }
 
 TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
@@ -2889,7 +2900,7 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
-    tDocument.save_file("xtk_xml.txt", " ");
+    //tDocument.save_file("xtk_xml.txt", " ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -2971,22 +2982,5 @@ TEST(PlatoTestXMLGenerator, AppendInitializeGeometryOperation)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 }
 
-// TEST(PlatoTestXMLGenerator, TOLSCriteriaSharedData)
-// {
-//     // append_criteria_shared_data
-// }
-// TEST(PlatoTestXMLGenerator, TOLSConstraintGrad)
-// {
-//     // void append_constraint_gradient_stage
-//     // (const XMLGen::InputData& aXMLMetaData,
-//     //  pugi::xml_document& aDocument)
-// }
-
-// TEST(PlatoTestXMLGenerator, TOLSConstraintGradLS)
-// {
-//     // void append_constraint_gradient_stage_for_topology_levelset_problem
-//     // (const XMLGen::InputData& aXMLMetaData,
-//     //  pugi::xml_document& aDocument)
-// }
 }
 // namespace PlatoTestXMLGenerator

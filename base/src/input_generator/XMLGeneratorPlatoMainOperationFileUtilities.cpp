@@ -6,15 +6,16 @@
 
 #include <cstdlib>
 #include <fstream>
-#include "XMLGeneratorInterfaceFileUtilities.hpp"
-#include "XMLGeneratorServiceMetadata.hpp"
+
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
+#include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorFixedBlockUtilities.hpp"
-#include "XMLGeneratorPlatoAnalyzeProblem.hpp"
-#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
+#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 
 namespace XMLGen
 {
@@ -68,6 +69,15 @@ void write_plato_main_operations_xml_file
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
 /******************************************************************************/
+
+/******************************************************************************/
+void write_dakota_plato_main_operations_xml_file
+(const XMLGen::InputData& aMetaData)
+{
+    pugi::xml_document tDocument;
+    XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
+    tDocument.save_file("plato_main_operations.xml", "  ");
+}
 
 /******************************************************************************/
 bool is_volume_constraint_defined
@@ -921,21 +931,46 @@ void append_update_geometry_on_change_operation_to_plato_main_operation
     if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
         pugi::xml_node tmp_node = aDocument.append_child("Operation");
-        addChild(tmp_node, "Function", "SystemCall");
-        addChild(tmp_node, "Name", "Update Geometry on Change");
-        addChild(tmp_node, "Command", "plato-cli geometry esp");
-        addChild(tmp_node, "OnChange", "true");
-        addChild(tmp_node, "Argument", std::string("--input ") + aXMLMetaData.optimization_parameters().csm_file());
-        addChild(tmp_node, "Argument", std::string("--output-model ") + aXMLMetaData.optimization_parameters().csm_opt_file());
-        addChild(tmp_node, "Argument", std::string("--output-mesh ") + aXMLMetaData.optimization_parameters().csm_exodus_file());
-        addChild(tmp_node, "Argument", std::string("--tesselation ") + aXMLMetaData.optimization_parameters().csm_tesselation_file());
-        addChild(tmp_node, "Argument", "--parameters");
-        addChild(tmp_node, "AppendInput", "true");
-        pugi::xml_node tmp_node1 = tmp_node.append_child("Input");
-        addChild(tmp_node1, "ArgumentName", "Parameters");
+        XMLGen::append_update_geometry_on_change_operation_commands(aXMLMetaData, tmp_node, "Update Geometry on Change", "plato-cli geometry esp", "");
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        auto tEvaluations = std::stoi(aXMLMetaData.optimization_parameters().concurrent_evaluations());
+        for (size_t iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+        {
+            pugi::xml_node tmp_node = aDocument.append_child("Operation");
+            std::string tTag = std::string("_") + std::to_string(iEvaluation);
+            std::string tName = std::string("update_geometry_on_change") + tTag;
+            std::string tCommand = std::string("cd evaluations") + tTag + std::string("; plato-cli geometry esp");
+            XMLGen::append_update_geometry_on_change_operation_commands(aXMLMetaData, tmp_node, tName, tCommand, tTag);
+        }
     }
 }
 // function append_update_geometry_on_change_operation_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_update_geometry_on_change_operation_commands
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode,
+ const std::string& aName,
+ const std::string& aCommand,
+ const std::string& aTag)
+{
+    addChild(aParentNode, "Function", "SystemCall");
+    addChild(aParentNode, "Name", aName);
+    addChild(aParentNode, "Command", aCommand);
+    addChild(aParentNode, "OnChange", "true");
+    addChild(aParentNode, "Argument", std::string("--input ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_file(),aTag));
+    addChild(aParentNode, "Argument", std::string("--output-model ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_opt_file(),aTag));
+    addChild(aParentNode, "Argument", std::string("--output-mesh ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),aTag));
+    addChild(aParentNode, "Argument", std::string("--tesselation ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_tesselation_file(),aTag));
+    addChild(aParentNode, "Argument", "--parameters");
+    addChild(aParentNode, "AppendInput", "true");
+    pugi::xml_node aInputNode = aParentNode.append_child("Input");
+    addChild(aInputNode, "ArgumentName", std::string("Parameters") + aTag);
+}
+// function append_update_geometry_on_change_operation_commands
 /******************************************************************************/
 
 /******************************************************************************/

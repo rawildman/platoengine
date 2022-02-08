@@ -4050,7 +4050,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveMeanTemperatureToCriteriaList)
 
     pugi::xml_document tDocument;
     XMLGen::append_criteria_list_to_plato_analyze_input_deck(tXMLMetaData, tDocument);
-    tDocument.save_file("dummy.xml");
+    //tDocument.save_file("dummy.xml");
 
     // TEST CRITERIA
     auto tCriteria = tDocument.child("ParameterList");
@@ -4853,6 +4853,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_All)
 
     ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
     tDocument.save_file("plato_analyze_input_deck.xml");
+
     auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?>"
     "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
@@ -4880,6 +4881,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForDisplacementCriterio
 
     ASSERT_NO_THROW(XMLGen::Private::append_displacement_criterion(tCriterion, tDocument));
     tDocument.save_file("plato_analyze_input_deck.xml");
+
     auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?>"
     "<ParameterListname=\"my_displacement_criterion_id_3\">"
@@ -4905,6 +4907,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_Subse
 
     ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
     tDocument.save_file("plato_analyze_input_deck.xml");
+
     auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?>"
     "<ParameterListname=\"my_mass_properties_criterion_id_1\">"

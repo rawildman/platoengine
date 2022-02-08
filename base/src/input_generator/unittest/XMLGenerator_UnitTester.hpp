@@ -52,6 +52,7 @@
 
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGenerator.hpp"
+#include "XMLGeneratorOptimizationParametersMetadata.hpp"
 
 
 class XMLGenerator_UnitTester : public XMLGen::XMLGenerator
@@ -105,14 +106,7 @@ public:
     std::string getKSOuterStagnationTolerance() {return m_InputData.optimization_parameters().ks_outer_stagnation_tolerance();}
     std::string getKSOuterControlStagnationTolerance() {return m_InputData.optimization_parameters().ks_outer_control_stagnation_tolerance();}
     std::string getKSOuterActualReductionTolerance() {return m_InputData.optimization_parameters().ks_outer_actual_reduction_tolerance();}
-    std::string getGCMMAMaxInnerIterations() {return m_InputData.optimization_parameters().gcmma_max_inner_iterations();}
-    std::string getGCMMAInnerKKTTolerance() {return m_InputData.optimization_parameters().gcmma_inner_kkt_tolerance();}
-    std::string getGCMMAInnerControlStagnationTolerance() {return m_InputData.optimization_parameters().gcmma_inner_control_stagnation_tolerance();}
-    std::string getGCMMAOuterKKTTolerance() {return m_InputData.optimization_parameters().gcmma_outer_kkt_tolerance();}
-    std::string getGCMMAOuterControlStagnationTolerance() {return m_InputData.optimization_parameters().gcmma_outer_control_stagnation_tolerance();}
-    std::string getGCMMAOuterObjectiveStagnationTolerance() {return m_InputData.optimization_parameters().gcmma_outer_objective_stagnation_tolerance();}
-    std::string getGCMMAOuterStationarityTolerance() {return m_InputData.optimization_parameters().gcmma_outer_stationarity_tolerance();}
-    std::string getGCMMAInitialMovingAsymptotesScaleFactor() {return m_InputData.optimization_parameters().gcmma_initial_moving_asymptotes_scale_factor();}
+
     std::string getLevelsetSpherePackingFactor() {return m_InputData.optimization_parameters().levelset_sphere_packing_factor();}
     std::string getLevelsetSphereRadius() {return m_InputData.optimization_parameters().levelset_sphere_radius();}
     std::string getLevelsetNodeset(const int &aIndex) {return m_InputData.optimization_parameters().levelset_nodesets()[aIndex];}
@@ -127,6 +121,8 @@ public:
     std::string getDiscretization() {return m_InputData.optimization_parameters().discretization();}
     std::string getCheckGradient() {return m_InputData.optimization_parameters().check_gradient();}
     std::string getCheckHessian() {return m_InputData.optimization_parameters().check_hessian();}
+    XMLGen::OptimizationType getOptimizationType() {return m_InputData.optimization_parameters().optimizationType();}
+    std::string getConcurrentEvaluations() {return m_InputData.optimization_parameters().concurrent_evaluations();}
     std::string getMeshName() {return m_InputData.mesh.name;}
     std::string getAuxiliaryMeshName() {return m_InputData.mesh.auxiliary_mesh_name;}
     void clearInputData();
