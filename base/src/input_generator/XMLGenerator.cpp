@@ -472,9 +472,9 @@ namespace XMLGen
             if (tShapeServiceID != "")
             {
                 bool tFound=false;
-                for(auto &tCurService : aInputData.mPerformerServices)
+                for(auto &service : aInputData.mPerformerServices)
                 {
-                    if(tCurService.id() == tShapeServiceID)
+                    if(service.id() == tShapeServiceID)
                     {
                         tFound = true; 
                         break;

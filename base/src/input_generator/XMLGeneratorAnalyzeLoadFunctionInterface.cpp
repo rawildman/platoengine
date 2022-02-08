@@ -101,9 +101,8 @@ void append_uniform_thermal_source_load_to_plato_problem
     std::vector<std::string> tElemBlockList = { aLoad.location_name() };
     if( !tElemBlockList.empty() )
     {
-        std::vector<std::string> tKeys = {"name", "type", "value"};
         auto tElemBlocksNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tElemBlockList);
-        std::vector<std::string> tValues = {"Domains", "Array(string)", tElemBlocksNames};
+        tValues = {"Domains", "Array(string)", tElemBlocksNames};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tUniformSource);
     }
 }

@@ -1290,7 +1290,6 @@ void append_objective_gradient_stage_for_topology_problem
     else
     {
         pugi::xml_node tParentNode = tStageNode;
-        XMLGen::Objective tObjective = aXMLMetaData.objective;
 
         bool tMultiObjective = (tObjective.criteriaIDs.size() > 1 &&
                                 tObjective.multi_load_case != "true");
