@@ -241,6 +241,20 @@ private:
     std::string parseMyStageTag(Plato::InputData& aStageNode) const;
 
     /******************************************************************************//**
+     * \brief Check if stage tag corresponds to a criterion
+     * \param [in] aTokens stage tag tokens
+     * \return true if tag corresponds to criterion
+    **********************************************************************************/
+    bool isCriterionTag(const std::vector<std::string>& aTokens) const;
+
+    /******************************************************************************//**
+     * \brief Check if stage tag has a number as ID
+     * \param [in] aTokens stage tag tokens
+     * \param [in] aTag full stage tag
+    **********************************************************************************/
+    void checkValidCriterionId(const std::vector<std::string>& aTokens, const std::string& aTag) const;
+
+    /******************************************************************************//**
      * \brief Parse stage's input shared data name at runtime.
      * \param [in] aStageNode stage metadata.
     **********************************************************************************/

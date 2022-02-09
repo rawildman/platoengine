@@ -110,21 +110,6 @@ void insert_plato_mma_input_options(XMLGen::MetaDataTags &aTags)
 /******************************************************************************/
 
 /******************************************************************************/
-void insert_plato_gcmma_input_options(XMLGen::MetaDataTags &aTags)
-{
-    aTags.insert({ "gcmma_inner_kkt_tolerance", { { {"gcmma_inner_kkt_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_outer_kkt_tolerance", { { {"gcmma_outer_kkt_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_max_inner_iterations", { { {"gcmma_max_inner_iterations"}, ""}, "" } });
-    aTags.insert({ "gcmma_outer_stationarity_tolerance", { { {"gcmma_outer_stationarity_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_inner_control_stagnation_tolerance", { { {"gcmma_inner_control_stagnation_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_outer_control_stagnation_tolerance", { { {"gcmma_outer_control_stagnation_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_outer_objective_stagnation_tolerance", { { {"gcmma_outer_objective_stagnation_tolerance"}, ""}, "" } });
-    aTags.insert({ "gcmma_initial_moving_asymptotes_scale_factor", { { {"gcmma_initial_moving_asymptotes_scale_factor"}, ""}, "" } });
-}
-// function insert_plato_gcmma_input_options
-/******************************************************************************/
-
-/******************************************************************************/
 void insert_amgx_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "amgx_solver_type", { { {"amgx_solver_type"}, ""}, "pbicgstab" } });

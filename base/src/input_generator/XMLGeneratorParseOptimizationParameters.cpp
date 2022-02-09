@@ -46,7 +46,6 @@ void ParseOptimizationParameters::allocate()
     XMLGen::insert_amgx_input_options(mTags);
     XMLGen::insert_restart_input_options(mTags);
     XMLGen::insert_plato_mma_input_options(mTags);
-    XMLGen::insert_plato_gcmma_input_options(mTags);
     XMLGen::insert_dakota_moga_input_options(mTags);
     XMLGen::insert_plato_filter_input_options(mTags);
     XMLGen::insert_fixed_blocks_input_options(mTags);

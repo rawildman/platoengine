@@ -1614,14 +1614,6 @@ struct ValidOptimizationParameterKeys
      "moga_niching_distance",
      "moga_max_function_evaluations",
      "num_sampling_method_samples",
-     "gcmma_inner_kkt_tolerance",
-     "gcmma_outer_kkt_tolerance",
-     "gcmma_max_inner_iterations",
-     "gcmma_outer_stationarity_tolerance",
-     "gcmma_inner_control_stagnation_tolerance",
-     "gcmma_outer_control_stagnation_tolerance",
-     "gcmma_outer_objective_stagnation_tolerance",
-     "gcmma_initial_moving_asymptotes_scale_factor"
     };
 };
 

@@ -106,23 +106,34 @@ std::string DakotaDataMap::parseMyStageTag(Plato::InputData &aStageNode) const
 {
     auto tLowerStageTag = Plato::tolower(Plato::Get::String(aStageNode, "StageTag"));
     
-    // check that tag is not empty
     if (tLowerStageTag.empty())
         THROWERR(std::string("Error while parsing inputs for the Plato-Dakota driver. The 'StageTag' keyword is empty. A stage ") + "tag must be defined. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'.")
             
-    // check tag format
     auto tTagTokens = Plato::tokenize(tLowerStageTag);
-    if(tTagTokens.size() == 3 && tTagTokens[0] == "criterion" && (tTagTokens[1] == "value" || tTagTokens[1] == "gradient") )
-    {
-        char* p;
-        long converted = std::strtol(tTagTokens[2].c_str(), &p, 10);
-        if (*p)
-            throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + tLowerStageTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
-    }
+    if(this->isCriterionTag(tTagTokens))
+        this->checkValidCriterionId(tTagTokens,tLowerStageTag);
     else if(tLowerStageTag != "initialize" && tLowerStageTag != "finalize")
-            throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + tLowerStageTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
+        throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + tLowerStageTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
 
     return tLowerStageTag;
+}
+
+bool DakotaDataMap::isCriterionTag(const std::vector<std::string> &aTokens) const
+{
+    bool tReturn = false;
+    if (aTokens.size() == 3 && aTokens[0] == "criterion")
+    {
+      if (aTokens[1] == "value" || aTokens[1] == "gradient") 
+        tReturn = true;
+    }
+}
+
+void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aTokens, const std::string &aTag) const
+{
+    char* p;
+    long converted = std::strtol(aTokens[2].c_str(), &p, 10);
+    if (*p)
+        throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + aTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
 }
 
 void DakotaDataMap::parseStageInputs(Plato::InputData &aStageNode)
