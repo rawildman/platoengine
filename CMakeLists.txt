@@ -219,9 +219,6 @@ add_subdirectory(base/src/Su2ToExodus)
 add_subdirectory(base/src/MarkFaces)
 add_subdirectory(base/src/geometry/BamG)
 
-# add plato command line interface app
-add_subdirectory(apps/cli)
-
 if( ENABLE_ISO )
   add_subdirectory(base/src/iso)
 endif()

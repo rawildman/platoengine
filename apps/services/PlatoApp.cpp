@@ -165,6 +165,14 @@ void PlatoApp::initialize()
                 continue;
             }
 
+            tFunctions.push_back("HarvestDataFromFile");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::HarvestDataFromFile(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("ReciprocateObjectiveValue");
             if(tStrFunction == tFunctions.back())
             {

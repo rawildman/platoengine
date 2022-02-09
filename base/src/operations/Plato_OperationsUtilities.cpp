@@ -46,6 +46,8 @@
  *  Created on: Jun 27, 2019
  */
 
+#include <fstream>
+
 #include "Plato_Parser.hpp"
 #include "Plato_InputData.hpp"
 #include "Plato_Exceptions.hpp"
@@ -166,6 +168,79 @@ void split(const std::string & aInput, std::vector<std::string> & aOutput)
        aOutput.push_back(tSegment);
     }
 }
+
+bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens)
+{
+    const std::string tDELIMITER = " \t";
+    constexpr int tMAX_TOKENS_PER_LINE = 5000;
+    const char* tToken[tMAX_TOKENS_PER_LINE] = {}; // initialize to 0
+
+    // parse the line
+    tToken[0] = std::strtok(aBuffer, tDELIMITER.c_str()); // first token
+
+    // If there is a comment...
+    if(tToken[0] && std::strlen(tToken[0]) > 1 && tToken[0][0] == '/' && tToken[0][1] == '/')
+    {
+        aTokens.clear();
+        return true;
+    }
+
+    int tN = 0;
+    if (tToken[0]) // zero if line is blank
+    {
+        for (tN = 1; tN < tMAX_TOKENS_PER_LINE; tN++)
+        {
+            tToken[tN] = std::strtok(0, tDELIMITER.c_str()); // subsequent tokens
+            if (!tToken[tN])
+            {
+                break; // no more tokens
+            }
+        }
+    }
+    for(int tIndex=0; tIndex<tN; ++tIndex)
+    {
+        aTokens.push_back(tToken[tIndex]);
+    }
+
+    return true;
+}
+// function parse_tokens
+
+void read_table(const std::string& aFileName, std::vector<std::vector<double>>& aTable)
+{
+    constexpr int MAX_CHARS_PER_LINE = 10000;
+    std::vector<char> tBuffer(MAX_CHARS_PER_LINE);
+    std::ifstream tFile(aFileName); //taking file as inputstream
+    while (!tFile.eof())
+    {
+        std::vector<std::string> tTokens;
+        tFile.getline(tBuffer.data(), MAX_CHARS_PER_LINE);
+        Plato::parse_tokens(tBuffer.data(), tTokens);
+        
+        bool tPushBack = false;
+        std::vector<double> tRow(tTokens.size(), 0.0);
+        for(auto& tToken : tTokens)
+        {
+            auto tIndex = &tToken - &tTokens[0];
+            try
+            {
+                tRow[tIndex] = std::stod(tToken);
+                tPushBack = true;
+            }
+            catch (std::exception& e)
+            {
+                std::cout << "Token: '" << tTokens[tIndex] << "' is not a number. String to double conversion will be skipped.\n";
+                continue;
+            }
+        }
+
+        if(tPushBack)
+        {
+            aTable.push_back(tRow);
+        }
+    }
+}
+// function read_table
 
 }
 // namespace Plato
