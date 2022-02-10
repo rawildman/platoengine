@@ -52,13 +52,14 @@
 #include <cmath>
 #include <numeric>
 
-#include "XMLGeneratorParserUtilities.hpp"
-#include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorParseUncertainty.hpp"
-#include "XMLGenerator_UnitTester.hpp"
 #include "XML_GoldValues.hpp"
-#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorUtilities.hpp"
+#include "XMLGenerator_UnitTester.hpp"
+#include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorParseUncertainty.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 
 #include "Plato_Utils.hpp"
 #include "XMLG_Macros.hpp"
@@ -809,158 +810,6 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
     EXPECT_EQ(tester.getKSOuterActualReductionTolerance(), "1e-7");
 
-    // gcmma max inner iterations
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_max_inner_iterations\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_max_inner_iterations 100\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAMaxInnerIterations(), "100");
-
-    // gcmma inner kkt tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_inner_kkt_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_inner_kkt_tolerance 1e-12\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAInnerKKTTolerance(), "1e-12");
-
-    // gcmma inner control stagnation tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_inner_control_stagnation_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_inner_control_stagnation_tolerance 5e-10\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAInnerControlStagnationTolerance(), "5e-10");
-
-    // gcmma outer kkt tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_kkt_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_kkt_tolerance 1e-8\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAOuterKKTTolerance(), "1e-8");
-
-    // gcmma outer control stagnation tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_control_stagnation_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_control_stagnation_tolerance 1e-11\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAOuterControlStagnationTolerance(), "1e-11");
-
-    // gcmma outer objective stagnation tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_objective_stagnation_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_objective_stagnation_tolerance 4e-8\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAOuterObjectiveStagnationTolerance(), "4e-8");
-
-    // gcmma outer stationarity tolerance
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_stationarity_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_outer_stationarity_tolerance 2e-10\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAOuterStationarityTolerance(), "2e-10");
-
-    // gcmma initial moving asymptotes scale factor
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_initial_moving_asymptotes_scale_factor\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "gcmma_initial_moving_asymptotes_scale_factor 0.4\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getGCMMAInitialMovingAsymptotesScaleFactor(), "0.4");
-
     // levelset sphere packing factor
     stringInput = "begin optimization_parameters\n"
             "levelset_sphere_packing_factor\n"
@@ -1386,6 +1235,44 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
     EXPECT_EQ(tester.getCheckHessian(), "true");
+
+    // type dakota
+    stringInput = "begin optimization_parameters\n"
+            "optimization_type\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
+    stringInput = "begin optimization_parameters\n"
+            "optimization_type dakota\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
+    EXPECT_EQ(tester.getOptimizationType(), XMLGen::OT_DAKOTA);
+
+    // concurrent evaluations
+    stringInput = "begin optimization_parameters\n"
+            "concurrent_evaluations\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
+    stringInput = "begin optimization_parameters\n"
+            "concurrent_evaluations 3\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
+    EXPECT_EQ(tester.getConcurrentEvaluations(), "3");
 }
 
 TEST(PlatoTestXMLGenerator, parseMesh)
@@ -2313,6 +2200,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "  filter_radius_scale 1.75\n"
         "  optimization_type shape\n"
         "  num_shape_design_variables 4\n"
+        "  csm_file bolted_bracket.csm\n"
         "end optimization_parameters\n"
         "begin mesh\n"
         "  name bolted_bracket.exo\n"
@@ -2463,6 +2351,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "  filter_radius_scale 1.75\n"
         "  optimization_type shape\n"
         "  num_shape_design_variables 4\n"
+        "  csm_file bolted_bracket.csm\n"
         "end optimization_parameters\n"
         "begin mesh\n"
         "  name bolted_bracket.exo\n"

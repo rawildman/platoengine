@@ -35,6 +35,7 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 							 Plato_Test_LocalStatisticsOperations.cpp
 							 Plato_Test_MethodMovingAsymptotes.cpp
 							 Plato_Test_WriteParameterStudyData.cpp
+                                                         Plato_Test_FreeFunctions.cpp
 							 PSL_Test_Triangle.cpp  
 							 PSL_Test_OverhangFilter.cpp  
 							 PSL_Test_KernelThenHeavisideFilter.cpp  

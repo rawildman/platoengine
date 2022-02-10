@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
-#include "XMLGeneratorParseOptimizationParameters.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorFixedBlockUtilities.hpp"
+#include "XMLGeneratorParseOptimizationParameters.hpp"
+#include "XMLGeneratorOptimizationParametersMetadata.hpp"
+#include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
 
 namespace XMLGen
 {
@@ -40,125 +42,25 @@ void ParseOptimizationParameters::setTags(XMLGen::OptimizationParameters &aOptim
 void ParseOptimizationParameters::allocate()
 {
     mTags.clear();
-    mTags.insert({ "discretization", { { {"discretization"}, ""}, "density" } });
-    mTags.insert({ "verbose", { { {"verbose"}, ""}, "false" } });
-    mTags.insert({ "enforce_bounds", { { {"enforce_bounds"}, ""}, "false" } });
-    mTags.insert({ "number_refines", { { {"number_refines"}, ""}, "" } });
-    mTags.insert({ "csm_file", { { {"csm_file"}, ""}, "" } });
-    mTags.insert({ "num_shape_design_variables", { { {"num_shape_design_variables"}, ""}, "" } });
-    mTags.insert({ "max_iterations", { { {"max_iterations"}, ""}, "" } });
-    mTags.insert({ "filter_in_engine", { { {"filter_in_engine"}, ""}, "true" } });
-    mTags.insert({ "symmetry_plane_normal", { { {"symmetry_plane_normal"}, ""}, "" } });
-    mTags.insert({ "symmetry_plane_origin", { { {"symmetry_plane_origin"}, ""}, "" } });
-    mTags.insert({ "mesh_map_filter_radius", { { {"mesh_map_filter_radius"}, ""}, "" } });
-    mTags.insert({ "filter_before_symmetry_enforcement", { { {"filter_before_symmetry_enforcement"}, ""}, "" } });
-    mTags.insert({ "mma_move_limit", { { {"mma_move_limit"}, ""}, "0.5" } });
-    mTags.insert({ "mma_asymptote_expansion", { { {"mma_asymptote_expansion"}, ""}, "1.2" } });
-    mTags.insert({ "mma_asymptote_contraction", { { {"mma_asymptote_contraction"}, ""}, "0.7" } });
-    mTags.insert({ "mma_max_sub_problem_iterations", { { {"mma_max_sub_problem_iterations"}, ""}, "50" } });
-    mTags.insert({ "mma_sub_problem_initial_penalty", { { {"mma_sub_problem_initial_penalty"}, ""}, "0.0015" } });
-    mTags.insert({ "mma_sub_problem_penalty_multiplier", { { {"mma_sub_problem_penalty_multiplier"}, ""}, "1.025" } });
-    mTags.insert({ "mma_output_subproblem_diagnostics", { { {"mma_output_subproblem_diagnostics"}, ""}, "false" } });
-    mTags.insert({ "mma_sub_problem_feasibility_tolerance", { { {"mma_sub_problem_feasibility_tolerance"}, ""}, "1e-8" } });
-    mTags.insert({ "mma_use_ipopt_sub_problem_solver", { { {"mma_use_ipopt_sub_problem_solver"}, ""}, "false" } });
-    mTags.insert({ "mma_control_stagnation_tolerance", { { {"mma_control_stagnation_tolerance"}, ""}, "1e-6" } });
-    mTags.insert({ "mma_objective_stagnation_tolerance", { { {"mma_objective_stagnation_tolerance"}, ""}, "1e-8" } });
-    mTags.insert({ "oc_control_stagnation_tolerance", { { {"oc_control_stagnation_tolerance"}, ""}, "1e-2" } });
-    mTags.insert({ "oc_objective_stagnation_tolerance", { { {"oc_objective_stagnation_tolerance"}, ""}, "1e-5" } });
-    mTags.insert({ "oc_gradient_tolerance", { { {"oc_gradient_tolerance"}, ""}, "1e-8" } });
-    mTags.insert({ "initial_guess_file_name", { { {"initial_guess_file_name"}, ""}, "" } });
-    mTags.insert({ "initial_guess_field_name", { { {"initial_guess_field_name"}, ""}, "" } });
-    mTags.insert({ "normalize_in_aggregator", { { {"normalize_in_aggregator"}, ""}, "" } });
-    mTags.insert({ "derivative_checker_final_superscript", { { {"derivative_checker_final_superscript"}, ""}, "8" } });
-    mTags.insert({ "derivative_checker_initial_superscript", { { {"derivative_checker_initial_superscript"}, ""}, "1" } });
-    mTags.insert({ "output_method", { { {"output_method"}, ""}, "epu" } });
-    mTags.insert({ "output_frequency", { { {"output_frequency"}, ""}, "5" } });
-    mTags.insert({ "initial_density_value", { { {"initial_density_value"}, ""}, "0.5" } });
-    mTags.insert({ "restart_iteration", { { {"restart_iteration"}, ""}, "0" } });
-    mTags.insert({ "create_levelset_spheres", { { {"create_levelset_spheres"}, ""}, "" } });
-   
-    mTags.insert({ "levelset_material_box_min", { { {"levelset_material_box_min"}, ""}, "" } });
-    mTags.insert({ "levelset_material_box_max", { { {"levelset_material_box_max"}, ""}, "" } });
-    mTags.insert({ "levelset_sphere_radius", { { {"levelset_sphere_radius"}, ""}, "" } });
-    mTags.insert({ "levelset_sphere_packing_factor", { { {"levelset_sphere_packing_factor"}, ""}, "" } });
-    mTags.insert({ "levelset_initialization_method", { { {"levelset_initialization_method"}, ""}, "" } });
-    
-    mTags.insert({ "fixed_block_ids", { { {"fixed_block_ids"}, ""}, "" } });
-    mTags.insert({ "fixed_sideset_ids", { { {"fixed_sideset_ids"}, ""}, "" } });
-    mTags.insert({ "fixed_nodeset_ids", { { {"fixed_nodeset_ids"}, ""}, "" } });
-    mTags.insert({ "fixed_block_domain_values", { { {"fixed_block_domain_values"}, ""}, "" } });
-    mTags.insert({ "fixed_block_boundary_values", { { {"fixed_block_boundary_values"}, ""}, "" } });
-    mTags.insert({ "fixed_block_material_states", { { {"fixed_block_material_states"}, ""}, "" } });
-
-    mTags.insert({ "levelset_nodesets", { { {"levelset_nodesets"}, ""}, "" } });
-    mTags.insert({ "number_prune_and_refine_processors", { { {"number_prune_and_refine_processors"}, ""}, "" } });
-    mTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });
-    mTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
-    mTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
-    mTags.insert({ "optimization_algorithm", { { {"optimization_algorithm"}, ""}, "oc" } });
-    mTags.insert({ "check_gradient", { { {"check_gradient"}, ""}, "false" } });
-    mTags.insert({ "check_hessian", { { {"check_hessian"}, ""}, "false" } });
-    mTags.insert({ "filter_type", { { {"filter_type"}, ""}, "kernel" } });
-    mTags.insert({ "filter_service", { { {"filter_service"}, ""}, "" } });
-    mTags.insert({ "projection_type", { { {"projection_type"}, ""}, "" } });
-    mTags.insert({ "filter_power", { { {"filter_power"}, ""}, "1" } });
-    mTags.insert({ "gcmma_inner_kkt_tolerance", { { {"gcmma_inner_kkt_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_outer_kkt_tolerance", { { {"gcmma_outer_kkt_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_inner_control_stagnation_tolerance", { { {"gcmma_inner_control_stagnation_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_outer_control_stagnation_tolerance", { { {"gcmma_outer_control_stagnation_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_outer_objective_stagnation_tolerance", { { {"gcmma_outer_objective_stagnation_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_max_inner_iterations", { { {"gcmma_max_inner_iterations"}, ""}, "" } });
-    mTags.insert({ "gcmma_outer_stationarity_tolerance", { { {"gcmma_outer_stationarity_tolerance"}, ""}, "" } });
-    mTags.insert({ "gcmma_initial_moving_asymptotes_scale_factor", { { {"gcmma_initial_moving_asymptotes_scale_factor"}, ""}, "" } });
-    mTags.insert({ "ks_max_radius_scale", { { {"ks_max_radius_scale"}, ""}, "" } });
-    mTags.insert({ "ks_initial_radius_scale", { { {"ks_initial_radius_scale"}, ""}, "" } });
-    mTags.insert({ "max_trust_region_radius", { { {"max_trust_region_radius"}, ""}, "" } });
-    mTags.insert({ "ks_min_trust_region_radius", { { {"ks_min_trust_region_radius"}, ""}, "" } });
-    mTags.insert({ "ks_max_trust_region_iterations", { { {"ks_max_trust_region_iterations"}, ""}, "5" } });
-    mTags.insert({ "ks_trust_region_expansion_factor", { { {"ks_trust_region_expansion_factor"}, ""}, "" } });
-    mTags.insert({ "ks_trust_region_contraction_factor", { { {"ks_trust_region_contraction_factor"}, ""}, "" } });
-    mTags.insert({ "ks_trust_region_ratio_low", { { {"ks_trust_region_ratio_low"}, ""}, "" } });
-    mTags.insert({ "ks_trust_region_ratio_mid", { { {"ks_trust_region_ratio_mid"}, ""}, "" } });
-    mTags.insert({ "ks_trust_region_ratio_high", { { {"ks_trust_region_ratio_high"}, ""}, "" } });
-    mTags.insert({ "ks_disable_post_smoothing", { { {"ks_disable_post_smoothing"}, ""}, "true" } });
-    mTags.insert({ "use_mean_norm", { { {"use_mean_norm"}, ""}, "" } });
-    mTags.insert({ "objective_number_standard_deviations", { { {"objective_number_standard_deviations"}, ""}, "" } });
-    mTags.insert({ "filter_radius_scale", { { {"filter_radius_scale"}, ""}, "2.0" } });
-    mTags.insert({ "filter_radius_absolute", { { {"filter_radius_absolute"}, ""}, "" } });
-    mTags.insert({ "symmetry_plane_location_names", { { {"symmetry_plane_location_names"}, ""}, "" } });
-    mTags.insert({ "boundary_sticking_penalty", { { {"boundary_sticking_penalty"}, ""}, "1.0" } });
-    mTags.insert({ "al_penalty_parameter", { { {"al_penalty_parameter"}, ""}, "" } });
-    mTags.insert({ "feasibility_tolerance", { { {"feasibility_tolerance"}, ""}, "" } });
-    mTags.insert({ "al_penalty_scale_factor", { { {"al_penalty_scale_factor"}, ""}, "" } });
-    mTags.insert({ "al_max_subproblem_iterations", { { {"al_max_subproblem_iterations"}, ""}, "" } });
-    mTags.insert({ "hessian_type", { { {"hessian_type"}, ""}, "" } });
-    mTags.insert({ "limited_memory_storage", { { {"limited_memory_storage"}, ""}, "8" } });
-    mTags.insert({ "problem_update_frequency", { { {"problem_update_frequency"}, ""}, "5" } });
-    mTags.insert({ "ks_outer_gradient_tolerance", { { {"ks_outer_gradient_tolerance"}, ""}, "" } });
-    mTags.insert({ "ks_outer_stationarity_tolerance", { { {"ks_outer_stationarity_tolerance"}, ""}, "" } });
-    mTags.insert({ "ks_outer_stagnation_tolerance", { { {"ks_outer_stagnation_tolerance"}, ""}, "" } });
-    mTags.insert({ "ks_outer_control_stagnation_tolerance", { { {"ks_outer_control_stagnation_tolerance"}, ""}, "" } });
-    mTags.insert({ "ks_outer_actual_reduction_tolerance", { { {"ks_outer_actual_reduction_tolerance"}, ""}, "" } });
-    mTags.insert({ "filter_heaviside_min", { { {"filter_heaviside_min"}, ""}, "" } });
-    mTags.insert({ "filter_heaviside_scale", { { {"filter_heaviside_scale"}, ""}, "" } });
-    mTags.insert({ "filter_heaviside_update", { { {"filter_heaviside_update"}, ""}, "" } });
-    mTags.insert({ "filter_heaviside_max", { { {"filter_heaviside_max"}, ""}, "" } });
-    mTags.insert({ "filter_projection_start_iteration", { { {"filter_projection_start_iteration"}, ""}, "" } });
-    mTags.insert({ "filter_projection_update_interval", { { {"filter_projection_update_interval"}, ""}, "" } });
-    mTags.insert({ "filter_use_additive_continuation", { { {"filter_use_additive_continuation"}, ""}, "" } });
-    mTags.insert({ "write_restart_file", { { {"write_restart_file"}, ""}, "false" } });
-    mTags.insert({ "optimization_type", { { {"optimization_type"}, ""}, "topology" } });
-    mTags.insert({ "reset_algorithm_on_update", { { {"reset_algorithm_on_update"}, ""}, "false" } });
-    mTags.insert({ "rol_subproblem_model", { { {"rol_subproblem_model"}, ""}, "" } });
-    mTags.insert({ "rol_lin_more_cauchy_initial_step_size", { { {"rol_lin_more_cauchy_initial_step_size"}, ""}, "3.0" } });
-    mTags.insert({ "filter_type_identity_generator_name", { { {"filter_type_identity_generator_name"}, ""}, "identity" } });
-    mTags.insert({ "filter_type_kernel_generator_name", { { {"filter_type_kernel_generator_name"}, ""}, "kernel" } });
-    mTags.insert({ "filter_type_kernel_then_heaviside_generator_name", { { {"filter_type_kernel_then_heaviside_generator_name"}, ""}, "kernel_then_heaviside" } });
-    mTags.insert({ "filter_type_kernel_then_tanh_generator_name", { { {"filter_type_kernel_then_tanh_generator_name"}, ""}, "kernel_then_tanh" } });
-    mTags.insert({ "amgx_solver_type", { { {"amgx_solver_type"}, ""}, "pbicgstab" } });
-    mTags.insert({ "amgx_solver_tolerance", { { {"amgx_solver_tolerance"}, ""}, "1e-12" } });
-    mTags.insert({ "amgx_max_iterations", { { {"amgx_max_iterations"}, ""}, "1000" } });
-    mTags.insert({ "amgx_print_solver_stats", { { {"amgx_print_solver_stats"}, ""}, "false" } });
+    XMLGen::insert_rol_input_options(mTags);
+    XMLGen::insert_amgx_input_options(mTags);
+    XMLGen::insert_restart_input_options(mTags);
+    XMLGen::insert_plato_mma_input_options(mTags);
+    XMLGen::insert_dakota_moga_input_options(mTags);
+    XMLGen::insert_plato_filter_input_options(mTags);
+    XMLGen::insert_fixed_blocks_input_options(mTags);
+    XMLGen::insert_general_dakota_input_options(mTags);
+    XMLGen::insert_plato_levelset_input_options(mTags);
+    XMLGen::insert_prune_and_refine_input_options(mTags);
+    XMLGen::insert_shape_optimization_input_options(mTags);
+    XMLGen::insert_derivative_checker_input_options(mTags);
+    XMLGen::insert_optimality_criteria_input_options(mTags);
+    XMLGen::insert_general_optimization_input_options(mTags);
+    XMLGen::insert_topology_optimization_input_options(mTags);
+    XMLGen::insert_plato_symmetry_filter_input_options(mTags);
+    XMLGen::insert_plato_projection_filter_input_options(mTags);
+    XMLGen::insert_dakota_multidim_param_study_input_options(mTags);
+    XMLGen::insert_plato_kelley_sachs_trust_region_input_options(mTags);
 }
 
 std::vector<XMLGen::OptimizationParameters> ParseOptimizationParameters::data() const 
@@ -452,6 +354,10 @@ void ParseOptimizationParameters::setOptimizationType(XMLGen::OptimizationParame
     {
         aMetadata.optimizationType(OT_TOPOLOGY);
     }
+    else if(tType == "dakota")
+    {
+        aMetadata.optimizationType(OT_DAKOTA);
+    }
     else
     {
         THROWERR(std::string("Parse Optimization Parameters: Unrecognized optimization type: ") + tType);
@@ -481,7 +387,6 @@ void ParseOptimizationParameters::checkHeavisideFilterParams(XMLGen::Optimizatio
 
 void ParseOptimizationParameters::setMaterialBoxExtents(XMLGen::OptimizationParameters &aMetadata)
 {
-    mTags.insert({ "levelset_material_box_min", { { {"levelset_material_box_min"}, ""}, "" } });
     auto tMinItr = mTags.find("levelset_material_box_min");
     auto tMaxItr = mTags.find("levelset_material_box_max");
     if(tMinItr != mTags.end() && tMaxItr != mTags.end())

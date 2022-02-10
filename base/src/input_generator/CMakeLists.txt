@@ -6,26 +6,36 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseLoads.cpp
                       XMLGeneratorParseOutput.cpp
                       XMLGeneratorParseScenario.cpp
-                      XMLGeneratorParseOptimizationParameters.cpp
                       XMLGeneratorParseServices.cpp
-                      XMLGeneratorOutputMetadata.cpp 
-                      XMLGeneratorParseObjective.cpp
-                      XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorParseMaterial.cpp
-                      XMLGeneratorParseEssentialBoundaryCondition.cpp
                       XMLGeneratorParseAssembly.cpp
                       XMLGeneratorParseCriteria.cpp
+                      XMLGeneratorOutputMetadata.cpp 
+                      XMLGeneratorParseObjective.cpp
+                      XMLGeneratorOutputUtilities.cpp
+                      XMLGeneratorStagesUtilities.cpp
                       XMLGeneratorParseConstraint.cpp
                       XMLGeneratorParserUtilities.cpp
-                      XMLGeneratorScenarioMetadata.cpp
-                      XMLGeneratorOptimizationParametersMetadata.cpp
                       XMLGeneratorServiceMetadata.cpp
+                      XMLGeneratorScenarioMetadata.cpp
                       XMLGeneratorParseUncertainty.cpp
+                      XMLGeneratorSierraSDUtilities.cpp
                       XMLGeneratorConstraintMetadata.cpp
+                      XMLGeneratorSharedDataUtilities.cpp
+                      XMLGeneratorPerformersUtilities.cpp
                       XMLGeneratorUncertaintyMetadata.cpp
                       XMLGeneratorDefinesFileUtilities.cpp
                       XMLGeneratorPlatoAnalyzeUtilities.cpp
                       XMLGeneratorInterfaceFileUtilities.cpp
+                      XMLGeneratorDakotaInterfaceFileUtilities.cpp
+                      XMLGeneratorDakotaDriverInputFileUtilities.cpp 
+                      XMLGeneratorGradBasedOptimizerOptions.cpp
+                      XMLGeneratorStagesOperationsUtilities.cpp
+                      XMLGeneratorParseOptimizationParameters.cpp
+                      XMLGeneratorOptimizationParametersMetadata.cpp
+                      XMLGeneratorParseEssentialBoundaryCondition.cpp
+                      XMLGeneratorParseMethodInputOptionsUtilities.cpp
+                      XMLGeneratorPostOptimizationRunFileUtilities.cpp
                       XMLGeneratorAnalyzePhysicsFunctionInterface.cpp
                       XMLGeneratorMaterialFunctionInterface.cpp
                       XMLGeneratorRandomInterfaceFileUtilities.cpp
@@ -37,7 +47,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoAnalyzeOperationsFileUtilities.cpp
                       XMLGeneratorSierraSDOperationsFileUtilities.cpp
                       XMLGeneratorSierraSDInputDeckUtilities.cpp
-                      XMLGeneratorLaunchScriptUtilities.cpp
+                      XMLGeneratorLaunchUtilities.cpp
                       XMLGeneratorAnalyzeLoadFunctionInterface.cpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                       XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
@@ -46,7 +56,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
-                      XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.cpp
+                      XMLGeneratorLaunchScriptUtilities.cpp
                       XMLGeneratorRunMetadata.cpp
                       XMLGeneratorUtilities.cpp
                       XMLGeneratorParseRun.cpp
@@ -55,27 +65,35 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
+                      XMLGeneratorProblem.hpp 
                       XMLGeneratorDataStruct.hpp
                       XMLGeneratorValidInputKeys.hpp
                       XMLGeneratorRandomMetadata.hpp
                       XMLGeneratorOutputMetadata.hpp 
+                      XMLGeneratorStagesUtilities.hpp
                       XMLGeneratorParserUtilities.hpp 
-                      XMLGeneratorScenarioMetadata.hpp
-                      XMLGeneratorOptimizationParametersMetadata.hpp
                       XMLGeneratorServiceMetadata.hpp
+                      XMLGeneratorOutputUtilities.hpp
+                      XMLGeneratorScenarioMetadata.hpp
+                      XMLGeneratorAssemblyMetadata.hpp
                       XMLGeneratorBoundaryMetadata.hpp
                       XMLGeneratorMaterialMetadata.hpp 
+                      XMLGeneratorSierraSDUtilities.hpp
                       XMLGeneratorCriterionMetadata.hpp 
-                      XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorConstraintMetadata.hpp
+                      XMLGeneratorSharedDataUtilities.hpp
+                      XMLGeneratorPerformersUtilities.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
-                      XMLGeneratorAssemblyMetadata.hpp
-                      XMLGeneratorPlatoAnalyzeProblem.hpp 
-                      XMLGeneratorProblem.hpp 
                       XMLGeneratorDefinesFileUtilities.hpp 
                       XMLGeneratorPlatoAnalyzeUtilities.hpp 
                       XMLGeneratorInterfaceFileUtilities.hpp 
-                      # XMLGeneratorAnalyzeFunctionMapTypes.hpp
+                      XMLGeneratorDakotaInterfaceFileUtilities.hpp 
+                      XMLGeneratorDakotaDriverInputFileUtilities.hpp 
+                      XMLGeneratorGradBasedOptimizerOptions.hpp
+                      XMLGeneratorStagesOperationsUtilities.hpp
+                      XMLGeneratorOptimizationParametersMetadata.hpp
+                      XMLGeneratorParseMethodInputOptionsUtilities.hpp
+                      XMLGeneratorPostOptimizationRunFileUtilities.hpp
                       XMLGeneratorAnalyzePhysicsFunctionInterface.hpp
                       XMLGeneratorMaterialFunctionInterface.hpp
                       XMLGeneratorPlatoMainInputFileUtilities.hpp
@@ -86,7 +104,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp
                       XMLGeneratorSierraSDOperationsFileUtilities.hpp
                       XMLGeneratorSierraSDInputDeckUtilities.hpp
-                      XMLGeneratorLaunchScriptUtilities.hpp
+                      XMLGeneratorLaunchUtilities.hpp
                       # XMLGeneratorAnalyzeCriterionUtilities.hpp
                       XMLGeneratorAnalyzeLoadFunctionInterface.hpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp
@@ -97,7 +115,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       # XMLGeneratorAnalyzeAppendCriterionFunctionInterface.hpp
                       XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp
                       XMLGeneratorPlatoMainConstraintGradientOperationInterface.hpp
-                      XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.hpp
+                      XMLGeneratorLaunchScriptUtilities.hpp
                       # XMLGeneratorRandomInterfaceFileUtilities.hpp 
                       # XMLGeneratorPlatoMainFunctionMapTypes.hpp
                       # XMLGeneratorDataStruct.hpp

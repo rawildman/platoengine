@@ -320,14 +320,24 @@ void append_plato_problem_to_plato_analyze_input_deck
 }
 // function append_plato_problem_to_plato_analyze_input_deck
 /**********************************************************************************/
+
+/**********************************************************************************/
 void append_criteria_list_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
     auto tCriteriaList = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Criteria"}, tCriteriaList);
-    XMLGen::append_objective_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
-    XMLGen::append_constraint_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    if (aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+        aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        XMLGen::append_objective_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+        XMLGen::append_constraint_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    }
+    else if (aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        XMLGen::append_individual_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    }
 }
 
 /**********************************************************************************/
@@ -513,6 +523,32 @@ void append_constraint_criteria_to_criteria_list
     XMLGen::append_constraint_criteria_to_plato_problem(aXMLMetaData, aParentNode);
 }
 // function append_constraint_criteria_to_criteria_list
+/**********************************************************************************/
+
+pugi::xml_node append_individual_criteria_to_criteria_list
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode)
+{
+    pugi::xml_node tReturn;
+    XMLGen::AppendCriterionParameters<XMLGen::Criterion> tFunctionInterface;
+
+    for(auto& tCriteriaID : aXMLMetaData.objective.criteriaIDs)
+    {
+        auto &tCriterion = aXMLMetaData.criterion(tCriteriaID);
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        tReturn = tFunctionInterface.call(tCriterion, aParentNode);
+    }
+
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        auto &tCriterion = aXMLMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        tReturn = tFunctionInterface.call(tCriterion, aParentNode);
+    }
+
+    return tReturn;
+}
+// function append_individual_criteria_to_criteria_list
 /**********************************************************************************/
 
 /**********************************************************************************/

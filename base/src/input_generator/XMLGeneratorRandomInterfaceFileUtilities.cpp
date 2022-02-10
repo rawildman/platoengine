@@ -6,6 +6,7 @@
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
+#include "XMLGeneratorPerformersUtilities.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorRandomInterfaceFileUtilities.hpp"
@@ -157,40 +158,6 @@ void append_multiperformer_topology_shared_data
     }
 }
 //function append_multiperformer_topology_shared_data
-/******************************************************************************/
-
-/******************************************************************************/
-void append_physics_performers_multiperformer_usecase
-(const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aNode)
-{
-    if(aXMLMetaData.services().empty())
-    {
-        THROWERR("Append Physics Performer for a Nondeterministic Use Case: Services list is empty.")
-    }
-
-    int tNextPerformerID=1;
-    for(auto& tService : aXMLMetaData.services())
-    {
-        if(tService.code() != "plato_esp")  
-        {
-            const int tID = (&tService - &aXMLMetaData.services()[0]);
-            // The PlatoMain optimizer should always be the first service in the list
-            // so skip it.
-            if(tID > 0)
-            {
-                auto tPerformerNode = aNode.append_child("Performer");
-                XMLGen::append_children( { "PerformerID" }, { std::to_string(tNextPerformerID) }, tPerformerNode);
-                tNextPerformerID++;
-                auto tForNode = tPerformerNode.append_child("For");
-                XMLGen::append_attributes( { "var", "in" }, { "PerformerIndex", "Performers" }, tForNode);
-                auto tPerformerName = tService.performer() + "_{PerformerIndex}";
-                XMLGen::append_children( { "Name", "Code" }, { tPerformerName, tService.code() }, tForNode);
-            }
-        }
-    }
-}
-// function append_physics_performers_multiperformer_usecase
 /******************************************************************************/
 
 /******************************************************************************/

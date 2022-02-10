@@ -68,7 +68,6 @@
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLG_Macros.hpp"
 
-#include "XMLGeneratorPlatoAnalyzeProblem.hpp"
 #include "XMLGeneratorProblem.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 
@@ -120,7 +119,15 @@ namespace XMLGen
     // **********************************************************************************/
     void XMLGenerator::writeInputFiles(XMLGen::InputData &aInputData)
     {
-        XMLGen::Problem::write_optimization_problem(aInputData, m_PreProcessedInputData);
+        if (aInputData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+            aInputData.optimization_parameters().optimizationType() == OT_SHAPE)
+        {
+            XMLGen::Problem::write_optimization_problem(aInputData, m_PreProcessedInputData);
+        }
+        else if (aInputData.optimization_parameters().optimizationType() == OT_DAKOTA)
+        {
+            XMLGen::Problem::write_dakota_problem(aInputData, m_PreProcessedInputData);
+        }
     }
 
     // /******************************************************************************//**
@@ -306,9 +313,9 @@ namespace XMLGen
     /******************************************************************************/
     {
         this->expandEssentialBoundaryConditions(aInputData);
-        determineIfPlatoEngineFilteringIsNeeded();
+        this->determineIfPlatoEngineFilteringIsNeeded();
         this->createCopiesForPerformerCreation(aInputData);
-        setupHelmholtzFilterService(aInputData);
+        this->setupHelmholtzFilterService(aInputData);
     }
 
     /******************************************************************************/
@@ -374,7 +381,6 @@ namespace XMLGen
                 tTempShapeServiceID == aShapeServiceID)
             {
                 std::string tTempCriterionID = aOriginalInputData.objective.criteriaIDs[j];
-                std::string tWeight = aOriginalInputData.objective.weights[j];
                 aNewInputData.objective.serviceIDs.push_back(tTempServiceID);
                 if (aShapeServiceID != "")
                 {
@@ -382,7 +388,11 @@ namespace XMLGen
                 }
                 aNewInputData.objective.scenarioIDs.push_back(tTempScenarioID);
                 aNewInputData.objective.criteriaIDs.push_back(tTempCriterionID);
-                aNewInputData.objective.weights.push_back(tWeight);
+                if (aOriginalInputData.objective.type != "single_criterion")
+                {
+                    std::string tWeight = aOriginalInputData.objective.weights[j];
+                    aNewInputData.objective.weights.push_back(tWeight);
+                }
             }
         }
     }
@@ -472,9 +482,9 @@ namespace XMLGen
             if (tShapeServiceID != "")
             {
                 bool tFound=false;
-                for(auto &tCurService : aInputData.mPerformerServices)
+                for(auto &service : aInputData.mPerformerServices)
                 {
-                    if(tCurService.id() == tShapeServiceID)
+                    if(service.id() == tShapeServiceID)
                     {
                         tFound = true; 
                         break;
@@ -640,7 +650,7 @@ namespace XMLGen
     {
         if (aInputData.objective.multi_load_case == "true")
         {
-            createObjectiveCopiesForMultiLoadCase(aInputData, aObjectiveScenarioServiceTuples);
+            this->createObjectiveCopiesForMultiLoadCase(aInputData, aObjectiveScenarioServiceTuples);
         }
         else
         {

@@ -5,6 +5,7 @@
  */
 
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 
 namespace XMLGen
@@ -231,7 +232,7 @@ void write_sierra_sd_operation_xml_file
     pugi::xml_document tDocument;
     XMLGen::append_include_defines_xml_data(aXMLMetaData, tDocument);
     add_operations(aXMLMetaData, tDocument);
-    std::string tServiceID = get_salinas_service_id(aXMLMetaData);
+    std::string tServiceID = XMLGen::get_salinas_service_id(aXMLMetaData);
     std::string tFilename = std::string("sierra_sd_") + tServiceID + "_operations.xml";
     tDocument.save_file(tFilename.c_str(), "  ");
 }

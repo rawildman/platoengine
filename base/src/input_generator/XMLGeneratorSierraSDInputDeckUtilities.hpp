@@ -25,9 +25,5 @@ void write_sierra_sd_modal_input_deck
 
 void augment_sierra_sd_input_deck_with_plato_problem_description(const XMLGen::InputData &aXMLMetaData, std::istream &inputDeck, std::ostream &outfile);
 
-bool extractMetaDataForWritingSDInputDeck(const XMLGen::InputData &aMetaData,
-                                          XMLGen::Service &tService,
-                                          XMLGen::Scenario &tScenario,
-                                          XMLGen::Criterion &tCriterion);
 }
 // namespace XMLGen

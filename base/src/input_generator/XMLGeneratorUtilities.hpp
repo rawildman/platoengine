@@ -56,226 +56,269 @@
 namespace XMLGen
 {
     
-    void append_version_entry(pugi::xml_document& aDocument);
+void append_version_entry(pugi::xml_document& aDocument);
 
-    bool addNTVParameter(pugi::xml_node parent_node,
-                     const std::string &name,
-                     const std::string &type,
-                     const std::string &value);
-    bool addChild(pugi::xml_node parent_node, 
-              const std::string &name, 
-              const std::string &value);
+bool addNTVParameter(pugi::xml_node parent_node,
+                 const std::string &name,
+                 const std::string &type,
+                 const std::string &value);
 
-    pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
-                                                   const std::string &aName,
-                                                   const std::string &aType,
-                                                   const std::string &aOwner,
-                                                   const std::string &aUser);
-    pugi::xml_node createSingleUserNodalSharedData(pugi::xml_node &aNode,
-                                                   const std::string &aName,
-                                                   const std::string &aType,
-                                                   const std::string &aOwner,
-                                                   const std::string &aUser);
-    pugi::xml_node createSingleUserElementSharedData(pugi::xml_document &aDoc,
-                                                     const std::string &aName,
-                                                     const std::string &aType,
-                                                     const std::string &aOwner,
-                                                     const std::string &aUser);
-    pugi::xml_node createSingleUserElementSharedData(pugi::xml_node &aNode,
-                                                     const std::string &aName,
-                                                     const std::string &aType,
-                                                     const std::string &aOwner,
-                                                     const std::string &aUser);
-    pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_document &aDoc,
-                                                    const std::string &aName,
-                                                    const std::string &aType,
-                                                    const std::string &aSize,
-                                                    const std::string &aOwner,
-                                                    const std::string &aUser);
-    pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_node &aNode,
-                                                    const std::string &aName,
-                                                    const std::string &aType,
-                                                    const std::string &aSize,
-                                                    const std::string &aOwner,
-                                                    const std::string &aUser);
-    pugi::xml_node createMultiUserGlobalSharedData(pugi::xml_document &aDoc,
-                                                   const std::string &aName,
-                                                   const std::string &aType,
-                                                   const std::string &aSize,
-                                                   const std::string &aOwner,
-                                                   const std::vector<std::string> &aUsers);
+bool addChild(pugi::xml_node parent_node, 
+          const std::string &name, 
+          const std::string &value);
 
-    /******************************************************************************//**
-     * \fn compute_greatest_divisor
-     * \brief Find greatest divisor, i.e. value which yields modulus = 0.
-     * \param [in]     aDividend dividend
-     * \param [in/out] aDivisor  divisor
-    **********************************************************************************/
-    size_t compute_greatest_divisor(const size_t& aDividend, size_t aDivisor);
+pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
+                                               const std::string &aName,
+                                               const std::string &aType,
+                                               const std::string &aOwner,
+                                               const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn append_children
-     * \brief Append children to a PUGI XML node.
-     * \param [in]     aKeys        keys to append
-     * \param [in]     aValues      values to append
-     * \param [in/out] aParentNode  PUGI XML node
-    **********************************************************************************/
-    void append_children
-    (const std::vector<std::string>& aKeys,
-     const std::vector<std::string>& aValues,
-     pugi::xml_node& aParentNode);
+pugi::xml_node createSingleUserNodalSharedData(pugi::xml_node &aNode,
+                                               const std::string &aName,
+                                               const std::string &aType,
+                                               const std::string &aOwner,
+                                               const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn append_attributes
-     * \brief Append attributes, i.e. keys and values, to a PUGI XML document.
-     * \param [in]     aNodeName  pugi::node name
-     * \param [in]     aKeywords  keywords to append
-     * \param [in]     aValues    values to append
-     * \param [in/out] aDocument  pugi::xml_document
-    **********************************************************************************/
-    void append_attributes
-    (const std::string& aNodeName,
-     const std::vector<std::string>& aKeywords,
-     const std::vector<std::string>& aValues,
-     pugi::xml_document& aDocument);
+pugi::xml_node createSingleUserElementSharedData(pugi::xml_document &aDoc,
+                                                 const std::string &aName,
+                                                 const std::string &aType,
+                                                 const std::string &aOwner,
+                                                 const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn append_attributes
-     * \brief Append attributes, i.e. keys and values, to a PUGI XML node.
-     * \param [in]     aKeywords   keys to append
-     * \param [in]     aValues     values to append
-     * \param [in/out] aParentNode PUGI XML node
-    **********************************************************************************/
-    void append_attributes
-    (const std::vector<std::string>& aKeywords,
-     const std::vector<std::string>& aValues,
-     pugi::xml_node& aParentNode);
+pugi::xml_node createSingleUserElementSharedData(pugi::xml_node &aNode,
+                                                 const std::string &aName,
+                                                 const std::string &aType,
+                                                 const std::string &aOwner,
+                                                 const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn append_parameter_plus_attributes
-     * \brief Append parameter child to parent node and corresponding child attributes.
-     * \param [in]     aKeywords   keys to append
-     * \param [in]     aValues     values to append
-     * \param [in/out] aParentNode PUGI XML node
-    **********************************************************************************/
-    void append_parameter_plus_attributes
-    (const std::vector<std::string>& aKeys,
-     const std::vector<std::string>& aValues,
-     pugi::xml_node& aParentNode);
+pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_document &aDoc,
+                                                const std::string &aName,
+                                                const std::string &aType,
+                                                const std::string &aSize,
+                                                const std::string &aOwner,
+                                                const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn transform_tokens
-     * \brief Transform list of tokens into string and return its string value.
-     * \param [in] aTokens list of tokens
-     * \return string value
-    **********************************************************************************/
-    std::string transform_tokens(const std::vector<std::string>& aTokens);
+pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_node &aNode,
+                                                const std::string &aName,
+                                                const std::string &aType,
+                                                const std::string &aSize,
+                                                const std::string &aOwner,
+                                                const std::string &aUser);
 
-    /******************************************************************************//**
-     * \fn read_data_from_file
-     * \brief Read data from text file and return string metadata.
-     * \param [in] aFilename text filename
-     * \return string metadata
-    **********************************************************************************/
-    std::stringstream read_data_from_file(const std::string& aFilename);
+pugi::xml_node createMultiUserGlobalSharedData(pugi::xml_document &aDoc,
+                                               const std::string &aName,
+                                               const std::string &aType,
+                                               const std::string &aSize,
+                                               const std::string &aOwner,
+                                               const std::vector<std::string> &aUsers);
 
-    /******************************************************************************//**
-     * \fn set_key_value
-     * \brief Set the value associated with the input key.
-     * \param [in]     aKey           parameter key
-     * \param [in]     aValue         parameter value
-     * \param [in/out] aKeyToValueMap parameter key to value map, i.e. map<key,value>
-    **********************************************************************************/
-    void set_key_value
-    (const std::string& aKey,
-     const std::string& aValue,
-     std::unordered_map<std::string, std::string>& aKeyToValueMap);
+/******************************************************************************//**
+ * \fn compute_greatest_divisor
+ * \brief Find greatest divisor, i.e. value which yields modulus = 0.
+ * \param [in]     aDividend dividend
+ * \param [in/out] aDivisor  divisor
+**********************************************************************************/
+size_t compute_greatest_divisor(const size_t& aDividend, size_t aDivisor);
 
-    /******************************************************************************//**
-     * \fn set_value_keyword_to_ignore_if_empty
-     * \brief If input string is empty, return 'IGNORE'.
-     * \param [in] aValues standard string
-     * \return if input string is empty, return 'IGNORE'; else, return input string
-    **********************************************************************************/
-    std::string set_value_keyword_to_ignore_if_empty(const std::string& aValue);
+/******************************************************************************//**
+ * \fn append_children
+ * \brief Append children to a PUGI XML node.
+ * \param [in]     aKeys        keys to append
+ * \param [in]     aValues      values to append
+ * \param [in/out] aParentNode  PUGI XML node
+**********************************************************************************/
+void append_children
+(const std::vector<std::string>& aKeys,
+ const std::vector<std::string>& aValues,
+ pugi::xml_node& aParentNode);
 
-    /******************************************************************************//**
-     * \fn set_value_keyword_to_ignore_if_empty
-     * \brief If input value keyword is empty, set value keyword to 'IGNORE'.
-     * \param [in/out] aValues list of value keywords
-    **********************************************************************************/
-    void set_value_keyword_to_ignore_if_empty(std::vector<std::string>& aValues);
+/******************************************************************************//**
+ * \fn append_attributes
+ * \brief Append attributes, i.e. keys and values, to a PUGI XML document.
+ * \param [in]     aNodeName  pugi::node name
+ * \param [in]     aKeywords  keywords to append
+ * \param [in]     aValues    values to append
+ * \param [in/out] aDocument  pugi::xml_document
+**********************************************************************************/
+void append_attributes
+(const std::string& aNodeName,
+ const std::vector<std::string>& aKeywords,
+ const std::vector<std::string>& aValues,
+ pugi::xml_document& aDocument);
 
-    /******************************************************************************//**
-     * \fn transform_key_tokens
-     * \brief Return list of key keywords in key to value map.
-     * \param [in] aKeyToValueMap key to value map
-     * \return list of key keywords
-    **********************************************************************************/
-    std::vector<std::string> transform_key_tokens
-    (const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+/******************************************************************************//**
+ * \fn append_attributes
+ * \brief Append attributes, i.e. keys and values, to a PUGI XML node.
+ * \param [in]     aKeywords   keys to append
+ * \param [in]     aValues     values to append
+ * \param [in/out] aParentNode PUGI XML node
+**********************************************************************************/
+void append_attributes
+(const std::vector<std::string>& aKeywords,
+ const std::vector<std::string>& aValues,
+ pugi::xml_node& aParentNode);
 
-    /******************************************************************************//**
-     * \fn transform_value_tokens
-     * \brief Return list of value keywords in key to value map.
-     * \param [in] aKeyToValueMap key to value map
-     * \return list of value keywords
-    **********************************************************************************/
-    std::vector<std::string> transform_value_tokens
-    (const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+/******************************************************************************//**
+ * \fn append_parameter_plus_attributes
+ * \brief Append parameter child to parent node and corresponding child attributes.
+ * \param [in]     aKeywords   keys to append
+ * \param [in]     aValues     values to append
+ * \param [in/out] aParentNode PUGI XML node
+**********************************************************************************/
+void append_parameter_plus_attributes
+(const std::vector<std::string>& aKeys,
+ const std::vector<std::string>& aValues,
+ pugi::xml_node& aParentNode);
 
-    /******************************************************************************//**
-     * \fn assert_is_positive_integer
-     * \brief Assert if input string is a positive integer.
-     * \param [in] aString input string
-    **********************************************************************************/
-    void assert_is_positive_integer(const std::string& aString);
+/******************************************************************************//**
+ * \fn transform_tokens
+ * \brief Transform list of tokens into string and return its string value.
+ * \param [in] aTokens list of tokens
+ * \return string value
+**********************************************************************************/
+std::string transform_tokens(const std::vector<std::string>& aTokens);
 
-    /******************************************************************************//**
-     * \fn is_shape_optimization_problem
-     * \brief Check if this is a shape optimization problem
-     * \param [in] aMetaData Input metadata
-    **********************************************************************************/
-    bool is_shape_optimization_problem(const XMLGen::InputData& aMetaData);
+/******************************************************************************//**
+ * \fn read_data_from_file
+ * \brief Read data from text file and return string metadata.
+ * \param [in] aFilename text filename
+ * \return string metadata
+**********************************************************************************/
+std::stringstream read_data_from_file(const std::string& aFilename);
 
-    /******************************************************************************//**
-     * \fn append_include_defines_xml_data
-     * \brief Append "include defines.xml" to interface.xml file.
-     * \param [in]     aXMLMetaData Plato problem input metadata
-     * \param [in/out] aParentNode  parent xml node
-    **********************************************************************************/
-    void append_include_defines_xml_data
-    (const XMLGen::InputData& aMetaData,
-     pugi::xml_document& aDocument);
+/******************************************************************************//**
+ * \fn set_key_value
+ * \brief Set the value associated with the input key.
+ * \param [in]     aKey           parameter key
+ * \param [in]     aValue         parameter value
+ * \param [in/out] aKeyToValueMap parameter key to value map, i.e. map<key,value>
+**********************************************************************************/
+void set_key_value
+(const std::string& aKey,
+ const std::string& aValue,
+ std::unordered_map<std::string, std::string>& aKeyToValueMap);
 
-    /******************************************************************************//**
-     * \fn get_salinas_service_id
-     * \brief Get the id of the Sierra/SD service
-     * \param [in]     aXMLMetaData Plato problem input metadata
-    **********************************************************************************/
-    std::string get_salinas_service_id
-    (const XMLGen::InputData& aXMLMetaData);
+/******************************************************************************//**
+ * \fn set_value_keyword_to_ignore_if_empty
+ * \brief If input string is empty, return 'IGNORE'.
+ * \param [in] aValues standard string
+ * \return if input string is empty, return 'IGNORE'; else, return input string
+**********************************************************************************/
+std::string set_value_keyword_to_ignore_if_empty(const std::string& aValue);
 
-    /******************************************************************************//**
-     * \fn is_robust_optimization_problem
-     * \brief Write input files needed to solve optimization problems with Plato Analyze.
-     * \param [in] aInputData input metadata
-    **********************************************************************************/
-    inline bool is_robust_optimization_problem
-    (const XMLGen::InputData& aMetaData)
-    {
-        if(aMetaData.mRandomMetaData.empty())
-            return false;
-        else
-            return true;
-    }
+/******************************************************************************//**
+ * \fn set_value_keyword_to_ignore_if_empty
+ * \brief If input value keyword is empty, set value keyword to 'IGNORE'.
+ * \param [in/out] aValues list of value keywords
+**********************************************************************************/
+void set_value_keyword_to_ignore_if_empty(std::vector<std::string>& aValues);
 
-    /******************************************************************************//**
-     * \fn negate_scalar_values
-     * \brief Add "-" character to each element in the list.
-     * \param [in,out] aInputs list of strings
-    **********************************************************************************/
-    void negate_scalar_values(std::vector<std::string>& aInputs);
+/******************************************************************************//**
+ * \fn transform_key_tokens
+ * \brief Return list of key keywords in key to value map.
+ * \param [in] aKeyToValueMap key to value map
+ * \return list of key keywords
+**********************************************************************************/
+std::vector<std::string> transform_key_tokens
+(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+
+/******************************************************************************//**
+ * \fn transform_value_tokens
+ * \brief Return list of value keywords in key to value map.
+ * \param [in] aKeyToValueMap key to value map
+ * \return list of value keywords
+**********************************************************************************/
+std::vector<std::string> transform_value_tokens
+(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+
+/******************************************************************************//**
+ * \fn assert_is_positive_integer
+ * \brief Assert if input string is a positive integer.
+ * \param [in] aString input string
+**********************************************************************************/
+void assert_is_positive_integer(const std::string& aString);
+
+/******************************************************************************//**
+ * \fn is_shape_optimization_problem
+ * \brief Check if this is a shape optimization problem
+ * \param [in] aMetaData Input metadata
+**********************************************************************************/
+bool is_shape_optimization_problem(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn append_include_defines_xml_data
+ * \brief Append "include defines.xml" to interface.xml file.
+ * \param [in]     aMetaData Plato problem input metadata
+ * \param [in/out] aParentNode  parent xml node
+**********************************************************************************/
+void append_include_defines_xml_data
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn is_robust_optimization_problem
+ * \brief Write input files needed to solve optimization problems with Plato Analyze.
+ * \param [in] aInputData input metadata
+**********************************************************************************/
+bool is_robust_optimization_problem(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn negate_scalar_values
+ * \brief Add "-" character to each element in the list.
+ * \param [in,out] aInputs list of strings
+**********************************************************************************/
+void negate_scalar_values(std::vector<std::string>& aInputs);
+
+/******************************************************************************//**
+ * \fn have_auxiliary_mesh
+ * \brief determine whether we have an auxiliary mesh (to be joined to an ESP mesh)
+ * \param [in]     aMetaData Plato problem input data
+**********************************************************************************/
+bool have_auxiliary_mesh(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn get_design_variable_name
+ * \brief Return design variable name for topology optimization problems.
+ * \param [in] aMetaData  Plato problem input metadata
+ * \return design variable name
+**********************************************************************************/
+std::string get_design_variable_name
+(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn count_number_of_reinitializations_needed
+ * \brief Return of mesh reinitialization needed.
+ * \param [in] aMetaData  Plato problem input metadata
+ * \param [in] aObjectiveinput objective input metadata
+ * \return number of reinitializations
+**********************************************************************************/
+int count_number_of_reinitializations_needed
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Objective& aObjective);
+
+/******************************************************************************//**
+ * \fn need_update_problem_stage
+ * \brief Return whether any service has the update problem feature enabled.
+ * \param [in] aMetaData  Plato problem input data
+**********************************************************************************/
+bool need_update_problem_stage(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn num_cache_states
+ * \brief Return the number of services with the cache state feature enabled.
+ * \param [in] aServices List of services to check
+**********************************************************************************/
+int num_cache_states(const std::vector<XMLGen::Service> &aServices);
+
+/******************************************************************************//**
+ * \fn append_concurrent_tag_to_file
+ * \brief Append concurrent evaluations tag for dakota problems
+ * \param [in]     aFileString operation name
+ * \param [in]     aTag tag for concurrent evaluations
+**********************************************************************************/
+std::string append_concurrent_tag_to_file_string
+(const std::string& aFileString,
+ const std::string& aTag);
 
 }
 // namespace XMLGen

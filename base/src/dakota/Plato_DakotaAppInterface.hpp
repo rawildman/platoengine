@@ -62,6 +62,7 @@
 #include "Plato_Interface.hpp"
 #include "Plato_FreeFunctions.hpp"
 #include "Plato_DakotaDataMap.hpp"
+#include "Plato_DakotaAppInterfaceUtilities.hpp"
 
 namespace Plato
 {
@@ -121,27 +122,20 @@ public:
     **********************************************************************************/
     void set_communicators_checks(int max_eval_concurrency) override;
 
-    /******************************************************************************//**
-     * \brief enum for dakota active set evaluation types.
-    **********************************************************************************/
-    enum evaluationTypes 
-    { 
-      NO_DATA, 
-      GET_VALUE, 
-      GET_GRADIENT,
-      GET_GRADIENT_AND_VALUE, 
-      GET_HESSIAN,
-      GET_HESSIAN_AND_VALUE,
-      GET_HESSIAN_AND_GRADIENT,
-      GET_HESSIAN_AND_GRADIENT_AND_VALUE 
-    };
-
 private:
     /******************************************************************************//**
      * \brief Set input shared data and initialize output shared data for all stages
      * \param [in] aParamResponsePairQueue parameter-response pair queue metadata
     **********************************************************************************/
-    void setStageData(const Dakota::PRPQueue& aParamResponsePairQueue);
+    void setAllStageData(const Dakota::PRPQueue& aParamResponsePairQueue);
+
+    /******************************************************************************//**
+     * \brief Set input shared data and initialize output shared data for aStageTag
+     * \param [in] aStageTag 
+     * \param [in] aParamResponsePairQueue parameter-response pair queue metadata
+    **********************************************************************************/
+    void setStageData(const std::string& aStageTag,
+                      const Dakota::PRPQueue& aParamResponsePairQueue);
 
     /******************************************************************************//**
      * \brief For each criterion sets the stage type (value, gradient or both) \n
@@ -172,6 +166,22 @@ private:
     void setCriterionStageData(const Dakota::PRPQueue& aParamResponsePairQueue);
 
     /******************************************************************************//**
+     * \brief Set input shared data and initialize output shared data for stages
+     * involving a specific prp 
+     * \param [in] aNumCriteria The number of criteria associated with the first
+     * prp in the queue. We currently require that each PRP has the same number
+     * \param [in] aPrpIndex index of PRP in the PRPQueue
+     * \param [in] aPRP parameter-response pair
+    **********************************************************************************/
+    void setCriterionStageDataForPRP(const size_t& aNumCriteria,
+                                     const size_t& aPrpIndex,
+                                     const Dakota::ParamResponsePair &aPRP);
+
+    void setSingleCriterionStageDataForPRP(const size_t& aCriterionIndex,
+                                           const size_t& aPrpIndex,
+                                           std::vector<DakotaEvaluationType>& aEvaluationFlags);
+
+    /******************************************************************************//**
      * \brief Set input shared data and initialize output shared data for finalize 
      * stage
      * \param [in] aParamResponsePairQueue parameter-response pair queue metadata
@@ -182,6 +192,7 @@ private:
      * \brief Sets input and output shared data for the criterion
      * \param [in] aStageTag tag for stage
      * \param [in] aPrpIndex index in prp queue
+     * \param [in] aDataMap maps from plato stage shared data (inputs & outputs) to dakota data
     **********************************************************************************/
     void setStageSharedData(const std::string aStageTag, const size_t aPrpIndex);
 
@@ -210,41 +221,9 @@ private:
     void setStageDiscreteIntegerVarsInputSharedData(const std::string& aStageTag, const size_t aPrpIndex);
 
     /******************************************************************************//**
-     * \brief Set outputs for current Plato Engine stage by initializing the output \n
-     *  shared data arrays. 
-     * \param [in] aStageTag stage tag, e.g. criterion_value_0
-     * \param [in] aPrpIndex index in prp queue
-    **********************************************************************************/
-    void setStageOutputSharedData(const std::string &aStageTag, const size_t aPrpIndex);
-
-    /******************************************************************************//**
      * \brief Create list of stage names and evaluate using Plato Interface.
     **********************************************************************************/
     void evaluateStages();
-
-    /******************************************************************************//**
-     * \brief Set std::vector of stage names for evaluation
-     * \param [in] aStageNames std::vector containing stage names
-    **********************************************************************************/
-    void setStageNamesForEvaluation(std::vector<std::string> & aStageNames);
-
-    /******************************************************************************//**
-     * \brief Set initialize stage name in std::vector of stage names for evaluation
-     * \param [in] aStageNames std::vector containing stage names
-    **********************************************************************************/
-    void setInitializeStageNameForEvaluation(std::vector<std::string> & aStageNames);
-
-    /******************************************************************************//**
-     * \brief Set criterion stage names in std::vector of stage names for evaluation
-     * \param [in] aStageNames std::vector containing stage names
-    **********************************************************************************/
-    void setCriterionStageNamesForEvaluation(std::vector<std::string> & aStageNames);
-
-    /******************************************************************************//**
-     * \brief Set finalize stage name in std::vector of stage names for evaluation
-     * \param [in] aStageNames std::vector containing stage names
-    **********************************************************************************/
-    void setFinalizeStageNameForEvaluation(std::vector<std::string> & aStageNames);
 
     /******************************************************************************//**
      * \brief Set dakota output data from output shared data and finalize criteria
@@ -252,32 +231,26 @@ private:
     void setDakotaOutputData(const Dakota::PRPQueue &aParamResponsePairQueue);
 
     /******************************************************************************//**
-     * \brief Set dakota output values from output shared data 
-     * \param [in] aCriterion criterion index
-     * \param [in] aPrpIndex index in prp queue
-     * \param [in] aDakotaFunVals vector of criterion values for dakota
+     * \brief Set local data to populate dakota data structures for input PRP
+     * \param [in] aPRP Dakota parameter response pair
     **********************************************************************************/
-    void setValueOutputs(const size_t aCriterion, 
-                         const size_t aPrpIndex, 
-                         Dakota::RealVector & aDakotaFunVals);
+    void setLocalData(const Dakota::ParamResponsePair& aPRP);
 
     /******************************************************************************//**
-     * \brief Set dakota output values from output shared data 
-     * \param [in] aCriterion criterion index
-     * \param [in] aPrpIndex index in prp queue
-     * \param [in] aDakotaFunGrads matrix of criterion gradient values for dakota
+     * \brief Set local data to populate dakota data structures for input PRP
+     * \param [in] aPRP Dakota parameter response pair
     **********************************************************************************/
-    void setGradientOutputs(const size_t aCriterion, 
-                            const size_t aPrpIndex, 
-                            Dakota::RealMatrix & aDakotaFunGrads);
+    void setNewEvaluationFlagsForPRPQueue(const size_t& tNumCriteria,
+                                          const Dakota::PRPQueue& aParamResponsePairQueue);
 
 private:
     Plato::Interface *mInterface; /*!< provides access to functions in plato engine */
     Teuchos::ParameterList mParameterList = Teuchos::ParameterList(); /*!< list of input and output shared data for evaluating plato stages */
     Plato::DakotaDataMap mDataMap; /*!< maps from plato stage shared data (inputs & outputs) to dakota data*/
-    std::vector<Plato::DakotaAppInterface::evaluationTypes> mEvaluationFlags; /*!< flag of evaluation type (value, gradient, or gradient and value) for different criteria  */
+    std::vector<Plato::DakotaEvaluationType> mEvaluationFlags; /*!< flag of evaluation type (value, gradient, or gradient and value) for different criteria  */
 
 };
 // class DakotaAppInterface
+
 }
 // namespace Plato

@@ -75,14 +75,7 @@ read_dakota_program_options(std::string aInputFileName = "")
     }
     else
     {
-        std::string tDakotaInputString; // get dakota input string
-        if(tDakotaInputString.empty())
-        {
-            THROWERR(std::string("Did not find input file 'plato_dakota_input_deck.i'. ")
-                + "Plato-Dakota driver expected to read Dakota's program options from string. "
-                + "However, parsed input string is empty.")
-        }
-        tProgramOptions->input_string(tDakotaInputString);
+        THROWERR(std::string("Did not find input file \"" + tInputFileName + "\""))
     }
 
     return tProgramOptions;

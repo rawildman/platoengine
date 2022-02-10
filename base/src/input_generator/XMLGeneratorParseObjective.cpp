@@ -125,7 +125,7 @@ void ParseObjective::setWeights(XMLGen::Objective &aMetadata)
     std::string tValues = tItr->second.first.second;
     if(aMetadata.type == "single_criterion" && tItr !=mTags.end() && !tValues.empty())
         THROWERR("Weights defined for single_criterion objective type")
-    if(aMetadata.type == "weighted_sum")
+    if(aMetadata.type == "weighted_sum" || aMetadata.type == "multi_objective")
     {
         if (tItr != mTags.end() && !tValues.empty())
         {

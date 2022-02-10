@@ -182,7 +182,7 @@ struct ValidObjectiveTypeKeys
     /*!<
      * \brief Valid plato input deck criterion keywords.
      **/
-    std::vector<std::string> mKeys = {"single_criterion", "weighted_sum"};
+    std::vector<std::string> mKeys = {"single_criterion", "weighted_sum", "multi_objective"};
 };
 // struct ValidObjectiveTypeKeys
 
@@ -229,7 +229,8 @@ private:
         "modal_matching",
         "modal_projection_error",
         "mass_properties",
-        "displacement"
+        "displacement",
+        "volume_average_von_mises"
     };
 
 public:
@@ -1555,14 +1556,6 @@ struct ValidOptimizationParameterKeys
      "filter_service",
      "projection_type",
      "filter_power",
-     "gcmma_inner_kkt_tolerance",
-     "gcmma_outer_kkt_tolerance",
-     "gcmma_inner_control_stagnation_tolerance",
-     "gcmma_outer_control_stagnation_tolerance",
-     "gcmma_outer_objective_stagnation_tolerance",
-     "gcmma_max_inner_iterations",
-     "gcmma_outer_stationarity_tolerance",
-     "gcmma_initial_moving_asymptotes_scale_factor",
      "ks_max_radius_scale",
      "ks_initial_radius_scale",
      "max_trust_region_radius",
@@ -1611,7 +1604,16 @@ struct ValidOptimizationParameterKeys
      "amgx_print_solver_stats",
      "reset_algorithm_on_update",
      "rol_subproblem_model",
-     "rol_lin_more_cauchy_initial_step_size"
+     "rol_lin_more_cauchy_initial_step_size",
+     "dakota_workflow",
+     "concurrent_evaluations",
+     "mdps_partitions",
+     "mdps_response_functions",
+     "sbgo_max_iterations",
+     "moga_population_size",
+     "moga_niching_distance",
+     "moga_max_function_evaluations",
+     "num_sampling_method_samples",
     };
 };
 

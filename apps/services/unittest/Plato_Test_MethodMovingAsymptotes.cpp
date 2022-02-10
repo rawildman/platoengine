@@ -797,11 +797,11 @@ TEST(PlatoTest, PERF_MethodMovingAsymptotes_5Bars)
     Plato::solve_mma<double, size_t>(tObjective, tConstraintList, tInputs, tOutputs);
 
     // ********* TEST SOLUTION *********
-    const double tTolerance = 1e-8;
-    ASSERT_NEAR(1.3399579043319767, tOutputs.mObjFuncValue, tTolerance);
-    ASSERT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
+    const double tTolerance = 2e-8;
+    EXPECT_NEAR(1.3399563684500915, tOutputs.mObjFuncValue, tTolerance);
+    EXPECT_TRUE(std::abs((*tOutputs.mConstraints)[0]) < tTolerance);
     Plato::StandardMultiVector<double> tGold(tNumVectors, tNumControls);
-    tGold(0,0) = 6.0222315988566022; tGold(0,1) = 5.3084162423219787; tGold(0,2) = 4.4935834845362104; tGold(0,3) = 3.4970208248829286; tGold(0,4) = 2.1524322136967804;
+    tGold(0,0) = 6.0160154481369661; tGold(0,1) = 5.3091734628366671; tGold(0,2) = 4.4943292328476749; tGold(0,3) = 3.5014747043154246; tGold(0,4) = 2.1526669026660157;
     PlatoTest::checkMultiVectorData(*tOutputs.mSolution, tGold, tTolerance);
 
     // ********* PRINT SOLUTION *********

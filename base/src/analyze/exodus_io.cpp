@@ -594,7 +594,6 @@ ExodusIO::writeHeader()
     for(int i=0; i<num_side_sets; i++) {
       int side_set_id = ss[i].id;
       int num_side_in_set = ss[i].numSides;
-      int num_nodes_per_face = ss[i].nodesPerFace;
       int num_dist_in_set = 0;
       if( ex_put_set_param(myFileID, EX_SIDE_SET, side_set_id, num_side_in_set,
                                 num_dist_in_set) ) {

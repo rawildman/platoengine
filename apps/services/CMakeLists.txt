@@ -32,11 +32,11 @@ if( ENABLE_PLATO_SERVICES )
 endif()
 
 if (PLATO_ENABLE_SERVICES_PYTHON)
-    find_package(Python2 COMPONENTS Development Interpreter)
+    find_package(Python3 COMPONENTS Development Interpreter)
     add_library( PlatoServices SHARED PlatoApp.cpp ServicesPythonModule.cpp )
-    target_include_directories(PlatoServices SYSTEM PRIVATE ${Python2_INCLUDE_DIRS} )
+    target_include_directories(PlatoServices SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
     target_link_libraries( PlatoServices ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES} 
-                           ${Python2_LIBRARIES} )
+                           ${Python3_LIBRARIES} )
     set_target_properties( PlatoServices PROPERTIES PREFIX "" )
     target_compile_options( PlatoServices PRIVATE "-lmpi" )
 

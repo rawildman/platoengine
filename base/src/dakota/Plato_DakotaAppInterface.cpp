@@ -88,7 +88,7 @@ int DakotaAppInterface::derived_map_of(const Dakota::String &of_name)
 
 void DakotaAppInterface::wait_local_evaluations(Dakota::PRPQueue &aParamResponsePairQueue)
 {
-    this->setStageData(aParamResponsePairQueue);
+    this->setAllStageData(aParamResponsePairQueue);
     this->evaluateStages();
     this->setDakotaOutputData(aParamResponsePairQueue);
 }
@@ -103,7 +103,7 @@ void DakotaAppInterface::set_communicators_checks(int max_eval_concurrency)
   // virtual function overwritten to enable call to wait_local_evaluations
 }
 
-void DakotaAppInterface::setStageData(const Dakota::PRPQueue &aParamResponsePairQueue)
+void DakotaAppInterface::setAllStageData(const Dakota::PRPQueue &aParamResponsePairQueue)
 {
     this->setInitializeStageData(aParamResponsePairQueue);
 
@@ -116,62 +116,57 @@ void DakotaAppInterface::setStageData(const Dakota::PRPQueue &aParamResponsePair
 void DakotaAppInterface::setEvaluationFlags(const Dakota::PRPQueue &aParamResponsePairQueue)
 {
     size_t tNumCriteria = this->determineNumberOfCriteria(aParamResponsePairQueue);
-    mEvaluationFlags.resize(tNumCriteria);
 
-    for(size_t tFlagIndex = 0; tFlagIndex < tNumCriteria; tFlagIndex++)
-    {
-        mEvaluationFlags[tFlagIndex] = NO_DATA;
-    }
+    resetEvaluationFlags(tNumCriteria,mEvaluationFlags);
+    this->setNewEvaluationFlagsForPRPQueue(tNumCriteria,aParamResponsePairQueue);
+}
 
+void DakotaAppInterface::setNewEvaluationFlagsForPRPQueue(const size_t& tNumCriteria,
+                                                          const Dakota::PRPQueue& aParamResponsePairQueue)
+{
     for(size_t tCriterion = 0; tCriterion < tNumCriteria; tCriterion++)
     {
         for (auto tPRP : aParamResponsePairQueue)
         {
-            const Dakota::Variables &tVariables = tPRP.variables();
-            const Dakota::ActiveSet &tActiveSet = tPRP.active_set();
-            Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
-
+            this->setLocalData(tPRP);
             auto tDirectFnASV = Dakota::DirectApplicInterface::directFnASV[tCriterion];
-
-            if(mEvaluationFlags[tCriterion] == NO_DATA)
-                mEvaluationFlags[tCriterion] = static_cast<Plato::DakotaAppInterface::evaluationTypes>(tDirectFnASV);
-
-            if(mEvaluationFlags[tCriterion] == GET_VALUE && (tDirectFnASV == GET_GRADIENT || tDirectFnASV == GET_GRADIENT_AND_VALUE))
-                mEvaluationFlags[tCriterion] = GET_GRADIENT_AND_VALUE;
-
-            if(mEvaluationFlags[tCriterion] == GET_GRADIENT && (tDirectFnASV == GET_VALUE || tDirectFnASV == GET_GRADIENT_AND_VALUE))
-                mEvaluationFlags[tCriterion] = GET_GRADIENT_AND_VALUE;
-      
-            if(tDirectFnASV != GET_VALUE && tDirectFnASV != GET_GRADIENT && tDirectFnASV != GET_GRADIENT_AND_VALUE)
-                 THROWERR(std::string("Invalid evaluation type requested. Valid evaluation types are: value, gradient, or gradient and value "))
+            setCriterionEvaluationFlagsForPRP(tDirectFnASV,tCriterion,mEvaluationFlags);
         }
     }
+}
+
+void DakotaAppInterface::setLocalData(const Dakota::ParamResponsePair& aPRP)
+{
+    const Dakota::Variables &tVariables = aPRP.variables();
+    const Dakota::ActiveSet &tActiveSet = aPRP.active_set();
+    Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
 }
 
 size_t DakotaAppInterface::determineNumberOfCriteria(const Dakota::PRPQueue &aParamResponsePairQueue)
 {
     Dakota::PRPQueueIter tFirstPRPIter = aParamResponsePairQueue.begin();
-    const Dakota::Variables &tVariables = tFirstPRPIter->variables();
-    const Dakota::ActiveSet &tActiveSet = tFirstPRPIter->active_set();
-    Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
+    this->setLocalData(*tFirstPRPIter);
     return Dakota::DirectApplicInterface::directFnASV.size();
 }
 
 void DakotaAppInterface::setInitializeStageData(const Dakota::PRPQueue &aParamResponsePairQueue)
 {
     std::string tStageTag = "initialize";
-    auto tStageName = mDataMap.getStageName(tStageTag);
+    this->setStageData(tStageTag,aParamResponsePairQueue);
+}
+
+void DakotaAppInterface::setStageData(const std::string& aStageTag,
+                                      const Dakota::PRPQueue& aParamResponsePairQueue)
+{
+    auto tStageName = mDataMap.getStageName(aStageTag);
     if (!tStageName.empty())
     {
         size_t tPrpIndex = 0;
         for (Dakota::PRPQueueIter tParamRespPairIter = aParamResponsePairQueue.begin();
                 tParamRespPairIter != aParamResponsePairQueue.end(); tParamRespPairIter++, tPrpIndex++)
         {
-            const Dakota::Variables &tVariables = tParamRespPairIter->variables();
-            const Dakota::ActiveSet &tActiveSet = tParamRespPairIter->active_set();
-            Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
-
-            this->setStageSharedData(tStageTag,tPrpIndex);
+            this->setLocalData(*tParamRespPairIter);
+            this->setStageSharedData(aStageTag,tPrpIndex);
         }
     }
 }
@@ -184,59 +179,34 @@ void DakotaAppInterface::setCriterionStageData(const Dakota::PRPQueue &aParamRes
     for (Dakota::PRPQueueIter tParamRespPairIter = aParamResponsePairQueue.begin();
              tParamRespPairIter != aParamResponsePairQueue.end(); tParamRespPairIter++, tPrpIndex++)
     {
-        const Dakota::Variables &tVariables = tParamRespPairIter->variables();
-        const Dakota::ActiveSet &tActiveSet = tParamRespPairIter->active_set();
-        Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
+        this->setCriterionStageDataForPRP(tNumCriteria, tPrpIndex, *tParamRespPairIter);
+    }
+}
 
-        auto tNumActiveCriteria = Dakota::DirectApplicInterface::directFnASV.size();
-        if (tNumActiveCriteria != tNumCriteria)
-        {
-            THROWERR(std::string("In setCriterionStageData: Number of active criteria for PRP ") + std::to_string(tPrpIndex) + std::string(" is different from PRP 0"))
-        }
+void DakotaAppInterface::setCriterionStageDataForPRP(const size_t& aNumCriteria,
+                                                     const size_t& aPrpIndex,
+                                                     const Dakota::ParamResponsePair &aPRP)
+{
+    this->setLocalData(aPRP);
+    auto tNumActiveCriteria = Dakota::DirectApplicInterface::directFnASV.size();
 
-        for (size_t tCriterion=0; tCriterion < tNumActiveCriteria; tCriterion++)
-        {
-            if (mEvaluationFlags[tCriterion] == GET_VALUE) // value
-            {
-                std::string tStageTag = "criterion_value_" + std::to_string(tCriterion);
-                this->setStageSharedData(tStageTag,tPrpIndex);
-            }
+    if (tNumActiveCriteria != aNumCriteria)
+        THROWERR(std::string("In setCriterionStageData: Number of active criteria for PRP ") + std::to_string(aPrpIndex) + std::string(" is different from PRP 0"))
 
-            if (mEvaluationFlags[tCriterion] == GET_GRADIENT) // gradient
-            {
-                std::string tStageTag = "criterion_gradient_" + std::to_string(tCriterion);
-                this->setStageSharedData(tStageTag,tPrpIndex);
-            }
+    for (size_t tCriterionIndex=0; tCriterionIndex < tNumActiveCriteria; tCriterionIndex++)
+    {
+        short tASV = mEvaluationFlags[tCriterionIndex];
+        std::vector<std::string> tStageTags = makeStageTags(tASV,tCriterionIndex);
 
-            if (mEvaluationFlags[tCriterion] == GET_GRADIENT_AND_VALUE) // value and gradient
-            {
-                std::string tStageTag = "criterion_value_" + std::to_string(tCriterion);
-                this->setStageSharedData(tStageTag,tPrpIndex);
-                tStageTag = "criterion_gradient_" + std::to_string(tCriterion);
-                this->setStageSharedData(tStageTag,tPrpIndex);
-            }
-        
-        }
+        for(auto tStageTag : tStageTags)
+            this->setStageSharedData(tStageTag,aPrpIndex);
     }
 }
 
 void DakotaAppInterface::setFinalizeStageData(const Dakota::PRPQueue &aParamResponsePairQueue)
 {
     std::string tStageTag = "finalize";
-    auto tStageName = mDataMap.getStageName(tStageTag);
-    if (!tStageName.empty())
-    {
-        size_t tPrpIndex = 0;
-        for (Dakota::PRPQueueIter tParamRespPairIter = aParamResponsePairQueue.begin();
-                tParamRespPairIter != aParamResponsePairQueue.end(); tParamRespPairIter++, tPrpIndex++)
-        {
-            const Dakota::Variables &tVariables = tParamRespPairIter->variables();
-            const Dakota::ActiveSet &tActiveSet = tParamRespPairIter->active_set();
-            Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
-
-            this->setStageSharedData(tStageTag,tPrpIndex);
-        }
-    }
+    this->setStageData(tStageTag,aParamResponsePairQueue);
 }
 
 void DakotaAppInterface::setStageSharedData(const std::string aStageTag, const size_t aPrpIndex)
@@ -249,16 +219,19 @@ void DakotaAppInterface::setStageSharedData(const std::string aStageTag, const s
     }
     if ( mDataMap.stageHasOutputSharedData(aStageTag) )
     {
-        this->setStageOutputSharedData(aStageTag, aPrpIndex);
+        allocateStageOutputSharedData(aStageTag, aPrpIndex, mDataMap, mParameterList);
     }
 }
 
-void DakotaAppInterface::setStageContinuousVarsInputSharedData(const std::string &aStageTag, const size_t aPrpIndex)
+void DakotaAppInterface::setStageContinuousVarsInputSharedData(const std::string &aStageTag,const size_t aPrpIndex)
 {
     auto tDataNames = mDataMap.getInputSharedDataNames(aStageTag,"continuous");
     
     if (tDataNames.size() > 0)
     {
+        if(tDataNames.size() <= aPrpIndex)
+            throw std::out_of_range(ERRMSG("PRP Index out of range of continuous shared data names"));
+
         std::string tName = tDataNames[aPrpIndex];
         mDataMap.setContinuousVarsSharedData(tName,Dakota::DirectApplicInterface::numACV,Dakota::DirectApplicInterface::xC);
         mParameterList.set(tName, mDataMap.getContinuousVarsSharedData(tName).data());
@@ -271,6 +244,9 @@ void DakotaAppInterface::setStageDiscreteRealVarsInputSharedData(const std::stri
     
     if (tDataNames.size() > 0)
     {
+        if(tDataNames.size() <= aPrpIndex)
+            throw std::out_of_range(ERRMSG("PRP Index out of range of discrete real shared data names"));
+
         std::string tName = tDataNames[aPrpIndex];
         mDataMap.setDiscreteRealVarsSharedData(tName,Dakota::DirectApplicInterface::numADRV,Dakota::DirectApplicInterface::xDR);
         mParameterList.set(tName, mDataMap.getDiscreteRealVarsSharedData(tName).data());
@@ -283,70 +259,19 @@ void DakotaAppInterface::setStageDiscreteIntegerVarsInputSharedData(const std::s
     
     if (tDataNames.size() > 0)
     {
+        if(tDataNames.size() <= aPrpIndex)
+            throw std::out_of_range(ERRMSG("PRP Index out of range of discrete integer shared data names"));
+
         std::string tName = tDataNames[aPrpIndex];
         mDataMap.setDiscreteIntegerVarsSharedData(tName,Dakota::DirectApplicInterface::numADIV,Dakota::DirectApplicInterface::xDI);
         mParameterList.set(tName, mDataMap.getDiscreteIntegerVarsSharedData(tName).data());
     }
 }
 
-void DakotaAppInterface::setStageOutputSharedData(const std::string &aStageTag, const size_t aPrpIndex)
-{
-    auto tSharedDataNames = mDataMap.getOutputSharedDataNames(aStageTag);
-    if (tSharedDataNames.size() > 0)
-    {
-        auto tSharedDataName = tSharedDataNames[aPrpIndex];
-        Plato::dakota::SharedDataMetaData tMetaData;
-        tMetaData.mName = tSharedDataName;
-        tMetaData.mValues.resize(1u,0.0);
-        mDataMap.setOutputVarsSharedData(aStageTag,tMetaData,aPrpIndex);
-        mParameterList.set(tSharedDataName, mDataMap.getOutputVarsSharedData(aStageTag,aPrpIndex).mValues.data());
-    }
-}
-
 void DakotaAppInterface::evaluateStages()
 {
-    std::vector<std::string> tStageNames;
-    this->setStageNamesForEvaluation(tStageNames);
+    std::vector<std::string> tStageNames = setStageNamesForEvaluation(mDataMap);
     mInterface->compute(tStageNames, mParameterList);
-}
-
-void DakotaAppInterface::setStageNamesForEvaluation(std::vector<std::string> & aStageNames)
-{
-    this->setInitializeStageNameForEvaluation(aStageNames);
-    this->setCriterionStageNamesForEvaluation(aStageNames);
-    this->setFinalizeStageNameForEvaluation(aStageNames);
-}
-
-void DakotaAppInterface::setInitializeStageNameForEvaluation(std::vector<std::string> & aStageNames)
-{
-    auto tStageName = mDataMap.getStageName("initialize");
-    if (!tStageName.empty())
-    {
-        aStageNames.push_back(tStageName);
-    }
-}
-
-void DakotaAppInterface::setCriterionStageNamesForEvaluation(std::vector<std::string> & aStageNames)
-{
-    std::vector<std::string> tStageTagList = mDataMap.getStageTags();
-    for (std::string tStageTag : tStageTagList)
-    {
-        auto tTagTokens = Plato::tokenize(tStageTag);
-        if (tTagTokens[0] == "criterion")
-        {
-            std::string tStageName = mDataMap.getStageName(tStageTag);
-            aStageNames.push_back(tStageName);
-        }
-    }
-}
-
-void DakotaAppInterface::setFinalizeStageNameForEvaluation(std::vector<std::string> & aStageNames)
-{
-    auto tStageName = mDataMap.getStageName("finalize");
-    if (!tStageName.empty())
-    {
-        aStageNames.push_back(tStageName);
-    }
 }
 
 void DakotaAppInterface::setDakotaOutputData(const Dakota::PRPQueue &aParamResponsePairQueue)
@@ -357,9 +282,7 @@ void DakotaAppInterface::setDakotaOutputData(const Dakota::PRPQueue &aParamRespo
     for (Dakota::PRPQueueIter tParamRespPairIter = aParamResponsePairQueue.begin();
              tParamRespPairIter != aParamResponsePairQueue.end(); tParamRespPairIter++, tPrpIndex++)
     {
-        const Dakota::Variables &tVariables = tParamRespPairIter->variables();
-        const Dakota::ActiveSet &tActiveSet = tParamRespPairIter->active_set();
-        Dakota::DirectApplicInterface::set_local_data(tVariables, tActiveSet);
+        this->setLocalData(*tParamRespPairIter);
 
         auto tNumActiveCriteria = Dakota::DirectApplicInterface::directFnASV.size();
         if (tNumActiveCriteria != tNumCriteria)
@@ -376,38 +299,22 @@ void DakotaAppInterface::setDakotaOutputData(const Dakota::PRPQueue &aParamRespo
         {
             if (mEvaluationFlags[tCriterion] == GET_VALUE) // value
             {
-                this->setValueOutputs(tCriterion,tPrpIndex,tDakotaFunVals);
+                setValueOutputs(tCriterion,tPrpIndex,tDakotaFunVals,mDataMap);
             }
 
             if (mEvaluationFlags[tCriterion] == GET_GRADIENT) // gradient
             {
-                this->setGradientOutputs(tCriterion,tPrpIndex,tDakotaFunGrads);
+                setGradientOutputs(tCriterion,tPrpIndex,tDakotaFunGrads,Dakota::DirectApplicInterface::numDerivVars,mDataMap);
             }
 
             if (mEvaluationFlags[tCriterion] == GET_GRADIENT_AND_VALUE) // value and gradient
             {
-                this->setValueOutputs(tCriterion,tPrpIndex,tDakotaFunVals);
-                this->setGradientOutputs(tCriterion,tPrpIndex,tDakotaFunGrads);
+                setValueOutputs(tCriterion,tPrpIndex,tDakotaFunVals,mDataMap);
+                setGradientOutputs(tCriterion,tPrpIndex,tDakotaFunGrads,Dakota::DirectApplicInterface::numDerivVars,mDataMap);
             }
         
         }
         Dakota::DirectApplicInterface::completionSet.insert(tEvaluationID);
-    }
-}
-
-void DakotaAppInterface::setValueOutputs(const size_t aCriterion, const size_t aPrpIndex, Dakota::RealVector & aDakotaFunVals)
-{
-    std::string tStageTag = "criterion_value_" + std::to_string(aCriterion);
-
-    aDakotaFunVals[aCriterion] = mDataMap.getOutputVarsSharedData(tStageTag,aPrpIndex).mValues.front();
-}
-
-void DakotaAppInterface::setGradientOutputs(const size_t aCriterion, const size_t aPrpIndex, Dakota::RealMatrix & aDakotaFunGrads)
-{
-    std::string tStageTag = "criterion_gradient_" + std::to_string(aCriterion);
-    for (size_t tVarIndex = 0; tVarIndex < Dakota::DirectApplicInterface::numDerivVars; tVarIndex++)
-    {
-        aDakotaFunGrads[aCriterion][tVarIndex] = mDataMap.getOutputVarsSharedData(tStageTag,aPrpIndex).mValues[tVarIndex];
     }
 }
 

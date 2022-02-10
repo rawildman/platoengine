@@ -2,18 +2,15 @@
 # Sources:
 ###############################################################################
 SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
-                                      ../XMLGenerator.cpp
                                       XMLGenerator_UnitTester.cpp
-                                      ../XMLGeneratorUtilities.cpp
-                                      ../XMLGeneratorParserUtilities.cpp
                                       Plato_Test_XMLGenerator.cpp
                                       XMLGeneratorSrom_UnitTester.cpp
                                       XMLGeneratorDefineFile_UnitTester.cpp
-                                      XMLGeneratorLaunchScript_UnitTester.cpp
-                                      XMLGeneratorAnalyzeUncertaintyLaunchScript_UnitTester.cpp
+                                      XMLGeneratorLaunch_UnitTester.cpp
+                                      XMLGeneratorDakotaDriver_UnitTester.cpp
                                       XMLGeneratorParseMetaData_UnitTester.cpp
                                       XMLGeneratorInterfaceFile_UnitTester.cpp
-                                      ../XMLGeneratorPostOptimizationRunFileUtilities.cpp
+                                      XMLGeneratorLaunchScript_UnitTester.cpp
                                       XMLGeneratorRandomInterfaceFile_UnitTester.cpp
                                       XMLGeneratorPlatoMainInputDeckFile_UnitTester.cpp
                                       XMLGeneratorPlatoMainOperationFile_UnitTester.cpp
@@ -22,52 +19,66 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
-                                      ../XMLGeneratorParseOptimizationParameters.cpp
-                                      ../XMLGeneratorOptimizationParametersMetadata.cpp
+                                      ../XMLGenerator.cpp
+                                      ../XMLGeneratorParseRun.cpp
+                                      ../XMLGeneratorUtilities.cpp
+                                      ../XMLGeneratorParseLoads.cpp
                                       ../XMLGeneratorParseOutput.cpp
+                                      ../XMLGeneratorRunMetadata.cpp
+                                      ../XMLGeneratorParseAssembly.cpp
                                       ../XMLGeneratorParseScenario.cpp
                                       ../XMLGeneratorParseServices.cpp
                                       ../XMLGeneratorParseMaterial.cpp
                                       ../XMLGeneratorParseCriteria.cpp
                                       ../XMLGeneratorOutputMetadata.cpp
-                                      ../XMLGeneratorRunMetadata.cpp
                                       ../XMLGeneratorParseObjective.cpp
-                                      ../XMLGeneratorParseAssembly.cpp
-                                      ../XMLGeneratorParseRun.cpp
-                                      ../XMLGeneratorParseEssentialBoundaryCondition.cpp
-                                      ../XMLGeneratorParseLoads.cpp
+                                      ../XMLGeneratorOutputUtilities.cpp
+                                      ../XMLGeneratorStagesUtilities.cpp
+                                      ../XMLGeneratorParserUtilities.cpp
                                       ../XMLGeneratorParseConstraint.cpp
+                                      ../XMLGeneratorServiceMetadata.cpp
                                       ../XMLGeneratorParseUncertainty.cpp
                                       ../XMLGeneratorScenarioMetadata.cpp
-                                      ../XMLGeneratorServiceMetadata.cpp
+                                      ../XMLGeneratorSierraSDUtilities.cpp
+                                      ../XMLGeneratorPlatoXTKInputFile.cpp
                                       ../XMLGeneratorConstraintMetadata.cpp
+                                      ../XMLGeneratorSharedDataUtilities.cpp
+                                      ../XMLGeneratorPerformersUtilities.cpp
                                       ../XMLGeneratorUncertaintyMetadata.cpp
                                       ../XMLGeneratorDefinesFileUtilities.cpp
+                                      ../XMLGeneratorPlatoXTKOperationFile.cpp
                                       ../XMLGeneratorPlatoAnalyzeUtilities.cpp
-                                      ../XMLGeneratorLaunchScriptUtilities.cpp
-                                       ../XMLGeneratorInterfaceFileUtilities.cpp
+                                      ../XMLGeneratorLaunchUtilities.cpp
+                                      ../XMLGeneratorInterfaceFileUtilities.cpp
+                                      ../XMLGeneratorDakotaInterfaceFileUtilities.cpp
+                                      ../XMLGeneratorDakotaDriverInputFileUtilities.cpp
+                                      ../XMLGeneratorGradBasedOptimizerOptions.cpp
+                                      ../XMLGeneratorStagesOperationsUtilities.cpp
                                       ../XMLGeneratorMaterialFunctionInterface.cpp
-                                      ../XMLGeneratorPlatoMainInputFileUtilities.cpp
                                       ../XMLGeneratorPlatoESPInputFileUtilities.cpp
-                                      ../XMLGeneratorPlatoESPOperationsFileUtilities.cpp
+                                      ../XMLGeneratorSierraSDInputDeckUtilities.cpp
+                                      ../XMLGeneratorPlatoMainInputFileUtilities.cpp
+                                      ../XMLGeneratorParseOptimizationParameters.cpp
+                                      ../XMLGeneratorAnalyzeLoadFunctionInterface.cpp
                                       ../XMLGeneratorRandomInterfaceFileUtilities.cpp
                                       ../XMLGeneratorPlatoAnalyzeInputFileUtilities.cpp
+                                      ../XMLGeneratorOptimizationParametersMetadata.cpp
+                                      ../XMLGeneratorPlatoESPOperationsFileUtilities.cpp
                                       ../XMLGeneratorAnalyzePhysicsFunctionInterface.cpp
                                       ../XMLGeneratorPlatoMainOperationFileUtilities.cpp
-                                      ../XMLGeneratorPlatoAnalyzeOperationsFileUtilities.cpp
+                                      ../XMLGeneratorParseEssentialBoundaryCondition.cpp
                                       ../XMLGeneratorSierraSDOperationsFileUtilities.cpp
-                                      ../XMLGeneratorSierraSDInputDeckUtilities.cpp
-                                      ../XMLGeneratorAnalyzeLoadFunctionInterface.cpp
                                       ../XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
-                                      ../XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
-                                      ../XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                                      ../XMLGeneratorParseMethodInputOptionsUtilities.cpp
+                                      ../XMLGeneratorPostOptimizationRunFileUtilities.cpp
                                       ../XMLGeneratorAnalyzeAssemblyFunctionInterface.cpp
+                                      ../XMLGeneratorPlatoAnalyzeOperationsFileUtilities.cpp
+                                      ../XMLGeneratorAnalyzeEssentialBCFunctionInterface.cpp
                                       ../XMLGeneratorAnalyzeMaterialModelFunctionInterface.cpp
+                                      ../XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.cpp
+                                      ../XMLGeneratorLaunchScriptUtilities.cpp
                                       ../XMLGeneratorPlatoMainConstraintValueOperationInterface.cpp
                                       ../XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
-                                      ../XMLGeneratorAnalyzeUncertaintyLaunchScriptUtilities.cpp
-                                      ../XMLGeneratorPlatoXTKInputFile.cpp
-                                      ../XMLGeneratorPlatoXTKOperationFile.cpp
                                       # ../PlatoAnalyzeInputDeckWriter.cpp
                                       # ../SalinasInputDeckWriter.cpp)
                                       )
