@@ -46,7 +46,7 @@ namespace XMLGen
                                                                     pugi::xml_document &aDocument)
     {
         auto tOperation = aDocument.append_child("Operation");
-        XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective"}, tOperation);
+        XMLGen::append_children({"Function", "Name", "Criterion", "Target"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective", XMLGen::get_plato_analyze_objective_target(aMetaData)}, tOperation);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"Argument"}, {"Value"}, tOutput);
         XMLGen::append_children({"ArgumentName"}, {"Objective Value"}, tOutput);
@@ -64,7 +64,7 @@ namespace XMLGen
                                                                        pugi::xml_document &aDocument)
     {
         auto tOperation = aDocument.append_child("Operation");
-        XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective"}, tOperation);
+        XMLGen::append_children({"Function", "Name", "Criterion", "Target"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective", XMLGen::get_plato_analyze_objective_target(aMetaData)}, tOperation);
         auto tInput = tOperation.append_child("Input");
         XMLGen::append_children({"ArgumentName"}, {"Topology"}, tInput);
         auto tOutput = tOperation.append_child("Output");
