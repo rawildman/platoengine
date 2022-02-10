@@ -44,6 +44,7 @@
 
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
+#include "Plato_SystemCall.hpp"
 #include "Plato_InitializeValues.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
@@ -54,6 +55,56 @@
 
 namespace PlatoTestOperations
 {
+
+TEST(LocalOperation, SystemCall)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "cd evaluations0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+
+    Plato::InputData tInput("Input");
+    tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInputNode.add<Plato::InputData>("Input", tInput);
+
+    std::cout << "1\n";
+    Plato::SystemCall tSystemCall(nullptr, tInputNode);
+    std::cout << "2\n";
+
+    EXPECT_STREQ("aprepro_0", tSystemCall.name().c_str());
+    EXPECT_STREQ("cd evaluations0; aprepro", tSystemCall.command().c_str());
+    EXPECT_TRUE(tSystemCall.onChange());
+    EXPECT_TRUE(tSystemCall.appendInput());
+
+    auto tOptions = tSystemCall.options();
+    std::vector<std::string> tGoldOptions = {"r=", "h="};
+    for(auto& tOption : tOptions)
+    {
+        auto tItr = std::find(tGoldOptions.begin(), tGoldOptions.end(), tOption);
+        EXPECT_TRUE(tItr != tGoldOptions.end());
+    }
+
+    auto tArguments = tSystemCall.arguments();
+    std::vector<std::string> tGoldArguments = {"matched.yaml.template matched.yaml", "-q"};
+    for(auto& tArgument : tArguments)
+    {
+        auto tItr = std::find(tGoldArguments.begin(), tGoldArguments.end(), tArgument);
+        EXPECT_TRUE(tItr != tGoldArguments.end());
+    }
+
+    auto tInputs = tSystemCall.inputNames();
+    std::vector<std::string> tGoldInputs = {"matched.yaml.template matched.yaml", "-q"};
+    for(auto& tInput : tInputs)
+    {
+        auto tItr = std::find(tGoldInputs.begin(), tGoldInputs.end(), tInput);
+        EXPECT_TRUE(tItr != tGoldInputs.end());
+    }
+}
 
 TEST(LocalOperation, read_table_1)
 {

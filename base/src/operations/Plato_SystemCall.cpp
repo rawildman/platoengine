@@ -73,20 +73,141 @@ void SystemCall::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 
 /******************************************************************************/
 SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode) :
-                  Plato::LocalOp(aPlatoApp)
+    Plato::LocalOp(aPlatoApp)
 /******************************************************************************/
 {
+    std::cout << "1\n";
+    mName = Plato::Get::String(aNode, "Name");
+    mNumRanks = Plato::Get::Int(aNode, "NumRanks");
     mOnChange = Plato::Get::Bool(aNode, "OnChange");
     mAppendInput = Plato::Get::Bool(aNode, "AppendInput");
     mStringCommand = Plato::Get::String(aNode, "Command");
+    std::cout << "2\n";
 
     for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
         mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
     }
+    std::cout << "3\n";
+
     for(auto tStrValue : aNode.getByName<std::string>("Argument"))
     {
         mArguments.push_back(tStrValue);
+    }
+    std::cout << "4\n";
+
+    std::cout << "argument size = " << mArguments.size() << "\n";
+    mOptions = std::vector<std::string>(mArguments.size(), "");
+    std::cout << "options size = " << mOptions.size() << "\n";
+    for(auto tStrValue : aNode.getByName<std::string>("Option"))
+    {
+        auto tIndex = &tStrValue - &aNode.getByName<std::string>("Option")[0];
+        mOptions[tIndex] = tStrValue;
+    }
+    std::cout << "5\n";
+
+}
+
+bool SystemCall::saveParameters()
+{
+    bool tChanged = false;
+    if(mSavedParameters.size() == 0)
+    {
+        for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
+        {
+            Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
+            auto tInputArgument = mPlatoApp->getValue(mInputNames[tIndexJ]);
+            std::vector<double> tCurVector(tInputArgument->size());
+            for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
+            {
+                tCurVector[tIndexI] = tInputArgument->data()[tIndexI];
+                Plato::Console::Status("Saved: Not set yet; Current: " + std::to_string(tCurVector[tIndexI]));
+            }
+            mSavedParameters.push_back(tCurVector);
+        }
+        tChanged = true;
+    }
+    return tChanged;
+}
+
+bool SystemCall::checkForLocalParameterChanges()
+{
+    bool tDidParametersChanged = false;
+    for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
+    {
+        bool tLocalChanged = false;
+        Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
+        auto tInputArgument = mPlatoApp->getValue(mInputNames[tIndexJ]);
+        for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
+        {
+            double tSavedValue = mSavedParameters[tIndexJ][tIndexI];
+            double tCurrentValue = tInputArgument->data()[tIndexI];
+            if(tSavedValue != tCurrentValue)
+            {
+                double tPercentChange = (fabs(tSavedValue-tCurrentValue)/fabs(tSavedValue))*100.0;
+                char tPercentChangeString[20];
+                sprintf(tPercentChangeString, "%.1lf", tPercentChange);
+                Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[tIndexJ][tIndexI]) 
+                                       + "; \tCurrent: " + std::to_string(tInputArgument->data()[tIndexI]) 
+                                       + " \t-- CHANGED " + tPercentChangeString + "%");
+                tLocalChanged = true;
+                tDidParametersChanged = true;
+            }
+            else
+            {
+                Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[tIndexJ][tIndexI]) + "; \tCurrent: " 
+                                       + std::to_string(tInputArgument->data()[tIndexI]) + " \t-- NO CHANGE");
+            }
+        }
+        if(tLocalChanged == true)
+        {
+            mSavedParameters[tIndexJ] = *(tInputArgument);
+        }
+    }
+    return tDidParametersChanged;
+}
+
+bool SystemCall::shouldEnginePerformSystemCall(bool aDidParametersChanged)
+{
+    bool tPerformSystemCall = true;
+    if(!aDidParametersChanged)
+    {
+        tPerformSystemCall = false;
+        Plato::Console::Status("PlatoMain: SystemCall -- Condition not met. Not calling.");
+    } 
+    else
+    {
+        Plato::Console::Status("PlatoMain: SystemCall -- Condition met. Calling.");
+    }
+    return tPerformSystemCall;
+}
+
+void SystemCall::performSystemCall()
+{
+    std::vector<std::string> tArguments;
+    for(auto& tArgumentName : mArguments)
+    {
+        tArguments.push_back(tArgumentName);
+    }
+    if(mAppendInput)
+    {
+        this->appendOptionsAndValues(tArguments);
+    }
+    this->executeCommand(tArguments);
+}
+
+void SystemCall::appendOptionsAndValues(std::vector<std::string>& aArguments)
+{
+    for(auto& tInputName : mInputNames)
+    {
+        auto tIndex = &tInputName - &mInputNames[0];
+        auto tInputArgument = mPlatoApp->getValue(tInputName);
+        for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
+        {
+            std::stringstream tDataString;
+            tDataString << std::setprecision(16) << mOptions[tIndex] << tInputArgument->data()[tIndexI];
+            aArguments.push_back(tDataString.str());
+        }
     }
 }
 
@@ -95,135 +216,63 @@ void SystemCall::operator()()
 /******************************************************************************/
 {
     bool tPerformSystemCall = true;
-
     if(mOnChange)
     {
-        bool tChanged = false;
-
-        // If we haven't saved any parameters yet save them now
-        // and set "changed" to true.
-        if(mSavedParameters.size() == 0)
-        {
-            for(size_t j=0; j<mInputNames.size(); ++j)
-            {
-                Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[j] + "\" Values:");
-                auto tInputArgument = mPlatoApp->getValue(mInputNames[j]);
-                std::vector<double> tCurVector(tInputArgument->size());
-                for(size_t i=0; i<tInputArgument->size(); ++i)
-                {
-                    tCurVector[i] = tInputArgument->data()[i];
-                    Plato::Console::Status("Saved: Not set yet; Current: " + std::to_string(tCurVector[i]));
-                }
-                mSavedParameters.push_back(tCurVector);
-            }
-            tChanged = true;
-        }
-
+        // If we haven't saved any parameters yet save them now and set "changed" to true.
+        auto tChanged = this->saveParameters();
         if(!tChanged)
         {
-            for(size_t j=0; j<mInputNames.size(); ++j)
-            {
-                bool tLocalChanged = false;
-                Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[j] + "\" Values:");
-                auto tInputArgument = mPlatoApp->getValue(mInputNames[j]);
-                for(size_t i=0; i<tInputArgument->size(); ++i)
-                {
-                    double tSavedValue = mSavedParameters[j][i];
-                    double tCurrentValue = tInputArgument->data()[i];
-                    if(tSavedValue != tCurrentValue)
-                    {
-                        double tPercentChange = (fabs(tSavedValue-tCurrentValue)/fabs(tSavedValue))*100.0;
-                        char tPercentChangeString[20];
-                        sprintf(tPercentChangeString, "%.1lf", tPercentChange);
-                        Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[j][i]) + "; \tCurrent: " + std::to_string(tInputArgument->data()[i]) + " \t-- CHANGED " + tPercentChangeString + "%");
-                        tLocalChanged = true;
-                        tChanged = true;
-                    }
-                    else
-                    {
-                        Plato::Console::Status("Saved: " + std::to_string(mSavedParameters[j][i]) + "; \tCurrent: " + std::to_string(tInputArgument->data()[i]) + " \t-- NO CHANGE");
-                    }
-                }
-                if(tLocalChanged == true)
-                {
-                    mSavedParameters[j] = *(tInputArgument);
-                }
-            }
+            tChanged = this->checkForLocalParameterChanges();
         }
-
-        if(!tChanged)
-        {
-            tPerformSystemCall = false;
-            Plato::Console::Status("PlatoMain: SystemCall -- Condition not met. Not calling.");
-        } 
-        else
-        {
-            Plato::Console::Status("PlatoMain: SystemCall -- Condition met. Calling.");
-        }
+        tPerformSystemCall = this->shouldEnginePerformSystemCall(tChanged);
     }
 
     if(tPerformSystemCall)
     {
-        std::vector<std::string> arguments;
-        for(auto& tArgumentName : mArguments)
-        {
-            arguments.push_back(tArgumentName);
-        }
-        if(mAppendInput)
-        {
-            for(auto& tInputName : mInputNames)
-            {
-                auto tInputArgument = mPlatoApp->getValue(tInputName);
-                for(size_t i=0; i<tInputArgument->size(); ++i)
-                {
-                    std::stringstream dataString;
-                    dataString << std::setprecision(16) << tInputArgument->data()[i];
-                    arguments.push_back(dataString.str());
-                }
-            }
-        }
-
-        executeCommand(arguments);
+        this->performSystemCall();
     }
 }
 
-void SystemCall::executeCommand(const std::vector<std::string> &arguments)
+void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
 {
-    std::string cmd = mStringCommand;
-    for(const auto &s : arguments) {
-        cmd += " " + s;
+    mCommandPlusArguments = mStringCommand;
+    for(const auto &tArgument : aArguments) {
+        mCommandPlusArguments += " " + tArgument;
     }
+
     // make system call
-    auto tExitStatus = Plato::system_with_return(cmd.c_str());
+    auto tExitStatus = Plato::system_with_return(mCommandPlusArguments.c_str());
     if (tExitStatus)
     {
-        std::string tErrorMessage = std::string("System call ' ") + cmd + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
+        std::string tErrorMessage = std::string("System call ' ") + mCommandPlusArguments + 
+                                    std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
         THROWERR(tErrorMessage)
     }
 }
 
-void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)
+void SystemCallMPI::executeCommand(const std::vector<std::string> &aArguments)
 {
-    std::vector<char*> argumentPointers;
-
-    for(const auto &a : arguments) {
-        const int lengthWithNullTerminator = a.length() + 1;
-        char *p = new char [lengthWithNullTerminator];
-        std::copy_n(a.c_str(), lengthWithNullTerminator, p);
-        argumentPointers.push_back(p);
+    std::vector<char*> tArgumentPointers;
+    mCommandPlusArguments = mStringCommand;
+    for(const auto &tArgument : aArguments) {
+        mCommandPlusArguments += " " + tArgument;
+        const int tLengthWithNullTerminator = tArgument.length() + 1;
+        char *tPointer = new char [tLengthWithNullTerminator];
+        std::copy_n(tArgument.c_str(), tLengthWithNullTerminator, tPointer);
+        tArgumentPointers.push_back(tPointer);
     }
-    argumentPointers.push_back(nullptr);
+    tArgumentPointers.push_back(nullptr);
 
-    MPI_Comm intercom;
-    auto tExitStatus = MPI_Comm_spawn(mStringCommand.c_str(), argumentPointers.data(), 1, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &intercom, MPI_ERRCODES_IGNORE);
+    MPI_Comm tIntercom;
+    auto tExitStatus = MPI_Comm_spawn(mStringCommand.c_str(), tArgumentPointers.data(), mNumRanks, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &tIntercom, MPI_ERRCODES_IGNORE);
     if (tExitStatus != MPI_SUCCESS)
     {
         std::string tErrorMessage = std::string("System call ' ") + mStringCommand + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
         THROWERR(tErrorMessage)
     }
 
-    for(auto p : argumentPointers) {
-        delete [] p;
+    for(auto tPointer : tArgumentPointers) {
+        delete [] tPointer;
     }
 }
 

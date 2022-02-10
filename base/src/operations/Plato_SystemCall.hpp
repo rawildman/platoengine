@@ -60,38 +60,89 @@ namespace Plato
 class InputData;
 
 /******************************************************************************//**
- * @brief Call a shell script
+ * \brief Call a shell script
 **********************************************************************************/
 class SystemCall : public Plato::LocalOp
 {
 public:
     /******************************************************************************//**
-     * @brief Constructor
-     * @param [in] aPlatoApp PLATO application
-     * @param [in] aNode input XML data
+     * \brief Constructor
+     * \param [in] aPlatoApp PLATO application
+     * \param [in] aNode input metadata
     **********************************************************************************/
     SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode);
 
     /******************************************************************************//**
-     * @brief perform local operation - initialize level
+     * \brief perform local operation to call a shell script.
     **********************************************************************************/
     void operator()();
 
     /******************************************************************************//**
-     * @brief Return local operation's argument list
-     * @param [out] aLocalArgs argument list
+     * \brief Return local operation's argument list
+     * \param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
-private:
-    virtual void executeCommand(const std::vector<std::string> &arguments);
 
-    std::vector<std::string> mInputNames;
-    std::vector<std::vector<double> > mSavedParameters;
-    std::vector<std::string> mArguments;
+    int numRanks() const { return mNumRanks; }
+    bool onChange() const { return mOnChange; }
+    bool appendInput() const { return mAppendInput; }
+
+    std::string name() const{ return mName;}
+    std::string command() const{ return mStringCommand;}
+
+    std::vector<std::string> options() const {return mOptions; }
+    std::vector<std::string> arguments() const {return mArguments; }
+    std::vector<std::string> inputNames() const {return mInputNames; }
+    std::string commandPlusArguments() const {return mCommandPlusArguments; }
+
+private:
+    /******************************************************************************//**
+     * \brief Append input values to the end of the argument list.
+     * \param [out] aArguments command argument list
+    **********************************************************************************/
+    void appendOptionsAndValues(std::vector<std::string>& aArguments);
+
+    /******************************************************************************//**
+     * \brief If the parameterd changed since the last call to the shell script, save the new parameters.
+     * \return boolean flag indicating if parameters changed since the last call to the shell script. 
+    **********************************************************************************/
+    bool saveParameters();
+
+    /******************************************************************************//**
+     * \brief perform system call to a shell script.
+    **********************************************************************************/
+    void performSystemCall();
+
+    /******************************************************************************//**
+     * \brief Check if the parameters were modified locally; if modified, save the new parameters.
+     * \return boolean flag indicating if parameters changed since the last call to the shell script. 
+    **********************************************************************************/
+    bool checkForLocalParameterChanges();
+
+    /******************************************************************************//**
+     * \brief Check if conditions to perform the system call to a shell script are met.
+     * \param [in] aDidParametersChanged boolean flag indicating if parameters have changed since last call.
+     * \return boolean flag (true=perform system call; false=do not perform system call, condition are not met)
+    **********************************************************************************/
+    bool shouldEnginePerformSystemCall(bool aDidParametersChanged);
+
+    virtual void executeCommand(const std::vector<std::string> &aArguments);
+    
+private:
     bool mOnChange;
     bool mAppendInput;
+    
+    std::string mName;
+
+    std::vector<std::string> mOptions;
+    std::vector<std::string> mArguments;
+    std::vector<std::string> mInputNames;
+    std::vector<std::vector<double>> mSavedParameters;
+    
 protected:
+    int mNumRanks = 1;
     std::string mStringCommand;
+    std::string mCommandPlusArguments;
 };
 // class SystemCall;
 
