@@ -69,8 +69,10 @@ public:
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
      * \param [in] aNode input metadata
+     * \param [in] aUnitTestBool set to true only if used in a unit test environment 
     **********************************************************************************/
-    SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode);
+    SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
+               bool aUnitTestBool = false);
 
     /******************************************************************************//**
      * \brief perform local operation to call a shell script.
@@ -94,6 +96,8 @@ public:
     std::vector<std::string> arguments() const {return mArguments; }
     std::vector<std::string> inputNames() const {return mInputNames; }
     std::string commandPlusArguments() const {return mCommandPlusArguments; }
+
+    void unitTest(const bool aUnitTestBool) { mUnitTest = aUnitTestBool;}
 
 private:
     /******************************************************************************//**
@@ -126,11 +130,15 @@ private:
     **********************************************************************************/
     bool shouldEnginePerformSystemCall(bool aDidParametersChanged);
 
+    void setInputSharedDataNames(Plato::InputData& aNode);
+    void setArguments(Plato::InputData& aNode);
+
     virtual void executeCommand(const std::vector<std::string> &aArguments);
     
 private:
     bool mOnChange;
     bool mAppendInput;
+    bool mUnitTest;
     
     std::string mName;
 
@@ -148,7 +156,7 @@ protected:
 
 class SystemCallMPI : public SystemCall {
 public:
-SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode) : SystemCall(aPlatoApp, aNode) { }
+SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool = false);
 private:
 void executeCommand(const std::vector<std::string> &arguments) override;
 };

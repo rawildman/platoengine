@@ -73,7 +73,7 @@ TEST(LocalOperation, SystemCall)
     tInputNode.add<Plato::InputData>("Input", tInput);
 
     std::cout << "1\n";
-    Plato::SystemCall tSystemCall(nullptr, tInputNode);
+    Plato::SystemCall tSystemCall(nullptr, tInputNode, true);
     std::cout << "2\n";
 
     EXPECT_STREQ("aprepro_0", tSystemCall.name().c_str());
@@ -242,7 +242,7 @@ TEST(LocalOperation, HarvestDataFromFile)
 
     // test operator()()
     std::ofstream tOutFile;
-    tOutFile.open("test.txt");
+    tOutFile.open("matched_power_balance.dat");
     std::stringstream tSS;
     tSS << "#f[Hz]  SE[dB]\n    1000000000    39.00415657\n    1010000000    38.93005158\n    1020000000    38.85582205";
     tOutFile << tSS.str();
@@ -252,7 +252,7 @@ TEST(LocalOperation, HarvestDataFromFile)
     auto tResult = tOperation.result();
     auto tTol = 1e-4;
     EXPECT_NEAR(39.00415657, tResult, tTol);
-    auto tTrash = std::system("rm -f test.txt");
+    auto tTrash = std::system("rm -f matched_power_balance.dat");
     Plato::Utils::ignore_unused(tTrash);
 
 /*
