@@ -794,7 +794,6 @@ void append_objective_gradient_stage_for_topology_problem
     else
     {
         pugi::xml_node tParentNode = tStageNode;
-        XMLGen::Objective tObjective = aMetaData.objective;
 
         // If there is more than one sub-objective add an
         // outer "Operation" block so the sub-objectives

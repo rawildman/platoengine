@@ -310,7 +310,7 @@ void append_surrogate_based_global_responses_block
         tDescriptorString += std::string(" '") + tCriterionType + std::string("'");
         tScalesString += std::string(" ") + tObjective.weights[i];
     }
-    fprintf(fp, "   objective_functions = %d\n", tObjective.criteriaIDs.size());
+    fprintf(fp, "   objective_functions = %zu\n", tObjective.criteriaIDs.size());
 
     tDescriptorString += "\n";
     tScalesString += "\n";
