@@ -74,7 +74,7 @@ void SystemCall::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 /******************************************************************************/
 SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
                        bool aUnitTestBool) :
-    Plato::LocalOp(aPlatoApp)
+    Plato::LocalOp(aPlatoApp),
     mUnitTest(aUnitTestBool)
 /******************************************************************************/
 {
@@ -94,7 +94,7 @@ SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
     for(auto tInputName : mInputNames)
     {
         auto tInputArgument = mPlatoApp->getValue(tInputName);
-        tTotalNumParameters += tInputArgument.size();
+        tTotalNumParameters += tInputArgument->size();
     }
 
     // set mOptions size to total num parameters
@@ -107,7 +107,7 @@ SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
     }
 }
 
-SystemCall::setInputSharedDataNames(Plato::InputData& aNode)
+void SystemCall::setInputSharedDataNames(Plato::InputData& aNode)
 {
     for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
@@ -115,7 +115,7 @@ SystemCall::setInputSharedDataNames(Plato::InputData& aNode)
     }
 }
 
-SystemCall::setArguments(Plato::InputData& aNode)
+void SystemCall::setArguments(Plato::InputData& aNode)
 {
     // set arguments
     for(auto tStrValue : aNode.getByName<std::string>("Argument"))
