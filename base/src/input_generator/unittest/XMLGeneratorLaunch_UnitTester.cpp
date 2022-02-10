@@ -118,7 +118,13 @@ TEST(PlatoTestXMLGenerator, determineMPILaunchStrings_dontUseLaunch)
   std::string tLaunchString, tNumProcsString;
   XMLGen::determine_mpi_launch_strings(tInputData, tLaunchString, tNumProcsString);
 
-  EXPECT_STREQ("mpiexec", tLaunchString.c_str());
+#ifdef USING_OPEN_MPI
+  const std::string goldLaunchString("mpiexec --oversubscribe");
+#else
+  const std::string goldLaunchString("mpiexec");
+#endif
+
+  EXPECT_STREQ(goldLaunchString.c_str(), tLaunchString.c_str());
   EXPECT_STREQ("-np", tNumProcsString.c_str());
 }
 
