@@ -158,7 +158,7 @@ inline void write_performer_input_deck_file_dakota_problem
             auto tServiceID = XMLGen::get_plato_analyze_service_id(aMetaData);
             std::string tInputFileName = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
 
-            for (size_t iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
             {
                 std::string tTag = std::string("_") + std::to_string(iEvaluation);
                 auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);

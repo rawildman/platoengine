@@ -57,7 +57,7 @@ void append_physics_performers_dakota_usecase
     {
         if(tService.code() == "plato_analyze" || tService.code() == "sierra_sd")
         {
-            for (size_t iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
             {
                 auto tPerformerNode = aDocument.append_child("Performer");
                 std::string tPerformerName = tService.performer() + std::string("_") + std::to_string(iEvaluation);

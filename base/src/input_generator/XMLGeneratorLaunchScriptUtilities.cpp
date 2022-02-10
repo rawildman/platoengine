@@ -262,7 +262,7 @@ void append_physics_performer_mpirun_commands_dakota_problem
         auto tEvaluations = std::stoi(aInputData.optimization_parameters().concurrent_evaluations());
         if(tService.code() == "plato_analyze")
         {
-            for (size_t iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
             {
                 append_analyze_mpirun_line(aInputData, tService, aNextPerformerID, aFile, iEvaluation);
                 aNextPerformerID++;

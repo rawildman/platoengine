@@ -936,7 +936,7 @@ void append_update_geometry_on_change_operation_to_plato_main_operation
     else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
     {
         auto tEvaluations = std::stoi(aXMLMetaData.optimization_parameters().concurrent_evaluations());
-        for (size_t iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+        for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
         {
             pugi::xml_node tmp_node = aDocument.append_child("Operation");
             std::string tTag = std::string("_") + std::to_string(iEvaluation);
