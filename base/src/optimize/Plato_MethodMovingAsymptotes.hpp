@@ -667,9 +667,9 @@ private:
     **********************************************************************************/
     void updateState()
     {
+        this->performContinuation();
         this->evaluateObjective();
         this->evaluateConstraints();
-        this->performContinuation();
         mDataMng->computeStoppingMeasures();
         this->printDiagnostics();
     }

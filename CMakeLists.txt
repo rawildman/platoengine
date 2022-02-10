@@ -61,7 +61,7 @@ if( ENABLE_ROL )
 endif()
 
 include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-
+list(REMOVE_DUPLICATES Trilinos_TPL_LIBRARIES)
 
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
