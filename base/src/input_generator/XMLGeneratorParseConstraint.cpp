@@ -50,6 +50,7 @@ void ParseConstraint::allocate()
     mTags.insert({ "scenario", { { {"scenario"}, ""}, "" } });
     mTags.insert({ "relative_target", { { {"relative_target"}, ""}, "" } });
     mTags.insert({ "absolute_target", { { {"absolute_target"}, ""}, "" } });
+    mTags.insert({ "divisor", { { {"divisor"}, ""}, "1.0" } });
     mTags.insert({ "weight", { { {"weight"}, ""}, "1.0" } });
 
 //    mTags.insert({ "standard_deviation_multiplier", { { {"standard_deviation_multiplier"}, ""}, "0" } });
