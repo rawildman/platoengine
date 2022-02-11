@@ -56,10 +56,39 @@
 namespace PlatoTestOperations
 {
 
-TEST(LocalOperation, SystemCall)
+void createMatchedYAMLTemplateFile()
+{
+    std::ofstream tOutFile;
+    tOutFile.open("matched.yaml.template", std::ofstream::out | std::ofstream::trunc);
+    tOutFile << "%YAML 1.1\n";
+    tOutFile << "---\n\n";
+
+    tOutFile << "Gemma-dynamic:\n\n";
+
+    tOutFile << "  Global:\n";
+    tOutFile << "    Description: Higgins cylinder\n";
+    tOutFile << "    Solution type: power balance\n\n";
+
+    tOutFile << "  Power balance: \n";
+    tOutFile << "    Algorithm: matched bound\n";
+    tOutFile << "    Radius: {r} # original value r=0.1016\n";
+    tOutFile << "    Height: {h} # original value h=0.1016\n";
+    tOutFile << "    Conductivity: 2.6e7\n";
+    tOutFile << "    Slot length: 0.0508\n";
+    tOutFile << "    Slot width: 2.54e-3\n";
+    tOutFile << "    Slot depth: 0.006350\n";
+    tOutFile << "    Start frequency range: 1e9\n";
+    tOutFile << "    End frequency range: 2.2e9\n";
+    tOutFile << "    Frequency interval size: 1e7\n\n";
+
+    tOutFile << "...\n";
+    tOutFile.close();
+}
+
+TEST(LocalOperation, SystemCall_constructor)
 {
     Plato::InputData tInputNode("Operation");
-    tInputNode.add<std::string>("Command", "cd evaluations0; aprepro");
+    tInputNode.add<std::string>("Command", "aprepro");
     tInputNode.add<std::string>("Name", "aprepro_0");
     tInputNode.add<std::string>("OnChange", "true");
     tInputNode.add<std::string>("AppendInput", "true");
@@ -72,22 +101,21 @@ TEST(LocalOperation, SystemCall)
     tInput.add<std::string>("ArgumentName", "Parameters_0");
     tInputNode.add<Plato::InputData>("Input", tInput);
 
-    std::cout << "1\n";
-    Plato::SystemCall tSystemCall(nullptr, tInputNode, true);
-    std::cout << "2\n";
+    Plato::SystemCallMetadata tMetaData;
+    std::vector<double> tParameters= {1,2};
+    tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
+
+    Plato::SystemCall tSystemCall(tInputNode,tMetaData);
 
     EXPECT_STREQ("aprepro_0", tSystemCall.name().c_str());
-    EXPECT_STREQ("cd evaluations0; aprepro", tSystemCall.command().c_str());
+    EXPECT_STREQ("aprepro", tSystemCall.command().c_str());
     EXPECT_TRUE(tSystemCall.onChange());
     EXPECT_TRUE(tSystemCall.appendInput());
 
     auto tOptions = tSystemCall.options();
     std::vector<std::string> tGoldOptions = {"r=", "h="};
-    for(auto& tOption : tOptions)
-    {
-        auto tItr = std::find(tGoldOptions.begin(), tGoldOptions.end(), tOption);
-        EXPECT_TRUE(tItr != tGoldOptions.end());
-    }
+    EXPECT_EQ(tOptions[0], tGoldOptions[0]);
+    EXPECT_EQ(tOptions[1], tGoldOptions[1]);
 
     auto tArguments = tSystemCall.arguments();
     std::vector<std::string> tGoldArguments = {"matched.yaml.template matched.yaml", "-q"};
@@ -98,13 +126,41 @@ TEST(LocalOperation, SystemCall)
     }
 
     auto tInputs = tSystemCall.inputNames();
-    std::vector<std::string> tGoldInputs = {"matched.yaml.template matched.yaml", "-q"};
+    std::vector<std::string> tGoldInputs = {"Parameters_0"};
     for(auto& tInput : tInputs)
     {
         auto tItr = std::find(tGoldInputs.begin(), tGoldInputs.end(), tInput);
         EXPECT_TRUE(tItr != tGoldInputs.end());
     }
+
+    createMatchedYAMLTemplateFile();
+
+    tSystemCall(tMetaData);
+
+    std::cout << tSystemCall.commandPlusArguments() << std::endl;
 }
+
+// TEST(LocalOperation, SystemCall_operator)
+// {
+//     Plato::InputData tInputNode("Operation");
+//     tInputNode.add<std::string>("Command", "aprepro");
+//     tInputNode.add<std::string>("Name", "aprepro_0");
+//     tInputNode.add<std::string>("OnChange", "true");
+//     tInputNode.add<std::string>("AppendInput", "true");
+//     tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+//     tInputNode.add<std::string>("Argument", "-q");
+//     tInputNode.add<std::string>("Option", "r=");
+//     tInputNode.add<std::string>("Option", "h=");
+
+//     Plato::InputData tInput("Input");
+//     tInput.add<std::string>("ArgumentName", "Parameters_0");
+//     tInputNode.add<Plato::InputData>("Input", tInput);
+
+//     Plato::SystemCallMetadata tMetaData;
+//     std::vector<double> tParameters= {100,200};
+//     tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
+
+// }
 
 TEST(LocalOperation, read_table_1)
 {

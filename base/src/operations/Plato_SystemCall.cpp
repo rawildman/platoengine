@@ -48,9 +48,7 @@
 
 #include <cstdlib>
 #include <sstream>
-#include <mpi.h>
 
-#include "PlatoApp.hpp"
 #include "Plato_Parser.hpp"
 #include "Plato_Console.hpp"
 #include "Plato_InputData.hpp"
@@ -72,9 +70,7 @@ void SystemCall::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 }
 
 /******************************************************************************/
-SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool) :
-    Plato::LocalOp(aPlatoApp),
-    mUnitTest(aUnitTestBool)
+SystemCall::SystemCall(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData)
 /******************************************************************************/
 {
     // set basic info
@@ -85,32 +81,26 @@ SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnit
     
     this->setInputSharedDataNames(aNode);
     this->setArguments(aNode);
-    this->setOptions(aNode);
+    this->setOptions(aNode,aMetaData);
 }
 
-void SystemCall::setOptions(const Plato::InputData& aNode)
+void SystemCall::setOptions(const Plato::InputData& aNode, const Plato::SystemCallMetadata& aMetaData)
 {
     auto tNumOptions = aNode.getByName<std::string>("Option").size();
-    if(mUnitTest)
+
+    auto tTotalNumParameters = this->countTotalNumParameters(aMetaData);
+    if(tNumOptions > tTotalNumParameters)
     {
-        mOptions = std::vector<std::string>(tNumOptions, "");
+        THROWERR(std::string("Number of options cannot exceed the number of total input parameters. ") 
+            + "The number of options is set to '" + std::to_string(tNumOptions) 
+            + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
     }
-    else
-    {
-        auto tTotalNumParameters = this->countTotalNumParameters();
-        if(tNumOptions > tTotalNumParameters)
-        {
-            THROWERR(std::string("Number of options cannot exceed the number of total input parameters. ") 
-                + "The number of options is set to '" + std::to_string(tNumOptions) 
-                + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
-        }
-        mOptions = std::vector<std::string>(tTotalNumParameters, "");
-    }
+    mOptions = std::vector<std::string>(tTotalNumParameters, "");
     
-    for(auto& tStrValue : aNode.getByName<std::string>("Option"))
+    size_t tIndex = 0;
+    for(auto tStrValue : aNode.getByName<std::string>("Option"))
     {
-        auto tIndex = &tStrValue - &aNode.getByName<std::string>("Option")[0];
-        mOptions[tIndex] = tStrValue;
+        mOptions[tIndex++] = tStrValue;
     }
 }
 
@@ -122,13 +112,12 @@ void SystemCall::setInputSharedDataNames(const Plato::InputData& aNode)
     }
 }
 
-size_t SystemCall::countTotalNumParameters() const
+size_t SystemCall::countTotalNumParameters(const Plato::SystemCallMetadata& aMetaData) const
 {
     size_t tTotalNumParameters = 0;
-    for(auto& tInputName : mInputNames)
+    for(auto& tInputArgumentPair : aMetaData.mInputArgumentMap)
     {
-        auto tInputArgument = mPlatoApp->getValue(tInputName);
-        tTotalNumParameters += tInputArgument->size();
+        tTotalNumParameters += tInputArgumentPair.second->size();
     }
     return tTotalNumParameters;
 }
@@ -142,36 +131,14 @@ void SystemCall::setArguments(const Plato::InputData& aNode)
     }
 }
 
-bool SystemCall::saveParameters()
-{
-    bool tChanged = false;
-    if(mSavedParameters.size() == 0)
-    {
-        for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
-        {
-            Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
-            auto tInputArgument = mPlatoApp->getValue(mInputNames[tIndexJ]);
-            std::vector<double> tCurVector(tInputArgument->size());
-            for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
-            {
-                tCurVector[tIndexI] = tInputArgument->data()[tIndexI];
-                Plato::Console::Status("Saved: Not set yet; Current: " + std::to_string(tCurVector[tIndexI]));
-            }
-            mSavedParameters.push_back(tCurVector);
-        }
-        tChanged = true;
-    }
-    return tChanged;
-}
-
-bool SystemCall::checkForLocalParameterChanges()
+bool SystemCall::checkForLocalParameterChanges(const Plato::SystemCallMetadata& aMetaData)
 {
     bool tDidParametersChanged = false;
     for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
     {
         bool tLocalChanged = false;
         Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
-        auto tInputArgument = mPlatoApp->getValue(mInputNames[tIndexJ]);
+        auto tInputArgument = aMetaData.mInputArgumentMap.at(mInputNames[tIndexJ]);
         for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
         {
             double tSavedValue = mSavedParameters[tIndexJ][tIndexI];
@@ -201,22 +168,7 @@ bool SystemCall::checkForLocalParameterChanges()
     return tDidParametersChanged;
 }
 
-bool SystemCall::shouldEnginePerformSystemCall(bool aDidParametersChanged)
-{
-    bool tPerformSystemCall = true;
-    if(!aDidParametersChanged)
-    {
-        tPerformSystemCall = false;
-        Plato::Console::Status("PlatoMain: SystemCall -- Condition not met. Not calling.");
-    } 
-    else
-    {
-        Plato::Console::Status("PlatoMain: SystemCall -- Condition met. Calling.");
-    }
-    return tPerformSystemCall;
-}
-
-void SystemCall::performSystemCall()
+void SystemCall::performSystemCall(const Plato::SystemCallMetadata& aMetaData)
 {
     std::vector<std::string> tArguments;
     for(auto& tArgumentName : mArguments)
@@ -225,45 +177,69 @@ void SystemCall::performSystemCall()
     }
     if(mAppendInput)
     {
-        this->appendOptionsAndValues(tArguments);
+        this->appendOptionsAndValues(aMetaData,tArguments);
     }
     this->executeCommand(tArguments);
 }
 
-void SystemCall::appendOptionsAndValues(std::vector<std::string>& aArguments)
+void SystemCall::appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaData, std::vector<std::string>& aArguments)
 {
     for(auto& tInputName : mInputNames)
     {
-        auto tIndex = &tInputName - &mInputNames[0];
-        auto tInputArgument = mPlatoApp->getValue(tInputName);
-        for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
+        auto tInputArgument = aMetaData.mInputArgumentMap.at(tInputName);
+        for(size_t tIndex=0; tIndex<tInputArgument->size(); ++tIndex)
         {
             std::stringstream tDataString;
-            tDataString << std::setprecision(16) << mOptions[tIndex] << tInputArgument->data()[tIndexI];
+            tDataString << std::setprecision(16) << mOptions[tIndex] << tInputArgument->data()[tIndex];
             aArguments.push_back(tDataString.str());
         }
     }
 }
 
+void SystemCall::saveParameters(const Plato::SystemCallMetadata& aMetaData)
+{
+    for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
+    {
+        Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
+        auto tInputArgument = aMetaData.mInputArgumentMap.at(mInputNames[tIndexJ]);
+
+
+        std::vector<double> tCurVector(tInputArgument->size());
+        for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
+        {
+            tCurVector[tIndexI] = tInputArgument->data()[tIndexI];
+            Plato::Console::Status("Saved: Not set yet; Current: " + std::to_string(tCurVector[tIndexI]));
+        }
+        mSavedParameters.push_back(tCurVector);
+    }
+}
+
 /******************************************************************************/
-void SystemCall::operator()()
+void SystemCall::operator()(const Plato::SystemCallMetadata& aMetaData)
 /******************************************************************************/
 {
-    bool tPerformSystemCall = true;
+    bool tChanged = true;
     if(mOnChange)
     {
         // If we haven't saved any parameters yet save them now and set "changed" to true.
-        auto tChanged = this->saveParameters();
-        if(!tChanged)
+        if(mSavedParameters.size() == 0)
         {
-            tChanged = this->checkForLocalParameterChanges();
+            this->saveParameters(aMetaData);
         }
-        tPerformSystemCall = this->shouldEnginePerformSystemCall(tChanged);
+        else
+        {
+            tChanged = this->checkForLocalParameterChanges(aMetaData);
+        }
     }
 
-    if(tPerformSystemCall)
+    if(tChanged)
     {
-        this->performSystemCall();
+        Plato::Console::Status("PlatoMain: SystemCall -- Condition met. Calling.");
+        this->performSystemCall(aMetaData);
+    }
+    else
+    {
+        Plato::Console::Status("PlatoMain: SystemCall -- Condition not met. Not calling.");
     }
 }
 
@@ -284,8 +260,9 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
     }
 }
 
-SystemCallMPI::SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool) : 
-    SystemCall(aPlatoApp, aNode, aUnitTestBool)
+SystemCallMPI::SystemCallMPI(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData, const MPI_Comm& aComm) : 
+    SystemCall(aNode,aMetaData),
+    mComm(aComm)
 {
     mNumRanks = Plato::Get::Int(aNode, "NumRanks");
 }
@@ -304,7 +281,13 @@ void SystemCallMPI::executeCommand(const std::vector<std::string> &aArguments)
     tArgumentPointers.push_back(nullptr);
 
     MPI_Comm tIntercom;
-    auto tExitStatus = MPI_Comm_spawn(mStringCommand.c_str(), tArgumentPointers.data(), mNumRanks, MPI_INFO_NULL, 0, mPlatoApp->getComm(), &tIntercom, MPI_ERRCODES_IGNORE);
+    auto tExitStatus = MPI_Comm_spawn(mStringCommand.c_str(),
+                                      tArgumentPointers.data(),
+                                      mNumRanks, MPI_INFO_NULL,
+                                      0,
+                                      mComm,
+                                      &tIntercom, MPI_ERRCODES_IGNORE);
+
     if (tExitStatus != MPI_SUCCESS)
     {
         std::string tErrorMessage = std::string("System call ' ") + mStringCommand + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);

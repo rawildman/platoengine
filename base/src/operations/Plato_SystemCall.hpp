@@ -51,33 +51,38 @@
 #include "Plato_LocalOperation.hpp"
 #include <vector>
 #include <string>
+#include <memory>
+#include <unordered_map>
 
-class PlatoApp;
+#include <mpi.h>
 
 namespace Plato
 {
+
+struct SystemCallMetadata
+{
+    std::unordered_map<std::string,std::vector<double>*> mInputArgumentMap;
+};
 
 class InputData;
 
 /******************************************************************************//**
  * \brief Call a shell script
 **********************************************************************************/
-class SystemCall : public Plato::LocalOp
+class SystemCall
 {
 public:
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
      * \param [in] aNode input metadata
-     * \param [in] aUnitTestBool set to true only if used in a unit test environment 
     **********************************************************************************/
-    SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
-               bool aUnitTestBool = false);
+    SystemCall(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief perform local operation to call a shell script.
     **********************************************************************************/
-    void operator()();
+    void operator()(const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief Return local operation's argument list
@@ -145,31 +150,24 @@ private:
      * \brief Append input values to the end of the argument list.
      * \param [out] aArguments command argument list
     **********************************************************************************/
-    void appendOptionsAndValues(std::vector<std::string>& aArguments);
+    void appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaData, std::vector<std::string>& aArguments);
 
     /******************************************************************************//**
      * \brief If the parameterd changed since the last call to the shell script, save the new parameters.
      * \return boolean flag indicating if parameters changed since the last call to the shell script. 
     **********************************************************************************/
-    bool saveParameters();
+    void saveParameters(const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief perform system call to a shell script.
     **********************************************************************************/
-    void performSystemCall();
+    void performSystemCall(const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief Check if the parameters were modified locally; if modified, save the new parameters.
      * \return boolean flag indicating if parameters changed since the last call to the shell script. 
     **********************************************************************************/
-    bool checkForLocalParameterChanges();
-
-    /******************************************************************************//**
-     * \brief Check if conditions to perform the system call to a shell script are met.
-     * \param [in] aDidParametersChanged boolean flag indicating if parameters have changed since last call.
-     * \return boolean flag (true=perform system call; false=do not perform system call, condition are not met)
-    **********************************************************************************/
-    bool shouldEnginePerformSystemCall(bool aDidParametersChanged);
+    bool checkForLocalParameterChanges(const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief Set input shared data argument names.
@@ -187,13 +185,13 @@ private:
      * \brief Set list of command options.
      * \param [in] aNode input XML metadata
     **********************************************************************************/
-    void setOptions(const Plato::InputData& aNode);
+    void setOptions(const Plato::InputData& aNode, const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
      * \brief Return the total number of parameters.
      * \return total number of parameters
     **********************************************************************************/
-    size_t countTotalNumParameters() const;
+    size_t countTotalNumParameters(const Plato::SystemCallMetadata& aMetaData) const;
 
     /******************************************************************************//**
      * \brief Execute call to the shell script.
@@ -204,7 +202,6 @@ private:
 private:
     bool mOnChange;
     bool mAppendInput;
-    bool mUnitTest;
     
     std::string mName;
 
@@ -212,19 +209,20 @@ private:
     std::vector<std::string> mArguments;
     std::vector<std::string> mInputNames;
     std::vector<std::vector<double>> mSavedParameters;
-    
+
 protected:
     int mNumRanks = 1;
     std::string mStringCommand;
     std::string mCommandPlusArguments;
 };
-// class SystemCall;
+// class SystemCall
 
 class SystemCallMPI : public SystemCall {
 public:
-SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool = false);
+SystemCallMPI(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData, const MPI_Comm& aComm);
 private:
 void executeCommand(const std::vector<std::string> &arguments) override;
+const MPI_Comm& mComm;
 };
 
 }

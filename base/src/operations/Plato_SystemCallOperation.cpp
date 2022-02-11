@@ -41,45 +41,92 @@
  */
 
 /*
- * Plato_Operations_incl.hpp
+ * Plato_SystemCallOperation.cpp
  *
- *  Created on: Jun 27, 2019
+ *  Created on: Feb 11, 2022
  */
-
-#pragma once
-
-#include "Plato_Filter.hpp"
-#include "Plato_CopyField.hpp"
-#include "Plato_CopyValue.hpp"
-#include "Plato_Roughness.hpp"
-#include "Plato_SystemCall.hpp"
 #include "Plato_SystemCallOperation.hpp"
-#include "Plato_Aggregator.hpp"
-#include "Plato_DesignVolume.hpp"
-#include "Plato_EnforceBounds.hpp"
-#include "Plato_UpdateProblem.hpp"
-#include "Plato_ComputeVolume.hpp"
-#include "Plato_CSMMeshOutput.hpp"
-#include "Plato_SetUpperBounds.hpp"
-#include "Plato_SetLowerBounds.hpp"
-#include "Plato_PlatoMainOutput.hpp"
-#include "Plato_InitializeField.hpp"
-#include "Plato_InitializeValues.hpp"
-#include "Plato_WriteGlobalValue.hpp"
-#include "Plato_CSMParameterOutput.hpp"
-#include "Plato_HarvestDataFromFile.hpp"
-#include "Plato_OperationsUtilities.hpp"
-#include "Plato_NormalizeObjectiveValue.hpp"
-#include "Plato_MeanPlusVarianceMeasure.hpp"
-#include "Plato_MeanPlusVarianceGradient.hpp"
-#include "Plato_ReciprocateObjectiveValue.hpp"
-#include "Plato_NormalizeObjectiveGradient.hpp"
-#include "Plato_OutputNodalFieldSharedData.hpp"
-#include "Plato_ReciprocateObjectiveGradient.hpp"
+#include "PlatoApp.hpp"
 
-#ifdef GEOMETRY
-#include "Plato_MapMLSField.hpp"
-#include "Plato_MetaDataMLS.hpp"
-#include "Plato_ComputeMLSField.hpp"
-#include "Plato_InitializeMLSPoints.hpp"
-#endif
+namespace Plato
+{
+
+SystemCallOperation::SystemCallOperation(PlatoApp* aPlatoApp, Plato::InputData & aNode)
+    : Plato::LocalOp(aPlatoApp),
+      mInputData(aNode)
+{
+    this->setMetaData();
+    mSystemCall = std::make_unique<SystemCall>(aNode,mMetaData);
+}
+
+void SystemCallOperation::operator()()
+{
+    this->setMetaData();
+    (*mSystemCall)(mMetaData);
+}
+
+void SystemCallOperation::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
+{
+    mSystemCall->getArguments(aLocalArgs);
+}
+
+void SystemCallOperation::setMetaData()
+{
+    for(Plato::InputData& tInputNode : mInputData.getByName<Plato::InputData>("Input"))
+    {
+        std::string tInputName = Plato::Get::String(tInputNode, "ArgumentName");
+        mMetaData.mInputArgumentMap[tInputName] = mPlatoApp->getValue(tInputName);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SystemCallMPIOperation::SystemCallMPIOperation(PlatoApp* aPlatoApp, Plato::InputData & aNode)
+    : Plato::LocalOp(aPlatoApp),
+      mInputData(aNode)
+{
+    this->setMetaData();
+    mSystemCall = std::make_unique<SystemCallMPI>(aNode,mMetaData,aPlatoApp->getComm());
+}
+
+void SystemCallMPIOperation::operator()()
+{
+    this->setMetaData();
+    (*mSystemCall)(mMetaData);
+}
+
+void SystemCallMPIOperation::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
+{
+    mSystemCall->getArguments(aLocalArgs);
+}
+
+void SystemCallMPIOperation::setMetaData()
+{
+    for(Plato::InputData& tInputNode : mInputData.getByName<Plato::InputData>("Input"))
+    {
+        std::string tInputName = Plato::Get::String(tInputNode, "ArgumentName");
+        mMetaData.mInputArgumentMap[tInputName] = mPlatoApp->getValue(tInputName);
+    }
+}
+
+}
