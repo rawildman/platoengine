@@ -6,7 +6,6 @@
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
-#include "XMLGeneratorPlatoAnalyzeProblem.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp"
 
@@ -328,6 +327,10 @@ void write_define_xml_file
     {
         add_shape_optimization_data_to_define_xml_file(aMetaData, tDocument);
     }
+    if(aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        add_dakota_concurrent_evaluations_data_to_define_xml_file(aMetaData, tDocument);
+    }
     tDocument.save_file("defines.xml", "  ");
 }
 // function write_define_xml_file
@@ -372,6 +375,23 @@ void add_shape_optimization_data_to_define_xml_file
 }
 
 // function add_shape_optimization_data_to_define_xml_file
+/******************************************************************************/
+
+/******************************************************************************/
+void add_dakota_concurrent_evaluations_data_to_define_xml_file
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document &aDocument)
+{
+    pugi::xml_node tTmpNode = aDocument.append_child("Define");
+    tTmpNode.append_attribute("name") = "NumParameters";
+    tTmpNode.append_attribute("value") = aMetaData.optimization_parameters().concurrent_evaluations().c_str();
+    tTmpNode = aDocument.append_child("Array");
+    tTmpNode.append_attribute("name") = "Parameters";
+    tTmpNode.append_attribute("type") = "int";
+    tTmpNode.append_attribute("from") = "0";
+    tTmpNode.append_attribute("to") = "{NumParameters-1}";
+}
+// function add_dakota_concurrent_evaluations_data_to_define_xml_file
 /******************************************************************************/
 
 }

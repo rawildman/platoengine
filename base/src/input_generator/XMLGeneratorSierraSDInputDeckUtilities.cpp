@@ -10,8 +10,9 @@
 #include <sstream>
 #include <sys/stat.h>
 
-#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorSierraSDUtilities.hpp"
+#include "XMLGeneratorCriterionMetadata.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
 
@@ -670,6 +671,10 @@ void append_case
     {
         outfile << "  case = primary_compliance_secondary_volume" << std::endl;
     }
+    else if (aCriterion.type() == "volume_average_von_mises")
+    {
+        outfile << "  case = volume_average_von_mises" << std::endl;
+    }
     else if(isInverseMethodCase(aCriterion))
     {
         outfile << "  case = inverse_methods" << std::endl;
@@ -713,6 +718,10 @@ void append_normalization_parameter
         tNormalizeObjective = false;
     }
     if(aCriterion.type() == "stress_and_mass")
+    {
+        tNormalizeObjective = false;
+    }
+    if(aCriterion.type() == "volume_average_von_mises")
     {
         tNormalizeObjective = false;
     }
@@ -917,28 +926,6 @@ void append_contact_block(const XMLGen::InputData& aMetaData,
     }
 }
 
-/**************************************************************************/
-bool extractMetaDataForWritingSDInputDeck(const XMLGen::InputData &aMetaData,
-                                          XMLGen::Service &tService,
-                                          XMLGen::Scenario &tScenario,
-                                          XMLGen::Criterion &tCriterion)
-{
-    if(aMetaData.objective.serviceIDs.size() > 0)
-    {
-        auto tServiceID = aMetaData.objective.serviceIDs[0];
-        tService = aMetaData.service(tServiceID);
-        if(tService.code() == "sierra_sd")
-        {
-            auto tScenarioID = aMetaData.objective.scenarioIDs[0];
-            tScenario = aMetaData.scenario(tScenarioID);
-            auto tCriterionID = aMetaData.objective.criteriaIDs[0];
-            tCriterion = aMetaData.criterion(tCriterionID);
-            return true;
-        }
-    }
-    return false;
-}
-
 void add_input_deck_blocks
 (const XMLGen::InputData& aMetaData,
  std::ostream &outfile)
@@ -946,8 +933,7 @@ void add_input_deck_blocks
     XMLGen::Service tService;
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
-
-    if (!extractMetaDataForWritingSDInputDeck(aMetaData, tService, tScenario, tCriterion)) {
+    if (!XMLGen::extract_metadata_for_writing_sd_input_deck(aMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 
@@ -1004,10 +990,6 @@ bool isEmptyLine(std::string line) {
         return !std::isspace(c);}) == 0;
 }
 
-void makeLowerCase(std::string &str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);    
-}
-
 std::string getFirstTokenInLine(std::string line) {
     std::istringstream stream(line);
     std::string firstToken;
@@ -1016,8 +998,7 @@ std::string getFirstTokenInLine(std::string line) {
 }
 
 std::string lowerCaseFirstTokenInLine(std::string line) {
-    std::string firstToken = getFirstTokenInLine(line);
-    makeLowerCase(firstToken);
+    std::string firstToken = to_lower(getFirstTokenInLine(line));
     return firstToken;
 }
 
@@ -1069,7 +1050,7 @@ void augment_sierra_sd_input_deck_with_plato_problem_description(const XMLGen::I
     XMLGen::Scenario tScenario;
     XMLGen::Criterion tCriterion;
 
-    if (!extractMetaDataForWritingSDInputDeck(aXMLMetaData, tService, tScenario, tCriterion)) {
+    if (!extract_metadata_for_writing_sd_input_deck(aXMLMetaData, tService, tScenario, tCriterion)) {
         return;
     }
 

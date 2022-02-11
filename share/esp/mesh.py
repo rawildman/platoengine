@@ -13,7 +13,7 @@ for inArg in inArgs:
   args[key] = val
 
 # check for required input
-if not args.keys().count('modelNameIn'):
+if not list(args.keys()).count('modelNameIn'):
   raise Exception("Required input is missing:  expected modelNameIn=model.csm")
 
 # call mesh() with destructured dictionary

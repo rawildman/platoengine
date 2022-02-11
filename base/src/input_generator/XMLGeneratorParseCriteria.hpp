@@ -80,6 +80,41 @@ private:
      * \param [in] aCriterion criterion metadata
     **********************************************************************************/
     void setTags(XMLGen::Criterion& aCriterion);
+
+    /******************************************************************************//**
+     * \fn setMassProperties
+     * \brief Set criterion metadata for mass properties.
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setMassProperties(XMLGen::Criterion& aCriterion);
+
+    /******************************************************************************//**
+     * \fn checkVolumePenaltyExponent
+     * \brief Make sure the default value for material penalty exponent is correct for volume criteria
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion);
+
+    /******************************************************************************//**
+     * \fn errorCheckDisplacementCriterion
+     * \brief Make sure the correct options are set for displacement type criteria
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void errorCheckDisplacementCriterion(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setDisplacementDirection
+     * \brief Set the displacement direction member variable
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setDisplacementDirection(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
+     * \fn insertTag
+     * \brief Insert a tag, possibly with a default value
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void insertTag(std::string keyword, std::string defaultValue = "");
 public:
     /******************************************************************************//**
      * \fn data

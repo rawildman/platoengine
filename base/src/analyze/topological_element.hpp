@@ -135,6 +135,11 @@ public:
   virtual const char* getType() { return myType.c_str(); }
   virtual int  getBlockId() { return groupID; }
   virtual void setBlockId(int bid) { groupID = bid; }
+  virtual string getBlockName() { return myName; }
+  virtual void setBlockName(string aMyName) { myName = aMyName; }
+
+  void setFaceGraph(vector<vector<int>> aFaceGraph) { mFaceGraph = aFaceGraph; }
+  vector<vector<int>> getFaceGraph() const { return mFaceGraph; }
 
   void Connect(int* gid, int lid);
   int* Connect(int lid);
@@ -175,6 +180,7 @@ protected:
   int myNattr;
   int myDim;
   string myType;
+  string myName;
   int* nodeConnect;
   int* globalID;
   double* attributes;
@@ -183,6 +189,8 @@ protected:
   ElementIntegration* elementIntegration;
   Teuchos::RCP<shards::CellTopology> blockTopology;
   Intrepid::Basis<double, Intrepid::FieldContainer<double> > *blockBasis;
+
+  vector<vector<int>> mFaceGraph;
 
 private:
   Element(const Element&);
@@ -293,6 +301,21 @@ private:
   void init();
   Tet4(const Tet4&);
   Tet4& operator=(const Tet4&);
+};
+
+class Tet10 : public Element
+{
+public:
+  Tet10( int number, int nattr=0 ): Element( number, nattr ){ init(); }
+  Tet10( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
+  virtual ~Tet10();
+  virtual void registerData();
+  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+
+private:
+  void init();
+  Tet10(const Tet10&);
+  Tet10& operator=(const Tet10&);
 };
 
 class NullElement : public Element

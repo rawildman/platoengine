@@ -139,6 +139,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tOptimizationParameters.append("problem_update_frequency", "5");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService0;
@@ -930,6 +931,94 @@ TEST(PlatoTestXMLGenerator, WriteAmgxInputFile)
     Plato::system("rm -f amgx.json");
 }
 
+TEST(PlatoTestXMLGenerator, WriteAmgxInputFile_solver_tolerance)
+{
+    XMLGen::InputData tInputData;
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tInputData.append(tScenario);
+    tInputData.objective.scenarioIDs.push_back("1");
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("amgx_solver_tolerance", "3.33e-6");
+    tInputData.set(tOptimizationParameters);
+    XMLGen::write_amgx_input_file(tInputData);
+    auto tData = XMLGen::read_data_from_file("amgx.json");
+    auto tGold = std::string("{\"config_version\":2,\"solver\":{\"preconditioner\":{\"print_grid_stats\":1,\"algorithm\":\"AGGREGATION\",\"print_vis_data\":0,\"max_matching_iterations\":50,")
+        +"\"max_unassigned_percentage\":0.01,\"solver\":\"AMG\",\"smoother\":{\"relaxation_factor\":0.78,\"scope\":\"jacobi\",\"solver\":\"BLOCK_JACOBI\",\"monitor_residual\":0,\"print_solve_stats\":0}"
+        +",\"print_solve_stats\":0,\"dense_lu_num_rows\":64,\"presweeps\":1,\"selector\":\"SIZE_8\",\"coarse_solver\":\"DENSE_LU_SOLVER\",\"coarsest_sweeps\":2,\"max_iters\":1,\"monitor_residual\":0,"
+        +"\"store_res_history\":0,\"scope\":\"amg\",\"max_levels\":100,\"postsweeps\":1,\"cycle\":\"W\"},\"solver\":\"PBICGSTAB\",\"print_solve_stats\":0,\"obtain_timings\":0,\"max_iters\":1000,"
+        +"\"monitor_residual\":1,\"convergence\":\"ABSOLUTE\",\"scope\":\"main\",\"tolerance\":3.33e-6,\"norm\":\"L2\"}}";
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f amgx.json");
+}
+
+TEST(PlatoTestXMLGenerator, WriteAmgxInputFile_max_iterations)
+{
+    XMLGen::InputData tInputData;
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tInputData.append(tScenario);
+    tInputData.objective.scenarioIDs.push_back("1");
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("amgx_max_iterations", "12345");
+    tInputData.set(tOptimizationParameters);
+    XMLGen::write_amgx_input_file(tInputData);
+    auto tData = XMLGen::read_data_from_file("amgx.json");
+    auto tGold = std::string("{\"config_version\":2,\"solver\":{\"preconditioner\":{\"print_grid_stats\":1,\"algorithm\":\"AGGREGATION\",\"print_vis_data\":0,\"max_matching_iterations\":50,")
+        +"\"max_unassigned_percentage\":0.01,\"solver\":\"AMG\",\"smoother\":{\"relaxation_factor\":0.78,\"scope\":\"jacobi\",\"solver\":\"BLOCK_JACOBI\",\"monitor_residual\":0,\"print_solve_stats\":0}"
+        +",\"print_solve_stats\":0,\"dense_lu_num_rows\":64,\"presweeps\":1,\"selector\":\"SIZE_8\",\"coarse_solver\":\"DENSE_LU_SOLVER\",\"coarsest_sweeps\":2,\"max_iters\":1,\"monitor_residual\":0,"
+        +"\"store_res_history\":0,\"scope\":\"amg\",\"max_levels\":100,\"postsweeps\":1,\"cycle\":\"W\"},\"solver\":\"PBICGSTAB\",\"print_solve_stats\":0,\"obtain_timings\":0,\"max_iters\":12345,"
+        +"\"monitor_residual\":1,\"convergence\":\"ABSOLUTE\",\"scope\":\"main\",\"tolerance\":1e-12,\"norm\":\"L2\"}}";
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f amgx.json");
+}
+
+TEST(PlatoTestXMLGenerator, WriteAmgxInputFile_print_solver_stats)
+{
+    XMLGen::InputData tInputData;
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tInputData.append(tScenario);
+    tInputData.objective.scenarioIDs.push_back("1");
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("amgx_print_solver_stats", "true");
+    tInputData.set(tOptimizationParameters);
+    XMLGen::write_amgx_input_file(tInputData);
+    auto tData = XMLGen::read_data_from_file("amgx.json");
+    auto tGold = std::string("{\"config_version\":2,\"solver\":{\"preconditioner\":{\"print_grid_stats\":1,\"algorithm\":\"AGGREGATION\",\"print_vis_data\":0,\"max_matching_iterations\":50,")
+        +"\"max_unassigned_percentage\":0.01,\"solver\":\"AMG\",\"smoother\":{\"relaxation_factor\":0.78,\"scope\":\"jacobi\",\"solver\":\"BLOCK_JACOBI\",\"monitor_residual\":0,\"print_solve_stats\":0}"
+        +",\"print_solve_stats\":0,\"dense_lu_num_rows\":64,\"presweeps\":1,\"selector\":\"SIZE_8\",\"coarse_solver\":\"DENSE_LU_SOLVER\",\"coarsest_sweeps\":2,\"max_iters\":1,\"monitor_residual\":0,"
+        +"\"store_res_history\":0,\"scope\":\"amg\",\"max_levels\":100,\"postsweeps\":1,\"cycle\":\"W\"},\"solver\":\"PBICGSTAB\",\"print_solve_stats\":1,\"obtain_timings\":0,\"max_iters\":1000,"
+        +"\"monitor_residual\":1,\"convergence\":\"ABSOLUTE\",\"scope\":\"main\",\"tolerance\":1e-12,\"norm\":\"L2\"}}";
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f amgx.json");
+}
+
+TEST(PlatoTestXMLGenerator, WriteAmgxInputFile_print_solver_type)
+{
+    XMLGen::InputData tInputData;
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tInputData.append(tScenario);
+    tInputData.objective.scenarioIDs.push_back("1");
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("amgx_solver_type", "pcg");
+    tInputData.set(tOptimizationParameters);
+    XMLGen::write_amgx_input_file(tInputData);
+    auto tData = XMLGen::read_data_from_file("amgx.json");
+    auto tGold = std::string("{\"config_version\":2,\"solver\":{\"preconditioner\":{\"print_grid_stats\":1,\"algorithm\":\"AGGREGATION\",\"print_vis_data\":0,\"max_matching_iterations\":50,")
+        +"\"max_unassigned_percentage\":0.01,\"solver\":\"AMG\",\"smoother\":{\"relaxation_factor\":0.78,\"scope\":\"jacobi\",\"solver\":\"BLOCK_JACOBI\",\"monitor_residual\":0,\"print_solve_stats\":0}"
+        +",\"print_solve_stats\":0,\"dense_lu_num_rows\":64,\"presweeps\":1,\"selector\":\"SIZE_8\",\"coarse_solver\":\"DENSE_LU_SOLVER\",\"coarsest_sweeps\":2,\"max_iters\":1,\"monitor_residual\":0,"
+        +"\"store_res_history\":0,\"scope\":\"amg\",\"max_levels\":100,\"postsweeps\":1,\"cycle\":\"W\"},\"solver\":\"PCG\",\"print_solve_stats\":0,\"obtain_timings\":0,\"max_iters\":1000,"
+        +"\"monitor_residual\":1,\"convergence\":\"ABSOLUTE\",\"scope\":\"main\",\"tolerance\":1e-12,\"norm\":\"L2\"}}";
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f amgx.json");
+}
+
 TEST(PlatoTestXMLGenerator, WriteAmgxInputFilePlasticity)
 {
     XMLGen::InputData tInputData;
@@ -1098,6 +1187,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeObjectiveGradientToPlatoAnalyzeOperatio
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1180,6 +1270,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeConstraintGradientToPlatoAnalyzeOperati
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1440,6 +1531,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomConstraintGradientToPlatoAnalyzeO
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");
@@ -1713,6 +1805,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveGradientToPlatoAnalyzeOp
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");

@@ -4,6 +4,7 @@
  *  Created on: Jun 8, 2020
  */
 
+#include <algorithm>
 #include <gtest/gtest.h>
 
 #include "XMLGenerator_UnitTester_Tools.hpp"
@@ -19,23 +20,26 @@
 #include "XMLGeneratorAnalyzeLoadTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeMaterialModelFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
+#include "XMLGeneratorAnalyzeCriterionUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
 
 TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("steady_state_incompressible_fluids");
     tScenario.append("output_frequency","1");
     tScenario.append("discretization","density");
-    tScenario.append("max_steady_state_iterations","500");
+    tScenario.append("steady_state_iterations","500");
     tScenario.append("steady_state_tolerance","1e-5");
     tScenario.append("time_step_safety_factor","0.7");
-    tScenario.append("critical_time_step_damping","1e-2");
     tScenario.append("heat_transfer","none");
     tScenario.append("momentum_damping","0.31");
+    tScenario.append("linear_solver_tolerance","1e-12");
+    tScenario.append("linear_solver_type","epetra");
+    tScenario.append("linear_solver_max_iterations","1000");
     
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
@@ -88,11 +92,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tValues = {"Safety Factor", "double", "0.7"};
     PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    ASSERT_FALSE(tParameter.empty());
-    ASSERT_STREQ("Parameter", tParameter.name());
-    tValues = {"Critical Time Step Damping", "double", "1e-2"};
-    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
-    tParameter = tParameter.next_sibling("Parameter");
     ASSERT_TRUE(tParameter.empty());
 
     // TEST CONVERGENCE BLOCK
@@ -108,7 +107,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_FALSE(tParameter.empty());
     ASSERT_STREQ("Parameter", tParameter.name());
-    tValues = {"Maximum Steady State Iterations", "int", "500"};
+    tValues = {"Steady State Iterations", "int", "500"};
     PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_FALSE(tParameter.empty());
@@ -136,7 +135,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_FALSE(tParameter.empty());
     ASSERT_STREQ("Parameter", tParameter.name());
-    tValues = {"Solver Stack", "string", "Amgx"};
+    tValues = {"Solver Stack", "string", "epetra"};
     PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     ASSERT_TRUE(tParameter.empty());
@@ -147,9 +146,11 @@ TEST(PlatoTestXMLGenerator, AppendPhysics_IncompressibleFluids)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsMechanical)
 {
+    std::vector<XMLGen::Output> tOutputs;
     XMLGen::Output tOutput;
     tOutput.appendDeterminsiticQoI("stress", "element field");
     tOutput.appendDeterminsiticQoI("vonmises", "element field");
+    tOutputs.push_back(tOutput);
     XMLGen::Scenario tScenario;
     tScenario.physics("steady_state_mechanics");
     tScenario.additiveContinuation("");
@@ -157,7 +158,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsMechanical)
     tScenario.minErsatzMaterialConstant("1e-9");
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
-    tPhysics.call(tScenario, tOutput, tDocument);
+    tPhysics.call(tScenario, tOutputs, tDocument);
 
     // TEST RESULTS
     auto tElliptic = tDocument.child("ParameterList");
@@ -196,9 +197,11 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsMechanical)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsThermal)
 {
+    std::vector<XMLGen::Output> tOutputs;
     XMLGen::Output tOutput;
     tOutput.appendDeterminsiticQoI("vonmises", "element field");
     tOutput.appendDeterminsiticQoI("temperature", "nodal field");
+    tOutputs.push_back(tOutput);
     XMLGen::Scenario tScenario;
     tScenario.physics("steady_state_thermal");
     tScenario.additiveContinuation("");
@@ -206,7 +209,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermal)
     tScenario.minErsatzMaterialConstant("1e-9");
     pugi::xml_document tDocument;
     XMLGen::AnalyzePhysicsFunctionInterface tPhysics;
-    tPhysics.call(tScenario, tOutput, tDocument);
+    tPhysics.call(tScenario, tOutputs, tDocument);
 
     // TEST RESULTS
     auto tElliptic = tDocument.child("ParameterList");
@@ -245,7 +248,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermal)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsThermoMechanical)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("steady_state_thermomechanics");
     tScenario.additiveContinuation("");
@@ -261,7 +264,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermoMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -286,7 +289,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsThermoMechanical)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsElectroMechanical)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("steady_state_electromechanics");
     tScenario.additiveContinuation("");
@@ -302,7 +305,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsElectroMechanical)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -327,7 +330,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsElectroMechanical)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsHeatConduction)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("transient_thermal");
     tScenario.timeStep("1.0");
@@ -344,7 +347,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsHeatConduction)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -384,7 +387,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsHeatConduction)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsTransientThermoMechanics)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("transient_thermomechanics");
     tScenario.timeStep("2.0");
@@ -401,7 +404,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientThermoMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Parabolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -441,7 +444,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientThermoMechanics)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsTransientMechanics)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("transient_mechanics");
     tScenario.timeStep("2.0");
@@ -460,7 +463,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientMechanics)
     ASSERT_STREQ("ParameterList", tParabolic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Hyperbolic"}, tParabolic);
     auto tParameter = tParabolic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tParabolic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -508,7 +511,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsTransientMechanics)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsStabilizedMechanics)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("stabilized_mechanics");
     tScenario.timeStep("2.0");
@@ -525,7 +528,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsStabilizedMechanics)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -565,7 +568,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsStabilizedMechanics)
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsPlasticity)
 {
-    XMLGen::Output tOutput;
+    std::vector<XMLGen::Output> tOutput;
     XMLGen::Scenario tScenario;
     tScenario.physics("plasticity");
     tScenario.timeStep("2.0");
@@ -590,7 +593,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPlasticity)
     ASSERT_STREQ("ParameterList", tElliptic.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Elliptic"}, tElliptic);
     auto tParameter = tElliptic.child("Parameter");
-    ASSERT_FALSE(tParameter.empty());
+    ASSERT_TRUE(tParameter.empty());
 
     auto tPenaltyFunction = tElliptic.child("ParameterList");
     ASSERT_FALSE(tPenaltyFunction.empty());
@@ -1436,7 +1439,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tXMLMetaData.objective.scenarioIDs.push_back("1");
 
     XMLGen::Load tLoad1;
-    tLoad1.type("uniform_source");
+    tLoad1.type("uniform_thermal_source");
     tLoad1.id("1");
     tLoad1.location_name("block_1");
     std::vector<std::string> tValues = {"2.0"};
@@ -1444,7 +1447,7 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tXMLMetaData.loads.push_back(tLoad1);
 
     XMLGen::Load tLoad2;
-    tLoad2.type("uniform_source");
+    tLoad2.type("uniform_thermal_source");
     tLoad2.id("2");
     tLoad2.location_name("block_2");
     std::vector<std::string> tValues2 = {"4.0"};
@@ -1483,11 +1486,11 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     auto tSourceParamList = tParameterList.child("ParameterList");
     ASSERT_FALSE(tSourceParamList.empty());
     ASSERT_STREQ("ParameterList", tParameterList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Source with ID 1"}, tSourceParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 1"}, tSourceParamList);
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValues =
-        { {"Type", "string", "Uniform"}, {"Value", "string", "2.0"}, {"Element Block", "string", "block_1"} };
+        { {"Type", "string", "Uniform"}, {"Value", "double", "2.0"}, {"Domains", "Array(string)", "{block_1}"} };
     auto tGoldValuesItr = tGoldValues.begin();
     auto tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -1503,9 +1506,9 @@ TEST(PlatoTestXMLGenerator, AppendThermalSourceToPlatoAnalyzeInputDeck)
     tSourceParamList = tSourceParamList.next_sibling("ParameterList");
     ASSERT_FALSE(tSourceParamList.empty());
     ASSERT_STREQ("ParameterList", tParameterList.name());
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Source with ID 2"}, tSourceParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Uniform Thermal Source with ID 2"}, tSourceParamList);
 
-    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "string", "4.0"}, {"Element Block", "string", "block_2"} };
+    tGoldValues = { {"Type", "string", "Uniform"}, {"Value", "double", "4.0"}, {"Domains", "Array(string)", "{block_2}"} };
     tGoldValuesItr = tGoldValues.begin();
     tParameter = tSourceParamList.child("Parameter");
     while(!tParameter.empty())
@@ -2441,6 +2444,89 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksT
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 }
 
+TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksOneFixed)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Block tBlock1;
+    tBlock1.block_id = "1";
+    tBlock1.element_type = "tet4";
+    tBlock1.material_id = "1";
+    tBlock1.name = "block_1";
+
+    XMLGen::Block tBlock2;
+    tBlock2.block_id = "2";
+    tBlock2.element_type = "tet4";
+    tBlock2.material_id = "2";
+    tBlock2.name = "block_2";
+
+    tXMLMetaData.blocks.push_back(tBlock1);
+    tXMLMetaData.blocks.push_back(tBlock2);
+
+    XMLGen::Material tMaterial1;
+    tMaterial1.id("1");
+    tMaterial1.code("plato_analyze");
+    tMaterial1.name("adamantium");
+    tMaterial1.materialModel("isotropic_linear_elastic");
+    tMaterial1.property("youngs_modulus", "1e9");
+    tMaterial1.property("poissons_ratio", "0.3");
+
+    XMLGen::Material tMaterial2;
+    tMaterial2.id("2");
+    tMaterial2.code("plato_analyze");
+    tMaterial2.name("carbonadium");
+    tMaterial2.materialModel("isotropic_linear_elastic");
+    tMaterial2.property("youngs_modulus", "1e91");
+    tMaterial2.property("poissons_ratio", "0.29");
+
+    tXMLMetaData.materials.push_back(tMaterial1);
+    tXMLMetaData.materials.push_back(tMaterial2);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    std::vector<std::string> tFixedBlockIds;
+    tFixedBlockIds.push_back("2");
+    tOptimizationParameters.setFixedBlockIDs(tFixedBlockIds);
+    tXMLMetaData.set(tOptimizationParameters);
+
+    ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+
+    auto tSpatialModelList = tDocument.child("ParameterList");
+    ASSERT_FALSE(tSpatialModelList.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Spatial Model"}, tSpatialModelList);
+
+    auto tDomainList = tSpatialModelList.child("ParameterList");
+    ASSERT_FALSE(tDomainList.empty());
+    ASSERT_STREQ("ParameterList", tDomainList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Domains"}, tDomainList);
+
+    auto tSpatialModelParams1 = tDomainList.child("ParameterList");
+    ASSERT_FALSE(tSpatialModelParams1.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelParams1.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams1);
+
+    auto tElementBlock = tSpatialModelParams1.child("Element Block");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
+
+    auto tMaterialModel = tSpatialModelParams1.child("Material Model");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
+
+    auto tSpatialModelParams2 = tSpatialModelParams1.next_sibling();
+    ASSERT_FALSE(tSpatialModelParams2.empty());
+    ASSERT_STREQ("ParameterList", tSpatialModelParams2.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 2"}, tSpatialModelParams2);
+
+    tElementBlock = tSpatialModelParams2.child("Element Block");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_2"}, tElementBlock);
+
+    tMaterialModel = tSpatialModelParams2.child("Material Model");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
+
+    auto tFixedControl = tSpatialModelParams2.child("Fixed Control");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tMaterialModel);
+}
+
 TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_MaterialIsNotFromAnalyzePerformer)
 {
     pugi::xml_document tDocument;
@@ -2537,7 +2623,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tMaterialModelsList);
 
     auto tFirstMaterial = tMaterialModelsList.child("ParameterList");
-PlatoTestXMLGenerator::test_attributes({"name"}, {"adamantium"}, tFirstMaterial);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"adamantium"}, tFirstMaterial);
     auto tThermalConduction = tFirstMaterial.child("ParameterList");
     ASSERT_FALSE(tThermalConduction.empty());
     ASSERT_STREQ("ParameterList", tThermalConduction.name());
@@ -2703,21 +2789,18 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_J2Plastic
     ASSERT_TRUE(tParameter.empty());
 }
 
-TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalBuoyancy)
+TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_ForcedConvection)
 {
     XMLGen::InputData tXMLMetaData;
     XMLGen::Material tMaterial;
     tMaterial.code("plato_analyze");
     tMaterial.name("Water");
-    tMaterial.materialModel("natural_buoyancy");
-    tMaterial.property("impermeability_number", "100");
-    tMaterial.property("prandtl_number", "17");
-    tMaterial.property("reference_temperature", "10");
-    tMaterial.property("characteristic_length", "1");
-    tMaterial.property("grashof_number", std::vector<std::string>{"10", "10"} );
-    tMaterial.property("richardson_number", std::vector<std::string>{"20", "20"} );
-    tMaterial.property("rayleigh_number", std::vector<std::string>{"30", "30"} );
-    tMaterial.property("thermal_diffusivity_ratio", "3.0");
+    tMaterial.materialModel("forced_convection");
+    tMaterial.property("darcy_number", "1e-5");
+    tMaterial.property("prandtl_number", "0.7");
+    tMaterial.property("reynolds_number", "100");
+    tMaterial.property("temperature_difference", "10");
+    tMaterial.property("characteristic_length", "0.1");
     tMaterial.property("thermal_conductivity", "1.0e-6");
     tMaterial.property("thermal_diffusivity", "2.1117e-5");
     tMaterial.property("kinematic_viscocity", "1.5111e-5");
@@ -2743,7 +2826,71 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalBu
     ASSERT_FALSE(tParameter.empty());
     ASSERT_STREQ("Parameter", tParameter.name());
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Impermeability Number", "double", "100"}, tParameter);
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Darcy Number", "double", "1e-5"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Prandtl Number", "double", "0.7"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Reynolds Number", "double", "100"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Diffusivity", "double", "2.1117e-5"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Kinematic Viscocity", "double", "1.5111e-5"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Conductivity", "double", "1.0e-6"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Characteristic Length", "double", "0.1"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Temperature Difference", "double", "10"}, tParameter);
+    tParameter = tParameter.next_sibling("Parameter");
+    ASSERT_TRUE(tParameter.empty());
+    // TEST WATER BLOCK END
+    tWater = tWater.next_sibling("ParameterList");
+    ASSERT_TRUE(tWater.empty());
+    //TEST MATERIAL MODEL BLOCK END
+    tMaterialModelsList = tMaterialModelsList.next_sibling("ParameterList");
+    ASSERT_TRUE(tMaterialModelsList.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalConvection)
+{
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::Material tMaterial;
+    tMaterial.code("plato_analyze");
+    tMaterial.name("Water");
+    tMaterial.materialModel("natural_convection");
+    tMaterial.property("darcy_number", "110");
+    tMaterial.property("prandtl_number", "17");
+    tMaterial.property("temperature_difference", "10");
+    tMaterial.property("characteristic_length", "1");
+    tMaterial.property("grashof_number", std::vector<std::string>{"10", "10"} );
+    tMaterial.property("richardson_number", std::vector<std::string>{"20", "20"} );
+    tMaterial.property("rayleigh_number", std::vector<std::string>{"30", "30"} );
+    tMaterial.property("thermal_conductivity", "1.0e-6");
+    tMaterial.property("thermal_diffusivity", "2.1117e-5");
+    tMaterial.property("kinematic_viscocity", "1.5111e-5");
+    tXMLMetaData.materials.push_back(tMaterial);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument);
+    //tDocument.save_file("dummy.xml");
+
+    // TEST MATERIAL MODEL BLOCK
+    auto tMaterialModelsList = tDocument.child("ParameterList");
+    ASSERT_FALSE(tMaterialModelsList.empty());
+    ASSERT_STREQ("ParameterList", tMaterialModelsList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tMaterialModelsList);
+
+    // TEST WATER BLOCK
+    auto tWater = tMaterialModelsList.child("ParameterList");
+    ASSERT_FALSE(tWater.empty());
+    ASSERT_STREQ("ParameterList", tWater.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Water"}, tWater);
+    // TEST WATER BLOCK PARAMETERS
+    auto tParameter = tWater.child("Parameter");
+    ASSERT_FALSE(tParameter.empty());
+    ASSERT_STREQ("Parameter", tParameter.name());
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Darcy Number", "double", "110"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Prandtl Number", "double", "17"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
@@ -2753,11 +2900,9 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_NaturalBu
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Conductivity", "double", "1.0e-6"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Reference Temperature", "double", "10"}, tParameter);
-    tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Characteristic Length", "double", "1"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Thermal Diffusivity Ratio", "double", "3.0"}, tParameter);
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Temperature Difference", "double", "10"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, {"Grashof Number", "Array(double)", "{10,10}"}, tParameter);
     tParameter = tParameter.next_sibling("Parameter");
@@ -2780,7 +2925,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Incompres
     XMLGen::Material tMaterial;
     tMaterial.code("plato_analyze");
     tMaterial.name("Water");
-    tMaterial.materialModel("incompressible_flow");
+    tMaterial.materialModel("laminar_flow");
     tMaterial.property("reynolds_number", "400");
     tMaterial.property("impermeability_number", "100");
     tXMLMetaData.materials.push_back(tMaterial);
@@ -3235,7 +3380,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsToPlatoAnalyzeInputDeck_ErrorInvalidPhy
     ASSERT_THROW(XMLGen::append_physics_to_plato_analyze_input_deck(tXMLMetaData, tDocument), std::runtime_error);
 }
 
-
 TEST(PlatoTestXMLGenerator, AppendSelfAdjointParameterToPlatoProblem_ErrorInvalidCriterion)
 {
     XMLGen::InputData tXMLMetaData;
@@ -3549,12 +3693,12 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     tXMLMetaData.append(tWeightedSum);
 
     XMLGen::Criterion tCriterion1;
-    tCriterion1.type("surface_pressure");
+    tCriterion1.type("mean_surface_pressure");
     tCriterion1.id("2");
     tCriterion1.append("location_names", "inlet");
     tXMLMetaData.append(tCriterion1);
     XMLGen::Criterion tCriterion2;
-    tCriterion2.type("surface_pressure");
+    tCriterion2.type("mean_surface_pressure");
     tCriterion2.id("3");
     tCriterion2.append("location_names", "outlet");
     tXMLMetaData.append(tCriterion2);
@@ -3596,7 +3740,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Functions", "Array(string)", "{my_surface_pressure_criterion_id_2,my_surface_pressure_criterion_id_3}"};
+    tGoldValues = {"Functions", "Array(string)", "{my_mean_surface_pressure_criterion_id_2,my_mean_surface_pressure_criterion_id_3}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3610,7 +3754,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Pressure"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Pressure"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3624,7 +3768,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectivePressureMisfitCriteriaToCriteriaList)
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Pressure"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Pressure"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3644,12 +3788,12 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     tXMLMetaData.append(tWeightedSum);
 
     XMLGen::Criterion tCriterion1;
-    tCriterion1.type("surface_temperature");
+    tCriterion1.type("mean_surface_temperature");
     tCriterion1.id("2");
     tCriterion1.append("location_names", "inlet");
     tXMLMetaData.append(tCriterion1);
     XMLGen::Criterion tCriterion2;
-    tCriterion2.type("surface_temperature");
+    tCriterion2.type("mean_surface_temperature");
     tCriterion2.id("3");
     tCriterion2.append("location_names", "outlet");
     tXMLMetaData.append(tCriterion2);
@@ -3691,7 +3835,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Functions", "Array(string)", "{my_surface_temperature_criterion_id_2,my_surface_temperature_criterion_id_3}"};
+    tGoldValues = {"Functions", "Array(string)", "{my_mean_surface_temperature_criterion_id_2,my_mean_surface_temperature_criterion_id_3}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3705,7 +3849,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Temperature"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Temperature"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3719,7 +3863,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveTemperatureMisfitCriteriaToCriteriaLi
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Scalar Function Type", "string", "Average Surface Temperature"};
+    tGoldValues = {"Scalar Function Type", "string", "Mean Surface Temperature"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -3880,6 +4024,73 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveThermalFluxCriteriaToCriteriaList)
     ASSERT_TRUE(tParameter.empty());
 }
 
+TEST(PlatoTestXMLGenerator, AppendObjectiveMeanTemperatureToCriteriaList)
+{
+    XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Criterion tCriterion1;
+    tCriterion1.type("mean_temperature");
+    tCriterion1.id("1");
+    tCriterion1.materialPenaltyExponent("3");
+    tXMLMetaData.append(tCriterion1);
+
+    XMLGen::Service tService;
+    tService.code("plato_analyze");
+    tService.id("1");
+    tXMLMetaData.append(tService);
+
+    XMLGen::Scenario tScenario;
+    tScenario.physics("incompressible_fluids");
+    tScenario.id("1");
+    tXMLMetaData.append(tScenario);
+
+    tXMLMetaData.objective.scenarioIDs.push_back("1");
+    tXMLMetaData.objective.criteriaIDs.push_back("1");
+    tXMLMetaData.objective.serviceIDs.push_back("1");
+
+    pugi::xml_document tDocument;
+    XMLGen::append_criteria_list_to_plato_analyze_input_deck(tXMLMetaData, tDocument);
+    //tDocument.save_file("dummy.xml");
+
+    // TEST CRITERIA
+    auto tCriteria = tDocument.child("ParameterList");
+    ASSERT_FALSE(tCriteria.empty());
+    ASSERT_STREQ("ParameterList", tCriteria.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Criteria"}, tCriteria);
+
+    // TEST MY OBJECTIVE CRITERION
+    auto tCriterion = tCriteria.child("ParameterList");
+    ASSERT_FALSE(tCriterion.empty());
+    ASSERT_STREQ("ParameterList", tCriterion.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"My Objective"}, tCriterion);
+
+    // TEST PARAMETERS
+    auto tParameter = tCriterion.child("Parameter");
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::string> tGoldValues = {"Type", "string", "Scalar Function"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+
+    tParameter = tParameter.next_sibling();
+    tGoldValues = {"Scalar Function Type", "string", "Mean Temperature"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+
+    // TEST CRITERION
+    auto tPenalty = tCriterion.child("ParameterList");
+    ASSERT_FALSE(tPenalty.empty());
+    ASSERT_STREQ("ParameterList", tPenalty.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Penalty Function"}, tPenalty);
+
+    tParameter = tPenalty.child("Parameter");
+    tGoldKeys = {"name", "type", "value"};
+    tGoldValues = {"Type", "string", "SIMP"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+    tParameter = tParameter.next_sibling();
+    tGoldValues = {"Exponent", "double", "3"};
+    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
+    tParameter = tParameter.next_sibling();
+    ASSERT_TRUE(tParameter.empty());
+}
+
 TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeCriteriaToCriteriaList_DefaultConductivityValues)
 {
     XMLGen::InputData tXMLMetaData;
@@ -3887,7 +4098,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeCriteriaToCriteriaList_DefaultC
     XMLGen::Criterion tCriterion1;
     tCriterion1.type("volume");
     tCriterion1.id("1");
-    tCriterion1.append("blocks", "block_1");
+    tCriterion1.append("location_types", "element_block");
+    tCriterion1.append("location_names", "block_1");
     tCriterion1.append("material_penalty_exponent", "3.0");
     tXMLMetaData.append(tCriterion1);
 
@@ -3932,7 +4144,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeCriteriaToCriteriaList_DefaultC
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
-    tGoldValues = {"Element Blocks", "Array(string)", "{block_1}"};
+    tGoldValues = {"Domains", "Array(string)", "{block_1}"};
     PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tParameter);
 
     tParameter = tParameter.next_sibling();
@@ -4557,14 +4769,156 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilter)
     // CALL FUNCTION
     ASSERT_NO_THROW(XMLGen::write_plato_analyze_helmholtz_input_deck_file(tXMLMetaData));
     auto tData = XMLGen::read_data_from_file("plato_analyze_helmholtz_input_deck.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/>")
-    +"<Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/>"
-    +"<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/>"
-    +"<ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
-    +"<ParameterListname=\"LengthScale\"><Parametername=\"LengthScale\"type=\"double\"value=\"3.2\"/></ParameterList>"
-    +"</ParameterList></ParameterList>";
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/><Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"0.923760\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList></ParameterList></ParameterList>");
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
     Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForHelmholtzFilterWithFixedBlock)
+{
+    // POSE INPUTS
+    XMLGen::InputData tXMLMetaData;
+
+    tXMLMetaData.mesh.run_name = "lbracket.exo";
+    XMLGen::Scenario tScenario;
+    tScenario.dimensions("3");
+    tXMLMetaData.append(tScenario);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("filter_type", "helmholtz");
+    tOptimizationParameters.append("filter_in_engine", "false");
+    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("filter_radius_absolute", "3.2");
+    std::vector<std::string> tFixedBlockIds;
+    tFixedBlockIds.push_back("2");
+    tOptimizationParameters.setFixedBlockIDs(tFixedBlockIds);
+    tXMLMetaData.set(tOptimizationParameters);
+
+    XMLGen::Block tBlock1;
+    tBlock1.block_id = "1";
+    tBlock1.element_type = "tet4";
+    tBlock1.material_id = "1";
+    tBlock1.name = "block_1";
+
+    XMLGen::Block tBlock2;
+    tBlock2.block_id = "2";
+    tBlock2.element_type = "tet4";
+    tBlock2.material_id = "1";
+    tBlock2.name = "block_2";
+
+    tXMLMetaData.blocks.push_back(tBlock1);
+    tXMLMetaData.blocks.push_back(tBlock2);
+
+    XMLGen::Material tMaterial;
+    tMaterial.id("1");
+    tMaterial.code("plato_analyze");
+    tMaterial.name("adamantium");
+    tMaterial.materialModel("isotropic linear elastic");
+    tMaterial.property("youngs_modulus", "1e9");
+    tMaterial.property("poissons_ratio", "0.3");
+    tXMLMetaData.materials.push_back(tMaterial);
+
+    XMLGen::Service tService;
+    tService.id("helmholtz");
+    tService.code("plato_analyze");
+    tXMLMetaData.append(tService);
+
+    // CALL FUNCTION
+    ASSERT_NO_THROW(XMLGen::write_plato_analyze_helmholtz_input_deck_file(tXMLMetaData));
+    auto tData = XMLGen::read_data_from_file("plato_analyze_helmholtz_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/><Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/>")
+      + "<Parametername=\"InputMesh\"type=\"string\"value=\"lbracket.exo\"/><ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"HelmholtzFilter\"/>"
+      + "<Parametername=\"PDEConstraint\"type=\"string\"value=\"HelmholtzFilter\"/><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\">"
+      + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList><ParameterListname=\"Block2\">"
+      + "<Parametername=\"ElementBlock\"type=\"string\"value=\"block_2\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/></ParameterList></ParameterList></ParameterList>"
+      + "<ParameterListname=\"Parameters\"><Parametername=\"LengthScale\"type=\"double\"value=\"0.923760\"/><Parametername=\"SurfaceLengthScale\"type=\"double\"value=\"1.0\"/></ParameterList></ParameterList></ParameterList>";
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_helmholtz_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_All)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("mass_properties");
+    tCriterion.id("1");
+    tCriterion.setMassProperty("Mass", 0.0664246, 1.0);
+    tCriterion.setMassProperty("Ixx", 3.7079, 1.0);
+    tCriterion.setMassProperty("Iyy", 2.7113, 1.0);
+    tCriterion.setMassProperty("Izz", 4.2975, 1.0);
+    tCriterion.setMassProperty("CGx", 4.1376, 1.0);
+    tCriterion.setMassProperty("CGy", 5.6817, 1.0);
+    tCriterion.setMassProperty("CGz", 2.9269, 1.0);
+
+    ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Linear\"type=\"bool\"value=\"true\"/>"
+    "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
+    "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGx,CGy,CGz,Ixx,Iyy,Izz,Mass}\"/>"
+    "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{4.1376,5.6817,2.9269,3.7079,2.7113,4.2975,0.0664246}\"/>"
+    "<Parametername=\"Weights\"type=\"Array(double)\"value=\"{1,1,1,1,1,1,1}\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForDisplacementCriterion)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("displacement");
+    tCriterion.id("3");
+    tCriterion.displacementDirection({"-1.0", "0.0", "0.0"});
+    tCriterion.append("measure_magnitude", "false");
+    tCriterion.append("location_types", "sideset");
+    tCriterion.append("location_names", "ss4");
+
+    ASSERT_NO_THROW(XMLGen::Private::append_displacement_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_displacement_criterion_id_3\">"
+    "<Parametername=\"Type\"type=\"string\"value=\"Solution\"/>"
+    "<Parametername=\"Normal\"type=\"Array(double)\"value=\"{-1.0,0.0,0.0}\"/>"
+    "<Parametername=\"Domain\"type=\"string\"value=\"ss4\"/>"
+    "<Parametername=\"Magnitude\"type=\"bool\"value=\"false\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFileForMassProperties_Subset)
+{
+    pugi::xml_document tDocument;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("mass_properties");
+    tCriterion.id("1");
+    tCriterion.setMassProperty("Mass", 0.0664246, 1.0);
+    tCriterion.setMassProperty("Ixx", 3.7079, 1.0);
+    tCriterion.setMassProperty("CGz", 2.9269, 1.0);
+
+    ASSERT_NO_THROW(XMLGen::Private::append_mass_properties_criterion(tCriterion, tDocument));
+    tDocument.save_file("plato_analyze_input_deck.xml");
+
+    auto tData = XMLGen::read_data_from_file("plato_analyze_input_deck.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>"
+    "<ParameterListname=\"my_mass_properties_criterion_id_1\">"
+    "<Parametername=\"Linear\"type=\"bool\"value=\"true\"/>"
+    "<Parametername=\"Type\"type=\"string\"value=\"MassProperties\"/>"
+    "<Parametername=\"Properties\"type=\"Array(string)\"value=\"{CGz,Ixx,Mass}\"/>"
+    "<Parametername=\"GoldValues\"type=\"Array(double)\"value=\"{2.9269,3.7079,0.0664246}\"/>"
+    "<Parametername=\"Weights\"type=\"Array(double)\"value=\"{1,1,1}\"/>"
+    "</ParameterList>");
+    ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
+    Plato::system("rm -f plato_analyze_input_deck.xml");
 }
 
 TEST(PlatoTestXMLGenerator, AppendObjectiveVolumeAverageCriteriaToCriteriaList)

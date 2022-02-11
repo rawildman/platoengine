@@ -59,7 +59,7 @@
 #include "Plato_MultiVector.hpp"
 #include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
-#include "Plato_OptimizerInterface.hpp"
+#include "Plato_DriverInterface.hpp"
 
 namespace Plato
 {
@@ -77,7 +77,7 @@ public:
     explicit EngineObjective(const Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
                              const Plato::OptimizerEngineStageData & aInputData,
                              Plato::Interface* aInterface,
-                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
+                             Plato::DriverInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mControl(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mGradient(std::vector<ScalarType>(aDataFactory.getNumControls())),
@@ -104,7 +104,7 @@ public:
     **********************************************************************************/
     explicit EngineObjective(const Plato::OptimizerEngineStageData & aInputData,
                              Plato::Interface* aInterface,
-                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
+                             Plato::DriverInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(),
             mControl(),
             mGradient(),
@@ -202,7 +202,7 @@ public:
      * With some of the the optimizer interfaces such as the MMA it is
      * possible to have nested optimization. This nesting creates a
      * circular dependency:
-     * OptimizerFactory->MMA->EngineObjective->OptimizerFactory
+     * DriverFactory->MMA->EngineObjective->OptimizerFactory
 
      * Because of this circular dependency it is necessary to break
      * from the traditional template class definition where everything
@@ -212,7 +212,7 @@ public:
      * OptimizerFactory class has been defined. As such, the
      * definition of EngineObjective::value is in a separate file,
      * Plato_EngineObjective.tcc and is included in
-     * Plato_OptimizerFactory.hpp
+     * Plato_DriverFactory.hpp
     **********************************************************************************/
     ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl);
 

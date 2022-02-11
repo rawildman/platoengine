@@ -53,11 +53,13 @@
 #include <Kokkos_Core.hpp>
 #endif
 
+#include <iostream>
+#include <sstream>
+
 #include "PlatoApp.hpp"
 #include "Plato_Exceptions.hpp"
 #include "Plato_Interface.hpp"
-#include "Plato_OptimizerInterface.hpp"
-#include "Plato_OptimizerFactory.hpp"
+#include "Plato_DriverFactory.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -108,7 +110,6 @@ int main(int aArgc, char *aArgv[])
 
     MPI_Comm tLocalComm;
     tPlatoInterface->getLocalComm(tLocalComm);
-    WorldComm.init(tLocalComm);
 
     // Create Plato services application and register it with the Plato interface
     PlatoApp *tPlatoApp = nullptr;
@@ -150,28 +151,29 @@ int main(int aArgc, char *aArgv[])
         // or nested. The while loop coupled with factory processes
         // optimizer blocks that are serial. Nested optimizer blocks
         // are processed recursively via the EngineObjective.
-        Plato::OptimizerFactory<double> tOptimizerFactory;
-        Plato::OptimizerInterface<double>* tOptimizer = nullptr;
+        Plato::DriverFactory<double> tDriverFactory;
+        Plato::DriverInterface<double>* tDriver = nullptr;
 
         // Note: When frist called, the factory will look for the
         // first optimizer block. Subsequent calls will look for the
         // next optimizer block if it exists.
-        while((tOptimizer =
-               tOptimizerFactory.create(tPlatoInterface, tLocalComm)) != nullptr)
+        while((tDriver =
+               tDriverFactory.create(tPlatoInterface, tLocalComm)) != nullptr)
         {
-            tOptimizer->optimize();
+            tDriver->run();
 
             // If the last optimizer compute the final stage before
             // deleting it. The optimizer finalize calls the interface
             // finalize with possibly a stage to compute.
-            if( tOptimizer->lastOptimizer() )
+            if( tDriver->lastOptimizer() )
             {
-                tOptimizer->finalize();
+                tDriver->finalize();
             }
 
-            delete tOptimizer;
+            delete tDriver;
         }
     }
+
     catch(...)
     {
         safeExit();
@@ -181,6 +183,7 @@ int main(int aArgc, char *aArgv[])
     {
         delete tPlatoApp;
     }
+
     if(tPlatoInterface)
     {
         delete tPlatoInterface;
@@ -216,7 +219,7 @@ void writeSplashScreen()
   splash << "#  @@@@@@@@@@@@@@#   @@@@@   &@@@@@@@@@@@@@@      @@@@@@@@   @@@@@@@@@@@@@@@*  #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
-  splash << "#  @@@@@   OPTIMIZATION BASED DESIGN                                           #" << std::endl;
+  splash << "#  @@@@@   OPTIMIZATION-BASED DESIGN                                           #" << std::endl;
   splash << "#  @@@@@                                                                       #" << std::endl;
   splash << "#  @@@@@   Questions? contact Plato3d-help@sandia.gov                          #" << std::endl;
   splash << "#                                                                              #" << std::endl;

@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 
 #include "Plato_FreeFunctions.hpp"
 #include "XMLG_Macros.hpp"
@@ -28,8 +29,10 @@ private:
     std::unordered_map<std::string, std::vector<std::string> > mMetaData; /*!< Scenario metadata, map< tag, vector<values> > */
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
+    std::vector<std::string> mDisplacementDirection;
     std::vector<std::string> mModesToExclude;
     std::vector<std::string> mMatchNodesetIDs;
+    std::map<std::string, std::pair<double,double>> mMassProperties;
 
     std::string mReport;
 
@@ -402,6 +405,26 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn displacementDirection
+     * \brief Cooordinates of the displacement dirction
+     * \param [in] aInput list of coords
+     **********************************************************************************/
+    void displacementDirection(const std::vector<std::string>& aInput)
+    {
+        this->mDisplacementDirection = aInput;
+    }
+
+    /******************************************************************************//**
+     * \fn displacementDirection
+     * \brief Return cooordinates of the displacement dirction
+     * \return value
+     **********************************************************************************/
+    std::vector<std::string> displacementDirection() const
+    {
+        return this->mDisplacementDirection;
+    }
+
+    /******************************************************************************//**
      * \fn criterionWeights
      * \brief Set weight strings for composite criteria
      * \param [in] aInput list of IDs
@@ -451,7 +474,7 @@ public:
     }
 
     /******************************************************************************//**
-     * \fn weightMassScaleFactor
+     * \fn shapeSideset
      * \brief Return string value Sierra/SD shape sideset
      * \return value
     **********************************************************************************/
@@ -477,6 +500,14 @@ public:
     **********************************************************************************/
     void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
 
+    void setMassProperty(std::string property, double goldValue, double weight) {
+        mMassProperties[property] = std::make_pair(goldValue, weight);
+    }
+
+    const std::map<std::string, std::pair<double,double>>& getMassProperties() const
+    {
+        return mMassProperties;
+    }
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
     std::string volume_misfit_target() const { return this->value("volume_misfit_target"); }
@@ -501,6 +532,9 @@ public:
     std::string volume_penalty_divisor() const { return this->value("volume_penalty_divisor"); }
     std::string volume_penalty_bias() const { return this->value("volume_penalty_bias"); }
     std::string surface_area_sideset_id() const { return this->value("surface_area_sideset_id"); }
+    std::string location_names() const { return this->value("location_names"); }
+    std::string location_types() const { return this->value("location_types"); }
+    std::string measure_magnitude() const { return this->value("measure_magnitude"); }
 
     // Sierra/SD modal objectives
     std::string num_modes_compute() const { return this->value("num_modes_compute"); }

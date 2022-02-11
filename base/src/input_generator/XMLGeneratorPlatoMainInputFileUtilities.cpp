@@ -34,10 +34,17 @@ void append_mesh_metadata_to_plato_main_input_deck
         THROWERR("Append Mesh Metadata To Plato Main Input Deck: Run mesh name in XMLGen::InputData is empty.");
     }
 
+    // in the case of a level set run, we use the mesh rather than the run mesh
+    std::string tMeshName = aInputData.mesh.run_name;
+    if(aInputData.optimization_parameters().discretization() == "levelset")
+    {
+        tMeshName = aInputData.mesh.name;
+    }
+
     auto tMesh = aDocument.append_child("mesh");
     std::vector<std::string> tKeys = { "type", "format", "ignore_node_map", "ignore_element_map", "mesh" };
     std::string tIgnoreFlag = sierra_sd_service_exists(aInputData) ? "false" : "true";
-    std::vector<std::string> tValues = { "unstructured", "exodus", tIgnoreFlag, tIgnoreFlag, aInputData.mesh.run_name };
+    std::vector<std::string> tValues = { "unstructured", "exodus", tIgnoreFlag, tIgnoreFlag, tMeshName };
     XMLGen::append_children(tKeys, tValues, tMesh);
     XMLGen::append_block_metadata_to_mesh_node(aInputData, tMesh);
 }

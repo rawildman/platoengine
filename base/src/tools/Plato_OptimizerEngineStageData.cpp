@@ -1028,6 +1028,30 @@ void OptimizerEngineStageData::setInitializationStageName(const std::string & aI
     mInitializationStageName.assign(aInput.begin(), aInput.end());
 }
 
+/******************************************************************************/
+std::string OptimizerEngineStageData::getInitialControlDataName() const
+/******************************************************************************/
+{
+    if(mInitialControlDataName.empty() == true)
+    {
+        return this->getControlName(0);
+    }
+    else
+    {
+        return (mInitialControlDataName);
+    }
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setInitialControlDataName(const std::string & aInput)
+/******************************************************************************/
+{
+    assert(aInput.empty() == false);
+    mInitialControlDataName.clear();
+    mInitialControlDataName.assign(aInput.begin(), aInput.end());
+}
+
+
 std::string OptimizerEngineStageData::getFinalizationStageName() const
 {
     return (mFinalizationStageName);
@@ -1293,6 +1317,8 @@ std::string OptimizerEngineStageData::getConstraintReferenceValueName(const size
     const std::string & tValueName = mConstraintValueNames[aIndex];
     std::map<std::string, std::string>::const_iterator tIterator;
     tIterator = mConstraintReferenceValueNames.find(tValueName);
+    if(tIterator == mConstraintReferenceValueNames.end())
+        return "";
     return (tIterator->second);
 }
 

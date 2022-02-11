@@ -16,6 +16,7 @@
 #include "XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp"
+#include <string>
 
 namespace XMLGen
 {
@@ -198,7 +199,7 @@ void append_problem_description_to_plato_analyze_input_deck
     if (tSpatialDim == tValidKeys.mKeys.end())
     {
         THROWERR(std::string("Append Problem Description to Plato Analyze Input Deck: Invalid spatial dimensions '")
-            + aXMLMetaData.scenario(0u).dimensions() + "'.  Only three and two dimensional problems are supported in Plato Analyze.")
+            + aXMLMetaData.scenario(0u).dimensions() + "'.  Only three- and two-dimensional problems are supported in Plato Analyze.")
     }
     XMLGen::check_input_mesh_file_keyword(aXMLMetaData);
 
@@ -319,14 +320,24 @@ void append_plato_problem_to_plato_analyze_input_deck
 }
 // function append_plato_problem_to_plato_analyze_input_deck
 /**********************************************************************************/
+
+/**********************************************************************************/
 void append_criteria_list_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
     auto tCriteriaList = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Criteria"}, tCriteriaList);
-    XMLGen::append_objective_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
-    XMLGen::append_constraint_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    if (aXMLMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+        aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        XMLGen::append_objective_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+        XMLGen::append_constraint_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    }
+    else if (aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        XMLGen::append_individual_criteria_to_criteria_list(aXMLMetaData, tCriteriaList);
+    }
 }
 
 /**********************************************************************************/
@@ -514,13 +525,39 @@ void append_constraint_criteria_to_criteria_list
 // function append_constraint_criteria_to_criteria_list
 /**********************************************************************************/
 
+pugi::xml_node append_individual_criteria_to_criteria_list
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode)
+{
+    pugi::xml_node tReturn;
+    XMLGen::AppendCriterionParameters<XMLGen::Criterion> tFunctionInterface;
+
+    for(auto& tCriteriaID : aXMLMetaData.objective.criteriaIDs)
+    {
+        auto &tCriterion = aXMLMetaData.criterion(tCriteriaID);
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        tReturn = tFunctionInterface.call(tCriterion, aParentNode);
+    }
+
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        auto &tCriterion = aXMLMetaData.criterion(tConstraint.criterion());
+        auto tCriterionType = Plato::tolower(tCriterion.type());
+        tReturn = tFunctionInterface.call(tCriterion, aParentNode);
+    }
+
+    return tReturn;
+}
+// function append_individual_criteria_to_criteria_list
+/**********************************************************************************/
+
 /**********************************************************************************/
 void append_physics_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
 {
     XMLGen::AnalyzePhysicsFunctionInterface tPhysicsInterface;
-    tPhysicsInterface.call(aXMLMetaData.scenario(0u), aXMLMetaData.mOutputMetaData[0], aParentNode);
+    tPhysicsInterface.call(aXMLMetaData.scenario(0u), aXMLMetaData.mOutputMetaData, aParentNode);
 }
 // function append_physics_to_plato_analyze_input_deck
 /**********************************************************************************/
@@ -528,7 +565,8 @@ void append_physics_to_plato_analyze_input_deck
 /**********************************************************************************/
 void append_spatial_model_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode)
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz)
 {
     if(aXMLMetaData.blocks.empty())
     {
@@ -539,6 +577,7 @@ void append_spatial_model_to_plato_problem
     XMLGen::append_attributes({"name"}, {"Spatial Model"}, tSpatialModel);
     auto tDomains = tSpatialModel.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Domains"}, tDomains);
+    auto tFixedBlockIds = aXMLMetaData.optimization_parameters().fixed_block_ids();
     for(auto& tBlock : aXMLMetaData.blocks)
     {
         auto tCurDomain = tDomains.append_child("ParameterList");
@@ -570,6 +609,14 @@ void append_spatial_model_to_plato_problem
 
         tValues = {"Material Model", "string", tMaterial.name()};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
+
+        auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
+        if(tItr != tFixedBlockIds.end() && !aIsHelmholtz)
+        {
+            tValues = {"Fixed Control", "bool", "true"};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
+        }
+
     }
 }
 // function append_spatial_model_to_plato_problem
@@ -655,9 +702,10 @@ void append_material_models_to_plato_analyze_input_deck
 /**********************************************************************************/
 void append_spatial_model_to_plato_analyze_input_deck
 (const XMLGen::InputData& aXMLMetaData,
- pugi::xml_node& aParentNode)
+ pugi::xml_node& aParentNode,
+ bool aIsHelmholtz)
 {
-    XMLGen::append_spatial_model_to_plato_problem(aXMLMetaData, aParentNode);
+    XMLGen::append_spatial_model_to_plato_problem(aXMLMetaData, aParentNode, aIsHelmholtz);
 }
 // function append_spatial_model_to_plato_analyze_input_deck
 /**********************************************************************************/
@@ -1050,24 +1098,42 @@ void write_plato_analyze_helmholtz_input_deck_file
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPlatoProblem);
 
     // spatial model
-    XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
+    bool tIsHelmholtz = true;
+    XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem, tIsHelmholtz);
 
     // assemblies
     XMLGen::append_assemblies_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
 
-    // length scale
-    auto tLengthScale = tPlatoProblem.append_child("ParameterList");
-    XMLGen::append_attributes({"name"}, {"Length Scale"}, tLengthScale);
+    // volume length scale parameter
+    auto tParameters = tPlatoProblem.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Parameters"}, tParameters);
     tKeys = {"name", "type", "value"};
 
-    auto tLengthScaleValue = aXMLMetaData.optimization_parameters().filter_radius_absolute();
-    if(tLengthScaleValue.empty())
+    auto tPhysicalLengthScaleString = aXMLMetaData.optimization_parameters().filter_radius_absolute();
+    if(tPhysicalLengthScaleString.empty())
     {
         THROWERR("Filter radius absolute is not set. This is needed for Helmholtz filter")
     }
+    double tPhysicalLengthScaleValue = std::stod(tPhysicalLengthScaleString);
+    double tHelmholtzRadiusFactor = 2.0*std::sqrt(3.0);
+    auto tHelmholtzLengthScaleString = std::to_string(tPhysicalLengthScaleValue/tHelmholtzRadiusFactor);
+    tValues = {"Length Scale", "double", tHelmholtzLengthScaleString};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
 
-    tValues = {"Length Scale", "double", tLengthScaleValue};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLengthScale);
+    // surface length scale parameter
+    auto tSurfaceLengthScaleValue = aXMLMetaData.optimization_parameters().boundary_sticking_penalty();
+    tSurfaceLengthScaleValue = tSurfaceLengthScaleValue.empty() ? "1.0" : tSurfaceLengthScaleValue;
+    tValues = {"Surface Length Scale", "double", tSurfaceLengthScaleValue};
+    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
+
+    // symmetry plane location names
+    auto tSymmetryPlaneLocationNames = aXMLMetaData.optimization_parameters().symmetry_plane_location_names();
+    if( !tSymmetryPlaneLocationNames.empty() )
+    {
+        auto tNames = XMLGen::transform_tokens_for_plato_analyze_input_deck(tSymmetryPlaneLocationNames);
+        tValues = {"Symmetry Plane Sides", "Array(string)", tNames};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tParameters);
+    }
 
     std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";

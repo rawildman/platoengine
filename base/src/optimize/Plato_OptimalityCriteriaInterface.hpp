@@ -58,10 +58,10 @@
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_EngineObjective.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_OptimalityCriteria.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
 #include "Plato_OptimalityCriteriaDataMng.hpp"
 #include "Plato_OptimalityCriteriaStageMng.hpp"
@@ -71,7 +71,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class OptimalityCriteriaInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class OptimalityCriteriaInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -90,10 +90,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     /******************************************************************************/
     {
-        return (Plato::optimizer::algorithm_t::OPTIMALITY_CRITERIA);
+        return (Plato::driver::driver_t::OPTIMALITY_CRITERIA);
     }
 
     /******************************************************************************/
@@ -105,7 +105,7 @@ public:
     }
 
     /******************************************************************************/
-    void optimize()
+    void run()
     /******************************************************************************/
     {
         this->initialize();

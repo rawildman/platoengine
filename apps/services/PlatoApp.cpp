@@ -69,6 +69,7 @@ PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
         mInputfileData("Inputfile Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
 }
 
 PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
@@ -81,6 +82,8 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
         mInputfileData("Inputfile Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
+
     const char* input_char = getenv("PLATO_APP_FILE");
     Plato::Parser* parser = new Plato::PugiParser();
     mAppfileData = parser->parseFile(input_char);
@@ -95,17 +98,18 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
     {
         tInputfile = "platomain.xml";
     }
-
     mInputfileData = parser->parseFile(tInputfile.c_str());
     auto tMeshSpec = mInputfileData.getByName<Plato::InputData>("mesh");
-
     if (tMeshSpec.size() != 0)
     {
-        mInputTree = std::make_shared<pugi::xml_document>();
-        mInputTree->load_file(tInputfile.c_str());
+        mLightMp = new LightMP(tInputfile);
     }
 
-    delete parser;
+    if (parser)
+    {
+        delete parser;
+        parser = nullptr;
+    }
 
     // parse/create the MLS PointArrays
     auto tPointArrayInputs = mInputfileData.getByName<Plato::InputData>("PointArray");
@@ -150,14 +154,17 @@ PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp
         mAppfileData("Input Data"),
         mTimersTree(nullptr)
 {
+    WorldComm.init(aLocalComm);
+
     const char* input_char = getenv("PLATO_APP_FILE");
     Plato::Parser* parser = new Plato::PugiParser();
     mAppfileData = parser->parseFile(input_char);
 
-    mInputfileData = parser->parseFile(aPhysics_XML_File.c_str());
+    std::shared_ptr<pugi::xml_document> tTempDoc = std::make_shared<pugi::xml_document>();
+    tTempDoc->load_string(aPhysics_XML_File.c_str());
 
-    mInputTree = std::make_shared<pugi::xml_document>();
-    mInputTree->load_string(aPhysics_XML_File.c_str());
+    mInputfileData = parser->parseFile(aPhysics_XML_File.c_str());
+    mLightMp = new LightMP(tTempDoc);
 }
 
 PlatoApp::~PlatoApp()
@@ -840,3 +847,4 @@ Plato::TimersTree* PlatoApp::getTimersTree()
 {
     return mTimersTree;
 }
+

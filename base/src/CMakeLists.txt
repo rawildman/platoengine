@@ -1,4 +1,5 @@
 set(PLATO_INCLUDES ${PLATO_INCLUDES} 
+  ${CMAKE_SOURCE_DIR}/base/src/dakota
   ${CMAKE_SOURCE_DIR}/base/src/analyze
   ${CMAKE_SOURCE_DIR}/base/src/optimize
   ${CMAKE_SOURCE_DIR}/base/src/operations
@@ -12,6 +13,7 @@ set(PLATO_INCLUDES ${PLATO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/base/src/geometry/MovingLeastSquares
   ${CMAKE_SOURCE_DIR}/base/src/geometry/Cogent
   ${CMAKE_SOURCE_DIR}/base/src/geometry/ESP
+  ${CMAKE_SOURCE_DIR}/base/src/geometry/BamG
   ${CMAKE_SOURCE_DIR}/base/src/EngineInterfaceToPlatoSubproblemLibrary
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Agent
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/BoundedSupportFunction

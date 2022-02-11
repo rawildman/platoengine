@@ -84,18 +84,18 @@ void ParseMaterial::insertPlasticProperties()
 
 void ParseMaterial::insertIncompressibleFluidFlowProperties()
 {
+    mTags.insert({ "darcy_number", { { {"darcy_number"}, ""}, "" } });
     mTags.insert({ "prandtl_number", { { {"prandtl_number"}, ""}, "" } });
     mTags.insert({ "grashof_number", { { {"grashof_number"}, ""}, "" } });   
     mTags.insert({ "reynolds_number", { { {"reynolds_number"}, ""}, "" } });
     mTags.insert({ "rayleigh_number", { { {"rayleigh_number"}, ""}, "" } });
     mTags.insert({ "richardson_number", { { {"richardson_number"}, ""}, "" } });
     mTags.insert({ "thermal_conductivity", { { {"thermal_conductivity"}, ""}, "" } });
-    mTags.insert({ "reference_temperature", { { {"reference_temperature"}, ""}, "" } });
-    mTags.insert({ "characteristic_length", { { {"characteristic_length"}, ""}, "" } });    
+    mTags.insert({ "characteristic_length", { { {"characteristic_length"}, ""}, "" } });
+    mTags.insert({ "temperature_difference", { { {"temperature_difference"}, ""}, "" } });
     mTags.insert({ "impermeability_number", { { {"impermeability_number"}, ""}, "100" } });
     mTags.insert({ "thermal_diffusivity", { { {"thermal_diffusivity"}, ""}, "2.1117e-5" } });
     mTags.insert({ "kinematic_viscocity", { { {"kinematic_viscocity"}, ""}, "1.5111e-5" } });
-    mTags.insert({ "thermal_diffusivity_ratio", { { {"thermal_diffusivity_ratio"}, ""}, "" } });
 }
 
 void ParseMaterial::allocate()

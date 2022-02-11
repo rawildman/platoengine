@@ -16,6 +16,7 @@ namespace XMLGen
     {
         OT_TOPOLOGY=0,
         OT_SHAPE,
+        OT_DAKOTA,
         OT_UNKNOWN
     };
 
@@ -49,6 +50,7 @@ private:
     std::vector<std::string> mFixedBlockMaterialStates;
     std::vector<std::string> mSymmetryPlaneOrigin;
     std::vector<std::string> mSymmetryPlaneNormal;
+    std::vector<std::string> mSymmetryPlaneLocationNames;
 
 // private member functions
 private:
@@ -153,16 +155,23 @@ public:
     /******************************************************************************//**
      * \fn symmetryOrigin
      * \brief Set scenario symmetry plane origin
-     * \param [in] input symmetry plane origin
+     * \param [in] aOrigin symmetry plane origin
     **********************************************************************************/
     void symmetryOrigin(std::vector<std::string>& aOrigin) {mSymmetryPlaneOrigin = aOrigin;}
 
     /******************************************************************************//**
      * \fn symmetryNormal
      * \brief Set scenario symmetry plane normal
-     * \param [in] input symmetry plane normal
+     * \param [in] aNormal symmetry plane normal
     **********************************************************************************/
     void symmetryNormal(std::vector<std::string>& aNormal) {mSymmetryPlaneNormal = aNormal;}
+
+    /******************************************************************************//**
+     * \fn symmetryOrigin
+     * \brief Set entity set location names where symmetry plane constraints are applied.
+     * \param [in] aInput entity set location names
+    **********************************************************************************/
+    void symmetryPlaneLocationNames(std::vector<std::string>& aInput) {mSymmetryPlaneLocationNames = aInput;}
 
     /******************************************************************************//**
      * \fn value
@@ -325,6 +334,7 @@ public:
     std::vector<std::string> fixed_block_domain_values() const {return mFixedBlockDomainValues;}
     std::vector<std::string> fixed_block_boundary_values() const {return mFixedBlockBoundaryValues;}
     std::vector<std::string> fixed_block_material_states() const {return mFixedBlockMaterialStates;}
+    std::vector<std::string> symmetry_plane_location_names() const {return mSymmetryPlaneLocationNames;}
     std::string mma_move_limit() const {return value("mma_move_limit");}
     std::string mma_asymptote_expansion() const {return value("mma_asymptote_expansion");}
     std::string mma_asymptote_contraction() const {return value("mma_asymptote_contraction");}
@@ -359,6 +369,7 @@ public:
     std::string objective_number_standard_deviations() const {return value("objective_number_standard_deviations");}
     std::string filter_radius_scale() const {return value("filter_radius_scale");}
     std::string filter_radius_absolute() const {return value("filter_radius_absolute");}
+    std::string boundary_sticking_penalty() const {return value("boundary_sticking_penalty");}
     std::string filter_projection_start_iteration() const {return value("filter_projection_start_iteration");}
     std::string filter_projection_update_interval() const {return value("filter_projection_update_interval");}
     std::string filter_use_additive_continuation() const {return value("filter_use_additive_continuation");}
@@ -372,14 +383,6 @@ public:
     std::string projection_type() const {return value("projection_type");}
     std::string write_restart_file() const {return value("write_restart_file");}
     std::string output_frequency() const {return value("output_frequency");}
-    std::string gcmma_max_inner_iterations() const {return value("gcmma_max_inner_iterations");}
-    std::string gcmma_inner_kkt_tolerance() const {return value("gcmma_inner_kkt_tolerance");}
-    std::string gcmma_outer_kkt_tolerance() const {return value("gcmma_outer_kkt_tolerance");}
-    std::string gcmma_inner_control_stagnation_tolerance() const {return value("gcmma_inner_control_stagnation_tolerance");}
-    std::string gcmma_outer_control_stagnation_tolerance() const {return value("gcmma_outer_control_stagnation_tolerance");}
-    std::string gcmma_outer_objective_stagnation_tolerance() const {return value("gcmma_outer_objective_stagnation_tolerance");}
-    std::string gcmma_outer_stationarity_tolerance() const {return value("gcmma_outer_stationarity_tolerance");}
-    std::string gcmma_initial_moving_asymptotes_scale_factor() const {return value("gcmma_initial_moving_asymptotes_scale_factor");}
     std::string csm_file() const {return value("csm_file");}
     std::string csm_exodus_file() const {return value("csm_exodus_file");}
     std::string csm_tesselation_file() const {return value("csm_tesselation_file");}
@@ -391,7 +394,19 @@ public:
     std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
     std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
-
+    std::string dakota_workflow() const {return value("dakota_workflow");}
+    std::string concurrent_evaluations() const {return value("concurrent_evaluations");}
+    std::string mdps_partitions() const {return value("mdps_partitions");}
+    std::string mdps_response_functions() const {return value("mdps_response_functions");}
+    std::string sbgo_max_iterations() const {return value("sbgo_max_iterations");}
+    std::string moga_population_size() const {return value("moga_population_size");}
+    std::string moga_niching_distance() const {return value("moga_niching_distance");}
+    std::string num_sampling_method_samples() const {return value("num_sampling_method_samples");}
+    std::string moga_max_function_evaluations() const {return value("moga_max_function_evaluations");}
+    std::string amgx_solver_tolerance() const {return value("amgx_solver_tolerance");}
+    std::string amgx_max_iterations() const {return value("amgx_max_iterations");}
+    std::string amgx_print_solver_stats() const {return value("amgx_print_solver_stats");}
+    std::string amgx_solver_type() const {return value("amgx_solver_type");}
 };
 // struct OptimizationParameters
 

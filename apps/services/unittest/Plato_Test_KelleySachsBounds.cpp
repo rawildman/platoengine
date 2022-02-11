@@ -270,7 +270,7 @@ TEST(PlatoTest, ReducedSpaceTrustRegionStageMngTestTwo)
     }
 }
 
-TEST(PlatoTest, KelleySachsBoundConstrainedTopo)
+TEST(PlatoTest, PERF_KelleySachsBoundConstrainedTopo)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -331,7 +331,7 @@ TEST(PlatoTest, KelleySachsBoundConstrainedTopo)
     }
 }
 
-TEST(PlatoTest, KelleySachsBoundConstrainedTopo_LBFGS)
+TEST(PlatoTest, PERF_KelleySachsBoundConstrainedTopo_LBFGS)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;

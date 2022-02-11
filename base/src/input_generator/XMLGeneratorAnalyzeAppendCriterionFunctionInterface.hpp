@@ -19,24 +19,29 @@ template<typename CriterionT>
 void append_incompressible_fluids_scalar_functions
 (XMLGen::Analyze::CriterionFuncMap & aMap)
 {
-    // surface pressure
+    // mean surface pressure
     auto tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
-    aMap.insert(std::make_pair("surface_pressure",
+    aMap.insert(std::make_pair("mean_surface_pressure",
         std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
 
-    // surface temperature
+    // mean surface temperature
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
-    aMap.insert(std::make_pair("surface_temperature",
+    aMap.insert(std::make_pair("mean_surface_temperature",
         std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
 
-    // maximize_fluid_thermal_flux
+    // maximize fluid thermal flux
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("maximize_fluid_thermal_flux", 
         std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_surface_scalar_function_criterion<CriterionT>, tFuncIndex)));
 
-    // fluid_thermal_compliance
+    // fluid thermal compliance
     tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionT>));
     aMap.insert(std::make_pair("fluid_thermal_compliance", 
+        std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionT>, tFuncIndex)));
+    
+    // mean temperature
+    tFuncIndex = std::type_index(typeid(XMLGen::Private::append_scalar_function_criterion<CriterionT>));
+    aMap.insert(std::make_pair("mean_temperature", 
         std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_scalar_function_criterion<CriterionT>, tFuncIndex)));
 }
 // function append_incompressible_fluids_scalar_functions
@@ -145,7 +150,17 @@ private:
         tFuncIndex = std::type_index(typeid(XMLGen::Private::append_volume_average_criterion<CriterionType>));
         mMap.insert(std::make_pair("volume_average",
           std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_volume_average_criterion<CriterionType>, tFuncIndex)));
-        
+
+        // mass_properties
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_mass_properties_criterion<CriterionType>));
+        mMap.insert(std::make_pair("mass_properties",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_mass_properties_criterion<CriterionType>, tFuncIndex)));
+
+        // displacement
+        tFuncIndex = std::type_index(typeid(XMLGen::Private::append_displacement_criterion<CriterionType>));
+        mMap.insert(std::make_pair("displacement",
+          std::make_pair((XMLGen::Analyze::CriterionFunc)XMLGen::Private::append_displacement_criterion<CriterionType>, tFuncIndex)));
+
         // incompressible fluids
         XMLGen::Private::append_incompressible_fluids_scalar_functions<CriterionType>(mMap);
     }

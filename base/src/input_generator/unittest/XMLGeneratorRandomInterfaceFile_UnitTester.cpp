@@ -9,7 +9,12 @@
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorStagesUtilities.hpp"
+#include "XMLGeneratorSharedDataUtilities.hpp"
+#include "XMLGeneratorPerformersUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorStagesOperationsUtilities.hpp"
+#include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 #include "XMLGeneratorRandomInterfaceFileUtilities.hpp"
 #include "XMLGeneratorPlatoMainConstraintValueOperationInterface.hpp"
 #include "XMLGeneratorPlatoMainConstraintGradientOperationInterface.hpp"
@@ -864,7 +869,12 @@ TEST(PlatoTestXMLGenerator, AppendUpperBoundsSharedData)
     tService.id("1");
     tService.code("platomain");
     tInputData.append(tService);
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
+    tInputData.set(tOptimizationParameters);
     XMLGen::append_upper_bounds_shared_data(tInputData, tDocument);
+    
 
     // TEST RESULTS AGAINST GOLD VALUES
     std::vector<std::string> tTemp = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
@@ -934,7 +944,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveSharedData)
     tObjective.serviceIDs.push_back("1");
     tInputData.objective = tObjective;
 
-    ASSERT_NO_THROW(XMLGen::append_objective_shared_data(tInputData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_objective_shared_data(tInputData, tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -985,7 +995,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintSharedData)
     tConstraint.id("1");
     tInputData.constraints.push_back(tConstraint);
 
-    ASSERT_NO_THROW(XMLGen::append_constraint_shared_data(tInputData, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_constraint_shared_data(tInputData, tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -1073,8 +1083,7 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainPerformer)
     tService.id("1");
     tService.code("platomain");
     tInputData.append(tService);
-    int tID = 0;
-    XMLGen::append_plato_main_performer(tInputData, tID, tDocument);
+    XMLGen::append_plato_main_performer(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -1087,9 +1096,8 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainPerformer)
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase_ErrorEmptyObjectiveList)
 {
     pugi::xml_document tDocument;
-    int tID = 0;
     XMLGen::InputData tInputData;
-    ASSERT_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tID, tDocument), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_multiperformer_usecase(tInputData, tDocument), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase)
@@ -1104,9 +1112,8 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase)
     tService.id("2");
     tService.code("plato_analyze");
     tInputData.append(tService);
-    int tID = 0;
 
-    ASSERT_NO_THROW(XMLGen::append_physics_performers_multiperformer_usecase(tInputData, tID, tDocument));
+    ASSERT_NO_THROW(XMLGen::append_multiperformer_usecase(tInputData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
@@ -1256,6 +1263,11 @@ TEST(PlatoTestXMLGenerator, AppendInitialGuessStage)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tInputData;
+    
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("discretization", "density");
+    tInputData.set(tOptimizationParameters);
+
     XMLGen::append_initial_guess_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
@@ -1470,6 +1482,7 @@ TEST(PlatoTestXMLGenerator, AppendUpperBoundStage)
     XMLGen::InputData tInputData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tInputData.set(tOptimizationParameters);
     XMLGen::append_upper_bound_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
@@ -1676,6 +1689,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tInputData.set(tOptimizationParameters);
 
     XMLGen::append_constraint_gradient_stage(tInputData, tDocument);
@@ -2605,6 +2619,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageForNondeterministicUseca
     tOptimizationParameters.append("objective_number_standard_deviations", "3");
     tOptimizationParameters.append("filter_in_engine", "true");
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization", "density");
     tXMLMetaData.set(tOptimizationParameters);
 
     // CALL FUNCTION
@@ -2892,7 +2907,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptions_ErrorOptimizerNot
     tOptimizationParameters.append("optimization_algorithm", "stochastic gradient descent");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_THROW(XMLGen::append_optimization_algorithm_parameters_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsKSBC)
@@ -2906,7 +2921,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsKSBC)
     tOptimizationParameters.append("optimization_algorithm", "KSbc");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_optimization_algorithm_parameters_options(tXMLMetaData, tOptimizerNode));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
     ASSERT_FALSE(tOptimizerNode.empty());
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
@@ -2929,7 +2944,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsMMA)
     tOptimizationParameters.append("optimization_algorithm", "MmA");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_optimization_algorithm_parameters_options(tXMLMetaData, tOptimizerNode));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
     ASSERT_FALSE(tOptimizerNode.empty());
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
@@ -2952,7 +2967,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsOC)
     tOptimizationParameters.append("optimization_algorithm", "Oc");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_optimization_algorithm_parameters_options(tXMLMetaData, tOptimizerNode));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
     ASSERT_FALSE(tOptimizerNode.empty());
 
     // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
@@ -2973,7 +2988,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_ErrorOptimizerNotS
     tOptimizationParameters.append("optimization_algorithm", "stochastic gradient descent");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_THROW(XMLGen::append_optimization_algorithm_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_DerivativeChecker)
@@ -2988,7 +3003,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_DerivativeChecker)
     tOptimizationParameters.append("optimization_algorithm", "derivativechecker");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_optimization_algorithm_options(tXMLMetaData, tOptimizerNode));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode));
 
     // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"Package", "CheckGradient", "CheckHessian", "UseUserInitialGuess", "Options"};
@@ -3009,7 +3024,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption)
     tOptimizationParameters.append("optimization_algorithm", "mma");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_optimization_algorithm_options(tXMLMetaData, tOptimizerNode));
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode));
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"Package", "Options"};
@@ -3026,7 +3041,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationOutputOptions)
     pugi::xml_document tDocument;
     XMLGen::InputData tXMLMetaData;
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_output_options(tXMLMetaData, tOptimizerNode);
+    XMLGen::append_grad_based_optimizer_output_options(tXMLMetaData, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"Output"};
@@ -3046,7 +3061,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationCacheStateOptions)
     tService.cacheState("true");
     tXMLMetaData.append(tService);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_cache_stage_options(tXMLMetaData, tOptimizerNode);
+    XMLGen::append_optimizer_cache_stage_options(tXMLMetaData, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"CacheStage"};
@@ -3067,7 +3082,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationUpdateProblemOptions)
     tService.updateProblem("true");
     tXMLMetaData.append(tService);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_update_problem_stage_options(tXMLMetaData, tOptimizerNode);
+    XMLGen::append_optimizer_update_problem_stage_options(tXMLMetaData, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"UpdateProblemStage"};
@@ -3088,7 +3103,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationVariablesOptions)
     tOptimizationParameters.append("optimization_type", "topology");
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_variables_options(tXMLMetaData, tOptimizerNode);
+    XMLGen::append_grad_based_optimizer_variables_options(tXMLMetaData, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"OptimizationVariables"};
@@ -3130,7 +3145,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationObjectiveOptions)
 
     tXMLMetaData.objective = tObjective;
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_objective_options(tXMLMetaData, tOptimizerNode);
+    XMLGen::append_grad_based_optimizer_objective_options(tXMLMetaData, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"Objective"};
@@ -3167,25 +3182,26 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_type", "topology");
+    tOptimizationParameters.append("discretization","density");
     tXMLMetaData.set(tOptimizationParameters);
 
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_THROW(XMLGen::append_optimization_constraint_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
+    ASSERT_THROW(XMLGen::append_grad_based_optimizer_constraint_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    // CASE 1: NORMALIZED TARGET VALUE IS DEFINED
+    // CASE 1: ABSOLUTE TARGET VALUE IS DEFINED
     tOptimizerNode = tDocument.append_child("Optimizer");
-    tXMLMetaData.constraints[0].relativeTarget("1.0");
-    XMLGen::append_optimization_constraint_options(tXMLMetaData, tOptimizerNode);
+    tXMLMetaData.constraints[0].absoluteTarget("1.0");
+    XMLGen::append_grad_based_optimizer_constraint_options(tXMLMetaData, tOptimizerNode);
 
     std::vector<std::string> tGoldKeys = {"Constraint"};
     std::vector<std::string> tGoldValues = {""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
     auto tConstraintNode = tOptimizerNode.child("Constraint");
     tGoldKeys = {"ValueName", "ValueStageName", "GradientName", "GradientStageName",
-        "ReferenceValueName", "NormalizedTargetValue"};
+        "ReferenceValueName", "AbsoluteTargetValue", "ReferenceValue"};
     tGoldValues = {"Constraint Value 1", "Compute Constraint Value 1", "Constraint Gradient 1",
-        "Compute Constraint Gradient 1", "Design Volume", "1.0"};
+        "Compute Constraint Gradient 1", "", "1.0", "1.0"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintNode);
 }
 
@@ -3193,7 +3209,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationBoundConstraintsOptions)
 {
     pugi::xml_document tDocument;
     auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimization_bound_constraints_options({"1.0", "0.0"}, tOptimizerNode);
+    XMLGen::append_bound_constraints_options_topology_optimization({"1.0", "0.0"}, tOptimizerNode);
 
     // ****** TEST RESULTS AGAINST GOLD VALUES ******
     std::vector<std::string> tGoldKeys = {"BoundConstraint"};

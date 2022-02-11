@@ -575,6 +575,7 @@ Hex8::registerData()
 
 void Hex20::init()
 {
+  myType = "HEX20";
   myData = NULL;
   myNnpe = 20;
   myNnps = 8;
@@ -696,6 +697,65 @@ Tet4::registerData()
 
 }
 
+void Tet10::init()
+{
+  myType = "TETRA10";
+  myData = NULL;
+  myNnpe = 10;
+  myNnps = 6;
+  myDim = 3;
+  NODECONNECT = UNSET_VAR_INDEX;
+  GLOBALID    = UNSET_VAR_INDEX;
+}
+
+Tet10::~Tet10()
+{
+}
+
+void Tet10::CurrentCoordinates(int* node_gid_list, 
+                              Real** X,
+                              Real* curcoor)
+{
+  Real*& x = X[0];
+  Real*& y = X[1];
+  Real*& z = X[2];
+
+  for(int i=0;i<myNnpe;i++){
+    curcoor[i]   = x[node_gid_list[i]];
+    curcoor[i+10] = y[node_gid_list[i]];
+    curcoor[i+20] = z[node_gid_list[i]];
+  }
+}
+
+
+void
+Tet10::registerData()
+{
+  int number = myNel*myNnpe;
+
+  NODECONNECT = myData->registerVariable( IntType,
+					  strint("CONT10", groupID),
+					  UNSET,
+					  number );
+
+  GLOBALID    = myData->registerVariable( IntType,
+					  strint("T10GID", groupID),
+					  ELEM,
+					  myNel );
+  
+  number = myNel*myNattr;
+  if(myNattr){
+    ATTRIBUTES = myData->registerVariable( RealType, 
+                                           strint("T10ATR", groupID),
+                                           UNSET,
+                                           number );
+    myData->getVariable(ATTRIBUTES, attributes);
+  }
+
+  myData->getVariable(NODECONNECT, nodeConnect);
+  myData->getVariable(GLOBALID, globalID);
+
+}
 void Element::zeroset()
 {
   myData = NULL;

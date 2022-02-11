@@ -110,7 +110,7 @@ def aflr(modelName, meshName, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, 
 ##############################################################################
 def getInitialValues(modelName):
 
-  strVal = subprocess.check_output(['awk', '/despmtr/{print $0}', modelName])
+  strVal = subprocess.check_output(['awk', '/despmtr/{print $0}', modelName]).decode(sys.stdout.encoding)
   params = strVal.split('\n')
   params = list(filter(None, params)) ## filter out empty strings
 
@@ -120,11 +120,11 @@ def getInitialValues(modelName):
     tokens = list(filter(None, tokens)) ## filter out empty strings
 
     if len(tokens) != 9 and len(tokens) != 3:
-      print "Expected line either in the form:"
-      print "despmtr <name> <value> lbound <value> ubound <value> initial <value>"
-      print "or in the form:"
-      print "despmtr <name> <value>"
-      print "got: " + param
+      print("Expected line either in the form:")
+      print("despmtr <name> <value> lbound <value> ubound <value> initial <value>")
+      print("or in the form:")
+      print("despmtr <name> <value>")
+      print("got: " + param)
       raise Exception("Parsing error: reading initial values failed.")
 
     ## first token should be 'despmtr'
@@ -155,9 +155,10 @@ def getInitialValues(modelName):
 def toExo(meshName, groupAttrs):
   tokens = meshName.split('.')
   tokens.pop()
+  baseDir = "./mesh/Scratch/aflr3AIM_aflr3AIM/"
   meshBaseName = ".".join(tokens)
 
-  callArgs = ['Su2ToExodus', meshBaseName+'.su2', meshBaseName+'.exo']
+  callArgs = ['Su2ToExodus', baseDir+meshBaseName+'.su2', meshBaseName+'.exo']
 
   # aflr writes faces w/o a capsGroup attribute to MARK 1
   callArgs.append("mark")
@@ -189,7 +190,7 @@ def updateModel(modelName, paramVals):
 
   # find mesh size attribute 'MeshLength'
   #
-  response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName])
+  response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
 
   ## is 'MeshLength' in the csm file?
   if response == "":
@@ -229,13 +230,14 @@ def updateModel(modelName, paramVals):
 
   for ip in range(len(paramVals)):
     p = paramVals[ip]
-    print "param: " + str(p)
-    f = open('tmp.file', "w")
+    print("param: " + str(p))
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
     command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
-    print "command: ", command
+    print("command: ", command)
     subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
     f.close()
-    subprocess.call(['mv', 'tmp.file', modedName])
+    subprocess.call(['mv', tmp_string, modedName])
 
   subprocess.call(['mv', modedName, modelName])
 
@@ -324,13 +326,13 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
     tokens = line.split(' ')
     tokens = list(filter(None, tokens)) ## filter out empty strings
     if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
-      numberLine = f_in.next()
+      numberLine = f_in.readline()
       tokens = numberLine.split(' = ')
       tokens = list(filter(None, tokens)) ## filter out empty strings
       if tokens[0].strip() == "Number of unique capsGroup attributes":
         numLines = int(tokens[1].strip())
         for iEntry in range(numLines):
-          nextLine = f_in.next()
+          nextLine = f_in.readline()
           defs = nextLine.split(', ')
           defs = list(filter(None, defs)) ## filter out empty strings
           groupName = defs[0].split(' = ')[1].strip()

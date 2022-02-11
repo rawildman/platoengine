@@ -65,5 +65,11 @@ namespace Plato
         + std::string("\nLINE:") + std::to_string(__LINE__) \
         + std::string("\nMESSAGE: ") + msg);
 
+#define ERRMSG(msg) \
+        std::string("\nFILE: ") + __FILE__ \
+        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
+        + std::string("\nLINE:") + std::to_string(__LINE__) \
+        + std::string("\nMESSAGE: ") + msg
+
 }
 // namespace Plato

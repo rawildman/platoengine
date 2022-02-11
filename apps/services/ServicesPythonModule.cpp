@@ -40,7 +40,9 @@
 //@HEADER
 */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
 #include <map>
 #include <vector>
 #include <string>
@@ -255,8 +257,11 @@ Services_finalize(Services* self)
     return Py_BuildValue("i", 1);
 }
 
-static PyMethodDef Plato_methods[] = {
-    {NULL}  /* Sentinel */
+static PyModuleDef Plato_module = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "Plato Services",
+    .m_doc = "Plato services module",
+    .m_size = -1,
 };
 
 static void
@@ -416,19 +421,30 @@ static PyTypeObject ServicesType = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initPlatoServices(void) 
+PyInit_PlatoServices(void) 
 {
     PyObject* m;
 
-    ServicesType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&ServicesType) < 0)
-        return;
+    {
+        return NULL;
+    }
 
-    m = Py_InitModule3("PlatoServices", Plato_methods,
-                       "Plato services.");
+    m = PyModule_Create(&Plato_module);
+    if (m == NULL)
+    {
+        return NULL;
+    }
 
     Py_INCREF(&ServicesType);
-    PyModule_AddObject(m, "Services", (PyObject *)&ServicesType);
+    if (PyModule_AddObject(m, "Services", (PyObject *)&ServicesType) < 0)
+    {
+        Py_DECREF(&ServicesType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    return m;
 }
 
 /*****************************************************************************/

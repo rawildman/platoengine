@@ -454,7 +454,84 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_Volume)
     ASSERT_STREQ("volume", tCriterionMetaData[0].type().c_str());
     ASSERT_STREQ("false", tCriterionMetaData[0].value("normalize").c_str());
     ASSERT_STREQ("1.0", tCriterionMetaData[0].value("normalization_value").c_str());
+    ASSERT_STREQ("1.0", tCriterionMetaData[0].value("material_penalty_exponent").c_str());
 
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_types sideset\n"
+        "location_names ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    tCriteriaParser.parse(tInputSS);
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("22", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("displacement", tCriterionMetaData[0].type().c_str());
+    ASSERT_STREQ("-1", tCriterionMetaData[0].displacementDirection()[0].c_str());
+    ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[1].c_str());
+    ASSERT_STREQ("0", tCriterionMetaData[0].displacementDirection()[2].c_str());
+    ASSERT_STREQ("false", tCriterionMetaData[0].value("measure_magnitude").c_str());
+    ASSERT_STREQ("sideset", tCriterionMetaData[0].value("location_types").c_str());
+    ASSERT_STREQ("ss4", tCriterionMetaData[0].value("location_names").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_displacement_direction)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "measure_magnitude false\n"
+        "location_type sideset\n"
+        "location_name ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_location_type)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_name ss4\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_Displacement_no_location_name)
+{
+    std::string tStringInput =
+        "begin criterion 22\n"
+        "type displacement\n"
+        "displacement_direction -1 0 0\n"
+        "measure_magnitude false\n"
+        "location_type sideset\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
@@ -477,6 +554,71 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
 
     ASSERT_STREQ("3", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
 }
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_MassProperties)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type mass_properties\n"
+        "Mass 0.0664246 Weight 1.0\n"
+        "Ixx 3.7079 Weight 1.0\n"
+        "Iyy 2.7113 Weight 1.0\n"
+        "Izz 4.2975 Weight 1.0\n"
+        "CGx 4.1376 Weight 1.0\n"
+        "CGy 5.6817 Weight 1.0\n"
+        "CGz 2.9269 Weight 1.0\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("mass_properties", tCriterionMetaData[0].type().c_str());
+
+    auto massProperties = tCriterionMetaData[0].getMassProperties();
+
+    std::map<std::string, std::pair<double,double>>::const_iterator p;
+
+    p = massProperties.find("Mass");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 0.0664246);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Ixx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 3.7079);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Iyy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.7113);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("Izz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.2975);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGx");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 4.1376);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGy");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 5.6817);
+    ASSERT_EQ((*p).second.second, 1.0);
+
+    p = massProperties.find("CGz");
+    ASSERT_FALSE(p == massProperties.end());
+    ASSERT_EQ((*p).second.first, 2.9269);
+    ASSERT_EQ((*p).second.second, 1.0);
+}
+
 
 TEST(PlatoTestXMLGenerator, ParseCriteria_ThreeCriteria)
 {
@@ -902,7 +1044,7 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithTimeAndSolverBlocks)
         "   end time\n"
         "   begin solver\n"
         "     newton_solver_tolerance 1e-10\n"
-        "     max_number_iterations 20\n"
+        "     linear_solver_max_iterations 20\n"
         "     convergence_criterion residual\n"
         "   end solver\n"
         "end scenario\n";
@@ -925,7 +1067,7 @@ TEST(PlatoTestXMLGenerator, ParseScenario_WithTimeAndSolverBlocks)
         ASSERT_STREQ("160", tScenario.value("max_number_time_steps").c_str());
         ASSERT_STREQ("1.2", tScenario.value("time_step_expansion_multiplier").c_str());
         ASSERT_STREQ("1e-10", tScenario.value("newton_solver_tolerance").c_str());
-        ASSERT_STREQ("20", tScenario.value("max_number_iterations").c_str());
+        ASSERT_STREQ("20", tScenario.value("linear_solver_max_iterations").c_str());
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }
@@ -970,8 +1112,9 @@ TEST(PlatoTestXMLGenerator, ParseScenario_DefaultMainValues)
         ASSERT_STREQ("160", tScenario.value("max_number_time_steps").c_str());
         ASSERT_STREQ("1.25", tScenario.value("time_step_expansion_multiplier").c_str());
 
-        ASSERT_STREQ("1e-8", tScenario.value("tolerance").c_str());
-        ASSERT_STREQ("25", tScenario.value("max_number_iterations").c_str());
+        ASSERT_STREQ("1e-8", tScenario.value("linear_solver_tolerance").c_str());
+        ASSERT_STREQ("amgx", tScenario.value("linear_solver_type").c_str());
+        ASSERT_STREQ("1000", tScenario.value("linear_solver_max_iterations").c_str());
         ASSERT_STREQ("residual", tScenario.value("convergence_criterion").c_str());
     }
 }

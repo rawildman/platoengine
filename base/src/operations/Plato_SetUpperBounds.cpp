@@ -76,16 +76,16 @@ void SetUpperBounds::operator()()
         tOutputField.ExtractView(&tToData);
         mUpperBoundVectorLength = tOutputField.MyLength();
     }
-    else if(mOutputLayout == Plato::data::layout_t::ELEMENT_FIELD)
-    {
-        throw Plato::ParsingException("ELEMENT_FIELD not implemented for SetUpperBounds operation");
-    }
     else if(mOutputLayout == Plato::data::layout_t::SCALAR)
     {
         auto tOutputScalar = mPlatoApp->getValue(mOutputArgumentName);
         mUpperBoundVectorLength = mOutputSize;
         tOutputScalar->resize(mUpperBoundVectorLength);
         tToData = tOutputScalar->data();
+    }
+    else
+    {
+        throw Plato::ParsingException("Only SCALAR, SCALAR_FIELD are implemented for SetUpperBounds operation");
     }
 
     this->initializeUpperBoundVector(tToData);

@@ -7,7 +7,7 @@
 #include "Plato_Parser.hpp"
 
 #include <string>
-using std::string;
+#include <vector>
 
 class DataMesh;
 class DataContainer;
@@ -16,7 +16,7 @@ struct DMNodeSet {
   int id;
   int numNodes;
   int numDist;
-  string setName;
+  std::string setName;
   VarIndex NODE_LIST;
 };
 
@@ -25,7 +25,7 @@ struct DMSideSet {
   int numSides;       //!< Number of elements in sideset
   int numNodes;       //!< Number of nodes in sideset
   int nodesPerFace;   //!< Number of nodes per face
-  string setName;
+  std::string setName;
   VarIndex FACE_ID_LIST; //!< List of local side ids
   VarIndex ELEM_ID_LIST; //!< List of local faces for each element in sideset
   VarIndex FACE_NODE_LIST;
@@ -39,12 +39,6 @@ class DataContainer;
 class MeshIO;
 class Element;
 
-#include <vector>
-using std::vector;
-
-#include <string>
-using std::string;
-
 enum IndexOrder { Cstyle=0, FortranStyle };
 
 
@@ -56,7 +50,7 @@ enum DataMeshType {
                   };
 
 class BlockElemPair {
-  public: 
+  public:
   BlockElemPair() : blockid(-1), elemid(-1) {}
   BlockElemPair(int b, int e) : blockid(b), elemid(e) {}
   int blockid;
@@ -78,6 +72,16 @@ public:
 
   virtual bool parseMesh(pugi::xml_node& mesh_spec) { return false; }
 
+  virtual bool
+  createMesh(
+    std::string aFormat,
+    std::string aFileName,
+    bool aIgnoreNodeMap,
+    bool aIgnoreElemMap
+  ) { return false; }
+
+  virtual void createBlocks(pugi::xml_node& meshspec){}
+
   virtual void Connect(int* node_gid_list, int block_index, int nlid_in_blk);
 
   virtual bool hasContactBlock(){return false; }
@@ -90,12 +94,12 @@ public:
   virtual void setNumNodes( int Nnp );      /*! sets total number of nodes (ghost + owned) on proc */
   virtual DataMeshType getMeshType() { return myMeshType; }
 
-  virtual bool registerNodeSet(int ids, int number_in_set);
+  virtual bool registerNodeSet(int ids, int number_in_set, std::string aName="");
   virtual int  getNumNodeSets() { int nns = nodeSets.size(); return nns; }
-  virtual const vector<DMNodeSet>& getNodeSets() { return nodeSets; }
+  virtual const std::vector<DMNodeSet>& getNodeSets() { return nodeSets; }
   virtual DMNodeSet* getNodeSet(int i) { return &nodeSets[i]; };
-  virtual bool registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set);
-  virtual vector<DMSideSet> getSideSets() { return sideSets; }
+  virtual bool registerSideSet(int ids, int number_faces_in_set, int number_nodes_in_set, std::string aName="");
+  virtual std::vector<DMSideSet> getSideSets() { return sideSets; }
   virtual DMSideSet* getSideSet(int i) { return &sideSets[i]; };
   virtual int  getNumSideSets() { int nss = sideSets.size(); return nss; }
   virtual int getNumNodes();      /*! returns total number of nodes on proc (owned + ghosted)*/
@@ -111,8 +115,10 @@ public:
   virtual int  getNumElemBlks() = 0;
   virtual int  getBlockId(int blk) = 0;     // given an index find the id
   virtual int  getBlockIndex(int blk) = 0;  // given an id find the index
+  virtual std::string getBlockName(int blk) = 0;  // given an index find the name
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk) = 0;  // given a block index find the local face graph
   virtual int* getElemToNodeConnInBlk(int blk) = 0;
-  virtual bool readNodePlot(Real*, string) = 0;
+  virtual bool readNodePlot(Real*, std::string, int time_step=-1) = 0;
   virtual void addElemBlk(Topological::Element*){ return; }
 
   virtual void setDimensions(int);
@@ -169,13 +175,13 @@ public: //!data
 protected: //!data
   DataMeshType myMeshType;     //! meshtype for RTTI
   int  myDimensions;           //! dimensionality of problem
-  int  numNodes;               //! number of (total=ghost+local) nodes in datamesh 
+  int  numNodes;               //! number of (total=ghost+local) nodes in datamesh
   int  numElems;               //! number of elements in topo
-  int *numDofsOnNodes;         //! vector of number of dofs on each node (totalNumNodes long)
-  vector<DMNodeSet> nodeSets;    //! all node sets
-  vector<DMSideSet> sideSets;    //! all side sets
+  int *numDofsOnNodes;         //! std::vector of number of dofs on each node (totalNumNodes long)
+  std::vector<DMNodeSet> nodeSets;    //! all node sets
+  std::vector<DMSideSet> sideSets;    //! all side sets
 
-  string myTitle;              //! topology title
+  std::string myTitle;              //! topology title
   DataContainer* myData;       //! copy of pointer to data container
 
   VarIndex XMATCOOR;           //! variable index to x material coordinate
@@ -186,7 +192,7 @@ protected: //!data
   VarIndex ZMATCOOR0;          //! variable index to initial z material coordinate
 
 protected: //!functions
-  vector <Topological::Element*> myElemBlk; //! groups of elements
+  std::vector <Topological::Element*> myElemBlk; //! groups of elements
 
 private: //!data
 
@@ -204,15 +210,27 @@ public:
 
   virtual bool parseMesh(pugi::xml_node& mesh_spec);
 
+  bool
+  createMesh(
+    std::string aFormat,
+    std::string aFileName,
+    bool aIgnoreNodeMap,
+    bool aIgnoreElemMap
+  );
+
+  void createBlocks(pugi::xml_node& meshspec) override;
+
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
   virtual const char*  getElemTypeInBlk(int blk);
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);
+  virtual std::string getBlockName(int blk);
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
   virtual int* getElemToNodeConnInBlk(int blk);
   virtual void addElemBlk(Topological::Element*);
-  virtual bool readNodePlot(Real*, string);
+  virtual bool readNodePlot(Real*, std::string, int time_step=-1) override;
 
 protected: //!data
 
@@ -241,8 +259,10 @@ public:
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);
+  virtual std::string getBlockName(int blk);
+  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
   virtual int* getElemToNodeConnInBlk(int blk);
-  virtual bool readNodePlot(Real*, string);
+  virtual bool readNodePlot(Real*, std::string, int time_step=-1) override;
 
 protected: //!data
 

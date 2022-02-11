@@ -87,9 +87,12 @@ struct ValidCriterionParameterKeys
         "relaxed_stress_ramp_factor",
         "conductivity_ratios",
         "location_names",
-        "blocks",
+        "location_types",
         "local_measure",
         "spatial_weighting_function",
+        "location_name",
+        "displacement_direction",
+        "measure_magnitude",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -118,7 +121,18 @@ struct ValidCriterionParameterKeys
         "camp_max_iter",
         "shape_sideset",
         "ref_data_file",
-        "match_nodesets"
+        "match_nodesets",
+        // mass properties
+        "mass",
+        "cgx", 
+        "cgy", 
+        "cgz", 
+        "ixx", 
+        "iyy", 
+        "izz", 
+        "ixz", 
+        "iyz", 
+        "ixy"
     };
 };
 
@@ -168,7 +182,7 @@ struct ValidObjectiveTypeKeys
     /*!<
      * \brief Valid plato input deck criterion keywords.
      **/
-    std::vector<std::string> mKeys = {"single_criterion", "weighted_sum"};
+    std::vector<std::string> mKeys = {"single_criterion", "weighted_sum", "multi_objective"};
 };
 // struct ValidObjectiveTypeKeys
 
@@ -192,21 +206,11 @@ private:
         "thermoplasticity_thermal_energy",
         "volume", 
         "volume_average", 
-        "mass", 
-        "CG_x", 
-        "CG_y", 
-        "CG_z", 
-        "Ixx", 
-        "Iyy", 
-        "Izz", 
-        "Ixz", 
-        "Iyz", 
-        "Ixy", 
+        "mass",
         "effective_energy", 
         "surface_area", 
         "flux_p-norm", 
         "stress", 
-        "average_temperature", 
         "stress_p-norm", 
         "stress_constraint",  
         "stress_constraint_general",  
@@ -216,13 +220,17 @@ private:
         "frf_mismatch", 
         "limit_stress",
         "compliance_and_volume_min",
-        "surface_pressure",
-        "surface_temperature",
+        "mean_temperature", 
+        "mean_surface_pressure",
+        "mean_surface_temperature",
         "flow_rate",
         "fluid_thermal_compliance",
         "maximize_fluid_thermal_flux",
         "modal_matching",
-        "modal_projection_error"
+        "modal_projection_error",
+        "mass_properties",
+        "displacement",
+        "volume_average_von_mises"
     };
 
 public:
@@ -386,9 +394,9 @@ public:
 struct ValidLoadKeys
 {
     /*!<
-     * \brief Valid plato input deck essential boundary condition keywords.
+     * \brief Valid plato input deck load keywords.
      **/
-    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_source"};
+    std::vector<std::string> mKeys = {"traction", "uniform_surface_flux", "force", "pressure", "uniform_thermal_source"};
 };
 
 // struct ValidEssentialBoundaryConditionsKeys
@@ -585,8 +593,9 @@ private:
         "isotropic_linear_thermoelastic",
         "j2_plasticity",
         "thermoplasticity",
-        "natural_buoyancy",
-        "incompressible_flow"};
+        "forced_convection",
+        "natural_convection",
+        "laminar_flow"};
 
 public:
     /******************************************************************************//**
@@ -685,7 +694,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk"};
 };
 // struct ValidCodeKeys
 
@@ -949,7 +958,7 @@ struct ValidPhysicsLoadCombinations
         },
         {"steady_state_incompressible_fluids", 
             {
-                {"uniform_source", {"Thermal Sources"}},
+                {"uniform_thermal_source", {"Thermal Sources"}},
                 {"traction", {"Momentum Natural Boundary Conditions"}},
                 {"uniform_surface_flux", {"Thermal Natural Boundary Conditions"}}
             }
@@ -1089,26 +1098,41 @@ private:
             }
         },
 
-        { "natural_buoyancy",
+        { "forced_convection",
+            {
+                { "darcy_number", { "Darcy Number", "double" } },
+                { "prandtl_number", { "Prandtl Number", "double" } },
+                { "reynolds_number", { "Reynolds Number", "double"} },
+                { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
+                { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
+                { "thermal_conductivity", { "Thermal Conductivity", "double"} },
+                { "impermeability_number", { "Impermeability Number", "double"} },
+                { "temperature_difference", { "Temperature Difference", "double" } },
+                { "characteristic_length", { "Characteristic Length", "double" } },            }
+        },
+
+        { "natural_convection",
+        
             {
                 { "impermeability_number", {"Impermeability Number", "double"} },
+                { "darcy_number", { "Darcy Number", "double" } }, 
                 { "prandtl_number", { "Prandtl Number", "double" } }, 
                 { "thermal_diffusivity", { "Thermal Diffusivity", "double" } },
                 { "kinematic_viscocity", { "Kinematic Viscocity", "double" } },
-                { "reference_temperature", { "Reference Temperature", "double" } },
+                { "temperature_difference", { "Temperature Difference", "double" } },
                 { "characteristic_length", { "Characteristic Length", "double" } },
                 { "grashof_number", { "Grashof Number", "Array(double)" } },
                 { "richardson_number", {"Richardson Number", "Array(double)"} },
                 { "rayleigh_number", {"Rayleigh Number", "Array(double)"} },
-                { "thermal_diffusivity_ratio", {"Thermal Diffusivity Ratio", "double"} },
                 { "thermal_conductivity", {"Thermal Conductivity", "double"} }
             }
         },
 
-        { "incompressible_flow",
+        { "laminar_flow",
             {
+                { "darcy_number", { "Darcy Number", "double" } }, 
                 { "reynolds_number", {"Reynolds Number", "double"} },
-                { "impermeability_number", {"Impermeability Number", "double"} },
+                { "impermeability_number", {"Impermeability Number", "double"} }
             }
         }
     };
@@ -1303,11 +1327,14 @@ struct ValidAnalyzeCriteriaKeys
         { "thermal_compliance", { "Internal Thermal Energy", false } },
         { "flux_p-norm", { "Flux P-Norm", false } },
         { "thermomechanical_compliance", { "Internal Thermoelastic Energy", false } },
-        { "surface_temperature", { "Average Surface Temperature", false } },
-        { "surface_pressure", { "Average Surface Pressure", false } },
+        { "mean_surface_temperature", { "Mean Surface Temperature", false } },
+        { "mean_surface_pressure", { "Mean Surface Pressure", false } },
+        { "mean_temperature", { "Mean Temperature", false } },
         { "flow_rate", { "Flow Rate", false } },
         { "maximize_fluid_thermal_flux", { "Thermal Flux", false } },
-        { "fluid_thermal_compliance", { "Thermal Compliance", false } }
+        { "fluid_thermal_compliance", { "Thermal Compliance", false } },
+        { "mass_properties", { "Mass Properties", false } },
+        { "displacement", { "Solution", false } }
     };
 };
 // ValidAnalyzeCriteriaKeys
@@ -1321,7 +1348,8 @@ struct ValidAnalyzeCriteriaIsLinearKeys
      **/
     std::unordered_map<std::string, std::string> mKeys =
     {
-        { "volume", "true" }
+        { "volume", "true" },
+        { "mass_properties", "true" }
     };
 };
 // ValidAnalyzeCriteriaIsLinearKeys
@@ -1528,14 +1556,6 @@ struct ValidOptimizationParameterKeys
      "filter_service",
      "projection_type",
      "filter_power",
-     "gcmma_inner_kkt_tolerance",
-     "gcmma_outer_kkt_tolerance",
-     "gcmma_inner_control_stagnation_tolerance",
-     "gcmma_outer_control_stagnation_tolerance",
-     "gcmma_outer_objective_stagnation_tolerance",
-     "gcmma_max_inner_iterations",
-     "gcmma_outer_stationarity_tolerance",
-     "gcmma_initial_moving_asymptotes_scale_factor",
      "ks_max_radius_scale",
      "ks_initial_radius_scale",
      "max_trust_region_radius",
@@ -1551,6 +1571,8 @@ struct ValidOptimizationParameterKeys
      "objective_number_standard_deviations",
      "filter_radius_scale",
      "filter_radius_absolute",
+     "symmetry_plane_location_names",
+     "boundary_sticking_penalty",
      "al_penalty_parameter",
      "feasibility_tolerance",
      "al_penalty_scale_factor",
@@ -1576,9 +1598,22 @@ struct ValidOptimizationParameterKeys
      "filter_type_kernel_generator_name",
      "filter_type_kernel_then_heaviside_generator_name",
      "filter_type_kernel_then_tanh_generator_name",
+     "amgx_solver_tolerance",
+     "amgx_max_iterations",
+     "amgx_solver_type",
+     "amgx_print_solver_stats",
      "reset_algorithm_on_update",
      "rol_subproblem_model",
-     "rol_lin_more_cauchy_initial_step_size"
+     "rol_lin_more_cauchy_initial_step_size",
+     "dakota_workflow",
+     "concurrent_evaluations",
+     "mdps_partitions",
+     "mdps_response_functions",
+     "sbgo_max_iterations",
+     "moga_population_size",
+     "moga_niching_distance",
+     "moga_max_function_evaluations",
+     "num_sampling_method_samples",
     };
 };
 

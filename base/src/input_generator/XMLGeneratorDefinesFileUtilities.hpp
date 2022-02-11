@@ -162,5 +162,15 @@ void append_tractions_to_define_xml_file
  const std::map<std::string, std::vector<std::vector<std::string>>>& aValues,
  pugi::xml_document& aDocument);
 
+/******************************************************************************//**
+ * \fn add_dakota_concurrent_evaluations_data_to_define_xml_file
+ * \brief Add concurrent evaluations data to defines.xml
+ * \param [in] aMetaData  input meta data
+ * \param [in] aDocument  document to add to
+**********************************************************************************/
+void add_dakota_concurrent_evaluations_data_to_define_xml_file
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document &aDocument);
+
 }
 // namespace XMLGen

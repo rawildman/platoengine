@@ -50,8 +50,8 @@
 
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
+#include "Plato_DriverInterface.hpp"
 #include "Plato_StageInputDataMng.hpp"
-#include "Plato_OptimizerInterface.hpp"
 #include "Plato_ParticleSwarmParser.hpp"
 #include "Plato_GradFreeEngineCriterion.hpp"
 #include "Plato_ParticleSwarmInterfaceALPSO.hpp"
@@ -63,7 +63,7 @@ namespace Plato
  * @brief PLATO Engine interface for Augmented Lagrangian Particle Swarm Optimization (ALPSO) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class ParticleSwarmEngineALPSO : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class ParticleSwarmEngineALPSO : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -94,9 +94,9 @@ public:
      * @brief Return optimization algorithm type
      * @return type
     **********************************************************************************/
-    Plato::optimizer::algorithm_t type() const
+    Plato::driver::driver_t type() const
     {
-        return (Plato::optimizer::algorithm_t::PARTICLE_SWARM_OPTMIZATION_ALPSO);
+        return (Plato::driver::driver_t::PARTICLE_SWARM_OPTMIZATION_ALPSO);
     }
 
     /******************************************************************************//**
@@ -118,7 +118,7 @@ public:
     /******************************************************************************//**
      * @brief Solve optimization problem using the ALPSO algorithm
     **********************************************************************************/
-    void optimize()
+    void run()
     {
         // PARSE INPUT DATA
         Plato::InputDataALPSO<ScalarType, OrdinalType> tInputsALPSO;

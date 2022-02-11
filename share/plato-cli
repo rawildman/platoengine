@@ -154,7 +154,14 @@ def esp_action(args):
 
   shell_command = "python " + scriptFilePath + " " + dictToArgs(argsDict)
 
-  subprocess.call(shell_command.split())
+  return_code = subprocess.call(shell_command.split())
+
+
+  if return_code != 0:
+    print("*******************************")
+    print("ESP operation failed.. aborting")
+    print("*******************************")
+    exit(return_code)
 
 
 def xtk_action(args):

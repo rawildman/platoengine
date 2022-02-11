@@ -110,17 +110,19 @@ protected:
                                    const std::vector<std::string> &aInputStrings,
                                    std::string &aReturnStringValue);
 
+    void preProcessInputMetaData(XMLGen::InputData& aInputData);
+
     std::string m_InputFilename;
     XMLGen::InputData m_InputData;
     XMLGen::InputData m_InputDataWithExpandedEBCs;
     std::vector<XMLGen::InputData> m_PreProcessedInputData;
 private:
 
-    void preProcessInputMetaData(XMLGen::InputData& aInputData);
     void determineIfPlatoEngineFilteringIsNeeded();
-    void setupHelmholtzFilterService(XMLGen::InputData& aInputData);
     void expandEssentialBoundaryConditions(XMLGen::InputData& aInputData);
     void updateScenariosWithExpandedBoundaryConditions(std::map<int, std::vector<int> > aOldIDToNewIDMap);
+
+    void setupHelmholtzFilterService(XMLGen::InputData& aInputData);
 
     void loadOutputData
     (XMLGen::InputData &aNewInputData,

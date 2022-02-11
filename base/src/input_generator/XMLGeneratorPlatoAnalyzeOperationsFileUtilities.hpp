@@ -77,6 +77,16 @@ void append_compute_constraint_value_operation_for_shape_problem
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_compute_constraint_gradient_operation_for_topology_levelset_problem
+ * \brief Append compute constraint value operation for topology levelset optimizatino problems
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+ void append_compute_constraint_gradient_operation_for_topology_levelset_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
  * \fn append_compute_objective_gradient_to_plato_analyze_operation
  * \brief Append compute objective gradient operation to plato_analyze_operation.xml.
  * \param [in]     aMetaData   Plato problem input data
@@ -127,6 +137,51 @@ void append_compute_constraint_gradient_operation_for_shape_problem
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_compute_criterion_value_operations_for_dakota_problem
+ * \brief Append compute criterion value operations for dakota problems to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_compute_criterion_value_operations_for_dakota_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_compute_objective_criterion_value_operations_for_dakota_problem
+ * \brief Append compute criterion value operation for objectives in dakota problems to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_compute_objective_criterion_value_operations_for_dakota_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aCriterionNumber);
+
+/******************************************************************************//**
+ * \fn append_compute_criterion_value_operation_for_dakota_problem
+ * \brief Append compute criterion value operation for dakota problems to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_compute_criterion_value_operation_for_dakota_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ const std::string& aCriterionId,
+ const std::string& aIdentifierString,
+ int aCriterionNumber);
+
+/******************************************************************************//**
+ * \fn append_compute_constraint_criterion_value_operations_for_dakota_problem
+ * \brief Append compute criterion value operation for constraints in dakota problems to plato_analyze_operation.xml.
+ * \param [in]     aMetaData   Plato problem input data
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_compute_constraint_criterion_value_operations_for_dakota_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aCriterionNumber);
+
+/******************************************************************************//**
  * \fn append_compute_constraint_value_to_plato_analyze_operation
  * \brief Append compute constraint value operation to plato_analyze_operation.xml.
  * \param [in]     aMetaData   Plato problem input data
@@ -151,10 +206,14 @@ void append_compute_constraint_gradient_to_plato_analyze_operation
  * \brief Append reinitialize on change operation
  * \param [in]     aMetaData   Plato problem input data
  * \param [in/out] aDocument   pugi::xml_document
+ * \param [in]     aName       operation name
+ * \param [in]     aSharedData shared data name if needed
 **********************************************************************************/
 void append_reinit_on_change_data
 (const XMLGen::InputData& aMetaData,
- pugi::xml_document& aDocument);
+ pugi::xml_document& aDocument,
+ const std::string& aName,
+ const std::string& aSharedData);
 
 /******************************************************************************//**
  * \fn append_update_problem_to_plato_analyze_operation
@@ -244,6 +303,14 @@ void append_filter_gradient_to_plato_analyze_helmholtz_operation
  * \param [in] aMetaData Plato problem input data
 **********************************************************************************/
 void write_plato_analyze_operation_xml_file
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn write_plato_analyze_operation_xml_file_dakota_problem
+ * \brief Write Plato Analyze operations for dakota problem to plato_analyze_operation.xml file.
+ * \param [in] aMetaData Plato problem input data
+**********************************************************************************/
+void write_plato_analyze_operation_xml_file_dakota_problem
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**

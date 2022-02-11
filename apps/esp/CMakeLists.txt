@@ -20,11 +20,11 @@ if( CMAKE_INSTALL_PREFIX )
 endif()
 
 if (PLATO_ENABLE_SERVICES_PYTHON)
-    find_package(Python2 COMPONENTS Development Interpreter)
+    find_package(Python3 COMPONENTS Development Interpreter)
     add_library( PythonPlatoESP SHARED PlatoESPApp.cpp PlatoESPPythonModule.cpp )
-    target_include_directories(PythonPlatoESP SYSTEM PRIVATE ${Python2_INCLUDE_DIRS} )
+    target_include_directories(PythonPlatoESP SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
     target_link_libraries( PythonPlatoESP ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES}
-                           ${Trilinos_TPL_LIBRARIES} ${Python2_LIBRARIES} )
+                           ${Trilinos_TPL_LIBRARIES} ${Python3_LIBRARIES} )
     set_target_properties( PythonPlatoESP PROPERTIES PREFIX "" )
     target_compile_options( PythonPlatoESP PRIVATE "-lmpi" )
 

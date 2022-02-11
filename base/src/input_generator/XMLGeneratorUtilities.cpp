@@ -47,54 +47,67 @@
  *
  */
 
+#include <fstream>
+
+#include "XMLG_Macros.hpp"
+#include "Plato_FreeFunctions.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
-#include "Plato_FreeFunctions.hpp"
-#include "XMLGeneratorPlatoAnalyzeProblem.hpp"
-#include "XMLG_Macros.hpp"
-#include <fstream>
 
 namespace XMLGen
 {
 
 /******************************************************************************/
-bool is_shape_optimization_problem(const XMLGen::InputData& aMetaData)
-/******************************************************************************/
+bool is_robust_optimization_problem(const XMLGen::InputData& aMetaData)
 {
-    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    if(aMetaData.mRandomMetaData.empty())
+        return false;
+    else
+        return true;
+}
+// function is_robust_optimization_problem
+/******************************************************************************/
+
+/******************************************************************************/
+bool is_shape_optimization_problem(const XMLGen::InputData &aMetaData)
+{
+    if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         return true;
     else
         return false;
 }
+// function is_shape_optimization_problem
+/******************************************************************************/
 
 /******************************************************************************/
-void append_version_entry(pugi::xml_document& aDocument)
-/******************************************************************************/
+void append_version_entry(pugi::xml_document &aDocument)
 {
     auto tNode = aDocument.append_child(pugi::node_declaration);
     tNode.set_name("xml");
     pugi::xml_attribute tAttribute = tNode.append_attribute("version");
     tAttribute.set_value("1.0");
 }
+// function append_version_entry
+/******************************************************************************/
 
 /******************************************************************************/
 bool addChild(pugi::xml_node parent_node,
               const std::string &name,
               const std::string &value)
-/******************************************************************************/
 {
     pugi::xml_node tmp_node = parent_node.append_child(name.c_str());
     tmp_node = tmp_node.append_child(pugi::node_pcdata);
     tmp_node.set_value(value.c_str());
     return true;
 }
+// function addChild
+/******************************************************************************/
 
 /******************************************************************************/
 bool addNTVParameter(pugi::xml_node parent_node,
-                     const std::string &name,
-                     const std::string &type,
-                     const std::string &value)
-/******************************************************************************/
+                 const std::string &name,
+                 const std::string &type,
+                 const std::string &value)
 {
     pugi::xml_node node = parent_node.append_child("Parameter");
     node.append_attribute("name") = name.c_str();
@@ -102,15 +115,16 @@ bool addNTVParameter(pugi::xml_node parent_node,
     node.append_attribute("value") = value.c_str();
     return true;
 }
+// function addNTVParameter
+/*****************************************************************************/
 
-/******************************************************************************/
+/*****************************************************************************/
 pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
-                                                             const std::string &aName,
-                                                             const std::string &aType,
-                                                             const std::string &aOwner,
-                                                             const std::string &aUser)
-/******************************************************************************/
-{   
+                                           const std::string &aName,
+                                           const std::string &aType,
+                                           const std::string &aOwner,
+                                           const std::string &aUser)
+{
     pugi::xml_node sd_node = aDoc.append_child("SharedData");
     addChild(sd_node, "Name", aName);
     addChild(sd_node, "Type", aType);
@@ -119,15 +133,16 @@ pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserNodalSharedData
+/*****************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createSingleUserNodalSharedData(pugi::xml_node &aNode,
-                                                             const std::string &aName,
-                                                             const std::string &aType,
-                                                             const std::string &aOwner,
-                                                             const std::string &aUser)
-/******************************************************************************/
-{   
+                                               const std::string &aName,
+                                               const std::string &aType,
+                                               const std::string &aOwner,
+                                               const std::string &aUser)
+{
     pugi::xml_node sd_node = aNode.append_child("SharedData");
     addChild(sd_node, "Name", aName);
     addChild(sd_node, "Type", aType);
@@ -136,14 +151,15 @@ pugi::xml_node createSingleUserNodalSharedData(pugi::xml_node &aNode,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserNodalSharedData
+/******************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createSingleUserElementSharedData(pugi::xml_document &aDoc,
-                                                               const std::string &aName,
-                                                               const std::string &aType,
-                                                               const std::string &aOwner,
-                                                               const std::string &aUser)
-/******************************************************************************/
+                                                 const std::string &aName,
+                                                 const std::string &aType,
+                                                 const std::string &aOwner,
+                                                 const std::string &aUser)
 {
     pugi::xml_node sd_node = aDoc.append_child("SharedData");
     addChild(sd_node, "Name", aName);
@@ -153,14 +169,15 @@ pugi::xml_node createSingleUserElementSharedData(pugi::xml_document &aDoc,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserElementSharedData
+/******************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createSingleUserElementSharedData(pugi::xml_node &aNode,
-                                                               const std::string &aName,
-                                                               const std::string &aType,
-                                                               const std::string &aOwner,
-                                                               const std::string &aUser)
-/******************************************************************************/
+                                                 const std::string &aName,
+                                                 const std::string &aType,
+                                                 const std::string &aOwner,
+                                                 const std::string &aUser)
 {
     pugi::xml_node sd_node = aNode.append_child("SharedData");
     addChild(sd_node, "Name", aName);
@@ -170,15 +187,16 @@ pugi::xml_node createSingleUserElementSharedData(pugi::xml_node &aNode,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserElementSharedData
+/******************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_document &aDoc,
-                                                              const std::string &aName,
-                                                              const std::string &aType,
-                                                              const std::string &aSize,
-                                                              const std::string &aOwner,
-                                                              const std::string &aUser)
-/******************************************************************************/
+                                                const std::string &aName,
+                                                const std::string &aType,
+                                                const std::string &aSize,
+                                                const std::string &aOwner,
+                                                const std::string &aUser)
 {
     pugi::xml_node sd_node = aDoc.append_child("SharedData");
     addChild(sd_node, "Name", aName);
@@ -189,15 +207,16 @@ pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_document &aDoc,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserGlobalSharedData
+/******************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_node &aNode,
-                                                              const std::string &aName,
-                                                              const std::string &aType,
-                                                              const std::string &aSize,
-                                                              const std::string &aOwner,
-                                                              const std::string &aUser)
-/******************************************************************************/
+                                                const std::string &aName,
+                                                const std::string &aType,
+                                                const std::string &aSize,
+                                                const std::string &aOwner,
+                                                const std::string &aUser)
 {
     pugi::xml_node sd_node = aNode.append_child("SharedData");
     addChild(sd_node, "Name", aName);
@@ -208,15 +227,16 @@ pugi::xml_node createSingleUserGlobalSharedData(pugi::xml_node &aNode,
     addChild(sd_node, "UserName", aUser);
     return sd_node;
 }
+// function createSingleUserGlobalSharedData
+/******************************************************************************/
 
 /******************************************************************************/
 pugi::xml_node createMultiUserGlobalSharedData(pugi::xml_document &aDoc,
-                                                              const std::string &aName,
-                                                              const std::string &aType,
-                                                              const std::string &aSize,
-                                                              const std::string &aOwner,
-                                                              const std::vector<std::string> &aUsers)
-/******************************************************************************/
+                                               const std::string &aName,
+                                               const std::string &aType,
+                                               const std::string &aSize,
+                                               const std::string &aOwner,
+                                               const std::vector<std::string> &aUsers)
 {
     pugi::xml_node sd_node = aDoc.append_child("SharedData");
     addChild(sd_node, "Name", aName);
@@ -224,20 +244,21 @@ pugi::xml_node createMultiUserGlobalSharedData(pugi::xml_document &aDoc,
     addChild(sd_node, "Layout", "Global");
     addChild(sd_node, "Size", aSize);
     addChild(sd_node, "OwnerName", aOwner);
-    for(size_t i=0; i<aUsers.size(); ++i)
+    for (size_t i = 0; i < aUsers.size(); ++i)
     {
         addChild(sd_node, "UserName", aUsers[i]);
     }
     return sd_node;
 }
+// function createMultiUserGlobalSharedData
+/******************************************************************************/
 
 /******************************************************************************/
-void append_children
-(const std::vector<std::string>& aKeys,
- const std::vector<std::string>& aValues,
- pugi::xml_node& aParentNode)
+void append_children(const std::vector<std::string> &aKeys,
+                     const std::vector<std::string> &aValues,
+                     pugi::xml_node &aParentNode)
 {
-    for (auto& tKey : aKeys)
+    for (auto &tKey : aKeys)
     {
         auto tIndex = &tKey - &aKeys[0];
         auto tLower = Plato::tolower(aValues[tIndex]);
@@ -253,12 +274,11 @@ void append_children
 /******************************************************************************/
 
 /******************************************************************************/
-void append_attributes
-(const std::vector<std::string>& aKeys,
- const std::vector<std::string>& aValues,
- pugi::xml_node& aParentNode)
+void append_attributes(const std::vector<std::string> &aKeys,
+                       const std::vector<std::string> &aValues,
+                       pugi::xml_node &aParentNode)
 {
-    for(auto& tKey : aKeys)
+    for (auto &tKey : aKeys)
     {
         auto tIndex = &tKey - &aKeys[0];
         auto tLower = Plato::tolower(aValues[tIndex]);
@@ -269,14 +289,13 @@ void append_attributes
 /******************************************************************************/
 
 /******************************************************************************/
-void append_attributes
-(const std::string& aNodeName,
- const std::vector<std::string>& aKeywords,
- const std::vector<std::string>& aValues,
- pugi::xml_document& aDocument)
+void append_attributes(const std::string &aNodeName,
+                       const std::vector<std::string> &aKeywords,
+                       const std::vector<std::string> &aValues,
+                       pugi::xml_document &aDocument)
 {
     auto tNode = aDocument.append_child(aNodeName.c_str());
-    for(auto& tKeyword : aKeywords)
+    for (auto &tKeyword : aKeywords)
     {
         auto tIndex = &tKeyword - &aKeywords[0];
         auto tLower = Plato::tolower(aValues[tIndex]);
@@ -287,15 +306,14 @@ void append_attributes
 /******************************************************************************/
 
 /******************************************************************************/
-void append_parameter_plus_attributes
-(const std::vector<std::string>& aKeys,
- const std::vector<std::string>& aValues,
- pugi::xml_node& aParentNode)
+void append_parameter_plus_attributes(const std::vector<std::string> &aKeys,
+                                      const std::vector<std::string> &aValues,
+                                      pugi::xml_node &aParentNode)
 {
     std::vector<std::string> tCopy = aValues;
     XMLGen::to_lower(tCopy);
     auto tIgnoreAttribute = std::find(tCopy.begin(), tCopy.end(), "ignore");
-    if(tIgnoreAttribute == tCopy.end())
+    if (tIgnoreAttribute == tCopy.end())
     {
         auto tChild = aParentNode.append_child("Parameter");
         XMLGen::append_attributes(aKeys, aValues, tChild);
@@ -305,7 +323,7 @@ void append_parameter_plus_attributes
 /******************************************************************************/
 
 /******************************************************************************/
-size_t compute_greatest_divisor(const size_t& aDividend, size_t aDivisor)
+size_t compute_greatest_divisor(const size_t &aDividend, size_t aDivisor)
 {
     if (aDivisor == 0u)
     {
@@ -323,28 +341,26 @@ size_t compute_greatest_divisor(const size_t& aDividend, size_t aDivisor)
 /******************************************************************************/
 std::string transform_tokens(const std::vector<std::string> &aTokens)
 {
-    if(aTokens.empty())
+    if (aTokens.empty())
     {
         return std::string("");
     }
-
     std::string tOutput;
     auto tEndIndex = aTokens.size() - 1u;
     auto tEndIterator = std::next(aTokens.begin(), tEndIndex);
-    for(auto tItr = aTokens.begin(); tItr != tEndIterator; ++tItr)
+    for (auto tItr = aTokens.begin(); tItr != tEndIterator; ++tItr)
     {
         auto tIndex = std::distance(aTokens.begin(), tItr);
         tOutput += aTokens[tIndex] + ", ";
     }
     tOutput += aTokens[tEndIndex];
-
     return tOutput;
 }
 // function transform_tokens
 /******************************************************************************/
 
 /******************************************************************************/
-std::stringstream read_data_from_file(const std::string& aFilename)
+std::stringstream read_data_from_file(const std::string &aFilename)
 {
     std::ifstream tReadFile;
     tReadFile.open(aFilename);
@@ -361,13 +377,12 @@ std::stringstream read_data_from_file(const std::string& aFilename)
 /******************************************************************************/
 
 /******************************************************************************/
-void set_key_value
-(const std::string& aKey,
- const std::string& aValue,
- std::unordered_map<std::string, std::string>& aKeyToValueMap)
+void set_key_value(const std::string &aKey,
+                   const std::string &aValue,
+                   std::unordered_map<std::string, std::string> &aKeyToValueMap)
 {
     auto tItr = aKeyToValueMap.find(aKey);
-    if(tItr == aKeyToValueMap.end())
+    if (tItr == aKeyToValueMap.end())
     {
         THROWERR(std::string("Set Key Value: Key '" + aKey + "' is not supported."))
     }
@@ -377,17 +392,15 @@ void set_key_value
 /******************************************************************************/
 
 /******************************************************************************/
-std::string set_value_keyword_to_ignore_if_empty
-(const std::string& aValue)
+std::string set_value_keyword_to_ignore_if_empty(const std::string &aValue)
 {
-/*
+    /*
     if(aValue.empty())
     {
         std::string tContextString = "\n";
         PRINTIGNOREINFO(aValue, tContextString);
     }
-*/
-
+    */
     auto tMyValue = aValue.empty() ? std::string("IGNORE") : aValue;
     return tMyValue;
 }
@@ -395,18 +408,17 @@ std::string set_value_keyword_to_ignore_if_empty
 /******************************************************************************/
 
 /******************************************************************************/
-void set_value_keyword_to_ignore_if_empty
-(std::vector<std::string>& aValues)
+void set_value_keyword_to_ignore_if_empty(std::vector<std::string> &aValues)
 {
-    for(auto& tValue : aValues)
+    for (auto &tValue : aValues)
     {
-/*
-        if(tValue.empty())
-        {
-            std::string tContextString = "\n";
-            PRINTIGNOREINFO(tValue, tContextString);
-        }
-*/
+    /*
+    if(tValue.empty())
+    {
+        std::string tContextString = "\n";
+        PRINTIGNOREINFO(tValue, tContextString);
+    }
+    */
         auto tMyValue = tValue.empty() ? std::string("IGNORE") : tValue;
         tValue = tMyValue;
     }
@@ -415,11 +427,10 @@ void set_value_keyword_to_ignore_if_empty
 /******************************************************************************/
 
 /******************************************************************************/
-std::vector<std::string> transform_key_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
+std::vector<std::string> transform_key_tokens(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
 {
     std::vector<std::string> tKeys;
-    for(auto& tPair : aKeyToValueMap)
+    for (auto &tPair : aKeyToValueMap)
     {
         tKeys.push_back(tPair.first);
     }
@@ -429,11 +440,10 @@ std::vector<std::string> transform_key_tokens
 /******************************************************************************/
 
 /******************************************************************************/
-std::vector<std::string> transform_value_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
+std::vector<std::string> transform_value_tokens(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
 {
     std::vector<std::string> tValues;
-    for(auto& tPair : aKeyToValueMap)
+    for (auto &tPair : aKeyToValueMap)
     {
         tValues.push_back(tPair.second);
     }
@@ -442,60 +452,34 @@ std::vector<std::string> transform_value_tokens
 // function transform_value_tokens
 /******************************************************************************/
 
-void assert_is_positive_integer(const std::string& aString)
+/******************************************************************************/
+void assert_is_positive_integer(const std::string &aString)
 {
-  if(aString.empty() || !std::isdigit(aString[0]) || aString == "0")
-    THROWERR("expected a positive integer\n")
-
-  char * p;
-  strtol(aString.c_str(), &p, 10);
-  bool is_positive_integer = *p == 0;
-
-  if(!is_positive_integer)
-    THROWERR("expected a positive integer\n")
+    if (aString.empty() || !std::isdigit(aString[0]) || aString == "0")
+        THROWERR("expected a positive integer\n")
+    char *p;
+    strtol(aString.c_str(), &p, 10);
+    bool is_positive_integer = *p == 0;
+    if (!is_positive_integer)
+        THROWERR("expected a positive integer\n")
 }
+// function assert_is_positive_integer
+/******************************************************************************/
 
 /******************************************************************************/
-void append_include_defines_xml_data
-(const XMLGen::InputData& aMetaData,
- pugi::xml_document& aDocument)
+void append_include_defines_xml_data(const XMLGen::InputData &aMetaData,
+                                     pugi::xml_document &aDocument)
 {
-    if(XMLGen::is_robust_optimization_problem(aMetaData) ||
-       aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    if (XMLGen::is_robust_optimization_problem(aMetaData) ||
+        aMetaData.optimization_parameters().optimizationType() == OT_SHAPE ||
+        aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
     {
         auto tInclude = aDocument.append_child("include");
         XMLGen::append_attributes({"filename"}, {"defines.xml"}, tInclude);
     }
 }
+// function append_include_defines_xml_data
 /******************************************************************************/
-
-std::string get_salinas_service_id(const XMLGen::InputData& aXMLMetaData)
-{
-    std::string tServiceID = "";
-    for(auto &tID : aXMLMetaData.objective.serviceIDs)
-    {
-        auto &tService = aXMLMetaData.service(tID);
-        if(tService.code() == "sierra_sd")
-        {
-            tServiceID = tID;
-            break;
-        }
-    }
-    if(tServiceID == "")
-    {
-        for(auto &tConstraint : aXMLMetaData.constraints)
-        {
-            auto tID = tConstraint.service();
-            auto &tService = aXMLMetaData.service(tID);
-            if(tService.code() == "sierra_sd")
-            {
-                tServiceID = tID;
-                break;
-            }
-        } 
-    }
-    return tServiceID;
-}
 
 /******************************************************************************/
 void negate_scalar_values(std::vector<std::string> &aInputs)
@@ -505,6 +489,105 @@ void negate_scalar_values(std::vector<std::string> &aInputs)
         tValue.insert(0, "-");
     }
 }
+// function negate_scalar_values
+/******************************************************************************/
+
+/******************************************************************************/
+bool have_auxiliary_mesh(const XMLGen::InputData& aMetaData)
+{
+    return aMetaData.mesh.auxiliary_mesh_name.size() > 0;
+}
+// function have_auxiliary_mesh
+/******************************************************************************/
+
+/******************************************************************************/
+std::string get_design_variable_name
+(const XMLGen::InputData& aMetaData)
+{
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        return "";
+    }
+    else
+    {
+        if(aMetaData.optimization_parameters().filterInEngine() == false)
+        {
+            if(aMetaData.optimization_parameters().filter_type() == "helmholtz")
+                return "Topology";
+            else
+                return "Control";
+        }
+    }
+    return "Topology";
+}
+// function get_design_variable_name
+/******************************************************************************/
+
+/******************************************************************************/
+int count_number_of_reinitializations_needed
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Objective& aObjective)
+{
+    int tReturn = 0;
+    for (size_t i=0; i<aObjective.serviceIDs.size(); ++i)
+    {
+        std::string tServiceID = aObjective.serviceIDs[i];
+        XMLGen::Service tService = aMetaData.service(tServiceID); 
+        if (tService.performer().find("sierra_sd") == std::string::npos) 
+        {
+            tReturn++;
+        }
+    }
+    return tReturn;
+}
+// function count_number_of_reinitializations_needed
+/******************************************************************************/
+
+/******************************************************************************/
+bool need_update_problem_stage
+(const XMLGen::InputData& aMetaData)
+{
+    for (auto &tService : aMetaData.services())
+    {
+        if (tService.updateProblem())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+// function need_update_problem_stage
+/******************************************************************************/
+
+/******************************************************************************/
+int num_cache_states
+(const std::vector<XMLGen::Service> &aServices)
+{
+    int tNumCacheStates = 0;
+    for(auto &tService : aServices)
+    {
+        if(tService.cacheState())
+        {
+            tNumCacheStates++;
+        }
+    }
+    return tNumCacheStates;
+}
+// function num_cache_states
+/******************************************************************************/
+
+/******************************************************************************/
+std::string append_concurrent_tag_to_file_string
+(const std::string& aFileString,
+ const std::string& aTag)
+{
+    size_t tPos = aFileString.rfind(".");
+    std::string tBaseName = aFileString.substr(0, tPos);
+    std::string tExtension = aFileString.substr(tPos);
+    std::string tReturn = tBaseName + aTag + tExtension;
+    return tReturn;
+}
+// function append_concurrent_tag_to_file_string
 /******************************************************************************/
 
 }

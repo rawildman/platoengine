@@ -45,7 +45,7 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_MethodMovingAsymptotesOperations.hpp
                         Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
-                        Plato_OptimizerFactory.hpp
+                        Plato_DriverFactory.hpp
                         Plato_OptimizersIO_Utilities.hpp
                         Plato_AugmentedLagrangian.hpp
                         Plato_TrustRegionUtilities.hpp
@@ -138,12 +138,12 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_NonlinearProgrammingSubProblemOC.hpp
                         Plato_Vector.hpp
                         Plato_Diagnostics.hpp
-                        Plato_DiagnosticsInterface.hpp
+                        Plato_DriverInterface.hpp
                         Plato_SOParameterStudies.hpp
-                        Plato_SOParameterStudiesInterface.hpp
+                        Plato_DiagnosticsInterface.hpp
                         Plato_DistributedVector.hpp
-                        Plato_OptimizerInterface.hpp
                         Plato_EpetraSerialDenseVector.hpp
+                        Plato_SOParameterStudiesInterface.hpp
                         Plato_OptimalityCriteriaInterface.hpp
                         Plato_EpetraSerialDenseMultiVector.hpp
                         Plato_BetaDistribution.hpp

@@ -56,6 +56,7 @@ MESSAGE("   Trilinos_DIR = ${Trilinos_DIR}")
 MESSAGE("   Trilinos_VERSION = ${Trilinos_VERSION}")
 MESSAGE("End of Trilinos details\n")
 
+
 if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
@@ -73,17 +74,22 @@ set(CMAKE_CXX_COMPILER     ${Trilinos_CXX_COMPILER})
 set(CMAKE_C_COMPILER       ${Trilinos_C_COMPILER})
 set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 
-
-
 ###############################################################################
-project(PlatoEngine) 
+project(PlatoEngine)
 ###############################################################################
 
-set(PLATO_INCLUDES)
+if( DAKOTADRIVER )
+  find_package(Dakota REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
+endif()
+
+set(PLATO_INCLUDES ${CMAKE_SOURCE_DIR}/apps)
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
+# set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -fopenmp")
+# set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -fopenmp")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
@@ -108,6 +114,8 @@ if( UNIT_TESTING )
     set(CMAKE_PREFIX_PATH ${GTEST_HOME} ${CMAKE_PREFIX_PATH})
   endif()
   find_package(GTest REQUIRED)
+  message( "-- Google Test Include Dir:  ${GTEST_INCLUDE_DIRS}" )
+  message( "-- Google Test Src Dir:  ${gtest_SOURCE_DIR}" )
   include_directories( ${GTEST_INCLUDE_DIRS} )
 endif()
 
@@ -140,6 +148,11 @@ if( ESP_ENABLED )
   add_definitions( -DESP_ENABLED )
 endif()
 
+if( DAKOTADRIVER )
+  message( "-- Compiling Dakota Driver " )
+  add_definitions(-DDAKOTADRIVER)
+endif()
+
 if( ENABLE_ISO )
   message( "-- Compiling PlatoIso " )
   add_definitions(-DENABLE_ISO)
@@ -150,12 +163,7 @@ if( ENABLE_PRUNE )
   add_definitions(-DENABLE_PRUNE)
 endif()
 
-if( XTK_ENABLED )
-    message( "\n-- Including XTK \n" )
-    add_definitions( -DXTK_ENABLED )
-    include(${CMAKE_SOURCE_DIR}/base/src/xtk/xtkinclude.cmake)
-endif()    
-#end XTK stuff
+
 
 if( REGRESSION OR UNIT_TESTING )
     enable_testing()
@@ -209,10 +217,7 @@ add_subdirectory(base/src/input_generator)
 add_subdirectory(base/src/operations)
 add_subdirectory(base/src/Su2ToExodus)
 add_subdirectory(base/src/MarkFaces)
-if(XTK_ENABLED)
-  add_subdirectory(base/src/xtk/)
-endif()   
-
+add_subdirectory(base/src/geometry/BamG)
 
 if( ENABLE_ISO )
   add_subdirectory(base/src/iso)
@@ -228,6 +233,10 @@ if( ESP_ENABLED )
   add_subdirectory(apps/esp)
 endif()
 
+if( DAKOTADRIVER )
+  add_subdirectory(base/src/dakota)
+endif()
+
 if( STK_ENABLED )
   add_subdirectory(base/src/support_structure)
   add_subdirectory(base/src/support_structure/main)
@@ -236,6 +245,11 @@ endif()
 if( PLATOMAIN )
   message( "-- Compiling PlatoMain " )
   add_subdirectory(apps/services)
+endif()
+
+if(XTK_ENABLED)
+    message( "-- Compiling xtk " )
+    add_subdirectory(apps/xtk)
 endif()
 
 if( PLATOPROXY )
@@ -275,7 +289,6 @@ if( REGRESSION )
     message("-- !! -- Regression has not been enabled.")
   endif()
 endif()
-
 
 if( XTK_ENABLED )
    message( "\n-- Compiling with XTK \n" ) 

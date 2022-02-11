@@ -22,6 +22,14 @@ void write_plato_main_operations_xml_file
 (const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
+ * \fn write_dakota_plato_main_operations_xml_file
+ * \brief Write Plato main operation xml file for dakota driver.
+ * \param [in] aXMLMetaData Plato problem input data
+**********************************************************************************/
+void write_dakota_plato_main_operations_xml_file
+(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
  * \fn is_volume_constraint_defined
  * \brief Return true if volume constraint is defined.
  * \param [in] aXMLMetaData Plato problem input data
@@ -327,6 +335,22 @@ void append_mesh_rename_operation_to_plato_main_operation
 void append_update_geometry_on_change_operation_to_plato_main_operation
  (const XMLGen::InputData& aXMLMetaData,
   pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_update_geometry_on_change_operation_commands
+ * \brief Append commands for updating csm geometry
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aParentNode  pugi::xml_node
+ * \param [in]     aName operation name
+ * \param [in]     aCommand plato-cli command
+ * \param [in]     aTag tag for concurrent evaluations
+**********************************************************************************/
+void append_update_geometry_on_change_operation_commands
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_node& aParentNode,
+ const std::string& aName,
+ const std::string& aCommand,
+ const std::string& aTag);
 
 /******************************************************************************//**
  * \fn append_initialize_density_field_operation

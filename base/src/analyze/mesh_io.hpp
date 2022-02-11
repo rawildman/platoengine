@@ -86,8 +86,19 @@ public:
   virtual bool writeTitle()    = 0;
   virtual bool writeQA()       = 0;
   virtual bool writeTime(int,Real)     = 0;
-  virtual bool writeNodePlot(Real*, int, int) = 0;
-  virtual bool readNodePlot(Real*, string) = 0;
+
+  virtual int getNumSteps() = 0;
+
+  virtual std::vector<std::string> getNodeVarNames() = 0;
+
+/******************************************************************************//**
+* \brief Write node plot to exodus mesh
+* \param [in] aVariableIndex zero-based index into nodal variables array
+* \param [in] aStepIndex zero-based index into time step array
+**********************************************************************************/
+  virtual bool writeNodePlot(Real* aData, int aVariableIndex, int aStepIndex) = 0;
+
+  virtual bool readNodePlot(Real*, string, int time_step=-1 ) = 0;
   virtual bool readElemPlot(double* data, string name) = 0;
   virtual bool writeElemPlot(Real*, int, int) = 0;
   virtual bool closeMeshIO()   = 0;
@@ -123,8 +134,13 @@ public:
   virtual bool writeTitle();
   virtual bool writeQA();
   virtual bool writeTime(int,Real);
+
+  virtual int getNumSteps();
+
+  virtual std::vector<std::string> getNodeVarNames();
+
   virtual bool writeNodePlot(Real*, int, int);
-  virtual bool readNodePlot(Real*, string);
+  virtual bool readNodePlot(Real*, string, int time_step=-1 );
   virtual bool readElemPlot(double* data, string name);
   virtual bool writeElemPlot(Real*, int, int);
   virtual bool closeMeshIO();

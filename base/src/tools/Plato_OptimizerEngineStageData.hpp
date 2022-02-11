@@ -326,6 +326,9 @@ public:
     std::string getInitializationStageName() const;
     void setInitializationStageName(const std::string & aInput);
 
+    std::string getInitialControlDataName() const;
+    void setInitialControlDataName(const std::string & aInput);
+
     /******************************************************************************//**
      * @brief Return finalization stage name: stage responsible for writing output files
      * @return stage name
@@ -552,6 +555,7 @@ private:
     std::string mObjectiveHessianOutputName;
     std::string mObjectiveGradientOutputName;
     std::string mInitializationStageName;
+    std::string mInitialControlDataName;
     std::string mFinalizationStageName;
     std::string mSetLowerBoundsStageName;
     std::string mSetUpperBoundsStageName;

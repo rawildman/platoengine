@@ -8,6 +8,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorAnalyzePhysicsFunctionInterface.hpp"
+#include <string>
 
 namespace XMLGen
 {
@@ -20,16 +21,16 @@ namespace Private
  * \brief Append linear solver options to analyze input deck.
  * \param [out] aParentNode  parent xml node
 **********************************************************************************/
-void append_linear_solver_options(pugi::xml_node &aParentNode)
+void append_linear_solver_options(const XMLGen::Scenario &aScenario, pugi::xml_node &aParentNode)
 {
     auto tLinearSolver = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Linear Solver"}, tLinearSolver);
     std::vector<std::string> tKeys = {"name", "type", "value"};
-    std::vector<std::string> tValues = {"Iterations", "int", "1000"};
+    std::vector<std::string> tValues = {"Iterations", "int", aScenario.value("linear_solver_max_iterations")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
-    tValues = {"Tolerance", "double", "1e-12"};
+    tValues = {"Tolerance", "double", aScenario.value("linear_solver_tolerance")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
-    tValues = {"Solver Stack", "string", "Amgx"};
+    tValues = {"Solver Stack", "string", aScenario.value("linear_solver_type")};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tLinearSolver);
 }
 
@@ -49,8 +50,8 @@ void append_incompressible_cfd_convergence_options(
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("output_frequency"));
     std::vector<std::string> tValues = {"Output Frequency", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
-    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("max_steady_state_iterations"));
-    tValues = {"Maximum Steady State Iterations", "int", tPropertyValue};
+    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_iterations"));
+    tValues = {"Steady State Iterations", "int", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tConvergence);
     tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("steady_state_tolerance"));
     tValues = {"Steady State Tolerance", "double", tPropertyValue};
@@ -73,10 +74,6 @@ void append_incompressible_cfd_time_integration_options(
     
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("time_step_safety_factor"));
     std::vector<std::string> tValues = {"Safety Factor", "double", tPropertyValue};
-    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tTimeIntegration);
-
-    tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aScenario.value("critical_time_step_damping"));
-    tValues = {"Critical Time Step Damping", "double", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tTimeIntegration);
 }
 
@@ -135,8 +132,6 @@ void append_incompressible_cfd_conservation_equations_options(
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
         tValues = {"Diffusive Term Penalty Exponent", "double", aScenario.value("thermal_diffusion_penalty_exponent")};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
-        tValues = {"Convective Term Penalty Exponent", "double", aScenario.value("thermal_convection_penalty_exponent")};
-        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tPenaltyFunction);
     }
 }
 
@@ -148,13 +143,13 @@ void append_incompressible_cfd_conservation_equations_options(
 **********************************************************************************/
 void append_hyperbolic_incompressible_cfd_pde_to_analyze_input_deck(
     const XMLGen::Scenario &aScenario,
-    const XMLGen::Output &aOutput,
+    const std::vector<XMLGen::Output> &aOutput,
     pugi::xml_node &aParentNode)
 {
     XMLGen::Private::append_incompressible_cfd_conservation_equations_options(aScenario, aParentNode);
     XMLGen::Private::append_incompressible_cfd_time_integration_options(aScenario, aParentNode);
     XMLGen::Private::append_incompressible_cfd_convergence_options(aScenario, aParentNode);
-    XMLGen::Private::append_linear_solver_options(aParentNode);
+    XMLGen::Private::append_linear_solver_options(aScenario, aParentNode);
 }
 
 /******************************************************************************//**
@@ -352,19 +347,25 @@ transform_analyze_output_keywords
  * \param [in/out] aParentNode  parent xml node
 **********************************************************************************/
 inline void append_plottable_option
-(const XMLGen::Output& aOutput,
+(const std::vector<XMLGen::Output>& aOutput,
  pugi::xml_node &aParentNode)
 {
-    auto tOutputQoIs = aOutput.outputIDs();
+    if (aOutput.size() > 0)
+    {
+        if (aOutput.size() > 1)
+            THROWERR( std::string("In append_plottable_option: expected vector aOutput to have size 1, but size is ") 
+                + std::to_string(aOutput.size()) )
 
-    auto tValidAnalyzeOutputKeywords = XMLGen::Private::transform_analyze_output_keywords(tOutputQoIs);
-    auto tTransformQoIIDs = XMLGen::transform_tokens(tValidAnalyzeOutputKeywords);
-    tTransformQoIIDs.insert(0u, "{");
-    tTransformQoIIDs.insert(tTransformQoIIDs.size(), "}");
-    std::vector<std::string> tKeys = {"name", "type", "value"};
-    std::vector<std::string> tValues = {"Plottable", "Array(string)", tTransformQoIIDs};
-    auto tParameter = aParentNode.append_child("Parameter");
-    XMLGen::append_attributes(tKeys, tValues, tParameter);
+        auto tOutputQoIs = aOutput[0].outputIDs();
+        auto tValidAnalyzeOutputKeywords = XMLGen::Private::transform_analyze_output_keywords(tOutputQoIs);
+        auto tTransformQoIIDs = XMLGen::transform_tokens(tValidAnalyzeOutputKeywords);
+        tTransformQoIIDs.insert(0u, "{");
+        tTransformQoIIDs.insert(tTransformQoIIDs.size(), "}");
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        std::vector<std::string> tValues = {"Plottable", "Array(string)", tTransformQoIIDs};
+        auto tParameter = aParentNode.append_child("Parameter");
+        XMLGen::append_attributes(tKeys, tValues, tParameter);
+    }
 }
 
 /******************************************************************************//**
@@ -391,7 +392,7 @@ inline void append_state_gradient_projection_residual_to_analyze_input_deck
 **********************************************************************************/
 inline void append_elliptic_pde_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -412,7 +413,7 @@ inline void append_elliptic_pde_to_analyze_input_deck
 **********************************************************************************/
 inline void append_hyperbolic_pde_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -434,7 +435,7 @@ inline void append_hyperbolic_pde_to_analyze_input_deck
 **********************************************************************************/
 inline void append_stabilized_elliptic_pde_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -457,7 +458,7 @@ inline void append_stabilized_elliptic_pde_to_analyze_input_deck
 **********************************************************************************/
 inline void append_parabolic_residual_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -479,7 +480,7 @@ inline void append_parabolic_residual_to_analyze_input_deck
 **********************************************************************************/
 inline void append_elliptic_plasticity_pde_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -503,7 +504,7 @@ inline void append_elliptic_plasticity_pde_to_analyze_input_deck
 **********************************************************************************/
 inline void append_elliptic_thermoplasticity_pde_to_analyze_input_deck
 (const XMLGen::Scenario& aScenario,
- const XMLGen::Output& aOutput,
+ const std::vector<XMLGen::Output> &aOutput,
  pugi::xml_node &aParentNode)
 {
     auto tPhysicsTag = aScenario.physics();
@@ -595,17 +596,9 @@ AnalyzePhysicsFunctionInterface::AnalyzePhysicsFunctionInterface()
 }
 
 void AnalyzePhysicsFunctionInterface::call(const XMLGen::Scenario& aScenarioMetaData,
-          const XMLGen::Output& aOutputMetaData,
+          const std::vector<XMLGen::Output>& aOutputMetaData,
           pugi::xml_node &aParentNode) const
 {
-/* Scenario doesn't have a code member and we should only be getting in here for plato_analyze anyway.
-    auto tCode = XMLGen::to_lower(aScenarioMetaData.code());
-    if(tCode.compare("plato_analyze") != 0)
-    {
-        return;
-    }
-*/
-
     auto tPhysics = XMLGen::to_lower(aScenarioMetaData.physics());
     auto tMapItr = mMap.find(tPhysics);
     if(tMapItr == mMap.end())
@@ -613,7 +606,7 @@ void AnalyzePhysicsFunctionInterface::call(const XMLGen::Scenario& aScenarioMeta
         THROWERR(std::string("Physics Function Interface: Did not find physics function with tag '") + tPhysics
             + "' in function list. " + "Physics '" + tPhysics + "' is not supported in Plato Analyze.")
     }
-    auto tTypeCastedFunc = reinterpret_cast<void(*)(const XMLGen::Scenario&, const XMLGen::Output&, pugi::xml_node&)>(tMapItr->second.first);
+    auto tTypeCastedFunc = reinterpret_cast<void(*)(const XMLGen::Scenario&, const std::vector<XMLGen::Output>&, pugi::xml_node&)>(tMapItr->second.first);
     if(tMapItr->second.second == std::type_index(typeid(tTypeCastedFunc)))
     {
         THROWERR(std::string("Physics Function Interface: Reinterpret cast for physics function with tag '") + tPhysics + "' failed.")
