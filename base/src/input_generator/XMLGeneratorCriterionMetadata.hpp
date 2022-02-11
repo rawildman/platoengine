@@ -542,6 +542,8 @@ public:
     std::string eigen_solver_shift() const { return this->value("eigen_solver_shift"); }
     std::string camp_solver_tol() const { return this->value("camp_solver_tol"); }
     std::string camp_max_iter() const { return this->value("camp_max_iter"); }
+
+    std::string target() const { return this->value("target"); }
 };
 // struct Criterion
 

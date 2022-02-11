@@ -93,6 +93,7 @@ struct ValidCriterionParameterKeys
         "location_name",
         "displacement_direction",
         "measure_magnitude",
+        "target",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",

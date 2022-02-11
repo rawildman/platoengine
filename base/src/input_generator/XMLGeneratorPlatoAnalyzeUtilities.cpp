@@ -89,6 +89,25 @@ bool is_any_objective_computed_by_plato_analyze
 /******************************************************************************/
 
 /******************************************************************************/
+std::string get_plato_analyze_objective_target
+(const XMLGen::InputData& aXMLMetaData)
+{
+    std::string tReturn = "0.0";
+    for(size_t i=0; i<aXMLMetaData.objective.serviceIDs.size(); i++)
+    {
+        auto tService = aXMLMetaData.service(aXMLMetaData.objective.serviceIDs[i]);
+        if(XMLGen::is_plato_analyze_code(tService.code()))
+        {
+            auto tCriterion = aXMLMetaData.criterion(aXMLMetaData.objective.criteriaIDs[i]);
+            tReturn = tCriterion.target();
+            break;
+        }
+    }
+    return (tReturn);
+}
+/******************************************************************************/
+
+/******************************************************************************/
 std::vector<std::string>
 return_constraints_computed_by_plato_analyze
 (const XMLGen::InputData& aXMLMetaData)

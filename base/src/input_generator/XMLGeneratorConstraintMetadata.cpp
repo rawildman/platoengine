@@ -93,6 +93,16 @@ std::string Constraint::weight() const
     return (this->getValue("weight"));
 }
 
+void Constraint::divisor(const std::string& aInput)
+{
+    mMetaData["divisor"] = aInput;
+}
+
+std::string Constraint::divisor() const
+{
+    return (this->getValue("divisor"));
+}
+
 void Constraint::scenario(const std::string& aInput)
 {
     mMetaData["scenario"] = aInput;
