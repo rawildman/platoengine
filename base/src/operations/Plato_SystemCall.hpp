@@ -85,19 +85,60 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+    /******************************************************************************//**
+     * \brief Return number of ranks used in mpi system call.
+     * \return number of ranks
+    **********************************************************************************/
     int numRanks() const { return mNumRanks; }
+
+    /******************************************************************************//**
+     * \brief Return on change flag 
+     * \return boolean flag
+    **********************************************************************************/
     bool onChange() const { return mOnChange; }
+
+    /******************************************************************************//**
+     * \brief Return append input flag 
+     * \return boolean flag
+    **********************************************************************************/
     bool appendInput() const { return mAppendInput; }
 
+    /******************************************************************************//**
+     * \brief Return user defined name for system call operation.
+     * \return operation name
+    **********************************************************************************/
     std::string name() const{ return mName;}
+
+    /******************************************************************************//**
+     * \brief Return main command to run shell script.
+     * \return command string
+    **********************************************************************************/
     std::string command() const{ return mStringCommand;}
 
+    /******************************************************************************//**
+     * \brief Return list of options appended to shell script command.
+     * \return list of options
+    **********************************************************************************/
     std::vector<std::string> options() const {return mOptions; }
-    std::vector<std::string> arguments() const {return mArguments; }
-    std::vector<std::string> inputNames() const {return mInputNames; }
-    std::string commandPlusArguments() const {return mCommandPlusArguments; }
 
-    void unitTest(const bool aUnitTestBool) { mUnitTest = aUnitTestBool;}
+    /******************************************************************************//**
+     * \brief Return list of arguments appended to shell script command.
+     * \return list of arguments
+    **********************************************************************************/
+    std::vector<std::string> arguments() const {return mArguments; }
+
+    /******************************************************************************//**
+     * \brief Return list of input shared data argument names.
+     * \return list of names
+    **********************************************************************************/
+    std::vector<std::string> inputNames() const {return mInputNames; }
+
+    /******************************************************************************//**
+     * \brief Return string for the full command, including arguments and options, \n
+     *        used to execute shell script.
+     * \return list of names
+    **********************************************************************************/
+    std::string commandPlusArguments() const {return mCommandPlusArguments; }
 
 private:
     /******************************************************************************//**
@@ -130,9 +171,34 @@ private:
     **********************************************************************************/
     bool shouldEnginePerformSystemCall(bool aDidParametersChanged);
 
-    void setInputSharedDataNames(Plato::InputData& aNode);
-    void setArguments(Plato::InputData& aNode);
+    /******************************************************************************//**
+     * \brief Set input shared data argument names.
+     * \param [in] aNode input XML metadata
+    **********************************************************************************/
+    void setInputSharedDataNames(const Plato::InputData& aNode);
 
+    /******************************************************************************//**
+     * \brief Set list of command arguments.
+     * \param [in] aNode input XML metadata
+    **********************************************************************************/
+    void setArguments(const Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Set list of command options.
+     * \param [in] aNode input XML metadata
+    **********************************************************************************/
+    void setOptions(const Plato::InputData& aNode);
+
+    /******************************************************************************//**
+     * \brief Return the total number of parameters.
+     * \return total number of parameters
+    **********************************************************************************/
+    size_t countTotalNumParameters() const;
+
+    /******************************************************************************//**
+     * \brief Execute call to the shell script.
+     * \param [in] aArguments arguments to be appended to shell command.
+    **********************************************************************************/
     virtual void executeCommand(const std::vector<std::string> &aArguments);
     
 private:

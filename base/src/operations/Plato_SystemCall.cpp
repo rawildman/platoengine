@@ -72,8 +72,7 @@ void SystemCall::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 }
 
 /******************************************************************************/
-SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
-                       bool aUnitTestBool) :
+SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool) :
     Plato::LocalOp(aPlatoApp),
     mUnitTest(aUnitTestBool)
 /******************************************************************************/
@@ -86,48 +85,61 @@ SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode,
     
     this->setInputSharedDataNames(aNode);
     this->setArguments(aNode);
+    this->setOptions(aNode);
+}
 
-
-    // set options
-    // count total parameters
-    size_t tTotalNumParameters = 0;
-    for(auto tInputName : mInputNames)
+void SystemCall::setOptions(const Plato::InputData& aNode)
+{
+    auto tNumOptions = aNode.getByName<std::string>("Option").size();
+    if(mUnitTest)
     {
-        auto tInputArgument = mPlatoApp->getValue(tInputName);
-        tTotalNumParameters += tInputArgument->size();
+        mOptions = std::vector<std::string>(tNumOptions, "");
     }
-
-    // set mOptions size to total num parameters
-    mOptions = std::vector<std::string>(tTotalNumParameters, "");
-
-    for(auto tStrValue : aNode.getByName<std::string>("Option"))
+    else
+    {
+        auto tTotalNumParameters = this->countTotalNumParameters();
+        if(tNumOptions > tTotalNumParameters)
+        {
+            THROWERR(std::string("Number of options cannot exceed the number of total input parameters. ") 
+                + "The number of options is set to '" + std::to_string(tNumOptions) 
+                + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
+        }
+        mOptions = std::vector<std::string>(tTotalNumParameters, "");
+    }
+    
+    for(auto& tStrValue : aNode.getByName<std::string>("Option"))
     {
         auto tIndex = &tStrValue - &aNode.getByName<std::string>("Option")[0];
         mOptions[tIndex] = tStrValue;
     }
 }
 
-void SystemCall::setInputSharedDataNames(Plato::InputData& aNode)
+void SystemCall::setInputSharedDataNames(const Plato::InputData& aNode)
 {
-    for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
+    for(Plato::InputData& tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
         mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
     }
 }
 
-void SystemCall::setArguments(Plato::InputData& aNode)
+size_t SystemCall::countTotalNumParameters() const
+{
+    size_t tTotalNumParameters = 0;
+    for(auto& tInputName : mInputNames)
+    {
+        auto tInputArgument = mPlatoApp->getValue(tInputName);
+        tTotalNumParameters += tInputArgument->size();
+    }
+    return tTotalNumParameters;
+}
+
+void SystemCall::setArguments(const Plato::InputData& aNode)
 {
     // set arguments
-    for(auto tStrValue : aNode.getByName<std::string>("Argument"))
+    for(auto& tStrValue : aNode.getByName<std::string>("Argument"))
     {
         mArguments.push_back(tStrValue);
     }
-}
-
-SystemCallMPI::SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode,
-                       bool aUnitTestBool) : SystemCall(aPlatoApp, aNode, aUnitTestBool)
-{
-    mNumRanks = Plato::Get::Int(aNode, "NumRanks");
 }
 
 bool SystemCall::saveParameters()
@@ -270,6 +282,12 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
                                     std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
         THROWERR(tErrorMessage)
     }
+}
+
+SystemCallMPI::SystemCallMPI(PlatoApp* aPlatoApp, Plato::InputData & aNode, bool aUnitTestBool) : 
+    SystemCall(aPlatoApp, aNode, aUnitTestBool)
+{
+    mNumRanks = Plato::Get::Int(aNode, "NumRanks");
 }
 
 void SystemCallMPI::executeCommand(const std::vector<std::string> &aArguments)
