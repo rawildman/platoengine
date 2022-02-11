@@ -21,6 +21,7 @@
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
+#include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
@@ -170,7 +171,18 @@ inline void write_performer_input_deck_file_dakota_problem
         }
         else if(aMetaData.services()[0].code() == "sierra_sd")
         {
-            XMLGen::write_sierra_sd_input_deck(aMetaData);
+            auto tServiceID = XMLGen::get_salinas_service_id(aMetaData);
+            std::string tInputFileName = std::string("sierra_sd_") + tServiceID + "_input_deck.i";
+
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            {
+                std::string tTag = std::string("_") + std::to_string(iEvaluation);
+                auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
+                aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
+
+                XMLGen::write_sierra_sd_input_deck(aMetaData);
+                XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
+            }
         }
     }
 }

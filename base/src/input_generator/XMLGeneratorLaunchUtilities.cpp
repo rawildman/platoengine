@@ -340,6 +340,27 @@ namespace XMLGen
     }
   }
 
+  void append_sierra_sd_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const int aEvaluation)
+  {
+    if(aInputData.service(aServiceID).path().length() != 0)
+    {
+        fprintf(aFile, "%s --beta -i ", aInputData.service(aServiceID).path().c_str());
+    }
+    else
+    {
+        fprintf(aFile, "plato_sd_main --beta -i ");
+    }
+    if (aEvaluation == -1)
+    {
+        fprintf(aFile, "sierra_sd_%s_input_deck.i \\\n", aServiceID.c_str());
+    }
+    else
+    {
+        auto tEvaluationString = std::to_string(aEvaluation);
+        fprintf(aFile, "evaluations_%s/sierra_sd_%s_input_deck_%s.i \\\n", tEvaluationString.c_str(), aServiceID.c_str(), tEvaluationString.c_str());
+    }
+  }
+
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
   {
     std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesName;

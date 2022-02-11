@@ -644,7 +644,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     tService.code("platomain");
     tMetaData.append(tService);
     tService.id("2");
-    tService.code("plato_analyze");
+    tService.code("sierra_sd");
     tMetaData.append(tService);
     tService.id("5");
     tService.code("plato_analyze");
@@ -703,7 +703,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     ASSERT_FALSE(tSharedData.empty());
     ASSERT_STREQ("SharedData", tSharedData.name());
     std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName", "UserName", "UserName"};
-    std::vector<std::string> tValues = {"design_parameters_{I}", "Scalar", "Global", "4", "platomain_1", "platomain_1", "plato_analyze_2_{I}", "plato_analyze_5_{I}"};
+    std::vector<std::string> tValues = {"design_parameters_{I}", "Scalar", "Global", "4", "platomain_1", "platomain_1", "sierra_sd_2_{I}", "plato_analyze_5_{I}"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tOuterSharedData = tOuterSharedData.next_sibling("For");
@@ -713,7 +713,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     ASSERT_FALSE(tSharedData.empty());
     ASSERT_STREQ("SharedData", tSharedData.name());
     tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
-    tValues = {"criterion_3_service_2_scenario_14_{I}", "Scalar", "Global", "1", "plato_analyze_2_{I}", "platomain_1"};
+    tValues = {"criterion_3_service_2_scenario_14_{I}", "Scalar", "Global", "1", "sierra_sd_2_{I}", "platomain_1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tOuterSharedData = tOuterSharedData.next_sibling("For");
@@ -743,7 +743,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     tService.code("platomain");
     tMetaData.append(tService);
     tService.id("21");
-    tService.code("plato_analyze");
+    tService.code("sierra_sd");
     tMetaData.append(tService);
 
     pugi::xml_document tDocument;
@@ -785,7 +785,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     tOperation = tForNode.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     tKeys = {"Name", "PerformerName", "Input"};
-    tValues = {"reinitialize_on_change_plato_analyze_21", "plato_analyze_21_{I}", ""};
+    tValues = {"reinitialize_on_change_sierra_sd_21", "sierra_sd_21_{I}", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
@@ -1080,7 +1080,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     tService.code("platomain");
     tMetaData.append(tService);
     tService.id("2");
-    tService.code("plato_analyze");
+    tService.code("sierra_sd");
     tMetaData.append(tService);
     tService.id("5");
     tService.code("plato_analyze");
@@ -1138,7 +1138,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     auto tOperation = tForNode.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     std::vector<std::string> tKeys = {"Name", "PerformerName", "Output"};
-    std::vector<std::string> tValues = {"Compute Criterion Value - criterion_3_service_2_scenario_14", "plato_analyze_2_{I}", ""};
+    std::vector<std::string> tValues = {"Compute Criterion Value - criterion_3_service_2_scenario_14", "sierra_sd_2_{I}", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
@@ -1612,7 +1612,7 @@ TEST(PlatoTestXMLGenerator, AppendConcurrentEvaluationsToDefinesFile)
     ASSERT_TRUE(tArray.empty());
 }
 
-TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript)
+TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_PAPerformer)
 {
     XMLGen::InputData tInputData;
     tInputData.m_UseLaunch = false;
@@ -1658,6 +1658,61 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript)
         std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
         std::string("-xPLATO_APP_FILE=plato_analyze_2_operations.xml\\") + 
         std::string("analyze_MPMD--input-config=evaluations_1/plato_analyze_2_input_deck_1.xml\\") + 
+        std::string(":-np2-xPLATO_PERFORMER_ID=3\\") + 
+        std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
+        std::string("-xPLATO_APP_FILE=plato_main_operations.xml\\") + 
+        std::string("/home/path/to/PlatoEngineServicesplato_main_input_deck.xml\\");
+
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+    Plato::system("rm -rf mpirun.source");
+}
+
+TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_SDPerformer)
+{
+    XMLGen::InputData tInputData;
+    tInputData.m_UseLaunch = false;
+    tInputData.mesh.run_name = "dummy_mesh.exo";
+    XMLGen::Service tService;
+    tService.numberProcessors("1");
+    tService.id("1");
+    tService.code("platomain");
+    tService.path("/home/path/to/PlatoMain");
+    tInputData.append(tService);
+    tService.numberProcessors("1");
+    tService.id("2");
+    tService.code("sierra_sd");
+    tService.path("");
+    tInputData.append(tService);
+    tService.numberProcessors("1");
+    tService.id("3");
+    tService.code("plato_services");
+    tService.path("/home/path/to/PlatoEngineServices");
+    tInputData.append(tService);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
+    tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tInputData.set(tOptimizationParameters);
+
+    ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
+
+    auto tReadData = XMLGen::read_data_from_file("mpirun.source");
+    auto tGold = std::string("mpiexec--oversubscribe-np1-xPLATO_PERFORMER_ID=0\\") + 
+        std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
+        std::string("-xPLATO_APP_FILE=plato_main_operations.xml\\") + 
+        std::string("/home/path/to/PlatoMainplato_main_input_deck.xml\\") + 
+        std::string(":-np1-xPLATO_PERFORMER_ID=1\\") + 
+        std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
+        std::string("-xPLATO_APP_FILE=sierra_sd_2_operations.xml\\") + 
+        std::string("plato_sd_main--beta-ievaluations_0/sierra_sd_2_input_deck_0.i\\") + 
+        std::string(":-np1-xPLATO_PERFORMER_ID=2\\") + 
+        std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
+        std::string("-xPLATO_APP_FILE=sierra_sd_2_operations.xml\\") + 
+        std::string("plato_sd_main--beta-ievaluations_1/sierra_sd_2_input_deck_1.i\\") + 
         std::string(":-np2-xPLATO_PERFORMER_ID=3\\") + 
         std::string("-xPLATO_INTERFACE_FILE=interface.xml\\") + 
         std::string("-xPLATO_APP_FILE=plato_main_operations.xml\\") + 
