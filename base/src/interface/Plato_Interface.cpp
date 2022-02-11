@@ -255,44 +255,45 @@ Interface::getStage()
 }
 
 /******************************************************************************/
-void Interface::optimize()
+void Interface::run()
 /******************************************************************************/
 {
   // Note: this method is a stub and is a reminder that the try loop
-  // in Plato_Main.cpp should really be encapsulated and be part of
-  // the interface. However doing so pulls all of the optimizers into
-  // the interface library. It also requires the optimizer library be
-  // included when building Analyze_MPMD. Future works is to refactor.
+  // in the main in Plato_Main.cpp should really be encapsulated and
+  // be part of the interface. However doing so pulls all of the
+  // optimizers into the interface library. It also requires the
+  // driver library be included when building Analyze_MPMD. Future
+  // works is to refactor.
 
   /*
     // This handleException matches the one in Interface::perform().
     this->handleExceptions();
 
-    // There should be at least one optimizer block but there can
-    // be more. These additional optimizer blocks can be in serial
+    // There should be at least one driver block but there can
+    // be more. These additional driver blocks can be in serial
     // or nested. The while loop coupled with factory processes
-    // optimizer blocks that are serial. Nested optimizer blocks
+    // driver blocks that are serial. Nested driver blocks
     // are processed recursively via the EngineObjective.
-    Plato::OptimizerFactory<double> tOptimizerFactory;
-    Plato::OptimizerInterface<double>* tOptimizer = nullptr;
+    Plato::DriverFactory<double> tDriverFactory;
+    Plato::DriverInterface<double>* tDriver = nullptr;
 
     // Note: When frist called, the factory will look for the
-    // first optimizer block. Subsequent calls will look for the
-    // next optimizer block if it exists.
-    while((tOptimizer =
-           tOptimizerFactory.create(this, mLocalComm)) != nullptr)
+    // first driver block. Subsequent calls will look for the
+    // next driver block if it exists.
+    while((tDriver =
+           tDriverFactory.create(this, mLocalComm)) != nullptr)
     {
-        tOptimizer->optimize();
+        tDriver->run();
 
-        // If the last optimizer do any final stages before deleting
-        // it. This call goes to the optimizer and then back to the
+        // If the last driver do any final stages before deleting
+        // it. This call goes to the driver and then back to the
         // interface finalize with possibly a stage to compute.
-        if( tOptimizer->lastOptimizer() )
+        if( tDriver->lastDriver() )
         {
-            tOptimizer->finalize();
+            tDriver->finalize();
         }
 
-        delete tOptimizer;
+        delete tDriver;
     }
   */
 }
@@ -419,7 +420,7 @@ void Interface::finalize( std::string aStageName )
         this->compute(aStageName, tParameterList);
     }
 
-    // At this point all optimizers have completed so terminate.
+    // At this point all drivers have completed so terminate.
     this->getStage("Terminate");
 }
 

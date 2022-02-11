@@ -58,7 +58,7 @@
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_PrimalProblemStageMng.hpp"
@@ -86,7 +86,7 @@ struct DefaultParametersGCMMA
 };
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class GloballyConvergentMethodMovingAsymptotesInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class GloballyConvergentMethodMovingAsymptotesInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -105,10 +105,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES);
+        return (Plato::optimizer::algorithm_t::GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES);
     }
 
     /******************************************************************************/
@@ -259,7 +259,7 @@ private:
     {
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-	  std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
 
         // ********* ALLOCATE LIST OF CONSTRAINTS ********* //
         const OrdinalType tNumConstraints = mInputData.getNumConstraints();

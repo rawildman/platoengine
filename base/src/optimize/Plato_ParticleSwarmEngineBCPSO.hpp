@@ -50,7 +50,7 @@
 
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_StageInputDataMng.hpp"
 #include "Plato_ParticleSwarmParser.hpp"
 #include "Plato_GradFreeEngineCriterion.hpp"
@@ -63,7 +63,7 @@ namespace Plato
  * @brief PLATO Engine interface for Bound Constrained Particle Swarm Optimization (BCPSO) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class ParticleSwarmEngineBCPSO : public Plato::DriverInterface<ScalarType, OrdinalType>
+class ParticleSwarmEngineBCPSO : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -90,9 +90,9 @@ public:
      * @brief Return optimization algorithm type
      * @return type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
+        return (Plato::optimizer::algorithm_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
     }
 
     /******************************************************************************//**
@@ -163,7 +163,7 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::InputDataBCPSO<ScalarType, OrdinalType> & aInput)
     {
-	auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
 
         Plato::ParticleSwarmParser<ScalarType, OrdinalType> tParserPSO;
         mObjFuncStageName = tParserPSO.getObjectiveStageName(tOptimizerNode);
@@ -233,7 +233,7 @@ private:
         const OrdinalType tPARTICLE_INDEX = 0;
         const OrdinalType tNumControls = (*aOutput.mParticles)[tPARTICLE_INDEX].size();
 
-	auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
         auto tBoundsNode = tOptimizerNode.template get<Plato::InputData>("BoundConstraint");
 
         std::vector<ScalarType> tLowerBounds = Plato::Get::Doubles(tBoundsNode, "Lower");

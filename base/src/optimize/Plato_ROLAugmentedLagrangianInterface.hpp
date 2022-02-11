@@ -64,7 +64,7 @@
 
 #include "Plato_Parser.hpp"
 #include "Plato_Interface.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_SerialVectorROL.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_ReducedObjectiveROL.hpp"
@@ -76,7 +76,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class ROLAugmentedLagrangianInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class ROLAugmentedLagrangianInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -95,10 +95,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::ROL_AUGMENTED_LAGRANGIAN);
+        return (Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN);
     }
 
     /******************************************************************************/
@@ -152,7 +152,7 @@ public:
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(mInputData, mInterface));
         Teuchos::RCP<ROL::Constraint<ScalarType>> tInequality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(mInputData, mInterface));
-        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = 
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem =
             ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
         tOptimizationProblem->addConstraint("Constraint", tInequality, tDual);

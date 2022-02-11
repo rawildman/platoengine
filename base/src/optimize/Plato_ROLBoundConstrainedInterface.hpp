@@ -66,7 +66,7 @@
 #include "Plato_Interface.hpp"
 #include "Plato_SerialVectorROL.hpp"
 #include "Plato_OptimizerUtilities.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_ReducedObjectiveROL.hpp"
 #include "Plato_ReducedConstraintROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
@@ -76,7 +76,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class ROLBoundConstrainedInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class ROLBoundConstrainedInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -95,10 +95,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::ROL_BOUND_CONSTRAINED);
+        return (Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED);
     }
 
     /******************************************************************************/
@@ -248,7 +248,7 @@ private:
                 }
                 ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
                 tOptimizer.solve(tOutputStream);
-                ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState = 
+                ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
                        ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
                 tCurDelta = tAlgorithmState->searchSize;
                 std::cout << "Delta: " << tCurDelta << std::endl;

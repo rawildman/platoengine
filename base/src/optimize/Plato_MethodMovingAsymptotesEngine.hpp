@@ -51,7 +51,7 @@
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_MethodMovingAsymptotesParser.hpp"
@@ -64,7 +64,7 @@ namespace Plato
  * \brief PLATO Engine interface for Method of Moving AsymptotesEngine (MMA) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class MethodMovingAsymptotesEngine : public Plato::DriverInterface<ScalarType, OrdinalType>
+class MethodMovingAsymptotesEngine : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -96,9 +96,9 @@ public:
      * \brief Return the algorithm type
      * \return algorithm type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::METHOD_OF_MOVING_ASYMPTOTES);
+        return (Plato::optimizer::algorithm_t::METHOD_OF_MOVING_ASYMPTOTES);
     }
 
     /******************************************************************************//**

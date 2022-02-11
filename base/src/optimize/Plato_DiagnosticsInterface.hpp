@@ -62,7 +62,7 @@
 #include "Plato_Diagnostics.hpp"
 #include "Plato_CommWrapper.hpp"
 #include "Plato_AlgebraFactory.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineObjective.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_StandardMultiVector.hpp"
@@ -73,7 +73,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class DiagnosticsInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class DiagnosticsInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     explicit DiagnosticsInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
@@ -87,10 +87,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::DERIVATIVE_CHECKER);
+        return (Plato::optimizer::algorithm_t::DERIVATIVE_CHECKER);
     }
 
     /******************************************************************************/

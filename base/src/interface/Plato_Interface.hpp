@@ -86,7 +86,7 @@ enum stage_index_t
  */
 
 /******************************************************************************/
-//!  Interface between optimizer and Plato
+//!  Interface between driver and Plato
 /*!
  This should be separated into two virtual bases.
  */
@@ -100,8 +100,8 @@ public:
 
     void registerApplication(Plato::Application* aApplication);
 
-    // optimizer interface
-    void optimize();
+    // driver interface
+    void run();
     void perform();
     void compute(const std::string & stageName, Teuchos::ParameterList & aArguments);
     void compute(const std::vector<std::string> & stageNames, Teuchos::ParameterList & aArguments);

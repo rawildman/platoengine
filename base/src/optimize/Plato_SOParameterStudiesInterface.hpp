@@ -62,7 +62,7 @@
 #include "Plato_Diagnostics.hpp"
 #include "Plato_CommWrapper.hpp"
 #include "Plato_AlgebraFactory.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineObjective.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
@@ -74,7 +74,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class SOParameterStudiesInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class SOParameterStudiesInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     explicit SOParameterStudiesInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
@@ -88,10 +88,10 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::SO_PARAMETER_STUDIES);
+        return (Plato::optimizer::algorithm_t::SO_PARAMETER_STUDIES);
     }
 
     /******************************************************************************/
@@ -103,7 +103,7 @@ public:
 
         // NOTE: Plato::initialize calls Plato::Parse::parseOptimizerStages
         // As such, the code below seems to be redunant.
-	auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
 
         Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }

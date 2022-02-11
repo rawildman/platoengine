@@ -94,10 +94,15 @@ public:
     ~DakotaDriver(){ return; }
 
     /******************************************************************************//**
+     * @brief Return true if the last driver
+    **********************************************************************************/
+    virtual bool lastDriver() const { return true; }
+
+    /******************************************************************************//**
      * \brief Return the driver type
      * \return driver type
      **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::driver::driver_t driver() const
     {
         return (Plato::driver::driver_t::PLATO_DAKOTA_DRIVER);
     }

@@ -46,11 +46,10 @@
 //@HEADER
 */
 
-#ifndef PLATO_OPTIMIZERINTERFACE_HPP_
-#define PLATO_OPTIMIZERINTERFACE_HPP_
+#ifndef PLATO_DRIVERINTERFACE_HPP_
+#define PLATO_DRIVERINTERFACE_HPP_
 
 #include "Plato_Interface.hpp"
-#include "Plato_OptimizerUtilities.hpp"
 
 namespace Plato
 {
@@ -59,29 +58,14 @@ struct driver
 {
     enum driver_t
     {
-        OPTIMALITY_CRITERIA = 1,
-        METHOD_OF_MOVING_ASYMPTOTES = 2,
-        GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES = 3,
-        KELLEY_SACHS_UNCONSTRAINED = 4,
-        KELLEY_SACHS_BOUND_CONSTRAINED = 5,
-        KELLEY_SACHS_AUGMENTED_LAGRANGIAN = 6,
-        DERIVATIVE_CHECKER = 7,
-        ROL_KSAL = 8,
-        ROL_KSBC = 9,
-        STOCHASTIC_REDUCED_ORDER_MODEL = 10,
-        PARTICLE_SWARM_OPTMIZATION_ALPSO = 11,
-        PARTICLE_SWARM_OPTMIZATION_BCPSO = 12,
-        SO_PARAMETER_STUDIES = 13,
-        PLATO_DAKOTA_DRIVER = 14,
-        ROL_LINEAR_CONSTRAINT = 15,
-        ROL_BOUND_CONSTRAINED = 16,
-        ROL_AUGMENTED_LAGRANGIAN = 17
+        PLATO_OPTIMIZER_DRIVER = 1,
+        PLATO_DAKOTA_DRIVER = 2,
     }; // enum driver_t
 };
 // struct driver
 
 /******************************************************************************//**
- * @brief Abstract interface to optimization algorithm
+ * @brief Abstract interface to driver algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
 class DriverInterface
@@ -92,113 +76,33 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Interface to optimization algorithm - solves optimization problem
+     * @brief Interface to driver algorithm
     **********************************************************************************/
     virtual void run() = 0;
 
     /******************************************************************************//**
-     * @brief Initialize the optimizer
+     * @brief Initialize the driver
     **********************************************************************************/
     virtual void initialize() = 0;
 
     /******************************************************************************//**
-     * @brief Finalize the optimizer
+     * @brief Finalize the driver
     **********************************************************************************/
     virtual void finalize() = 0;
 
     /******************************************************************************//**
-     * @brief Get the optimizer node based on the index.
+     * @brief Return true if the last driver
     **********************************************************************************/
-    Plato::InputData getOptimizerNode(Plato::Interface* aInterface)
-    {
-        return Plato::getOptimizerNode(aInterface, mOptimizerIndex);
-    }
+    virtual bool lastDriver() const = 0;
 
     /******************************************************************************//**
-     * @brief Set the optimizer name - Optional.
+     * @brief Return the driver type
+     * \return driver type
     **********************************************************************************/
-    void setOptimizerName( std::string val ) { mOptimizerName = val; }
-
-    /******************************************************************************//**
-     * @brief Get the optimizer name.
-    **********************************************************************************/
-    std::string getOptimizerName() const { return mOptimizerName; }
-
-    /******************************************************************************//**
-     * @brief Set the index of the optimizer.
-
-     // The optimizer block index is a vector of indices. The size of
-     // the vector less 1 denotes the number of nesting levels. Each
-     // index is the serial index of the optimizer block.
-
-     // A basic run with one optimizer block would have a vector of
-     // {0}. A simple nested run with one nested optimizer block would
-     // have a vector of {0} for the outer optimizer block and {0,0}
-     // for the inner optimizer block.
-
-     // A more complicated vector for the inner most optimizer block
-     // would be {2,1,0} which denotes the outer most third serial
-     // optimizer block {2}, of which its second serial inner loop
-     // optimizer block is wanted {2,1}, of which its first inner loop
-     // optimizer block is wanted {2,1,0},
-
-    **********************************************************************************/
-  void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
-
-    /******************************************************************************//**
-     * @brief Get the index of the optimizer.
-    **********************************************************************************/
-    std::vector<size_t> getOptimizerIndex() const { return mOptimizerIndex; }
-
-    /******************************************************************************//**
-     * @brief Set the inner loop boolean.
-    **********************************************************************************/
-    void setHasInnerLoop( bool val ) { mHasInnerLoop = val; }
-
-    /******************************************************************************//**
-     * @brief Get the inner loop boolean.
-    **********************************************************************************/
-    bool getHasInnerLoop() const { return mHasInnerLoop; }
-
-    /******************************************************************************//**
-     * @brief True if this optimizer is the last top level serial
-     * optimizer to be executed.
-    **********************************************************************************/
-    void lastOptimizer( bool val ) { mLastOptimizer = val; }
-
-    /******************************************************************************//**
-     * @brief True if this optimizer is the last top level serial
-     * optimizer to be executed.
-    **********************************************************************************/
-    bool lastOptimizer() { return mLastOptimizer; }
-
-protected:
-    /******************************************************************************//**
-     * @brief String containing the optimizer name - Optional
-    **********************************************************************************/
-    std::string mOptimizerName{""};
-
-    /******************************************************************************//**
-     * @brief Vector of indices decribing this optimizer's location
-     * in the input - used when there are multiple optimizers. See
-     * Plato_OptimizerUtilities.hpp and the function getOptimizerNode().
-    **********************************************************************************/
-    std::vector<size_t> mOptimizerIndex;
-
-    /******************************************************************************//**
-     * @brief Boolean indicating if this optimizer is the last top
-     * level serial optimizer to be executed and can issue a
-     * finialize/terminate operation.
-    **********************************************************************************/
-    bool mLastOptimizer{false};
-
-    /******************************************************************************//**
-     * @brief Boolean indicating an inner optimizer loop is present
-    **********************************************************************************/
-    bool mHasInnerLoop{false};
+    virtual driver::driver_t driver() const = 0;
 };
 // class DriverInterface
 
 } // namespace Plato
 
-#endif /* PLATO_OPTIMIZERINTERFACE_HPP_ */
+#endif /* PLATO_DRIVERINTERFACE_HPP_ */

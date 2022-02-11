@@ -143,29 +143,35 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
+        // Note: This code is encapsulated and is part of
+        // Interface::run() in Plato_Interface. However doing so pulls
+        // all of the drivers into the interface library. It also
+        // requires the driver library be included when building
+        // Analyze_MPMD. Future works is to refactor.
+
         // This handleException matches the one in Interface::perform().
         tPlatoInterface->handleExceptions();
 
-        // There should be at least one optimizer block but there can
-        // be more. These additional optimizer blocks can be in serial
+        // There should be at least one driver block but there can
+        // be more. These additional driver blocks can be in serial
         // or nested. The while loop coupled with factory processes
-        // optimizer blocks that are serial. Nested optimizer blocks
+        // driver blocks that are serial. Nested driver blocks
         // are processed recursively via the EngineObjective.
         Plato::DriverFactory<double> tDriverFactory;
         Plato::DriverInterface<double>* tDriver = nullptr;
 
         // Note: When frist called, the factory will look for the
-        // first optimizer block. Subsequent calls will look for the
-        // next optimizer block if it exists.
+        // first driver block. Subsequent calls will look for the
+        // next driver block if it exists.
         while((tDriver =
                tDriverFactory.create(tPlatoInterface, tLocalComm)) != nullptr)
         {
             tDriver->run();
 
-            // If the last optimizer compute the final stage before
-            // deleting it. The optimizer finalize calls the interface
+            // If the last driver compute the final stage before
+            // deleting it. The driver finalize calls the interface
             // finalize with possibly a stage to compute.
-            if( tDriver->lastOptimizer() )
+            if( tDriver->lastDriver() )
             {
                 tDriver->finalize();
             }

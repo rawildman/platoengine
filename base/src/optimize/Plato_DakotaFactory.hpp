@@ -51,10 +51,9 @@
 
 #include <mpi.h>
 
-#include "Plato_DriverInterface.hpp"
-
-#include "Plato_OptimizerFactory.hpp"
-#include "Plato_DakotaFactory.hpp"
+#ifdef DAKOTADRIVER
+  #include "Plato_DakotaDriver.hpp"
+#endif
 
 namespace Plato
 {
@@ -63,20 +62,20 @@ namespace Plato
  * \brief Construct interface to optimization algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class DriverFactory
+class DakotaFactory
 {
 public:
     /******************************************************************************//**
      * \brief Constructor
     **********************************************************************************/
-    DriverFactory()
+    DakotaFactory()
     {
     }
 
     /******************************************************************************//**
      * \brief Destructuor
     **********************************************************************************/
-    ~DriverFactory()
+    ~DakotaFactory()
     {
     }
 
@@ -93,48 +92,68 @@ public:
            std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
            )
     {
-      // Look for an Optimizer Driver.
-      if( aInterface->getInputData().size<Plato::InputData>("Optimizer") >= 1 )
-      {
-        Plato::DriverFactory<ScalarType, OrdinalType> tOptimizerFactory;
-
-        return tOptimizerFactory.create(aInterface, aLocalComm);
-      }
-      // Look for a Dakota Driver.
-      else if( aInterface->getInputData().size<Plato::InputData>("DakotaDriver") >= 1 )
-      {
-        Plato::DakotaFactory<ScalarType, OrdinalType> tDakotaFactory;
-
-        return tDakotaFactory.create(aInterface, aLocalComm);
-      }
-
-      // NEW DRIVERS GO HERE
-
-      else
-      {
+#ifndef DAKOTADRIVER
+        // Wanted Dakota but it is not present.
         std::stringstream tStringStream;
         tStringStream
-          << "Plato::DriverFactory: "
-            << "No driver block found." << std::endl
-            << "Valid options are\n"
-            << "\t 'Optimizer' ... Plato driven by the Optimizer Driver\n"
-#ifdef DAKOTAOPTIMIZER
-            << "\t 'DakotaDriver' ... Plato driven by the Dakota Driver\n"
-#endif
-            << std::endl;
-
+          << "Plato::DakotaFactory: "
+          << "Plato was not compiled with Dakota";
         Plato::ParsingException tParsingException(tStringStream.str());
         aInterface->registerException(tParsingException);
+#endif
+
+        int nBlocks = aInterface->getInputData().size<Plato::InputData>("DakotaDriver");
+
+        if( nBlocks == 0 )
+        {
+            std::stringstream tStringStream;
+            tStringStream
+              << "Plato::DakotaFactory: "
+              << "No Dakota Driver block was found. ";
+
+            Plato::ParsingException tParsingException(tStringStream.str());
+            aInterface->registerException(tParsingException);
+        }
+
+        else if( nBlocks > 1 )
+        {
+            std::stringstream tStringStream;
+            tStringStream
+              << "Plato::DakotaFactory: "
+              << "More than one Dakota Driver block was found. "
+              << "Only one block is permitted. ";
+
+            Plato::ParsingException tParsingException(tStringStream.str());
+            aInterface->registerException(tParsingException);
+        }
+
+        else if( nBlocks == 1 )
+        {
+          Plato::DriverInterface<ScalarType, OrdinalType>* tDriver = nullptr;
+
+#ifdef DAKOTADRIVER
+          try
+          {
+              tDriver = new Plato::DakotaDriver<ScalarType, OrdinalType>(aInterface, aLocalComm);
+              feclearexcept(FE_ALL_EXCEPT);
+          }
+          catch(...)
+          {
+              aInterface->Catch();
+              tDriver = nullptr;
+          }
+#endif
+          return tDriver;
       }
 
       return nullptr;
     }
 
 private:
-    DriverFactory(const Plato::DriverFactory<ScalarType, OrdinalType>&);
+    DakotaFactory(const Plato::DakotaFactory<ScalarType, OrdinalType>&);
 
-    Plato::DriverFactory<ScalarType, OrdinalType> & operator=(const Plato::DriverFactory<ScalarType, OrdinalType>&);
+    Plato::DakotaFactory<ScalarType, OrdinalType> & operator=(const Plato::DakotaFactory<ScalarType, OrdinalType>&);
 };
-// class DriverFactory
+// class DakotaFactory
 
 } // namespace Plato

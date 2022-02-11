@@ -57,7 +57,7 @@
 #include "Plato_CriterionList.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_StandardMultiVector.hpp"
@@ -71,7 +71,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class KelleySachsAugmentedLagrangianInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class KelleySachsAugmentedLagrangianInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -97,9 +97,9 @@ public:
      * @brief Return optimization algorithm used to solve optimization problem
      * @return optimization algorithm type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
+        return (Plato::optimizer::algorithm_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
     }
 
     /******************************************************************************//**
@@ -182,7 +182,7 @@ private:
     {
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-	  std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
 
         // ********* ALLOCATE CONSTRAINT LIST ********* //
         const OrdinalType tNumConstraints = mInputData.getNumConstraints();

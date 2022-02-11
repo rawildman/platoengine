@@ -54,7 +54,7 @@
 #include "Plato_Interface.hpp"
 #include "Plato_Console.hpp"
 #include "Plato_MultiVector.hpp"
-#include "Plato_DriverFactory.hpp"
+#include "Plato_OptimizerFactory.hpp"
 
 namespace Plato
 {
@@ -79,7 +79,7 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         mInterface->getLocalComm(tLocalComm);
 
         // For the inner loop use the factory to create the optimizer.
-        Plato::DriverFactory<ScalarType, OrdinalType> tOptimizerFactory;
+        Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
         // Get the optimizer block index for this objective (i.e. the
         // outer loop). To read the first optimizer block for the
@@ -90,7 +90,7 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         tOptimizerIndex.push_back(0);
 
         // Create the first inner loop optimizer.
-        Plato::DriverInterface<ScalarType, OrdinalType>*
+        Plato::OptimizerInterface<ScalarType, OrdinalType>*
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
                                                   tOptimizerIndex );
 

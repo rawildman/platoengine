@@ -423,7 +423,7 @@ public:
                 mSubProblemSolverKSAL->enableDiagnostics();
 #else
             mSubProblemSolverKSAL->enableDiagnostics();
-#endif          
+#endif
         }
     }
 
@@ -812,7 +812,7 @@ private:
         }
         double tElapsedTime = mTimer->wallTime() - tStartTime;
         if (mPrintDiagnostics && mDataMng->getCommWrapper().myProcID() == 0)
-            std::cout << "MMA Subproblem Solve (Performed With " << tSubproblemSolverString << ") Required " 
+            std::cout << "MMA Subproblem Solve (Performed With " << tSubproblemSolverString << ") Required "
                       << tElapsedTime << " Seconds." << std::endl;
     }
 
