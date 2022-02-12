@@ -96,7 +96,7 @@ public:
       // Look for an Optimizer Driver.
       if( aInterface->getInputData().size<Plato::InputData>("Optimizer") >= 1 )
       {
-        Plato::DriverFactory<ScalarType, OrdinalType> tOptimizerFactory;
+        Plato::OptimizerFactory<ScalarType, OrdinalType> tOptimizerFactory;
 
         return tOptimizerFactory.create(aInterface, aLocalComm);
       }
