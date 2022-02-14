@@ -45,6 +45,7 @@
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
 #include "Plato_SystemCall.hpp"
+#include "Plato_UnitTestUtils.hpp"
 #include "Plato_InitializeValues.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
@@ -88,7 +89,7 @@ void createMatchedYAMLTemplateFile()
 TEST(LocalOperation, SystemCall_constructor)
 {
     Plato::InputData tInputNode("Operation");
-    tInputNode.add<std::string>("Command", "aprepro");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
     tInputNode.add<std::string>("Name", "aprepro_0");
     tInputNode.add<std::string>("OnChange", "true");
     tInputNode.add<std::string>("AppendInput", "true");
@@ -108,7 +109,7 @@ TEST(LocalOperation, SystemCall_constructor)
     Plato::SystemCall tSystemCall(tInputNode,tMetaData);
 
     EXPECT_STREQ("aprepro_0", tSystemCall.name().c_str());
-    EXPECT_STREQ("aprepro", tSystemCall.command().c_str());
+    EXPECT_STREQ("mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro", tSystemCall.command().c_str());
     EXPECT_TRUE(tSystemCall.onChange());
     EXPECT_TRUE(tSystemCall.appendInput());
 
@@ -134,33 +135,16 @@ TEST(LocalOperation, SystemCall_constructor)
     }
 
     createMatchedYAMLTemplateFile();
-
     tSystemCall(tMetaData);
+    EXPECT_STREQ("mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro matched.yaml.template matched.yaml -q r=1 h=2", tSystemCall.commandPlusArguments().c_str());
 
-    std::cout << tSystemCall.commandPlusArguments() << std::endl;
+    auto tFileContentCreated = PlatoTest::read_data_from_file("./evaluation0/matched.yaml");
+    auto tGold = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:1#originalvaluer=0.1016Height:2#originalvalueh=0.1016Conductivity:2.6e7Slotlength:0.0508Slotwidth:2.54e-3Slotdepth:0.006350Startfrequencyrange:1e9Endfrequencyrange:2.2e9Frequencyintervalsize:1e7...");
+    EXPECT_STREQ(tFileContentCreated.str().c_str(),tGold.c_str());
+
+    auto tTrash = std::system("rm -rf evaluation0");
+    Plato::Utils::ignore_unused(tTrash);
 }
-
-// TEST(LocalOperation, SystemCall_operator)
-// {
-//     Plato::InputData tInputNode("Operation");
-//     tInputNode.add<std::string>("Command", "aprepro");
-//     tInputNode.add<std::string>("Name", "aprepro_0");
-//     tInputNode.add<std::string>("OnChange", "true");
-//     tInputNode.add<std::string>("AppendInput", "true");
-//     tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
-//     tInputNode.add<std::string>("Argument", "-q");
-//     tInputNode.add<std::string>("Option", "r=");
-//     tInputNode.add<std::string>("Option", "h=");
-
-//     Plato::InputData tInput("Input");
-//     tInput.add<std::string>("ArgumentName", "Parameters_0");
-//     tInputNode.add<Plato::InputData>("Input", tInput);
-
-//     Plato::SystemCallMetadata tMetaData;
-//     std::vector<double> tParameters= {100,200};
-//     tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
-
-// }
 
 TEST(LocalOperation, read_table_1)
 {
