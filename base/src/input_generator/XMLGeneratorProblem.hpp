@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "Plato_FreeFunctions.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
@@ -34,6 +35,22 @@ namespace Problem
 {
 
 /******************************************************************************//**
+ * \fn is_physics_performer
+ * \brief check if service is physics performer
+ * \param [in] aMetaData input metadata
+**********************************************************************************/
+inline bool is_physics_performer
+(XMLGen::InputData& aMetaData)
+{
+    bool tReturn = false;
+    if (aMetaData.services().size() > 0)
+        if (aMetaData.services()[0].code() == "plato_analyze" || aMetaData.services()[0].code() == "sierra_sd")
+            tReturn = true;
+
+    return tReturn;
+}
+
+/******************************************************************************//**
  * \fn create_subdirectory_for_performer
  * \brief create subdirectory and required files for performer
  * \param [in] aCsmFileName csm file name
@@ -54,13 +71,13 @@ inline void create_subdirectory_for_performer
     auto tAppendedInputFileName = XMLGen::append_concurrent_tag_to_file_string(aInputFileName,tTag);
 
     std::string tCommand = std::string("mkdir ") + tDirectoryName;
-    Plato::system(tCommand.c_str());
+    Plato::system_with_return(tCommand.c_str());
     tCommand = std::string("cp ") + aCsmFileName + std::string(" ") + tDirectoryName + tAppendedCsmFileName;
-    Plato::system(tCommand.c_str());
+    Plato::system_with_return(tCommand.c_str());
     tCommand = std::string("cp ") + aMeshFileName + std::string(" ") + tDirectoryName + tAppendedMeshFileName;
-    Plato::system(tCommand.c_str());
+    Plato::system_with_return(tCommand.c_str());
     tCommand = std::string("mv ") + aInputFileName + std::string(" ") + tDirectoryName + tAppendedInputFileName;
-    Plato::system(tCommand.c_str());
+    Plato::system_with_return(tCommand.c_str());
 }
 
 /******************************************************************************//**
@@ -143,46 +160,37 @@ inline void write_performer_input_deck_file_gradient_based_problem
 /******************************************************************************//**
  * \fn write_performer_input_deck_file_dakota_problem
  * \brief Write the input deck file for the performer in the metada
- * \param [in] aInputData input metadata
+ * \param [in] aMetaData input metadata
 **********************************************************************************/
 inline void write_performer_input_deck_file_dakota_problem
 (XMLGen::InputData& aMetaData)
 {
-    if(aMetaData.services().size() > 0)
+    if(XMLGen::Problem::is_physics_performer(aMetaData))
     {
         auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
         std::string tMeshName = aMetaData.mesh.run_name;
         std::string tCsmFileName = aMetaData.optimization_parameters().csm_file();
 
-        if(aMetaData.services()[0].code() == "plato_analyze")
+        for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
         {
-            auto tServiceID = XMLGen::get_plato_analyze_service_id(aMetaData);
-            std::string tInputFileName = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
+            std::string tTag = std::string("_") + std::to_string(iEvaluation);
+            auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
+            aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
 
-            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            std::string tInputFileName = "";
+            if(aMetaData.services()[0].code() == "plato_analyze")
             {
-                std::string tTag = std::string("_") + std::to_string(iEvaluation);
-                auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
-                aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
-
+                auto tServiceID = XMLGen::get_plato_analyze_service_id(aMetaData);
+                tInputFileName = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
                 XMLGen::write_plato_analyze_input_deck_file(aMetaData);
-                XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
             }
-        }
-        else if(aMetaData.services()[0].code() == "sierra_sd")
-        {
-            auto tServiceID = XMLGen::get_salinas_service_id(aMetaData);
-            std::string tInputFileName = std::string("sierra_sd_") + tServiceID + "_input_deck.i";
-
-            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            else if(aMetaData.services()[0].code() == "sierra_sd")
             {
-                std::string tTag = std::string("_") + std::to_string(iEvaluation);
-                auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
-                aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
-
+                auto tServiceID = XMLGen::get_salinas_service_id(aMetaData);
+                tInputFileName = std::string("sierra_sd_") + tServiceID + "_input_deck.i";
                 XMLGen::write_sierra_sd_input_deck(aMetaData);
-                XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
             }
+            XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
         }
     }
 }

@@ -1793,6 +1793,77 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationsXmlFileForDakotaDriver_Mu
     Plato::system("rm -f plato_analyze_2_operations.xml");
 }
 
+TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiPlatoAnalyzeServiceOperationsXmlFilesForDakotaDriver_MultiObjective)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("5");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("volume");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.serviceIDs.push_back("5");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("7");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_plato_analyze_operation_xml_file_dakota_problem(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_plato_analyze_2</Name>") + 
+        std::string("<Function>Reinitialize</Function>") + 
+        std::string("<OnChange>true</OnChange>") + 
+        std::string("<Input><ArgumentName>Parameters</ArgumentName></Input></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
+        std::string("<Criterion>my_mechanical_compliance_criterion_id_3</Criterion>") + 
+        std::string("<Output><Argument>Value</Argument><ArgumentName>Criterion0Value</ArgumentName></Output></Operation>");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f plato_analyze_2_operations.xml");
+}
+
 TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationsXmlFileForDakotaDriver_SingleObjectiveSingleConstraint)
 {
     XMLGen::InputData tMetaData;
@@ -1866,6 +1937,451 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationsXmlFileForDakotaDriver_Si
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f plato_analyze_2_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiPlatoAnalyzeServiceOperationsXmlFilesForDakotaDriver_SingleObjectiveMultiConstraint)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("20");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("volume");
+    tMetaData.append(tCriterion);
+    tCriterion.id("5");
+    tCriterion.type("stress_p-norm");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+    
+    // Create constraints
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("8");
+    tConstraint.criterion("7");
+    tConstraint.service("20");
+    tConstraint.scenario("14");
+    tMetaData.constraints.push_back(tConstraint);
+    tConstraint.id("13");
+    tConstraint.criterion("5");
+    tConstraint.service("2");
+    tConstraint.scenario("1");
+    tMetaData.constraints.push_back(tConstraint);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_plato_analyze_operation_xml_file_dakota_problem(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("plato_analyze_2_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_plato_analyze_2</Name>") + 
+        std::string("<Function>Reinitialize</Function>") + 
+        std::string("<OnChange>true</OnChange>") + 
+        std::string("<Input><ArgumentName>Parameters</ArgumentName></Input></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
+        std::string("<Criterion>my_mechanical_compliance_criterion_id_3</Criterion>") + 
+        std::string("<Output><Argument>Value</Argument><ArgumentName>Criterion0Value</ArgumentName></Output></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_5_service_2_scenario_1</Name>") + 
+        std::string("<Criterion>my_stress_p-norm_criterion_id_5</Criterion>") + 
+        std::string("<Output><Argument>Value</Argument><ArgumentName>Criterion1Value</ArgumentName></Output></Operation>"); 
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f plato_analyze_2_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_SingleObjective)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("13");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("13");
+    tObjective.scenarioIDs.push_back("14");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_sierra_sd_operation_xml_file(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("sierra_sd_2_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<includefilename=\"defines.xml\"/>") + 
+        std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
+        std::string("<Function>Reinitialize</Function></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_13_service_2_scenario_14</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f sierra_sd_2_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_MultiObjective)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("5");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("6");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("7");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("5");
+    tObjective.serviceIDs.push_back("5");
+    tObjective.criteriaIDs.push_back("6");
+    tObjective.criteriaIDs.push_back("6");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("7");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("4");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_sierra_sd_operation_xml_file(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("sierra_sd_5_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<includefilename=\"defines.xml\"/>") + 
+        std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_sierra_sd_5</Name>") + 
+        std::string("<Function>Reinitialize</Function></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_14</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_7</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f sierra_sd_5_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_SingleObjectiveSingleconstraint)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("9");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+    
+    // Create a constraint
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("8");
+    tConstraint.criterion("3");
+    tConstraint.service("2");
+    tConstraint.scenario("9");
+    tMetaData.constraints.push_back(tConstraint);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_sierra_sd_operation_xml_file(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("sierra_sd_2_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<includefilename=\"defines.xml\"/>") + 
+        std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
+        std::string("<Function>Reinitialize</Function></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_9</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f sierra_sd_2_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiSierraSDServiceOperationsXmlFilesForDakotaDriver_MultiObjective)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("5");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("3");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("6");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("7");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("5");
+    tObjective.serviceIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("6");
+    tObjective.criteriaIDs.push_back("6");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("7");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("4");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_sierra_sd_operation_xml_file(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("sierra_sd_5_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<includefilename=\"defines.xml\"/>") + 
+        std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_sierra_sd_5</Name>") + 
+        std::string("<Function>Reinitialize</Function></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_14</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>");  
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f sierra_sd_5_operations.xml");
+}
+
+TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiSierraSDServiceOperationsXmlFilesForDakotaDriver_SingleObjectiveMultiConstraint)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("20");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("4");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+    
+    // Create constraints
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("8");
+    tConstraint.criterion("3");
+    tConstraint.service("20");
+    tConstraint.scenario("1");
+    tMetaData.constraints.push_back(tConstraint);
+    tConstraint.id("13");
+    tConstraint.criterion("3");
+    tConstraint.service("2");
+    tConstraint.scenario("4");
+    tMetaData.constraints.push_back(tConstraint);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tMetaData.set(tOptimizationParameters);
+
+    // Create output
+    XMLGen::Output tOutputMetadata;
+    tOutputMetadata.disableOutput();
+    tOutputMetadata.appendParam("native_service_output", "false");
+    tMetaData.mOutputMetaData.push_back(tOutputMetadata);
+
+    ASSERT_NO_THROW(XMLGen::write_sierra_sd_operation_xml_file(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("sierra_sd_2_operations.xml");
+    auto tGold = std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<includefilename=\"defines.xml\"/>") + 
+        std::string("<?xmlversion=\"1.0\"?>") + 
+        std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
+        std::string("<Function>Reinitialize</Function></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_4</Name>") + 
+        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>");  
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f sierra_sd_2_operations.xml");
 }
 
 TEST(PlatoTestXMLGenerator, AppendCriteriaListToPlatoAnalyzeInputFileForDakotaDriver_SingleObjective)
@@ -2329,6 +2845,10 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     tOptimizationParameters.append("csm_file", "rocker.csm");
     tMetaData.set(tOptimizationParameters);
 
+    // Create dummy files to copy
+    FILE* exo=fopen("rocker.exo", "w");
+    FILE* csm=fopen("rocker.csm", "w");
+
     ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_2_input_deck_0.xml");
@@ -2342,7 +2862,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_0/plato_analyze_2_input_deck_0.xml");
+    Plato::system("rm -rf evaluations_0");
 
     tReadData = XMLGen::read_data_from_file("evaluations_1/plato_analyze_2_input_deck_1.xml");
     tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -2355,7 +2875,107 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_1/plato_analyze_2_input_deck_1.xml");
+    Plato::system("rm -rf evaluations_1");
+
+    // Remove dummy files
+    Plato::system("rm -rf rocker.exo");
+    Plato::system("rm -rf rocker.csm");
+}
+
+TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_sd");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tScenario.dimensions("3");
+    tMetaData.append(tScenario);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tCriterion.materialPenaltyExponent("3.0");
+    tCriterion.minErsatzMaterialConstant("1e-8");
+    tMetaData.append(tCriterion);
+
+    // create mesh
+    tMetaData.mesh.run_name = "rocker.exo";
+
+    // create a block
+    XMLGen::Block tBlock;
+    tBlock.block_id = "1";
+    tBlock.element_type = "tet10";
+    tBlock.material_id = "1";
+    tBlock.name = "block_1";
+    tMetaData.blocks.push_back(tBlock);
+
+    // create a material
+    XMLGen::Material tMaterial;
+    tMaterial.id("1");
+    // tMaterial.code("sierra_sd");
+    tMaterial.name("adamantium");
+    tMaterial.materialModel("isotropic_linear_elastic");
+    tMaterial.property("youngs_modulus", "1e9");
+    tMaterial.property("poissons_ratio", "0.3");
+    tMetaData.materials.push_back(tMaterial);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.serviceIDs.push_back("2");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.criteriaIDs.push_back("3");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tMetaData.set(tOptimizationParameters);
+
+    // Create dummy files to copy
+    FILE* exo=fopen("rocker.exo", "w");
+    FILE* csm=fopen("rocker.csm", "w");
+
+    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
+
+    auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
+    auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
+                 std::string("OUTPUTStopologyENDECHOtopologyEND") + 
+                 std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
+                 std::string("BLOCK1material1tet10END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compliance_minvolume_fraction=.314END") + 
+                 std::string("FILEgeometry_file'evaluations_0/rocker_0.exo'END") +
+                 std::string("LOADSENDBOUNDARYEND");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -rf evaluations_0");
+
+    tReadData = XMLGen::read_data_from_file("evaluations_1/sierra_sd_2_input_deck_1.i");
+    tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
+                 std::string("OUTPUTStopologyENDECHOtopologyEND") + 
+                 std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
+                 std::string("BLOCK1material1tet10END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compliance_minvolume_fraction=.314END") + 
+                 std::string("FILEgeometry_file'evaluations_1/rocker_1.exo'END") +
+                 std::string("LOADSENDBOUNDARYEND");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    Plato::system("rm -rf evaluations_1");
+
+    // Remove dummy files
+    Plato::system("rm -rf rocker.exo");
+    Plato::system("rm -rf rocker.csm");
 }
 
 TEST(PlatoTestXMLGenerator, CheckDakotaWorkflow_ErrorEmpty)
