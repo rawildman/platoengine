@@ -302,7 +302,6 @@ namespace XMLGen
         int tCriteriaCounter = 0;
         XMLGen::append_compute_objective_criterion_value_operations_for_dakota_problem(aMetaData,aDocument,tCriteriaCounter);
         XMLGen::append_compute_constraint_criterion_value_operations_for_dakota_problem(aMetaData,aDocument,tCriteriaCounter);
-
     }
 
     /******************************************************************************/
@@ -316,11 +315,14 @@ namespace XMLGen
             std::string tCriterionID = tObjective.criteriaIDs[i];
             std::string tServiceID = tObjective.serviceIDs[i];
             std::string tScenarioID = tObjective.scenarioIDs[i];
-            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
-            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
 
-            XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
-            aCriterionNumber++;
+            if(tServiceID == aMetaData.services()[0].id())
+            {
+                ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+                auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+                XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+                aCriterionNumber++;
+            }
         }
     }
     /******************************************************************************/
@@ -356,11 +358,14 @@ namespace XMLGen
             std::string tCriterionID = tConstraint.criterion();
             std::string tServiceID = tConstraint.service();
             std::string tScenarioID = tConstraint.scenario();
-            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
-            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
 
-            XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
-            aCriterionNumber++;
+            if(tServiceID == aMetaData.services()[0].id())
+            {
+                ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+                auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+                XMLGen::append_compute_criterion_value_operation_for_dakota_problem(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+                aCriterionNumber++;
+            }
         }
     }
     /******************************************************************************/
@@ -727,7 +732,7 @@ namespace XMLGen
         XMLGen::append_compute_objective_gradient_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_compute_constraint_value_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_compute_constraint_gradient_to_plato_analyze_operation(aXMLMetaData, tDocument);
-        std::string tServiceID = get_plato_analyze_service_id(aXMLMetaData);
+        std::string tServiceID = aXMLMetaData.services()[0].id();
         std::string tFilename = std::string("plato_analyze_") + tServiceID + "_operations.xml";
         tDocument.save_file(tFilename.c_str(), "  ");
     }
@@ -742,7 +747,7 @@ namespace XMLGen
         XMLGen::append_visualization_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_write_output_to_plato_analyze_operation(aXMLMetaData, tDocument);
         XMLGen::append_compute_criterion_value_operations_for_dakota_problem(aXMLMetaData, tDocument);
-        std::string tServiceID = get_plato_analyze_service_id(aXMLMetaData);
+        std::string tServiceID = aXMLMetaData.services()[0].id();
         std::string tFilename = std::string("plato_analyze_") + tServiceID + "_operations.xml";
         tDocument.save_file(tFilename.c_str(), "  ");
     }

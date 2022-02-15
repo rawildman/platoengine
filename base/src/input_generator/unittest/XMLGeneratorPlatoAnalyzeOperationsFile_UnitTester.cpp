@@ -142,13 +142,9 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     tOptimizationParameters.append("discretization", "density");
     tOptimizationParameters.append("problem_update_frequency", "5");
     tXMLMetaData.set(tOptimizationParameters);
-    XMLGen::Service tService0;
-    tService0.id("1");
-    tService0.updateProblem("true");
-    tService0.code("platomain");
-    tXMLMetaData.append(tService0);
     XMLGen::Service tService;
     tService.id("2");
+    tService.updateProblem("true");
     tService.code("plato_analyze");
     tXMLMetaData.append(tService);
 
@@ -295,7 +291,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     +"</Parameter><Parameter><ArgumentName>poissons_ratio_block_id_1</ArgumentName><Target>[PlatoProblem]:[MaterialModels]:[material_1]:[IsotropicLinearElastic]:PoissonsRatio</Target><InitialValue>0.0</InitialValue></Parameter>"
     +"<Parameter><ArgumentName>youngs_modulus_block_id_1</ArgumentName><Target>[PlatoProblem]:[MaterialModels]:[material_1]:[IsotropicLinearElastic]:YoungsModulus</Target><InitialValue>0.0</InitialValue></Parameter></Operation>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
-    //Plato::system("rm -f plato_analyze_2_operations.xml");
+    Plato::system("rm -f plato_analyze_2_operations.xml");
 }
 
 TEST(PlatoTestXMLGenerator, AppendRandomTractionVectorToPlatoAnalyzeOperation)
