@@ -133,6 +133,13 @@ void SystemCall::setArguments(const Plato::InputData& aNode)
 
 bool SystemCall::checkForLocalParameterChanges(const Plato::SystemCallMetadata& aMetaData)
 {
+    if(aMetaData.mInputArgumentMap.size() != mInputNames.size())
+    {
+        THROWERR(std::string("Mismatch between map from input argument name to data and array of input argument names. ") 
+            + "The size of the map from input argument names to data is '" + std::to_string(aMetaData.mInputArgumentMap.size()) 
+            + "' while the size of the array of input argument names is '" + std::to_string(mInputNames.size()) + "'.")
+    }
+    
     bool tDidParametersChanged = false;
     for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
     {
@@ -198,12 +205,17 @@ void SystemCall::appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaDa
 
 void SystemCall::saveParameters(const Plato::SystemCallMetadata& aMetaData)
 {
+    if(aMetaData.mInputArgumentMap.size() != mInputNames.size())
+    {
+        THROWERR(std::string("Mismatch between map from input argument name to data and array of input argument names. ") 
+            + "The size of the map from input argument names to data is '" + std::to_string(aMetaData.mInputArgumentMap.size()) 
+            + "' while the size of the array of input argument names is '" + std::to_string(mInputNames.size()) + "'.")
+    }
+    
     for(size_t tIndexJ=0; tIndexJ<mInputNames.size(); ++tIndexJ)
     {
         Plato::Console::Status("PlatoMain: On Change SystemCall -- \"" + mInputNames[tIndexJ] + "\" Values:");
         auto tInputArgument = aMetaData.mInputArgumentMap.at(mInputNames[tIndexJ]);
-
-
         std::vector<double> tCurVector(tInputArgument->size());
         for(size_t tIndexI=0; tIndexI<tInputArgument->size(); ++tIndexI)
         {

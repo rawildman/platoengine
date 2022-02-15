@@ -86,7 +86,58 @@ void createMatchedYAMLTemplateFile()
     tOutFile.close();
 }
 
-TEST(LocalOperation, SystemCall_constructor)
+TEST(LocalOperation, SystemCall_Error_InputArraySizeMismatch)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+
+    Plato::InputData tInputOne("Input");
+    tInputOne.add<std::string>("ArgumentName", "Parameters_0");
+    tInputNode.add<Plato::InputData>("Input", tInputOne);
+    Plato::InputData tInputTwo("Input");
+    tInputTwo.add<std::string>("ArgumentName", "Parameters_1");
+    tInputNode.add<Plato::InputData>("Input", tInputTwo);
+
+    Plato::SystemCallMetadata tMetaData;
+    std::vector<double> tParameters= {1,2};
+    tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
+
+    Plato::SystemCall tSystemCall(tInputNode,tMetaData);
+    EXPECT_THROW(tSystemCall(tMetaData), std::runtime_error);
+}
+
+TEST(LocalOperation, SystemCall_Error_OptionsGreaterThanNumParam)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+    tInputNode.add<std::string>("Option", "l=");
+
+    Plato::InputData tInput("Input");
+    tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInputNode.add<Plato::InputData>("Input", tInput);
+
+    Plato::SystemCallMetadata tMetaData;
+    std::vector<double> tParameters= {1,2};
+    tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
+
+    EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode,tMetaData), std::runtime_error);
+}
+
+TEST(LocalOperation, SystemCall_operator)
 {
     Plato::InputData tInputNode("Operation");
     tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
