@@ -254,8 +254,15 @@ bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens)
     constexpr int tMAX_TOKENS_PER_LINE = 5000;
     const char* tToken[tMAX_TOKENS_PER_LINE] = {}; // initialize to 0
 
-    // parse the line
-    tToken[0] = std::strtok(aBuffer, tDELIMITER.c_str()); // first token
+    // strip any # comments to end of buffer
+    const std::string tCOMMENT_DELIMETER = "#";
+    std::string tBuffer(aBuffer);
+    std::size_t tFound = tBuffer.find(tCOMMENT_DELIMETER);
+    if(tFound!=std::string::npos)
+        tBuffer=tBuffer.substr(0,tFound);
+
+    // parse the line stripped of comments
+    tToken[0] = std::strtok(&tBuffer[0], tDELIMITER.c_str()); // first token
 
     // If there is a comment...
     if(tToken[0] && std::strlen(tToken[0]) > 1 && tToken[0][0] == '/' && tToken[0][1] == '/')

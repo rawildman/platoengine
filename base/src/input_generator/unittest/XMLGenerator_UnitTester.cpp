@@ -87,6 +87,11 @@ bool XMLGenerator_UnitTester::publicParseTokens(char *buffer, std::vector<std::s
 {
     return XMLGen::parseTokens(buffer, tokens);
 }
+bool XMLGenerator_UnitTester::publicParse_Tokens(char *buffer, std::vector<std::string> &tokens)
+/******************************************************************************/
+{
+    return XMLGen::parse_tokens(buffer, tokens);
+}
 
 /******************************************************************************/
 bool XMLGenerator_UnitTester::publicParseLoads(std::istream &sin)

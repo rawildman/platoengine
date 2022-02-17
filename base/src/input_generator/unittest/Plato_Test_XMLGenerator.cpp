@@ -414,6 +414,51 @@ TEST(PlatoTestXMLGenerator, parseTokens)
     EXPECT_EQ(tokens[2], "trike");
 }
 
+
+TEST(PlatoTestXMLGenerator, parseCommentTokens)
+{
+    XMLGenerator_UnitTester tester;
+    std::vector<std::string> tokens;
+    char buffer[MAX_CHARS_PER_LINE];
+
+    //Comment as first character
+    strcpy(buffer, "#");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 0);
+    //Comment as first character
+    strcpy(buffer, "#   car\tbus   trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 0);
+
+    //Comment after tab
+    tokens.clear();
+    strcpy(buffer, "   car\t#bus   trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 1);
+    EXPECT_EQ(tokens[0], "car");
+
+    //Comment  mid
+    tokens.clear();
+    strcpy(buffer, "   car\t bus #  trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 2);
+    EXPECT_EQ(tokens[0], "car");
+    EXPECT_EQ(tokens[1], "bus");
+
+
+    //Comment  end
+    tokens.clear();
+    strcpy(buffer, "   car\t bus  trike\t #");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 3);
+    EXPECT_EQ(tokens[0], "car");
+    EXPECT_EQ(tokens[1], "bus");
+    EXPECT_EQ(tokens[2], "trike");
+
+}
+
+
+
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
 {
     XMLGenerator_UnitTester tester;
