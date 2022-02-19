@@ -44,9 +44,9 @@
 
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
-#include "Plato_SystemCall.hpp"
 #include "Plato_UnitTestUtils.hpp"
 #include "Plato_InitializeValues.hpp"
+#include "Plato_SystemCallOperation.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
@@ -260,6 +260,35 @@ TEST(LocalOperation, SystemCall_constructor)
 
     auto tTrash = std::system("rm -rf evaluation0");
     Plato::Utils::ignore_unused(tTrash);
+}
+
+TEST(LocalOperation, SystemCallOperation_Constructor)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+
+    Plato::InputData tInput("Input");
+    tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInput.add<std::string>("Layout", "Scalar");
+    tInput.add<std::string>("Size", "2");
+    tInputNode.add<Plato::InputData>("Input", tInput);
+    Plato::SystemCallOperation tSystemCallOperation(nullptr, tInputNode);
+
+    std::vector<Plato::LocalArg> tArguments;
+    tSystemCallOperation.getArguments(tArguments);
+    EXPECT_EQ(1u, tArguments.size());
+    EXPECT_FALSE(tArguments.front().mWrite);
+    EXPECT_EQ(2u, tArguments.front().mLength);
+    EXPECT_EQ(Plato::data::SCALAR, tArguments.front().mLayout);
+    EXPECT_STREQ("Parameters_0", tArguments.front().mName.c_str());
+
 }
 
 TEST(LocalOperation, read_table_1)
