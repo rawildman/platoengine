@@ -140,12 +140,16 @@ std::string SystemCall::getLayout(const Plato::InputData& aInputNode)
     if(std::find(tSupportedLayout.begin(), tSupportedLayout.end(),tLowerLayout) == tSupportedLayout.end())
     {
         auto tName = Plato::Get::String(aInputNode, "ArgumentName");
-        auto tMsg = std::string("Data layout '") + tLayout + "' of argument '" + tName + "' is not supported. Supported Layouts: "; 
-        for(auto& tLayout : tSupportedLayout)
+        auto tMsg = std::string("Data layout '") + tLayout + "' of argument '" + tName + "' is not supported by SystemCall Operation. Supported Layouts: "; 
+
+        std::string tLayoutsMsg;
+        for(auto tMyLayout : tSupportedLayout)
         {
-            tMsg + "\n    " + tLayout;
+            auto tDelimiter = (&tMyLayout - &tSupportedLayout[0] >= tSupportedLayout.size()) ? "." : ", ";
+            tLayoutsMsg += tMyLayout + tDelimiter;
+            
         }
-        THROWERR(tMsg);
+        THROWERR(tMsg + tLayoutsMsg);
     }
     return tLowerLayout;
 }

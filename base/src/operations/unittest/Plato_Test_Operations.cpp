@@ -180,6 +180,26 @@ TEST(LocalOperation, SystemCall_InputArgumentLayoutNotDefinedError)
     EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode),std::runtime_error);
 }
 
+TEST(LocalOperation, SystemCall_InputArgumentLayourNotSupported_Error)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+
+    Plato::InputData tInput("Input");
+    tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInput.add<std::string>("Layout", "Nodal");
+    tInput.add<std::string>("Size", "2");
+    tInputNode.add<Plato::InputData>("Input", tInput);
+    EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode),std::runtime_error);
+}
+
 TEST(LocalOperation, SystemCall_constructor)
 {
     Plato::InputData tInputNode("Operation");
