@@ -49,14 +49,14 @@
 #include <cstdlib>
 #include <sstream>
 
+#include "Plato_Macros.hpp"
 #include "Plato_Parser.hpp"
 #include "Plato_Console.hpp"
 #include "Plato_InputData.hpp"
 #include "Plato_Exceptions.hpp"
 #include "Plato_SystemCall.hpp"
+#include "Plato_FreeFunctions.hpp"
 #include "Plato_OperationsUtilities.hpp"
-#include <Plato_FreeFunctions.hpp>
-#include "Plato_Macros.hpp"
 
 namespace Plato
 {
@@ -64,13 +64,16 @@ namespace Plato
 void SystemCall::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 /******************************************************************************/
 {
-    for(auto& tInputName : mInputNames) {
-        aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR, tInputName));
+    for(auto& tPair : mInputArgumentNameToAttributesMap) 
+    {
+        auto tSize = tPair.second.second;
+        auto tArgumentName = tPair.first;
+        aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR, tArgumentName, tSize));
     }
 }
 
 /******************************************************************************/
-SystemCall::SystemCall(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData)
+SystemCall::SystemCall(const Plato::InputData & aNode)
 /******************************************************************************/
 {
     // set basic info
@@ -81,13 +84,15 @@ SystemCall::SystemCall(const Plato::InputData & aNode, const Plato::SystemCallMe
     
     this->setInputSharedDataNames(aNode);
     this->setArguments(aNode);
-    this->setOptions(aNode,aMetaData);
+    this->setOptions(aNode);
 }
 
-void SystemCall::setOptions(const Plato::InputData& aNode, const Plato::SystemCallMetadata& aMetaData)
+void SystemCall::areNumOptionsGreaterThanNumParams(const Plato::SystemCallMetadata& aMetaData)
 {
-    auto tNumOptions = aNode.getByName<std::string>("Option").size();
-
+    if(mOptions.empty())
+    {return;}
+    
+    auto tNumOptions = mOptions.size();
     auto tTotalNumParameters = this->countTotalNumParameters(aMetaData);
     if(tNumOptions > tTotalNumParameters)
     {
@@ -95,7 +100,12 @@ void SystemCall::setOptions(const Plato::InputData& aNode, const Plato::SystemCa
             + "The number of options is set to '" + std::to_string(tNumOptions) 
             + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
     }
-    mOptions = std::vector<std::string>(tTotalNumParameters, "");
+}
+
+void SystemCall::setOptions(const Plato::InputData& aNode)
+{
+    auto tNumOptions = aNode.getByName<std::string>("Option").size();
+    mOptions = std::vector<std::string>(tNumOptions, "");
     
     size_t tIndex = 0;
     for(auto tStrValue : aNode.getByName<std::string>("Option"))
@@ -104,11 +114,51 @@ void SystemCall::setOptions(const Plato::InputData& aNode, const Plato::SystemCa
     }
 }
 
+int SystemCall::getSize(const Plato::InputData& aInputNode)
+{
+    auto tSize = Plato::Get::Int(aInputNode, "Size");
+    if(tSize <= 0)
+    {
+        auto tName = Plato::Get::String(aInputNode, "ArgumentName");
+        THROWERR(std::string("Invalid size '") + std::to_string(tSize) + "' for argument with name '" + 
+            tName + "'. " + "Size has to be a positive integer greater than zero.")
+    }
+    return tSize;
+}
+
+std::string SystemCall::getLayout(const Plato::InputData& aInputNode)
+{
+    std::vector<std::string> tSupportedLayout = {"scalar"};
+    auto tLayout = Plato::Get::String(aInputNode, "Layout");
+    if(tLayout.empty())
+    {
+        auto tName = Plato::Get::String(aInputNode, "ArgumentName");
+        THROWERR(std::string("Data layout was not defined for argument with name '") + tName + "'.")
+    }
+
+    auto tLowerLayout = Plato::tolower(tLayout);
+    if(std::find(tSupportedLayout.begin(), tSupportedLayout.end(),tLowerLayout) == tSupportedLayout.end())
+    {
+        auto tName = Plato::Get::String(aInputNode, "ArgumentName");
+        auto tMsg = std::string("Data layout '") + tLayout + "' of argument '" + tName + "' is not supported. Supported Layouts: "; 
+        for(auto& tLayout : tSupportedLayout)
+        {
+            tMsg + "\n    " + tLayout;
+        }
+        THROWERR(tMsg);
+    }
+    return tLowerLayout;
+}
+
 void SystemCall::setInputSharedDataNames(const Plato::InputData& aNode)
 {
     for(Plato::InputData& tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
-        mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
+        auto tSize = this->getSize(tInputNode);
+        auto tLayout = this->getLayout(tInputNode);
+        auto tArgumentName = Plato::Get::String(tInputNode, "ArgumentName");
+        mInputArgumentNameToAttributesMap[tArgumentName] = std::make_pair(tLayout, tSize);
+        mInputNames.push_back(tArgumentName);
     }
 }
 
@@ -230,6 +280,8 @@ void SystemCall::saveParameters(const Plato::SystemCallMetadata& aMetaData)
 void SystemCall::operator()(const Plato::SystemCallMetadata& aMetaData)
 /******************************************************************************/
 {
+    this->areNumOptionsGreaterThanNumParams(aMetaData);
+
     bool tChanged = true;
     if(mOnChange)
     {
@@ -272,8 +324,8 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
     }
 }
 
-SystemCallMPI::SystemCallMPI(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData, const MPI_Comm& aComm) : 
-    SystemCall(aNode,aMetaData),
+SystemCallMPI::SystemCallMPI(const Plato::InputData & aNode, const MPI_Comm& aComm) : 
+    SystemCall(aNode),
     mComm(aComm)
 {
     mNumRanks = Plato::Get::Int(aNode, "NumRanks");

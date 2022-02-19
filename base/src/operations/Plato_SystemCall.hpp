@@ -74,10 +74,9 @@ class SystemCall
 public:
     /******************************************************************************//**
      * \brief Constructor
-     * \param [in] aPlatoApp PLATO application
      * \param [in] aNode input metadata
     **********************************************************************************/
-    SystemCall(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData);
+    SystemCall(const Plato::InputData & aNode);
 
     /******************************************************************************//**
      * \brief perform local operation to call a shell script.
@@ -146,6 +145,9 @@ public:
     std::string commandPlusArguments() const {return mCommandPlusArguments; }
 
 private:
+    int getSize(const Plato::InputData& aInputNode);
+    std::string getLayout(const Plato::InputData& aInputNode);
+    
     /******************************************************************************//**
      * \brief Append input values to the end of the argument list.
      * \param [out] aArguments command argument list
@@ -170,6 +172,12 @@ private:
     bool checkForLocalParameterChanges(const Plato::SystemCallMetadata& aMetaData);
 
     /******************************************************************************//**
+     * \brief Check if the number of command options is greater than the number of parameters. \n
+     * If true, throw error and kill the job. 
+    **********************************************************************************/
+    void areNumOptionsGreaterThanNumParams(const Plato::SystemCallMetadata& aMetaData);
+
+    /******************************************************************************//**
      * \brief Set input shared data argument names.
      * \param [in] aNode input XML metadata
     **********************************************************************************/
@@ -185,7 +193,7 @@ private:
      * \brief Set list of command options.
      * \param [in] aNode input XML metadata
     **********************************************************************************/
-    void setOptions(const Plato::InputData& aNode, const Plato::SystemCallMetadata& aMetaData);
+    void setOptions(const Plato::InputData& aNode);
 
     /******************************************************************************//**
      * \brief Return the total number of parameters.
@@ -209,6 +217,7 @@ private:
     std::vector<std::string> mArguments;
     std::vector<std::string> mInputNames;
     std::vector<std::vector<double>> mSavedParameters;
+    std::unordered_map<std::string,std::pair<std::string,int>> mInputArgumentNameToAttributesMap;
 
 protected:
     int mNumRanks = 1;
@@ -219,7 +228,7 @@ protected:
 
 class SystemCallMPI : public SystemCall {
 public:
-SystemCallMPI(const Plato::InputData & aNode, const Plato::SystemCallMetadata& aMetaData, const MPI_Comm& aComm);
+SystemCallMPI(const Plato::InputData & aNode, const MPI_Comm& aComm);
 private:
 void executeCommand(const std::vector<std::string> &arguments) override;
 const MPI_Comm& mComm;

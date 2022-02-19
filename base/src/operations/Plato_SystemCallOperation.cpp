@@ -51,17 +51,41 @@
 namespace Plato
 {
 
+namespace Private
+{
+
+void set_system_call_metadata(
+    PlatoApp* aPlatoApp, 
+    const Plato::InputData& aInputData,
+    Plato::SystemCallMetadata& aMetaData)
+{
+    try
+    {
+        for(Plato::InputData& tInputNode : aInputData.getByName<Plato::InputData>("Input"))
+        {
+            std::string tInputName = Plato::Get::String(tInputNode, "ArgumentName");
+            aMetaData.mInputArgumentMap[tInputName] = aPlatoApp->getValue(tInputName);
+        }
+    }
+    catch(std::exception& aException)
+    {
+        THROWERR(std::string("Error while constructing the map from input argument names to data. Exception message is '") + aException.what() + "'.")
+    }
+}
+
+}
+// namespace Private
+
 SystemCallOperation::SystemCallOperation(PlatoApp* aPlatoApp, Plato::InputData & aNode)
     : Plato::LocalOp(aPlatoApp),
       mInputData(aNode)
 {
-    this->setMetaData();
-    mSystemCall = std::make_unique<SystemCall>(aNode,mMetaData);
+    mSystemCall = std::make_unique<SystemCall>(aNode);
 }
 
 void SystemCallOperation::operator()()
 {
-    this->setMetaData();
+    Plato::Private::set_system_call_metadata(mPlatoApp, mInputData, mMetaData);
     (*mSystemCall)(mMetaData);
 }
 
@@ -70,33 +94,10 @@ void SystemCallOperation::getArguments(std::vector<Plato::LocalArg> & aLocalArgs
     mSystemCall->getArguments(aLocalArgs);
 }
 
-void SystemCallOperation::setMetaData()
-{
-    for(Plato::InputData& tInputNode : mInputData.getByName<Plato::InputData>("Input"))
-    {
-        std::string tInputName = Plato::Get::String(tInputNode, "ArgumentName");
-        mMetaData.mInputArgumentMap[tInputName] = mPlatoApp->getValue(tInputName);
-    }
-}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ******************************** SystemCallMPIOperation ******************************** //
 
 
 
@@ -105,13 +106,12 @@ SystemCallMPIOperation::SystemCallMPIOperation(PlatoApp* aPlatoApp, Plato::Input
     : Plato::LocalOp(aPlatoApp),
       mInputData(aNode)
 {
-    this->setMetaData();
-    mSystemCall = std::make_unique<SystemCallMPI>(aNode,mMetaData,aPlatoApp->getComm());
+    mSystemCall = std::make_unique<SystemCallMPI>(aNode,aPlatoApp->getComm());
 }
 
 void SystemCallMPIOperation::operator()()
 {
-    this->setMetaData();
+    Plato::Private::set_system_call_metadata(mPlatoApp, mInputData, mMetaData);
     (*mSystemCall)(mMetaData);
 }
 
@@ -120,13 +120,5 @@ void SystemCallMPIOperation::getArguments(std::vector<Plato::LocalArg> & aLocalA
     mSystemCall->getArguments(aLocalArgs);
 }
 
-void SystemCallMPIOperation::setMetaData()
-{
-    for(Plato::InputData& tInputNode : mInputData.getByName<Plato::InputData>("Input"))
-    {
-        std::string tInputName = Plato::Get::String(tInputNode, "ArgumentName");
-        mMetaData.mInputArgumentMap[tInputName] = mPlatoApp->getValue(tInputName);
-    }
 }
-
-}
+// namespace Plato

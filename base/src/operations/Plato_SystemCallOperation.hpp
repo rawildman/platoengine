@@ -87,11 +87,8 @@ public:
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
 private:
-    void setMetaData();
-
-private:
     std::unique_ptr<SystemCall> mSystemCall;
-    SystemCallMetadata mMetaData;
+    Plato::SystemCallMetadata mMetaData;
     Plato::InputData mInputData;
 };
 // class SystemCallOperation;
@@ -118,11 +115,8 @@ public:
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
 private:
-    void setMetaData();
-
-private:
     std::unique_ptr<SystemCallMPI> mSystemCall;
-    SystemCallMetadata mMetaData;
+    Plato::SystemCallMetadata mMetaData;
     Plato::InputData mInputData;
 };
 
