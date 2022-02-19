@@ -100,17 +100,20 @@ TEST(LocalOperation, SystemCall_Error_InputArraySizeMismatch)
 
     Plato::InputData tInputOne("Input");
     tInputOne.add<std::string>("ArgumentName", "Parameters_0");
+    tInputOne.add<std::string>("Layout", "Scalar");
+    tInputOne.add<std::string>("Size", "2");
     tInputNode.add<Plato::InputData>("Input", tInputOne);
     Plato::InputData tInputTwo("Input");
     tInputTwo.add<std::string>("ArgumentName", "Parameters_1");
+    tInputTwo.add<std::string>("Layout", "Scalar");
+    tInputTwo.add<std::string>("Size", "2");
     tInputNode.add<Plato::InputData>("Input", tInputTwo);
 
+    Plato::SystemCall tSystemCall(tInputNode);
     Plato::SystemCallMetadata tMetaData;
     std::vector<double> tParameters= {1,2};
     tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
-
-    Plato::SystemCall tSystemCall(tInputNode,tMetaData);
-    EXPECT_THROW(tSystemCall(tMetaData), std::runtime_error);
+    EXPECT_THROW(tSystemCall(tMetaData),std::runtime_error);
 }
 
 TEST(LocalOperation, SystemCall_Error_OptionsGreaterThanNumParam)
@@ -128,16 +131,18 @@ TEST(LocalOperation, SystemCall_Error_OptionsGreaterThanNumParam)
 
     Plato::InputData tInput("Input");
     tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInput.add<std::string>("Layout", "Scalar");
+    tInput.add<std::string>("Size", "2");
     tInputNode.add<Plato::InputData>("Input", tInput);
-
+    
+    Plato::SystemCall tSystemCall(tInputNode);
     Plato::SystemCallMetadata tMetaData;
     std::vector<double> tParameters= {1,2};
     tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
-
-    EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode,tMetaData), std::runtime_error);
+    EXPECT_THROW(tSystemCall(tMetaData),std::runtime_error);
 }
 
-TEST(LocalOperation, SystemCall_operator)
+TEST(LocalOperation, SystemCall_InputArgumentSizeNotDefinedError)
 {
     Plato::InputData tInputNode("Operation");
     tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
@@ -156,10 +161,29 @@ TEST(LocalOperation, SystemCall_operator)
     EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode),std::runtime_error);
 }
 
+TEST(LocalOperation, SystemCall_InputArgumentLayoutNotDefinedError)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "true");
+    tInputNode.add<std::string>("Argument", "matched.yaml.template matched.yaml");
+    tInputNode.add<std::string>("Argument", "-q");
+    tInputNode.add<std::string>("Option", "r=");
+    tInputNode.add<std::string>("Option", "h=");
+
+    Plato::InputData tInput("Input");
+    tInput.add<std::string>("ArgumentName", "Parameters_0");
+    tInput.add<std::string>("Size", "2");
+    tInputNode.add<Plato::InputData>("Input", tInput);
+    EXPECT_THROW(Plato::SystemCall tSystemCall(tInputNode),std::runtime_error);
+}
+
 TEST(LocalOperation, SystemCall_constructor)
 {
     Plato::InputData tInputNode("Operation");
-    tInputNode.add<std::string>("Command", "aprepro");
+    tInputNode.add<std::string>("Command", "mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro");
     tInputNode.add<std::string>("Name", "aprepro_0");
     tInputNode.add<std::string>("OnChange", "true");
     tInputNode.add<std::string>("AppendInput", "true");
@@ -203,6 +227,10 @@ TEST(LocalOperation, SystemCall_constructor)
     }
 
     createMatchedYAMLTemplateFile();
+
+    Plato::SystemCallMetadata tMetaData;
+    std::vector<double> tParameters= {1,2};
+    tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
     tSystemCall(tMetaData);
     EXPECT_STREQ("mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro matched.yaml.template matched.yaml -q r=1 h=2", tSystemCall.commandPlusArguments().c_str());
 
