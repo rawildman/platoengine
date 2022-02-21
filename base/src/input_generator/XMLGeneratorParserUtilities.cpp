@@ -531,34 +531,5 @@ void is_metadata_block_id_valid(const std::vector<std::string>& tTokens)
     }
 }
 
-bool parseTokens(char *buffer, std::vector<std::string> &tokens)
-{
-    const char* token[MAX_TOKENS_PER_LINE] = {}; // initialize to 0
-    int n = 0;
-
-    // parse the line
-    token[0] = strtok(buffer, DELIMITER); // first token
-
-    // If there is a comment...
-    if(token[0] && strlen(token[0]) > 1 && token[0][0] == '/' && token[0][1] == '/')
-    {
-        tokens.clear();
-        return true;
-    }
-
-    if (token[0]) // zero if line is blank
-    {
-        for (n = 1; n < MAX_TOKENS_PER_LINE; n++)
-        {
-            token[n] = strtok(0, DELIMITER); // subsequent tokens
-            if (!token[n])
-                break; // no more tokens
-        }
-    }
-    for(int i=0; i<n; ++i)
-        tokens.push_back(token[i]);
-
-    return true;
-}
 
 }
