@@ -391,23 +391,23 @@ TEST(PlatoTestXMLGenerator, parseTokens)
     char buffer[MAX_CHARS_PER_LINE];
 
     buffer[0] = '\0';
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 0);
     buffer[0] = '\t';
     buffer[1] = '\0';
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 0);
     strcpy(buffer, "   car");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 1);
     tokens.clear();
     buffer[0] = '\t';
     strcpy(&(buffer[1]), "   car");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 1);
     tokens.clear();
     strcpy(buffer, "   car\tbus   trike\t");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 3);
     EXPECT_EQ(tokens[0], "car");
     EXPECT_EQ(tokens[1], "bus");

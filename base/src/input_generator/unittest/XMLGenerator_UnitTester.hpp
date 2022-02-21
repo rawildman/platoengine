@@ -65,7 +65,6 @@ public:
     bool publicParseSingleValue(const std::vector<std::string> &aTokens,
                                 const std::vector<std::string> &aInputStrings,
                                 std::string &aReturnStringValue);
-    bool publicParseTokens(char *buffer, std::vector<std::string> &tokens);
     bool publicParse_Tokens(char *buffer, std::vector<std::string> &tokens);
     bool publicParseSingleUnLoweredValue(const std::vector<std::string> &aTokens,
                                          const std::vector<std::string> &aUnLoweredTokens,
