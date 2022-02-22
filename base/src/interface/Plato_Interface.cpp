@@ -323,6 +323,13 @@ void Interface::perform()
 }
 
 /******************************************************************************/
+void Interface::reinitializePerformer()
+/******************************************************************************/
+{
+    mPerformer->getApplication()->reinitialize();
+}
+
+/******************************************************************************/
 void Interface::perform(Plato::Stage* aStage)
 /******************************************************************************/
 {
@@ -340,6 +347,8 @@ void Interface::perform(Plato::Stage* aStage)
         // operations need to be updated so to have the new links to
         // the shared data.
         this->updateStages();
+
+        this->reinitializePerformer();
     }
     else
     {

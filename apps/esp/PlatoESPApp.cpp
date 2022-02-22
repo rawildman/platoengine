@@ -82,6 +82,14 @@ void PlatoESPApp::initialize()
     }
 }
 
+void PlatoESPApp::reinitialize()
+{
+    mPrevParameters.clear();
+    mParameters.clear();
+    mLocalData.clear();
+    mESP = nullptr;
+}
+
 void PlatoESPApp::compute(const std::string & aOperationName)
 {
     if(hasChanged())

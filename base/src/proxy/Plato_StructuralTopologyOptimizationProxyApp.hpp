@@ -84,6 +84,8 @@ public:
     void finalize();
     // ************* ALLOCATE APPLICATION MEMORY *************
     void initialize();
+    // ************* REALLOCATE APPLICATION MEMORY *************
+    void reinitialize();
     // ************* PERFORM OPERATION *************
     void compute(const std::string & aOperationName);
     // ************* EXPORT DATA FROM APPLICATION *************

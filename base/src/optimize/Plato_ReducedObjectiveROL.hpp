@@ -360,7 +360,7 @@ private:
 private:
     ReducedObjectiveROL(const Plato::ReducedObjectiveROL<ScalarType> & aRhs);
     Plato::ReducedObjectiveROL<ScalarType> & operator=(const Plato::ReducedObjectiveROL<ScalarType> & aRhs);
-    ofstream mFile;
+    std::ofstream mFile;
 };
 // class ReducedObjectiveROL
 

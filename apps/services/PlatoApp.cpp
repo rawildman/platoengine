@@ -103,6 +103,7 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
     if (tMeshSpec.size() != 0)
     {
         mLightMp = new LightMP(tInputfile);
+        mInputTree = mLightMp->getInput();
     }
 
     if (parser)
@@ -268,7 +269,7 @@ void PlatoApp::initialize( bool initializeTimers )
             delete mSysGraph;
         }
 
-        mSysGraph = new SystemContainer(mLightMp->getMesh(), tDofsPerNode, mLightMp->getInput());
+        mSysGraph = new SystemContainer(mLightMp->getMesh(), tDofsPerNode);
 
         if(mMeshServices)
         {

@@ -108,6 +108,9 @@ void setupSolver( pugi::xml_node& config, AztecOO&, int&, Real&, DistributedCrsM
   LightMP is a top level class that manages the mesh, data, IO, etc.
 */
 class LightMP{
+
+    std::shared_ptr<pugi::xml_document> myInputTree;
+
   public:
     LightMP();
     LightMP(std::string inputfile);
@@ -134,8 +137,7 @@ class LightMP{
     int                getCurrentStep()       {return stepIndex; }
     Real               getTermTime()          {return termTime; }
 
-    pugi::xml_document&
-    getInput() {return *myInputTree;}
+    decltype(myInputTree) getInput() {return myInputTree;}
     void setWriteTimeStepDuringSetup(bool value) { mWriteTimeStepDuringSetup = value; }
 
 
@@ -145,7 +147,6 @@ class LightMP{
     DataContainer* myDataContainer;
     MaterialContainer* myMaterialContainer;
     MeshIO* myMeshOutput;
-    std::shared_ptr<pugi::xml_document> myInputTree;
 
     void InitializeOutput();
     bool initPlot();

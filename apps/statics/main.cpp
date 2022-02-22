@@ -259,10 +259,10 @@ void LocalApp::initialize()
 {
     // define the system graph for solid mechanics
     const int dofsPerNode_3D = 3;
-    m_sysGraph_3D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_3D, m_lightmp->getInput());
+    m_sysGraph_3D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_3D);
 
     const int dofsPerNode_1D = 1;
-    m_sysGraph_1D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_1D, m_lightmp->getInput());
+    m_sysGraph_1D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_1D);
 
     // define a distributed global stiffness matrix
     m_stiffnessMatrix = new DistributedCrsMatrix(m_sysGraph_3D);

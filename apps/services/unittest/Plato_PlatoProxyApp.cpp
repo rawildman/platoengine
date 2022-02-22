@@ -106,6 +106,14 @@ void PlatoProxyApp::initialize()
     mObjectiveGradient.resize(tNumOwnedDesignVariables, 0);
 }
 
+void PlatoProxyApp::reinitialize()
+{
+    mGlobalIDsOwned.clear();
+    mGlobalIDsOwnedAndShared.clear();
+
+    initialize();
+}
+
 void PlatoProxyApp::compute(const std::string & aOperationName)
 {
     if(std::strcmp(aOperationName.c_str(), "UpdateDesignVariables") == 0)

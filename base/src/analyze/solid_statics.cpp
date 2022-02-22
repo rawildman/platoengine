@@ -96,8 +96,8 @@ SolidStatics::SolidStatics(SystemContainer& sys, LightMP& ren)
    myDataMesh = ren.getMesh();
 
    // parse
-   pugi::xml_node input = ren.getInput();
-   pugi::xml_node physicsSpec = input.child("physics");
+   auto input = ren.getInput();
+   pugi::xml_node physicsSpec = input->child("physics");
 
    Parse( physicsSpec, ren );
 

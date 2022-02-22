@@ -79,7 +79,7 @@ class SystemContainer
       \param mesh The DataMesh on which the maps and graph are based.
       \param dofsPerNode Number of degrees of freedom per node.
     */
-    SystemContainer(DataMesh* mesh, int dofsPerNode, pugi::xml_node& input);
+    SystemContainer(DataMesh* mesh, int dofsPerNode);
     ~SystemContainer();
 
     int getDofsPerNode(){ return dofsPerNode; }

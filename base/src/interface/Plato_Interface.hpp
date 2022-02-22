@@ -141,6 +141,7 @@ private:
     void createStages();
     void updateStages();
     void createPerformers();
+    void reinitializePerformer();
     void createSharedData(Plato::Application* aApplication);
 
     void exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,

@@ -68,6 +68,23 @@ SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
   Operation(aOperationDataMng, aPerformer, aSharedData)
 /******************************************************************************/
 {
+    this->initialize(aOperationDataMng, aPerformer, aSharedData);
+}
+
+/******************************************************************************/
+void
+SingleOperation::
+initialize(const Plato::OperationInputDataMng & aOperationDataMng,
+           const std::shared_ptr<Plato::Performer> aPerformer,
+           const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    m_performer = nullptr;
+    m_parameters.clear();
+    m_inputData.clear();
+    m_outputData.clear();
+    m_argumentNames.clear();
+
     const std::string & tPerformerName = aOperationDataMng.getPerformerName();
     m_operationName = aOperationDataMng.getOperationName(tPerformerName);
 
@@ -119,28 +136,7 @@ update(const Plato::OperationInputDataMng & aOperationDataMng,
     // If the shared data is recreated then the operation must be
     // updated so to have the new links to the shared data.
 
-    // Clear the input and output data.
-    m_inputData.clear();
-    m_outputData.clear();
-
-    const std::string & tPerformerName = aOperationDataMng.getPerformerName();
-
-    // Get the input shared data.
-    const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
-    for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
-    {
-        const std::string & tArgumentName = aOperationDataMng.getInputArgument(tPerformerName, tInputIndex);
-        const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
-        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
-    }
-
-    // Get the output shared data.
-    const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
-    for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
-    {
-        const std::string & tArgumentName = aOperationDataMng.getOutputArgument(tPerformerName, tOutputIndex);
-        const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
-        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_outputData);
-    }
+    this->initialize(aOperationDataMng, aPerformer, aSharedData);
 }
+
 } // End namespace Plato
