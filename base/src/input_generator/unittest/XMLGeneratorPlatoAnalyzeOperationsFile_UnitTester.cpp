@@ -156,6 +156,9 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     tCriterion.id("12");
     tCriterion.type("mechanical_compliance");
     tXMLMetaData.append(tCriterion);
+    tCriterion.id("11");
+    tCriterion.type("mechanical_compliance");
+    tXMLMetaData.append(tCriterion);
 
     XMLGen::Constraint tConstraint;
     tConstraint.service("2");
@@ -165,6 +168,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
 
     XMLGen::Objective tObjective;
     tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("11");
     tXMLMetaData.objective = tObjective;
     XMLGen::Output tOutputMetadata;
     tOutputMetadata.serviceID("2");
@@ -1159,6 +1163,52 @@ TEST(PlatoTestXMLGenerator, AppendComputeObjectiveValueToPlatoAnalyzeOperation)
     PlatoTestXMLGenerator::test_children({"Argument","ArgumentName"}, {"Value", "Objective Value"}, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendComputeObjectiveValueWithTargetToPlatoAnalyzeOperation)
+{
+    XMLGen::InputData tMetaData;
+
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.serviceIDs.push_back("1");
+    tObjective.scenarioIDs.push_back("1");
+    tMetaData.objective = tObjective;
+
+    XMLGen::Scenario tScenario;
+    tScenario.id("1");
+    tMetaData.append(tScenario);
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("compliance");
+    tCriterion.append("target", "56.56");
+    tMetaData.append(tCriterion);
+
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("plato_analyze");
+    tService.cacheState("false");
+    tService.updateProblem("true");
+    tMetaData.append(tService);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_type", "topology");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_compute_objective_value_to_plato_analyze_operation(tMetaData, tDocument);
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Criterion", "Target", "Input", "Output"};
+    std::vector<std::string> tValues = {"ComputeCriterionValue", "Compute Objective Value", "My Objective", "56.56", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Topology"}, tInput);
+    auto tOutput = tOperation.child("Output");
+    PlatoTestXMLGenerator::test_children({"Argument","ArgumentName"}, {"Value", "Objective Value"}, tOutput);
+}
+
 TEST(PlatoTestXMLGenerator, AppendComputeObjectiveGradientToPlatoAnalyzeOperation)
 {
     XMLGen::InputData tMetaData;
@@ -1678,8 +1728,12 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOpera
     tService.id("1");
     tService.code("plato_analyze");
     tXMLMetaData.append(tService);
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tXMLMetaData.append(tCriterion);
     XMLGen::Objective tObjective;
     tObjective.serviceIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("1");
     tXMLMetaData.objective = tObjective;
 
     // POSE MATERIAL SET 1

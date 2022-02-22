@@ -96,6 +96,7 @@ void ParseCriteria::allocate()
     insertTag("conductivity_ratios");
     insertTag("displacement_direction");
     insertTag("measure_magnitude", "false");
+    insertTag("target", "0.0");
 
     insertTag("mass");
     insertTag("cgx");

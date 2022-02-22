@@ -703,11 +703,11 @@ void append_grad_based_optimizer_constraint_options
 
 /******************************************************************************/
 void generate_target_value_entries
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& aXMLMetaData,
  const XMLGen::Constraint &aConstraint,
  std::unordered_map<std::string, std::string> &aKeyToValueMap)
 {
-    auto tCriterion = aMetaData.criterion(aConstraint.criterion());
+    auto tCriterion = aXMLMetaData.criterion(aConstraint.criterion());
     std::string tCriterionType = tCriterion.type();
     if(tCriterionType == "volume")
     {
@@ -718,8 +718,10 @@ void generate_target_value_entries
             {
                 THROWERR("You must specify a non-zero volume constraint value.")
             }
+            double tReferenceValue = std::atof(aConstraint.absoluteTarget().c_str());
+            tReferenceValue *= std::atof(aConstraint.divisor().c_str());
             aKeyToValueMap["AbsoluteTargetValue"] = aConstraint.absoluteTarget();
-            aKeyToValueMap["ReferenceValue"] = aConstraint.absoluteTarget();
+            aKeyToValueMap["ReferenceValue"] = std::to_string(tReferenceValue);
         }
         else if(aConstraint.relativeTarget().length() > 0)
         {
@@ -741,7 +743,9 @@ void generate_target_value_entries
         }
         double tAbsoluteTargetValue = std::atof(aConstraint.absoluteTarget().c_str());
         aKeyToValueMap["AbsoluteTargetValue"] = aConstraint.absoluteTarget();
-        aKeyToValueMap["ReferenceValue"] = fabs(tAbsoluteTargetValue) < 1e-16 ? "1.0" : aConstraint.absoluteTarget();
+        double tReferenceValue = fabs(tAbsoluteTargetValue) < 1e-16 ? 1.0 : std::atof(aConstraint.absoluteTarget().c_str());
+        tReferenceValue *= std::atof(aConstraint.divisor().c_str());
+        aKeyToValueMap["ReferenceValue"] = std::to_string(tReferenceValue);
     }
 }
 // function generate_target_value_entries

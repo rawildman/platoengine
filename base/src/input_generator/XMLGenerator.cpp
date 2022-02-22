@@ -208,8 +208,8 @@ namespace XMLGen
             std::string tValueString = tCurEBC.value("value");
             std::vector<std::string> tDofTokens;
             std::vector<std::string> tValueTokens;
-            XMLGen::parseTokens((char *)(tDofString.c_str()), tDofTokens);
-            XMLGen::parseTokens((char *)(tValueString.c_str()), tValueTokens);
+            XMLGen::parse_tokens((char *)(tDofString.c_str()), tDofTokens);
+            XMLGen::parse_tokens((char *)(tValueString.c_str()), tValueTokens);
             if (tDofTokens.size() != tValueTokens.size())
             {
                 THROWERR(std::string("Parse EssentialBoundaryCondition:expandDofs:  Number of Dofs does not equal the number of values. "))
@@ -812,7 +812,7 @@ namespace XMLGen
 
         tokens.clear();
         fin.getline(buf, MAX_CHARS_PER_LINE);
-        XMLGen::parseTokens(buf, tokens);
+        XMLGen::parse_tokens(buf, tokens);
     }
 
     /******************************************************************************/
@@ -913,7 +913,7 @@ namespace XMLGen
             char buf[MAX_CHARS_PER_LINE];
             fin.getline(buf, MAX_CHARS_PER_LINE);
             std::vector<std::string> tokens;
-            XMLGen::parseTokens(buf, tokens);
+            XMLGen::parse_tokens(buf, tokens);
 
             // process the tokens
             if (tokens.size() > 0)
@@ -928,7 +928,7 @@ namespace XMLGen
                     {
                         fin.getline(buf, MAX_CHARS_PER_LINE);
                         tokens.clear();
-                        XMLGen::parseTokens(buf, tokens);
+                        XMLGen::parse_tokens(buf, tokens);
                         // process the tokens
                         if (tokens.size() > 0)
                         {
@@ -1020,7 +1020,7 @@ namespace XMLGen
             char buf[MAX_CHARS_PER_LINE];
             fin.getline(buf, MAX_CHARS_PER_LINE);
             std::vector<std::string> tokens;
-            XMLGen::parseTokens(buf, tokens);
+            XMLGen::parse_tokens(buf, tokens);
 
             // process the tokens
             if (tokens.size() > 0)
@@ -1042,7 +1042,7 @@ namespace XMLGen
                     {
                         fin.getline(buf, MAX_CHARS_PER_LINE);
                         tokens.clear();
-                        XMLGen::parseTokens(buf, tokens);
+                        XMLGen::parse_tokens(buf, tokens);
                         // process the tokens
                         if (tokens.size() > 0)
                         {

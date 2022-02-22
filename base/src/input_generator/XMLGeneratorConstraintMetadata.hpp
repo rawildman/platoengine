@@ -156,6 +156,20 @@ public:
      * \return value
      **********************************************************************************/
     std::string weight() const;
+
+    /******************************************************************************//**
+     * \fn divisor
+     * \brief Set string value for keyword 'divisor'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void divisor(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn divisor
+     * \brief Return string value for keyword 'divisor'.
+     * \return value
+     **********************************************************************************/
+    std::string divisor() const;
 };
 // struct Constraint
 
