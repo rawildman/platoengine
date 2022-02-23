@@ -643,9 +643,16 @@ void writeInverseMethodObjective(const std::string &tDiscretization, const XMLGe
         outfile << "  inverse_method_objective = eigen-inverse" << std::endl;
     }
 }
-
 /**************************************************************************/
-void append_case
+void append_case_dakota_problem
+(const XMLGen::Criterion &aCriterion,
+ std::ostream &outfile)
+{
+    outfile << "  case = compute_criterion" << std::endl;
+    outfile << "  criterion = " << aCriterion.type() << std::endl;
+}
+/**************************************************************************/
+void append_case_gradient_based_problem
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Criterion &aCriterion,
  const XMLGen::Scenario &aScenario,
@@ -704,6 +711,23 @@ void append_case
             if (aScenario.complex_error_measure().length() > 0)
                 outfile << "  complex_error_measure " << aScenario.complex_error_measure() << std::endl;
         }
+    }
+}
+/**************************************************************************/
+void append_case
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Criterion &aCriterion,
+ const XMLGen::Scenario &aScenario,
+ std::ostream &outfile)
+{
+    if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+        aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        append_case_gradient_based_problem(aMetaData, aCriterion, aScenario, outfile);
+    }
+    else if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        append_case_dakota_problem(aCriterion, outfile);
     }
 }
 /**************************************************************************/

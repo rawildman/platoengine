@@ -2079,9 +2079,9 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_Single
         std::string("<?xmlversion=\"1.0\"?>") + 
         std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
         std::string("<Function>Reinitialize</Function></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_13_service_2_scenario_14</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+        std::string("<OutputValue><Name>Criterion0Value</Name></OutputValue></Operation>"); 
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_sd_2_operations.xml");
@@ -2145,18 +2145,18 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_MultiO
         std::string("<?xmlversion=\"1.0\"?>") + 
         std::string("<Operation><Name>reinitialize_on_change_sierra_sd_5</Name>") + 
         std::string("<Function>Reinitialize</Function></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_14</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<OutputValue><Name>Criterion0Value</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_7</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+        std::string("<OutputValue><Name>Criterion1Value</Name></OutputValue></Operation>"); 
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_sd_5_operations.xml");
 }
 
-TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_SingleObjectiveSingleconstraint)
+TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_SingleObjectiveSingleConstraint)
 {
     XMLGen::InputData tMetaData;
 
@@ -2218,12 +2218,12 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDOperationsXmlFileForDakotaDriver_Single
         std::string("<?xmlversion=\"1.0\"?>") + 
         std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
         std::string("<Function>Reinitialize</Function></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<OutputValue><Name>Criterion0Value</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_9</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>"); 
+        std::string("<OutputValue><Name>Criterion1Value</Name></OutputValue></Operation>"); 
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_sd_2_operations.xml");
@@ -2291,9 +2291,9 @@ TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiSierraSDServiceOperationsXmlFil
         std::string("<?xmlversion=\"1.0\"?>") + 
         std::string("<Operation><Name>reinitialize_on_change_sierra_sd_5</Name>") + 
         std::string("<Function>Reinitialize</Function></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_6_service_5_scenario_14</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>");  
+        std::string("<OutputValue><Name>Criterion0Value</Name></OutputValue></Operation>");  
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_sd_5_operations.xml");
@@ -2373,12 +2373,12 @@ TEST(PlatoTestXMLGenerator, WriteOnlyFirstOfMultiSierraSDServiceOperationsXmlFil
         std::string("<?xmlversion=\"1.0\"?>") + 
         std::string("<Operation><Name>reinitialize_on_change_sierra_sd_2</Name>") + 
         std::string("<Function>Reinitialize</Function></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_14</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>") + 
-        std::string("<Operation><Function>InternalEnergy</Function>") + 
+        std::string("<OutputValue><Name>Criterion0Value</Name></OutputValue></Operation>") + 
+        std::string("<Operation><Function>ComputeCriterionValue</Function>") + 
         std::string("<Name>ComputeCriterionValue-criterion_3_service_2_scenario_4</Name>") + 
-        std::string("<OutputValue><Name>InternalEnergy</Name></OutputValue></Operation>");  
+        std::string("<OutputValue><Name>Criterion1Value</Name></OutputValue></Operation>");  
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_sd_2_operations.xml");
@@ -2848,6 +2848,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     // Create dummy files to copy
     FILE* exo=fopen("rocker.exo", "w");
     FILE* csm=fopen("rocker.csm", "w");
+    Plato::system("rm -rf evaluations_0");
+    Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
 
@@ -2946,6 +2948,8 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
     // Create dummy files to copy
     FILE* exo=fopen("rocker.exo", "w");
     FILE* csm=fopen("rocker.csm", "w");
+    Plato::system("rm -rf evaluations_0");
+    Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
 
@@ -2954,7 +2958,7 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
                  std::string("OUTPUTStopologyENDECHOtopologyEND") + 
                  std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
                  std::string("BLOCK1material1tet10END") + 
-                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compliance_minvolume_fraction=.314END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compute_criterioncriterion=mechanical_compliancevolume_fraction=.314objective_normalizationfalseEND") + 
                  std::string("FILEgeometry_file'evaluations_0/rocker_0.exo'END") +
                  std::string("LOADSENDBOUNDARYEND");
 
@@ -2966,7 +2970,7 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
                  std::string("OUTPUTStopologyENDECHOtopologyEND") + 
                  std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
                  std::string("BLOCK1material1tet10END") + 
-                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compliance_minvolume_fraction=.314END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compute_criterioncriterion=mechanical_compliancevolume_fraction=.314objective_normalizationfalseEND") + 
                  std::string("FILEgeometry_file'evaluations_1/rocker_1.exo'END") +
                  std::string("LOADSENDBOUNDARYEND");
 
