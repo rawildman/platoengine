@@ -223,9 +223,9 @@ void append_criterion_value_operation
 
     auto tOperation = aDocument.append_child("Operation");
     auto tOperationName = std::string("Compute Criterion Value - ") + aIdentifierString;
-    XMLGen::append_children({"Function", "Name"}, {"InternalEnergy", tOperationName}, tOperation);
+    XMLGen::append_children({"Function", "Name"}, {"Compute Criterion Value", tOperationName}, tOperation);
     auto tOutput = tOperation.append_child("OutputValue");
-    XMLGen::append_children({"Name"}, {"Internal Energy"}, tOutput);
+    XMLGen::append_children({"Name"}, {std::string("Criterion ") + std::to_string(aCriterionNumber) + std::string(" Value")}, tOutput);
 }
 /**************************************************************************/
 void append_objective_criterion_value_operations
@@ -270,6 +270,7 @@ void append_constraint_criterion_value_operations
         }
     }
 }
+/**************************************************************************/
 void append_criteria_operations
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)

@@ -728,6 +728,9 @@ void append_normalization_parameter
     if (isModalCriterion(aCriterion)) {
         tNormalizeObjective = false;
     }
+    if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA) {
+        tNormalizeObjective = false;
+    }
     if(tNormalizeObjective == false)
     {
         outfile << "  objective_normalization false" << std::endl;
