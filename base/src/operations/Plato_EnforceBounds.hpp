@@ -84,6 +84,7 @@ private:
     std::string mLowerBoundVectorFieldName; /*!< lower bound argument name */
     std::string mUpperBoundVectorFieldName; /*!< upper bound argument name */
     std::string mTopologyFieldName; /*!< topology argument name */
+    std::string mTopologyOutputFieldName; /*!< output topology argument name */
 };
 // class EnforceBounds;
 

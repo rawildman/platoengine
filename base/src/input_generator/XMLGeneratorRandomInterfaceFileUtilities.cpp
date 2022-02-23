@@ -156,6 +156,21 @@ void append_multiperformer_topology_shared_data
             XMLGen::append_children( { "UserName" }, { tUserName }, tForNode);
         }
     }
+
+    // Add the "Clamped Topology" shared data that will be used for output.
+    if(aXMLMetaData.optimization_parameters().enforceBounds())
+    {
+        tSharedData = aDocument.append_child("SharedData");
+        tKeys = {"Name", "Type", "Layout", "Size"};
+        tValues = {"Clamped Topology", "Scalar", "Nodal Field", "IGNORE"};
+        XMLGen::append_children(tKeys, tValues, tSharedData);
+        tKeys = {"OwnerName"};
+        tValues = {tFirstPlatoMainPerformer};
+        XMLGen::append_children(tKeys, tValues, tSharedData);
+        tKeys = {"UserName"};
+        tValues = {tFirstPlatoMainPerformer};
+        XMLGen::append_children(tKeys, tValues, tSharedData);
+    }
 }
 //function append_multiperformer_topology_shared_data
 /******************************************************************************/

@@ -61,19 +61,26 @@ EnforceBounds::EnforceBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
     mLowerBoundVectorFieldName = "Lower Bound Vector";
     mUpperBoundVectorFieldName = "Upper Bound Vector";
     mTopologyFieldName = "Topology";
+    mTopologyOutputFieldName = "Clamped Topology";
 }
 
 void EnforceBounds::operator()()
 {
     // Get the output field
     double* tOutputData;
+    double* tInputData;
     double* tLowerBoundData;
     double* tUpperBoundData;
     int tDataLength = 0;
 
-    auto& tOutputField = *(mPlatoApp->getNodeField(mTopologyFieldName));
+    auto& tInputField = *(mPlatoApp->getNodeField(mTopologyFieldName));
+    tInputField.ExtractView(&tInputData);
+    tDataLength = tInputField.MyLength();
+
+    auto& tOutputField = *(mPlatoApp->getNodeField(mTopologyOutputFieldName));
     tOutputField.ExtractView(&tOutputData);
-    tDataLength = tOutputField.MyLength();
+    
+    memcpy(tOutputData, tInputData, tDataLength*sizeof(double));
 
     auto& tLowerBoundField = *(mPlatoApp->getNodeField(mLowerBoundVectorFieldName));
     tLowerBoundField.ExtractView(&tLowerBoundData);
@@ -93,6 +100,7 @@ void EnforceBounds::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
     aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, mLowerBoundVectorFieldName));
     aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, mUpperBoundVectorFieldName));
     aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, mTopologyFieldName));
+    aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, mTopologyOutputFieldName));
 }
 
 }
