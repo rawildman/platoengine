@@ -110,6 +110,13 @@ private:
     void setDisplacementDirection(XMLGen::Criterion &aMetadata);
 
     /******************************************************************************//**
+     * \fn setTargetSolutionVector
+     * \brief Set the target solution vector member variable
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setTargetSolutionVector(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
      * \fn insertTag
      * \brief Insert a tag, possibly with a default value
      * \param [in] aCriterion criterion metadata

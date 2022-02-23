@@ -94,6 +94,9 @@ struct ValidCriterionParameterKeys
         "displacement_direction",
         "measure_magnitude",
         "target",
+        "target_solution_vector",
+        "target_magnitude",
+        "target_solution",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",

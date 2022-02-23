@@ -556,6 +556,32 @@ pugi::xml_node append_displacement_criterion
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
     tValues = {"Magnitude", "bool", aCriterion.measure_magnitude()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    std::vector<std::string> tTargetSolutionVector = aCriterion.targetSolutionVector();
+    if(tTargetSolutionVector.size() > 0)
+    {
+        std::string tTempString = "{";
+        for(int i=0; i<tTargetSolutionVector.size(); ++i)
+        {
+            if(i>0)
+            {
+                tTempString += ",";
+            }
+            tTempString += tTargetSolutionVector[i];
+        }
+        tTempString += "}";
+        tValues = {"TargetSolutionVector", "Array(double)", tTempString};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    }
+    if(aCriterion.target_magnitude() != "")
+    {
+        tValues = {"TargetMagnitude", "double", aCriterion.target_magnitude()};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    }
+    if(aCriterion.target_solution() != "")
+    {
+        tValues = {"TargetSolution", "double", aCriterion.target_solution()};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+    }
 
     return tObjective;
 }
