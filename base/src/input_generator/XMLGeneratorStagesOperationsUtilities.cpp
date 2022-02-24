@@ -115,7 +115,6 @@ void append_compute_normalization_factor_operation
         if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
             XMLGen::append_filter_control_operation(aMetaData, aParentNode);
-            XMLGen::append_enforce_bounds_operation(aMetaData, aParentNode);
         }
         XMLGen::append_objective_value_operation(aMetaData, aParentNode, true);
     }
@@ -307,7 +306,7 @@ void append_enforce_bounds_operation
         tInputNode = tOperationNode.append_child("Input");
         XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Topology", "Topology"}, tInputNode);
         auto tOutputNode = tOperationNode.append_child("Output");
-        XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Topology", "Topology"}, tOutputNode);
+        XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Clamped Topology", "Clamped Topology"}, tOutputNode);
     }
 }
 // function append_enforce_bounds_operation

@@ -80,10 +80,23 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    /******************************************************************************//**
+     * @brief Apply the bounds to the given vector of data.
+     * @param [in] aDataLength Number of entries in vector.
+     * @param [in] aLowerBoundData Vector of lower bounds.
+     * @param [in] aUpperBoundData Vector of upper bounds.
+     * @param [in/out] aOutputData Vector to apply bounds to.
+    **********************************************************************************/
+    void applyBounds(const int aDataLength,
+                     const double *aLowerBoundData,
+                     const double *aUpperBoundData,
+                     double *aOutputData);
 private:
     std::string mLowerBoundVectorFieldName; /*!< lower bound argument name */
     std::string mUpperBoundVectorFieldName; /*!< upper bound argument name */
     std::string mTopologyFieldName; /*!< topology argument name */
+    std::string mTopologyOutputFieldName; /*!< output topology argument name */
 };
 // class EnforceBounds;
 
