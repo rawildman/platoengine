@@ -13,7 +13,7 @@ namespace XMLGen
     void append_analyze_mpirun_commands_robust_optimization_problems(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& aFile);
     void append_physics_performer_mpirun_commands_gradient_based_problem(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& aFile);
     void append_analyze_mpirun_line(const XMLGen::InputData& aInputData, const XMLGen::Service& aService, int &aNextPerformerID, FILE*& aFile, const int aEvaluation = -1);
-    void append_sierra_sd_mpirun_line (const XMLGen::InputData& aInputData, const XMLGen::Service& aService, int &aNextPerformerID, FILE*& aFile);
+    void append_sierra_sd_mpirun_line (const XMLGen::InputData& aInputData, const XMLGen::Service& aService, int &aNextPerformerID, FILE*& aFile, const int aEvaluation = -1);
     void append_esp_mpirun_line(const XMLGen::InputData& aInputData, const XMLGen::Service& aService, int &aNextPerformerID, FILE*& aFile);
     void append_physics_performer_mpirun_commands_dakota_problem(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& aFile);
 }

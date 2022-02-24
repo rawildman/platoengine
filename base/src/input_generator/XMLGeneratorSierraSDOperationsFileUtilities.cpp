@@ -4,6 +4,8 @@
  *  Created on: Feb 1, 2021
  */
 
+#include "XMLGeneratorScenarioMetadata.hpp"
+#include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
@@ -103,7 +105,7 @@ void append_internal_energy_operation
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    append_children({"Function", "Name","PenaltyModel"}, {"InternalEnergy", "Compute Objective","SIMP"}, tOperationNode);
+    append_children({"Function", "Name", "PenaltyModel"}, {"InternalEnergy", "Compute Objective","SIMP"}, tOperationNode);
     auto tTopologyNode = tOperationNode.append_child("Topology");
     append_children({"Name"}, {"Topology"}, tTopologyNode);
     append_SIMP_penalty_model(aScenario, tOperationNode);
@@ -197,33 +199,139 @@ void append_surface_area_gradient_operation
     }
 }
 /**************************************************************************/
+void append_reinitialize_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tReinitializeName = std::string("reinitialize_on_change_") + aMetaData.services()[0].performer();
+    auto tOperationNode = aDocument.append_child("Operation");
+    addChild(tOperationNode, "Name", tReinitializeName);
+    addChild(tOperationNode, "Function", "Reinitialize");
+}
+/**************************************************************************/
+void append_criterion_value_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ const std::string& aCriterionId,
+ const std::string& aIdentifierString,
+ int aCriterionNumber)
+{
+    auto& tCriterion = aMetaData.criterion(aCriterionId);
+    auto tCriterionType = Plato::tolower(tCriterion.type());
+    if(tCriterionType != "mechanical_compliance")
+        THROWERR(std::string("Criterion type ") + tCriterionType + std::string("was specified, but only mechanical_compliance is currently supported in Sierra SD"))
+
+    auto tOperation = aDocument.append_child("Operation");
+    auto tOperationName = std::string("Compute Criterion Value - ") + aIdentifierString;
+    XMLGen::append_children({"Function", "Name"}, {"Compute Criterion Value", tOperationName}, tOperation);
+    auto tOutput = tOperation.append_child("OutputValue");
+    XMLGen::append_children({"Name"}, {std::string("Criterion ") + std::to_string(aCriterionNumber) + std::string(" Value")}, tOutput);
+}
+/**************************************************************************/
+void append_objective_criterion_value_operations
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aCriterionNumber)
+{
+    XMLGen::Objective tObjective = aMetaData.objective;
+    for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
+    {
+        std::string tCriterionID = tObjective.criteriaIDs[i];
+        std::string tServiceID = tObjective.serviceIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
+
+        if(tServiceID == aMetaData.services()[0].id())
+        {
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+            XMLGen::append_criterion_value_operation(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+            aCriterionNumber++;
+        }
+    }
+}
+/**************************************************************************/
+void append_constraint_criterion_value_operations
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aCriterionNumber)
+{
+    for (auto &tConstraint : aMetaData.constraints)
+    {
+        std::string tCriterionID = tConstraint.criterion();
+        std::string tServiceID = tConstraint.service();
+        std::string tScenarioID = tConstraint.scenario();
+
+        if(tServiceID == aMetaData.services()[0].id())
+        {
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+            XMLGen::append_criterion_value_operation(aMetaData,aDocument,tCriterionID,tIdentifierString,aCriterionNumber);
+            aCriterionNumber++;
+        }
+    }
+}
+/**************************************************************************/
+void append_criteria_operations
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument)
+{
+    int tCriteriaCounter = 0;
+    append_objective_criterion_value_operations(aMetaData,aDocument,tCriteriaCounter);
+    append_constraint_criterion_value_operations(aMetaData,aDocument,tCriteriaCounter);
+}
+/**************************************************************************/
+void add_operations_gradient_based_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ const XMLGen::Scenario& aScenario)
+{
+    append_version_entry(aDocument);
+    append_update_problem_operation(aMetaData, aDocument);
+    append_cache_state_operation(aMetaData, aDocument);
+    append_displacement_operation(aScenario, aDocument);
+    append_internal_energy_operation(aScenario, aDocument);
+    append_internal_energy_gradient_operation(aScenario, aDocument);
+    if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) {
+        append_compute_objective_gradient_operation_for_shape_problem(aScenario, aDocument);
+    }
+    append_internal_energy_hessian_operation(aMetaData, aScenario, aDocument);
+    append_surface_area_operation(aMetaData, aScenario, aDocument);
+    append_surface_area_gradient_operation(aMetaData, aScenario, aDocument);
+}
+/**************************************************************************/
+void add_operations_dakota_problem
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument)
+{
+    append_version_entry(aDocument);
+    append_reinitialize_operation(aMetaData, aDocument);
+    append_criteria_operations(aMetaData, aDocument);
+}
+/**************************************************************************/
 void add_operations
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    for(size_t i=0; i<aMetaData.objective.serviceIDs.size(); ++i)
+    if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+        aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
-        auto tServiceID = aMetaData.objective.serviceIDs[i];
-        auto &tService = aMetaData.service(tServiceID);
-        if(tService.code() == "sierra_sd")
+        for(size_t i=0; i<aMetaData.objective.serviceIDs.size(); ++i)
         {
-            auto tScenarioID = aMetaData.objective.scenarioIDs[i];
-            auto &tScenario = aMetaData.scenario(tScenarioID);
-            append_version_entry(aDocument);
-            append_update_problem_operation(aMetaData, aDocument);
-            append_cache_state_operation(aMetaData, aDocument);
-            append_displacement_operation(tScenario, aDocument);
-            append_internal_energy_operation(tScenario, aDocument);
-            append_internal_energy_gradient_operation(tScenario, aDocument);
-            if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) {
-                append_compute_objective_gradient_operation_for_shape_problem(tScenario, aDocument);
+            auto tServiceID = aMetaData.objective.serviceIDs[i];
+            auto &tService = aMetaData.service(tServiceID);
+            if(tService.code() == "sierra_sd" && tServiceID == aMetaData.services()[0].id())
+            {
+                auto tScenarioID = aMetaData.objective.scenarioIDs[i];
+                auto &tScenario = aMetaData.scenario(tScenarioID);
+                add_operations_gradient_based_problem(aMetaData, aDocument, tScenario);
             }
-            append_internal_energy_hessian_operation(aMetaData, tScenario, aDocument);
-            append_surface_area_operation(aMetaData, tScenario, aDocument);
-            append_surface_area_gradient_operation(aMetaData, tScenario, aDocument);
-
         }
     }
+    else if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        add_operations_dakota_problem(aMetaData, aDocument);
+    }
+
 }
 /******************************************************************************/
 void write_sierra_sd_operation_xml_file
@@ -232,7 +340,7 @@ void write_sierra_sd_operation_xml_file
     pugi::xml_document tDocument;
     XMLGen::append_include_defines_xml_data(aXMLMetaData, tDocument);
     add_operations(aXMLMetaData, tDocument);
-    std::string tServiceID = XMLGen::get_salinas_service_id(aXMLMetaData);
+    std::string tServiceID = aXMLMetaData.services()[0].id();
     std::string tFilename = std::string("sierra_sd_") + tServiceID + "_operations.xml";
     tDocument.save_file(tFilename.c_str(), "  ");
 }

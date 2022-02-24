@@ -134,6 +134,6 @@ std::string toupper(const std::string& aInput);
 
 void system(const char* aString);
 
-int system_with_return(const char* aString);
+void system_with_return(const char* aString);
 
 } // end namespace Plato

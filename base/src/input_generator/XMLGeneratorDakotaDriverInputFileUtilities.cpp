@@ -224,7 +224,7 @@ void append_dakota_driver_variables_block
     for (auto& tString : tVariablesStrings)
     {
         tString += "\n";
-        fprintf(fp, tString.c_str());
+        fprintf(fp, "%s", tString.c_str());
     }
 }
 
@@ -314,8 +314,8 @@ void append_surrogate_based_global_responses_block
 
     tDescriptorString += "\n";
     tScalesString += "\n";
-    fprintf(fp, tDescriptorString.c_str());
-    fprintf(fp, tScalesString.c_str());
+    fprintf(fp, "%s", tDescriptorString.c_str());
+    fprintf(fp, "%s", tScalesString.c_str());
 }
 
 }
