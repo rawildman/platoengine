@@ -560,7 +560,7 @@ pugi::xml_node append_displacement_criterion
     if(tTargetSolutionVector.size() > 0)
     {
         std::string tTempString = "{";
-        for(int i=0; i<tTargetSolutionVector.size(); ++i)
+        for(size_t i=0; i<tTargetSolutionVector.size(); ++i)
         {
             if(i>0)
             {
