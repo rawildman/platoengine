@@ -88,10 +88,18 @@ void EnforceBounds::operator()()
     auto& tUpperBoundField = *(mPlatoApp->getNodeField(mUpperBoundVectorFieldName));
     tUpperBoundField.ExtractView(&tUpperBoundData);
 
-    for(int tIndex = 0; tIndex < tDataLength; tIndex++)
+    applyBounds(tDataLength, tLowerBoundData, tUpperBoundData, tOutputData);
+}
+
+void EnforceBounds::applyBounds(const int aDataLength,
+                                const double *aLowerBoundData,
+                                const double *aUpperBoundData,
+                                double *aOutputData)
+{
+    for(int tIndex = 0; tIndex < aDataLength; tIndex++)
     {
-        tOutputData[tIndex] = std::max(tOutputData[tIndex], tLowerBoundData[tIndex]);
-        tOutputData[tIndex] = std::min(tOutputData[tIndex], tUpperBoundData[tIndex]);
+        aOutputData[tIndex] = std::max(aOutputData[tIndex], aLowerBoundData[tIndex]);
+        aOutputData[tIndex] = std::min(aOutputData[tIndex], aUpperBoundData[tIndex]);
     }
 }
 
