@@ -179,7 +179,7 @@ void HarvestDataFromFile::getOutputArguments(std::vector<Plato::LocalArg>& aLoca
     {
         for(auto& tName : tItr->second) 
         {
-            aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR, tName));
+            aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR, tName, 1 /*length*/));
         }
     }
     else

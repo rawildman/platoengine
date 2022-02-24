@@ -42,17 +42,19 @@
 
 #include <gtest/gtest.h>
 
+#include <fstream>
+
+//#include <aprepro.h>
+
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
-#include "Plato_UnitTestUtils.hpp"
 #include "Plato_InitializeValues.hpp"
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
-//#include <aprepro.h>
+#include "Plato_UnitTestUtils.hpp"
 
-#include <fstream>
 
 namespace PlatoTestOperations
 {
@@ -74,6 +76,35 @@ void createMatchedYAMLTemplateFile()
     tOutFile << "    Algorithm: matched bound\n";
     tOutFile << "    Radius: {r} # original value r=0.1016\n";
     tOutFile << "    Height: {h} # original value h=0.1016\n";
+    tOutFile << "    Conductivity: 2.6e7\n";
+    tOutFile << "    Slot length: 0.0508\n";
+    tOutFile << "    Slot width: 2.54e-3\n";
+    tOutFile << "    Slot depth: 0.006350\n";
+    tOutFile << "    Start frequency range: 1e9\n";
+    tOutFile << "    End frequency range: 2.2e9\n";
+    tOutFile << "    Frequency interval size: 1e7\n\n";
+
+    tOutFile << "...\n";
+    tOutFile.close();
+}
+
+void createMatchedYAMLFile()
+{
+    std::ofstream tOutFile;
+    tOutFile.open("matched.yaml", std::ofstream::out | std::ofstream::trunc);
+    tOutFile << "%YAML 1.1\n";
+    tOutFile << "---\n\n";
+
+    tOutFile << "Gemma-dynamic:\n\n";
+
+    tOutFile << "  Global:\n";
+    tOutFile << "    Description: Higgins cylinder\n";
+    tOutFile << "    Solution type: power balance\n\n";
+
+    tOutFile << "  Power balance: \n";
+    tOutFile << "    Algorithm: matched bound\n";
+    tOutFile << "    Radius: 0.1016 # original value r=0.1016\n";
+    tOutFile << "    Height: 0.1016 # original value h=0.1016\n";
     tOutFile << "    Conductivity: 2.6e7\n";
     tOutFile << "    Slot length: 0.0508\n";
     tOutFile << "    Slot width: 2.54e-3\n";
@@ -262,6 +293,42 @@ TEST(LocalOperation, SystemCall_constructor)
     Plato::Utils::ignore_unused(tTrash);
 }
 
+
+TEST(LocalOperation, SystemCallOperation_CallSerialGemma)
+{
+    Plato::InputData tInputNode("Operation");
+    tInputNode.add<std::string>("Function", "SystemCall");
+    tInputNode.add<std::string>("Name", "aprepro_0");
+    tInputNode.add<std::string>("NumRanks", "1");
+    tInputNode.add<std::string>("ChDir", "evaluation_0");
+    tInputNode.add<std::string>("Command", "gemma");
+    tInputNode.add<std::string>("OnChange", "true");
+    tInputNode.add<std::string>("AppendInput", "false");
+    tInputNode.add<std::string>("Argument", "matched.yaml");
+
+    auto tTrash = std::system("mkdir -p evaluation_0");
+    Plato::Utils::ignore_unused(tTrash);
+
+    createMatchedYAMLFile();
+
+    tTrash = std::system("cp matched.yaml evaluation_0");
+    Plato::Utils::ignore_unused(tTrash);
+
+    Plato::SystemCall tSystemCall(tInputNode);
+    Plato::SystemCallMetadata tMetaData;
+    tSystemCall(tMetaData);
+
+    std::ifstream tFileOnDisk("./evaluation_0/matched_power_balance.dat");
+    EXPECT_TRUE(tFileOnDisk.good());
+}
+
+TEST(LocalOperation, SystemCallOperation_CallSerialGemma_Delete)
+{
+    std::cout << "Current working directory: " << Plato::Utils::current_working_directory() << std::endl;
+    auto tTrash = std::system("rm -rf matched.yaml evaluation_0/");
+    Plato::Utils::ignore_unused(tTrash);
+}
+
 TEST(LocalOperation, SystemCallOperation_Constructor)
 {
     Plato::InputData tInputNode("Operation");
@@ -288,7 +355,6 @@ TEST(LocalOperation, SystemCallOperation_Constructor)
     EXPECT_EQ(2u, tArguments.front().mLength);
     EXPECT_EQ(Plato::data::SCALAR, tArguments.front().mLayout);
     EXPECT_STREQ("Parameters_0", tArguments.front().mName.c_str());
-
 }
 
 TEST(LocalOperation, read_table_1)

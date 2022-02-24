@@ -48,7 +48,9 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <unistd.h>
 
+#include "Plato_Utils.hpp"
 #include "Plato_Macros.hpp"
 #include "Plato_Parser.hpp"
 #include "Plato_Console.hpp"
@@ -78,6 +80,7 @@ SystemCall::SystemCall(const Plato::InputData & aNode)
 {
     // set basic info
     mName = Plato::Get::String(aNode, "Name");
+    mChDir = Plato::Get::String(aNode, "ChDir");
     mOnChange = Plato::Get::Bool(aNode, "OnChange");
     mAppendInput = Plato::Get::Bool(aNode, "AppendInput");
     mStringCommand = Plato::Get::String(aNode, "Command");
@@ -240,7 +243,11 @@ void SystemCall::performSystemCall(const Plato::SystemCallMetadata& aMetaData)
     {
         this->appendOptionsAndValues(aMetaData,tArguments);
     }
+
+    auto tCWD = Plato::Utils::current_working_directory();
+    Plato::Utils::change_directory(mChDir);
     this->executeCommand(tArguments);
+    if(tCWD != mChDir && !mChDir.empty()) { Plato::Utils::change_directory(tCWD); }
 }
 
 void SystemCall::appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaData, std::vector<std::string>& aArguments)
@@ -314,7 +321,8 @@ void SystemCall::operator()(const Plato::SystemCallMetadata& aMetaData)
 void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
 {
     mCommandPlusArguments = mStringCommand;
-    for(const auto &tArgument : aArguments) {
+    for(const auto &tArgument : aArguments) 
+    {
         mCommandPlusArguments += " " + tArgument;
     }
 
@@ -322,11 +330,20 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
     auto tExitStatus = Plato::system_with_return(mCommandPlusArguments.c_str());
     if (tExitStatus)
     {
-        std::string tErrorMessage = std::string("System call ' ") + mCommandPlusArguments + 
-                                    std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
+        std::string tErrorMessage = std::string("System call '") + mCommandPlusArguments + 
+                                    std::string("' exited with exit status: ") + std::to_string(tExitStatus);
         THROWERR(tErrorMessage)
     }
 }
+
+
+
+
+
+
+
+
+
 
 SystemCallMPI::SystemCallMPI(const Plato::InputData & aNode, const MPI_Comm& aComm) : 
     SystemCall(aNode),
@@ -358,8 +375,7 @@ void SystemCallMPI::executeCommand(const std::vector<std::string> &aArguments)
 
     if (tExitStatus != MPI_SUCCESS)
     {
-        std::string tErrorMessage = std::string("System call ' ") + mStringCommand + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
-        THROWERR(tErrorMessage)
+        THROWERR(std::string("System call '") + mStringCommand + std::string("' exited with exit status: ") + std::to_string(tExitStatus))
     }
 
     for(auto tPointer : tArgumentPointers) {

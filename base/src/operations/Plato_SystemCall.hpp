@@ -67,7 +67,7 @@ struct SystemCallMetadata
 class InputData;
 
 /******************************************************************************//**
- * \brief Call a shell script
+ * \brief This class enables shell script calls from within Plato.
 **********************************************************************************/
 class SystemCall
 {
@@ -88,12 +88,6 @@ public:
      * \param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
-
-    /******************************************************************************//**
-     * \brief Return number of ranks used in mpi system call.
-     * \return number of ranks
-    **********************************************************************************/
-    int numRanks() const { return mNumRanks; }
 
     /******************************************************************************//**
      * \brief Return on change flag 
@@ -118,6 +112,12 @@ public:
      * \return command string
     **********************************************************************************/
     std::string command() const{ return mStringCommand;}
+
+    /******************************************************************************//**
+     * \brief Return directory path which the user want to make the current working directory.
+     * \return directory path
+    **********************************************************************************/
+    std::string chDir() const { return mChDir; }
 
     /******************************************************************************//**
      * \brief Return list of options appended to shell script command.
@@ -145,7 +145,19 @@ public:
     std::string commandPlusArguments() const {return mCommandPlusArguments; }
 
 private:
+    /******************************************************************************//**
+     * \brief Return size of argument data container. Function throws if argument \n
+     *     does not match list of user defined arguments.
+     * \param [in] aInputNode input metadata
+     * \return lowercase data layout (string)
+    **********************************************************************************/
     int getSize(const Plato::InputData& aInputNode);
+
+    /******************************************************************************//**
+     * \brief Return argument layout. Function throws error if data layout is not supported.
+     * \param [in] aInputNode input metadata
+     * \return lowercase data layout (string)
+    **********************************************************************************/
     std::string getLayout(const Plato::InputData& aInputNode);
     
     /******************************************************************************//**
@@ -220,19 +232,46 @@ private:
     std::unordered_map<std::string,std::pair<std::string,int>> mInputArgumentNameToAttributesMap;
 
 protected:
-    int mNumRanks = 1;
+    std::string mChDir = "";
     std::string mStringCommand;
     std::string mCommandPlusArguments;
 };
 // class SystemCall
 
-class SystemCallMPI : public SystemCall {
+
+
+
+/******************************************************************************//**
+ * \brief This class enables MPI shell script calls from within Plato.
+**********************************************************************************/
+class SystemCallMPI : public SystemCall 
+{
 public:
-SystemCallMPI(const Plato::InputData & aNode, const MPI_Comm& aComm);
+    /******************************************************************************//**
+     * \brief Constructor
+     * \param [in] aNode input metadata
+     * \param [in] aComm MPI communicator
+    **********************************************************************************/
+    SystemCallMPI(const Plato::InputData & aNode, const MPI_Comm& aComm);
+
+    /******************************************************************************//**
+     * \brief Return number of ranks used in mpi system call.
+     * \return number of ranks
+    **********************************************************************************/
+    int numRanks() const { return mNumRanks; }
+    
 private:
-void executeCommand(const std::vector<std::string> &arguments) override;
-const MPI_Comm& mComm;
+    /******************************************************************************//**
+     * \brief Execute system call command using MPI_Spawn.
+     * \param [in] aArguments arguments to be appended to shell command.
+    **********************************************************************************/
+    void executeCommand(const std::vector<std::string> &arguments) override;
+
+private:
+    int mNumRanks = 1;
+    const MPI_Comm& mComm;
 };
+// class SystemCallMPI
 
 }
 // namespace Plato

@@ -168,7 +168,6 @@ void PlatoApp::initialize()
             tFunctions.push_back("HarvestDataFromFile");
             if(tStrFunction == tFunctions.back())
             {
-                std::cout << "CREATE HARVEST DATA FROM FILE OPERATION\n";
                 mOperationMap[tStrName] = new Plato::HarvestDataFromFile(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
@@ -222,13 +221,13 @@ void PlatoApp::initialize()
                 continue;
             }
 
-            // tFunctions.push_back("SystemCallMPI");
-            // if(tStrFunction == tFunctions.back())
-            // {
-            //     mOperationMap[tStrName] = new Plato::SystemCallMPIOperation(this, tNode);
-            //     this->createLocalData(mOperationMap[tStrName]);
-            //     continue;
-            // }
+            tFunctions.push_back("SystemCallMPI");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::SystemCallMPIOperation(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
 
             tFunctions.push_back("EnforceBounds");
             if(tStrFunction == tFunctions.back())
@@ -462,7 +461,6 @@ void PlatoApp::createLocalData(Plato::LocalOp* aLocalOperation)
 
 void PlatoApp::createLocalData(Plato::LocalArg aLocalArguments)
 {
-    std::cout << "CREATE LOCAL ARGUMENT '" << aLocalArguments.mName << "'.\n";
     if(aLocalArguments.mLayout == Plato::data::layout_t::SCALAR_FIELD)
     {
         auto tIterator = mNodeFieldMap.find(aLocalArguments.mName);
@@ -498,12 +496,10 @@ void PlatoApp::createLocalData(Plato::LocalArg aLocalArguments)
     else if(aLocalArguments.mLayout == Plato::data::layout_t::SCALAR)
     {
         auto tIterator = mValueMap.find(aLocalArguments.mName);
-        std::cout << "CREATE LOCAL ARGUMENT '" << aLocalArguments.mName << "' WITH SIZE ' " << aLocalArguments.mLength << "'.\n";
         if(tIterator != mValueMap.end())
         {
             return;
         }
-        std::cout << "CREATE LOCAL ARGUMENT '" << aLocalArguments.mName << "' WITH SIZE ' " << aLocalArguments.mLength << "'.\n";
         std::vector<double>* tNewData = new std::vector<double>(aLocalArguments.mLength);
         mValueMap[aLocalArguments.mName] = tNewData;
     }
