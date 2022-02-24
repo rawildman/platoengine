@@ -166,7 +166,6 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
 {
     this->setOptimizationType(aMetadata);
     this->setFilterInEngine(aMetadata);
-    this->setEnforceBounds(aMetadata);
     this->setNormalizeInAggregator(aMetadata);
     
     this->setFixedBlockIDs(aMetadata);
@@ -177,6 +176,7 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
     this->setFixedBlockMaterialStates(aMetadata);
     XMLGen::FixedBlock::check_fixed_block_metadata(aMetadata);
 
+    this->setEnforceBounds(aMetadata); // this needs to be called after the fixed blocks processing to get correct defaults.
     this->setLevelsetNodesetIDs(aMetadata);
     this->setMaterialBoxExtents(aMetadata);
     this->checkHeavisideFilterParams(aMetadata);
@@ -304,18 +304,38 @@ void ParseOptimizationParameters::setNormalizeInAggregator(XMLGen::OptimizationP
 
 void ParseOptimizationParameters::setEnforceBounds(XMLGen::OptimizationParameters &aMetadata)
 {
-    std::string tValue = aMetadata.enforce_bounds();
-    if(tValue == "true")
+    bool tUserSpecifiedEnforceBoundsOption = false;
+    auto tItr = mTags.find("enforce_bounds");
+    if(tItr != mTags.end())
+    {
+        std::string tValues = tItr->second.first.second;
+        if (!tValues.empty())
+        {
+            tUserSpecifiedEnforceBoundsOption = true;
+        }
+    }
+    bool tFixedBlockIDsExist = (aMetadata.fixed_block_ids().size() > 0);
+
+    // Turn enforce bounds on by default if there are fixed blocks
+    if(tFixedBlockIDsExist && !tUserSpecifiedEnforceBoundsOption)
     {
         aMetadata.enforceBounds(true);
     }
-    else if(tValue == "false")
-    {
-        aMetadata.enforceBounds(false);
-    }
     else
     {
-        THROWERR(std::string("Parse Optimization Parameters: Unrecognized enforce_bounds value: ") + tValue);
+        std::string tValue = aMetadata.enforce_bounds();
+        if(tValue == "true")
+        {
+            aMetadata.enforceBounds(true);
+        }
+        else if(tValue == "false")
+        {
+            aMetadata.enforceBounds(false);
+        }
+        else
+        {
+            THROWERR(std::string("Parse Optimization Parameters: Unrecognized enforce_bounds value: ") + tValue);
+        }
     }
 }
 

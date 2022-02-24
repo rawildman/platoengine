@@ -279,7 +279,7 @@ void append_enforce_bounds_operation_to_plato_main_operation
         tInputNode = tOperationNode.append_child("Input");
         XMLGen::append_children({"ArgumentName"}, {"Topology"}, tInputNode);
         auto tOutputNode = tOperationNode.append_child("Output");
-        XMLGen::append_children({"ArgumentName"}, {"Topology"}, tOutputNode);
+        XMLGen::append_children({"ArgumentName"}, {"Clamped Topology"}, tOutputNode);
     }
 }
 // function append_enforce_bounds_operation_to_plato_main_operation

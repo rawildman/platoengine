@@ -61,7 +61,14 @@ void append_default_qoi_to_output_operation_in_interface_file
  pugi::xml_node& aParentNode)
 {
     auto tInput = aParentNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"topology", "Topology"}, tInput);
+    if(aMetaData.optimization_parameters().enforceBounds())
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"topology", "Clamped Topology"}, tInput);
+    }  
+    else
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"topology", "Topology"}, tInput);
+    }
     tInput = aParentNode.append_child("Input");
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"control", "Control"}, tInput);
     XMLGen::append_objective_gradient_qoi_to_output_operation(aMetaData, aParentNode);

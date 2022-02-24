@@ -82,10 +82,10 @@ bool XMLGenerator_UnitTester::publicParseSingleUnLoweredValue(const std::vector<
 }
 
 /******************************************************************************/
-bool XMLGenerator_UnitTester::publicParseTokens(char *buffer, std::vector<std::string> &tokens)
+bool XMLGenerator_UnitTester::publicParse_Tokens(char *buffer, std::vector<std::string> &tokens)
 /******************************************************************************/
 {
-    return XMLGen::parseTokens(buffer, tokens);
+    return XMLGen::parse_tokens(buffer, tokens);
 }
 
 /******************************************************************************/
