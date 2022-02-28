@@ -194,12 +194,7 @@ void SystemCall::executeCommand(const std::vector<std::string> &arguments)
         cmd += " " + s;
     }
     // make system call
-    auto tExitStatus = Plato::system_with_return(cmd.c_str());
-    if (tExitStatus)
-    {
-        std::string tErrorMessage = std::string("System call ' ") + cmd + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
-        THROWERR(tErrorMessage)
-    }
+    Plato::system_with_return(cmd.c_str());
 }
 
 void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)

@@ -5,6 +5,20 @@ set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 
 set(${LIB_NAME}_SOURCES
        Plato_ESP.cpp
+   )
+
+set(${LIB_NAME}_HEADERS
+       Plato_ESP.hpp
+   )
+
+set(${LIB_NAME}_TYPE STATIC)
+
+set(LIB_NAME GeometryESPImpl)
+set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
+
+set(${LIB_NAME}_SOURCES
+       Plato_ESP_Impl.cpp
+       Plato_ESP.cpp
        bodyTess.c
    )
 
@@ -13,13 +27,19 @@ set(${LIB_NAME}_HEADERS
        Plato_ESP.hpp
    )
 
+set(${LIB_NAME}_TYPE SHARED)
+
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
 FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
-  target_link_libraries(Plato${PLATO_LIB} ${OCSM_LIB} ${ESP_LIB})
-  set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
+  add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_TYPE} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
+  if(${${PLATO_LIB}_TYPE} STREQUAL "STATIC")
+    set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
+  else()
+    target_link_libraries(Plato${PLATO_LIB} ${OCSM_LIB} ${ESP_LIB})
+  endif()
 ENDFOREACH()
+
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES})
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
 

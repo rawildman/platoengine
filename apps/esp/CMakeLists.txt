@@ -1,7 +1,7 @@
 ###############################################################################
 # Sources:
 ###############################################################################
-SET(PlatoESP_SRCS Plato_ESP.cpp PlatoESPApp.cpp)
+SET(PlatoESP_SRCS PlatoESP_main.cpp PlatoESPApp.cpp)
 
 SET(PlatoESP_HDRS PlatoESPApp.hpp)
 
