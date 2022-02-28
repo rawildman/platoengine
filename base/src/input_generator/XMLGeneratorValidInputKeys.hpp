@@ -872,11 +872,11 @@ private:
                 {"plastic_strain", "plastic strain"}, 
                 {"cauchy_stress", "cauchy stress"},
                 {"backstress", "backstress"}, 
-                {"dispx", "Displacement X"}, 
-                {"dispy", "Displacement Y"}, 
-                {"dispz", "Displacement Z"},
+                {"dispx", "displacement X"}, 
+                {"dispy", "displacement Y"}, 
+                {"dispz", "displacement Z"},
                 {"principal_stresses", "principal stresses"}, 
-                {"temperature", "Temperature"} 
+                {"temperature", "temperature"} 
             }
         },
         { "sierra_sd", 

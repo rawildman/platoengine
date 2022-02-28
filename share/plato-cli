@@ -25,20 +25,6 @@ def source_dir():
 
   return str(parent)
 
-def loadState():
-  src_dir = source_dir()
-  fileName = src_dir + "/config.json"
-  try:
-    f = open(fileName, 'r')
-  except IOError as e:
-    print(os.strerror(e.errno))  
-    return {}
-  else:
-    data = json.load(f)
-    return data
-
-platoState = loadState()
-
 def is_executable(exeName):
   command = 'which ' + exeName
   try:
@@ -91,8 +77,8 @@ def list_analyze_templates(args):
 
 def execute_plato(args):
   print("executing plato:")
-  print("XMLGenerator " + args.input)
-  print("source mpirun.source")
+  os.system("XMLGenerator " + args.input)
+  os.system(". ./mpirun.source")
 
 def write_plato_template(args):
   print(args)
@@ -219,26 +205,6 @@ def optimize_action(args):
     list_plato_templates(args)
     return
 
-def writeState(state):
-  src_dir = source_dir()
-  fileName = src_dir + "/state.json"
-  with open(fileName, 'w') as f:
-    json.dump(state, f)
-
-def saveState(key, value):
-
-  global platoState
-
-  platoState = loadState()
-  platoState[key] = value
-  writeState(platoState)
-
-#def configure_action(args):
-#
-#  if args.spack_dir != None:
-#    saveState(key='spack_dir', value=args.spack_dir)
-#    return
-
 ## create top level parser
 #
 parser = argparse.ArgumentParser(prog='plato', description='Plato command line interface (CLI)')
@@ -248,17 +214,9 @@ parser = argparse.ArgumentParser(prog='plato', description='Plato command line i
 #
 subparsers = parser.add_subparsers(help='plato sub-command help')
 
-## setup configure sub parser
-#
-#configure_parser = subparsers.add_parser('configure', help='Plato configure options', aliases=['c', 'config'])
-#c_group = configure_parser.add_mutually_exclusive_group(required=True)
-#c_group.add_argument('--spack-dir', help='Location of spack.')
-#configure_parser.set_defaults(func=configure_action)
-
 ## setup geometry sub parser
 #
 geometry_parser = subparsers.add_parser('geometry', help='Plato Geometry options', aliases=['g'])
-#geometry_parser.set_defaults(func=lambda x: geometry_parser.print_usage())
 geo_subparsers = geometry_parser.add_subparsers(help='geometry sub-command help', dest='geo_execmode')
 
 # geometry - esp
