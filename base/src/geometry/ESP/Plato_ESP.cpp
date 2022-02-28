@@ -40,11 +40,69 @@
 //@HEADER
 */
 
-/*!
- * Plato_ESP.cpp
- *
- * Created on: Nov 13, 2019
- *
- */
+#include "Plato_ESP.hpp"
+#include "Plato_KokkosTypes.hpp"
 
-#include "Plato_MLS.hpp"
+namespace Plato {
+namespace Geometry {
+
+template <typename ScalarType, typename ScalarVectorType>
+ESP<ScalarType,ScalarVectorType>::ESP(std::string aModelFileName, std::string aTessFileName, int aParameterIndex) :
+    mModelFileName(aModelFileName),
+    mTessFileName(aTessFileName)
+{
+    readNames();
+
+    if(aParameterIndex != -1){
+        auto tName = mParameterNames[aParameterIndex];
+        mParameterNames.resize(1);
+        mParameterNames[0] = tName;
+    }
+
+    mSensitivity.resize(mParameterNames.size());
+}
+
+template <typename ScalarType, typename ScalarVectorType>
+ScalarType ESP<ScalarType,ScalarVectorType>::sensitivity(int aParameterIndex, ScalarVectorType aGradientX)
+{
+    ScalarType tDfDp(0.0);
+    auto& tSensitivity = mSensitivity[aParameterIndex];
+    int tNumData = tSensitivity.size();
+    for (int k=0; k<tNumData; k++)
+    {
+        tDfDp += tSensitivity[k]*aGradientX[k];
+    }
+    return tDfDp;
+}
+
+template <typename ScalarType, typename ScalarVectorType>
+void ESP<ScalarType,ScalarVectorType>::readNames()
+{
+    mParameterNames.empty();
+    std::ifstream tInputStream;
+    tInputStream.open(mModelFileName.c_str());
+    if(tInputStream.good())
+    {
+        std::string tLine, tWord;
+        while(std::getline(tInputStream, tLine))
+        {
+            std::istringstream tStream(tLine, std::istringstream::in);
+            while( tStream >> tWord )    
+            {
+                for(auto& c : tWord) { c = std::tolower(c); }
+                if (tWord == "despmtr")
+                {
+                    tStream >> tWord;
+                    mParameterNames.push_back(tWord);
+                }
+            }
+        }
+        tInputStream.close();
+    }
+}
+
+template class ESP<double,std::vector<double>>;
+template class ESP<double,Plato::ScalarVectorT<double>::HostMirror>;
+
+} // end namespace Geometry
+} // end namespace Plato

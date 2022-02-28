@@ -40,13 +40,6 @@
 //@HEADER
 */
 
-/*
- * Plato_ESP.cpp
- *
- *  Created on: Dec 18, 2019
- *
- */
-
 #include "PlatoApp.hpp"
 #include "Plato_TemplateMain.hpp"
 
