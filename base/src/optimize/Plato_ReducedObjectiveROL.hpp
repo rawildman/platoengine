@@ -92,7 +92,7 @@ public:
     {
         this->initialize();
         if(mDebugOutput)
-            mFile.open("obj_output.txt", ios::out);
+            mFile.open("obj_output.txt", std::ios::out);
     }
 
     /******************************************************************************//**
@@ -316,11 +316,9 @@ if(mDebugOutput)
     {
 if(mDebugOutput)
     mFile << "  callUpdateStage() called" << std::endl;
-      std::vector<std::string> tStageNames;
-      std::string tUpdateStageName = mEngineInputData.getUpdateProblemStageName();
-      if(tUpdateStageName.empty() == false)
+      std::vector<std::string> tStageNames = mEngineInputData.getUpdateProblemStageNames();
+      if(tStageNames.size())
       {
-        tStageNames.push_back(tUpdateStageName);
         mInterface->compute(tStageNames, *mParameterList);
       }
     }

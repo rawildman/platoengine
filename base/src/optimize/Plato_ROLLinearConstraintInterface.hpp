@@ -106,7 +106,8 @@ public:
     void initialize()
     /******************************************************************************/
     {
-        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData);
+        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
+                                                   this->mOptimizerIndex);
     }
 
     /******************************************************************************/
