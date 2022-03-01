@@ -2985,5 +2985,41 @@ TEST(PlatoTestXMLGenerator, AppendInitializeGeometryOperation)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 }
 
+TEST(PlatoTestXMLGenerator, AppendDefaultQOIToOutputOperation)
+{
+    XMLGen::InputData tMetaData;
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.enforceBounds(true);
+    tMetaData.set(tOptimizationParameters);
+
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("3");
+    tConstraint.criterion("3");
+    tConstraint.service("3");
+    tMetaData.constraints.push_back(tConstraint);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_default_qoi_to_output_operation_in_interface_file(tMetaData, tDocument));
+    //tDocument.save_file("xml.txt", " ");
+
+    auto tNode = tDocument.child("Input");
+    std::vector<std::string> tKeys = {"ArgumentName", "SharedDataName"};
+    std::vector<std::string> tValues = {"topology", "Clamped Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+    tNode = tNode.next_sibling("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"control", "Control"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+    tNode = tNode.next_sibling("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"objective gradient", "Objective Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+    tNode = tNode.next_sibling("Input");
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"constraint gradient 3", "Constraint Gradient 3"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+}
+
 }
 // namespace PlatoTestXMLGenerator

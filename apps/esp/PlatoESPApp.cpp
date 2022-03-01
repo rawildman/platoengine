@@ -41,6 +41,7 @@
  */
 
 #include "PlatoESPApp.hpp"
+#include <dlfcn.h>
 #include "Plato_Parser.hpp"
 #include "Plato_Exceptions.hpp"
 #include "Plato_SharedData.hpp"
@@ -94,9 +95,24 @@ void PlatoESPApp::compute(const std::string & aOperationName)
 {
     if(hasChanged())
     {
-        mESP.reset( new ESPType(mModelFileName, mTessFileName, mParameterIndex) );
+        mESP.reset( mCreateESP(mModelFileName, mTessFileName, mParameterIndex), mDestroyESP );
     }
     mLocalData = mESP->getSensitivities()[0];
+}
+
+void PlatoESPApp::loadESPInterface()
+{
+    const std::string libraryName("libPlatoGeometryESPImpl.so");
+    mESPInterface = dlopen(libraryName.c_str(), RTLD_LAZY);
+    if (mESPInterface == nullptr) {
+        throw Plato::LogicException(libraryName + " not found.");
+    }
+
+    mCreateESP = reinterpret_cast<create_t>(dlsym(mESPInterface, "createESP"));
+    mDestroyESP = reinterpret_cast<destroy_t>(dlsym(mESPInterface, "destroyESP"));
+    if (mCreateESP == nullptr || mDestroyESP == nullptr) {
+        throw Plato::LogicException("Unable to load functions from " + libraryName);
+    }
 }
 
 bool PlatoESPApp::hasChanged()
@@ -172,4 +188,6 @@ PlatoESPApp::PlatoESPApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
         delete parser;
         parser = nullptr;
     }
+
+    loadESPInterface();
 }

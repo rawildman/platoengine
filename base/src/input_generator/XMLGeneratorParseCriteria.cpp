@@ -97,6 +97,9 @@ void ParseCriteria::allocate()
     insertTag("displacement_direction");
     insertTag("measure_magnitude", "false");
     insertTag("target", "0.0");
+    insertTag("target_solution_vector");
+    insertTag("target_magnitude");
+    insertTag("target_solution");
 
     insertTag("mass");
     insertTag("cgx");
@@ -213,6 +216,23 @@ void ParseCriteria::setCriterionIDs(XMLGen::Criterion &aMetadata)
     }
 }
 
+void ParseCriteria::setTargetSolutionVector(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "displacement")
+    {
+        auto tItr = mTags.find("target_solution_vector");
+        std::string tValues = tItr->second.first.second;
+        if (tItr != mTags.end() && !tValues.empty())
+        {
+            std::vector<std::string> tDirection;
+            char tValuesBuffer[10000];
+            strcpy(tValuesBuffer, tValues.c_str());
+            XMLGen::parse_tokens(tValuesBuffer, tDirection);
+            aMetadata.targetSolutionVector(tDirection);
+        }
+    }
+}
+
 void ParseCriteria::setDisplacementDirection(XMLGen::Criterion &aMetadata)
 {
     if(aMetadata.type() == "displacement")
@@ -275,6 +295,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setMassProperties(aMetadata);
     this->checkVolumePenaltyExponent(aMetadata);
     this->setDisplacementDirection(aMetadata);
+    this->setTargetSolutionVector(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);

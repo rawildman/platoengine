@@ -30,6 +30,7 @@ private:
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
     std::vector<std::string> mDisplacementDirection;
+    std::vector<std::string> mTargetSolutionVector;
     std::vector<std::string> mModesToExclude;
     std::vector<std::string> mMatchNodesetIDs;
     std::map<std::string, std::pair<double,double>> mMassProperties;
@@ -425,6 +426,26 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn targetSolutionVector
+     * \brief User-specified solution vector
+     * \param [in] aInput list of solution components
+     **********************************************************************************/
+    void targetSolutionVector(const std::vector<std::string>& aInput)
+    {
+        this->mTargetSolutionVector = aInput;
+    }
+
+    /******************************************************************************//**
+     * \fn targetSolutionVector
+     * \brief Return user-specified solution vector
+     * \return value
+     **********************************************************************************/
+    std::vector<std::string> targetSolutionVector() const
+    {
+        return this->mTargetSolutionVector;
+    }
+
+    /******************************************************************************//**
      * \fn criterionWeights
      * \brief Set weight strings for composite criteria
      * \param [in] aInput list of IDs
@@ -544,6 +565,8 @@ public:
     std::string camp_max_iter() const { return this->value("camp_max_iter"); }
 
     std::string target() const { return this->value("target"); }
+    std::string target_magnitude() const { return this->value("target_magnitude"); }
+    std::string target_solution() const { return this->value("target_solution"); }
 };
 // struct Criterion
 

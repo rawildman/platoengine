@@ -94,7 +94,7 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_Random)
     ASSERT_FALSE(tOutput.empty());
     ASSERT_STREQ("Output", tOutput.name());
     tGoldKeys = {"ArgumentName", "SharedDataName"};
-    tGoldValues = {"Displacement X", "dispx {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}"};
+    tGoldValues = {"displacement X", "dispx {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOutput);
     tOutput = tOutput.next_sibling("Output");
     ASSERT_TRUE(tOutput.empty());

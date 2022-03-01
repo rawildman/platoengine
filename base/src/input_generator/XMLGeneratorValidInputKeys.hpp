@@ -94,6 +94,9 @@ struct ValidCriterionParameterKeys
         "displacement_direction",
         "measure_magnitude",
         "target",
+        "target_solution_vector",
+        "target_magnitude",
+        "target_solution",
         /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
         "volume_misfit_target",
         "limit_power_min",
@@ -869,11 +872,11 @@ private:
                 {"plastic_strain", "plastic strain"}, 
                 {"cauchy_stress", "cauchy stress"},
                 {"backstress", "backstress"}, 
-                {"dispx", "Displacement X"}, 
-                {"dispy", "Displacement Y"}, 
-                {"dispz", "Displacement Z"},
+                {"dispx", "displacement X"}, 
+                {"dispy", "displacement Y"}, 
+                {"dispz", "displacement Z"},
                 {"principal_stresses", "principal stresses"}, 
-                {"temperature", "Temperature"} 
+                {"temperature", "temperature"} 
             }
         },
         { "sierra_sd", 

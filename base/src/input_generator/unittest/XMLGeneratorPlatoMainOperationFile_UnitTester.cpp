@@ -16,6 +16,41 @@
 namespace PlatoTestXMLGenerator
 {
 
+TEST(PlatoTestXMLGenerator, AppendEnforceBoundsToPlatoMainOperationsFile)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.enforceBounds(true);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_enforce_bounds_operation_to_plato_main_operation(tMetaData, tDocument);
+    //tDocument.save_file("xml.txt", " ");
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Name", "Function", "Input", "Input", "Output"};
+    std::vector<std::string> tValues = {"EnforceBounds", "EnforceBounds", "", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    tKeys = {"ArgumentName"};
+    tValues = {"Upper Bound Vector"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+    tInput = tInput.next_sibling("Input");
+    tKeys = {"ArgumentName"};
+    tValues = {"Lower Bound Vector"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+    tInput = tInput.next_sibling("Input");
+    tKeys = {"ArgumentName"};
+    tValues = {"Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+    auto tOutput = tInput.next_sibling("Output");
+    tKeys = {"ArgumentName"};
+    tValues = {"Clamped Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+}
+
 TEST(PlatoTestXMLGenerator, AppendDeterministicQoIToOutputOperation_non_multi_load_case)
 {
     XMLGen::InputData tMetaData;

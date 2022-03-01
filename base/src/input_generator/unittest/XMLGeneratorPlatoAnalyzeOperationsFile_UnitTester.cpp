@@ -142,13 +142,9 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     tOptimizationParameters.append("discretization", "density");
     tOptimizationParameters.append("problem_update_frequency", "5");
     tXMLMetaData.set(tOptimizationParameters);
-    XMLGen::Service tService0;
-    tService0.id("1");
-    tService0.updateProblem("true");
-    tService0.code("platomain");
-    tXMLMetaData.append(tService0);
     XMLGen::Service tService;
     tService.id("2");
+    tService.updateProblem("true");
     tService.code("plato_analyze");
     tXMLMetaData.append(tService);
 
@@ -256,8 +252,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     // CALL FUNCTION
     XMLGen::write_plato_analyze_operation_xml_file(tXMLMetaData);
     auto tData = XMLGen::read_data_from_file("plato_analyze_2_operations.xml");
-    auto tGold = std::string("<?xmlversion=\"1.0\"?><includefilename=\"defines.xml\"/><Operation><Function>WriteOutput</Function><Name>WriteOutput</Name><Output><ArgumentName>DisplacementX</ArgumentName></Output>")
-    +"<Output><ArgumentName>DisplacementY</ArgumentName></Output><Output><ArgumentName>DisplacementZ</ArgumentName></Output></Operation><Operation><Function>UpdateProblem</Function><Name>UpdateProblem</Name>"
+    auto tGold = std::string("<?xmlversion=\"1.0\"?><includefilename=\"defines.xml\"/><Operation><Function>WriteOutput</Function><Name>WriteOutput</Name><Output><ArgumentName>displacementX</ArgumentName></Output>")
+    +"<Output><ArgumentName>displacementY</ArgumentName></Output><Output><ArgumentName>displacementZ</ArgumentName></Output></Operation><Operation><Function>UpdateProblem</Function><Name>UpdateProblem</Name>"
     +"</Operation><Operation><Function>ComputeCriterionValue</Function><Name>ComputeObjectiveValue</Name><Criterion>MyObjective</Criterion><Input><ArgumentName>Topology</ArgumentName></Input><Output><Argument>Value</Argument><ArgumentName>ObjectiveValue</ArgumentName></Output>"
     +"<Parameter><ArgumentName>traction_load_id_2_x_axis</ArgumentName><Target>[PlatoProblem]:[NaturalBoundaryConditions]:[RandomTractionVectorBoundaryConditionwithID2]:Values(0)</Target><InitialValue>0.0</InitialValue>"
     +"</Parameter><Parameter><ArgumentName>traction_load_id_2_y_axis</ArgumentName><Target>[PlatoProblem]:[NaturalBoundaryConditions]:[RandomTractionVectorBoundaryConditionwithID2]:Values(1)</Target><InitialValue>0.0</InitialValue>"
@@ -295,7 +291,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeOperationXmlFileForNondeterministic
     +"</Parameter><Parameter><ArgumentName>poissons_ratio_block_id_1</ArgumentName><Target>[PlatoProblem]:[MaterialModels]:[material_1]:[IsotropicLinearElastic]:PoissonsRatio</Target><InitialValue>0.0</InitialValue></Parameter>"
     +"<Parameter><ArgumentName>youngs_modulus_block_id_1</ArgumentName><Target>[PlatoProblem]:[MaterialModels]:[material_1]:[IsotropicLinearElastic]:YoungsModulus</Target><InitialValue>0.0</InitialValue></Parameter></Operation>";
     ASSERT_STREQ(tGold.c_str(), tData.str().c_str());
-    //Plato::system("rm -f plato_analyze_2_operations.xml");
+    Plato::system("rm -f plato_analyze_2_operations.xml");
 }
 
 TEST(PlatoTestXMLGenerator, AppendRandomTractionVectorToPlatoAnalyzeOperation)
