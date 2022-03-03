@@ -5,8 +5,9 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGenerator_UnitTester.cpp
                                       Plato_Test_XMLGenerator.cpp
                                       XMLGeneratorSrom_UnitTester.cpp
-                                      XMLGeneratorDefineFile_UnitTester.cpp
                                       XMLGeneratorLaunch_UnitTester.cpp
+                                      XMLGeneratorPlatoGemma_UnitTester.cpp
+                                      XMLGeneratorDefineFile_UnitTester.cpp
                                       XMLGeneratorDakotaDriver_UnitTester.cpp
                                       XMLGeneratorParseMetaData_UnitTester.cpp
                                       XMLGeneratorInterfaceFile_UnitTester.cpp

@@ -1497,8 +1497,11 @@ struct ValidOptimizationParameterKeys
      **/
     std::unordered_set<std::string> mKeys =
     {
-     "discretization",
      "verbose",
+     "descriptors",
+     "lower_bounds",
+     "upper_bounds",
+     "discretization",
      "enforce_bounds",
      "number_refines",
      "mma_move_limit",

@@ -459,6 +459,26 @@ public:
         mOptimizationParameters = aOptimizationParameters;
     }
 
+    const XMLGen::Material& material(const std::string& aMaterialID) const
+    {
+        auto tIndex = 0;
+        bool tFound = false;
+        for(auto& tMaterial : materials)
+        {
+            tIndex = &tMaterial - &materials[0];
+            if(tMaterial.id() == aMaterialID)
+            {
+                tFound = true;
+                break;
+            }
+        }
+        if(!tFound)
+        {
+            THROWERR(std::string("Did not find material with id '") + aMaterialID + "' in materials list.")
+        }
+        return materials[tIndex];
+    }
+
     XMLGen::Objective objective;
     std::vector<XMLGen::Scenario> mScenarios;
     std::vector<XMLGen::Constraint> constraints;

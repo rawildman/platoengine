@@ -18,7 +18,7 @@ namespace XMLGen
 
 void ParseOptimizationParameters::setTags(XMLGen::OptimizationParameters &aOptimizationParameters)
 {
-    ValidOptimizationParameterKeys tValidKeys;
+    XMLGen::ValidOptimizationParameterKeys tValidKeys;
     for(auto& tTag : mTags)
     {
         if(tValidKeys.mKeys.find(tTag.first) == tValidKeys.mKeys.end())

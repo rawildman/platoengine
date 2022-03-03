@@ -32,6 +32,9 @@ void insert_shape_optimization_input_options(XMLGen::MetaDataTags &aTags)
 void insert_general_optimization_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "verbose", { { {"verbose"}, ""}, "false" } });
+    aTags.insert({ "descriptors", { { {"descriptors"}, ""}, "" } });
+    aTags.insert({ "lower_bounds", { { {"lower_bounds"}, ""}, "" } });
+    aTags.insert({ "upper_bounds", { { {"upper_bounds"}, ""}, "" } });
     aTags.insert({ "output_method", { { {"output_method"}, ""}, "epu" } });
     aTags.insert({ "max_iterations", { { {"max_iterations"}, ""}, "" } });
     aTags.insert({ "output_frequency", { { {"output_frequency"}, ""}, "5" } });
