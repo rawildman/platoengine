@@ -105,7 +105,7 @@ void append_internal_energy_operation
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    append_children({"Function", "Name", "PenaltyModel"}, {"InternalEnergy", "Compute Objective","SIMP"}, tOperationNode);
+    append_children({"Function", "Name", "PenaltyModel"}, {"Compute Criterion Value", "Compute Objective", "SIMP"}, tOperationNode);
     auto tTopologyNode = tOperationNode.append_child("Topology");
     append_children({"Name"}, {"Topology"}, tTopologyNode);
     append_SIMP_penalty_model(aScenario, tOperationNode);
