@@ -169,6 +169,9 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_RandomMaterialMetadata.hpp
                         Plato_LinearCriterionHessian.hpp
                         Plato_CentralDifferenceHessian.hpp
+                        Plato_DakotaFactory.hpp
+                        Plato_OptimizerFactory.hpp
+                        Plato_OptimizerInterface.hpp
                         Plato_OptimizerUtilities.hpp
                         Plato_KokkosVector.hpp
                         Plato_KokkosReductionOperations.hpp

@@ -68,7 +68,7 @@
 namespace Plato
 {
 
-void 
+void
 MathParser::addArrays(const decltype(mArrays)& aArrays)
 {
     mArrays = aArrays;
@@ -78,16 +78,16 @@ void
 MathParser::addVariable(std::string aVarName, std::string aVarValue)
 {
     // the te_variable struct stores pointers to name and value -- it doesn't
-    // copy anything -- so the data have to be persistent.  Use shared_ptr's 
+    // copy anything -- so the data have to be persistent.  Use shared_ptr's
     // so there's no cleanup.  The references in the te_variable instance aren't
     // counted, but mVariables, mValues, and mNames all go out of scope at the
     // same time.
-    
+
     if( aVarValue.find("{") != std::string::npos ) aVarValue = this->compute(aVarValue);
 
     auto tNewDatum = std::make_shared<double>(atof(aVarValue.c_str()));
     mValues.push_back(tNewDatum);
-    
+
     // tinyexpr only works with lowercase variable names
     std::transform(aVarName.begin(), aVarName.end(), aVarName.begin(), ::tolower);
     auto tNewName  = std::make_shared<std::string>(aVarName);
@@ -131,13 +131,13 @@ MathParser::compute(std::string aExpr)
         auto tIndexStart = tSearchPos+1;
         auto tIndexLen = tIndexEnd - tIndexStart;
         int tArrayIndex = stoi(tSubExpr.substr(tIndexStart, tIndexLen));
-        
+
         std::string tDelimiters(" +-()/*^");
         auto tNameStart = tSubExpr.find_last_of(tDelimiters,tSearchPos);
         tNameStart++; // Array name starts immediately after the delimiter
         auto tNameLen = tSearchPos - tNameStart;
         std::string tArrayName = tSubExpr.substr(tNameStart, tNameLen);
-        
+
         if( mArrays.count(tArrayName) == 0 )
         {
             std::stringstream ss;
@@ -149,7 +149,7 @@ MathParser::compute(std::string aExpr)
         if( (tStrVals.size() < (static_cast<size_t>(tArrayIndex + 1))) || (tArrayIndex < 0) )
         {
             std::stringstream ss;
-            ss << "Expression '," << tSubExpr << "' Array '" << tArrayName 
+            ss << "Expression '," << tSubExpr << "' Array '" << tArrayName
                << "', value (" << tArrayIndex << " out of bounds.";
             throw Plato::ParsingException(ss.str());
         }
@@ -164,7 +164,7 @@ MathParser::compute(std::string aExpr)
 
     int error;
     te_expr *tExpr = te_compile(tSubExpr.c_str(), mVariables.data(), mVariables.size(), &error);
- 
+
     if( tExpr )
     {
         double tVal = te_eval(tExpr);
@@ -184,7 +184,7 @@ std::string
 MathParser::parse(std::string aExpr)
 {
     std::stringstream tRetval;
-    
+
     int error=0;
     double tValue = te_interp(aExpr.c_str(), &error);
 
@@ -199,7 +199,7 @@ MathParser::parse(std::string aExpr)
     return tRetval.str();
 }
 
-InputData 
+InputData
 PugiParser::parseFile(const std::string& filename)
 {
     auto tInput = std::make_shared<pugi::xml_document>();
@@ -213,7 +213,7 @@ PugiParser::parseFile(const std::string& filename)
     return read(tInput);
 }
 
-InputData 
+InputData
 PugiParser::parseString(const std::string& inputString)
 {
     auto tInput = std::make_shared<pugi::xml_document>();
@@ -225,7 +225,7 @@ PugiParser::parseString(const std::string& inputString)
     return read(tInput);
 }
 
-InputData 
+InputData
 PugiParser::read(std::shared_ptr<pugi::xml_document> doc)
 {
 
@@ -278,7 +278,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
         std::string tDefValue = tDefineNode.attribute("value").value();
         tMathParser->addVariable(tDefName, tDefValue);
     }
-    
+
 
     // parse 'Array' definitions
     //
@@ -292,7 +292,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
             // new variable.  add it.
             //
             tArrays[tVarName] = std::vector<std::string>(0);
- 
+
             std::string tStrType = tArrayNode.attribute("type").value();
             std::transform(tStrType.begin(), tStrType.end(), tStrType.begin(), ::tolower);
             if( tStrType == "int" || tStrType == "" )
@@ -304,9 +304,9 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                 {
                     tArrays[tVarName] = tokenize(tStrValues,',');
                 }
-                else 
+                else
                 {
-                    // parse from=, to=, by=, 
+                    // parse from=, to=, by=,
                     std::string tStrFrom = tArrayNode.attribute("from").value();
                     if( tStrFrom.find("{") != std::string::npos ) tStrFrom = tMathParser->compute(tStrFrom);
                     int tIntFrom = stoi(tStrFrom);
@@ -326,13 +326,13 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                     {
                         throw Plato::ParsingException("'by' keyword cannot be zero.");
                     }
-                    
+
                     // make sure that the range isn't bogus
                     int tIntRange = (tIntTo - tIntFrom) / tIntBy;
                     if( tIntRange < 0 )
                     {
                         std::stringstream ss;
-                        ss << "Range (from: " << tIntFrom << ", to: " << tIntTo << ", by: " 
+                        ss << "Range (from: " << tIntFrom << ", to: " << tIntTo << ", by: "
                            << tIntBy << ") doesn't end." << std::endl;
                         throw Plato::ParsingException(ss.str());
                     }
@@ -353,7 +353,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                 {
                     tArrays[tVarName] = tokenize(tStrValues,',');
                 }
-                else 
+                else
                 {
                     // parse from=
                     std::string tStrFrom = tArrayNode.attribute("from").value();
@@ -389,12 +389,12 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                             throw Plato::ParsingException("'by' keyword cannot be zero.");
                         }
                         tNumReals = (tRealTo - tRealFrom) / tRealBy;
-                    
+
                         // make sure that the range isn't bogus
                         if( tNumReals < 0 )
                         {
                             std::stringstream ss;
-                            ss << "Range (from: " << tRealFrom << ", to: " << tRealTo << ", by: " 
+                            ss << "Range (from: " << tRealFrom << ", to: " << tRealTo << ", by: "
                                << tRealBy << ") doesn't end." << std::endl;
                             throw Plato::ParsingException(ss.str());
                         }
@@ -403,7 +403,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                     if( tStrIntervals != "" )
                     {
                         // parse 'intervals='
-                        if( tStrIntervals.find("{") != std::string::npos ) 
+                        if( tStrIntervals.find("{") != std::string::npos )
                             tStrIntervals = tMathParser->compute(tStrIntervals);
                         tNumReals = stoi(tStrIntervals);
 
@@ -424,7 +424,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
                 }
             }
         }
-        else 
+        else
         {
             std::stringstream ss;
             ss << "Plato::Parser: Multiple variable definitions for '" << tVarName << "'." << std::endl;
@@ -438,7 +438,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
     int numMods;
     do
     {
-        // find 'For' elements and expand them.  The for_each member function in 
+        // find 'For' elements and expand them.  The for_each member function in
         // the ForWalker class is called for each node in the tree:
         ForWalker tForWalker(tArrays, numMods);
         doc->traverse(tForWalker);
@@ -448,7 +448,7 @@ PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
 
     do
     {
-        // find arithmetic expressions and evaluate them.  The for_each member function in 
+        // find arithmetic expressions and evaluate them.  The for_each member function in
         // the MathWalker class is called for each node in the tree:
         MathWalker tMathWalker(tMathParser);
         doc->traverse(tMathWalker);
@@ -515,7 +515,7 @@ void PugiParser::MathWalker::evalSubExpr(std::string& aString, size_t aSearchPos
     if (tOpenerPos < tCloserPos)
     {
         evalSubExpr(aString, tOpenerPos+1);
-    } 
+    }
     else
     {
         size_t tStrLen = tCloserPos-aSearchPos;
@@ -535,7 +535,7 @@ bool PugiParser::ForWalker::for_each(pugi::xml_node& aNode)
         {
             throw Plato::ParsingException("'For' element missing 'var' attribute");
         }
-  
+
         // tokenize to account for compound 'For' loops (i.e., For var='I,J', etc.)
         auto tStrVars = tokenize(tStrVar,',');
 
@@ -583,7 +583,7 @@ bool PugiParser::ForWalker::for_each(pugi::xml_node& aNode)
                 {
                     std::string tVal = mVarMap.at(tStrIns[iVar])[iVal];
                     std::string tVar = tStrVars[iVar];
-         
+
                     // find/replace var in new copy.
                     PugiParser::recursiveFindReplace(copied, tVar, tVal);
                 }
@@ -612,7 +612,7 @@ PugiParser::tokenize( std::string aString, const char aDelimiter )
 }
 
 
-void 
+void
 PugiParser::recursiveFindReplace( pugi::xml_node aNode, std::string aFind, std::string aReplace)
 {
     for( auto tNode : aNode.children() )
@@ -631,7 +631,7 @@ PugiParser::findReplace(std::string aString, std::string aFind, std::string aRep
     // only look for aFind between '{' and '}' delimiters
     // tokenify the string between '{' and '}' based on arithmetic ops and delimiters (i.e., +-()/*^{}[]) and find based on tokens
     // the delimiters '{' and '}' are not removed.
-    
+
     std::string tString(aString);
 
     size_t tSearchPos = 0;
@@ -675,7 +675,7 @@ PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData)
       if( std::string(child.child_value()) != "" )
       {
         inputData.add<std::string>(child.name(),child.child_value());
-      } 
+      }
       else
       {
         Plato::InputData newData(child.name());
@@ -727,7 +727,7 @@ Plato::InputData InputData(Plato::InputData & aNode, const std::string & aFieldN
         // requested entry is one past then end of the list.  add new entry then return it.
         aNode.add<Plato::InputData>(aFieldName, Plato::InputData(aFieldName));
         return aNode.get<Plato::InputData>(aFieldName, aIndex);
-    } else 
+    } else
     {
         // requested entry is more than one past then end of the list.  return empty InputData but don't add it.
         return Plato::InputData(aFieldName);
@@ -957,7 +957,7 @@ void loadFile(pugi::xml_document & aInput)
 
 std::string keyword(
  const Plato::InputData& aNode,
- const std::string& aKeyword, 
+ const std::string& aKeyword,
  const std::string& aDefault)
 {
     auto tOutput = Plato::Get::String(aNode, aKeyword);
@@ -1024,10 +1024,10 @@ void parseOperationData(const Plato::InputData & aOperationNode, Plato::Operatio
 /******************************************************************************/
 {
     aOperationData.set<Plato::InputData>("Input Data", aOperationNode);
- 
+
     std::string tOperationName = aOperationNode.get<std::string>("Name");
 
-  
+
     if( aOperationNode.size<std::string>("PerformerName") != static_cast<int>(1) )
     {
         throw Plato::ParsingException("one and only one performer must be specified");
@@ -1069,7 +1069,7 @@ void parseStageOperations(const Plato::InputData & aStageNode, Plato::StageInput
 {
     std::string tStageName = aStageNode.get<std::string>("Name");
     auto tOperationNodes = aStageNode.getByName<Plato::InputData>("Operation");
-    for(auto tOperationNode  = tOperationNodes.begin(); 
+    for(auto tOperationNode  = tOperationNodes.begin();
              tOperationNode != tOperationNodes.end(); ++tOperationNode)
     {
         int numSubOperations = tOperationNode->size<Plato::InputData>("Operation");
@@ -1077,7 +1077,7 @@ void parseStageOperations(const Plato::InputData & aStageNode, Plato::StageInput
         {
             Plato::OperationInputDataMng tOperationInputData;
             auto tSubOperationNodes = tOperationNode->getByName<Plato::InputData>("Operation");
-            for(auto tSubOperationNode  = tSubOperationNodes.begin(); 
+            for(auto tSubOperationNode  = tSubOperationNodes.begin();
                      tSubOperationNode != tSubOperationNodes.end(); ++tSubOperationNode)
             {
                 int numSubSubOperations = tSubOperationNode->size<Plato::InputData>("Operation");
@@ -1202,10 +1202,10 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
 }
 
 /******************************************************************************/
-void parseConstraintValueNames(const Plato::InputData & aOptimizationNode, Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
+void parseConstraintValueNames(const Plato::InputData & aOptimizerNode, Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tConstraintNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tConstraintNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for(auto tMyConstraintNode = tConstraintNodes.begin(); tMyConstraintNode != tConstraintNodes.end(); ++tMyConstraintNode)
     {
         if( tMyConstraintNode->size<std::string>("ValueName") || tMyConstraintNode->size<std::string>("ValueStageName") )
@@ -1227,11 +1227,11 @@ void parseConstraintValueNames(const Plato::InputData & aOptimizationNode, Plato
 }
 
 /******************************************************************************/
-void parseConstraintGradientNames(const Plato::InputData & aOptimizationNode,
+void parseConstraintGradientNames(const Plato::InputData & aOptimizerNode,
                                   Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tConstraintNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tConstraintNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for( auto tMyConstraintNode = tConstraintNodes.begin(); tMyConstraintNode != tConstraintNodes.end(); ++tMyConstraintNode)
     {
         if( tMyConstraintNode->size<std::string>("GradientName") || tMyConstraintNode->size<std::string>("GradientStageName") )
@@ -1255,11 +1255,11 @@ void parseConstraintGradientNames(const Plato::InputData & aOptimizationNode,
 }
 
 /******************************************************************************/
-void parseConstraintHessianNames(const Plato::InputData & aOptimizationNode,
+void parseConstraintHessianNames(const Plato::InputData & aOptimizerNode,
                                  Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tConstraintNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tConstraintNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for(auto tMyConstraintNode = tConstraintNodes.begin(); tMyConstraintNode != tConstraintNodes.end(); ++tMyConstraintNode)
     {
         const std::string tValueName = tMyConstraintNode->get<std::string>("ValueName");
@@ -1277,11 +1277,11 @@ void parseConstraintHessianNames(const Plato::InputData & aOptimizationNode,
 }
 
 /******************************************************************************/
-void parseConstraintReferenceValueNames(const Plato::InputData & aOptimizationNode,
+void parseConstraintReferenceValueNames(const Plato::InputData & aOptimizerNode,
                                         Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for(auto tNode=tNodes.begin(); tNode!=tNodes.end(); ++tNode)
     {
         if( tNode->size<std::string>("ReferenceValueName") )
@@ -1295,11 +1295,11 @@ void parseConstraintReferenceValueNames(const Plato::InputData & aOptimizationNo
 }
 
 /******************************************************************************/
-void parseConstraintTargetValues(const Plato::InputData & aOptimizationNode,
+void parseConstraintTargetValues(const Plato::InputData & aOptimizerNode,
                                  Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for(auto tNode=tNodes.begin(); tNode!=tNodes.end(); ++tNode)
     {
         const std::string tValueName = tNode->get<std::string>("ValueName");
@@ -1326,11 +1326,11 @@ void parseConstraintTargetValues(const Plato::InputData & aOptimizationNode,
 }
 
 /******************************************************************************/
-void parseConstraintReferenceValues(const Plato::InputData & aOptimizationNode,
+void parseConstraintReferenceValues(const Plato::InputData & aOptimizerNode,
                                     Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    auto tNodes = aOptimizationNode.getByName<Plato::InputData>("Constraint");
+    auto tNodes = aOptimizerNode.getByName<Plato::InputData>("Constraint");
     for(auto tNode=tNodes.begin(); tNode!=tNodes.end(); ++tNode)
     {
         const std::string tValueName = tNode->get<std::string>("ValueName");
@@ -1341,15 +1341,15 @@ void parseConstraintReferenceValues(const Plato::InputData & aOptimizationNode,
 }
 
 /******************************************************************************/
-void parseConstraintStagesData(const Plato::InputData & aOptimizationNode, Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
+void parseConstraintStagesData(const Plato::InputData & aOptimizerNode, Plato::OptimizerEngineStageData & aOptimizerEngineStageData)
 /******************************************************************************/
 {
-    Plato::Parse::parseConstraintValueNames(aOptimizationNode, aOptimizerEngineStageData);
-    Plato::Parse::parseConstraintHessianNames(aOptimizationNode, aOptimizerEngineStageData);
-    Plato::Parse::parseConstraintTargetValues(aOptimizationNode, aOptimizerEngineStageData);
-    Plato::Parse::parseConstraintGradientNames(aOptimizationNode, aOptimizerEngineStageData);
-    Plato::Parse::parseConstraintReferenceValues(aOptimizationNode, aOptimizerEngineStageData);
-    Plato::Parse::parseConstraintReferenceValueNames(aOptimizationNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintValueNames(aOptimizerNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintHessianNames(aOptimizerNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintTargetValues(aOptimizerNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintGradientNames(aOptimizerNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintReferenceValues(aOptimizerNode, aOptimizerEngineStageData);
+    Plato::Parse::parseConstraintReferenceValueNames(aOptimizerNode, aOptimizerEngineStageData);
 }
 
 /******************************************************************************/
@@ -1688,11 +1688,47 @@ void parseOptimizerStages(const Plato::InputData & aOptimizerNode, Plato::Optimi
         std::string tCacheStageName = tCacheNode.get<std::string>("Name");
         aOptimizerEngineStageData.setCacheStageName(tCacheStageName);
     }
+
     if( aOptimizerNode.size<Plato::InputData>("UpdateProblemStage") )
     {
-        Plato::InputData tUpdateProblemNode = aOptimizerNode.get<Plato::InputData>("UpdateProblemStage");
-        std::string tUpdateProblemStageName = tUpdateProblemNode.get<std::string>("Name");
-        aOptimizerEngineStageData.setUpdateProblemStageName(tUpdateProblemStageName);
+        // Allow for one or more update problem stages.
+
+        // There are two possible schemas the first is to have each
+        // stage in separate blocks. NOT USED.
+
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 1</Name>
+        // </UpdateProblemStage>
+
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 2</Name>
+        // </UpdateProblemStage>
+
+        // auto tUPSNodes =
+        //   aOptimizerNode.getByName<Plato::InputData>("UpdateProblemStage");
+
+        // std::vector< std::string > tUpdateProblemStageNames;
+
+        // for(auto tUPSNode=tUPSNodes.begin(); tUPSNode!=tUPSNodes.end(); ++tUPSNode)
+        // {
+        //     std::string tStageName = tUPSNode->get<std::string>("Name");
+        //     tUpdateProblemStageNames.push_back(tStageName);
+        // }
+
+        // The second is to have all the stages under one block.
+
+        // <UpdateProblemStage>
+        //   <Name>Update Shape 1</Name>
+        //   <Name>Update Shape 2</Name>
+        // </UpdateProblemStage>
+
+        auto tUPSNode =
+            aOptimizerNode.get<Plato::InputData>("UpdateProblemStage");
+
+        std::vector<std::string> tUpdateProblemStageNames =
+            tUPSNode.getByName<std::string>("Name");
+
+        aOptimizerEngineStageData.setUpdateProblemStageNames(tUpdateProblemStageNames);
     }
 
     Plato::Parse::parseInitialGuess(aOptimizerNode, aOptimizerEngineStageData);
@@ -1708,8 +1744,10 @@ void parseOptimizerStages(const Plato::InputData & aOptimizerNode, Plato::Optimi
     else
     {
         std::ostringstream tMsg;
-        tMsg << "\n\n ********** PLATO ERROR: FILE = " << __FILE__ << ", FUNCTION = " << __PRETTY_FUNCTION__ << ", LINE = "
-             << __LINE__ << ", MESSAGE: NO OBJECTIVE IS DEFINED. **********\n\n";
+        tMsg << "\n\n ********** PLATO ERROR: FILE = " << __FILE__
+             << ", FUNCTION = " << __PRETTY_FUNCTION__
+             << ", LINE = " << __LINE__
+             << ", MESSAGE: NO OBJECTIVE IS DEFINED. **********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
 

@@ -99,6 +99,11 @@ void Performer::setApplication(Application* aApplication)
     mApplication = aApplication;
 }
 
+Application * Performer::getApplication() const
+{
+    return mApplication;
+}
+
 std::string Performer::myName()
 {
     return mName;

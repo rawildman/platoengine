@@ -76,9 +76,11 @@ SystemCall::SystemCall(PlatoApp* aPlatoApp, Plato::InputData & aNode) :
                   Plato::LocalOp(aPlatoApp)
 /******************************************************************************/
 {
+    mPrint = Plato::Get::Bool(aNode, "Print");
     mOnChange = Plato::Get::Bool(aNode, "OnChange");
     mAppendInput = Plato::Get::Bool(aNode, "AppendInput");
     mStringCommand = Plato::Get::String(aNode, "Command");
+    mPrecision = Plato::Get::Int(aNode, "ParameterPrecision", 16);
 
     for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
@@ -177,7 +179,7 @@ void SystemCall::operator()()
                 for(size_t i=0; i<tInputArgument->size(); ++i)
                 {
                     std::stringstream dataString;
-                    dataString << std::setprecision(16) << tInputArgument->data()[i];
+                    dataString << std::setprecision(mPrecision) << tInputArgument->data()[i];
                     arguments.push_back(dataString.str());
                 }
             }
@@ -195,6 +197,11 @@ void SystemCall::executeCommand(const std::vector<std::string> &arguments)
     }
     // make system call
     Plato::system_with_return(cmd.c_str());
+
+    if (mPrint)
+    {
+        Plato::Console::Status("Executed command: " + cmd);
+    }
 }
 
 void SystemCallMPI::executeCommand(const std::vector<std::string> &arguments)

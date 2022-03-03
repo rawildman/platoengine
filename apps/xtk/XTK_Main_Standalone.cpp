@@ -53,8 +53,6 @@
 #include "Plato_XTK_Application.hpp"
 #include "Plato_XTK_Local_Op_Generate_Model.hpp"
 #include "Plato_Interface.hpp"
-#include "Plato_OptimizerInterface.hpp"
-#include "Plato_OptimizerFactory.hpp"
 #include "Plato_Exceptions.hpp"
 #include <iostream>
 

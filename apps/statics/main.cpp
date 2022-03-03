@@ -60,8 +60,9 @@ public:
     LocalApp(int aArgc, char **aArgv);
     virtual ~LocalApp();
 
-    void finalize();
     void initialize();
+    void reinitialize() {};
+    void finalize() {};
     void compute(const std::string & aOperationName);
     void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
     void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
@@ -129,7 +130,7 @@ int main(int argc, char **argv)
 
     try
     {
-        platoInterface->registerPerformer(myApp);
+        platoInterface->registerApplication(myApp);
     }
     catch(...)
     {
@@ -253,21 +254,15 @@ void LocalApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vec
 }
 
 /******************************************************************************/
-void LocalApp::finalize()
-{
-}
-/******************************************************************************/
-
-/******************************************************************************/
 void LocalApp::initialize()
 /******************************************************************************/
 {
     // define the system graph for solid mechanics
     const int dofsPerNode_3D = 3;
-    m_sysGraph_3D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_3D, m_lightmp->getInput());
+    m_sysGraph_3D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_3D);
 
     const int dofsPerNode_1D = 1;
-    m_sysGraph_1D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_1D, m_lightmp->getInput());
+    m_sysGraph_1D = new SystemContainer(m_lightmp->getMesh(), dofsPerNode_1D);
 
     // define a distributed global stiffness matrix
     m_stiffnessMatrix = new DistributedCrsMatrix(m_sysGraph_3D);
@@ -373,7 +368,7 @@ void LocalApp::compute(const std::string & aOperationName)
     m_forcingVector->PutScalar(0.0);
     m_statics->computeExternalForces(*m_forcingVector, /*currentTime=*/0.0);
 
-    // compute stiffness 
+    // compute stiffness
     m_statics->buildStiffnessMatrix(*m_stiffnessMatrix, *topology, m_penaltyModel);
     m_statics->applyConstraints(*m_stiffnessMatrix, *m_forcingVector, /*currentTime=*/0.0);
 
@@ -463,4 +458,3 @@ LocalApp::LocalApp(int aArgc, char **aArgv) :
 
     m_lightmp = new LightMP(tInputFile);
 }
-

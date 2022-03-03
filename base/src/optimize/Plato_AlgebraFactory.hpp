@@ -103,9 +103,10 @@ public:
      * @param [in] aInterface PLATO Engine interface
      * @return standard shared pointer to 1D container
     **********************************************************************************/
-    std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> createVector(const MPI_Comm & aComm,
-                                                                         const OrdinalType & aLength,
-                                                                         Plato::Interface* aInterface) const
+    std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>>
+    createVector(const MPI_Comm & aComm,
+                 const OrdinalType & aLength,
+                 Plato::Interface* aInterface) const
     {
         std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector;
         try
@@ -114,11 +115,15 @@ public:
 
             if( tInputData.size<Plato::Interface>("Optimizer") > 1 )
             {
-                std::string tError("MULTIPLE 'Optimizer' DEFINITIONS\n");
-                PRINTERR("MULTIPLE 'Optimizer' DEFINITIONS");
-                Plato::ParsingException tParsingException(tError);
+                Plato::ParsingException tParsingException("Plato::AlgebraFactory: multiple 'Optimizer' definitions");
                 aInterface->registerException(tParsingException);
             }
+            else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
+            {
+                Plato::ParsingException tParsingException("Plato::AlgebraFactory: missing 'Optimizer' definitions");
+                aInterface->registerException(tParsingException);
+            }
+
             auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
 
             std::string tAlgebra;
@@ -195,8 +200,8 @@ public:
      * @param [in] aInterface PLATO Engine interface
      * @return standard shared pointer to reduction operations interface
     **********************************************************************************/
-    std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>> createReduction(const MPI_Comm & aComm,
-                                                                                         Plato::Interface* aInterface) const
+    std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>>
+    createReduction(const MPI_Comm & aComm, Plato::Interface* aInterface) const
     {
         std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>> tReductions;
         try
@@ -205,11 +210,15 @@ public:
 
             if( tInputData.size<Plato::Interface>("Optimizer") > 1 )
             {
-                std::string tError("MULTIPLE 'Optimizer' DEFINITIONS\n");
-                PRINTERR("MULTIPLE 'Optimizer' DEFINITIONS");
-                Plato::ParsingException tParsingException(tError);
+                Plato::ParsingException tParsingException("Plato::AlgebraFactory: multiple 'Optimizer' definitions");
                 aInterface->registerException(tParsingException);
             }
+            else if( tInputData.size<Plato::InputData>("Optimizer") == 0 )
+            {
+                Plato::ParsingException tParsingException("Plato::AlgebraFactory: missing 'Optimizer' definitions");
+                aInterface->registerException(tParsingException);
+            }
+
             auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
 
             std::string tAlgebra;

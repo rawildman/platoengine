@@ -84,13 +84,13 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
             const Plato::communication::broadcast_t tBroadcastType = aSharedDataInfo.getMyBroadcast(tIndex);
             tNewData = new Plato::SharedField(tMyName, tBroadcastType, aCommData,  Plato::data::layout_t::SCALAR_FIELD);
         }
-        else 
+        else
         if(tMyLayout == "ELEMENT FIELD")
         {
             const Plato::communication::broadcast_t tBroadcastType = aSharedDataInfo.getMyBroadcast(tIndex);
             tNewData = new Plato::SharedField(tMyName, tBroadcastType, aCommData, Plato::data::layout_t::ELEMENT_FIELD);
         }
-        else 
+        else
         if(tMyLayout == "GLOBAL")
         {
             const int tSize = aSharedDataInfo.getSharedDataSize(tMyName);
@@ -116,10 +116,9 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
 DataLayer::~DataLayer()
 /******************************************************************************/
 {
-    const size_t tNumSharedData = mSharedData.size();
-    for(size_t tSharedDataIndex = 0u; tSharedDataIndex < tNumSharedData; tSharedDataIndex++)
+    for(auto& tSharedData : mSharedData)
     {
-        delete mSharedData[tSharedDataIndex];
+        delete tSharedData;
     }
     mSharedData.clear();
     mSharedDataMap.clear();
@@ -150,4 +149,3 @@ const std::vector<SharedData*> & DataLayer::getSharedData() const
 }
 
 } /* namespace Plato */
-

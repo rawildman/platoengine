@@ -52,7 +52,7 @@
 
 
 /*****************************************************************************/
-SystemContainer::SystemContainer(DataMesh* mesh, int dofs_per_node, pugi::xml_node& input)
+SystemContainer::SystemContainer(DataMesh* mesh, int dofs_per_node)
 /*****************************************************************************/
 {
   Comm = new Epetra_MpiComm( WorldComm.getComm() );

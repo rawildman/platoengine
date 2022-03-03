@@ -70,8 +70,16 @@ class MultiOperation : public Operation
 {
 public:
     MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
-                  const std::shared_ptr<Plato::Performer> aPerformer,
-                  const std::vector<Plato::SharedData*>& aSharedData);
+                   const std::shared_ptr<Plato::Performer> aPerformer,
+                   const std::vector<Plato::SharedData*>& aSharedData);
+
+    virtual void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
+                        const std::shared_ptr<::Plato::Performer> aPerformer,
+                        const std::vector<::Plato::SharedData*>& aSharedData) override;
+
+    void initialize(const ::Plato::OperationInputDataMng & aOperationDataMng,
+                    const std::shared_ptr<::Plato::Performer> aPerformer,
+                    const std::vector<::Plato::SharedData*>& aSharedData);
 };
 
 } // End namespace Plato

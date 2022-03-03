@@ -88,8 +88,10 @@ private:
     std::vector<std::string> mInputNames;
     std::vector<std::vector<double> > mSavedParameters;
     std::vector<std::string> mArguments;
+    bool mPrint;
     bool mOnChange;
     bool mAppendInput;
+    short unsigned int mPrecision;
 protected:
     std::string mStringCommand;
 };

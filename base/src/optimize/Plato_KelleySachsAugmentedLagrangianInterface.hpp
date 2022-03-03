@@ -57,7 +57,7 @@
 #include "Plato_CriterionList.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_StandardMultiVector.hpp"
@@ -71,7 +71,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class KelleySachsAugmentedLagrangianInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class KelleySachsAugmentedLagrangianInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -97,9 +97,9 @@ public:
      * @brief Return optimization algorithm used to solve optimization problem
      * @return optimization algorithm type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
+        return (Plato::optimizer::algorithm_t::KELLEY_SACHS_AUGMENTED_LAGRANGIAN);
     }
 
     /******************************************************************************//**
@@ -107,7 +107,8 @@ public:
     **********************************************************************************/
     void initialize()
     {
-        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData);
+        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
+                                                   this->mOptimizerIndex);
     }
 
     /******************************************************************************//**
@@ -115,8 +116,6 @@ public:
     **********************************************************************************/
     void run()
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -140,19 +139,15 @@ public:
 
         // ********* SOLVE OPTIMIZATION PROBLEM ********* //
         this->solveOptimizationProblem(tDataFactory, tDataMng);
-
-        // ********* OUTPUT SOLUTION *********
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        this->finalize();
     }
 
     /******************************************************************************//**
-     * @brief Notification from optimizer stating that problem has been solved.
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
-        mInterface->finalize();
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -187,7 +182,7 @@ private:
     {
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-                std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
 
         // ********* ALLOCATE CONSTRAINT LIST ********* //
         const OrdinalType tNumConstraints = mInputData.getNumConstraints();

@@ -108,6 +108,17 @@ void PhysicsProxyApp::initialize()
     mObjectiveGradient.resize(tNumDesignVariables, 0);
 }
 
+void PhysicsProxyApp::reinitialize()
+{
+    delete mMeshData;
+    mMeshData = new stk::io::StkMeshIoBroker(mMyComm);
+
+    mGlobalIDsOwned.clear();
+    mGlobalIDsOwnedAndShared.clear();
+
+    initialize();
+}
+
 void PhysicsProxyApp::compute(const std::string & aOperationName)
 {
     if(std::strcmp(aOperationName.c_str(), "ObjectiveFunctionEvaluation") == 0)

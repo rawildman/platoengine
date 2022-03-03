@@ -62,7 +62,7 @@
 #include "Plato_Diagnostics.hpp"
 #include "Plato_CommWrapper.hpp"
 #include "Plato_AlgebraFactory.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineObjective.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_StandardMultiVector.hpp"
@@ -73,7 +73,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class DiagnosticsInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class DiagnosticsInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     explicit DiagnosticsInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
@@ -87,25 +87,25 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::DERIVATIVE_CHECKER);
+        return (Plato::optimizer::algorithm_t::DERIVATIVE_CHECKER);
     }
+
     /******************************************************************************/
     void initialize()
     /******************************************************************************/
     {
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
-        Plato::Parse::parseOptimizerStages(tOptimizationNode, mInputData);
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+
+        Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }
+
     /******************************************************************************/
     void run()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -151,10 +151,12 @@ public:
 
         // ********* CHECK CONSTRAINTS ********* //
         this->checkConstraints(tDataFactory, *tInitialGuess, tDiagnostics);
-
-        this->finalize();
     }
-    /******************************************************************************/
+
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
     /******************************************************************************/
     {
@@ -246,7 +248,7 @@ private:
     /******************************************************************************/
     {
         // ********* Check Objective Function ********* //
-        Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, mInputData, mInterface);
+      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, mInputData, mInterface, this);
 
         std::ostringstream tOutputMsg;
         std::string tMyName = mInputData.getObjectiveValueOutputName();

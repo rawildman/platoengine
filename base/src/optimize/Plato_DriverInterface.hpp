@@ -46,8 +46,10 @@
 //@HEADER
 */
 
-#ifndef PLATO_OPTIMIZERINTERFACE_HPP_
-#define PLATO_OPTIMIZERINTERFACE_HPP_
+#ifndef PLATO_DRIVERINTERFACE_HPP_
+#define PLATO_DRIVERINTERFACE_HPP_
+
+#include "Plato_Interface.hpp"
 
 namespace Plato
 {
@@ -56,29 +58,14 @@ struct driver
 {
     enum driver_t
     {
-        OPTIMALITY_CRITERIA = 1,
-        METHOD_OF_MOVING_ASYMPTOTES = 2,
-        GLOBALLY_CONVERGENT_METHOD_OF_MOVING_ASYMPTOTES = 3,
-        KELLEY_SACHS_UNCONSTRAINED = 4,
-        KELLEY_SACHS_BOUND_CONSTRAINED = 5,
-        KELLEY_SACHS_AUGMENTED_LAGRANGIAN = 6,
-        DERIVATIVE_CHECKER = 7,
-        ROL_KSAL = 8,
-        ROL_KSBC = 9,
-        STOCHASTIC_REDUCED_ORDER_MODEL = 10,
-        PARTICLE_SWARM_OPTMIZATION_ALPSO = 11,
-        PARTICLE_SWARM_OPTMIZATION_BCPSO = 12,
-        SO_PARAMETER_STUDIES = 13,
-        PLATO_DAKOTA_DRIVER = 14,
-        ROL_LINEAR_CONSTRAINT = 15,
-        ROL_BOUND_CONSTRAINED = 16,
-        ROL_AUGMENTED_LAGRANGIAN = 17
+        PLATO_OPTIMIZER_DRIVER = 1,
+        PLATO_DAKOTA_DRIVER = 2,
     }; // enum driver_t
 };
 // struct driver
 
 /******************************************************************************//**
- * @brief Abstract interface to optimization algorithm
+ * @brief Abstract interface to driver algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
 class DriverInterface
@@ -89,22 +76,33 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Interface to optimization algorithm - solves optimization problem
+     * @brief Interface to driver algorithm
     **********************************************************************************/
     virtual void run() = 0;
 
     /******************************************************************************//**
-     * @brief Deallocate memory
+     * @brief Initialize the driver
+    **********************************************************************************/
+    virtual void initialize() = 0;
+
+    /******************************************************************************//**
+     * @brief Finalize the driver
     **********************************************************************************/
     virtual void finalize() = 0;
 
     /******************************************************************************//**
-     * @brief Allocate memory
+     * @brief Return true if the last driver
     **********************************************************************************/
-    virtual void initialize() = 0;
+    virtual bool lastDriver() const = 0;
+
+    /******************************************************************************//**
+     * @brief Return the driver type
+     * \return driver type
+    **********************************************************************************/
+    virtual driver::driver_t driver() const = 0;
 };
 // class DriverInterface
 
 } // namespace Plato
 
-#endif /* PLATO_OPTIMIZERINTERFACE_HPP_ */
+#endif /* PLATO_DRIVERINTERFACE_HPP_ */

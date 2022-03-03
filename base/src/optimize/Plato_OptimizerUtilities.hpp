@@ -64,13 +64,68 @@ namespace Plato
 {
 
 /********************************************************************************/
-template<typename ScalarType, typename OrdinalType>
-inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStageData & aInputData)
+inline const Plato::InputData
+getOptimizerNode(Plato::Interface* aInterface,
+                 const std::vector<size_t> & aOptimizerIndex)
 /********************************************************************************/
 {
-    auto tInputData = aInterface->getInputData();
-    auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
-    Plato::Parse::parseOptimizerStages(tOptimizationNode, aInputData);
+    // The optimizer index is a vector of indices. The size of the
+    // vector less 1 denotes the number of nesting levels. Each index
+    // is the serial index of the optimizer block.
+
+    // A basic run with one optimizer block would have a vector of
+    // {0}. A simple nested run with one nested optimizer would
+    // have a vector of {0} for the outer optimizer and {0,0} for
+    // the inner optimizer.
+
+    // More complicated vector for the inner most optimizer would be
+    // {2,1,0} which denotes the outer most third serial optimizer
+    // {2}, of which its second serial inner loop is wanted {2,1}, of
+    // which its first inner loop is wanted {2,1,0},
+
+    // Get the parent of the first optimizer node. Note the name is
+    // used recursively below.
+    auto tOptimizerNode = aInterface->getInputData();
+
+    // Make sure there is a top level optimizer.
+    if( tOptimizerNode.size<Plato::InputData>("Optimizer") == 0 )
+    {
+        return Plato::InputData();
+    }
+
+    // The top level input data node is always used. As such,
+    // recursively search for the block which is a series of
+    // nested blocks.
+    for( size_t i=0; i<aOptimizerIndex.size(); ++i )
+    {
+        size_t nOptimizers =
+            tOptimizerNode.size<Plato::InputData>("Optimizer");
+
+        // Make sure the serial optimizer at this level is valid.
+        if( aOptimizerIndex[i] >= nOptimizers )
+        {
+            return Plato::InputData();
+        }
+
+        // Get the serial optimizer at this level and index.
+        tOptimizerNode =
+          tOptimizerNode.get<Plato::InputData>("Optimizer",
+                                               aOptimizerIndex[i]);
+    }
+
+    return tOptimizerNode;
+}
+
+/********************************************************************************/
+template<typename ScalarType, typename OrdinalType>
+inline void initialize(Plato::Interface* aInterface,
+                       Plato::OptimizerEngineStageData & aInputData,
+                       std::vector<size_t> aOptimizerIndex)
+/********************************************************************************/
+{
+    auto tOptimizerNode = getOptimizerNode(aInterface, aOptimizerIndex);
+
+    Plato::Parse::parseOptimizerStages(tOptimizerNode, aInputData);
 
     const OrdinalType tNumConstraints = aInputData.getNumConstraints();
     for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
@@ -86,9 +141,10 @@ inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStage
             aInputData.addConstraintReferenceValue(tConstraintValueName, tReferenceValue);
         }
 
-        // Do some error checking and make sure we have valid constraint values set.  If the user
-        // specified an absolute value rather than a normalized one we need to calculate
-        // the normalized one.
+        // Do some error checking and make sure we have valid
+        // constraint values set.  If the user specified an absolute
+        // value rather than a normalized one we need to calculate the
+        // normalized one.
         bool tAbsoluteWasSet = aInputData.constraintAbsoluteTargetValueWasSet(tConstraintValueName);
         bool tNormalizedWasSet = aInputData.constraintNormalizedTargetValueWasSet(tConstraintValueName);
         bool tReferenceWasSet = aInputData.constraintReferenceValueWasSet(tConstraintValueName);
@@ -97,8 +153,8 @@ inline void initialize(Plato::Interface* aInterface, Plato::OptimizerEngineStage
             double tReferenceTargetValue = aInputData.getConstraintReferenceValue(tConstraintValueName);
             if(tAbsoluteWasSet && tNormalizedWasSet)
             {
-                // If both normalized and absolute target values were set make sure they
-                // are consistent.
+                // If both normalized and absolute target values were
+                // set make sure they are consistent.
                 double tAbsoluteTargetValue = aInputData.getConstraintAbsoluteTargetValue(tConstraintValueName);
                 double tNormalizedTargetValue = aInputData.getConstraintNormalizedTargetValue(tConstraintValueName);
                 double tCalculatedNormalizedValue = tAbsoluteTargetValue / tReferenceTargetValue;
@@ -241,23 +297,6 @@ inline void getInitialGuessInputData(const std::string & aControlName,
             assert(aOutput.size() == tInitialGuess.size());
             std::copy(tInitialGuess.begin(), tInitialGuess.end(), aOutput.begin());
         }
-    }
-}
-
-/******************************************************************************//**
- * @brief Call finalization stage: responsible for writing the solution to the output file
- * @param [in] aInterface PLATO Engine interface
- * @param [in] aInputData PLATO Engine struct with input data read from xml file
-***********************************************************************************/
-void call_finalization_stage(Plato::Interface* aInterface, const Plato::OptimizerEngineStageData & aInputData)
-{
-    std::string tStageName = aInputData.getFinalizationStageName();
-    if(tStageName.empty() == false)
-    {
-        std::vector<std::string> tStageNames;
-        tStageNames.push_back(tStageName);
-        Teuchos::ParameterList tParameterList;
-        aInterface->compute(tStageNames, tParameterList);
     }
 }
 

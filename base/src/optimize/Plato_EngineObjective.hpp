@@ -59,6 +59,7 @@
 #include "Plato_MultiVector.hpp"
 #include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
+#include "Plato_OptimizerInterface.hpp"
 
 namespace Plato
 {
@@ -75,7 +76,8 @@ public:
     **********************************************************************************/
     explicit EngineObjective(const Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
                              const Plato::OptimizerEngineStageData & aInputData,
-                             Plato::Interface* aInterface = nullptr) :
+                             Plato::Interface* aInterface,
+                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mControl(std::vector<ScalarType>(aDataFactory.getNumControls())),
             mGradient(std::vector<ScalarType>(aDataFactory.getNumControls())),
@@ -84,6 +86,15 @@ public:
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())
     {
+
+        // This data is used to manage the serial and nesting
+        // optimization when calling the value method.
+        if( aOptInterface )
+        {
+            mOptimizerName  = aOptInterface->getOptimizerName();
+            mOptimizerIndex = aOptInterface->getOptimizerIndex();
+            mHasInnerLoop   = aOptInterface->getHasInnerLoop();
+        }
     }
 
     /******************************************************************************//**
@@ -92,7 +103,8 @@ public:
      * @param [in] aInterface PLATO Engine interface
     **********************************************************************************/
     explicit EngineObjective(const Plato::OptimizerEngineStageData & aInputData,
-                             Plato::Interface* aInterface = nullptr) :
+                             Plato::Interface* aInterface,
+                             Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
             mVector(),
             mControl(),
             mGradient(),
@@ -101,6 +113,14 @@ public:
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())
     {
+        // This data is used to manage the serial and nesting
+        // optimization when calling the value method.
+        if( aOptInterface )
+        {
+            mOptimizerName  = aOptInterface->getOptimizerName();
+            mOptimizerIndex = aOptInterface->getOptimizerIndex();
+            mHasInnerLoop   = aOptInterface->getHasInnerLoop();
+        }
     }
 
     /******************************************************************************//**
@@ -167,41 +187,34 @@ public:
         assert(mInterface != nullptr);
 
         this->setControls(aControl);
+
         // Tell performers to cache the state
-        std::vector<std::string> tStageNames;
-        std::string tUpdateProblemName = mEngineInputData.getUpdateProblemStageName();
-        if(tUpdateProblemName.empty() == false)
-        {
-            tStageNames.push_back(tUpdateProblemName);
-            mInterface->compute(tStageNames, *mParameterList);
-        }
+        std::vector<std::string> tUpdateProblemNames =
+            mEngineInputData.getUpdateProblemStageNames();
+
+        mInterface->compute(tUpdateProblemNames, *mParameterList);
     }
 
     /******************************************************************************//**
      * @brief Evaluate one or multiple third-party application objective functions
      * @param [in] aControl const reference to 2D container of optimization variables
+     *
+     * With some of the the optimizer interfaces such as the MMA it is
+     * possible to have nested optimization. This nesting creates a
+     * circular dependency:
+     * DriverFactory->MMA->EngineObjective->OptimizerFactory
+
+     * Because of this circular dependency it is necessary to break
+     * from the traditional template class definition where everything
+     * is defined as part of the class definition ina single header
+     * file. Instead the EngineObjective::value method (which calls
+     * the OptimizerFactory) is defined SEPARTELY and AFTER the
+     * OptimizerFactory class has been defined. As such, the
+     * definition of EngineObjective::value is in a separate file,
+     * Plato_EngineObjective.tcc and is included in
+     * Plato_DriverFactory.hpp
     **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
-    {
-        assert(mInterface != nullptr);
-
-        // ********* Set view to each control vector entry ********* //
-        this->setControls(aControl);
-
-        // ********* Set view to objective function value ********* //
-        ScalarType tObjectiveValue = 0;
-        std::string tValueOutputName = mEngineInputData.getObjectiveValueOutputName();
-        mParameterList->set(tValueOutputName, &tObjectiveValue);
-
-        // ********* Compute objective function value ********* //
-        std::string tMyStageName = mEngineInputData.getObjectiveValueStageName();
-        assert(tMyStageName.empty() == false);
-        std::vector<std::string> tStageNames;
-        tStageNames.push_back(tMyStageName);
-        mInterface->compute(tStageNames, *mParameterList);
-
-        return (tObjectiveValue);
-    }
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl);
 
     /******************************************************************************//**
      * @brief Compute the gradient of one or multiple third-party application objectives
@@ -272,6 +285,22 @@ public:
         this->copy(mHessianTimesVector, aOutput);
     }
 
+    /******************************************************************************//**
+     * @brief set the optimizer name - Optional.
+    **********************************************************************************/
+    void setOptimizerName( std::string val ) { mOptimizerName = val; }
+
+    /******************************************************************************//**
+     * @brief set the index of the optimizer.
+    **********************************************************************************/
+    void setOptimizerIndex( std::vector<size_t> val ) { mOptimizerIndex = val; }
+
+    /******************************************************************************//**
+     * @brief set the inner loop boolean if the optimizer has an inner
+     * loop
+    **********************************************************************************/
+    void setHasInnerLoop( bool val ) { this->mHasInnerLoop = val; }
+
 private:
     /******************************************************************************//**
      * @brief Copy elements in standard vector into a Plato multi-vector
@@ -315,6 +344,23 @@ private:
     Plato::Interface* mInterface; /*!< PLATO Engine interface */
     Plato::OptimizerEngineStageData mEngineInputData; /*!< Parsed input data */
     std::shared_ptr<Teuchos::ParameterList> mParameterList; /*!< parameter list with data to be communicated through the PLATO Engine interface */
+
+    /******************************************************************************//**
+     * @brief string containing the optimizer name - Optional
+    **********************************************************************************/
+    std::string mOptimizerName{""};
+
+    /******************************************************************************//**
+     * @brief a vector of indices decribing this optimizer's location
+     * in the input - used when there are multiple optimizers. See
+     * Plato_OptimizerUtilities.hpp and the function getOptimizerNode().
+    **********************************************************************************/
+    std::vector<size_t> mOptimizerIndex;
+
+    /******************************************************************************//**
+     * @brief boolean indicating an inner optimizer loop is present
+    **********************************************************************************/
+    bool mHasInnerLoop{false};
 
 private:
     EngineObjective(const Plato::EngineObjective<ScalarType, OrdinalType>&);

@@ -41,84 +41,52 @@
  */
 
 /*
- * RocketDesignMain.cpp
+ * Plato_Reinitialize.hpp
  *
- *  Created on: Sep 27, 2018
+ *  Created on: Aug 31, 2021
  */
 
-#include "Plato_Interface.hpp"
-#include "Plato_RocketDesignApp.hpp"
+#pragma once
 
-#ifndef NDEBUG
-#include <fenv.h>
-#endif
+#include "Plato_LocalOperation.hpp"
 
-/******************************************************************************/
-int main(int aArgc, char **aArgv)
-/******************************************************************************/
+class PlatoApp;
+
+namespace Plato
 {
-#ifndef NDEBUG
-    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
 
-    MPI_Init(&aArgc, &aArgv);
+class InputData;
 
-    /************************* CREATE PLATO INTERFACE *************************/
-    Plato::Interface* tPlatoInterface = nullptr;
-    try
-    {
-        tPlatoInterface = new Plato::Interface();
-    }
-    catch(...)
-    {
-        MPI_Finalize();
-        exit(0);
-    }
-    /************************* CREATE PLATO INTERFACE *************************/
+/******************************************************************************//**
+ * @brief Compute current structural volume
+**********************************************************************************/
+class Reinitialize : public Plato::LocalOp
+{
+public:
+    /******************************************************************************//**
+     * @brief Constructor
+     * @param [in] aPlatoApp PLATO application
+     * @param [in] aNode input XML data
+    **********************************************************************************/
+    Reinitialize(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
-    /*************************** SET PLATO INTERFACE **************************/
-    MPI_Comm tLocalComm;
-    tPlatoInterface->getLocalComm(tLocalComm);
-    /*************************** SET PLATO INTERFACE **************************/
+    /******************************************************************************//**
+     * @brief Destructor
+    **********************************************************************************/
+    virtual ~Reinitialize();
 
-    /************************ CREATE LOCAL APPLICATION ************************/
-    Plato::RocketDesignApp* tMyApp = nullptr;
-    try
-    {
-        tMyApp = new Plato::RocketDesignApp(aArgc, aArgv);
-    }
-    catch(...)
-    {
-        MPI_Finalize();
-        exit(0);
-    }
-    /************************ CREATE LOCAL APPLICATION ************************/
+    /******************************************************************************//**
+     * @brief perform local operation - reinitialize the Application
+    **********************************************************************************/
+    void operator()();
 
-    /************************** REGISTER APPLICATION **************************/
-    try
-    {
-        tPlatoInterface->registerApplication(tMyApp);
-    }
-    catch(...)
-    {
-        MPI_Finalize();
-        exit(0);
-    }
-    /************************** REGISTER APPLICATION **************************/
+    /******************************************************************************//**
+     * @brief Return local operation's argument list
+     * @param [out] aLocalArgs argument list
+    **********************************************************************************/
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+};
+// class Reinitialize
 
-    /******************************** PERFORM *********************************/
-    try
-    {
-        tPlatoInterface->perform();
-    }
-    catch(...)
-    {
-    }
-    /******************************** PERFORM *********************************/
-
-    delete tMyApp;
-
-    MPI_Finalize();
 }
-// main
-
+// namespace Plato

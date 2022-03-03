@@ -188,7 +188,7 @@ void Interface::broadcastStageIndex(int & aStageIndex)
         Plato::TerminateSignal tTerminateSignal(tMsg.str());
         registerException(tTerminateSignal);
     }
-    handleExceptions();
+    this->handleExceptions();
 }
 
 /******************************************************************************/
@@ -207,7 +207,10 @@ Interface::getStage(std::string aStageName)
 
         auto tTerminate = Plato::Get::Bool(tControlData, "Terminate", false);
 
-        if(tTerminate) aStageName = "Terminate";
+        if(tTerminate)
+        {
+            aStageName = "Terminate";
+        }
     }
 
     // broadcast the index of the next stage
@@ -235,7 +238,6 @@ Plato::Stage*
 Interface::getStage()
 /******************************************************************************/
 {
-
     // broadcast the index of the next stage
     int tStageIndex;
 
@@ -253,102 +255,181 @@ Interface::getStage()
 }
 
 /******************************************************************************/
+void Interface::run()
+/******************************************************************************/
+{
+  // Note: this method is a stub and is a reminder that the try loop
+  // in the main in Plato_Main.cpp should really be encapsulated and
+  // be part of the interface. However doing so pulls all of the
+  // optimizers into the interface library. It also requires the
+  // driver library be included when building Analyze_MPMD. Future
+  // works is to refactor.
+
+  /*
+    // This handleException matches the one in Interface::perform().
+    this->handleExceptions();
+
+    // There should be at least one driver block but there can
+    // be more. These additional driver blocks can be in serial
+    // or nested. The while loop coupled with factory processes
+    // driver blocks that are serial. Nested driver blocks
+    // are processed recursively via the EngineObjective.
+    Plato::DriverFactory<double> tDriverFactory;
+    Plato::DriverInterface<double>* tDriver = nullptr;
+
+    // Note: When frist called, the factory will look for the
+    // first driver block. Subsequent calls will look for the
+    // next driver block if it exists.
+    while((tDriver =
+           tDriverFactory.create(this, mLocalComm)) != nullptr)
+    {
+        tDriver->run();
+
+        // If the last driver do any final stages before deleting
+        // it. This call goes to the driver and then back to the
+        // interface finalize with possibly a stage to compute.
+        if( tDriver->lastDriver() )
+        {
+            tDriver->finalize();
+        }
+
+        delete tDriver;
+    }
+  */
+}
+
+/******************************************************************************/
 void Interface::perform()
 /******************************************************************************/
 {
-    mExceptionHandler->handleExceptions();
+    // This handleException matches the one in Plato_Main.cpp main().
+    this->handleExceptions();
 
     while(this->isDone() == false)
     {
-
-        // performers 'hang' here until a new stage is established
+        // Performers 'hang' here until a new stage is established
         Plato::Stage* tStage = this->getStage();
 
         // 'Terminate' stage is nullptr
-        if(!tStage)
+        if(tStage == nullptr)
         {
             continue;
         }
 
         this->perform(tStage);
-
     }
 
-      mPerformer->finalize();
+    mPerformer->finalize();
+}
+
+/******************************************************************************/
+void Interface::reinitializePerformer()
+/******************************************************************************/
+{
+    mPerformer->getApplication()->reinitialize();
 }
 
 /******************************************************************************/
 void Interface::perform(Plato::Stage* aStage)
 /******************************************************************************/
 {
-    Console::Status("Stage: (" + mPerformer->myName() + ") " + aStage->getName());
+    // Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
-    // transmits input data
-    //
-    aStage->begin();
-
-    // any local operations?
-    //
-    Plato::Operation* tOperation = aStage->getNextOperation();
-    while(tOperation)
+    // Intercept this stage as it is an internal stage. That is the
+    // user does not need to define it.
+    if( aStage->getName() == "Update Shared Data" )
     {
+        Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
-        tOperation->sendInput();
+        this->createSharedData( mPerformer->getApplication() );
 
-        // copy data from Plato::SharedData buffers to hostedCode data containers
-        //
-        std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
-        for(std::string tName : tOperationInputDataNames)
-        {
-            try
-            {
-                tOperation->importData(tName, mDataLayer->getSharedData(tName));
-            }
-            catch(...)
-            {
-                mExceptionHandler->Catch();
-            }
-            mExceptionHandler->handleExceptions();
-        }
+        // After creating the shared data all of the stages and their
+        // operations need to be updated so to have the new links to
+        // the shared data.
+        this->updateStages();
 
-        try
-        {
-            tOperation->compute();
-        }
-        catch(...)
-        {
-            mExceptionHandler->Catch();
-        }
-        mExceptionHandler->handleExceptions();
-
-        // copy data from hostedCode data containers to Plato::SharedData buffers
-        //
-        std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
-        for(std::string tName : tOperationOutputDataNames)
-        {
-            try
-            {
-                tOperation->exportData(tName, mDataLayer->getSharedData(tName));
-            }
-            catch(...)
-            {
-                mExceptionHandler->Catch();
-            }
-            mExceptionHandler->handleExceptions();
-        }
-
-        tOperation->sendOutput();
-
-        tOperation = aStage->getNextOperation();
+        this->reinitializePerformer();
     }
+    else
+    {
+        // transmits input data
+        //
+        aStage->begin();
 
-    // transmits output data
-    //
-    aStage->end();
+        // any local operations?
+        //
+        Plato::Operation* tOperation = aStage->getNextOperation();
+        while(tOperation)
+        {
+            // Console::Status("Perform Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
+
+            tOperation->sendInput();
+
+            // copy data from Plato::SharedData buffers to hostedCode data containers
+            //
+            std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
+            for(std::string tName : tOperationInputDataNames)
+            {
+                try
+                {
+                    tOperation->importData(tName, mDataLayer->getSharedData(tName));
+                }
+                catch(...)
+                {
+                    mExceptionHandler->Catch();
+                }
+                this->handleExceptions();
+            }
+
+            try
+            {
+                tOperation->compute();
+            }
+            catch(...)
+            {
+                mExceptionHandler->Catch();
+            }
+            this->handleExceptions();
+
+            // copy data from hostedCode data containers to Plato::SharedData buffers
+            //
+            std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
+            for(std::string tName : tOperationOutputDataNames)
+            {
+                try
+                {
+                    tOperation->exportData(tName, mDataLayer->getSharedData(tName));
+                }
+                catch(...)
+                {
+                    mExceptionHandler->Catch();
+                }
+                this->handleExceptions();
+            }
+
+            tOperation->sendOutput();
+
+            tOperation = aStage->getNextOperation();
+        }
+
+        // transmits output data
+        //
+        aStage->end();
+    }
 }
 
-void Interface::finalize()
+/******************************************************************************/
+void Interface::finalize( std::string aStageName )
+/******************************************************************************/
 {
+    // Typically a stage for writing the solution to the output file.
+    if(aStageName.empty() == false)
+    {
+        Teuchos::ParameterList tParameterList;
+        this->compute(aStageName, tParameterList);
+    }
+
+    // At this point all drivers have completed so terminate.
     this->getStage("Terminate");
 }
 
@@ -366,8 +447,18 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& aArguments)
 /******************************************************************************/
 {
-    // find requested stage
+    // Console::Status("Compute Stage: (" + mPerformer->myName() + ") " + aStageName);
+
+    // Find the requested stage
     Plato::Stage* tStage = getStage(aStageName);
+
+    if( tStage == nullptr )
+    {
+        std::stringstream tMsg;
+        tMsg << "\n\n ********** PLATO ERROR: Interface::compute: Invalid stage requested: " << aStageName << "\n\n";
+        Plato::ParsingException tParsingException(tMsg.str());
+        registerException(tParsingException);
+    }
 
     // Unpack input arguments into Plato::SharedData
     //
@@ -414,10 +505,10 @@ void Interface::registerApplication(Plato::Application* aApplication)
 {
     if(aApplication == nullptr)
     {
-        registerException(Plato::ParsingException("Failed to create Performer"));
+        registerException(Plato::ParsingException("Failed to create Application"));
     }
-    mExceptionHandler->handleExceptions();
-    
+    this->handleExceptions();
+
     try
     {
         aApplication->initialize();
@@ -426,7 +517,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 
     if(mPerformer)
     {
@@ -441,7 +532,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 
     try
     {
@@ -451,7 +542,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     {
         mExceptionHandler->Catch();
     }
-    mExceptionHandler->handleExceptions();
+    this->handleExceptions();
 }
 
 /******************************************************************************/
@@ -465,6 +556,51 @@ void Interface::createStages()
         Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
         Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
         mStages.push_back(tNewStage);
+    }
+
+    // Add the internal stages. That is stages that the user does not
+    // need to define.
+    {
+        Plato::StageInputDataMng tStageInputDataMng;
+        tStageInputDataMng.add("Update Shared Data");
+        Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+        mStages.push_back(tNewStage);
+    }
+}
+
+/******************************************************************************/
+void Interface::updateStages()
+/******************************************************************************/
+{
+    // After creating the shared data all of the stages and their
+    // operations need to be updated so to have the new links to
+    // the shared data.
+    auto tStages = mInputData.getByName<Plato::InputData>("Stage");
+
+    for(auto tStageNode=tStages.begin(); tStageNode!=tStages.end(); ++tStageNode)
+    {
+        Plato::StageInputDataMng tStageInputDataMng;
+        Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
+
+        Plato::Stage* tStage =
+          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+
+        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+    }
+
+    // Update the internal stages. That is stages that the user does not
+    // need to define.
+    {
+        // This update is really a no-op as there is no shared data.
+        // The update is done though for consistancy (and as an
+        // example for future internal stages).
+
+        Plato::StageInputDataMng tStageInputDataMng;
+        tStageInputDataMng.add("Update Shared Data");
+        Plato::Stage* tStage =
+          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+
+        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
     }
 }
 
@@ -493,8 +629,8 @@ void Interface::createPerformers()
                 std::cout << " -----------------------------------------------------------------------------" << std::endl;
             }
             throw 1;
-        } 
-       
+        }
+
         // is the PerformerID already used? If so, error out.
         //
         if( std::count( tPerfIDs.begin(), tPerfIDs.end(), tLocalPerformerID ) )
@@ -506,15 +642,15 @@ void Interface::createPerformers()
                 std::cout << " -----------------------------------------------------------------------------" << std::endl;
             }
             throw 1;
-        } 
-        else 
+        }
+        else
         {
             tPerfIDs.push_back(tLocalPerformerID);
         }
 
 
-        // Are any PerformerIDs specified in the interface definition that weren't 
-        // defined on the mpi command line?
+        // Are any PerformerIDs specified in the interface definition
+        // that weren't defined on the mpi command line?
         //
         int tMyPerformerSpec = (tLocalPerformerID == mPerformerID) ? 1 : 0;
         int tNumRanksThisID = 0;
@@ -528,13 +664,13 @@ void Interface::createPerformers()
             }
             throw 1;
         }
-        else 
+        else
         {
            tPerfCommSize[tLocalPerformerID] = tNumRanksThisID;
         }
     }
 
-    // Is there a Performer spec for my local Performer ID?  
+    // Is there a Performer spec for my local Performer ID?
     //
     int tErrorNoSpec = ( std::count( tPerfIDs.begin(), tPerfIDs.end(), mPerformerID ) == 0 ) ? 1 : 0;
     int tErrorNoSpecGlobal = 0;
@@ -549,8 +685,9 @@ void Interface::createPerformers()
         throw 1;
     }
 
-    // If the Performer spec has N names defined then the allocated ranks on that PerformerID are
-    // broken into N local comms.  To avoid any semantics of how ranks are assigned, manually color 
+    // If the Performer spec has N names defined then the allocated
+    // ranks on that PerformerID are broken into N local comms.  To
+    // avoid any semantics of how ranks are assigned, manually color
     // the local comms before splitting.
     //
     std::vector<int> tPerformerIDs(tNumGlobalRanks);
@@ -565,7 +702,8 @@ void Interface::createPerformers()
         int tNumCommsThisID = tPerformerNames.size();
         int tLocalPerformerCommSize = tNumRanksThisID / tNumCommsThisID;
 
-        // Does the number of Comms partition the ranks for this PerformerID without a remainder?
+        // Does the number of Comms partition the ranks for this
+        // PerformerID without a remainder?
         //
         int tErrorUneven = ( tNumCommsThisID * tLocalPerformerCommSize == tNumRanksThisID ) ? 0 : 1;
         if( tErrorUneven ){
@@ -573,7 +711,7 @@ void Interface::createPerformers()
             {
                     std::cout << " -- Fatal Error --------------------------------------------------------------" << std::endl;
                     std::cout << "  Error creating performer with ID=" << tLocalPerformerID << "." << std::endl;
-                    std::cout << "  Attempted to spread N=" << tNumRanksThisID 
+                    std::cout << "  Attempted to spread N=" << tNumRanksThisID
                               << " processes over M=" << tNumCommsThisID << " comms, but N % M != 0." << std::endl;
                     std::cout << "  Change N to a whole number multiple of M and try again." << std::endl;
                     std::cout << " -----------------------------------------------------------------------------" << std::endl;
@@ -660,6 +798,11 @@ void Interface::createSharedData(Plato::Application* aApplication)
     }
 
     this->exportGraph(tSharedDataInfo, aApplication, tCommunicationData);
+
+    if(mDataLayer)
+    {
+        delete mDataLayer;
+    }
     mDataLayer = new Plato::DataLayer(tSharedDataInfo, tCommunicationData);
 }
 
@@ -703,6 +846,7 @@ int Interface::size(const std::string & aName) const
 /******************************************************************************/
 {
     int tLength = 0;
+
     Plato::SharedData* tSharedData = mDataLayer->getSharedData(aName);
     if(tSharedData)
     {
@@ -792,4 +936,3 @@ Interface::~Interface()
 }
 
 } /* namespace Plato */
-

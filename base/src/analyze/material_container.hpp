@@ -52,7 +52,6 @@
 #include "Plato_Parser.hpp"
 #include "math_library.hpp"
 #include <string>
-using namespace std;
 
 class Model;
 class Material;
@@ -78,7 +77,7 @@ public:
   virtual bool SetUp(DataContainer*, Tensor& basis){return false;}
   virtual bool Initialize(int dataIndex, DataContainer*) = 0;
 
-  virtual bool Tangent(int dataIndex, DataContainer* mc, 
+  virtual bool Tangent(int dataIndex, DataContainer* mc,
                        Intrepid::FieldContainer<double>*& C){return false;}
 
   virtual bool UpdateMaterialState( int dataIndex,
@@ -99,7 +98,7 @@ public:
 /******************************************************************************/
 /*! This class owns all the available models.  This added layer between the
    caller and the materials is used to determine the relavent material given
-   the block, element, and material point.  Consequently, this class has 
+   the block, element, and material point.  Consequently, this class has
    access to the material topology information.
 */
 class MaterialContainer {
@@ -109,7 +108,7 @@ class MaterialContainer {
 
     virtual ~MaterialContainer(){}
 
-    virtual void setMaterialTopology(DataMesh* mesh, 
+    virtual void setMaterialTopology(DataMesh* mesh,
                                      DataContainer* dc,
                                      pugi::xml_node& node);
 
@@ -117,7 +116,7 @@ class MaterialContainer {
     virtual void initializeDataMap();
 
 
-    virtual void getCurrentTangent(int iblock, int ielement, int ipoint, 
+    virtual void getCurrentTangent(int iblock, int ielement, int ipoint,
                                    Intrepid::FieldContainer<double>*& C,
                                    VarIndex f, VarIndex x);
 
@@ -132,9 +131,9 @@ class MaterialContainer {
         { return myDataMap[iblock](ielem, ipoint); }
     Intrepid::FieldContainer<int>& getBlockDataMap( int iblock )
         { return myDataMap[iblock]; }
- 
+
   protected:
-    vector<Material*> myMaterials;
+    std::vector<Material*> myMaterials;
     Intrepid::FieldContainer<int>* myMaterialTopology;
     Intrepid::FieldContainer<int>* myDataMap;
     DataContainer* dataContainer;
@@ -160,16 +159,16 @@ class DefaultMaterialContainer : public MaterialContainer
     DefaultMaterialContainer(pugi::xml_node& xml_data);
     void initializeMaterialTopology();
   private:
-    vector<int> blockToMaterialMap;
+    std::vector<int> blockToMaterialMap;
 };
 /******************************************************************************/
 /******************************************************************************/
 
 /******************************************************************************/
 /******************************************************************************/
-/*!  This class owns one or more MaterialModels.  It is responsible for 
+/*!  This class owns one or more MaterialModels.  It is responsible for
    extracting the necessary data from the data container, putting in the needed
-   form, and calling the submodels.  
+   form, and calling the submodels.
 */
 class Material {
   public:
@@ -189,12 +188,8 @@ class Material {
   private:
     int myId;
     Tensor crystalBasis;
-    vector<MaterialModel*> materialModels;
+    std::vector<MaterialModel*> materialModels;
 };
 /******************************************************************************/
 /******************************************************************************/
-
-
-
-
 #endif

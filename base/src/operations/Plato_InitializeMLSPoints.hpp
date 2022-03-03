@@ -120,7 +120,7 @@ public:
 private:
     typedef typename Plato::Geometry::MovingLeastSquares<SpaceDim, ScalarType> MLS_Type;
 
-    shared_ptr<Plato::MLSstruct> mMLS; /*!< MLS meta data */
+    std::shared_ptr<Plato::MLSstruct> mMLS; /*!< MLS meta data */
     const std::string mOutputName; /*!< output argument name */
     std::string mFieldName; /*!< field argument name */
 };

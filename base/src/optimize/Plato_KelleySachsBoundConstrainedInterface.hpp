@@ -59,7 +59,7 @@
 #include "Plato_CriterionList.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_StandardMultiVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
 #include "Plato_KelleySachsBoundConstrained.hpp"
@@ -70,13 +70,13 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class KelleySachsBoundConstrainedInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class KelleySachsBoundConstrainedInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
     explicit KelleySachsBoundConstrainedInterface(Plato::Interface* aInterface,
                                                   const MPI_Comm & aComm,
-                                                  const Plato::driver::driver_t & aType) :
+                                                  const Plato::optimizer::algorithm_t & aType) :
             mComm(aComm),
             mInterface(aInterface),
             mType(aType),
@@ -92,7 +92,7 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
         return (mType);
@@ -102,17 +102,15 @@ public:
     void initialize()
     /******************************************************************************/
     {
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizationNode = tInputData.get<Plato::InputData>("Optimizer");
-        Plato::Parse::parseOptimizerStages(tOptimizationNode, mInputData);
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+
+        Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }
 
     /******************************************************************************/
     void run()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -136,7 +134,7 @@ public:
 
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-                std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, mInputData, mInterface);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, mInputData, mInterface, this);
         std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> tCriterionList =
                 std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>();
         tCriterionList->add(tObjective);
@@ -150,18 +148,16 @@ public:
         Plato::KelleySachsBoundConstrained<ScalarType, OrdinalType> tAlgorithm(tDataFactory, tDataMng, tStageMng);
         this->setParameters(tAlgorithm);
         tAlgorithm.solve();
-
-        // ********* OUTPUT SOLUTION *********
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        this->finalize();
     }
 
-    /******************************************************************************/
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
     /******************************************************************************/
     {
-        mInterface->finalize();
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -254,7 +250,7 @@ private:
         tUpperBoundVector->fill(tUpperBoundValue);
         aDataFactory.allocateUpperBoundVector(*tUpperBoundVector);
 
-        if(mType == Plato::driver::driver_t::KELLEY_SACHS_BOUND_CONSTRAINED)
+        if(mType == Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED)
         {
             // ********* GET UPPER BOUNDS INFORMATION *********
             std::vector<ScalarType> tInputBoundsData(tNumControls);
@@ -282,7 +278,7 @@ private:
         tLowerBoundVector->fill(tLowerBoundValue);
         aDataFactory.allocateLowerBoundVector(*tLowerBoundVector);
 
-        if(mType == Plato::driver::driver_t::KELLEY_SACHS_BOUND_CONSTRAINED)
+        if(mType == Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED)
         {
             // ********* GET LOWER BOUNDS INFORMATION *********
             std::vector<ScalarType> tInputBoundsData(tNumControls);
@@ -341,7 +337,7 @@ private:
 private:
     MPI_Comm mComm;
     Plato::Interface* mInterface;
-    Plato::driver::driver_t mType;
+    Plato::optimizer::algorithm_t mType;
     Plato::OptimizerEngineStageData mInputData;
 
 private:

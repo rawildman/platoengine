@@ -131,6 +131,13 @@ void StructuralTopologyOptimizationProxyApp::initialize()
     this->makeDataMap();
 }
 
+void StructuralTopologyOptimizationProxyApp::reinitialize()
+{
+    mPDE = nullptr;
+    mDataMap.clear();
+    initialize();
+}
+
 void StructuralTopologyOptimizationProxyApp::compute(const std::string & aOperationName)
 {
     if(aOperationName.compare("Solve") == static_cast<int>(0))

@@ -50,7 +50,7 @@
 
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_StageInputDataMng.hpp"
 #include "Plato_ParticleSwarmParser.hpp"
 #include "Plato_GradFreeEngineCriterion.hpp"
@@ -63,7 +63,7 @@ namespace Plato
  * @brief PLATO Engine interface for Bound Constrained Particle Swarm Optimization (BCPSO) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class ParticleSwarmEngineBCPSO : public Plato::DriverInterface<ScalarType, OrdinalType>
+class ParticleSwarmEngineBCPSO : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -90,9 +90,9 @@ public:
      * @brief Return optimization algorithm type
      * @return type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
+        return (Plato::optimizer::algorithm_t::PARTICLE_SWARM_OPTMIZATION_BCPSO);
     }
 
     /******************************************************************************//**
@@ -103,7 +103,8 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Notify PLATO Engine that optimization problem is done.
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
@@ -115,8 +116,6 @@ public:
     **********************************************************************************/
     void run()
     {
-        mInterface->handleExceptions();
-
         // PARSE INPUT DATA
         Plato::InputDataBCPSO<ScalarType, OrdinalType> tInputsBCPSO;
         this->parseOptimizerOptions(tInputsBCPSO);
@@ -138,8 +137,6 @@ public:
         // SOLVE OPTIMIZATION PROBLEM
         Plato::OutputDataBCPSO<ScalarType, OrdinalType> tOutputsBCPSO;
         Plato::solve_bcpso<ScalarType, OrdinalType>(tObjective, tInputsBCPSO, tOutputsBCPSO);
-
-        this->finalize();
     }
 
 private:
@@ -166,8 +163,8 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::InputDataBCPSO<ScalarType, OrdinalType> & aInput)
     {
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+
         Plato::ParticleSwarmParser<ScalarType, OrdinalType> tParserPSO;
         mObjFuncStageName = tParserPSO.getObjectiveStageName(tOptimizerNode);
         tParserPSO.parse(tOptimizerNode, aInput);
@@ -236,9 +233,8 @@ private:
         const OrdinalType tPARTICLE_INDEX = 0;
         const OrdinalType tNumControls = (*aOutput.mParticles)[tPARTICLE_INDEX].size();
 
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
-        auto tBoundsNode = tOptimizerNode.get<Plato::InputData>("BoundConstraint");
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tBoundsNode = tOptimizerNode.template get<Plato::InputData>("BoundConstraint");
 
         std::vector<ScalarType> tLowerBounds = Plato::Get::Doubles(tBoundsNode, "Lower");
         aOutput.mParticlesLowerBounds = aFactory.createVector(mComm, tNumControls, mInterface);

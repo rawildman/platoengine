@@ -409,7 +409,7 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Set output diagnostics flag for augmented Lagrangian subproblem. 
+     * @brief Set output diagnostics flag for augmented Lagrangian subproblem.
      * @param [out] aInput boolean flag
     **********************************************************************************/
     void outputSubProblemDiagnostics(const bool aInput)
@@ -423,7 +423,7 @@ public:
                 mSubProblemSolverKSAL->enableDiagnostics();
 #else
             mSubProblemSolverKSAL->enableDiagnostics();
-#endif          
+#endif
         }
     }
 
@@ -683,7 +683,6 @@ private:
         const auto IterationCountOneBase = mIterationCount + static_cast<OrdinalType>(1);
         bool tPerformContinuation = tIsContinuationEnabled ? (IterationCountOneBase % mProblemUpdateFrequency) == static_cast<OrdinalType>(0) : false;
 
-        tPerformContinuation = true;
         if (tPerformContinuation)
         {
             mObjective->updateProblem(mDataMng->getCurrentControls());
@@ -813,7 +812,7 @@ private:
         }
         double tElapsedTime = mTimer->wallTime() - tStartTime;
         if (mPrintDiagnostics && mDataMng->getCommWrapper().myProcID() == 0)
-            std::cout << "MMA Subproblem Solve (Performed With " << tSubproblemSolverString << ") Required " 
+            std::cout << "MMA Subproblem Solve (Performed With " << tSubproblemSolverString << ") Required "
                       << tElapsedTime << " Seconds." << std::endl;
     }
 
