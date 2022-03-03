@@ -61,7 +61,6 @@ public:
     virtual ~LocalApp();
 
     void initialize();
-    void reinitialize() {};
     void finalize() {};
     void compute(const std::string & aOperationName);
     void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
