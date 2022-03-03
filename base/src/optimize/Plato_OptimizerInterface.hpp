@@ -99,9 +99,9 @@ public:
      * @brief Return the driver type
      * \return driver type
     **********************************************************************************/
-    virtual driver::driver_t driver() const
+    virtual Plato::driver_t driver() const
     {
-        return (Plato::driver::driver_t::PLATO_OPTIMIZER_DRIVER);
+        return (Plato::driver_t::PLATO_OPTIMIZER_DRIVER);
     }
 
     /******************************************************************************//**

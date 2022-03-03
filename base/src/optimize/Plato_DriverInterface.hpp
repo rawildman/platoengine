@@ -54,15 +54,11 @@
 namespace Plato
 {
 
-struct driver
+enum class driver_t
 {
-    enum driver_t
-    {
-        PLATO_OPTIMIZER_DRIVER = 1,
-        PLATO_DAKOTA_DRIVER = 2,
-    }; // enum driver_t
-};
-// struct driver
+    PLATO_OPTIMIZER_DRIVER = 1,
+    PLATO_DAKOTA_DRIVER = 2,
+}; 
 
 /******************************************************************************//**
  * @brief Abstract interface to driver algorithm
@@ -99,7 +95,7 @@ public:
      * @brief Return the driver type
      * \return driver type
     **********************************************************************************/
-    virtual driver::driver_t driver() const = 0;
+    virtual Plato::driver_t driver() const = 0;
 };
 // class DriverInterface
 
