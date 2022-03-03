@@ -105,7 +105,7 @@ void append_internal_energy_operation
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    append_children({"Function", "Name", "PenaltyModel"}, {"InternalEnergy", "Compute Objective","SIMP"}, tOperationNode);
+    append_children({"Function", "Name", "PenaltyModel"}, {"Compute Criterion Value", "Compute Objective", "SIMP"}, tOperationNode);
     auto tTopologyNode = tOperationNode.append_child("Topology");
     append_children({"Name"}, {"Topology"}, tTopologyNode);
     append_SIMP_penalty_model(aScenario, tOperationNode);
@@ -134,7 +134,7 @@ void append_internal_energy_gradient_operation
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    append_children({"Function", "Name","PenaltyModel"}, {"InternalEnergyGradient", "Compute Gradient","SIMP"}, tOperationNode);
+    append_children({"Function", "Name","PenaltyModel"}, {"Compute Criterion Gradient", "Compute Gradient", "SIMP"}, tOperationNode);
     auto tTopologyNode = tOperationNode.append_child("Topology");
     append_children({"Name"}, {"Topology"}, tTopologyNode);
     append_SIMP_penalty_model(aScenario, tOperationNode);
@@ -154,7 +154,7 @@ void append_internal_energy_hessian_operation
        tAlgorithm == "rol ksbc")
     {
         auto tOperationNode = aDocument.append_child("Operation");
-        append_children({"Function", "Name","PenaltyModel"}, {"InternalEnergyHessian", "Compute HessianTimesVector","SIMP"}, tOperationNode);
+        append_children({"Function", "Name","PenaltyModel"}, {"Compute HessianTimesVector", "Compute HessianTimesVector", "SIMP"}, tOperationNode);
         auto tTopologyNode = tOperationNode.append_child("Topology");
         append_children({"Name"}, {"Topology"}, tTopologyNode);
         auto tDescentNode = tOperationNode.append_child("DescentDirection");
