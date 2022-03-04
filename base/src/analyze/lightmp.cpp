@@ -58,11 +58,11 @@
 
 /******************************************************************************/
 LightMP::LightMP() :
+        myInputTree(),
         myMesh(nullptr),
         myDataContainer(nullptr),
         myMaterialContainer(nullptr),
         myMeshOutput(nullptr),
-        myInputTree(),
         myPlotVars(),
         appendOutput(),
         stepIndex(),
@@ -77,11 +77,11 @@ LightMP::LightMP() :
 
 /******************************************************************************/
 LightMP::LightMP(std::string inputfile) :
+        myInputTree(),
         myMesh(nullptr),
         myDataContainer(nullptr),
         myMaterialContainer(nullptr),
         myMeshOutput(nullptr),
-        myInputTree(),
         myPlotVars(),
         appendOutput(),
         stepIndex(),
@@ -97,11 +97,11 @@ LightMP::LightMP(std::string inputfile) :
 
 /******************************************************************************/
 LightMP::LightMP(std::shared_ptr<pugi::xml_document> inputTree) :
+        myInputTree(inputTree),
         myMesh(nullptr),
         myDataContainer(nullptr),
         myMaterialContainer(nullptr),
         myMeshOutput(nullptr),
-        myInputTree(inputTree),
         myPlotVars(),
         appendOutput(),
         stepIndex(),
