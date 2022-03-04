@@ -51,6 +51,7 @@ private:
     std::vector<std::string> mSymmetryPlaneOrigin;
     std::vector<std::string> mSymmetryPlaneNormal;
     std::vector<std::string> mSymmetryPlaneLocationNames;
+    std::vector<std::string> mDescriptors;
 
 // private member functions
 private:
@@ -327,6 +328,7 @@ public:
     std::string levelset_material_box_max() const {return value("levelset_material_box_max");}
     std::string levelset_sphere_radius() const {return value("levelset_sphere_radius");}
     std::string levelset_sphere_packing_factor() const {return value("levelset_sphere_packing_factor");}
+    std::vector<std::string> descriptors() const {return mDescriptors;}
     std::vector<std::string> levelset_nodesets() const {return mLevelsetNodesets;}
     std::vector<std::string> fixed_block_ids() const {return mFixedBlockIDs;}
     std::vector<std::string> fixed_nodeset_ids() const {return mFixedNodesetIDs;}

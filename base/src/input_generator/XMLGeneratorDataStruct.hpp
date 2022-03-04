@@ -459,6 +459,10 @@ public:
         mOptimizationParameters = aOptimizationParameters;
     }
 
+    void append(const XMLGen::Material& aMaterial)
+    {
+        materials.push_back(aMaterial);
+    }
     const XMLGen::Material& material(const std::string& aMaterialID) const
     {
         auto tIndex = 0;

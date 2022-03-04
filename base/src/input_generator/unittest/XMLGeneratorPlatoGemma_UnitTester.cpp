@@ -8,59 +8,12 @@
 
 #include "pugixml.hpp"
 
+#include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 
 namespace XMLGen
 {
-
-struct MapFromCriterionToServiceScenarioPairs
-{
-public:
-    void insert(const std::string& aCriterionID, const std::string& aServiceID, const std::string& aScenarioID)
-    {
-        mMap[aCriterionID] = std::make_pair(aServiceID, aScenarioID);
-    }
-    std::vector<std::string> criterion_ids() const
-    {
-        std::vector<std::string> tOutput;
-        for(auto& tPair : mMap)
-        {
-            tOutput.push_back(tPair.first);
-        }
-        return tOutput;
-    }
-    std::vector<std::string> scenario_ids() const
-    {
-        std::vector<std::string> tOutput;
-        for(auto& tPair : mMap)
-        {
-            tOutput.push_back(tPair.second.first);
-        }
-        return tOutput;
-    }
-    std::vector<std::string> service_ids() const
-    {
-        std::vector<std::string> tOutput;
-        for(auto& tPair : mMap)
-        {
-            tOutput.push_back(tPair.second.second);
-        }
-        return tOutput;
-    }
-    std::vector<std::pair<std::string,std::string>> criterion_scenario_pairs() const
-    {
-        std::vector<std::pair<std::string,std::string>> tOutput;
-        for(auto& tPair : mMap)
-        {
-            tOutput.push_back(std::make_pair(tPair.first,tPair.second.second));
-        }
-        return tOutput;
-    }
-
-private:
-    std::unordered_map<std::string, std::pair<std::string, std::string>> mMap;
-};
 
 std::vector<std::string> 
 get_unique_scenario_ids
@@ -88,51 +41,23 @@ get_unique_scenario_ids
     return tUniqueScenarioIDs;
 }
 
-XMLGen::MapFromCriterionToServiceScenarioPairs
-get_map_from_criterion_to_service_scenario_pairs
-(const XMLGen::InputData& aMetaData)
-{
-    XMLGen::MapFromCriterionToServiceScenarioPairs tOutput;
-    for(auto& tID : aMetaData.objective.criteriaIDs)
-    {
-        auto tIndex = &tID - &aMetaData.objective.criteriaIDs[0];
-        tOutput.insert(tID, aMetaData.objective.serviceIDs[tIndex], aMetaData.objective.scenarioIDs[tIndex]);
-    }
-}
-
-std::vector<std::pair<std::string,std::string>> 
-get_unique_gemma_scenario_ids
-(const XMLGen::MapFromCriterionToServiceScenarioPairs& aMap)
-{
-    auto tAllPairs = aMap.criterion_scenario_pairs();
-    std::vector<std::pair<std::string,std::string>> tOutput;
-    for(auto& tPair : tAllPairs)
-    {
-        auto tLower = XMLGen::to_lower(tPair.second);
-        if(tLower == "gemma")
-        {
-            tOutput.push_back(tPair);
-        }
-    }
-    return tOutput;
-}
-
 std::string set_descriptor_value
 (const std::string& aTargetDescriptor,
  const std::string& aTargetDescriptorValue,
  const std::vector<std::string>& aDescriptors)
 {
-    std::find(aDescriptors.begin(), aDescriptors.end(), aTargetDescriptor) == aDescriptors.end() ? aTargetDescriptorValue : std::string("{") + aTargetDescriptor + "}";
+    auto tOutput = std::find(aDescriptors.begin(), aDescriptors.end(), aTargetDescriptor) == aDescriptors.end() ? aTargetDescriptorValue : std::string("{") + aTargetDescriptor + "}";
+    return tOutput;
 }
 
 namespace matched_power_balance
 {
 
-void write_input_deck
-(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
+void input_deck
+(const std::string& aFileName, const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
     std::ofstream tOutFile;
-    tOutFile.open("matched.yaml", std::ofstream::out | std::ofstream::trunc);
+    tOutFile.open(aFileName, std::ofstream::out | std::ofstream::trunc);
     tOutFile << "%YAML 1.1\n";
     tOutFile << "---\n\n";
 
@@ -165,18 +90,15 @@ get_input_key_value_pairs
  const std::vector<std::string>& aDescriptors)
 {
     std::unordered_map<std::string,std::string> tMap;
-
-    tMap["slot_width"] = XMLGen::set_descriptor_value("slot_width", aScenario.value("slot_width"), aDescriptors);
-    tMap["slot_depth"] = XMLGen::set_descriptor_value("slot_depth", aScenario.value("slot_depth"), aDescriptors);
-    tMap["slot_depth"] = XMLGen::set_descriptor_value("slot_depth", aScenario.value("slot_depth"), aDescriptors);
-    tMap["slot_length"] = XMLGen::set_descriptor_value("slot_length", aScenario.value("slot_length"), aDescriptors);
-    tMap["cavity_radius"] = XMLGen::set_descriptor_value("cavity_radius", aScenario.value("cavity_radius"), aDescriptors);
-    tMap["cavity_height"] = XMLGen::set_descriptor_value("cavity_height", aScenario.value("cavity_height"), aDescriptors);
-    tMap["frequency_min"] = XMLGen::set_descriptor_value("frequency_min", aScenario.value("frequency_min"), aDescriptors);
-    tMap["frequency_max"] = XMLGen::set_descriptor_value("frequency_max", aScenario.value("frequency_max"), aDescriptors);
-    tMap["frequency_step"] = XMLGen::set_descriptor_value("frequency_step", aScenario.value("frequency_step"), aDescriptors);
+    tMap["slot_width"] = XMLGen::set_descriptor_value("slot_width", aScenario.getValue("slot_width"), aDescriptors);
+    tMap["slot_depth"] = XMLGen::set_descriptor_value("slot_depth", aScenario.getValue("slot_depth"), aDescriptors);
+    tMap["slot_length"] = XMLGen::set_descriptor_value("slot_length", aScenario.getValue("slot_length"), aDescriptors);
+    tMap["cavity_radius"] = XMLGen::set_descriptor_value("cavity_radius", aScenario.getValue("cavity_radius"), aDescriptors);
+    tMap["cavity_height"] = XMLGen::set_descriptor_value("cavity_height", aScenario.getValue("cavity_height"), aDescriptors);
+    tMap["frequency_min"] = XMLGen::set_descriptor_value("frequency_min", aScenario.getValue("frequency_min"), aDescriptors);
+    tMap["frequency_max"] = XMLGen::set_descriptor_value("frequency_max", aScenario.getValue("frequency_max"), aDescriptors);
+    tMap["frequency_step"] = XMLGen::set_descriptor_value("frequency_step", aScenario.getValue("frequency_step"), aDescriptors);
     tMap["conductivity"] = XMLGen::set_descriptor_value("conductivity", aMaterial.property("conductivity"), aDescriptors);
-
     return tMap;
 }
 
@@ -185,7 +107,7 @@ get_input_key_value_pairs
 
 void write_matched_power_balance_input_deck(const XMLGen::InputData& aMetaData)
 {
-    std::vector<std::string> tDescriptors; // = aMetaData.optimization_parameters().descriptors();
+    std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
     auto tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", aMetaData);
     for(auto& tScenarioID : tUniqueGemmaScenarioIDs)
     {
@@ -193,7 +115,8 @@ void write_matched_power_balance_input_deck(const XMLGen::InputData& aMetaData)
         auto tMaterialID = tScenario.material();
         auto tMaterial = aMetaData.material(tMaterialID);
         auto tInputKeyValuePairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
-        XMLGen::matched_power_balance::write_input_deck(tInputKeyValuePairs);
+        auto tFileName = tDescriptors.empty() ? "gemma_matched_power_balance_input_deck.yaml" : "gemma_matched_power_balance_input_deck.yaml.template";
+        XMLGen::matched_power_balance::input_deck(tFileName, tInputKeyValuePairs);
     }
 }
 
@@ -206,6 +129,147 @@ void write_gemma_input_deck(const XMLGen::InputData& aMetaData)
 
 namespace PlatoTestXMLGenerator
 {
+
+TEST(PlatoTestXMLGenerator, matched_power_balance_input_deck)
+{
+    std::unordered_map<std::string,std::string> tMap;
+    tMap["slot_width"] = "0.1";
+    tMap["slot_depth"] = "0.2";
+    tMap["slot_length"] = "0.3";
+    tMap["cavity_radius"] = "1";
+    tMap["cavity_height"] = "2";
+    tMap["frequency_min"] = "10";
+    tMap["frequency_max"] = "100";
+    tMap["frequency_step"] = "5";
+    tMap["conductivity"] = "11";
+    XMLGen::matched_power_balance::input_deck("input_deck.yaml",tMap);
+    auto tReadData = XMLGen::read_data_from_file("input_deck.yaml");
+    std::string tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:1Height:2Conductivity:11Slotlength:0.3Slotwidth:0.1Slotdepth:0.2Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f input_deck.yaml");
+}
+
+TEST(PlatoTestXMLGenerator, matched_power_balance_get_input_key_value_pairs)
+{
+    XMLGen::Scenario tScenario;
+    tScenario.append("frequency_min", "10");
+    tScenario.append("frequency_max", "100");
+    tScenario.append("frequency_step", "5");
+    tScenario.append("cavity_radius", "0.1016");
+    tScenario.append("cavity_height", "0.1018");
+
+    XMLGen::Material tMaterial;
+    tMaterial.property("conductivity", "1e6");
+
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    auto tPairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
+    EXPECT_EQ(9u, tPairs.size());
+    EXPECT_STREQ("10", tPairs.at("frequency_min").c_str());
+    EXPECT_STREQ("5", tPairs.at("frequency_step").c_str());
+    EXPECT_STREQ("1e6", tPairs.at("conductivity").c_str());
+    EXPECT_STREQ("100", tPairs.at("frequency_max").c_str());
+    EXPECT_STREQ("0.1016", tPairs.at("cavity_radius").c_str());
+    EXPECT_STREQ("0.1018", tPairs.at("cavity_height").c_str());
+    EXPECT_STREQ("{slot_width}", tPairs.at("slot_width").c_str());
+    EXPECT_STREQ("{slot_depth}", tPairs.at("slot_depth").c_str());
+    EXPECT_STREQ("{slot_length}", tPairs.at("slot_length").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, set_descriptor_value)
+{
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_height"};
+    auto tOutput = XMLGen::set_descriptor_value("slot_length", "0.01", tDescriptors);
+    EXPECT_STREQ("{slot_length}", tOutput.c_str());
+
+    tOutput = XMLGen::set_descriptor_value("slot_width", "0.01", tDescriptors);
+    EXPECT_STREQ("{slot_width}", tOutput.c_str());
+
+    tOutput = XMLGen::set_descriptor_value("slot_height", "0.01", tDescriptors);
+    EXPECT_STREQ("{slot_height}", tOutput.c_str());
+
+    tOutput = XMLGen::set_descriptor_value("conductivity", "0.01", tDescriptors);
+    EXPECT_STREQ("0.01", tOutput.c_str());
+}
+
+TEST(PlatoTestXMLGenerator, get_unique_scenario_ids)
+{
+    XMLGen::InputData tMetaData;
+
+    // TEST 1: target scenario defined
+    // define objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "weighted_sum";
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.serviceIDs.push_back("1");
+    tObjective.scenarioIDs.push_back("1");
+    tMetaData.objective = tObjective;
+
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tMetaData.append(tServiceOne);
+
+    // call get_unique_scenario_ids
+    auto tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", tMetaData);
+    EXPECT_EQ(1u, tUniqueGemmaScenarioIDs.size());
+    EXPECT_STREQ("1", tUniqueGemmaScenarioIDs.front().c_str());
+    auto tUniquePAScenarioIDs = XMLGen::get_unique_scenario_ids("plato_analyze", tMetaData);
+    EXPECT_TRUE(tUniquePAScenarioIDs.empty());
+
+    // TEST 2: one target scenario and two distinct criteria, scenarios & services defined 
+    // define objective: add new criteria, scenario, and service info to objective
+    tMetaData.objective.criteriaIDs.push_back("2");
+    tMetaData.objective.serviceIDs.push_back("2");
+    tMetaData.objective.scenarioIDs.push_back("2");
+    EXPECT_EQ(2u, tMetaData.objective.criteriaIDs.size());
+
+    // define objective
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "plato_analyze");
+    tServiceTwo.append("id", "2");
+    tMetaData.append(tServiceTwo);
+    EXPECT_EQ(2u, tMetaData.services().size());
+
+    // call get_unique_scenario_ids
+    tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", tMetaData);
+    EXPECT_EQ(1u, tUniqueGemmaScenarioIDs.size());
+    EXPECT_STREQ("1", tUniqueGemmaScenarioIDs.front().c_str());
+    tUniquePAScenarioIDs = XMLGen::get_unique_scenario_ids("plato_analyze", tMetaData);
+    EXPECT_EQ(1u, tUniquePAScenarioIDs.size());
+    EXPECT_STREQ("2", tUniquePAScenarioIDs.front().c_str());
+
+    // TEST 3: one target scenario, two distinct services and three criterion defined
+    tMetaData.objective.criteriaIDs.push_back("3");
+    tMetaData.objective.serviceIDs.push_back("1");
+    tMetaData.objective.scenarioIDs.push_back("1");
+    EXPECT_EQ(3u, tMetaData.objective.criteriaIDs.size());
+    EXPECT_EQ(2u, tMetaData.services().size());
+
+    // call get_unique_scenario_ids
+    tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", tMetaData);
+    EXPECT_EQ(1u, tUniqueGemmaScenarioIDs.size());
+    EXPECT_STREQ("1", tUniqueGemmaScenarioIDs.front().c_str());
+    tUniquePAScenarioIDs = XMLGen::get_unique_scenario_ids("plato_analyze", tMetaData);
+    EXPECT_EQ(1u, tUniquePAScenarioIDs.size());
+    EXPECT_STREQ("2", tUniquePAScenarioIDs.front().c_str());
+
+    // TEST 4: two distinct services, four criterion and three scenarios defined
+    tMetaData.objective.criteriaIDs.push_back("4");
+    tMetaData.objective.serviceIDs.push_back("1");
+    tMetaData.objective.scenarioIDs.push_back("3");
+    EXPECT_EQ(4u, tMetaData.objective.criteriaIDs.size());
+    EXPECT_EQ(2u, tMetaData.services().size());
+
+    // call get_unique_scenario_ids
+    tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", tMetaData);
+    EXPECT_EQ(2u, tUniqueGemmaScenarioIDs.size());
+    EXPECT_STREQ("1", tUniqueGemmaScenarioIDs.front().c_str());
+    EXPECT_STREQ("3", tUniqueGemmaScenarioIDs.back().c_str());
+    tUniquePAScenarioIDs = XMLGen::get_unique_scenario_ids("plato_analyze", tMetaData);
+    EXPECT_EQ(1u, tUniquePAScenarioIDs.size());
+    EXPECT_STREQ("2", tUniquePAScenarioIDs.front().c_str());
+}
 
 TEST(PlatoTestXMLGenerator, ParseSystemCallCriterion)
 {
