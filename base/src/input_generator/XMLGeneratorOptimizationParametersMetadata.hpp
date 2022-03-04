@@ -214,6 +214,13 @@ public:
     std::string filter_before_symmetry_enforcement() const;
 
     /******************************************************************************//**
+     * \fn descriptors
+     * \brief Set optimization parameter descriptors.
+     * \param [in] aDescriptors list of optimization parameter descriptors
+    **********************************************************************************/
+    void descriptors(const std::vector<std::string> &aDescriptors) { mDescriptors = aDescriptors; }
+
+    /******************************************************************************//**
      * \fn setFixedBlockIDs
      * \brief Set the fixed block ids
      * \param [in] aFixedBlockIDs vector of strings with fixed block ids

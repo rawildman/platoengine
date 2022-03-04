@@ -53,9 +53,25 @@ std::string set_descriptor_value
 namespace matched_power_balance
 {
 
-void input_deck
-(const std::string& aFileName, const std::unordered_map<std::string,std::string>& aKeyValuePairs)
+void are_inputs_defned(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
+    std::vector<std::string> tValidKeys = 
+        {"cavity_radius", "cavity_height", "conductivity", "slot_length", "slot_width", "slot_depth", "frequency_min", "frequency_max", "frequency_step"};
+    for(auto& tKey : tValidKeys)
+    {
+        auto tItr = aKeyValuePairs.find(tKey);
+        if(tItr == aKeyValuePairs.end() || tItr->second.empty())
+        {
+            THROWERR(std::string("Input key '") + tKey + "' was not properly defined by the user in the plato input deck. " 
+                + "Either the parameter was not defined in the input deck or its value is empty.")
+        }
+    }
+}
+
+void input_deck(const std::string& aFileName, const std::unordered_map<std::string,std::string>& aKeyValuePairs)
+{
+    XMLGen::matched_power_balance::are_inputs_defned(aKeyValuePairs);
+
     std::ofstream tOutFile;
     tOutFile.open(aFileName, std::ofstream::out | std::ofstream::trunc);
     tOutFile << "%YAML 1.1\n";
@@ -129,6 +145,82 @@ void write_gemma_input_deck(const XMLGen::InputData& aMetaData)
 
 namespace PlatoTestXMLGenerator
 {
+
+// TODO: FINISH
+TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
+{
+    XMLGen::InputData tMetaData;
+    // define optmization parameters
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tMetaData.set(tOptParams);
+
+    // define objective 
+    XMLGen::Objective tObjective;
+    tObjective.type = "weighted_sum";
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("2");
+    tObjective.serviceIDs.push_back("1");
+    tObjective.serviceIDs.push_back("2");
+    tObjective.scenarioIDs.push_back("1");
+    tObjective.scenarioIDs.push_back("2");
+    tMetaData.objective = tObjective;
+
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tMetaData.append(tServiceTwo);
+
+    // define scenario
+    XMLGen::Scenario tScenario;
+    tScenario.append("id", "1");
+    tScenario.append("material", "1");
+    tScenario.append("frequency_min", "10");
+    tScenario.append("frequency_max", "100");
+    tScenario.append("frequency_step", "5");
+    tScenario.append("cavity_radius", "0.1016");
+    tScenario.append("cavity_height", "0.1018");
+    tScenario.append("physics", "electromagnetics");
+    tMetaData.append(tScenario);
+
+    // define material
+    XMLGen::Material tMaterial;
+    tMaterial.id("1");
+    tMaterial.property("conductivity", "1e6");
+    tMetaData.append(tMaterial);
+
+    // TEST 1: WRITE TEMPLATE FILE NEEDED FOR APREPRO OPERATION
+    XMLGen::write_gemma_input_deck(tMetaData);
+    auto tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml.template");
+    std::string tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:{slot_length}Slotwidth:{slot_width}Slotdepth:{slot_depth}Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f gemma_matched_power_balance_input_deck.yaml.template");
+
+    // TEST 2: ERROR - PARAMETER VALUE WAS NOT DEFINED
+    tDescriptors.clear();
+    tOptParams.descriptors(tDescriptors);
+    tMetaData.set(tOptParams);
+    ASSERT_THROW(XMLGen::write_gemma_input_deck(tMetaData), std::runtime_error);
+
+    // TEST 3: WRITE REGULAR INPUT DECK
+    tScenario.append("slot_width", "0.0118");
+    tScenario.append("slot_depth", "0.00218");
+    tScenario.append("slot_length", "0.0116");
+    std::vector<XMLGen::Scenario> tScenarios;
+    tScenarios.push_back(tScenario);
+    tMetaData.set(tScenarios);
+    XMLGen::write_gemma_input_deck(tMetaData);
+    tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml");
+    tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:0.0116Slotwidth:0.0118Slotdepth:0.00218Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f gemma_matched_power_balance_input_deck.yaml");
+}
 
 TEST(PlatoTestXMLGenerator, matched_power_balance_input_deck)
 {
