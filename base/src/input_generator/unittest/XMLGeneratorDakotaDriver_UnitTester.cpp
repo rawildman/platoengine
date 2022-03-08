@@ -2793,26 +2793,46 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaListToPlatoAnalyzeInputFileForDakotaDr
     ASSERT_TRUE(tParamList.empty());
 }
 
+TEST(PlatoTestXMLGenerator, CheckThatDirectoryExists)
+{
+    std::string tDirectoryName = "evaluations_0";
+    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    Plato::system("mkdir evaluations_0");
+    ASSERT_TRUE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    Plato::system("rm -rf evaluations_0");
+    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+}
+
 TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
 {
-    XMLGen::InputData tMetaData;
+    XMLGen::InputData tMetaData1;
+    XMLGen::InputData tMetaData2;
 
     // Create a service
     XMLGen::Service tService;
     tService.id("2");
     tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    tMetaData1.append(tService);
+    tMetaData1.mPerformerServices.push_back(tService);
+    tService.id("7");
+    tService.code("plato_analyze");
+    tMetaData2.append(tService);
+    tMetaData2.mPerformerServices.push_back(tService);
 
-    // Create a scenario
+    // Create scenarios
     XMLGen::Scenario tScenario;
     tScenario.id("14");
     tScenario.physics("steady_state_mechanics");
     tScenario.dimensions("3");
-    tMetaData.append(tScenario);
+    tMetaData1.append(tScenario);
+    tScenario.id("9");
+    tScenario.physics("steady_state_mechanics");
+    tScenario.dimensions("3");
+    tMetaData2.append(tScenario);
 
     // create mesh
-    tMetaData.mesh.run_name = "rocker.exo";
+    tMetaData1.mesh.run_name = "rocker.exo";
+    tMetaData2.mesh.run_name = "rocker.exo";
 
     // create a block
     XMLGen::Block tBlock;
@@ -2820,7 +2840,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     tBlock.element_type = "tet4";
     tBlock.material_id = "1";
     tBlock.name = "block_1";
-    tMetaData.blocks.push_back(tBlock);
+    tMetaData1.blocks.push_back(tBlock);
+    tMetaData2.blocks.push_back(tBlock);
 
     // create a material
     XMLGen::Material tMaterial;
@@ -2830,20 +2851,28 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     tMaterial.materialModel("isotropic_linear_elastic");
     tMaterial.property("youngs_modulus", "1e9");
     tMaterial.property("poissons_ratio", "0.3");
-    tMetaData.materials.push_back(tMaterial);
+    tMetaData1.materials.push_back(tMaterial);
+    tMaterial.property("youngs_modulus", "3e9");
+    tMaterial.property("poissons_ratio", "0.4");
+    tMetaData2.materials.push_back(tMaterial);
     
-    // Create an objective
-    XMLGen::Objective tObjective;
-    tObjective.serviceIDs.push_back("2");
-    tObjective.scenarioIDs.push_back("14");
-    tMetaData.objective = tObjective;
+    // Create objectives
+    XMLGen::Objective tObjective1;
+    tObjective1.serviceIDs.push_back("2");
+    tObjective1.scenarioIDs.push_back("14");
+    tMetaData1.objective = tObjective1;
+    XMLGen::Objective tObjective2;
+    tObjective2.serviceIDs.push_back("7");
+    tObjective2.scenarioIDs.push_back("9");
+    tMetaData2.objective = tObjective2;
 
     // Create optimization parameters
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_file", "rocker.csm");
-    tMetaData.set(tOptimizationParameters);
+    tMetaData1.set(tOptimizationParameters);
+    tMetaData2.set(tOptimizationParameters);
 
     // Create dummy files to copy
     FILE* exo=fopen("rocker.exo", "w");
@@ -2851,7 +2880,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_0");
     Plato::system("rm -rf evaluations_1");
 
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
+    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_2_input_deck_0.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -2864,7 +2894,6 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_0");
 
     tReadData = XMLGen::read_data_from_file("evaluations_1/plato_analyze_2_input_deck_1.xml");
     tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -2877,9 +2906,34 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_1");
+
+    tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_7_input_deck_0.xml");
+    tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
+                 std::string("<Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"evaluations_0/rocker_0.exo\"/>") + 
+                 std::string("<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"Mechanical\"/>") + 
+                 std::string("<Parametername=\"PDEConstraint\"type=\"string\"value=\"Elliptic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/>") + 
+                 std::string("<ParameterListname=\"Criteria\"/><ParameterListname=\"Elliptic\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"Type\"type=\"string\"value=\"SIMP\"/>") + 
+                 std::string("</ParameterList></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/>") + 
+                 std::string("</ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"adamantium\"><ParameterListname=\"IsotropicLinearElastic\"><Parametername=\"PoissonsRatio\"type=\"double\"value=\"0.4\"/>") + 
+                 std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"3e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+
+    tReadData = XMLGen::read_data_from_file("evaluations_1/plato_analyze_7_input_deck_1.xml");
+    tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
+                 std::string("<Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"evaluations_1/rocker_1.exo\"/>") + 
+                 std::string("<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"Mechanical\"/>") + 
+                 std::string("<Parametername=\"PDEConstraint\"type=\"string\"value=\"Elliptic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/>") + 
+                 std::string("<ParameterListname=\"Criteria\"/><ParameterListname=\"Elliptic\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"Type\"type=\"string\"value=\"SIMP\"/>") + 
+                 std::string("</ParameterList></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/>") + 
+                 std::string("</ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"adamantium\"><ParameterListname=\"IsotropicLinearElastic\"><Parametername=\"PoissonsRatio\"type=\"double\"value=\"0.4\"/>") + 
+                 std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"3e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
 
     // Remove dummy files
+    Plato::system("rm -rf evaluations_0");
+    Plato::system("rm -rf evaluations_1");
     Plato::system("rm -rf rocker.exo");
     Plato::system("rm -rf rocker.csm");
 }
@@ -2978,6 +3032,146 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     // Remove dummy files
+    Plato::system("rm -rf rocker.exo");
+    Plato::system("rm -rf rocker.csm");
+}
+
+TEST(PlatoTestXMLGenerator, WriteSierraSDAndPlatoAnalyzeInputXmlFilesForDakotaDriver)
+{
+    XMLGen::InputData tMetaData1;
+    XMLGen::InputData tMetaData2;
+
+    // Create services
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_sd");
+    tMetaData1.append(tService);
+    tMetaData1.mPerformerServices.push_back(tService);
+    tService.id("7");
+    tService.code("plato_analyze");
+    tMetaData2.append(tService);
+    tMetaData2.mPerformerServices.push_back(tService);
+
+    // Create scenarios
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tScenario.dimensions("3");
+    tMetaData1.append(tScenario);
+    tScenario.id("9");
+    tMetaData2.append(tScenario);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tCriterion.materialPenaltyExponent("3.0");
+    tCriterion.minErsatzMaterialConstant("1e-8");
+    tMetaData1.append(tCriterion);
+    tMetaData2.append(tCriterion);
+
+    // create mesh
+    tMetaData1.mesh.run_name = "rocker.exo";
+    tMetaData2.mesh.run_name = "rocker.exo";
+
+    // create a block
+    XMLGen::Block tBlock;
+    tBlock.block_id = "1";
+    tBlock.element_type = "tet10";
+    tBlock.material_id = "1";
+    tBlock.name = "block_1";
+    tMetaData1.blocks.push_back(tBlock);
+    tMetaData2.blocks.push_back(tBlock);
+
+    // create materials
+    XMLGen::Material tMaterial;
+    tMaterial.id("1");
+    tMaterial.name("adamantium");
+    tMaterial.materialModel("isotropic_linear_elastic");
+    tMaterial.property("youngs_modulus", "1e9");
+    tMaterial.property("poissons_ratio", "0.3");
+    tMetaData1.materials.push_back(tMaterial);
+    tMaterial.property("youngs_modulus", "3e9");
+    tMaterial.property("poissons_ratio", "0.4");
+    tMetaData2.materials.push_back(tMaterial);
+    
+    // Create objectives
+    XMLGen::Objective tObjective1;
+    tObjective1.serviceIDs.push_back("2");
+    tObjective1.scenarioIDs.push_back("14");
+    tObjective1.criteriaIDs.push_back("3");
+    tMetaData1.objective = tObjective1;
+    XMLGen::Objective tObjective2;
+    tObjective2.serviceIDs.push_back("7");
+    tObjective2.scenarioIDs.push_back("9");
+    tMetaData2.objective = tObjective2;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tMetaData1.set(tOptimizationParameters);
+    tMetaData2.set(tOptimizationParameters);
+
+    // Create dummy files to copy
+    FILE* exo=fopen("rocker.exo", "w");
+    FILE* csm=fopen("rocker.csm", "w");
+    Plato::system("rm -rf evaluations_0");
+    Plato::system("rm -rf evaluations_1");
+
+    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
+
+    auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
+    auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
+                 std::string("OUTPUTStopologyENDECHOtopologyEND") + 
+                 std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
+                 std::string("BLOCK1material1tet10END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compute_criterioncriterion=mechanical_compliancevolume_fraction=.314objective_normalizationfalseEND") + 
+                 std::string("FILEgeometry_file'evaluations_0/rocker_0.exo'END") +
+                 std::string("LOADSENDBOUNDARYEND");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+
+    tReadData = XMLGen::read_data_from_file("evaluations_1/sierra_sd_2_input_deck_1.i");
+    tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
+                 std::string("OUTPUTStopologyENDECHOtopologyEND") + 
+                 std::string("MATERIAL1isotropicE=1e9nu=0.3material_penalty_model=simpEND") + 
+                 std::string("BLOCK1material1tet10END") + 
+                 std::string("TOPOLOGY-OPTIMIZATIONalgorithm=plato_enginecase=compute_criterioncriterion=mechanical_compliancevolume_fraction=.314objective_normalizationfalseEND") + 
+                 std::string("FILEgeometry_file'evaluations_1/rocker_1.exo'END") +
+                 std::string("LOADSENDBOUNDARYEND");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+
+    tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_7_input_deck_0.xml");
+    tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
+                 std::string("<Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"evaluations_0/rocker_0.exo\"/>") + 
+                 std::string("<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"Mechanical\"/>") + 
+                 std::string("<Parametername=\"PDEConstraint\"type=\"string\"value=\"Elliptic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/>") + 
+                 std::string("<ParameterListname=\"Criteria\"/><ParameterListname=\"Elliptic\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"Type\"type=\"string\"value=\"SIMP\"/>") + 
+                 std::string("</ParameterList></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/>") + 
+                 std::string("</ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"adamantium\"><ParameterListname=\"IsotropicLinearElastic\"><Parametername=\"PoissonsRatio\"type=\"double\"value=\"0.4\"/>") + 
+                 std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"3e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+
+    tReadData = XMLGen::read_data_from_file("evaluations_1/plato_analyze_7_input_deck_1.xml");
+    tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
+                 std::string("<Parametername=\"SpatialDimension\"type=\"int\"value=\"3\"/><Parametername=\"InputMesh\"type=\"string\"value=\"evaluations_1/rocker_1.exo\"/>") + 
+                 std::string("<ParameterListname=\"PlatoProblem\"><Parametername=\"Physics\"type=\"string\"value=\"Mechanical\"/>") + 
+                 std::string("<Parametername=\"PDEConstraint\"type=\"string\"value=\"Elliptic\"/><Parametername=\"Self-Adjoint\"type=\"bool\"value=\"false\"/>") + 
+                 std::string("<ParameterListname=\"Criteria\"/><ParameterListname=\"Elliptic\"><ParameterListname=\"PenaltyFunction\"><Parametername=\"Type\"type=\"string\"value=\"SIMP\"/>") + 
+                 std::string("</ParameterList></ParameterList><ParameterListname=\"SpatialModel\"><ParameterListname=\"Domains\"><ParameterListname=\"Block1\"><Parametername=\"ElementBlock\"type=\"string\"value=\"block_1\"/><Parametername=\"MaterialModel\"type=\"string\"value=\"adamantium\"/>") + 
+                 std::string("</ParameterList></ParameterList></ParameterList><ParameterListname=\"MaterialModels\"><ParameterListname=\"adamantium\"><ParameterListname=\"IsotropicLinearElastic\"><Parametername=\"PoissonsRatio\"type=\"double\"value=\"0.4\"/>") + 
+                 std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"3e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
+
+    ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
+    
+    // Remove dummy files
+    Plato::system("rm -rf evaluations_0");
+    Plato::system("rm -rf evaluations_1");
     Plato::system("rm -rf rocker.exo");
     Plato::system("rm -rf rocker.csm");
 }

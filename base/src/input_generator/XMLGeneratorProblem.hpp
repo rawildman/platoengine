@@ -51,16 +51,31 @@ inline bool is_physics_performer
 }
 
 /******************************************************************************//**
+ * \fn subdirectory_exists
+ * \brief check if performer subdirectory exists
+ * \param [in] aDirectoryName input name of directory
+**********************************************************************************/
+inline bool subdirectory_exists
+(const std::string& aDirectoryName)
+{
+    bool tReturn = true;
+    auto tCommand = std::string("[ -d \"") + aDirectoryName + std::string("\" ]");
+    auto tExitStatus = Plato::system_with_status(tCommand.c_str());
+    if (tExitStatus)
+        tReturn = false;
+
+    return tReturn;
+}
+
+/******************************************************************************//**
  * \fn create_subdirectory_for_performer
- * \brief create subdirectory and required files for performer
+ * \brief create subdirectory and copy required files for performer
  * \param [in] aCsmFileName csm file name
- * \param [in] aInputFileName performer input file name
  * \param [in] aEvaluation evaluation ID
 **********************************************************************************/
 inline void create_subdirectory_for_performer
 (const std::string& aMeshFileName,
  const std::string& aCsmFileName,
- const std::string& aInputFileName,
  int aEvaluation)
 {
     std::string tDirectoryName = std::string("evaluations_") + std::to_string(aEvaluation) + std::string("/");
@@ -68,16 +83,31 @@ inline void create_subdirectory_for_performer
     std::string tTag = std::string("_") + std::to_string(aEvaluation);
     auto tAppendedCsmFileName = XMLGen::append_concurrent_tag_to_file_string(aCsmFileName,tTag);
     auto tAppendedMeshFileName = XMLGen::append_concurrent_tag_to_file_string(aMeshFileName,tTag);
-    auto tAppendedInputFileName = XMLGen::append_concurrent_tag_to_file_string(aInputFileName,tTag);
 
     std::string tCommand = std::string("mkdir ") + tDirectoryName;
-    Plato::system_with_return(tCommand.c_str());
+    Plato::system_with_throw(tCommand.c_str());
     tCommand = std::string("cp ") + aCsmFileName + std::string(" ") + tDirectoryName + tAppendedCsmFileName;
-    Plato::system_with_return(tCommand.c_str());
+    Plato::system_with_throw(tCommand.c_str());
     tCommand = std::string("cp ") + aMeshFileName + std::string(" ") + tDirectoryName + tAppendedMeshFileName;
-    Plato::system_with_return(tCommand.c_str());
-    tCommand = std::string("mv ") + aInputFileName + std::string(" ") + tDirectoryName + tAppendedInputFileName;
-    Plato::system_with_return(tCommand.c_str());
+    Plato::system_with_throw(tCommand.c_str());
+}
+
+/******************************************************************************//**
+ * \fn move_input_deck_to_subdirectory
+ * \brief move performer input deck to subdirectory
+ * \param [in] aInputFileName performer input file name
+**********************************************************************************/
+inline void move_input_deck_to_subdirectory
+(const std::string& aInputFileName,
+ int aEvaluation)
+{
+    std::string tDirectoryName = std::string("evaluations_") + std::to_string(aEvaluation) + std::string("/");
+
+    std::string tTag = std::string("_") + std::to_string(aEvaluation);
+    auto tAppendedInputFileName = XMLGen::append_concurrent_tag_to_file_string(aInputFileName,tTag);
+
+    auto tCommand = std::string("mv ") + aInputFileName + std::string(" ") + tDirectoryName + tAppendedInputFileName;
+    Plato::system_with_throw(tCommand.c_str());
 }
 
 /******************************************************************************//**
@@ -165,7 +195,7 @@ inline void write_performer_input_deck_file_gradient_based_problem
 inline void write_performer_input_deck_file_dakota_problem
 (XMLGen::InputData& aMetaData)
 {
-    if(XMLGen::Problem::is_physics_performer(aMetaData))
+    if(is_physics_performer(aMetaData))
     {
         auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
         std::string tMeshName = aMetaData.mesh.run_name;
@@ -190,7 +220,9 @@ inline void write_performer_input_deck_file_dakota_problem
                 tInputFileName = std::string("sierra_sd_") + tServiceID + "_input_deck.i";
                 XMLGen::write_sierra_sd_input_deck(aMetaData);
             }
-            XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
+            if (!subdirectory_exists(std::string("evaluations_") + std::to_string(iEvaluation)))
+                create_subdirectory_for_performer(tMeshName,tCsmFileName,iEvaluation);
+            move_input_deck_to_subdirectory(tInputFileName,iEvaluation);
         }
     }
 }
