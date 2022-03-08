@@ -264,7 +264,8 @@ void append_parallel_criterion_value_operation
     XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     tOperationNode = tForNode.append_child("Operation");
     auto tInnerOperationName = std::string("Compute Criterion Value - ") + aIdentifierString;
-    XMLGen::append_children({"Name", "PerformerName"}, {tInnerOperationName, aService.performer() + std::string("_{I}")}, tOperationNode);
+    auto tPerformerName = (aService.code() == "platomain") ? std::string("plato_services") : aService.performer();
+    XMLGen::append_children({"Name", "PerformerName"}, {tInnerOperationName, tPerformerName + std::string("_{I}")}, tOperationNode);
     auto tOutputNode = tOperationNode.append_child("Output");
     auto tArgumentName = std::string("Criterion ") + std::to_string(aCriterionNumber) + std::string(" Value");
     XMLGen::append_children({"SharedDataName", "ArgumentName"}, {aIdentifierString + std::string("_{I}"), tArgumentName}, tOutputNode);
