@@ -61,6 +61,15 @@ public:
         }
         return true;
     }
+    std::vector<std::string> keys() const
+    {
+        std::vector<std::string> tKeys;
+        for(auto tPair : mData)
+        {
+            tKeys.push_back(tPair.first);
+        }
+        return tKeys;
+    }
 };
 
 void append_integer_to_aprepro_option
@@ -179,11 +188,18 @@ void are_aprepro_input_options_defined
 (const XMLGen::OperationMetaData& aOperationMetaData)
 {
     std::vector<std::string> tValidKeys = {"concurrent_evaluations", "names", "options", "arguments", "commands", "functions"};
-    for(auto& tKey : tValidKeys)
+    for(auto& tValidKey : tValidKeys)
     {
-        if(aOperationMetaData.find(tKey))
+        if(!aOperationMetaData.find(tValidKey))
         {
-            THROWERR(std::string("Did not find aprepro system call option '") + tKey + "' for matched power balance use case.")
+            auto tDefinedKeys = aOperationMetaData.keys();
+            auto tMsg = std::string("Did not find aprepro system call option '") + tValidKey + "' for matched power balance use case. " 
+                + "The following keys are defined in the aprepro operation metadata cabinet: \n";
+            for(auto tKey : tDefinedKeys)
+            {
+                tMsg = tMsg + "  " + tKey + "\n";
+            }
+            THROWERR(tMsg)
         }
     }
 }
@@ -322,6 +338,47 @@ void write_gemma_input_deck(const XMLGen::InputData& aMetaData)
 
 namespace PlatoTestXMLGenerator
 {
+
+TEST(PlatoTestXMLGenerator, aprepro_system_call_matched_power_balance)
+{
+    XMLGen::InputData tMetaData;
+    // define optmization parameters
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "3");
+    tOptParams.set("lower_bounds", std::vector<std::string>(3, "1.0"));
+    tMetaData.set(tOptParams);
+
+    pugi::xml_document tDocument;
+    XMLGen::matched_power_balance::aprepro_system_call(tMetaData, tDocument);
+    tDocument.save_file("dummy.txt");
+
+    auto tReadData = XMLGen::read_data_from_file("dummy.txt");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>OperationMetaData</Function><Name>aprepro_0</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>OperationMetaData</Function><Name>aprepro_1</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>OperationMetaData</Function><Name>aprepro_2</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_2</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation>");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f dummy.txt");
+}
+
+TEST(PlatoTestXMLGenerator, are_aprepro_input_options_defined_matched_power_balance)
+{
+    XMLGen::OperationMetaData tOperationMetaData1;
+    tOperationMetaData1.append("concurrent_evaluations", "2");
+    tOperationMetaData1.set("names", {"aprepro_0", "aprepro_1"});
+    tOperationMetaData1.set("options", {"length=", "depth=", "width="});
+    tOperationMetaData1.set("commands", std::vector<std::string>(2u, "aprepro"));
+    tOperationMetaData1.set("functions", std::vector<std::string>(2u, "SystemCall"));
+    tOperationMetaData1.set("arguments", {"-q", "matched.yaml.template", "matched.yaml"});
+    EXPECT_NO_THROW(XMLGen::matched_power_balance::are_aprepro_input_options_defined(tOperationMetaData1));
+
+    XMLGen::OperationMetaData tOperationMetaData2;
+    tOperationMetaData2.set("names", {"aprepro_0", "aprepro_1"});
+    tOperationMetaData2.set("options", {"length=", "depth=", "width="});
+    tOperationMetaData2.set("commands", std::vector<std::string>(2u, "aprepro"));
+    tOperationMetaData2.set("functions", std::vector<std::string>(2u, "SystemCall"));
+    tOperationMetaData2.set("arguments", {"-q", "matched.yaml.template", "matched.yaml"});
+    EXPECT_THROW(XMLGen::matched_power_balance::are_aprepro_input_options_defined(tOperationMetaData2), std::runtime_error);
+}
 
 TEST(PlatoTestXMLGenerator, write_aprepro_system_call_operation)
 {
