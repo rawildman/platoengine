@@ -15,6 +15,118 @@
 namespace XMLGen
 {
 
+struct OperationArguments
+{
+private:
+    std::unordered_map<std::string, std::string> mData;
+public:
+    void set(const std::string& aKey, const std::string& aValue)
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        mData[tLowerKey] = aValue;
+    }
+    const std::string& get(const std::string& aKey) const
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        return mData.find(tLowerKey)->second;
+    }
+};
+
+struct OperationMetaData
+{
+private:
+    std::unordered_map<std::string, std::vector<std::string>> mData;
+public:
+    void append(const std::string& aKey, const std::string& aValue)
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        mData[tLowerKey].push_back(aValue);
+    }
+    void set(const std::string& aKey, const std::vector<std::string>& aValues)
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        mData[tLowerKey] = aValues;
+    }
+    const std::vector<std::string>& get(const std::string& aKey) const
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        return mData.find(tLowerKey)->second;
+    }
+};
+
+void append_integer_to_aprepro_option
+(const std::string& aKey,
+ const std::string& aValue,
+ XMLGen::OperationMetaData& aOperationMetaDataOptions)
+{
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaDataOptions.get("concurrent_evaluations").front());
+    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
+    {
+        auto tStrIndex = std::to_string(tIndex);
+        auto tConcatanetedValue = aValue + tStrIndex;
+        aOperationMetaDataOptions.append(aKey, tConcatanetedValue);
+    }    
+}
+
+void append_integer_to_aprepro_options
+(XMLGen::OperationMetaData& aOperationMetaDataOptions)
+{
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaDataOptions.get("concurrent_evaluations").front());
+    aOperationMetaDataOptions.set("functions", std::vector<std::string>(tNumConcurrentEvals, "OperationMetaData"));
+    aOperationMetaDataOptions.set("commands", std::vector<std::string>(tNumConcurrentEvals, "aprepro"));
+
+    XMLGen::append_integer_to_aprepro_option("names", "aprepro_", aOperationMetaDataOptions);
+    XMLGen::append_integer_to_aprepro_option("directories", "evaluation_", aOperationMetaDataOptions);
+    
+    auto tDescriptors = aOperationMetaDataOptions.get("descriptors");
+    aOperationMetaDataOptions.set("options", tDescriptors);
+    auto tInputFileName = aOperationMetaDataOptions.get("input_file").front();
+    auto tTemplateFileName = aOperationMetaDataOptions.get("template_file").front();
+    std::vector<std::string> tArguments = {"-q", tTemplateFileName, tInputFileName};
+    aOperationMetaDataOptions.set("arguments", tArguments);
+}
+
+void append_aprepro_system_call_operation_inputs
+(const std::vector<XMLGen::OperationArguments>& aInputs,
+ const std::string& aSuffix,
+ pugi::xml_node& aOperation)
+{
+    for(auto tInput : aInputs)
+    {
+        auto tInputNode = aOperation.append_child("Input");
+        auto tArgName = tInput.get("name") + aSuffix;
+        XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {tArgName, tInput.get("layout"), tInput.get("size")}, tInputNode);
+    }
+}
+
+void write_aprepro_system_call_operation
+(const std::vector<XMLGen::OperationArguments>& aInputs,
+ const XMLGen::OperationMetaData& aOperationMetaDataOptions,
+ pugi::xml_document& aDocument)
+{
+    auto tOptions = aOperationMetaDataOptions.get("options");
+    auto tArguments = aOperationMetaDataOptions.get("arguments");
+    auto tAppendInput = aInputs.empty() ? "false" : "true";
+
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaDataOptions.get("concurrent_evaluations").front());
+    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
+    {
+        auto tSuffix = std::string("_") + std::to_string(tIndex);
+        auto tOperation = aDocument.append_child("Operation");
+        auto tFuncName = std::string("aprepro") + tSuffix;
+        std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "AppendInput"};
+        std::vector<std::string> tVals = {aOperationMetaDataOptions.get("functions")[tIndex], 
+                                          aOperationMetaDataOptions.get("names")[tIndex], 
+                                          aOperationMetaDataOptions.get("commands")[tIndex], 
+                                          "true", tAppendInput};
+        XMLGen::append_children(tKeys, tVals, tOperation);
+        XMLGen::append_children(std::vector<std::string>(tArguments.size(), "Argument"), tArguments, tOperation);
+        XMLGen::append_children(std::vector<std::string>(tOptions.size(), "Option"), tOptions, tOperation);
+
+        XMLGen::append_aprepro_system_call_operation_inputs(aInputs, tSuffix, tOperation);
+    }
+}
+
 std::vector<std::string> 
 get_unique_scenario_ids
 (const std::string& aTargetCodeName,
@@ -52,6 +164,47 @@ std::string set_descriptor_value
 
 namespace matched_power_balance
 {
+
+void preprocess_aprepro_system_call_options
+(const XMLGen::InputData& aMetaData,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    aOperationMetaData.append("input_file", "gemma_matched_power_balance_input_deck.yaml");
+    aOperationMetaData.append("template_file", "gemma_matched_power_balance_input_deck.yaml.template");
+    auto tNumConcurrentEvals = aMetaData.optimization_parameters().concurrent_evaluations();
+    aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
+    auto tDescriptors = aMetaData.optimization_parameters().descriptors();
+    aOperationMetaData.set("descriptors", tDescriptors);
+}
+
+void preprocess_aprepro_system_call_inputs
+(const XMLGen::InputData& aMetaData,
+ std::vector<XMLGen::OperationArguments>& aData)
+{
+    XMLGen::OperationArguments tParamData;
+    tParamData.set("name", "parameters");
+    tParamData.set("layout", "scalar");
+    auto tSize = aMetaData.optimization_parameters().values("lower_bounds").size();
+    if(tSize <= 0)
+    {
+        THROWERR("Number of parameters can not be less or equal than zero.")
+    }
+    auto tSrSize = std::to_string(tSize);
+    tParamData.set("size", tSrSize);
+    aData.push_back(tParamData);
+}
+
+void aprepro_system_call
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& tDocument)
+{
+    XMLGen::OperationMetaData tOperationMetaDataOptions;
+    XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(aMetaData, tOperationMetaDataOptions);
+    XMLGen::append_integer_to_aprepro_options(tOperationMetaDataOptions);
+    std::vector<XMLGen::OperationArguments> tData;
+    XMLGen::matched_power_balance::preprocess_aprepro_system_call_inputs(aMetaData, tData);
+    XMLGen::write_aprepro_system_call_operation(tData, tOperationMetaDataOptions, tDocument);
+}
 
 void are_inputs_defned(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
@@ -146,7 +299,43 @@ void write_gemma_input_deck(const XMLGen::InputData& aMetaData)
 namespace PlatoTestXMLGenerator
 {
 
-// TODO: FINISH
+TEST(PlatoTestXMLGenerator, append_integer_to_aprepro_option)
+{
+    XMLGen::OperationMetaData tOperationMetaData;
+    tOperationMetaData.append("concurrent_evaluations", "3");
+    XMLGen::append_integer_to_aprepro_option("names", "aprepro_", tOperationMetaData);
+
+    auto tOutput = tOperationMetaData.get("names");
+    EXPECT_EQ(3u, tOutput.size());
+    EXPECT_STREQ("aprepro_0", tOutput[0].c_str());
+    EXPECT_STREQ("aprepro_1", tOutput[1].c_str());
+    EXPECT_STREQ("aprepro_2", tOutput[2].c_str());
+}
+
+TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_options_matched_power_balance)
+{
+    XMLGen::InputData tMetaData;
+    // define optmization parameters
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "3");
+    tMetaData.set(tOptParams);
+
+    XMLGen::OperationMetaData tOperationMetaData;
+    XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(tMetaData, tOperationMetaData);
+
+    auto tMyDescriptors = tOperationMetaData.get("descriptors");
+    EXPECT_EQ(3u, tMyDescriptors.size());
+    EXPECT_STREQ(tDescriptors[0].c_str(), tMyDescriptors[0].c_str());
+    EXPECT_STREQ(tDescriptors[1].c_str(), tMyDescriptors[1].c_str());
+    EXPECT_STREQ(tDescriptors[2].c_str(), tMyDescriptors[2].c_str());
+
+    EXPECT_STREQ("3", tOperationMetaData.get("concurrent_evaluations").front().c_str());
+    EXPECT_STREQ("gemma_matched_power_balance_input_deck.yaml", tOperationMetaData.get("input_file").front().c_str());
+    EXPECT_STREQ("gemma_matched_power_balance_input_deck.yaml.template", tOperationMetaData.get("template_file").front().c_str());
+}
+
 TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
 {
     XMLGen::InputData tMetaData;
@@ -363,7 +552,7 @@ TEST(PlatoTestXMLGenerator, get_unique_scenario_ids)
     EXPECT_STREQ("2", tUniquePAScenarioIDs.front().c_str());
 }
 
-TEST(PlatoTestXMLGenerator, ParseSystemCallCriterion)
+TEST(PlatoTestXMLGenerator, ParseOperationMetaDataCriterion)
 {
 
     std::string tStringInput =
@@ -377,7 +566,7 @@ TEST(PlatoTestXMLGenerator, ParseSystemCallCriterion)
         "  mdps_partitions     2           3          4\n"
         "  mdps_response_functions 1\n"
         "end optimization_parameters\n"
-        "begin criterion MySystemCall\n"
+        "begin criterion MyOperationMetaData\n"
         "  type system_call\n"
         "  aprepro_template_name input.yaml.template"
         "  command gemma\n"

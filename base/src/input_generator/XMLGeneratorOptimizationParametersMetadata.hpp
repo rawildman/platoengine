@@ -29,7 +29,7 @@ struct OptimizationParameters
     struct ValueData
     {
         bool mIsDefault;
-        std::string mValue;
+        std::vector<std::string> mValue;
     };
 
 // private member data
@@ -57,12 +57,22 @@ private:
 private:
     /******************************************************************************//**
      * \fn getValue
-     * \brief Return string value for property with input tag; else, throw an error if \n
-     * property is not defined in the metadata.
-     * \param [in] aTag property tag
-     * \return property string value
+     * \brief Return first value on the list of strings with key defined by 'aTag'. \n 
+     *   If key is not defined, returned and empty string.
+     * \param [in] aTag key
+     * \return first value
     **********************************************************************************/
     std::string getValue(const std::string& aTag) const;
+
+    /******************************************************************************//**
+     * \fn getValues
+     * \brief Return list of strings with key defined by 'aTag'. If key is not defined, \n
+     *   returned a list of size one. The only element in the list is defined by an \n
+     *   empty string.
+     * \param [in] aTag ket
+     * \return list
+    **********************************************************************************/
+    std::vector<std::string> getValues(const std::string& aTag) const;
 
     /******************************************************************************//**
      * \fn getBool
@@ -176,12 +186,19 @@ public:
 
     /******************************************************************************//**
      * \fn value
-     * \brief Return value for property with input tag; else, throw an error if \n
-     * property is not defined in the metadata.
+     * \brief Return first element on the list; else, throw an error if input key/tag is not defined.
      * \param [in] aTag property tag
-     * \return property string value
+     * \return value
     **********************************************************************************/
     std::string value(const std::string& aTag) const;
+
+    /******************************************************************************//**
+     * \fn value
+     * \brief Return list of values; else, throw an error if input key/tag is not defined.
+     * \param [in] aTag property tag
+     * \return list
+    **********************************************************************************/
+    std::vector<std::string> values(const std::string& aTag) const;
 
     /******************************************************************************//**
      * \fn tags
@@ -198,6 +215,15 @@ public:
      * \param [in] aIsDefault parameter specifying whether this is a default or user set value
     **********************************************************************************/
     void append(const std::string& aTag, const std::string& aValue, const bool& aIsDefault=false);
+
+    /******************************************************************************//**
+     * \fn set
+     * \brief Set metadata.
+     * \param [in] aTag   parameter tag
+     * \param [in] aList  parameter list
+     * \param [in] aIsDefault parameter specifying whether this is a default or user set value
+    **********************************************************************************/
+    void set(const std::string& aTag, const std::vector<std::string>& aList, const bool& aIsDefault=false);
 
     /******************************************************************************//**
      * \fn mesh_map_filter_radius 

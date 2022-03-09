@@ -344,11 +344,12 @@ TEST(PlatoTestXMLGenerator, InsertGeneralOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_general_optimization_input_options(tTags);
-    EXPECT_EQ(9u, tTags.size());
+    EXPECT_EQ(12u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"max_iterations",""}, {"verbose", "false"}, {"output_method", "epu"},
         {"output_frequency", "5"}, {"optimization_type", "topology"}, {"optimization_algorithm", "oc"}, 
-        {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""} };
+        {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""},
+        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
