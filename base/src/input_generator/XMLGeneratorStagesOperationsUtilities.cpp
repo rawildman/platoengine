@@ -549,7 +549,8 @@ void append_write_output_operation_deterministic_usecase
                 auto tOperationNode = tCurParentNode.append_child("Operation");
                 auto tPerformerName = aMetaData.service(tServiceID).performer();
                 XMLGen::append_children( { "Name", "PerformerName" }, { "Write Output", tPerformerName }, tOperationNode);
-                if(aMetaData.optimization_parameters().filterInEngine() == false)
+                if(aMetaData.optimization_parameters().filterInEngine() == false &&
+                   aMetaData.getFirstPlatoAnalyzePerformer() == tPerformerName)
                 {
                     auto tTopologyNode = tOperationNode.append_child("Output");
                     XMLGen::append_children( { "ArgumentName", "SharedDataName" }, { "Topology", "Topology"}, tTopologyNode);
@@ -628,6 +629,38 @@ void append_copy_value_operation
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"OutputValue", aOutputSharedDataName}, tOutputNode);
 }
 // function append_copy_value_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_value_operation
+(const std::string &aPlatoMainPerformer,
+ const std::string &aSharedDataName,
+ pugi::xml_node &aParentNode)
+{
+    auto tOperationNode = aParentNode.append_child("Operation");
+    XMLGen::append_children({"Name", "PerformerName"}, {"Negate Value", aPlatoMainPerformer}, tOperationNode);
+    auto tInputNode = tOperationNode.append_child("Input");
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"InputValue", aSharedDataName}, tInputNode);
+    auto tOutputNode = tOperationNode.append_child("Output");
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"OutputValue", aSharedDataName}, tOutputNode);
+}
+// function append_negate_value_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_field_operation
+(const std::string &aPlatoMainPerformer,
+ const std::string &aSharedDataName,
+ pugi::xml_node &aParentNode)
+{
+    auto tOperationNode = aParentNode.append_child("Operation");
+    XMLGen::append_children({"Name", "PerformerName"}, {"Negate Field", aPlatoMainPerformer}, tOperationNode);
+    auto tInputNode = tOperationNode.append_child("Input");
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"InputField", aSharedDataName}, tInputNode);
+    auto tOutputNode = tOperationNode.append_child("Output");
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"OutputField", aSharedDataName}, tOutputNode);
+}
+// function append_negate_value_operation
 /******************************************************************************/
 
 /******************************************************************************/

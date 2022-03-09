@@ -369,6 +369,11 @@ void append_constraint_stage_for_topology_problem
 
         XMLGen::append_copy_value_operation(tFirstPlatoMainPerformer, std::string("Criterion Value - ") + tIdentifierString, std::string("Constraint Value ") + tConstraint.id(), tStageNode);
 
+        if(tConstraint.greater_than())
+        {
+            XMLGen::append_negate_value_operation(tFirstPlatoMainPerformer, std::string("Constraint Value ") + tConstraint.id(), tStageNode);
+        }
+
         auto tOutputNode = tStageNode.append_child("Output");
         auto tSharedDataName = std::string("Constraint Value ") + tConstraint.id();
         XMLGen::append_children({"SharedDataName"}, {tSharedDataName}, tOutputNode);
@@ -478,6 +483,10 @@ void append_constraint_gradient_stage_for_topology_problem
         {
             auto tSharedDataName = XMLGen::get_filter_constraint_criterion_gradient_input_shared_data_name(tConstraint);
             XMLGen::append_filter_criterion_gradient_operation(aMetaData, tSharedDataName, tOutputSharedData, tStageNode);
+        }
+        if(tConstraint.greater_than())
+        {
+            XMLGen::append_negate_field_operation(tFirstPlatoMainPerformer, std::string("Constraint Gradient ") + tConstraint.id(), tStageNode);
         }
 
         auto tOutputNode = tStageNode.append_child("Output");
