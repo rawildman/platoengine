@@ -37,6 +37,11 @@ void write_plato_main_operations_xml_file
     XMLGen::append_design_volume_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_compute_volume_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_compute_volume_gradient_to_plato_main_operation(aMetaData, tDocument);
+    if(aMetaData.needNegateOperation())
+    {
+        XMLGen::append_negate_field_to_plato_main_operation(aMetaData, tDocument);
+        XMLGen::append_negate_value_to_plato_main_operation(aMetaData, tDocument);
+    }
 
     if(XMLGen::is_robust_optimization_problem(aMetaData))
     {
@@ -1479,6 +1484,54 @@ void append_copy_value_to_plato_main_operation
     XMLGen::append_children({"ArgumentName"}, {"OutputValue"}, tOutput);
 }
 // function append_copy_value_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_value_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name"};
+    std::vector<std::string> tValues = {"Aggregator", "Negate Value"};
+    XMLGen::append_children(tKeys, tValues, tOperation);
+
+    auto tAggregate = tOperation.append_child("Aggregate");
+    XMLGen::append_children({"Layout"}, {"Value"}, tAggregate);
+    auto tInput = tAggregate.append_child("Input");
+    XMLGen::append_children({"ArgumentName"}, {"InputValue"}, tInput);
+    auto tOutput = tAggregate.append_child("Output");
+    XMLGen::append_children({"ArgumentName"}, {"OutputValue"}, tOutput);
+
+    auto tWeighting = tOperation.append_child("Weighting");
+    auto tWeight = tWeighting.append_child("Weight");
+    XMLGen::append_children({"Value"}, {"-1.0"}, tWeight);
+}
+// function append_negate_value_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_field_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name"};
+    std::vector<std::string> tValues = {"Aggregator", "Negate Field"};
+    XMLGen::append_children(tKeys, tValues, tOperation);
+
+    auto tAggregate = tOperation.append_child("Aggregate");
+    XMLGen::append_children({"Layout"}, {"Nodal Field"}, tAggregate);
+    auto tInput = tAggregate.append_child("Input");
+    XMLGen::append_children({"ArgumentName"}, {"InputField"}, tInput);
+    auto tOutput = tAggregate.append_child("Output");
+    XMLGen::append_children({"ArgumentName"}, {"OutputField"}, tOutput);
+
+    auto tWeighting = tOperation.append_child("Weighting");
+    auto tWeight = tWeighting.append_child("Weight");
+    XMLGen::append_children({"Value"}, {"-1.0"}, tWeight);
+}
+// function append_negate_value_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/

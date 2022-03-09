@@ -177,6 +177,15 @@ public:
         return tReturn; 
     }
 
+    bool needNegateOperation() const
+    {
+        bool tReturnValue = false;
+        for(auto& tConstraint : constraints)
+        {
+            tReturnValue = tReturnValue || tConstraint.greater_than();
+        }
+        return tReturnValue;
+    }
     bool needToAggregate() const
     {
         bool tReturnValue = false;

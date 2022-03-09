@@ -52,6 +52,7 @@ void ParseConstraint::allocate()
     mTags.insert({ "absolute_target", { { {"absolute_target"}, ""}, "" } });
     mTags.insert({ "divisor", { { {"divisor"}, ""}, "1.0" } });
     mTags.insert({ "weight", { { {"weight"}, ""}, "1.0" } });
+    mTags.insert({ "type", { { {"type"}, ""}, "less_than" } });
 
 //    mTags.insert({ "standard_deviation_multiplier", { { {"standard_deviation_multiplier"}, ""}, "0" } });
 
