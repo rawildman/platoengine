@@ -90,6 +90,10 @@ public:
     std::vector<std::string> getOutputDataNames() const;
 
 private:
+    void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
+                              const std::shared_ptr<Plato::Performer> aPerformer,
+                              const std::vector<Plato::SharedData*>& aSharedData);
+
     std::string m_name;
     std::vector<Plato::Operation*> m_operations;
     std::vector<Plato::SharedData*> m_inputData;
