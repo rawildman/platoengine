@@ -75,13 +75,16 @@ void append_platoservices_dakota_usecase
  pugi::xml_document& aDocument,
  int& aPerformerId)
 {
-    auto tPerformerNode = aDocument.append_child("Performer");
-    addChild(tPerformerNode, "PerformerID", std::to_string(aPerformerId));
-    auto tForNode = tPerformerNode.append_child("For");
-    tForNode.append_attribute("var") = "I";
-    tForNode.append_attribute("in") = "Parameters";
-    addChild(tForNode, "Name", "plato_services_{I}");
-    addChild(tForNode, "Code", "plato_services");
+    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+    {
+        auto tPerformerNode = aDocument.append_child("Performer");
+        std::string tPerformerName = std::string("plato_services_") + std::to_string(iEvaluation);
+        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(aPerformerId) };
+        XMLGen::append_children( tKeywords, tValues, tPerformerNode);
+        aPerformerId++;
+    }
 }
 
 /******************************************************************************/
@@ -135,7 +138,7 @@ void append_dakota_criterion_shared_data
         std::string tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tCriterion);
 
         XMLGen::Service tService = aMetaData.service(tServiceID);
-        std::string tOwnerName = tService.performer();
+        auto tOwnerName = (tService.code() == "platomain") ? std::string("plato_services") : tService.performer();
 
         auto tForNode = aDocument.append_child("For");
         tForNode.append_attribute("var") = "I";
@@ -193,7 +196,7 @@ void append_parallel_update_geometry_on_change_operation
     auto tOperationNode = tForNode.append_child("Operation");
     XMLGen::append_children({"Name", "PerformerName"}, {"update_geometry_on_change_{I}", "plato_services_{I}"}, tOperationNode);
     auto tInputNode = tOperationNode.append_child("Input");
-    XMLGen::append_children({"SharedDataName", "ArgumentName"}, {"design_parameters_{I}", "Parameters_{I}"}, tInputNode);
+    XMLGen::append_children({"SharedDataName", "ArgumentName"}, {"design_parameters_{I}", "Parameters"}, tInputNode);
 }
 
 /******************************************************************************/
@@ -205,12 +208,12 @@ void append_parallel_reinitialize_on_change_operation
     XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     for(auto& tService : aMetaData.services())
     {
-        if(tService.code() != "plato_esp" && tService.code() != "platomain")
+        if(tService.code() != "plato_esp")
         {
             auto tOperationNode = tForNode.append_child("Operation");
-            auto tOperationName = std::string("reinitialize_on_change_") + tService.performer();
-            auto tPerformerName = tService.performer() + std::string("_{I}");
-            XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tPerformerName}, tOperationNode);
+            auto tPerformerName = (tService.code() == "platomain") ? std::string("plato_services") : tService.performer();
+            auto tOperationName = std::string("reinitialize_on_change_") + tPerformerName;
+            XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tPerformerName + std::string("_{I}")}, tOperationNode);
             auto tInputNode = tOperationNode.append_child("Input");
             XMLGen::append_children({"SharedDataName", "ArgumentName"}, {"design_parameters_{I}", "Parameters"}, tInputNode);
         }

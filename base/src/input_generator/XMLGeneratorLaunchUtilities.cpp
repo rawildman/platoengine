@@ -366,32 +366,36 @@ namespace XMLGen
 
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
   {
-    std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesName;
+    std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesPath;
 
     XMLGen::determine_mpi_env_and_separation_strings(envString,separationString);
     XMLGen::determine_mpi_launch_strings(aInputData,tLaunchString,tNumProcsString);
-    tPlatoServicesName = "PlatoEngineServices";   
 
-    std::string num_opt_procs = aInputData.optimization_parameters().concurrent_evaluations();
-    XMLGen::assert_is_positive_integer(num_opt_procs);
-
-    // Now add the main mpirun call.
-    fprintf(fp, ": %s %s %s PLATO_PERFORMER_ID%s%d \\\n", tNumProcsString.c_str(), num_opt_procs.c_str(),
-                                envString.c_str(),separationString.c_str(), aNextPerformerID);
-    fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
-    fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
-
-    auto tPlatoMainServiceId = aInputData.getFirstPlatoMainId();
-    std::string tPlatoMainPath = aInputData.service(tPlatoMainServiceId).path();
+    std::string tPlatoServicesName = "PlatoEngineServices";   
+    auto tPlatoMainService = aInputData.service(aInputData.getFirstPlatoMainId());
+    std::string tPlatoMainPath = tPlatoMainService.path();
     if(tPlatoMainPath.length() != 0)
     {
       size_t tPos = tPlatoMainPath.rfind("/");
       std::string tPathToExecutable = tPlatoMainPath.substr(0, tPos);
-      std::string tPlatoServicesPath = tPathToExecutable + std::string("/") + tPlatoServicesName;
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoServicesPath.c_str());
+      tPlatoServicesPath = tPathToExecutable + std::string("/") + tPlatoServicesName;
     }
     else
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoServicesName.c_str());
+      tPlatoServicesPath = tPlatoServicesName;
+
+    auto tEvaluations = std::stoi(aInputData.optimization_parameters().concurrent_evaluations());
+    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+    {
+      fprintf(fp, ": %s %s %s PLATO_PERFORMER_ID%s%d \\\n", tNumProcsString.c_str(), tPlatoMainService.numberProcessors().c_str(),
+                                  envString.c_str(),separationString.c_str(), aNextPerformerID);
+      fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
+      fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
+
+      auto tEvaluationString = std::to_string(iEvaluation);
+      fprintf(fp, "%s evaluations_%s/plato_main_input_deck_%s.xml \\\n", tPlatoServicesPath.c_str(), tEvaluationString.c_str(), tEvaluationString.c_str());
+
+      aNextPerformerID++;
+    }
   }
 
   void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)
