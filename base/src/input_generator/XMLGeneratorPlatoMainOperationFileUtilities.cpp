@@ -77,11 +77,8 @@ void write_dakota_plato_main_operations_xml_file
     pugi::xml_document tDocument;
     append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
     append_reinitialize_operation_to_plato_main_operation(aMetaData, tDocument);
-
-    std::string tIdentifierString = "";
-    int tCriterionNumber = 0;
-    if (get_volume_criterion_defined_and_computed_by_platomain(aMetaData, tIdentifierString, tCriterionNumber))
-        append_compute_volume_criterion_value_to_plato_main_operation(aMetaData, tDocument, tIdentifierString, tCriterionNumber);
+    append_compute_volume_criterion_value_operation_to_plato_main_operation(aMetaData, tDocument);
+    append_decomp_operations_for_physics_performers_to_plato_main_operation(aMetaData, tDocument);
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
 
@@ -1425,23 +1422,65 @@ void append_compute_volume_gradient_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
-void append_compute_volume_criterion_value_to_plato_main_operation
+void append_compute_volume_criterion_value_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    std::string tIdentifierString = "";
+    int tCriterionNumber = 0;
+    if (get_volume_criterion_defined_and_computed_by_platomain(aXMLMetaData, tIdentifierString, tCriterionNumber))
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        std::vector<std::string> tKeys = {"Function", "Name"};
+        std::vector<std::string> tValues = {"DesignVolume", std::string("Compute Criterion Value - ") + tIdentifierString};
+        XMLGen::append_children(tKeys, tValues, tOperation);
+
+        auto tArgumentName = std::string("Criterion ") + std::to_string(tCriterionNumber) + std::string(" Value");
+        tKeys = {"ArgumentName"}; tValues = {tArgumentName};
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children(tKeys, tValues, tOutput);
+    }
+}
+// function append_compute_volume_criterion_value_operation_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_decomp_operations_for_physics_performers_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tDecompServiceID = XMLGen::get_unique_decomp_service(aXMLMetaData);
+    if (tDecompServiceID.size() > 0)
+    {
+        auto tService = aXMLMetaData.service(tDecompServiceID);
+        auto tEvaluations = std::stoi(aXMLMetaData.optimization_parameters().concurrent_evaluations());
+        for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            append_decomp_operations(aXMLMetaData, aDocument, tService, iEvaluation);
+    }
+}
+// function append_decomp_operations_for_physics_performers_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_decomp_operations
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument,
- const std::string& aIdentifierString,
- int aCriterionNumber)
+ const XMLGen::Service& aService,
+ int aEvaluation)
 {
-    auto tOperation = aDocument.append_child("Operation");
-    std::vector<std::string> tKeys = {"Function", "Name"};
-    std::vector<std::string> tValues = {"DesignVolume", std::string("Compute Criterion Value - ") + aIdentifierString};
-    XMLGen::append_children(tKeys, tValues, tOperation);
+    std::string tTag = std::string("_") + std::to_string(aEvaluation);
+    std::string tName = std::string("decomp_mesh_") + aService.performer() + tTag;
+    std::string num_procs = aService.numberProcessors();
+    std::string tMesh = XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),tTag);
+    std::string tDecompString = std::string("decomp -p ") + num_procs + std::string(" ") + tMesh;
+    std::string tCommand = std::string("cd evaluations") + tTag + std::string("; ") + tDecompString;
 
-    auto tArgumentName = std::string("Criterion ") + std::to_string(aCriterionNumber) + std::string(" Value");
-    tKeys = {"ArgumentName"}; tValues = {tArgumentName};
-    auto tOutput = tOperation.append_child("Output");
-    XMLGen::append_children(tKeys, tValues, tOutput);
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
+    std::vector<std::string> tValues = {"SystemCall", tName, tCommand};
+    XMLGen::append_children(tKeys, tValues, tOperation);
 }
-// function append_compute_volume_criterion_value_to_plato_main_operation
+// function append_decomp_operations
 /******************************************************************************/
 
 /******************************************************************************/

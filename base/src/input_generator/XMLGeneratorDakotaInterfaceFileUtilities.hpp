@@ -112,20 +112,31 @@ void append_initialize_stage
 void append_design_parameters_input(pugi::xml_node & aParentNode);
 
 /******************************************************************************//**
- * \fn append_parallel_update_geometry_on_change_operation
+ * \fn append_concurrent_update_geometry_on_change_operation
  * \brief Append update geometry on change operation for concurrent design parameters.
  * \param [in/out] aParentNode    parent xml node
 **********************************************************************************/
-void append_parallel_update_geometry_on_change_operation(pugi::xml_node & aParentNode);
+void append_concurrent_update_geometry_on_change_operation(pugi::xml_node & aParentNode);
 
 /******************************************************************************//**
- * \fn append_parallel_reinitialize_on_change_operation
+ * \fn append_concurrent_physics_performer_decomp_operation
  * \brief Append reinitialize on change operation for all physics performers with
   concurrent design parameters.
  * \param [in]     aMetaData Plato problem input metadata
  * \param [in/out] aParentNode    parent xml node
 **********************************************************************************/
-void append_parallel_reinitialize_on_change_operation
+void append_concurrent_physics_performer_decomp_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode);
+
+/******************************************************************************//**
+ * \fn append_concurrent_reinitialize_on_change_operation
+ * \brief Append reinitialize on change operation for all physics performers with
+  concurrent design parameters.
+ * \param [in]     aMetaData Plato problem input metadata
+ * \param [in/out] aParentNode    parent xml node
+**********************************************************************************/
+void append_concurrent_reinitialize_on_change_operation
 (const XMLGen::InputData & aMetaData,
  pugi::xml_node          & aParentNode);
 
@@ -152,14 +163,14 @@ void append_objective_criterion_value_stages
  int                     & aCriterionNumber);
 
 /******************************************************************************//**
- * \fn append_parallel_criterion_value_operation
+ * \fn append_concurrent_criterion_value_operation
  * \brief Append parallel criterion value operation to interface.xml file.
  * \param [in/out] aParentNode       parent xml node
  * \param [in]     aService          Service computing criterion
  * \param [in]     aIdentifierString criterion identifier string
  * \param [in]     aCriterionNumber  criterion ordering number
 **********************************************************************************/
-void append_parallel_criterion_value_operation
+void append_concurrent_criterion_value_operation
 (pugi::xml_node    & aParentNode,
  XMLGen::Service   & aService,
  const std::string & aIdentifierString,

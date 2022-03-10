@@ -487,18 +487,38 @@ void append_compute_volume_gradient_to_plato_main_operation
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
- * \fn append_compute_volume_criterion_value_to_plato_main_operation
+ * \fn append_compute_volume_criterion_value_operation_to_plato_main_operation
  * \brief Append compute volume criterion value operation to PUGI XML document.
  * \param [in]     aXMLMetaData Plato problem input data
  * \param [in/out] aDocument    pugi::xml_document
- * \param [in]     aIdentifierString Identifier string for criterion
- * \param [in]     aCriterionNumber Criterion number
 **********************************************************************************/
-void append_compute_volume_criterion_value_to_plato_main_operation
+void append_compute_volume_criterion_value_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_decomp_operations_for_physics_performers_to_plato_main_operation
+ * \brief Append decomp operations for physics performers to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_decomp_operations_for_physics_performers_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_decomp_operations
+ * \brief Append decomp operations for physics performer to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+ * \param [in]     aService     Plato service for physics performer
+ * \param [in]     aEvaluation  concurrent evaluation id
+**********************************************************************************/
+void append_decomp_operations
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument,
- const std::string& aIdentifierString,
- int aCriterionNumber);
+ const XMLGen::Service& aService,
+ int aEvaluation);
 
 /******************************************************************************//**
  * \fn append_fixed_blocks_identification_numbers_to_operation

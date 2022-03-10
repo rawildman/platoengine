@@ -739,14 +739,21 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
 {
     XMLGen::InputData tMetaData;
 
-    // Create a service
+    // Create services
     XMLGen::Service tService;
     tService.id("1");
     tService.code("platomain");
     tMetaData.append(tService);
     tService.id("21");
     tService.code("sierra_sd");
+    tService.numberProcessors("14");
     tMetaData.append(tService);
+
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("21");
+    tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_initialize_stage(tMetaData, tDocument));
@@ -777,6 +784,18 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+
+    // DECOMP OPERATION
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOuterOperation.empty());
+    tForNode = tOuterOperation.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
+    tOperation = tForNode.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"decomp_mesh_sierra_sd_21_{I}", "plato_services_{I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     // REINITIALIZE ON CHANGE OPERATION 
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -1671,10 +1690,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriterionValueToPlatoMainOperationsFile
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    std::string tIdentifierString = "";
-    int tCriterionNumber = 0;
-    ASSERT_TRUE(get_volume_criterion_defined_and_computed_by_platomain(tMetaData, tIdentifierString, tCriterionNumber));
-    ASSERT_NO_THROW(XMLGen::append_compute_volume_criterion_value_to_plato_main_operation(tMetaData, tDocument, tIdentifierString, tCriterionNumber));
+    ASSERT_NO_THROW(XMLGen::append_compute_volume_criterion_value_operation_to_plato_main_operation(tMetaData, tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -1693,6 +1709,229 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriterionValueToPlatoMainOperationsFile
 
     tOutput = tOutput.next_sibling("Output");
     ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_ErrorMultipleDecopmsRequested)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create services
+    XMLGen::Service tService;
+    tService.id("33");
+    tService.code("sierra_sd");
+    tService.numberProcessors("10");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("2");
+    tService.code("sierra_sd");
+    tService.numberProcessors("4");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("33");
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_MultiObjective)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create services
+    XMLGen::Service tService;
+    tService.id("6");
+    tService.code("sierra_sd");
+    tService.numberProcessors("1");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("7");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("33");
+    tService.code("sierra_sd");
+    tService.numberProcessors("10");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("volume_average_von_mises");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("1");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("9");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("6");
+    tObjective.serviceIDs.push_back("7");
+    tObjective.serviceIDs.push_back("33");
+    tObjective.serviceIDs.push_back("33");
+    tObjective.criteriaIDs.push_back("7");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("7");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("1");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("9");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    tKeys = {"Function", "Name", "Command"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_SingleObjectiveSingleConstraint)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create services
+    XMLGen::Service tService;
+    tService.id("6");
+    tService.code("sierra_sd");
+    tService.numberProcessors("4");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+    tService.id("7");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    tMetaData.mPerformerServices.push_back(tService);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("volume_average_von_mises");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("9");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("7");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("9");
+    tMetaData.objective = tObjective;
+
+    // Create a constraint
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("8");
+    tConstraint.criterion("7");
+    tConstraint.service("6");
+    tConstraint.scenario("9");
+    tMetaData.constraints.push_back(tConstraint);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    tKeys = {"Function", "Name", "Command"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -3721,7 +3960,7 @@ TEST(PlatoTestXMLGenerator, AppendResponsesToDakotaDriverInputFile_SBGO_MultiObj
     auto tReadData = XMLGen::read_data_from_file("appendResponses.txt");
     auto tGold = std::string("responses") + 
         std::string("objective_functions=2") + 
-        std::string("descriptors'mechanical_compliance''volume'") + 
+        std::string("descriptors'mechanical_compliance_scenario14''volume_scenario14'") + 
         std::string("primary_scales=1.35.4") + 
         std::string("no_gradients") +
         std::string("no_hessians");

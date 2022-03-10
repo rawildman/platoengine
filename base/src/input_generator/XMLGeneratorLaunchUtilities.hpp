@@ -18,6 +18,7 @@ namespace XMLGen
   void append_decomp_lines_for_prune_and_refine(const XMLGen::InputData& aInputData, FILE*& fp);
   void append_decomp_line(FILE*& fp, const std::string& num_processors, const std::string& mesh_file_name);
   void append_decomp_line(FILE*& fp, const int& num_processors, const std::string& mesh_file_name);
+  void append_decomp_lines_for_dakota_workflow(FILE*& fp, const std::string& num_processors, int num_evaluations, const std::string& mesh_file_name);
   void append_prune_and_refine_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp);
   void append_prune_and_refine_command(const XMLGen::InputData& aInputData, FILE*& fp);
   void append_concatenate_mesh_file_lines(const XMLGen::InputData& aInputData, FILE*& fp);

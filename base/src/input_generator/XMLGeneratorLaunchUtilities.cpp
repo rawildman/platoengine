@@ -162,6 +162,16 @@ namespace XMLGen
     fprintf(fp, "decomp -p %d %s\n", num_processors, mesh_file_name.c_str());
   }
 
+  void append_decomp_lines_for_dakota_workflow(FILE*& fp, const std::string& num_processors, int num_evaluations, const std::string& mesh_file_name)
+  {
+    for (int iEvaluation = 0; iEvaluation < num_evaluations; iEvaluation++)
+    {
+      std::string tTag = std::string("_") + std::to_string(iEvaluation);
+      std::string appended_mesh_file_name = XMLGen::append_concurrent_tag_to_file_string(mesh_file_name,tTag);
+      fprintf(fp, "cd evaluations_%d; decomp -p %s %s; cd ..\n", iEvaluation, num_processors.c_str(), appended_mesh_file_name.c_str());
+    }
+  }
+
   void append_prune_and_refine_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
   {
     int tNumRefines = XMLGen::Internal::get_number_of_refines(aInputData);
@@ -269,7 +279,15 @@ namespace XMLGen
             if(need_to_decompose)
             {
                 if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0)
-                  XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
+                  if (aInputData.optimization_parameters().optimizationType() == OT_DAKOTA)
+                  {
+                    auto tMeshName = aInputData.optimization_parameters().csm_exodus_file();
+                    int tNumEvaluations = std::stoi(aInputData.optimization_parameters().concurrent_evaluations());
+                    XMLGen::append_decomp_lines_for_dakota_workflow(fp, num_procs, tNumEvaluations, tMeshName);
+                  }
+                  else
+                    XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
+
                 if(tCriterion.value("ref_data_file").length() > 0)
                   XMLGen::append_decomp_line(fp, num_procs, tCriterion.value("ref_data_file"));
             }
