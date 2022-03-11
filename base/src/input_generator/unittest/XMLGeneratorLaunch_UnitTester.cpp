@@ -511,6 +511,53 @@ TEST(PlatoTestXMLGenerator, appendDecompLinesToMPILaunchScript)
   Plato::system("rm -rf appendDecompLine.txt");
 }
 
+TEST(PlatoTestXMLGenerator, appendDecompLinesToMPILaunchScriptDakotaDriver)
+{
+  XMLGen::InputData tInputData;
+  tInputData.mesh.run_name = "dummy_mesh.exo";
+
+  XMLGen::Service tService;
+  tService.id("1");
+  tService.code("platomain");
+  tService.numberProcessors("1");
+  tInputData.append(tService);
+  tService.id("2");
+  tService.code("sierra_sd");
+  tService.numberProcessors("10");
+  tInputData.append(tService);
+
+  XMLGen::Scenario tScenario;
+  tScenario.id("5");
+  tInputData.append(tScenario);
+
+  XMLGen::Criterion tCriterion;
+  tCriterion.id("1");
+  tCriterion.type("volume_average_von_mises");
+  tInputData.append(tCriterion);
+
+  XMLGen::Objective tObjective;
+  tObjective.serviceIDs.push_back("2");
+  tObjective.scenarioIDs.push_back("5");
+  tObjective.criteriaIDs.push_back("1");
+  tInputData.objective = tObjective;
+
+  XMLGen::OptimizationParameters tOptimizationParameters;
+  tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+  tOptimizationParameters.append("concurrent_evaluations", "2");
+  tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+  tInputData.set(tOptimizationParameters);
+
+  FILE* fp=fopen("appendDecompLine.txt", "w");
+  XMLGen::append_decomp_lines_to_mpirun_launch_script(tInputData, fp);
+  fclose(fp);
+
+  auto tReadData = XMLGen::read_data_from_file("appendDecompLine.txt");
+  auto tGold = std::string("cdevaluations_0;decomp-p10rocker_0.exo;cd..cdevaluations_1;decomp-p10rocker_1.exo;cd..");
+
+  EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+  Plato::system("rm -rf appendDecompLine.txt");
+}
+
 TEST(PlatoTestXMLGenerator, appendEngineMPIRunLines)
 {
   XMLGen::InputData tInputData;

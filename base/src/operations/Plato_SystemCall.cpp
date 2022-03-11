@@ -195,8 +195,8 @@ void SystemCall::executeCommand(const std::vector<std::string> &arguments)
     for(const auto &s : arguments) {
         cmd += " " + s;
     }
-    // make system call
-    Plato::system_with_return(cmd.c_str());
+    // make system call and throw error if exit status non-zero
+    Plato::system_with_throw(cmd.c_str());
 
     if (mPrint)
     {
