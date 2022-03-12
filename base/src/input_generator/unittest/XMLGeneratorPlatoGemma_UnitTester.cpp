@@ -342,7 +342,7 @@ void check_plato_app_service_type(const std::string& aType)
 {
     if( aType == "plato_app" )
     {
-        THROWERR("The 'run system call function' cannot be used with service type 'plato_app'. The 'run system call function' can only be used with services of types 'web_app' and 'system_call'.")
+        THROWERR("The 'run system call' function cannot be used with service of type 'plato_app'. The 'run system call' function can only be used with services of type 'web_app' and 'system_call'.")
     }
 }
 
@@ -352,7 +352,7 @@ void set_run_system_call_option
 {
     auto tNumConcurrentEvals = std::stoi(aOperationMetaData.back("concurrent_evaluations"));
     XMLGen::gemma::ServiceTypeBasedOptions tOptions(tNumConcurrentEvals);
-    for(auto tType : aOperationMetaData.get("type"))
+    for(auto& tType : aOperationMetaData.get("type"))
     {
         XMLGen::check_plato_app_service_type(tType);
         auto tIndex = &tType - &aOperationMetaData.get("type")[0];
@@ -611,6 +611,56 @@ void write_operation_file(const XMLGen::InputData& aMetaData)
 
 namespace PlatoTestXMLGenerator
 {
+
+TEST(PlatoTestXMLGenerator, pre_process_general_run_system_call_options)
+{
+
+}
+
+TEST(PlatoTestXMLGenerator, set_run_system_call_option)
+{
+    XMLGen::OperationMetaData tOperationMetaDataOne;
+    tOperationMetaDataOne.append("concurrent_evaluations", "3");
+
+    // test one: web_app options
+    tOperationMetaDataOne.set("type", std::vector<std::string>(3, "web_app"));
+    XMLGen::set_run_system_call_option("commands", tOperationMetaDataOne);
+    EXPECT_EQ(3u, tOperationMetaDataOne.get("commands").size());
+    EXPECT_STREQ("curl", tOperationMetaDataOne.get("commands")[0].c_str());
+    EXPECT_STREQ("curl", tOperationMetaDataOne.get("commands")[1].c_str());
+    EXPECT_STREQ("curl", tOperationMetaDataOne.get("commands")[2].c_str());
+
+    XMLGen::set_run_system_call_option("functions", tOperationMetaDataOne);
+    EXPECT_EQ(3u, tOperationMetaDataOne.get("functions").size());
+    EXPECT_STREQ("SystemCall", tOperationMetaDataOne.get("functions")[0].c_str());
+    EXPECT_STREQ("SystemCall", tOperationMetaDataOne.get("functions")[1].c_str());
+    EXPECT_STREQ("SystemCall", tOperationMetaDataOne.get("functions")[2].c_str());
+    
+    EXPECT_THROW(XMLGen::set_run_system_call_option("ranks", tOperationMetaDataOne), std::runtime_error); // error: key not defined
+
+    // test two: system_call options
+    XMLGen::OperationMetaData tOperationMetaDataTwo;
+    tOperationMetaDataTwo.append("concurrent_evaluations", "3");
+    tOperationMetaDataTwo.set("type", std::vector<std::string>(3, "system_call"));
+    XMLGen::set_run_system_call_option("commands", tOperationMetaDataTwo);
+    EXPECT_EQ(3u, tOperationMetaDataTwo.get("commands").size());
+    EXPECT_STREQ("gemma", tOperationMetaDataTwo.get("commands")[0].c_str());
+    EXPECT_STREQ("gemma", tOperationMetaDataTwo.get("commands")[1].c_str());
+    EXPECT_STREQ("gemma", tOperationMetaDataTwo.get("commands")[2].c_str());
+
+    XMLGen::set_run_system_call_option("functions", tOperationMetaDataTwo);
+    EXPECT_EQ(3u, tOperationMetaDataTwo.get("functions").size());
+    EXPECT_STREQ("SystemCallMPI", tOperationMetaDataTwo.get("functions")[0].c_str());
+    EXPECT_STREQ("SystemCallMPI", tOperationMetaDataTwo.get("functions")[1].c_str());
+    EXPECT_STREQ("SystemCallMPI", tOperationMetaDataTwo.get("functions")[2].c_str());
+}
+
+TEST(PlatoTestXMLGenerator, check_plato_app_service_type)
+{
+    EXPECT_THROW(XMLGen::check_plato_app_service_type("plato_app"), std::runtime_error);
+    EXPECT_NO_THROW(XMLGen::check_plato_app_service_type("web_app"));
+    EXPECT_NO_THROW(XMLGen::check_plato_app_service_type("system_call"));
+}
 
 TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
 {
