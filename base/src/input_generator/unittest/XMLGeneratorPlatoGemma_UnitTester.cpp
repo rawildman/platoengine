@@ -1,4 +1,4 @@
-/*
+ /*
  * XMLGeneratorPlatoGemma_UnitTester.cpp
  *
  *  Created on: Feb 28, 2022
@@ -14,6 +14,82 @@
 
 namespace XMLGen
 {
+
+namespace gemma
+{
+
+struct InputDeckName
+{
+private:
+    std::unordered_map<std::string, std::string> mSolverTypeToInputDeckNameMap = 
+        { {"matched_power_balance", "gemma_matched_power_balance_input_deck.yaml"},
+          {"unmatched_power_balance", "gemma_unmatched_power_balance_input_deck.yaml"} };
+
+public:
+    std::string get(const std::string& aSolverType) const
+    {
+        auto tItr = mSolverTypeToInputDeckNameMap.find(aSolverType);
+        if(tItr == mSolverTypeToInputDeckNameMap.end())
+        {
+            auto tMsg = std::string("Gemma solver of type '") + aSolverType + "' is not supported in Plato. Supported Gemma solvers are:\n" ;
+            for(auto tPair : mSolverTypeToInputDeckNameMap)
+            {
+                tMsg = tMsg + "  " + tPair.first + "\n";
+            }
+            THROWERR(tMsg)
+        }
+        return tItr->second;
+    }
+};
+
+struct ServiceTypeBasedOptions
+{
+private:
+    std::unordered_map<std::string, std::unordered_map<std::string,std::vector<std::string>>> mMap;
+
+public:
+    explicit ServiceTypeBasedOptions(const size_t& aNumConcurrentEvals)
+    {
+        this->build(aNumConcurrentEvals);
+    }
+
+    const std::vector<std::string>& get(const std::string& aOuterKey, const std::string& aInnerKey) const
+    {
+        auto tOuterItr = mMap.find(aOuterKey);
+        if(tOuterItr == mMap.end())
+        {
+            THROWERR(std::string("Did not find outer key '") + aOuterKey + "' in map.")
+        }
+        auto tInnerItr = tOuterItr->second.find(aInnerKey);
+        if(tInnerItr == tOuterItr->second.end())
+        {
+            THROWERR(std::string("Did not find inner key '") + aInnerKey + "' in map.")
+        }
+        return tInnerItr->second;
+    }
+
+    void set(const std::string& aOuterKey, const std::string& aInnerKey, const std::vector<std::string>& aValues)
+    {
+        mMap[aOuterKey][aInnerKey] = aValues;
+    }
+
+private:
+    void build(const size_t& aNumConcurrentEvals)
+    {
+        // command defaults
+        mMap["commands"]["web_app"] = std::vector<std::string>(aNumConcurrentEvals, "curl");
+        mMap["commands"]["plato_app"] = std::vector<std::string>(aNumConcurrentEvals, "");
+        mMap["commands"]["system_call"] = std::vector<std::string>(aNumConcurrentEvals, "gemma");
+    
+        // functions defaults
+        mMap["functions"]["web_app"] = std::vector<std::string>(aNumConcurrentEvals, "SystemCall");
+        mMap["functions"]["plato_app"] = std::vector<std::string>(aNumConcurrentEvals, "");
+        mMap["functions"]["system_call"] = std::vector<std::string>(aNumConcurrentEvals, "SystemCallMPI");
+    }
+};
+
+}
+// namespace gemma
 
 struct OperationArguments
 {
@@ -54,12 +130,31 @@ public:
     }
     bool find(const std::string& aKey) const
     {
-        auto tItr = mData.find(aKey);
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        auto tItr = mData.find(tLowerKey);
         if(tItr == mData.end())
         {
             return false;
         }
         return true;
+    }
+    std::string front(const std::string& aKey) const
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        if(!this->find(tLowerKey))
+        {
+            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
+        }
+        return mData.find(tLowerKey)->second.front();
+    }
+    std::string back(const std::string& aKey) const
+    {
+        auto tLowerKey = XMLGen::to_lower(aKey);
+        if(!this->find(tLowerKey))
+        {
+            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
+        }
+        return mData.find(tLowerKey)->second.back();
     }
     std::vector<std::string> keys() const
     {
@@ -72,7 +167,7 @@ public:
     }
 };
 
-void append_integer_to_aprepro_option
+void append_integer_to_option
 (const std::string& aKey,
  const std::string& aValue,
  XMLGen::OperationMetaData& aOperationMetaDataOptions)
@@ -86,15 +181,15 @@ void append_integer_to_aprepro_option
     }    
 }
 
-void append_integer_to_aprepro_options
+void set_aprepro_system_call_options
 (XMLGen::OperationMetaData& aOperationMetaDataOptions)
 {
     auto tNumConcurrentEvals = std::stoi(aOperationMetaDataOptions.get("concurrent_evaluations").front());
-    aOperationMetaDataOptions.set("functions", std::vector<std::string>(tNumConcurrentEvals, "OperationMetaData"));
+    aOperationMetaDataOptions.set("functions", std::vector<std::string>(tNumConcurrentEvals, "SystemCall"));
     aOperationMetaDataOptions.set("commands", std::vector<std::string>(tNumConcurrentEvals, "aprepro"));
 
-    XMLGen::append_integer_to_aprepro_option("names", "aprepro_", aOperationMetaDataOptions);
-    XMLGen::append_integer_to_aprepro_option("directories", "evaluation_", aOperationMetaDataOptions);
+    XMLGen::append_integer_to_option("names", "aprepro_", aOperationMetaDataOptions);
+    XMLGen::append_integer_to_option("directories", "evaluation_", aOperationMetaDataOptions);
     
     auto tDescriptors = aOperationMetaDataOptions.get("descriptors");
     aOperationMetaDataOptions.set("options", tDescriptors);
@@ -181,6 +276,148 @@ std::string set_descriptor_value
     return tOutput;
 }
 
+std::vector<size_t> 
+get_service_indices
+(const std::string& aTargetCodeName,
+ const XMLGen::InputData& aMetaData)
+{
+    std::vector<size_t> tTargetServiceIndices;
+    auto tLowerTargetCodeName = XMLGen::to_lower(aTargetCodeName);
+    for(auto& tService : aMetaData.services())
+    {
+        auto tLowerCode = XMLGen::to_lower(tService.code());
+        if(tLowerCode == tLowerTargetCodeName)
+        {
+            size_t tIndex = &tService - &aMetaData.services()[0];
+            tTargetServiceIndices.push_back(tIndex);
+        }
+    }
+    return tTargetServiceIndices;
+}
+
+std::vector<std::string> 
+get_values_from_service
+(const std::string& aCodeName,
+ const std::string& aTargetValue,
+ const XMLGen::InputData& aMetaData)
+{
+    std::vector<std::string> tOutput;
+    auto tLowerCodeName = XMLGen::to_lower(aCodeName);
+    auto tLowerTargetValue = XMLGen::to_lower(aTargetValue);
+    auto tServiceIndices = XMLGen::get_service_indices(tLowerCodeName, aMetaData);
+    for(auto tIndex : tServiceIndices)
+    {
+        auto tValue = aMetaData.service(tIndex).value(tLowerTargetValue);
+        tOutput.push_back(tValue);
+    }
+    return tOutput;
+}
+
+void set_system_call_option_from_service
+(const std::string& aTargetValue,
+ const XMLGen::InputData& aMetaData,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    auto tLowerTargetValue = XMLGen::to_lower(aTargetValue);
+    auto tLowerTargetCode = XMLGen::to_lower(aOperationMetaData.back("code"));
+    auto tValues = XMLGen::get_values_from_service(tLowerTargetCode, aTargetValue, aMetaData);
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
+    if( tNumConcurrentEvals > tValues.size() && tValues.size() == 1u )
+    {
+        aOperationMetaData.set( tLowerTargetValue, std::vector<std::string>(tNumConcurrentEvals, tValues.front()) );
+    }
+    else if( tNumConcurrentEvals == tValues.size() )
+    {
+        aOperationMetaData.set( tLowerTargetValue, tValues );
+    }
+    else
+    {
+        THROWERR(std::string("The number of services with code name '") + tLowerTargetCode 
+            + "' should be equal to one or match the number of concurrent evaluations, which is set to '" 
+            + std::to_string(tNumConcurrentEvals) + "'.")
+    }
+}
+
+void check_plato_app_service_type(const std::string& aType)
+{
+    if( aType == "plato_app" )
+    {
+        THROWERR("The 'run system call function' cannot be used with service type 'plato_app'. The 'run system call function' can only be used with services of types 'web_app' and 'system_call'.")
+    }
+}
+
+void set_run_system_call_option
+(const std::string& aOuterKey,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.back("concurrent_evaluations"));
+    XMLGen::gemma::ServiceTypeBasedOptions tOptions(tNumConcurrentEvals);
+    for(auto tType : aOperationMetaData.get("type"))
+    {
+        XMLGen::check_plato_app_service_type(tType);
+        auto tIndex = &tType - &aOperationMetaData.get("type")[0];
+        aOperationMetaData.append(aOuterKey, tOptions.get(aOuterKey, tType)[tIndex]);
+    }
+}
+
+void pre_process_general_run_system_call_options
+(const XMLGen::InputData& aMetaData,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    auto tNumConcurrentEvals = aMetaData.optimization_parameters().concurrent_evaluations();
+    aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
+      
+    XMLGen::set_system_call_option_from_service("type", aMetaData, aOperationMetaData);
+    XMLGen::set_system_call_option_from_service("number_processors", aMetaData, aOperationMetaData);
+
+    XMLGen::set_run_system_call_option("commands", aOperationMetaData);
+    XMLGen::set_run_system_call_option("functions", aOperationMetaData);
+}
+
+void set_run_system_call_arguments
+(XMLGen::OperationMetaData& aOperationMetaData)
+{
+    XMLGen::gemma::InputDeckName tInputDeckName; 
+    auto tServiceTypes = aOperationMetaData.get("type");
+    for(auto tType : tServiceTypes)
+    {
+        XMLGen::check_plato_app_service_type(tType);
+        if(tType == "system_call")
+        {
+            auto tInputFileName = tInputDeckName.get(aOperationMetaData.front("algorithm"));
+            aOperationMetaData.append("arguments", tInputFileName);
+        }
+        else
+        {
+            auto tBASE_LOCAL_HOST_NUMBER = 7000;
+            auto tHostNumber = tBASE_LOCAL_HOST_NUMBER + (&tType - &tServiceTypes[0]);
+            aOperationMetaData.append("arguments", std::string("http://localhost:") + std::to_string(tHostNumber) + "/rungemma/");
+        }
+    }
+}
+
+void write_run_system_call_operation
+(const XMLGen::OperationMetaData& aOperationMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tArguments = aOperationMetaData.get("arguments");
+    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
+    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
+    {
+        auto tSuffix = std::string("_") + std::to_string(tIndex);
+        auto tOperation = aDocument.append_child("Operation");
+
+        auto tFuncName = std::string("aprepro") + tSuffix;
+        std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "AppendInput", "ChDir"};
+        std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tIndex], 
+                                          aOperationMetaData.get("names")[tIndex], 
+                                          aOperationMetaData.get("commands")[tIndex], 
+                                          "true", "false", aOperationMetaData.get("directories")[tIndex],};
+        XMLGen::append_children(tKeys, tVals, tOperation);
+        XMLGen::append_children(std::vector<std::string>(tArguments.size(), "Argument"), tArguments, tOperation);
+    }
+}
+
 namespace matched_power_balance
 {
 
@@ -208,8 +445,10 @@ void preprocess_aprepro_system_call_options
 (const XMLGen::InputData& aMetaData,
  XMLGen::OperationMetaData& aOperationMetaData)
 {
-    aOperationMetaData.append("input_file", "gemma_matched_power_balance_input_deck.yaml");
-    aOperationMetaData.append("template_file", "gemma_matched_power_balance_input_deck.yaml.template");
+    XMLGen::gemma::InputDeckName tInputDeckName; 
+    auto tInputFileName = tInputDeckName.get("matched_power_balance");
+    aOperationMetaData.append("input_file", tInputFileName);
+    aOperationMetaData.append("template_file", tInputFileName + ".template");
     auto tNumConcurrentEvals = aMetaData.optimization_parameters().concurrent_evaluations();
     aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
     auto tDescriptors = aMetaData.optimization_parameters().descriptors();
@@ -239,7 +478,7 @@ void aprepro_system_call
 {
     XMLGen::OperationMetaData tOperationMetaData;
     XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(aMetaData, tOperationMetaData);
-    XMLGen::append_integer_to_aprepro_options(tOperationMetaData);
+    XMLGen::set_aprepro_system_call_options(tOperationMetaData);
     std::vector<XMLGen::OperationArguments> tData;
     XMLGen::matched_power_balance::preprocess_aprepro_system_call_inputs(aMetaData, tData);
     XMLGen::matched_power_balance::are_aprepro_input_options_defined(tOperationMetaData);
@@ -261,7 +500,9 @@ void are_inputs_defned(const std::unordered_map<std::string,std::string>& aKeyVa
     }
 }
 
-void input_deck(const std::string& aFileName, const std::unordered_map<std::string,std::string>& aKeyValuePairs)
+void write_input_deck_to_file
+(const std::string& aFileName, 
+ const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
     XMLGen::matched_power_balance::are_inputs_defned(aKeyValuePairs);
 
@@ -311,11 +552,11 @@ get_input_key_value_pairs
     return tMap;
 }
 
-}
-// namespace matched_power_balance
-
-void write_matched_power_balance_input_deck(const XMLGen::InputData& aMetaData)
+void write_input_deck
+(const XMLGen::InputData& aMetaData)
 {
+    XMLGen::gemma::InputDeckName tInputDeckName; 
+    auto tInputFileName = tInputDeckName.get("matched_power_balance");
     std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
     auto tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", aMetaData);
     for(auto& tScenarioID : tUniqueGemmaScenarioIDs)
@@ -324,20 +565,181 @@ void write_matched_power_balance_input_deck(const XMLGen::InputData& aMetaData)
         auto tMaterialID = tScenario.material();
         auto tMaterial = aMetaData.material(tMaterialID);
         auto tInputKeyValuePairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
-        auto tFileName = tDescriptors.empty() ? "gemma_matched_power_balance_input_deck.yaml" : "gemma_matched_power_balance_input_deck.yaml.template";
-        XMLGen::matched_power_balance::input_deck(tFileName, tInputKeyValuePairs);
+        auto tFileName = tDescriptors.empty() ? tInputFileName : tInputFileName + ".template";
+        XMLGen::matched_power_balance::write_input_deck_to_file(tFileName, tInputKeyValuePairs);
     }
 }
 
-void write_gemma_input_deck(const XMLGen::InputData& aMetaData)
+void write_run_system_call_operation
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& tDocument)
 {
-    XMLGen::write_matched_power_balance_input_deck(aMetaData);
+    XMLGen::OperationMetaData tOperationMetaData;
+    tOperationMetaData.append("code", "gemma");
+    tOperationMetaData.append("algorithm", "matched_power_balance");
+
+    XMLGen::pre_process_general_run_system_call_options(aMetaData, tOperationMetaData);
+    XMLGen::append_integer_to_option("names", "gemma_", tOperationMetaData);
+    XMLGen::append_integer_to_option("directories", "evaluation_", tOperationMetaData);
+    XMLGen::set_run_system_call_arguments(tOperationMetaData);
+    XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
 }
+
+}
+// namespace matched_power_balance
+
+namespace gemma
+{
+
+void write_input_deck(const XMLGen::InputData& aMetaData)
+{
+    XMLGen::matched_power_balance::write_input_deck(aMetaData);
+}
+
+void write_operation_file(const XMLGen::InputData& aMetaData)
+{
+    pugi::xml_document tDocument;
+    XMLGen::matched_power_balance::aprepro_system_call(aMetaData, tDocument);
+    XMLGen::matched_power_balance::write_run_system_call_operation(aMetaData, tDocument);
+    tDocument.save_file("plato_gemma_service_operation_file", "  ");
+}
+
+}
+// namespace gemma
 
 }
 
 namespace PlatoTestXMLGenerator
 {
+
+TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
+{
+    XMLGen::InputData tMetaData;
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "web_app");
+    tServiceOne.append("number_processors", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tMetaData.append(tServiceTwo);
+
+    XMLGen::OperationMetaData tOperationMetaData;
+    tOperationMetaData.append("code", "gemma");
+    tOperationMetaData.append("concurrent_evaluations", "3");
+
+    // test one: one service defined 
+    XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData);
+    EXPECT_EQ(3u, tOperationMetaData.get("type").size());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[2].c_str());
+
+    XMLGen::set_system_call_option_from_service("number_processors", tMetaData, tOperationMetaData);
+    EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[2].c_str());
+
+    // test two: number of services mathc the number of concurrent evaluations
+    XMLGen::Service tServiceThree;
+    tServiceThree.append("code", "gemma");
+    tServiceThree.append("id", "3");
+    tServiceThree.append("type", "web_app");
+    tServiceThree.append("number_processors", "1");
+    tMetaData.append(tServiceThree);
+    XMLGen::Service tServiceFour;
+    tServiceFour.append("code", "gemma");
+    tServiceFour.append("id", "4");
+    tServiceFour.append("type", "system_call");
+    tServiceFour.append("number_processors", "2");
+    tMetaData.append(tServiceFour);
+
+    XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData);
+    EXPECT_EQ(3u, tOperationMetaData.get("type").size());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
+    EXPECT_STREQ("system_call", tOperationMetaData.get("type")[2].c_str());
+
+    XMLGen::set_system_call_option_from_service("number_processors", tMetaData, tOperationMetaData);
+    EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
+    EXPECT_STREQ("2", tOperationMetaData.get("number_processors")[2].c_str());
+
+    // test three: error -> the number of services exceeds the number of concurrent evaluations
+    XMLGen::Service tServiceFive;
+    tServiceFive.append("code", "gemma");
+    tServiceFive.append("id", "5");
+    tServiceFive.append("type", "system_call");
+    tServiceFive.append("number_processors", "2");
+    tMetaData.append(tServiceFive);
+
+    EXPECT_THROW(XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, get_values_from_service)
+{
+    XMLGen::InputData tMetaData;
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "web_app");
+    tServiceOne.append("number_processors", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tMetaData.append(tServiceTwo);
+
+    // test gemma 
+    auto tValues = XMLGen::get_values_from_service("gemma", "number_processors", tMetaData);
+    EXPECT_EQ(1u, tValues.size());
+    EXPECT_STREQ("1", tValues.front().c_str());
+    tValues = XMLGen::get_values_from_service("GEMMA", "TYPE", tMetaData);
+    EXPECT_EQ(1u, tValues.size());
+    EXPECT_STREQ("web_app", tValues.front().c_str());
+
+    // test platomain 
+    tValues = XMLGen::get_values_from_service("platomain", "number_processors", tMetaData);
+    EXPECT_EQ(1u, tValues.size());
+    EXPECT_STREQ("2", tValues.front().c_str());
+    tValues = XMLGen::get_values_from_service("Platomain", "Type", tMetaData);
+    EXPECT_EQ(1u, tValues.size());
+    EXPECT_STREQ("plato_app", tValues.front().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, get_service_indices)
+{
+    XMLGen::InputData tMetaData;
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tMetaData.append(tServiceTwo);
+
+    // test gemma indices
+    auto tIndices = XMLGen::get_service_indices("gemma", tMetaData);
+    EXPECT_EQ(1u, tIndices.size());
+    EXPECT_EQ(0, tIndices.front());
+
+    // test plato indices
+    tIndices = XMLGen::get_service_indices("PLATOMAIN", tMetaData);
+    EXPECT_EQ(1u, tIndices.size());
+    EXPECT_EQ(1, tIndices.front());
+}
 
 TEST(PlatoTestXMLGenerator, aprepro_system_call_matched_power_balance)
 {
@@ -355,7 +757,7 @@ TEST(PlatoTestXMLGenerator, aprepro_system_call_matched_power_balance)
     tDocument.save_file("dummy.txt");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
-    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>OperationMetaData</Function><Name>aprepro_0</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>OperationMetaData</Function><Name>aprepro_1</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>OperationMetaData</Function><Name>aprepro_2</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_2</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation>");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_2</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_2</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f dummy.txt");
 }
@@ -426,11 +828,11 @@ TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_inputs_matched_power_
     EXPECT_STREQ("parameters", tData.front().get("name").c_str());
 }
 
-TEST(PlatoTestXMLGenerator, append_integer_to_aprepro_option)
+TEST(PlatoTestXMLGenerator, append_integer_to_option)
 {
     XMLGen::OperationMetaData tOperationMetaData;
     tOperationMetaData.append("concurrent_evaluations", "3");
-    XMLGen::append_integer_to_aprepro_option("names", "aprepro_", tOperationMetaData);
+    XMLGen::append_integer_to_option("names", "aprepro_", tOperationMetaData);
 
     auto tOutput = tOperationMetaData.get("names");
     EXPECT_EQ(3u, tOutput.size());
@@ -463,7 +865,7 @@ TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_options_matched_power
     EXPECT_STREQ("gemma_matched_power_balance_input_deck.yaml.template", tOperationMetaData.get("template_file").front().c_str());
 }
 
-TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
+TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)
 {
     XMLGen::InputData tMetaData;
     // define optmization parameters
@@ -512,7 +914,7 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
     tMetaData.append(tMaterial);
 
     // TEST 1: WRITE TEMPLATE FILE NEEDED FOR APREPRO OPERATION
-    XMLGen::write_gemma_input_deck(tMetaData);
+    XMLGen::matched_power_balance::write_input_deck(tMetaData);
     auto tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml.template");
     std::string tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:{slot_length}Slotwidth:{slot_width}Slotdepth:{slot_depth}Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
@@ -522,7 +924,7 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
     tDescriptors.clear();
     tOptParams.descriptors(tDescriptors);
     tMetaData.set(tOptParams);
-    ASSERT_THROW(XMLGen::write_gemma_input_deck(tMetaData), std::runtime_error);
+    ASSERT_THROW(XMLGen::matched_power_balance::write_input_deck(tMetaData), std::runtime_error);
 
     // TEST 3: WRITE REGULAR INPUT DECK
     tScenario.append("slot_width", "0.0118");
@@ -531,14 +933,14 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck)
     std::vector<XMLGen::Scenario> tScenarios;
     tScenarios.push_back(tScenario);
     tMetaData.set(tScenarios);
-    XMLGen::write_gemma_input_deck(tMetaData);
+    XMLGen::matched_power_balance::write_input_deck(tMetaData);
     tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml");
     tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:0.0116Slotwidth:0.0118Slotdepth:0.00218Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f gemma_matched_power_balance_input_deck.yaml");
 }
 
-TEST(PlatoTestXMLGenerator, matched_power_balance_input_deck)
+TEST(PlatoTestXMLGenerator, matched_power_balance_write_input_deck_to_file)
 {
     std::unordered_map<std::string,std::string> tMap;
     tMap["slot_width"] = "0.1";
@@ -550,7 +952,7 @@ TEST(PlatoTestXMLGenerator, matched_power_balance_input_deck)
     tMap["frequency_max"] = "100";
     tMap["frequency_step"] = "5";
     tMap["conductivity"] = "11";
-    XMLGen::matched_power_balance::input_deck("input_deck.yaml",tMap);
+    XMLGen::matched_power_balance::write_input_deck_to_file("input_deck.yaml",tMap);
     auto tReadData = XMLGen::read_data_from_file("input_deck.yaml");
     std::string tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:1Height:2Conductivity:11Slotlength:0.3Slotwidth:0.1Slotdepth:0.2Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
