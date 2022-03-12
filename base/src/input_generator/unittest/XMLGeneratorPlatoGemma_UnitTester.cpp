@@ -126,9 +126,14 @@ public:
     const std::vector<std::string>& get(const std::string& aKey) const
     {
         auto tLowerKey = XMLGen::to_lower(aKey);
-        return mData.find(tLowerKey)->second;
+        auto tItr = mData.find(tLowerKey);
+        if(tItr == mData.end())
+        {
+            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
+        }
+        return tItr->second;
     }
-    bool find(const std::string& aKey) const
+    bool is_defined(const std::string& aKey) const
     {
         auto tLowerKey = XMLGen::to_lower(aKey);
         auto tItr = mData.find(tLowerKey);
@@ -141,7 +146,7 @@ public:
     std::string front(const std::string& aKey) const
     {
         auto tLowerKey = XMLGen::to_lower(aKey);
-        if(!this->find(tLowerKey))
+        if(!this->is_defined(tLowerKey))
         {
             THROWERR(std::string("Did not find key '") + aKey + "' in map.")
         }
@@ -150,7 +155,7 @@ public:
     std::string back(const std::string& aKey) const
     {
         auto tLowerKey = XMLGen::to_lower(aKey);
-        if(!this->find(tLowerKey))
+        if(!this->is_defined(tLowerKey))
         {
             THROWERR(std::string("Did not find key '") + aKey + "' in map.")
         }
@@ -378,8 +383,7 @@ void set_run_system_call_arguments
 (XMLGen::OperationMetaData& aOperationMetaData)
 {
     XMLGen::gemma::InputDeckName tInputDeckName; 
-    auto tServiceTypes = aOperationMetaData.get("type");
-    for(auto tType : tServiceTypes)
+    for(auto& tType : aOperationMetaData.get("type"))
     {
         XMLGen::check_plato_app_service_type(tType);
         if(tType == "system_call")
@@ -389,8 +393,8 @@ void set_run_system_call_arguments
         }
         else
         {
-            auto tBASE_LOCAL_HOST_NUMBER = 7000;
-            auto tHostNumber = tBASE_LOCAL_HOST_NUMBER + (&tType - &tServiceTypes[0]);
+            auto tLOCAL_HOST_NUMBER_BASE = 7000;
+            auto tHostNumber = tLOCAL_HOST_NUMBER_BASE + (&tType - &aOperationMetaData.get("type")[0]);
             aOperationMetaData.append("arguments", std::string("http://localhost:") + std::to_string(tHostNumber) + "/rungemma/");
         }
     }
@@ -408,13 +412,14 @@ void write_run_system_call_operation
         auto tOperation = aDocument.append_child("Operation");
 
         auto tFuncName = std::string("aprepro") + tSuffix;
-        std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "AppendInput", "ChDir"};
+        std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "AppendInput", "ChDir", "Argument"};
         std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tIndex], 
                                           aOperationMetaData.get("names")[tIndex], 
                                           aOperationMetaData.get("commands")[tIndex], 
-                                          "true", "false", aOperationMetaData.get("directories")[tIndex],};
+                                          "true", "false",
+                                          aOperationMetaData.get("directories")[tIndex],
+                                          aOperationMetaData.get("arguments")[tIndex]};
         XMLGen::append_children(tKeys, tVals, tOperation);
-        XMLGen::append_children(std::vector<std::string>(tArguments.size(), "Argument"), tArguments, tOperation);
     }
 }
 
@@ -427,7 +432,7 @@ void are_aprepro_input_options_defined
     std::vector<std::string> tValidKeys = {"concurrent_evaluations", "names", "options", "arguments", "commands", "functions"};
     for(auto& tValidKey : tValidKeys)
     {
-        if(!aOperationMetaData.find(tValidKey))
+        if(!aOperationMetaData.is_defined(tValidKey))
         {
             auto tDefinedKeys = aOperationMetaData.keys();
             auto tMsg = std::string("Did not find aprepro system call option '") + tValidKey + "' for matched power balance use case. " 
@@ -577,7 +582,6 @@ void write_run_system_call_operation
     XMLGen::OperationMetaData tOperationMetaData;
     tOperationMetaData.append("code", "gemma");
     tOperationMetaData.append("algorithm", "matched_power_balance");
-
     XMLGen::pre_process_general_run_system_call_options(aMetaData, tOperationMetaData);
     XMLGen::append_integer_to_option("names", "gemma_", tOperationMetaData);
     XMLGen::append_integer_to_option("directories", "evaluation_", tOperationMetaData);
@@ -612,9 +616,133 @@ void write_operation_file(const XMLGen::InputData& aMetaData)
 namespace PlatoTestXMLGenerator
 {
 
+
+TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balance)
+{
+    XMLGen::InputData tMetaData;
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "system_call");
+    tServiceOne.append("number_processors", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tMetaData.append(tServiceTwo);
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    tOptParams.append("concurrent_evaluations", "2");
+    tMetaData.set(tOptParams);
+
+    pugi::xml_document tDocument;
+    XMLGen::matched_power_balance::write_run_system_call_operation(tMetaData, tDocument);
+    tDocument.save_file("dummy.txt", " ");
+
+    auto tReadData = XMLGen::read_data_from_file("dummy.txt");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_0</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_1</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation>");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f dummy.txt");
+}
+
+TEST(PlatoTestXMLGenerator, write_run_system_call_operation)
+{
+    pugi::xml_document tDocument;
+    XMLGen::OperationMetaData tOperationMetaData;
+    
+    tOperationMetaData.append("concurrent_evaluations", "2");
+    tOperationMetaData.append("names", "gemma_0");
+    tOperationMetaData.append("names", "gemma_1");
+    tOperationMetaData.append("commands", "curl");
+    tOperationMetaData.append("commands", "curl");
+    tOperationMetaData.append("functions", "SystemCall");
+    tOperationMetaData.append("functions", "SystemCall");
+    tOperationMetaData.append("directories", "evaluation_0");
+    tOperationMetaData.append("directories", "evaluation_1");
+    tOperationMetaData.append("arguments", "http://localhost:7000/rungemma/");
+    tOperationMetaData.append("arguments", "http://localhost:7001/rungemma/");
+
+    XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
+    tDocument.save_file("dummy.txt", " ");
+
+    auto tReadData = XMLGen::read_data_from_file("dummy.txt");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>gemma_0</Name><Command>curl</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_0</ChDir><Argument>http://localhost:7000/rungemma/</Argument></Operation><Operation><Function>SystemCall</Function><Name>gemma_1</Name><Command>curl</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_1</ChDir><Argument>http://localhost:7001/rungemma/</Argument></Operation>");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f dummy.txt");
+}
+
+TEST(PlatoTestXMLGenerator, set_run_system_call_arguments)
+{
+    XMLGen::OperationMetaData tOperationMetaDataOne;
+    tOperationMetaDataOne.append("algorithm", "matched_power_balance");
+    tOperationMetaDataOne.append("type", "web_app");
+    tOperationMetaDataOne.append("type", "web_app");
+    XMLGen::set_run_system_call_arguments(tOperationMetaDataOne);
+    // test web_app arguments
+    EXPECT_EQ(2u, tOperationMetaDataOne.get("arguments").size());
+    EXPECT_STREQ("http://localhost:7000/rungemma/", tOperationMetaDataOne.get("arguments").front().c_str());
+    EXPECT_STREQ("http://localhost:7001/rungemma/", tOperationMetaDataOne.get("arguments").back().c_str());
+}
+
 TEST(PlatoTestXMLGenerator, pre_process_general_run_system_call_options)
 {
+    XMLGen::InputData tMetaData;
+    // define service
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "web_app");
+    tServiceOne.append("number_processors", "1");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tMetaData.append(tServiceTwo);
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    tOptParams.append("concurrent_evaluations", "3");
+    tMetaData.set(tOptParams);
 
+    XMLGen::OperationMetaData tOperationMetaData;
+    tOperationMetaData.append("code", "gemma");
+    EXPECT_NO_THROW(XMLGen::pre_process_general_run_system_call_options(tMetaData, tOperationMetaData));
+
+    // test output
+    auto tKeys = tOperationMetaData.keys();
+    EXPECT_EQ(6u, tKeys.size());
+    std::vector<std::string> tGoldKeys = {"functions", "number_processors", "commands", "type", "code", "concurrent_evaluations"};
+    for(auto tKey : tKeys)
+    {
+        EXPECT_TRUE(std::find(tGoldKeys.begin(), tGoldKeys.end(), tKey) != tGoldKeys.end());
+    }
+    // test concurrent_evaluations
+    EXPECT_EQ(1u, tOperationMetaData.get("concurrent_evaluations").size());
+    EXPECT_STREQ("3", tOperationMetaData.get("concurrent_evaluations").front().c_str());    
+    // test functions
+    EXPECT_EQ(3u, tOperationMetaData.get("functions").size());
+    EXPECT_STREQ("SystemCall", tOperationMetaData.get("functions")[0].c_str());
+    EXPECT_STREQ("SystemCall", tOperationMetaData.get("functions")[1].c_str());
+    EXPECT_STREQ("SystemCall", tOperationMetaData.get("functions")[2].c_str());
+    // test number processors
+    EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
+    EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[2].c_str());
+    // test commands
+    EXPECT_EQ(3u, tOperationMetaData.get("commands").size());
+    EXPECT_STREQ("curl", tOperationMetaData.get("commands")[0].c_str());
+    EXPECT_STREQ("curl", tOperationMetaData.get("commands")[1].c_str());
+    EXPECT_STREQ("curl", tOperationMetaData.get("commands")[2].c_str());
+    // test type
+    EXPECT_EQ(3u, tOperationMetaData.get("type").size());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
+    EXPECT_STREQ("web_app", tOperationMetaData.get("type")[2].c_str());
 }
 
 TEST(PlatoTestXMLGenerator, set_run_system_call_option)
