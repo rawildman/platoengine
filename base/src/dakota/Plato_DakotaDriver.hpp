@@ -124,8 +124,6 @@ public:
         // so we don't want them to send SIGFPE
         fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 
-        mInterface->handleExceptions();
-
         this->initialize();
 
         auto tProgramOptions = Plato::read_dakota_program_options();

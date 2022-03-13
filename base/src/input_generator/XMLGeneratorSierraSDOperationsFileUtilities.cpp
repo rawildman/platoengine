@@ -218,8 +218,6 @@ void append_criterion_value_operation
 {
     auto& tCriterion = aMetaData.criterion(aCriterionId);
     auto tCriterionType = Plato::tolower(tCriterion.type());
-    if(tCriterionType != "mechanical_compliance")
-        THROWERR(std::string("Criterion type ") + tCriterionType + std::string("was specified, but only mechanical_compliance is currently supported in Sierra SD"))
 
     auto tOperation = aDocument.append_child("Operation");
     auto tOperationName = std::string("Compute Criterion Value - ") + aIdentifierString;

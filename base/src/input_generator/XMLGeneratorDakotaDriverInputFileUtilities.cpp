@@ -305,9 +305,10 @@ void append_surrogate_based_global_responses_block
     for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
     {
         std::string tCriterionId = tObjective.criteriaIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
         auto& tCriterion = aMetaData.criterion(tCriterionId);
         auto tCriterionType = Plato::tolower(tCriterion.type());
-        tDescriptorString += std::string(" '") + tCriterionType + std::string("'");
+        tDescriptorString += std::string(" '") + tCriterionType + std::string("_scenario") + tScenarioID + std::string("'");
         tScalesString += std::string(" ") + tObjective.weights[i];
     }
     fprintf(fp, "   objective_functions = %zu\n", tObjective.criteriaIDs.size());

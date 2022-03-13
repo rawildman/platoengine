@@ -150,7 +150,7 @@ void system(const char* aString)
 /**********************************************************************************/
 
 /**********************************************************************************/
-void system_with_return(const char* aString)
+void system_with_throw(const char* aString)
 {
   auto tExitStatus = std::system(aString);
   if (tExitStatus)
@@ -158,6 +158,13 @@ void system_with_return(const char* aString)
       std::string tErrorMessage = std::string("System call ' ") + aString + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
       THROWERR(tErrorMessage)
   }
+}
+/**********************************************************************************/
+
+/**********************************************************************************/
+int system_with_status(const char* aString)
+{
+  return std::system(aString);
 }
 /**********************************************************************************/
 

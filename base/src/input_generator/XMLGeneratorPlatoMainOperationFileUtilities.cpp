@@ -37,6 +37,11 @@ void write_plato_main_operations_xml_file
     XMLGen::append_design_volume_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_compute_volume_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_compute_volume_gradient_to_plato_main_operation(aMetaData, tDocument);
+    if(aMetaData.needNegateOperation())
+    {
+        XMLGen::append_negate_field_to_plato_main_operation(aMetaData, tDocument);
+        XMLGen::append_negate_value_to_plato_main_operation(aMetaData, tDocument);
+    }
 
     if(XMLGen::is_robust_optimization_problem(aMetaData))
     {
@@ -75,7 +80,10 @@ void write_dakota_plato_main_operations_xml_file
 (const XMLGen::InputData& aMetaData)
 {
     pugi::xml_document tDocument;
-    XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
+    append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
+    append_reinitialize_operation_to_plato_main_operation(aMetaData, tDocument);
+    append_compute_volume_criterion_value_operation_to_plato_main_operation(aMetaData, tDocument);
+    append_decomp_operations_for_physics_performers_to_plato_main_operation(aMetaData, tDocument);
     tDocument.save_file("plato_main_operations.xml", "  ");
 }
 
@@ -122,6 +130,61 @@ bool is_volume_constraint_defined_and_computed_by_platomain
     return tIsVolumeDefinedAndComputedByPlatoMain;
 }
 //function is_volume_constraint_defined_and_computed_by_platomain
+/******************************************************************************/
+
+/******************************************************************************/
+bool get_volume_criterion_defined_and_computed_by_platomain
+(const XMLGen::InputData& aXMLMetaData,
+ std::string& aIdentifierString,
+ int& aCriterionNumber)
+{
+    auto tIsVolumeDefinedAndComputedByPlatoMain = false;
+
+    XMLGen::Objective tObjective = aXMLMetaData.objective;
+    for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
+    {
+        std::string tCriterionID = tObjective.criteriaIDs[i];
+        std::string tServiceID = tObjective.serviceIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
+
+        auto tType = Plato::tolower(aXMLMetaData.criterion(tCriterionID).type());
+        auto tCode = Plato::tolower(aXMLMetaData.service(tServiceID).code());
+
+        auto tIsVolumeConstraintDefined = tType.compare("volume") == 0;
+        auto tIsVolumeComputedByPlatoMain = tCode.compare("platomain") == 0;
+        tIsVolumeDefinedAndComputedByPlatoMain = tIsVolumeConstraintDefined && tIsVolumeComputedByPlatoMain;
+        if (tIsVolumeDefinedAndComputedByPlatoMain == true)
+        {
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            aIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+            return tIsVolumeDefinedAndComputedByPlatoMain;
+        }
+        aCriterionNumber++;
+    }
+
+    for(auto& tConstraint : aXMLMetaData.constraints)
+    {
+        std::string tCriterionID = tConstraint.criterion();
+        std::string tServiceID = tConstraint.service();
+        std::string tScenarioID = tConstraint.scenario();
+
+        auto tType = Plato::tolower(aXMLMetaData.criterion(tCriterionID).type());
+        auto tCode = Plato::tolower(aXMLMetaData.service(tServiceID).code());
+
+        auto tIsVolumeConstraintDefined = tType.compare("volume") == 0;
+        auto tIsVolumeComputedByPlatoMain = tCode.compare("platomain") == 0;
+        tIsVolumeDefinedAndComputedByPlatoMain = tIsVolumeConstraintDefined && tIsVolumeComputedByPlatoMain;
+        if (tIsVolumeDefinedAndComputedByPlatoMain == true)
+        {
+            ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
+            aIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
+            return tIsVolumeDefinedAndComputedByPlatoMain;
+        }
+        aCriterionNumber++;
+    }
+    return tIsVolumeDefinedAndComputedByPlatoMain;
+}
+//function get_volume_criterion_defined_and_computed_by_platomain
 /******************************************************************************/
 
 /******************************************************************************/
@@ -968,9 +1031,23 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "Argument", "--parameters");
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");
-    addChild(aInputNode, "ArgumentName", std::string("Parameters") + aTag);
+    addChild(aInputNode, "ArgumentName", "Parameters");
 }
 // function append_update_geometry_on_change_operation_commands
+/******************************************************************************/
+
+/******************************************************************************/
+void append_reinitialize_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        pugi::xml_node tOperation = aDocument.append_child("Operation");
+        XMLGen::append_children({"Function", "Name"}, {"Reinitialize", "reinitialize_on_change_plato_services"}, tOperation);
+    }
+}
+// function append_reinitialize_operation_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
@@ -1350,6 +1427,68 @@ void append_compute_volume_gradient_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
+void append_compute_volume_criterion_value_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    std::string tIdentifierString = "";
+    int tCriterionNumber = 0;
+    if (get_volume_criterion_defined_and_computed_by_platomain(aXMLMetaData, tIdentifierString, tCriterionNumber))
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        std::vector<std::string> tKeys = {"Function", "Name"};
+        std::vector<std::string> tValues = {"DesignVolume", std::string("Compute Criterion Value - ") + tIdentifierString};
+        XMLGen::append_children(tKeys, tValues, tOperation);
+
+        auto tArgumentName = std::string("Criterion ") + std::to_string(tCriterionNumber) + std::string(" Value");
+        tKeys = {"ArgumentName"}; tValues = {tArgumentName};
+        auto tOutput = tOperation.append_child("Output");
+        XMLGen::append_children(tKeys, tValues, tOutput);
+    }
+}
+// function append_compute_volume_criterion_value_operation_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_decomp_operations_for_physics_performers_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tDecompServiceID = XMLGen::get_unique_decomp_service(aXMLMetaData);
+    if (tDecompServiceID.size() > 0)
+    {
+        auto tService = aXMLMetaData.service(tDecompServiceID);
+        auto tEvaluations = std::stoi(aXMLMetaData.optimization_parameters().concurrent_evaluations());
+        for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            append_decomp_operations(aXMLMetaData, aDocument, tService, iEvaluation);
+    }
+}
+// function append_decomp_operations_for_physics_performers_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_decomp_operations
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument,
+ const XMLGen::Service& aService,
+ int aEvaluation)
+{
+    std::string tTag = std::string("_") + std::to_string(aEvaluation);
+    std::string tName = std::string("decomp_mesh_") + aService.performer() + tTag;
+    std::string num_procs = aService.numberProcessors();
+    std::string tMesh = XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),tTag);
+    std::string tDecompString = std::string("decomp -p ") + num_procs + std::string(" ") + tMesh;
+    std::string tCommand = std::string("cd evaluations") + tTag + std::string("; ") + tDecompString;
+
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
+    std::vector<std::string> tValues = {"SystemCall", tName, tCommand};
+    XMLGen::append_children(tKeys, tValues, tOperation);
+}
+// function append_decomp_operations
+/******************************************************************************/
+
+/******************************************************************************/
 void append_fixed_blocks_identification_numbers_to_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode)
@@ -1479,6 +1618,54 @@ void append_copy_value_to_plato_main_operation
     XMLGen::append_children({"ArgumentName"}, {"OutputValue"}, tOutput);
 }
 // function append_copy_value_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_value_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name"};
+    std::vector<std::string> tValues = {"Aggregator", "Negate Value"};
+    XMLGen::append_children(tKeys, tValues, tOperation);
+
+    auto tAggregate = tOperation.append_child("Aggregate");
+    XMLGen::append_children({"Layout"}, {"Value"}, tAggregate);
+    auto tInput = tAggregate.append_child("Input");
+    XMLGen::append_children({"ArgumentName"}, {"InputValue"}, tInput);
+    auto tOutput = tAggregate.append_child("Output");
+    XMLGen::append_children({"ArgumentName"}, {"OutputValue"}, tOutput);
+
+    auto tWeighting = tOperation.append_child("Weighting");
+    auto tWeight = tWeighting.append_child("Weight");
+    XMLGen::append_children({"Value"}, {"-1.0"}, tWeight);
+}
+// function append_negate_value_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_negate_field_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tOperation = aDocument.append_child("Operation");
+    std::vector<std::string> tKeys = {"Function", "Name"};
+    std::vector<std::string> tValues = {"Aggregator", "Negate Field"};
+    XMLGen::append_children(tKeys, tValues, tOperation);
+
+    auto tAggregate = tOperation.append_child("Aggregate");
+    XMLGen::append_children({"Layout"}, {"Nodal Field"}, tAggregate);
+    auto tInput = tAggregate.append_child("Input");
+    XMLGen::append_children({"ArgumentName"}, {"InputField"}, tInput);
+    auto tOutput = tAggregate.append_child("Output");
+    XMLGen::append_children({"ArgumentName"}, {"OutputField"}, tOutput);
+
+    auto tWeighting = tOperation.append_child("Weighting");
+    auto tWeight = tWeighting.append_child("Weight");
+    XMLGen::append_children({"Value"}, {"-1.0"}, tWeight);
+}
+// function append_negate_value_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
