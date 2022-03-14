@@ -24,7 +24,6 @@ string(REPLACE " " ";" NUM_PROCS_LIST ${NUM_PROCS})
 list(GET NUM_PROCS_LIST ${IO_COMM_INDEX} NUM_PARTS)
 
 if(${NUM_PARTS} MATCHES "1")
-  set(OUTPUT_MESH ${OUTPUT_MESH}.${NUM_PARTS}.0)
   message("EPU was skipped becasue there is only one file part.")
 else()
   if (NOT SEACAS_EPU)
