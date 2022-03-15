@@ -46,7 +46,15 @@ namespace XMLGen
                                                                     pugi::xml_document &aDocument)
     {
         auto tOperation = aDocument.append_child("Operation");
-        XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective"}, tOperation);
+        std::vector<std::string> tKeys = {"Function", "Name", "Criterion"};
+        std::vector<std::string> tValues = {"ComputeCriterionValue", "Compute Objective Value", "My Objective"};
+        std::string tObjectiveTarget = XMLGen::get_plato_analyze_objective_target(aMetaData);
+        if(tObjectiveTarget != "")
+        {
+            tKeys.push_back("Target");
+            tValues.push_back(tObjectiveTarget);
+        }
+        XMLGen::append_children(tKeys, tValues, tOperation);
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"Argument"}, {"Value"}, tOutput);
         XMLGen::append_children({"ArgumentName"}, {"Objective Value"}, tOutput);
@@ -64,7 +72,15 @@ namespace XMLGen
                                                                        pugi::xml_document &aDocument)
     {
         auto tOperation = aDocument.append_child("Operation");
-        XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionValue", "Compute Objective Value", "My Objective"}, tOperation);
+        std::vector<std::string> tKeys = {"Function", "Name", "Criterion"};
+        std::vector<std::string> tValues = {"ComputeCriterionValue", "Compute Objective Value", "My Objective"};
+        std::string tObjectiveTarget = XMLGen::get_plato_analyze_objective_target(aMetaData);
+        if(tObjectiveTarget != "")
+        {
+            tKeys.push_back("Target");
+            tValues.push_back(tObjectiveTarget);
+        }
+        XMLGen::append_children(tKeys, tValues, tOperation);
         auto tInput = tOperation.append_child("Input");
         XMLGen::append_children({"ArgumentName"}, {"Topology"}, tInput);
         auto tOutput = tOperation.append_child("Output");

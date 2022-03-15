@@ -66,5 +66,14 @@ std::vector<std::string>
 return_objectives_computed_by_plato_analyze
 (const XMLGen::InputData& aXMLMetaData);
 
+/******************************************************************************//**
+ * \fn get_plato_analyze_objective_target
+ * \brief Returns criterion target.
+ * \param [in] aXMLMetaData Plato problem input data
+ * \return criterion target
+**********************************************************************************/
+std::string get_plato_analyze_objective_target
+(const XMLGen::InputData& aXMLMetaData);
+
 }
 // namespace Plato

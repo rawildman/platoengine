@@ -3175,6 +3175,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     tConstraint.id("1");
     tConstraint.absoluteTarget("");  // EMPTY VALUE - IT WILL BE IGNORE
     tConstraint.relativeTarget("");
+    tConstraint.divisor("1.0");
     tConstraint.criterion("1");
     tConstraint.service("1");
 
@@ -3201,7 +3202,7 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     tGoldKeys = {"ValueName", "ValueStageName", "GradientName", "GradientStageName",
         "ReferenceValueName", "AbsoluteTargetValue", "ReferenceValue"};
     tGoldValues = {"Constraint Value 1", "Compute Constraint Value 1", "Constraint Gradient 1",
-        "Compute Constraint Gradient 1", "", "1.0", "1.0"};
+        "Compute Constraint Gradient 1", "", "1.0", "1.000000"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintNode);
 }
 
