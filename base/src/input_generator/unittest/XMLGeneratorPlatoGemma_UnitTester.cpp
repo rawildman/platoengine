@@ -379,7 +379,7 @@ void pre_process_general_run_system_call_options
     XMLGen::set_run_system_call_option("functions", aOperationMetaData);
 }
 
-void set_run_system_call_arguments
+void set_run_system_call_shared_data_arguments
 (XMLGen::OperationMetaData& aOperationMetaData)
 {
     XMLGen::gemma::InputDeckName tInputDeckName; 
@@ -598,7 +598,7 @@ void write_run_system_call_operation
     XMLGen::pre_process_general_run_system_call_options(aMetaData, tOperationMetaData);
     XMLGen::append_integer_to_option("names", "gemma_", tOperationMetaData);
     XMLGen::append_integer_to_option("directories", "evaluation_", tOperationMetaData);
-    XMLGen::set_run_system_call_arguments(tOperationMetaData);
+    XMLGen::set_run_system_call_shared_data_arguments(tOperationMetaData);
     XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
 }
 
@@ -606,7 +606,7 @@ void write_run_system_call_operation
 // namespace matched_power_balance
 
 void write_harvest_data_from_file_operation
-(const std::vector<XMLGen::OperationArgument>& aArguments,
+(const std::vector<XMLGen::OperationArgument>& aOutputs,
  const XMLGen::OperationMetaData& aOperationMetaData,
  pugi::xml_document& aDocument)
 {
@@ -614,17 +614,15 @@ void write_harvest_data_from_file_operation
     auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
     for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
     {
-        auto tSuffix = std::string("_") + std::to_string(tIndex);
         auto tOperation = aDocument.append_child("Operation");
-
-        auto tFuncName = std::string("aprepro") + tSuffix;
+        auto tFuncName = std::string("harvest_data_") + std::to_string(tIndex);
         std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", "Column"};
-        std::vector<std::string> tVals = { "HarvestDataFromFile", 
-                                           aOperationMetaData.get("names")[tIndex], 
+        std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
                                            aOperationMetaData.get("files")[tIndex],
                                            aOperationMetaData.get("operations")[tIndex],
                                            aOperationMetaData.get("data")[tIndex] };
         XMLGen::append_children(tKeys, tVals, tOperation);
+        XMLGen::append_shared_data_argument_to_operation(aOutputs[tIndex], tOperation);
     }
 }
 
@@ -709,13 +707,13 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation)
     Plato::system("rm -f dummy.txt");
 }
 
-TEST(PlatoTestXMLGenerator, set_run_system_call_arguments)
+TEST(PlatoTestXMLGenerator, set_run_system_call_shared_data_arguments)
 {
     XMLGen::OperationMetaData tOperationMetaDataOne;
     tOperationMetaDataOne.append("algorithm", "matched_power_balance");
     tOperationMetaDataOne.append("type", "web_app");
     tOperationMetaDataOne.append("type", "web_app");
-    XMLGen::set_run_system_call_arguments(tOperationMetaDataOne);
+    XMLGen::set_run_system_call_shared_data_arguments(tOperationMetaDataOne);
     // test web_app arguments
     EXPECT_EQ(2u, tOperationMetaDataOne.get("arguments").size());
     EXPECT_STREQ("http://localhost:7000/rungemma/", tOperationMetaDataOne.get("arguments").front().c_str());
