@@ -433,6 +433,10 @@ public:
 
         return mCriteria[tIndex];
     }
+    const std::vector<XMLGen::Criterion>& criteria() const
+    {
+        return mCriteria;
+    }
     void set(const std::vector<XMLGen::Criterion>& aCriteria)
     {
         mCriteria = aCriteria;
