@@ -3877,6 +3877,72 @@ TEST(PlatoTestXMLGenerator, ParseCsmFileForDakotaDriverInputFile)
     }
 }
 
+TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile_ErrorNumberDesignVariablesDontMatchCsm)
+{
+    // Create test csm file
+    FILE* fp1=fopen("rocker.csm", "w");
+    fprintf(fp1, "%s", "# Constant, Design, and Output Parameters:\n");
+    fprintf(fp1, "%s", "despmtr Py 2.0 lbound 2.0 ubound 3.0 initial 2.0\n");
+    fprintf(fp1, "%s", "despmtr Px 2.0 lbound 1.6 ubound 2.4 initial 2.0\n");
+    fprintf(fp1, "%s", "conpmtr Boffset 0.25 # lbound 0.05 ubound 0.38 initial 0.25\n");
+    fprintf(fp1, "%s", "conpmtr Lx 6.5 # lbound 5.0 ubound 8.0 initial 6.5\n");
+    fclose(fp1);
+
+    // create metadata
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("dakota_workflow", "sbgo");
+    tOptimizationParameters.append("concurrent_evaluations", "6");
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tOptimizationParameters.append("num_shape_design_variables", "3");
+    tMetaData.set(tOptimizationParameters);
+
+    FILE* fp2=fopen("appendParameters.txt", "w");
+    ASSERT_THROW(XMLGen::append_dakota_driver_variables_block(tMetaData, fp2), std::runtime_error);
+    fclose(fp2);
+
+    Plato::system("rm -rf appendParameters.txt");
+    Plato::system("rm -rf rocker.csm");
+}
+
+TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile)
+{
+    // Create test csm file
+    FILE* fp1=fopen("rocker.csm", "w");
+    fprintf(fp1, "%s", "# Constant, Design, and Output Parameters:\n");
+    fprintf(fp1, "%s", "despmtr Py 2.0 lbound 2.0 ubound 3.0 initial 2.0\n");
+    fprintf(fp1, "%s", "despmtr Px 2.0 lbound 1.6 ubound 2.4 initial 2.0\n");
+    fprintf(fp1, "%s", "conpmtr Boffset 0.25 # lbound 0.05 ubound 0.38 initial 0.25\n");
+    fprintf(fp1, "%s", "conpmtr Lx 6.5 # lbound 5.0 ubound 8.0 initial 6.5\n");
+    fclose(fp1);
+
+    // create metadata
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("dakota_workflow", "sbgo");
+    tOptimizationParameters.append("concurrent_evaluations", "6");
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tOptimizationParameters.append("num_shape_design_variables", "2");
+    tMetaData.set(tOptimizationParameters);
+
+    FILE* fp2=fopen("appendParameters.txt", "w");
+    ASSERT_NO_THROW(XMLGen::append_dakota_driver_variables_block(tMetaData, fp2));
+    fclose(fp2);
+
+    auto tReadData = XMLGen::read_data_from_file("appendParameters.txt");
+    auto tGold = std::string("variables") + 
+        std::string("continuous_design=2") + 
+        std::string("descriptors'py''px'") +
+        std::string("lower_bounds2.01.6") +
+        std::string("upper_bounds3.02.4") +
+        std::string("initial_point2.02.0");
+
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+    Plato::system("rm -rf appendParameters.txt");
+    Plato::system("rm -rf rocker.csm");
+}
+
 TEST(PlatoTestXMLGenerator, AppendInterfaceToDakotaDriverInputFile_MDPS)
 {
     XMLGen::InputData tMetaData;
