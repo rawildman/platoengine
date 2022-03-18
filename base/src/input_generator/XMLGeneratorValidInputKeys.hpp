@@ -133,7 +133,11 @@ struct ValidCriterionParameterKeys
         "izz", 
         "ixz", 
         "iyz", 
-        "ixy"
+        "ixy",
+        // system call
+        "data_file",
+        "data_group",
+        "data_extraction_operation"
     };
 };
 
