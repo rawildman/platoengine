@@ -140,38 +140,49 @@ inline void write_performer_input_deck_file_gradient_based_problem
 }
 
 /******************************************************************************//**
+ * \fn write_plato_analyze_input_deck
+ * \brief Write input deck file for Plato Analyze performer in the metadata.
+ * \param [in] aInputData input metadata
+**********************************************************************************/
+inline void write_plato_analyze_input_deck
+(XMLGen::InputData& aMetaData)
+{
+    std::string tMeshName = aMetaData.mesh.run_name;
+    std::string tCsmFileName = aMetaData.optimization_parameters().csm_file();
+    auto tConcurrentEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+
+    auto tServiceID = XMLGen::get_plato_analyze_service_id(aMetaData);
+    std::string tInputFileName = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
+    for (decltype(tConcurrentEvaluations) iEvaluation = 0; iEvaluation < tConcurrentEvaluations; iEvaluation++)
+    {
+        std::string tTag = std::string("_") + std::to_string(iEvaluation);
+        auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
+        aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
+        XMLGen::write_plato_analyze_input_deck_file(aMetaData);
+        XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
+    }
+}
+
+/******************************************************************************//**
  * \fn write_performer_input_deck_file_dakota_problem
- * \brief Write the input deck file for the performer in the metada
+ * \brief Write the input deck file for the performer in the metadata
  * \param [in] aInputData input metadata
 **********************************************************************************/
 inline void write_performer_input_deck_file_dakota_problem
 (XMLGen::InputData& aMetaData)
 {
-    if(aMetaData.services().size() > 0)
+    if(aMetaData.services().size() <= 0)
     {
-        auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
-        std::string tMeshName = aMetaData.mesh.run_name;
-        std::string tCsmFileName = aMetaData.optimization_parameters().csm_file();
+        return;
+    }
 
-        if(aMetaData.services()[0].code() == "plato_analyze")
-        {
-            auto tServiceID = XMLGen::get_plato_analyze_service_id(aMetaData);
-            std::string tInputFileName = std::string("plato_analyze_") + tServiceID + "_input_deck.xml";
-
-            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
-            {
-                std::string tTag = std::string("_") + std::to_string(iEvaluation);
-                auto tAppendedMeshName = XMLGen::append_concurrent_tag_to_file_string(tMeshName,tTag);
-                aMetaData.mesh.run_name = std::string("evaluations_") + std::to_string(iEvaluation) + std::string("/") + tAppendedMeshName;
-
-                XMLGen::write_plato_analyze_input_deck_file(aMetaData);
-                XMLGen::Problem::create_subdirectory_for_performer(tMeshName,tCsmFileName,tInputFileName,iEvaluation);
-            }
-        }
-        else if(aMetaData.services()[0].code() == "sierra_sd")
-        {
-            XMLGen::write_sierra_sd_input_deck(aMetaData);
-        }
+    if(aMetaData.services()[0].code() == "plato_analyze")
+    {
+        XMLGen::Problem::write_plato_analyze_input_deck(aMetaData);
+    }
+    else if(aMetaData.services()[0].code() == "sierra_sd")
+    {
+        XMLGen::write_sierra_sd_input_deck(aMetaData);
     }
 }
 

@@ -2288,7 +2288,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_0/plato_analyze_2_input_deck_0.xml");
+    Plato::system("rm -rf evaluations_0/");
 
     tReadData = XMLGen::read_data_from_file("evaluations_1/plato_analyze_2_input_deck_1.xml");
     tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -2301,7 +2301,7 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
                  std::string("<Parametername=\"YoungsModulus\"type=\"double\"value=\"1e9\"/></ParameterList></ParameterList></ParameterList><ParameterListname=\"NaturalBoundaryConditions\"/></ParameterList></ParameterList>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
-    Plato::system("rm -rf evaluations_1/plato_analyze_2_input_deck_1.xml");
+    Plato::system("rm -rf evaluations_1/");
 }
 
 TEST(PlatoTestXMLGenerator, CheckDakotaWorkflow_ErrorEmpty)

@@ -195,6 +195,21 @@ public:
     }
 };
 
+void set_evaluation_subdirectory_names
+(const std::string& aSubDirBaseName, 
+ const XMLGen::InputData& aInputMetaData,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    auto tConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
+    tConcurrentEvals = tConcurrentEvals.empty() ? "1" : tConcurrentEvals;
+    auto tNumConcurrentEvals = std::stoi(tConcurrentEvals);
+    for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
+    {
+        auto tDirectoryName = aSubDirBaseName + "_" + std::to_string(tEvalIndex) + std::string("/");
+        aOperationMetaData.append("subdirectories", tDirectoryName);
+    }
+}
+
 void append_integer_to_option
 (const std::string& aKey,
  const std::string& aValue,
@@ -215,10 +230,8 @@ void set_aprepro_system_call_options
     auto tNumConcurrentEvals = std::stoi(aOperationMetaDataOptions.get("concurrent_evaluations").front());
     aOperationMetaDataOptions.set("functions", std::vector<std::string>(tNumConcurrentEvals, "SystemCall"));
     aOperationMetaDataOptions.set("commands", std::vector<std::string>(tNumConcurrentEvals, "aprepro"));
+    XMLGen::append_integer_to_option("names", "aprepro_", aOperationMetaDataOptions); 
 
-    XMLGen::append_integer_to_option("names", "aprepro_", aOperationMetaDataOptions);
-    XMLGen::append_integer_to_option("directories", "evaluation_", aOperationMetaDataOptions);
-    
     auto tDescriptors = aOperationMetaDataOptions.get("descriptors");
     aOperationMetaDataOptions.set("options", tDescriptors);
     auto tInputFileName = aOperationMetaDataOptions.get("input_file").front();
@@ -261,7 +274,7 @@ void write_aprepro_system_call_operation
         std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tEvalIndex], 
                                           aOperationMetaData.get("names")[tEvalIndex], 
                                           aOperationMetaData.get("commands")[tEvalIndex], 
-                                          aOperationMetaData.get("directories")[tEvalIndex], 
+                                          aOperationMetaData.get("subdirectories")[tEvalIndex], 
                                           "true", tAppendInput};
         XMLGen::append_children(tKeys, tVals, tOperation);
         XMLGen::append_children(std::vector<std::string>(tArguments.size(), "Argument"), tArguments, tOperation);
@@ -440,7 +453,7 @@ void write_run_system_call_operation
                                           aOperationMetaData.get("names")[tIndex], 
                                           aOperationMetaData.get("commands")[tIndex], 
                                           "true", "false",
-                                          aOperationMetaData.get("directories")[tIndex],
+                                          aOperationMetaData.get("subdirectories")[tIndex],
                                           aOperationMetaData.get("arguments")[tIndex]};
         XMLGen::append_children(tKeys, tVals, tOperation);
     }
@@ -475,9 +488,9 @@ void check_if_data_file_names_are_defined
     std::vector<std::string> tFileNames;
     for(auto& tFileName : aOperationMetaData.get(aKey))
     {
-        for(auto& tDirectoryName : aOperationMetaData.get("directories"))
+        for(auto& tDirectoryName : aOperationMetaData.get("subdirectories"))
         {
-            auto tProposedAppFilePath = std::string("./") + tDirectoryName + "/" + tProposedAppFileName;
+            auto tProposedAppFilePath = std::string("./") + tDirectoryName + tProposedAppFileName;
             auto tMyFileName = tFileName.empty() ? tProposedAppFilePath : tFileName;
             tFileNames.push_back(tMyFileName);
         }
@@ -616,7 +629,6 @@ void pre_process_general_harvest_data_from_file_operation_options
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
     XMLGen::append_integer_to_option("names", "harvest_data_", aOperationMetaData);
-    XMLGen::append_integer_to_option("directories", "evaluation_", aOperationMetaData);
 }
 
 void pre_process_aprepro_system_call_inputs
@@ -720,10 +732,12 @@ void preprocess_aprepro_system_call_options
 }
 
 void write_aprepro_system_call_operation
-(const XMLGen::InputData& aInputMetaData,
+(const std::string& aSubDirBaseName, 
+ const XMLGen::InputData& aInputMetaData,
  pugi::xml_document& tDocument)
 {
     XMLGen::OperationMetaData tOperationMetaData;
+    XMLGen::set_evaluation_subdirectory_names(aSubDirBaseName, aInputMetaData, tOperationMetaData);
     XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(aInputMetaData, tOperationMetaData);
     XMLGen::set_aprepro_system_call_options(tOperationMetaData);
     
@@ -734,7 +748,7 @@ void write_aprepro_system_call_operation
     XMLGen::write_aprepro_system_call_operation(tSharedDataArgs, tOperationMetaData, tDocument);
 }
 
-void are_inputs_defned(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
+void are_inputs_defined(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
     std::vector<std::string> tValidKeys = 
         {"cavity_radius", "cavity_height", "conductivity", "slot_length", "slot_width", "slot_depth", "frequency_min", "frequency_max", "frequency_step"};
@@ -753,7 +767,7 @@ void write_input_deck_to_file
 (const std::string& aFileName, 
  const std::unordered_map<std::string,std::string>& aKeyValuePairs)
 {
-    XMLGen::matched_power_balance::are_inputs_defned(aKeyValuePairs);
+    XMLGen::matched_power_balance::are_inputs_defined(aKeyValuePairs);
 
     std::ofstream tOutFile;
     tOutFile.open(aFileName, std::ofstream::out | std::ofstream::trunc);
@@ -802,11 +816,12 @@ get_input_key_value_pairs
 }
 
 void write_input_deck
-(const XMLGen::InputData& aInputMetaData)
+(const XMLGen::InputData& aInputMetaData,
+ const XMLGen::OperationMetaData& aOperationMetaData)
 {
     XMLGen::gemma::FileFormats tFileFormats; 
     auto tInputFileName = tFileFormats.get("matched_power_balance", "input");
-    std::vector<std::string> tDescriptors = aInputMetaData.optimization_parameters().descriptors();
+    auto tDescriptors = aInputMetaData.optimization_parameters().descriptors();
     auto tUniqueGemmaScenarioIDs = XMLGen::get_unique_scenario_ids("gemma", aInputMetaData);
     for(auto& tScenarioID : tUniqueGemmaScenarioIDs)
     {
@@ -816,19 +831,32 @@ void write_input_deck
         auto tInputKeyValuePairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
         auto tFileName = tDescriptors.empty() ? tInputFileName : tInputFileName + ".template";
         XMLGen::matched_power_balance::write_input_deck_to_file(tFileName, tInputKeyValuePairs);
+
+        for(auto& tSubDirName : aOperationMetaData.get("subdirectories"))
+        {
+            auto tCommand = std::string("mkdir -p ") + tSubDirName;
+            Plato::system(tCommand.c_str());
+            tCommand = std::string("cp ") + tFileName + " " + tSubDirName;
+            Plato::system(tCommand.c_str());
+        }
+
+        auto tCommand = std::string("rm -f ") + tFileName;
+        Plato::system(tCommand.c_str());
     }
 }
 
 void write_run_system_call_operation
-(const XMLGen::InputData& aInputMetaData,
+(const std::string& aSubDirBaseName, 
+ const XMLGen::InputData& aInputMetaData,
  pugi::xml_document& tDocument)
 {
     XMLGen::OperationMetaData tOperationMetaData;
+    XMLGen::set_evaluation_subdirectory_names(aSubDirBaseName, aInputMetaData, tOperationMetaData);
+
     tOperationMetaData.append("code", "gemma");
     tOperationMetaData.append("algorithm", "matched_power_balance");
     XMLGen::pre_process_general_run_system_call_options(aInputMetaData, tOperationMetaData);
     XMLGen::append_integer_to_option("names", "gemma_", tOperationMetaData);
-    XMLGen::append_integer_to_option("directories", "evaluation_", tOperationMetaData);
     XMLGen::set_run_system_call_shared_data_arguments(tOperationMetaData);
     XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
 }
@@ -843,17 +871,20 @@ void set_app_data_file_name_for_harvest_data_operation
     for(auto tID : aSystemCallCriteriaIDs)
     {
         auto tIndex = &tID - &aSystemCallCriteriaIDs[0];
-        auto tProposedAppFilePath = std::string("./") + aOperationMetaData.get("directories")[tIndex] + "/" + tProposedAppFileName;
+        auto tProposedAppFilePath = std::string("./") + aOperationMetaData.get("subdirectories")[tIndex] + "/" + tProposedAppFileName;
         auto tAppFilePath = aInputMetaData.criterion(tID).value("data_file").empty() ? tProposedAppFilePath : aInputMetaData.criterion(tID).value("data_file");
         aOperationMetaData.append("app_data_file_paths", tAppFilePath);
     }
 }
 
 void write_harvest_data_from_file_operation
-(const XMLGen::InputData& aInputMetaData,
+(const std::string& aSubDirBaseName, 
+ const XMLGen::InputData& aInputMetaData,
  pugi::xml_document& aDocument)
 {
     XMLGen::OperationMetaData tOperationMetaData;
+    XMLGen::set_evaluation_subdirectory_names(aSubDirBaseName, aInputMetaData, tOperationMetaData);
+
     auto tCriteriaIDs = XMLGen::get_criteria_ids("system_call", aInputMetaData);
     XMLGen::set_system_call_objective_criteria_ids(tCriteriaIDs, aInputMetaData, tOperationMetaData);
     XMLGen::set_system_call_constraint_criteria_ids(tCriteriaIDs, aInputMetaData, tOperationMetaData);
@@ -876,29 +907,38 @@ namespace gemma
 
 void write_input_deck(const XMLGen::InputData& aInputMetaData)
 {
-    XMLGen::matched_power_balance::write_input_deck(aInputMetaData);
+    XMLGen::OperationMetaData tOperationMetaData;
+    XMLGen::set_evaluation_subdirectory_names("gemma_evaluation", aInputMetaData, tOperationMetaData);
+    XMLGen::matched_power_balance::write_input_deck(aInputMetaData, tOperationMetaData);
+}
+
+void write_system_call_app_operation_files(const XMLGen::InputData& aInputMetaData)
+{
+    pugi::xml_document tDocument;
+    const std::string tSubDirBaseName("gemma_evaluation");
+    XMLGen::matched_power_balance::write_aprepro_system_call_operation(tSubDirBaseName, aInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_run_system_call_operation(tSubDirBaseName, aInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_harvest_data_from_file_operation(tSubDirBaseName, aInputMetaData, tDocument);
+    tDocument.save_file("plato_gemma_app_operation_file.xml", "  ");
 }
 
 void write_operation_file(const XMLGen::InputData& aInputMetaData)
 {
-    pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_aprepro_system_call_operation(aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_run_system_call_operation(aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation(aInputMetaData, tDocument);
-    tDocument.save_file("plato_gemma_app_operation_file.xml", "  ");
+    XMLGen::gemma::write_system_call_app_operation_files(aInputMetaData);
 }
 
 }
 // namespace gemma
 
 }
+// namespace XMLGen
 
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, write_operation_file_gemma)
+TEST(PlatoTestXMLGenerator, write_operation_file_gemma_usecase_system_call)
 {
-    // use case: constraint and objective functions defined
+    // use case: gemma call is defined by a system call mpi operation
     XMLGen::InputData tInputMetaData;
     // define criterion
     XMLGen::Criterion tCriterionOne;
@@ -950,7 +990,66 @@ TEST(PlatoTestXMLGenerator, write_operation_file_gemma)
     // write files
     XMLGen::gemma::write_operation_file(tInputMetaData);
     auto tReadData = XMLGen::read_data_from_file("plato_gemma_app_operation_file.xml");
-    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><ChDir>evaluation_0</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><ChDir>evaluation_1</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_0</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_1</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><ChDir>gemma_evaluation_0/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><ChDir>gemma_evaluation_1/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_0/</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_1/</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./gemma_evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./gemma_evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f plato_gemma_app_operation_file.xml");
+}
+
+TEST(PlatoTestXMLGenerator, write_operation_file_gemma_usecase_web_app)
+{
+    // use case: gemma call is defined by a web app
+    XMLGen::InputData tInputMetaData;
+    // define criterion
+    XMLGen::Criterion tCriterionOne;
+    tCriterionOne.id("1");
+    tCriterionOne.type("volume");
+    tInputMetaData.append(tCriterionOne);
+    XMLGen::Criterion tCriterionTwo;
+    tCriterionTwo.id("2");
+    tCriterionTwo.type("system_call");
+    tCriterionTwo.append("data_group", "column_1");
+    tCriterionTwo.append("data_extraction_operation", "max");
+    tCriterionTwo.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterionTwo);
+    XMLGen::Criterion tCriterionThree;
+    tCriterionThree.id("3");
+    tCriterionThree.type("system_call");
+    tCriterionThree.append("data_group", "column_2");
+    tCriterionThree.append("data_extraction_operation", "max");
+    tInputMetaData.append(tCriterionThree);
+    // define objective
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("2");
+    tInputMetaData.objective = tObjective;
+    // define constraints
+    XMLGen::Constraint tConstraint;
+    tConstraint.criterion("3");
+    tInputMetaData.constraints.push_back(tConstraint);
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+    // service parameters
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "web_app");
+    tServiceOne.append("number_processors", "1");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+    
+    // write files
+    XMLGen::gemma::write_operation_file(tInputMetaData);
+    auto tReadData = XMLGen::read_data_from_file("plato_gemma_app_operation_file.xml");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><ChDir>gemma_evaluation_0/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><ChDir>gemma_evaluation_1/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>gemma_0</Name><Command>curl</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_0/</ChDir><Argument>http://localhost:7000/rungemma/</Argument></Operation><Operation><Function>SystemCall</Function><Name>gemma_1</Name><Command>curl</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_1/</ChDir><Argument>http://localhost:7001/rungemma/</Argument></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./gemma_evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./gemma_evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f plato_gemma_app_operation_file.xml");
 }
@@ -988,7 +1087,7 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
 
     // test function 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation(tInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("gemma_evaluation", tInputMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
@@ -1034,7 +1133,7 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
 
     // test function 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation(tInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("gemma_evaluation", tInputMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
@@ -1081,11 +1180,11 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
 
     // test function 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation(tInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("gemma_evaluation", tInputMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
-    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./gemma_evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./gemma_evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f dummy.txt");
 }
@@ -1221,9 +1320,6 @@ TEST(PlatoTestXMLGenerator, pre_process_general_harvest_data_from_file_operation
     EXPECT_EQ(2u, tOperationMetaData.get("names").size());
     EXPECT_STREQ("harvest_data_0", tOperationMetaData.get("names")[0].c_str());
     EXPECT_STREQ("harvest_data_1", tOperationMetaData.get("names")[1].c_str());
-    EXPECT_EQ(2u, tOperationMetaData.get("directories").size());
-    EXPECT_STREQ("evaluation_0", tOperationMetaData.get("directories")[0].c_str());
-    EXPECT_STREQ("evaluation_1", tOperationMetaData.get("directories")[1].c_str());
 }
 
 TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balance)
@@ -1248,11 +1344,11 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balanc
     tMetaData.set(tOptParams);
 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_run_system_call_operation(tMetaData, tDocument);
+    XMLGen::matched_power_balance::write_run_system_call_operation("gemma_evaluation", tMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
-    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_0</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_1</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation>");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_0/</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>gemma_evaluation_1/</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f dummy.txt");
 }
@@ -1269,8 +1365,8 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation)
     tOperationMetaData.append("commands", "curl");
     tOperationMetaData.append("functions", "SystemCall");
     tOperationMetaData.append("functions", "SystemCall");
-    tOperationMetaData.append("directories", "evaluation_0");
-    tOperationMetaData.append("directories", "evaluation_1");
+    tOperationMetaData.append("subdirectories", "evaluation_0");
+    tOperationMetaData.append("subdirectories", "evaluation_1");
     tOperationMetaData.append("arguments", "http://localhost:7000/rungemma/");
     tOperationMetaData.append("arguments", "http://localhost:7001/rungemma/");
 
@@ -1539,11 +1635,11 @@ TEST(PlatoTestXMLGenerator, aprepro_system_call_matched_power_balance)
     tMetaData.set(tOptParams);
 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_aprepro_system_call_operation(tMetaData, tDocument);
+    XMLGen::matched_power_balance::write_aprepro_system_call_operation("gemma_evaluation", tMetaData, tDocument);
     tDocument.save_file("dummy.txt");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
-    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><ChDir>evaluation_0</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><ChDir>evaluation_1</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_2</Name><Command>aprepro</Command><ChDir>evaluation_2</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_2</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation>");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><ChDir>gemma_evaluation_0/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><ChDir>gemma_evaluation_1/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_2</Name><Command>aprepro</Command><ChDir>gemma_evaluation_2/</ChDir><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_2</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm -f dummy.txt");
 }
@@ -1574,7 +1670,7 @@ TEST(PlatoTestXMLGenerator, write_aprepro_system_call_operation)
     tOperationMetaData.append("concurrent_evaluations", "2");
     tOperationMetaData.set("names", {"aprepro_0", "aprepro_1"});
     tOperationMetaData.set("options", {"length=", "depth=", "width="});
-    tOperationMetaData.set("directories", {"evaluation_0", "evaluation_1"});
+    tOperationMetaData.set("subdirectories", {"evaluation_0", "evaluation_1"});
     tOperationMetaData.set("commands", std::vector<std::string>(2u, "aprepro"));
     tOperationMetaData.set("functions", std::vector<std::string>(2u, "SystemCall"));
     tOperationMetaData.set("arguments", {"-q", "matched.yaml.template", "matched.yaml"});
@@ -1670,12 +1766,13 @@ TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_options_matched_power
 
 TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)
 {
-    XMLGen::InputData tMetaData;
+    XMLGen::InputData tInputMetaData;
     // define optmization parameters
     XMLGen::OptimizationParameters tOptParams;
+    tOptParams.append("concurrent_evaluations", "2");
     std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
     tOptParams.descriptors(tDescriptors);
-    tMetaData.set(tOptParams);
+    tInputMetaData.set(tOptParams);
 
     // define objective 
     XMLGen::Objective tObjective;
@@ -1686,17 +1783,17 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)
     tObjective.serviceIDs.push_back("2");
     tObjective.scenarioIDs.push_back("1");
     tObjective.scenarioIDs.push_back("2");
-    tMetaData.objective = tObjective;
+    tInputMetaData.objective = tObjective;
 
     // define service
     XMLGen::Service tServiceOne;
     tServiceOne.append("code", "gemma");
     tServiceOne.append("id", "1");
-    tMetaData.append(tServiceOne);
+    tInputMetaData.append(tServiceOne);
     XMLGen::Service tServiceTwo;
     tServiceTwo.append("code", "platomain");
     tServiceTwo.append("id", "2");
-    tMetaData.append(tServiceTwo);
+    tInputMetaData.append(tServiceTwo);
 
     // define scenario
     XMLGen::Scenario tScenario;
@@ -1708,26 +1805,28 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)
     tScenario.append("cavity_radius", "0.1016");
     tScenario.append("cavity_height", "0.1018");
     tScenario.append("physics", "electromagnetics");
-    tMetaData.append(tScenario);
+    tInputMetaData.append(tScenario);
 
     // define material
     XMLGen::Material tMaterial;
     tMaterial.id("1");
     tMaterial.property("conductivity", "1e6");
-    tMetaData.append(tMaterial);
+    tInputMetaData.append(tMaterial);
 
     // TEST 1: WRITE TEMPLATE FILE NEEDED FOR APREPRO OPERATION
-    XMLGen::matched_power_balance::write_input_deck(tMetaData);
-    auto tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml.template");
+    XMLGen::gemma::write_input_deck(tInputMetaData);
+    auto tReadDataEvalDirZero = XMLGen::read_data_from_file("./gemma_evaluation_0/gemma_matched_power_balance_input_deck.yaml.template");
+    auto tReadDataEvalDirOne = XMLGen::read_data_from_file("./gemma_evaluation_1/gemma_matched_power_balance_input_deck.yaml.template");
     std::string tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:{slot_length}Slotwidth:{slot_width}Slotdepth:{slot_depth}Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
-    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
-    Plato::system("rm -f gemma_matched_power_balance_input_deck.yaml.template");
+    ASSERT_STREQ(tGoldString.c_str(), tReadDataEvalDirZero.str().c_str());
+    ASSERT_STREQ(tGoldString.c_str(), tReadDataEvalDirOne.str().c_str());
+    Plato::system("rm -rf gemma_evaluation_0/ gemma_evaluation_1/");
 
     // TEST 2: ERROR - PARAMETER VALUE WAS NOT DEFINED
     tDescriptors.clear();
     tOptParams.descriptors(tDescriptors);
-    tMetaData.set(tOptParams);
-    ASSERT_THROW(XMLGen::matched_power_balance::write_input_deck(tMetaData), std::runtime_error);
+    tInputMetaData.set(tOptParams);
+    ASSERT_THROW(XMLGen::gemma::write_input_deck(tInputMetaData), std::runtime_error);
 
     // TEST 3: WRITE REGULAR INPUT DECK
     tScenario.append("slot_width", "0.0118");
@@ -1735,12 +1834,14 @@ TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)
     tScenario.append("slot_length", "0.0116");
     std::vector<XMLGen::Scenario> tScenarios;
     tScenarios.push_back(tScenario);
-    tMetaData.set(tScenarios);
-    XMLGen::matched_power_balance::write_input_deck(tMetaData);
-    tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml");
+    tInputMetaData.set(tScenarios);
+    tOptParams.set("concurrent_evaluations", {""} );
+    tInputMetaData.set(tOptParams);
+    XMLGen::gemma::write_input_deck(tInputMetaData);
+    tReadDataEvalDirZero = XMLGen::read_data_from_file("./gemma_evaluation_0/gemma_matched_power_balance_input_deck.yaml");
     tGoldString = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:0.1016Height:0.1018Conductivity:1e6Slotlength:0.0116Slotwidth:0.0118Slotdepth:0.00218Startfrequencyrange:10Endfrequencyrange:100Frequencyintervalsize:5...");
-    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
-    Plato::system("rm -f gemma_matched_power_balance_input_deck.yaml");
+    ASSERT_STREQ(tGoldString.c_str(), tReadDataEvalDirZero.str().c_str());
+    Plato::system("rm -rf gemma_evaluation_0/");
 }
 
 TEST(PlatoTestXMLGenerator, matched_power_balance_write_input_deck_to_file)
