@@ -11,6 +11,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorOperationsDataStructures.hpp"
 
 namespace XMLGen
 {
@@ -113,87 +114,6 @@ private:
 
 }
 // namespace gemma
-
-struct OperationArgument
-{
-private:
-    std::unordered_map<std::string, std::string> mData;
-public:
-    void set(const std::string& aKey, const std::string& aValue)
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        mData[tLowerKey] = aValue;
-    }
-    const std::string& get(const std::string& aKey) const
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        return mData.find(tLowerKey)->second;
-    }
-};
-
-struct OperationMetaData
-{
-private:
-    std::unordered_map<std::string, std::vector<std::string>> mData;
-public:
-    void append(const std::string& aKey, const std::string& aValue)
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        mData[tLowerKey].push_back(aValue);
-    }
-    void set(const std::string& aKey, const std::vector<std::string>& aValues)
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        mData[tLowerKey] = aValues;
-    }
-    const std::vector<std::string>& get(const std::string& aKey) const
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        auto tItr = mData.find(tLowerKey);
-        if(tItr == mData.end())
-        {
-            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
-        }
-        return tItr->second;
-    }
-    bool is_defined(const std::string& aKey) const
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        auto tItr = mData.find(tLowerKey);
-        if(tItr == mData.end())
-        {
-            return false;
-        }
-        return true;
-    }
-    std::string front(const std::string& aKey) const
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        if(!this->is_defined(tLowerKey))
-        {
-            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
-        }
-        return mData.find(tLowerKey)->second.front();
-    }
-    std::string back(const std::string& aKey) const
-    {
-        auto tLowerKey = XMLGen::to_lower(aKey);
-        if(!this->is_defined(tLowerKey))
-        {
-            THROWERR(std::string("Did not find key '") + aKey + "' in map.")
-        }
-        return mData.find(tLowerKey)->second.back();
-    }
-    std::vector<std::string> keys() const
-    {
-        std::vector<std::string> tKeys;
-        for(auto tPair : mData)
-        {
-            tKeys.push_back(tPair.first);
-        }
-        return tKeys;
-    }
-};
 
 void set_evaluation_subdirectory_names
 (const std::string& aSubDirBaseName, 

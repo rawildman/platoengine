@@ -27,6 +27,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorDefinesFileUtilities.cpp
                       XMLGeneratorPlatoAnalyzeUtilities.cpp
                       XMLGeneratorInterfaceFileUtilities.cpp
+                      XMLGeneratorOperationsFileUtilities.cpp
+                      XMLGeneratorOperationsDataStructures.cpp
                       XMLGeneratorDakotaInterfaceFileUtilities.cpp
                       XMLGeneratorDakotaDriverInputFileUtilities.cpp 
                       XMLGeneratorGradBasedOptimizerOptions.cpp
@@ -86,7 +88,9 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
                       XMLGeneratorDefinesFileUtilities.hpp 
                       XMLGeneratorPlatoAnalyzeUtilities.hpp 
-                      XMLGeneratorInterfaceFileUtilities.hpp 
+                      XMLGeneratorInterfaceFileUtilities.hpp
+                      XMLGeneratorOperationsFileUtilities.hpp
+                      XMLGeneratorOperationsDataStructures.hpp
                       XMLGeneratorDakotaInterfaceFileUtilities.hpp 
                       XMLGeneratorDakotaDriverInputFileUtilities.hpp 
                       XMLGeneratorGradBasedOptimizerOptions.hpp

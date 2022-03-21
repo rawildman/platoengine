@@ -51,6 +51,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoAnalyzeUtilities.cpp
                                       ../XMLGeneratorLaunchUtilities.cpp
                                       ../XMLGeneratorInterfaceFileUtilities.cpp
+                                      ../XMLGeneratorOperationsDataStructures.cpp
                                       ../XMLGeneratorDakotaInterfaceFileUtilities.cpp
                                       ../XMLGeneratorDakotaDriverInputFileUtilities.cpp
                                       ../XMLGeneratorGradBasedOptimizerOptions.cpp
