@@ -44,6 +44,7 @@
 #include "IVEMeshAPI.hpp"
 #include "IVEMeshAPISTK.hpp"
 #include "IsoVolumeExtractionTool.hpp"
+#include "Plato_FreeFunctions.hpp"
 
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_io/IossBridge.hpp>
