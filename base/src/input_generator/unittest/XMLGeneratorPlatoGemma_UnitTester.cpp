@@ -464,16 +464,22 @@ void check_if_data_file_names_are_defined
  const std::string& aFileType,
  XMLGen::OperationMetaData& aOperationMetaData)
 {
+    if( !aOperationMetaData.is_defined(aKey) )
+    {
+        return;
+    }
     XMLGen::gemma::FileFormats tFileFormats;
     auto tProposedAppFileName = tFileFormats.get(aAlgo, aFileType);
 
     std::vector<std::string> tFileNames;
     for(auto& tFileName : aOperationMetaData.get(aKey))
     {
-        auto tIndex = &tFileName - &aOperationMetaData.get(aKey)[0];
-        auto tProposedAppFilePath = std::string("./") + aOperationMetaData.get("directories")[tIndex] + "/" + tProposedAppFileName;
-        auto tMyFileName = tFileName.empty() ? tProposedAppFilePath : std::string("./") + tFileName;
-        tFileNames.push_back(tMyFileName);
+        for(auto& tDirectoryName : aOperationMetaData.get("directories"))
+        {
+            auto tProposedAppFilePath = std::string("./") + tDirectoryName + "/" + tProposedAppFileName;
+            auto tMyFileName = tFileName.empty() ? tProposedAppFilePath : tFileName;
+            tFileNames.push_back(tMyFileName);
+        }
     }
     aOperationMetaData.set(aKey, tFileNames);
 }
@@ -487,22 +493,25 @@ void write_harvest_objective_data_from_file_operation
     {
         return;
     }
-    auto tNumObjectives = aOperationMetaData.get("objective_data_files").size();
+    auto tNumCriteria = aOperationMetaData.get("objective_criteria_ids").size();
     auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumObjectives) tObjIndex = 0; tObjIndex < tNumObjectives; tObjIndex++)
+    for(decltype(tNumCriteria) tCriteriaIndex = 0; tCriteriaIndex < tNumCriteria; tCriteriaIndex++)
     {
-        auto tObjectiveCriterionID = aOperationMetaData.get("objective_criteria_ids")[tObjIndex];
+        auto tObjectiveCriterionID = aOperationMetaData.get("objective_criteria_ids")[tCriteriaIndex];
         for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
         {
-            auto tOperation = aDocument.append_child("Operation");
-            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("objective_data_groups")[tObjIndex]);
-            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("objective_data_groups")[tObjIndex]);
-            auto tFuncName = std::string("harvest_objective_criterion_id_") + tObjectiveCriterionID + "_eval_" + std::to_string(tEvalIndex);
+            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
             std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", tDataGroupType};
+
+            auto tFileIndex = (tNumCriteria * tCriteriaIndex) + tEvalIndex;
+            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
+            auto tFuncName = std::string("harvest_objective_criterion_id_") + tObjectiveCriterionID + "_eval_" + std::to_string(tEvalIndex);
             std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
-                                               aOperationMetaData.get("objective_data_files")[tObjIndex],
-                                               aOperationMetaData.get("objective_data_extraction_operations")[tObjIndex],
+                                               aOperationMetaData.get("objective_data_files")[tFileIndex],
+                                               aOperationMetaData.get("objective_data_extraction_operations")[tCriteriaIndex],
                                                tDataGroupIndex };
+
+            auto tOperation = aDocument.append_child("Operation");
             XMLGen::append_children(tKeys, tVals, tOperation);
             XMLGen::append_shared_data_argument_to_operation(aOutputs[tEvalIndex], tOperation);
         }
@@ -518,22 +527,25 @@ void write_harvest_constraint_data_from_file_operation
     {
         return;
     }
-    auto tNumConstraints = aOperationMetaData.get("constraint_data_files").size();
+    auto tNumCriteria = aOperationMetaData.get("constraint_criteria_ids").size();
     auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumConstraints) tConstraintIndex = 0; tConstraintIndex < tNumConstraints; tConstraintIndex++)
+    for(decltype(tNumCriteria) tCriteriaIndex = 0; tCriteriaIndex < tNumCriteria; tCriteriaIndex++)
     {
-        auto tConstraintCriterionID = aOperationMetaData.get("constraint_criteria_ids")[tConstraintIndex];
+        auto tConstraintCriterionID = aOperationMetaData.get("constraint_criteria_ids")[tCriteriaIndex];
         for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
         {
-            auto tOperation = aDocument.append_child("Operation");
-            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("constraint_data_groups")[tConstraintIndex]);
-            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("constraint_data_groups")[tConstraintIndex]);
-            auto tFuncName = std::string("harvest_constraint_criterion_id_") + tConstraintCriterionID + "_eval_" + std::to_string(tEvalIndex);
+            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("constraint_data_groups")[tCriteriaIndex]);
             std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", tDataGroupType};
+            
+            auto tFileIndex = (tNumCriteria * tCriteriaIndex) + tEvalIndex;
+            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("constraint_data_groups")[tCriteriaIndex]);
+            auto tFuncName = std::string("harvest_constraint_criterion_id_") + tConstraintCriterionID + "_eval_" + std::to_string(tEvalIndex);
             std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
-                                               aOperationMetaData.get("constraint_data_files")[tConstraintIndex],
-                                               aOperationMetaData.get("constraint_data_extraction_operations")[tConstraintIndex],
+                                               aOperationMetaData.get("constraint_data_files")[tFileIndex],
+                                               aOperationMetaData.get("constraint_data_extraction_operations")[tCriteriaIndex],
                                                tDataGroupIndex };
+
+            auto tOperation = aDocument.append_child("Operation");
             XMLGen::append_children(tKeys, tVals, tOperation);
             XMLGen::append_shared_data_argument_to_operation(aOutputs[tEvalIndex], tOperation);
         }
@@ -1013,9 +1025,9 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
-    auto tGoldString = std::string("");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
-    //Plato::system("rm -f dummy.txt");
+    Plato::system("rm -f dummy.txt");
 }
 
 TEST(PlatoTestXMLGenerator, pre_process_criterion_value_argument_data)
