@@ -884,7 +884,7 @@ void write_operation_file(const XMLGen::InputData& aInputMetaData)
     XMLGen::matched_power_balance::write_aprepro_system_call_operation(aInputMetaData, tDocument);
     XMLGen::matched_power_balance::write_run_system_call_operation(aInputMetaData, tDocument);
     XMLGen::matched_power_balance::write_harvest_data_from_file_operation(aInputMetaData, tDocument);
-    tDocument.save_file("plato_gemma_app_operation_file", "  ");
+    tDocument.save_file("plato_gemma_app_operation_file.xml", "  ");
 }
 
 }
@@ -894,6 +894,66 @@ void write_operation_file(const XMLGen::InputData& aInputMetaData)
 
 namespace PlatoTestXMLGenerator
 {
+
+
+TEST(PlatoTestXMLGenerator, write_operation_file_gemma)
+{
+    // use case: constraint and objective functions defined
+    XMLGen::InputData tInputMetaData;
+    // define criterion
+    XMLGen::Criterion tCriterionOne;
+    tCriterionOne.id("1");
+    tCriterionOne.type("volume");
+    tInputMetaData.append(tCriterionOne);
+    XMLGen::Criterion tCriterionTwo;
+    tCriterionTwo.id("2");
+    tCriterionTwo.type("system_call");
+    tCriterionTwo.append("data_group", "column_1");
+    tCriterionTwo.append("data_extraction_operation", "max");
+    tCriterionTwo.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterionTwo);
+    XMLGen::Criterion tCriterionThree;
+    tCriterionThree.id("3");
+    tCriterionThree.type("system_call");
+    tCriterionThree.append("data_group", "column_2");
+    tCriterionThree.append("data_extraction_operation", "max");
+    tInputMetaData.append(tCriterionThree);
+    // define objective
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("1");
+    tObjective.criteriaIDs.push_back("2");
+    tInputMetaData.objective = tObjective;
+    // define constraints
+    XMLGen::Constraint tConstraint;
+    tConstraint.criterion("3");
+    tInputMetaData.constraints.push_back(tConstraint);
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+    // service parameters
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "system_call");
+    tServiceOne.append("number_processors", "1");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+    
+    // write files
+    XMLGen::gemma::write_operation_file(tInputMetaData);
+    auto tReadData = XMLGen::read_data_from_file("plato_gemma_app_operation_file.xml");
+    auto tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>SystemCall</Function><Name>aprepro_0</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_0</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCall</Function><Name>aprepro_1</Name><Command>aprepro</Command><OnChange>true</OnChange><AppendInput>true</AppendInput><Argument>-q</Argument><Argument>gemma_matched_power_balance_input_deck.yaml.template</Argument><Argument>gemma_matched_power_balance_input_deck.yaml</Argument><Option>slot_length</Option><Option>slot_width</Option><Option>slot_depth</Option><Input><ArgumentName>parameters_1</ArgumentName><Layout>scalar</Layout><Size>3</Size></Input></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_0</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_0</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>SystemCallMPI</Function><Name>gemma_1</Name><Command>gemma</Command><OnChange>true</OnChange><AppendInput>false</AppendInput><ChDir>evaluation_1</ChDir><Argument>gemma_matched_power_balance_input_deck.yaml</Argument></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_0</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_objective_criterion_id_2_eval_1</Name><File>matched_power_balance.dat</File><Operation>max</Operation><Column>1</Column><Output><ArgumentName>objectivevalueforcriterion2andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_0</Name><File>./evaluation_0/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation0</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation><Operation><Function>HarvestDataFromFile</Function><Name>harvest_constraint_criterion_id_3_eval_1</Name><File>./evaluation_1/matched_power_balance.dat</File><Operation>max</Operation><Column>2</Column><Output><ArgumentName>constraintvalueforcriterion3andevaluation1</ArgumentName><Layout>scalar</Layout><Size>1</Size></Output></Operation>");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f plato_gemma_app_operation_file.xml");
+}
 
 TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power_balance_usecase_1)
 {
@@ -985,7 +1045,7 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
 
 TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power_balance_usecase_3)
 {
-    // use case: only constraint functions are defined
+    // use case: constraint and objective functions defined
     XMLGen::InputData tInputMetaData;
     // define criterion
     XMLGen::Criterion tCriterionOne;
