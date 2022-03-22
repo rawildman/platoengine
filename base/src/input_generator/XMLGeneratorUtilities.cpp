@@ -364,6 +364,10 @@ std::stringstream read_data_from_file(const std::string &aFilename)
 {
     std::ifstream tReadFile;
     tReadFile.open(aFilename);
+    if(!tReadFile.is_open())
+    {
+        THROWERR(std::string("Error while trying to read file '") + aFilename + "'.")
+    }
     std::string tInputString;
     std::stringstream tReadData;
     while (tReadFile >> tInputString)
