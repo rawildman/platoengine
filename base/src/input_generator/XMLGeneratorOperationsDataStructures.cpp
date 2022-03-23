@@ -43,6 +43,11 @@ void OperationMetaData::set(const std::string& aKey, const std::vector<std::stri
     mData[tLowerKey] = aValues;
 }
 
+void OperationMetaData::set(const std::unordered_map<std::string, std::vector<std::string>>& aData)
+{
+    mData = aData;
+}
+
 const std::vector<std::string>& OperationMetaData::get(const std::string& aKey) const
 {
     auto tLowerKey = XMLGen::to_lower(aKey);

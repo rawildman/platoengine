@@ -6,12 +6,13 @@
 
 #include <tuple>
 
-#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
-#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
+#include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorPerformersUtilities.hpp"
+#include "XMLGeneratorInterfaceFileUtilities.hpp"
+#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
 
 namespace XMLGen
 {

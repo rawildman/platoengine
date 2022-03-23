@@ -73,6 +73,13 @@ public:
     void set(const std::string& aKey, const std::vector<std::string>& aValues);
 
     /******************************************************************************//**
+     * \fn set
+     * \brief Set associative container.
+     * \param [in] aData associative container
+    **********************************************************************************/
+    void set(const std::unordered_map<std::string, std::vector<std::string>>& aData);
+
+    /******************************************************************************//**
      * \fn get
      * \brief Set list associated to a given key in the associative container.
      * \param [in] aKey   input key

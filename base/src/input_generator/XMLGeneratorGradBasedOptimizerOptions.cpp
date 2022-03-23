@@ -6,6 +6,7 @@
 
 #include "XMLG_Macros.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 
 namespace XMLGen

@@ -11,6 +11,7 @@
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorFixedBlockUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"

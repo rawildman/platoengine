@@ -11,6 +11,8 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
+#include "XMLGeneratorScenarioUtilities.hpp"
 #include "XMLGeneratorOperationsFileUtilities.hpp"
 #include "XMLGeneratorOperationsDataStructures.hpp"
 
@@ -121,152 +123,6 @@ private:
 }
 // namespace gemma
 
-void write_aprepro_system_call_operation
-(const std::vector<XMLGen::OperationArgument>& aInputs,
- const XMLGen::OperationMetaData& aOperationMetaData,
- pugi::xml_document& aDocument)
-{
-    auto tOptions = aOperationMetaData.get("options");
-    auto tArguments = aOperationMetaData.get("arguments");
-    auto tAppendInput = aInputs.empty() ? "false" : "true";
-
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.get("concurrent_evaluations").front());
-    for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
-    {
-        auto tSuffix = std::string("_") + std::to_string(tEvalIndex);
-        auto tOperation = aDocument.append_child("Operation");
-
-        auto tFuncName = std::string("aprepro") + tSuffix;
-        std::vector<std::string> tKeys = {"Function", "Name", "Command", "ChDir", "OnChange", "AppendInput"};
-        std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tEvalIndex], 
-                                          aOperationMetaData.get("names")[tEvalIndex], 
-                                          aOperationMetaData.get("commands")[tEvalIndex], 
-                                          aOperationMetaData.get("subdirectories")[tEvalIndex], 
-                                          "true", tAppendInput};
-        XMLGen::append_children(tKeys, tVals, tOperation);
-        XMLGen::append_children(std::vector<std::string>(tArguments.size(), "Argument"), tArguments, tOperation);
-        XMLGen::append_children(std::vector<std::string>(tOptions.size(), "Option"), tOptions, tOperation);
-        XMLGen::append_shared_data_argument_to_operation(aInputs[tEvalIndex], tOperation);
-    }
-}
-
-std::vector<std::string> 
-get_unique_scenario_ids
-(const std::string& aTargetCodeName,
- const XMLGen::InputData& aInputMetaData)
-{
-    std::vector<std::string> tUniqueScenarioIDs;
-    auto tLowerTargetCodeName = XMLGen::to_lower(aTargetCodeName);
-
-    for(auto& tID : aInputMetaData.objective.criteriaIDs)
-    {
-        auto tIndex = &tID - &aInputMetaData.objective.criteriaIDs[0];
-        auto tServiceID = aInputMetaData.objective.serviceIDs[tIndex];
-        auto tLowerCode = XMLGen::to_lower(aInputMetaData.service(tServiceID).code());
-        if(tLowerCode == tLowerTargetCodeName)
-        {
-            auto tScenarioID = aInputMetaData.objective.scenarioIDs[tIndex];
-            if(std::find(tUniqueScenarioIDs.begin(), tUniqueScenarioIDs.end(), tScenarioID) == tUniqueScenarioIDs.end())
-            {
-                tUniqueScenarioIDs.push_back(tScenarioID);   
-            }
-        }
-    }
-
-    return tUniqueScenarioIDs;
-}
-
-std::string set_descriptor_value
-(const std::string& aTargetDescriptor,
- const std::string& aTargetDescriptorValue,
- const std::vector<std::string>& aDescriptors)
-{
-    auto tOutput = std::find(aDescriptors.begin(), aDescriptors.end(), aTargetDescriptor) == aDescriptors.end() ? aTargetDescriptorValue : std::string("{") + aTargetDescriptor + "}";
-    return tOutput;
-}
-
-std::vector<size_t> 
-get_service_indices
-(const std::string& aTargetCodeName,
- const XMLGen::InputData& aInputMetaData)
-{
-    std::vector<size_t> tTargetServiceIndices;
-    auto tLowerTargetCodeName = XMLGen::to_lower(aTargetCodeName);
-    for(auto& tService : aInputMetaData.services())
-    {
-        auto tLowerCode = XMLGen::to_lower(tService.code());
-        if(tLowerCode == tLowerTargetCodeName)
-        {
-            size_t tIndex = &tService - &aInputMetaData.services()[0];
-            tTargetServiceIndices.push_back(tIndex);
-        }
-    }
-    return tTargetServiceIndices;
-}
-
-std::vector<std::string> 
-get_values_from_service
-(const std::string& aCodeName,
- const std::string& aTargetValue,
- const XMLGen::InputData& aInputMetaData)
-{
-    std::vector<std::string> tOutput;
-    auto tLowerCodeName = XMLGen::to_lower(aCodeName);
-    auto tLowerTargetValue = XMLGen::to_lower(aTargetValue);
-    auto tServiceIndices = XMLGen::get_service_indices(tLowerCodeName, aInputMetaData);
-    for(auto tIndex : tServiceIndices)
-    {
-        auto tValue = aInputMetaData.service(tIndex).value(tLowerTargetValue);
-        tOutput.push_back(tValue);
-    }
-    return tOutput;
-}
-
-void set_system_call_option_from_service_input_metadata
-(const std::string& aTargetValue,
- const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tLowerTargetValue = XMLGen::to_lower(aTargetValue);
-    auto tLowerTargetCode = XMLGen::to_lower(aOperationMetaData.back("code"));
-    auto tValues = XMLGen::get_values_from_service(tLowerTargetCode, aTargetValue, aInputMetaData);
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    if( tNumConcurrentEvals > tValues.size() && tValues.size() == 1u )
-    {
-        aOperationMetaData.set( tLowerTargetValue, std::vector<std::string>(tNumConcurrentEvals, tValues.front()) );
-    }
-    else if( tNumConcurrentEvals == tValues.size() )
-    {
-        aOperationMetaData.set( tLowerTargetValue, tValues );
-    }
-    else
-    {
-        THROWERR(std::string("The number of services with code name '") + tLowerTargetCode 
-            + "' should be equal to one or match the number of concurrent evaluations, which is set to '" 
-            + std::to_string(tNumConcurrentEvals) + "'.")
-    }
-}
-
-void check_plato_app_service_type(const std::string& aType)
-{
-    if( aType == "plato_app" )
-    {
-        THROWERR("The 'run system call' function cannot be used with service of type 'plato_app'. The 'run system call' function can only be used with services of type 'web_app' and 'system_call'.")
-    }
-}
-
-void append_concurrent_operation_matadata
-(const std::string& aKey,
- const std::string& aValue,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.back("concurrent_evaluations"));
-    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
-    {
-        aOperationMetaData.append(aKey, aValue);
-    }
-}
-
 void append_concurrent_operation_matadata_based_on_app_type
 (const std::string& aOuterKey,
  XMLGen::OperationMetaData& aOperationMetaData)
@@ -275,7 +131,7 @@ void append_concurrent_operation_matadata_based_on_app_type
     XMLGen::gemma::ServiceTypeBasedOptions tOptions(tNumConcurrentEvals);
     for(auto& tType : aOperationMetaData.get("type"))
     {
-        XMLGen::check_plato_app_service_type(tType);
+        XMLGen::check_app_service_type(tType);
         auto tIndex = &tType - &aOperationMetaData.get("type")[0];
         aOperationMetaData.append(aOuterKey, tOptions.get(aOuterKey, tType)[tIndex]);
     }
@@ -288,8 +144,8 @@ void pre_process_general_run_system_call_options
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
       
-    XMLGen::set_system_call_option_from_service_input_metadata("type", aInputMetaData, aOperationMetaData);
-    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", aInputMetaData, aOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("type", aInputMetaData, aOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("number_processors", aInputMetaData, aOperationMetaData);
 
     XMLGen::append_concurrent_operation_matadata_based_on_app_type("commands", aOperationMetaData);
     XMLGen::append_concurrent_operation_matadata_based_on_app_type("functions", aOperationMetaData);
@@ -312,7 +168,7 @@ void append_run_system_call_shared_data_arguments
     XMLGen::gemma::FileFormats tFileFormats; 
     for(auto& tType : aOperationMetaData.get("type"))
     {
-        XMLGen::check_plato_app_service_type(tType);
+        XMLGen::check_app_service_type(tType);
         if(tType == "system_call")
         {
             auto tInputFileName = tFileFormats.get(aOperationMetaData.front("algorithm"), "input");
@@ -891,7 +747,7 @@ void write_web_app_input_deck(const XMLGen::InputData& aInputMetaData)
     tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
 
     XMLGen::append_evaluation_subdirectory_names("gemma_evaluation", tOperationMetaData);
-    XMLGen::set_system_call_option_from_service_input_metadata("type", aInputMetaData, tOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("type", aInputMetaData, tOperationMetaData);
     XMLGen::append_concurrent_operation_matadata_based_on_app_type("executables", tOperationMetaData);
     XMLGen::matched_power_balance::write_web_app_input_deck(tOperationMetaData);
 }
@@ -1580,14 +1436,14 @@ TEST(PlatoTestXMLGenerator, append_concurrent_operation_matadata_based_on_app_ty
     EXPECT_STREQ("SystemCallMPI", tOperationMetaDataTwo.get("functions")[2].c_str());
 }
 
-TEST(PlatoTestXMLGenerator, check_plato_app_service_type)
+TEST(PlatoTestXMLGenerator, check_app_service_type)
 {
-    EXPECT_THROW(XMLGen::check_plato_app_service_type("plato_app"), std::runtime_error);
-    EXPECT_NO_THROW(XMLGen::check_plato_app_service_type("web_app"));
-    EXPECT_NO_THROW(XMLGen::check_plato_app_service_type("system_call"));
+    EXPECT_THROW(XMLGen::check_app_service_type("plato_app"), std::runtime_error);
+    EXPECT_NO_THROW(XMLGen::check_app_service_type("web_app"));
+    EXPECT_NO_THROW(XMLGen::check_app_service_type("system_call"));
 }
 
-TEST(PlatoTestXMLGenerator, set_system_call_option_from_service_input_metadata)
+TEST(PlatoTestXMLGenerator, set_operation_option_from_service_metadata)
 {
     XMLGen::InputData tMetaData;
     // define service
@@ -1609,13 +1465,13 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service_input_metadata)
     tOperationMetaData.append("concurrent_evaluations", "3");
 
     // test one: one service defined 
-    XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("type", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("type").size());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[2].c_str());
 
-    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", tMetaData, tOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("number_processors", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
@@ -1635,13 +1491,13 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service_input_metadata)
     tServiceFour.append("number_processors", "2");
     tMetaData.append(tServiceFour);
 
-    XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("type", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("type").size());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
     EXPECT_STREQ("system_call", tOperationMetaData.get("type")[2].c_str());
 
-    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", tMetaData, tOperationMetaData);
+    XMLGen::set_operation_option_from_service_metadata("number_processors", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
@@ -1655,10 +1511,10 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service_input_metadata)
     tServiceFive.append("number_processors", "2");
     tMetaData.append(tServiceFive);
 
-    EXPECT_THROW(XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData), std::runtime_error);
+    EXPECT_THROW(XMLGen::set_operation_option_from_service_metadata("type", tMetaData, tOperationMetaData), std::runtime_error);
 }
 
-TEST(PlatoTestXMLGenerator, get_values_from_service)
+TEST(PlatoTestXMLGenerator, get_values_from_service_metadata)
 {
     XMLGen::InputData tMetaData;
     // define service
@@ -1676,18 +1532,18 @@ TEST(PlatoTestXMLGenerator, get_values_from_service)
     tMetaData.append(tServiceTwo);
 
     // test gemma 
-    auto tValues = XMLGen::get_values_from_service("gemma", "number_processors", tMetaData);
+    auto tValues = XMLGen::get_values_from_service_metadata("gemma", "number_processors", tMetaData);
     EXPECT_EQ(1u, tValues.size());
     EXPECT_STREQ("1", tValues.front().c_str());
-    tValues = XMLGen::get_values_from_service("GEMMA", "TYPE", tMetaData);
+    tValues = XMLGen::get_values_from_service_metadata("GEMMA", "TYPE", tMetaData);
     EXPECT_EQ(1u, tValues.size());
     EXPECT_STREQ("web_app", tValues.front().c_str());
 
     // test platomain 
-    tValues = XMLGen::get_values_from_service("platomain", "number_processors", tMetaData);
+    tValues = XMLGen::get_values_from_service_metadata("platomain", "number_processors", tMetaData);
     EXPECT_EQ(1u, tValues.size());
     EXPECT_STREQ("2", tValues.front().c_str());
-    tValues = XMLGen::get_values_from_service("Platomain", "Type", tMetaData);
+    tValues = XMLGen::get_values_from_service_metadata("Platomain", "Type", tMetaData);
     EXPECT_EQ(1u, tValues.size());
     EXPECT_STREQ("plato_app", tValues.front().c_str());
 }

@@ -559,39 +559,6 @@ int count_number_of_reinitializations_needed
 /******************************************************************************/
 
 /******************************************************************************/
-bool need_update_problem_stage
-(const XMLGen::InputData& aMetaData)
-{
-    for (auto &tService : aMetaData.services())
-    {
-        if (tService.updateProblem())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-// function need_update_problem_stage
-/******************************************************************************/
-
-/******************************************************************************/
-int num_cache_states
-(const std::vector<XMLGen::Service> &aServices)
-{
-    int tNumCacheStates = 0;
-    for(auto &tService : aServices)
-    {
-        if(tService.cacheState())
-        {
-            tNumCacheStates++;
-        }
-    }
-    return tNumCacheStates;
-}
-// function num_cache_states
-/******************************************************************************/
-
-/******************************************************************************/
 std::string append_concurrent_tag_to_file_string
 (const std::string& aFileString,
  const std::string& aTag)
@@ -603,55 +570,6 @@ std::string append_concurrent_tag_to_file_string
     return tReturn;
 }
 // function append_concurrent_tag_to_file_string
-/******************************************************************************/
-
-/******************************************************************************/
-std::string get_unique_decomp_service
-(const XMLGen::InputData& aMetaData)
-{
-    std::string tReturn = "";
-    std::map<std::string,int> hasBeenDecompedForThisNumberOfProcessors;
-    for(size_t i=0; i<aMetaData.objective.serviceIDs.size(); ++i)
-    {
-        XMLGen::Service tService = aMetaData.service(aMetaData.objective.serviceIDs[i]);
-        if(tService.code() != "plato_analyze" && tService.code() != "platomain")
-            if (service_needs_decomp(tService, hasBeenDecompedForThisNumberOfProcessors))
-                tReturn = aMetaData.objective.serviceIDs[i];
-    }
-    for(auto& tConstraint : aMetaData.constraints)
-    {
-        XMLGen::Service tService = aMetaData.service(tConstraint.service());
-        if(tService.code() != "plato_analyze" && tService.code() != "platomain")
-            if (service_needs_decomp(tService, hasBeenDecompedForThisNumberOfProcessors))
-                tReturn = tConstraint.service();
-    }
-    return tReturn;
-}
-// function get_unique_decomp_service
-/******************************************************************************/
-
-/******************************************************************************/
-bool service_needs_decomp
-(const XMLGen::Service& aService,
- std::map<std::string,int>& hasBeenDecompedForThisNumberOfProcessors)
-{
-    std::string num_procs = aService.numberProcessors();
-    assert_is_positive_integer(num_procs);
-    bool need_to_decompose = num_procs.compare("1") != 0;
-    if(need_to_decompose)
-    {
-        bool has_been_decomposed = hasBeenDecompedForThisNumberOfProcessors[num_procs]++ != 0;
-        if (hasBeenDecompedForThisNumberOfProcessors.size() > 1)
-            THROWERR("MESH HAS ALREADY BEEN DECOMPED FOR A DIFFERENT NUMBER OF PROCESSORS.")
-
-        if (!has_been_decomposed)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-// function service_needs_decomp
 /******************************************************************************/
 
 }

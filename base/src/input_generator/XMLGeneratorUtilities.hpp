@@ -304,20 +304,6 @@ int count_number_of_reinitializations_needed
  const XMLGen::Objective& aObjective);
 
 /******************************************************************************//**
- * \fn need_update_problem_stage
- * \brief Return whether any service has the update problem feature enabled.
- * \param [in] aMetaData  Plato problem input data
-**********************************************************************************/
-bool need_update_problem_stage(const XMLGen::InputData& aMetaData);
-
-/******************************************************************************//**
- * \fn num_cache_states
- * \brief Return the number of services with the cache state feature enabled.
- * \param [in] aServices List of services to check
-**********************************************************************************/
-int num_cache_states(const std::vector<XMLGen::Service> &aServices);
-
-/******************************************************************************//**
  * \fn append_concurrent_tag_to_file
  * \brief Append concurrent evaluations tag for dakota problems
  * \param [in]     aFileString operation name
@@ -326,24 +312,6 @@ int num_cache_states(const std::vector<XMLGen::Service> &aServices);
 std::string append_concurrent_tag_to_file_string
 (const std::string& aFileString,
  const std::string& aTag);
-
-/******************************************************************************//**
- * \fn get_unique_decomp_service
- * \brief Get service ID for unique application of decomp 
- * \param [in] aMetaData Input metadata
-**********************************************************************************/
-std::string get_unique_decomp_service
-(const XMLGen::InputData& aXMLMetaData);
-
-/******************************************************************************//**
- * \fn service_needs_decomp
- * \brief Determine if service needs decomp
- * \param [in] aService service to check
- * \param [in] hasBeenDecompedForThisNumberOfProcessors map to check if decomped
-**********************************************************************************/
-bool service_needs_decomp
-(const XMLGen::Service& aService,
- std::map<std::string,int>& hasBeenDecompedForThisNumberOfProcessors);
 
 }
 // namespace XMLGen

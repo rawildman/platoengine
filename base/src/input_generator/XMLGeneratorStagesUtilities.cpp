@@ -8,6 +8,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorStagesUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorSharedDataUtilities.hpp"
 #include "XMLGeneratorStagesOperationsUtilities.hpp"
