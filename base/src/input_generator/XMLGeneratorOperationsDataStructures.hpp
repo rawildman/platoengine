@@ -14,6 +14,21 @@ namespace XMLGen
 {
 
 /******************************************************************************//**
+ * \class AppOptions
+ * \brief Class used to define app-specific options that depend on the service \n 
+ *    type: 'web_app', 'plato_app', 'system_call'.
+**********************************************************************************/
+struct AppOptions
+{
+public:
+    virtual std::vector<std::string> otags() const = 0;
+    virtual const std::string& get(const std::string& aOuterKey, const std::string& aInnerKey) const = 0;
+    virtual const std::unordered_map<std::string, std::string>& get(const std::string& aOuterKey) const = 0;
+    virtual void set(const std::string& aOuterKey, const std::string& aInnerKey, const std::string& aValues) = 0;
+};
+// class AppOptions
+
+/******************************************************************************//**
  * \struct OperationArgument
  * \brief Associative container of operation input and output arguments.
 **********************************************************************************/

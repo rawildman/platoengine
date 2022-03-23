@@ -19,23 +19,6 @@
 namespace XMLGen
 {
 
-void append_operation_options_based_on_app_type
-(const std::string& aKey,
- const std::unordered_map<std::string, std::string>& aMap,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    for(auto& tType : aOperationMetaData.get("type"))
-    {
-        XMLGen::check_app_service_type(tType);
-        auto tItr = aMap.find(tType);
-        if(tItr == aMap.end())
-        {
-            THROWERR("Did not find key '" + tType + "' in associative map.")
-        }
-        aOperationMetaData.append(aKey, tItr->second);
-    }
-}
-
 namespace gemma
 {
 
@@ -86,13 +69,13 @@ private:
     }
 };
 
-struct AppOptions
+struct Options : public XMLGen::AppOptions
 {
 private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> mMap;
 
 public:
-    AppOptions()
+    Options()
     {
         this->build();
     }
@@ -551,11 +534,8 @@ void write_web_app_executable
 }
 // namespace flask
 
-namespace gemma
-{
-
 void append_app_options
-(const XMLGen::gemma::AppOptions& aAppOptions,
+(const XMLGen::AppOptions& aAppOptions,
  XMLGen::OperationMetaData& aOperationMetaData)
 {
     auto tOuterTags = aAppOptions.otags();
@@ -563,8 +543,6 @@ void append_app_options
     {
         XMLGen::append_operation_options_based_on_app_type(tTag, aAppOptions.get(tTag), aOperationMetaData);
     }
-}
-
 }
 
 namespace matched_power_balance
@@ -706,8 +684,8 @@ void write_run_system_call_operation
     tOperationMetaData.append("algorithm", "matched_power_balance");
     XMLGen::set_general_run_system_call_options(aInputMetaData, tOperationMetaData);
 
-    XMLGen::gemma::AppOptions tAppOptions;
-    XMLGen::gemma::append_app_options(tAppOptions, tOperationMetaData);
+    XMLGen::gemma::Options tAppOptions;
+    XMLGen::append_app_options(tAppOptions, tOperationMetaData);
     
     XMLGen::append_evaluation_subdirectories(aSubDirBaseName, tOperationMetaData);
     XMLGen::append_concurrent_evaluation_index_to_option("names", "gemma_", tOperationMetaData);
@@ -783,7 +761,7 @@ void write_web_app_input_deck(const XMLGen::InputData& aInputMetaData)
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
 
-    XMLGen::gemma::AppOptions tAppOptions;
+    XMLGen::gemma::Options tAppOptions;
     XMLGen::set_operation_option_from_service_metadata("type", aInputMetaData, tOperationMetaData);
     XMLGen::append_operation_options_based_on_app_type("executables", tAppOptions.get("executables"), tOperationMetaData);
 
@@ -1426,7 +1404,7 @@ TEST(PlatoTestXMLGenerator, set_general_run_system_call_options)
 
 TEST(PlatoTestXMLGenerator, append_operation_options_based_on_app_type)
 {
-    XMLGen::gemma::AppOptions tAppOptions;
+    XMLGen::gemma::Options tAppOptions;
     XMLGen::OperationMetaData tOperationMetaDataOne;
     tOperationMetaDataOne.append("concurrent_evaluations", "3");
 

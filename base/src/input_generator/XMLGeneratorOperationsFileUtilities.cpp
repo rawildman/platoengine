@@ -154,8 +154,23 @@ void check_app_service_type(const std::string& aType)
 }
 // function check_app_service_type
 
-
-// function append_concurrent_operation_matadata_based_on_app_type
+void append_operation_options_based_on_app_type
+(const std::string& aKey,
+ const std::unordered_map<std::string, std::string>& aMap,
+ XMLGen::OperationMetaData& aOperationMetaData)
+{
+    for(auto& tType : aOperationMetaData.get("type"))
+    {
+        XMLGen::check_app_service_type(tType);
+        auto tItr = aMap.find(tType);
+        if(tItr == aMap.end())
+        {
+            THROWERR("Did not find key '" + tType + "' in associative map.")
+        }
+        aOperationMetaData.append(aKey, tItr->second);
+    }
+}
+// function append_operation_options_based_on_app_type
 
 }
 // namespace XMLGen

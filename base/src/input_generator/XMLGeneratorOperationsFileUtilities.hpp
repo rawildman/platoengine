@@ -22,7 +22,7 @@ struct OperationArgument;
  * \fn append_evaluation_subdirectories
  * \brief Set subdirectories associated with each concurrent performer evaluation.
  * \param [in]  aSubDirBaseName     base name for the subdirectories
- * \param [out] aOperationMetaData  operation metadata
+ * \param [out] aOperationMetaData  operation metadata structure
 **********************************************************************************/
 void append_evaluation_subdirectories
 (const std::string& aSubDirBaseName, 
@@ -34,7 +34,7 @@ void append_evaluation_subdirectories
  *        associated with input key and save in associated container.
  * \param [in]  aKey   key to access value in associative container
  * \param [in]  aValue value accessed with key
- * \param [out] aOperationMetaData operation metadata
+ * \param [out] aOperationMetaData operation metadata structure
 **********************************************************************************/
 void append_concurrent_evaluation_index_to_option
 (const std::string& aKey,
@@ -44,7 +44,7 @@ void append_concurrent_evaluation_index_to_option
 /******************************************************************************//**
  * \fn set_aprepro_system_call_options
  * \brief Set options associated with an aprepro system call.
- * \param [in] aOperationMetaData operation metadata
+ * \param [in] aOperationMetaData operation metadata structure
 **********************************************************************************/
 void set_aprepro_system_call_options
 (XMLGen::OperationMetaData& aOperationMetaData);
@@ -63,7 +63,7 @@ void append_shared_data_argument_to_operation
  * \fn write_aprepro_system_call_operation
  * \brief Append/Write aprepro system call operation in operation file.
  * \param [in]  aInputs            input arguments to aprepro operation
- * \param [in]  aOperationMetaData operation metadata
+ * \param [in]  aOperationMetaData operation metadata structure
  * \param [out] aDocument          pugi xml node 
 **********************************************************************************/
 void write_aprepro_system_call_operation
@@ -93,7 +93,7 @@ std::string set_descriptor_value
  *    concurrent evaluations.
  * \param [in]  aTargetKey         target key
  * \param [in]  aInputMetaData     input metadata read from Plato input deck
- * \param [out] aOperationMetaData operation metadata
+ * \param [out] aOperationMetaData operation metadata structure
 **********************************************************************************/
 void set_operation_option_from_service_metadata
 (const std::string& aTargetKey,
@@ -109,12 +109,17 @@ void set_operation_option_from_service_metadata
 void check_app_service_type(const std::string& aType);
 
 /******************************************************************************//**
- * \fn append_concurrent_operation_matadata_based_on_app_type
+ * \fn append_operation_options_based_on_app_type
  * \brief Append operation option values based on app type. The number of values \n
  *    appended equals the number of concurrent evaluations. 
- * \param [in]  aKey associative key
- * \param [out] aOperationMetaData operation metadata
+ * \param [in]  aKey associative key to set in operation metadata structure
+ * \param [in]  aMap associative map with app-sepcific options
+ * \param [out] aOperationMetaData operation metadata structure
 **********************************************************************************/
+void append_operation_options_based_on_app_type
+(const std::string& aKey,
+ const std::unordered_map<std::string, std::string>& aMap,
+ XMLGen::OperationMetaData& aOperationMetaData);
 
 }
 // namespace XMLGen
