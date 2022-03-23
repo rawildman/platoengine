@@ -366,7 +366,7 @@ std::stringstream read_data_from_file(const std::string &aFilename)
     tReadFile.open(aFilename);
     if(!tReadFile.is_open())
     {
-        THROWERR(std::string("Error while trying to read file '") + aFilename + "'.")
+        THROWERR(std::string("Error while reading file '") + aFilename + "'. Is the requested file on disk?")
     }
     std::string tInputString;
     std::stringstream tReadData;

@@ -222,7 +222,7 @@ get_values_from_service
     return tOutput;
 }
 
-void set_system_call_option_from_service
+void set_system_call_option_from_service_input_metadata
 (const std::string& aTargetValue,
  const XMLGen::InputData& aInputMetaData,
  XMLGen::OperationMetaData& aOperationMetaData)
@@ -288,8 +288,8 @@ void pre_process_general_run_system_call_options
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
       
-    XMLGen::set_system_call_option_from_service("type", aInputMetaData, aOperationMetaData);
-    XMLGen::set_system_call_option_from_service("number_processors", aInputMetaData, aOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("type", aInputMetaData, aOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", aInputMetaData, aOperationMetaData);
 
     XMLGen::append_concurrent_operation_matadata_based_on_app_type("commands", aOperationMetaData);
     XMLGen::append_concurrent_operation_matadata_based_on_app_type("functions", aOperationMetaData);
@@ -614,16 +614,15 @@ void copy_file_into_subdirectories
     }    
 }
 
-void copy_files_into_subdirs_and_delete_them_from_current_dir
-(const std::string& aKey,
+void copy_file_into_subdirectory
+(const std::string& aFileName,
+ const std::string& aSubDirName, 
  const XMLGen::OperationMetaData& aOperationMetaData)
 {
-   for(auto& tFileName : aOperationMetaData.get(aKey))
-   {
-       XMLGen::copy_file_into_subdirectories(tFileName, aOperationMetaData);
-       auto tCommand = std::string("rm -f ") + tFileName;
-       Plato::system(tCommand.c_str());
-   }
+    auto tCommand = std::string("mkdir -p ") + aSubDirName;
+    Plato::system(tCommand.c_str());
+    tCommand = std::string("cp ") + aFileName + " " + aSubDirName;
+    Plato::system(tCommand.c_str());
 }
 
 void append_web_port_numbers
@@ -649,7 +648,7 @@ void write_web_app_executable
     {
         auto tIndex = &tWebPortNum - &aOperationMetaData.get("web_port_numbers")[0];
         auto tFileName = aBaseFileName + "_" + std::to_string(tIndex) + aFileExtension;
-        aOperationMetaData.append("run_app_file_names", tFileName);
+        aOperationMetaData.append("run_app_files", tFileName);
 
         std::ofstream tOutFile;
         tOutFile.open(tFileName, std::ofstream::out | std::ofstream::trunc);
@@ -868,7 +867,13 @@ void write_web_app_input_deck
     aOperationMetaData.set("arguments", {"gemma", tFileFormats.get("matched_power_balance", "input")});
     XMLGen::append_web_port_numbers(aOperationMetaData);
     XMLGen::flask::write_web_app_executable("run_web_app", ".py", aOperationMetaData);
-    XMLGen::copy_files_into_subdirs_and_delete_them_from_current_dir("run_app_file_names", aOperationMetaData);
+    for(auto& tFileName : aOperationMetaData.get("run_app_files"))
+    {
+        auto tIndex = &tFileName - &aOperationMetaData.get("run_app_files")[0];
+        XMLGen::copy_file_into_subdirectory(tFileName, aOperationMetaData.get("subdirectories")[tIndex], aOperationMetaData);
+        auto tCommand = std::string("rm -f ") + tFileName;
+        Plato::system(tCommand.c_str());
+    }
 }
 
 }
@@ -880,10 +885,14 @@ namespace gemma
 void write_web_app_input_deck(const XMLGen::InputData& aInputMetaData)
 {
     XMLGen::OperationMetaData tOperationMetaData;
+    tOperationMetaData.append("code", "gemma");
     tOperationMetaData.append("base_web_port_number", "7000");
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    XMLGen::append_evaluation_subdirectory_names("gemma_evaluation", tOperationMetaData);
     tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
+
+    XMLGen::append_evaluation_subdirectory_names("gemma_evaluation", tOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("type", aInputMetaData, tOperationMetaData);
+    XMLGen::append_concurrent_operation_matadata_based_on_app_type("executables", tOperationMetaData);
     XMLGen::matched_power_balance::write_web_app_input_deck(tOperationMetaData);
 }
 
@@ -922,6 +931,7 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, write_web_app_executable)
 {
+    // TODO: FINISH TEST
     XMLGen::OperationMetaData tOperationMetaData;
     tOperationMetaData.append("executables", "gemma");
     tOperationMetaData.append("executables", "gemma");
@@ -930,6 +940,51 @@ TEST(PlatoTestXMLGenerator, write_web_app_executable)
     tOperationMetaData.append("web_port_numbers", "6002");
     tOperationMetaData.append("web_port_numbers", "6003");
     XMLGen::flask::write_web_app_executable("run_web_app", ".py", tOperationMetaData);
+
+    auto tReadData = XMLGen::read_data_from_file("./run_web_app_0.py");
+    auto tGoldString = std::string("fromflaskimportFlaskimportsubprocessapp=Flask(__name__)@app.route('/run_gemma/')defrun_gemma():tExitStatus=subprocess.call([\"gemma\",\"matched.yaml\"])returnstr(tExitStatus)if__name__=='__main__':app.run(host='0.0.0.0',port=6002)");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f run_web_app_0.py");
+
+    tReadData = XMLGen::read_data_from_file("./run_web_app_1.py");
+    tGoldString = std::string("fromflaskimportFlaskimportsubprocessapp=Flask(__name__)@app.route('/run_gemma/')defrun_gemma():tExitStatus=subprocess.call([\"gemma\",\"matched.yaml\"])returnstr(tExitStatus)if__name__=='__main__':app.run(host='0.0.0.0',port=6003)");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -f run_web_app_1.py");
+}
+
+TEST(PlatoTestXMLGenerator, write_web_app_input_deck)
+{
+    XMLGen::InputData tInputMetaData;
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+    // service parameters
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "web_app");
+    tServiceOne.append("number_processors", "1");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+
+    XMLGen::gemma::write_web_app_input_deck(tInputMetaData);
+
+    // test
+    auto tReadData = XMLGen::read_data_from_file("./gemma_evaluation_0/run_web_app_0.py");
+    auto tGoldString = std::string("fromflaskimportFlaskimportsubprocessapp=Flask(__name__)@app.route('/run_gemma/')defrun_gemma():tExitStatus=subprocess.call([\"gemma\",\"gemma_matched_power_balance_input_deck.yaml\"])returnstr(tExitStatus)if__name__=='__main__':app.run(host='0.0.0.0',port=7000)");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -rf gemma_evaluation_0/");
+
+    tReadData = XMLGen::read_data_from_file("./gemma_evaluation_1/run_web_app_1.py");
+    tGoldString = std::string("fromflaskimportFlaskimportsubprocessapp=Flask(__name__)@app.route('/run_gemma/')defrun_gemma():tExitStatus=subprocess.call([\"gemma\",\"gemma_matched_power_balance_input_deck.yaml\"])returnstr(tExitStatus)if__name__=='__main__':app.run(host='0.0.0.0',port=7001)");
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm -rf gemma_evaluation_1/");
 }
 
 TEST(PlatoTestXMLGenerator, copy_file_into_subdirectories)
@@ -1534,7 +1589,7 @@ TEST(PlatoTestXMLGenerator, check_plato_app_service_type)
     EXPECT_NO_THROW(XMLGen::check_plato_app_service_type("system_call"));
 }
 
-TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
+TEST(PlatoTestXMLGenerator, set_system_call_option_from_service_input_metadata)
 {
     XMLGen::InputData tMetaData;
     // define service
@@ -1556,13 +1611,13 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
     tOperationMetaData.append("concurrent_evaluations", "3");
 
     // test one: one service defined 
-    XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("type").size());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[2].c_str());
 
-    XMLGen::set_system_call_option_from_service("number_processors", tMetaData, tOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
@@ -1582,13 +1637,13 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
     tServiceFour.append("number_processors", "2");
     tMetaData.append(tServiceFour);
 
-    XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("type").size());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[0].c_str());
     EXPECT_STREQ("web_app", tOperationMetaData.get("type")[1].c_str());
     EXPECT_STREQ("system_call", tOperationMetaData.get("type")[2].c_str());
 
-    XMLGen::set_system_call_option_from_service("number_processors", tMetaData, tOperationMetaData);
+    XMLGen::set_system_call_option_from_service_input_metadata("number_processors", tMetaData, tOperationMetaData);
     EXPECT_EQ(3u, tOperationMetaData.get("number_processors").size());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[0].c_str());
     EXPECT_STREQ("1", tOperationMetaData.get("number_processors")[1].c_str());
@@ -1602,7 +1657,7 @@ TEST(PlatoTestXMLGenerator, set_system_call_option_from_service)
     tServiceFive.append("number_processors", "2");
     tMetaData.append(tServiceFive);
 
-    EXPECT_THROW(XMLGen::set_system_call_option_from_service("type", tMetaData, tOperationMetaData), std::runtime_error);
+    EXPECT_THROW(XMLGen::set_system_call_option_from_service_input_metadata("type", tMetaData, tOperationMetaData), std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, get_values_from_service)
