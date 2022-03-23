@@ -16,7 +16,7 @@
 namespace XMLGen
 {
 
-void append_evaluation_subdirectory_names
+void append_evaluation_subdirectories
 (const std::string& aSubDirBaseName, 
  XMLGen::OperationMetaData& aOperationMetaData)
 {
@@ -29,7 +29,7 @@ void append_evaluation_subdirectory_names
         aOperationMetaData.append("subdirectories", tDirectoryName);
     }
 }
-// function append_evaluation_subdirectory_names
+// function append_evaluation_subdirectories
 
 void append_concurrent_evaluation_index_to_option
 (const std::string& aKey,
