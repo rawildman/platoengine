@@ -80,10 +80,12 @@ SystemCall::SystemCall(const Plato::InputData & aNode)
 {
     // set basic info
     mName = Plato::Get::String(aNode, "Name");
+    mPrint = Plato::Get::Bool(aNode, "Print");
     mChDir = Plato::Get::String(aNode, "ChDir");
     mOnChange = Plato::Get::Bool(aNode, "OnChange");
     mAppendInput = Plato::Get::Bool(aNode, "AppendInput");
     mStringCommand = Plato::Get::String(aNode, "Command");
+    mPrecision = Plato::Get::Int(aNode, "ParameterPrecision", 16);
     
     this->setInputSharedDataNames(aNode);
     this->setArguments(aNode);
@@ -258,7 +260,7 @@ void SystemCall::appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaDa
         for(size_t tIndex=0; tIndex<tInputArgument->size(); ++tIndex)
         {
             std::stringstream tDataString;
-            tDataString << std::setprecision(16) << mOptions[tIndex] << tInputArgument->data()[tIndex];
+            tDataString << std::setprecision(mPrecision) << mOptions[tIndex] << tInputArgument->data()[tIndex];
             aArguments.push_back(tDataString.str());
         }
     }
@@ -326,13 +328,11 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
         mCommandPlusArguments += " " + tArgument;
     }
 
-    // make system call
-    auto tExitStatus = Plato::system_with_return(mCommandPlusArguments.c_str());
-    if (tExitStatus)
+    // make system call and throw error if exit status non-zero
+    Plato::system_with_throw(cmd.c_str());
+    if (mPrint)
     {
-        std::string tErrorMessage = std::string("System call '") + mCommandPlusArguments + 
-                                    std::string("' exited with exit status: ") + std::to_string(tExitStatus);
-        THROWERR(tErrorMessage)
+        Plato::Console::Status("Executed command: " + cmd);
     }
 }
 

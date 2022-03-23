@@ -141,7 +141,7 @@ void SetUpperBounds::updateUpperBoundsForDensityProblems
 {
         LightMP* tLightMP = mPlatoApp->getLightMP();
         const int tDofsPerNode_1D = 1;
-        SystemContainer* tSysGraph_1D = new SystemContainer(tLightMP->getMesh(), tDofsPerNode_1D, tLightMP->getInput());
+        SystemContainer* tSysGraph_1D = new SystemContainer(tLightMP->getMesh(), tDofsPerNode_1D);
         std::vector<VarIndex> tSingleValue(1u);
         DataContainer* tDataContainer = tLightMP->getDataContainer();
         bool tPlottable = true;

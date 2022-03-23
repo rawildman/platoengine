@@ -99,7 +99,7 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
-        tInterface->registerPerformer(tMyApp);
+        tInterface->registerApplication(tMyApp);
     }
     catch(...)
     {

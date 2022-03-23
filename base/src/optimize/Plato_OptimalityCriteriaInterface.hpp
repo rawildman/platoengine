@@ -58,7 +58,7 @@
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_OptimalityCriteria.hpp"
@@ -71,7 +71,7 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class OptimalityCriteriaInterface : public Plato::DriverInterface<ScalarType, OrdinalType>
+class OptimalityCriteriaInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
@@ -90,25 +90,24 @@ public:
     }
 
     /******************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
-        return (Plato::driver::driver_t::OPTIMALITY_CRITERIA);
+        return (Plato::optimizer::algorithm_t::OPTIMALITY_CRITERIA);
     }
 
     /******************************************************************************/
     void initialize()
     /******************************************************************************/
     {
-        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData);
+        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
+                                                   this->mOptimizerIndex);
     }
 
     /******************************************************************************/
     void run()
     /******************************************************************************/
     {
-        mInterface->handleExceptions();
-
         this->initialize();
 
         // ********* ALLOCATE LINEAR ALGEBRA FACTORY ********* //
@@ -135,18 +134,16 @@ public:
 
         // ********* SOLVE OPTIMIZATION PROBLEM *********
         this->solveOptimizationProblem(tDataMng, tDataFactory);
-
-        // ********* OUTPUT SOLUTION *********
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        this->finalize();
     }
 
-    /******************************************************************************/
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
     void finalize()
     /******************************************************************************/
     {
-        mInterface->finalize();
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -250,7 +247,7 @@ private:
     {
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-                std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*aDataFactory, mInputData, mInterface, this);
 
         // ********* ALLOCATE LIST OF CONSTRAINTS ********* //
         const OrdinalType tNumConstraints = mInputData.getNumConstraints();

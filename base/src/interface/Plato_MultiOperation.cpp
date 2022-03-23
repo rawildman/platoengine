@@ -68,14 +68,35 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
   Operation(aOperationDataMng, aPerformer, aSharedData)
 /******************************************************************************/
 {
+    this->initialize(aOperationDataMng, aPerformer, aSharedData);
+}
+
+/******************************************************************************/
+void
+MultiOperation::
+initialize(const Plato::OperationInputDataMng & aOperationDataMng,
+           const std::shared_ptr<Plato::Performer> aPerformer,
+           const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // Clear local data
+    m_performer = nullptr;
+    m_parameters.clear();
+    m_inputData.clear();
+    m_outputData.clear();
+    m_argumentNames.clear();
+
     const int tNumSubOperations = aOperationDataMng.getNumOperations();
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+        const std::string & tPerformerName =
+          aOperationDataMng.getPerformerName(tSubOperationIndex);
+
         if(aPerformer->myName() != tPerformerName)
         {
              continue;
         }
+
         m_operationName = aOperationDataMng.getOperationName(tPerformerName);
 
         auto tAllParamsData = aOperationDataMng.get<Plato::InputData>("Parameters");
@@ -97,10 +118,13 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
         const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+
+        // Get the input shared data.
         const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
         for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
         {
-            const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
+            const std::string & tSharedDataName =
+              aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
             Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
@@ -116,10 +140,13 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 throw Plato::ParsingException(tErrorMessage.str());
             }
         }
+
+        // Get the output shared data.
         const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
         for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
         {
-            const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
+            const std::string & tSharedDataName =
+              aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
             Plato::SharedData *tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
@@ -142,19 +169,22 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
     //
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+        const std::string & tPerformerName =
+          aOperationDataMng.getPerformerName(tSubOperationIndex);
+
         if(aPerformer->myName() == tPerformerName)
         {
             m_performer = aPerformer;
         }
+
         if(m_performer != nullptr)
         {
-
-            // A local performer is participating in this operation, so parse the input
-            // and output argument multimaps
+            // A local performer is participating in this operation,
+            // so parse the input and output argument multimaps
             //
             m_operationName = aOperationDataMng.getOperationName(tPerformerName);
 
+            // Get the inputs.
             const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
             for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
             {
@@ -169,6 +199,8 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                     }
                 }
             }
+
+            // Get the outputs.
             const int tNumOutputs = aOperationDataMng.getNumOutputs(tPerformerName);
             for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
             {
@@ -187,4 +219,18 @@ MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
         }
     }
 }
+
+/******************************************************************************/
+void MultiOperation::
+update(const Plato::OperationInputDataMng & aOperationDataMng,
+       const std::shared_ptr<Plato::Performer> aPerformer,
+       const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // If the shared data is recreated then the operation must be
+    // updated so to have the new links to the shared data.
+
+    this->initialize(aOperationDataMng, aPerformer, aSharedData);
+}
+
 } // End namespace Plato

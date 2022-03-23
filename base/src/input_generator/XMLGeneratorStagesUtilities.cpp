@@ -172,6 +172,7 @@ void append_plato_main_output_stage
         {
             auto tOutputStage = aDocument.append_child("Stage");
             XMLGen::append_children({"Name"}, {"Output To File"}, tOutputStage);
+            XMLGen::append_enforce_bounds_operation(aMetaData, tOutputStage);
             XMLGen::append_write_output_operation(aMetaData, tOutputStage);
             XMLGen::append_compute_qoi_statistics_operation(aMetaData, tOutputStage);
             XMLGen::append_output_operation_to_interface_file(aMetaData, tOutputStage); // TODO: ME QUEDE AQUI
@@ -364,10 +365,14 @@ void append_constraint_stage_for_topology_problem
 
         auto tService = aMetaData.service(tConstraint.service()); 
         XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-        XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
         tValueOperationInterface.call(tConstraint, tService.performer(), tDesignVariableName, tService.code(), tStageNode);
 
         XMLGen::append_copy_value_operation(tFirstPlatoMainPerformer, std::string("Criterion Value - ") + tIdentifierString, std::string("Constraint Value ") + tConstraint.id(), tStageNode);
+
+        if(tConstraint.greater_than())
+        {
+            XMLGen::append_negate_value_operation(tFirstPlatoMainPerformer, std::string("Constraint Value ") + tConstraint.id(), tStageNode);
+        }
 
         auto tOutputNode = tStageNode.append_child("Output");
         auto tSharedDataName = std::string("Constraint Value ") + tConstraint.id();
@@ -458,7 +463,6 @@ void append_constraint_gradient_stage_for_topology_problem
 
         auto tService = aMetaData.service(tConstraint.service()); 
         XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-        XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
         tGradOperationInterface.call(tConstraint, tService.performer(), tDesignVariableName, tService.code(), tStageNode);
 
         std::string tOutputSharedData = "Constraint Gradient " + tConstraint.id();
@@ -479,6 +483,10 @@ void append_constraint_gradient_stage_for_topology_problem
         {
             auto tSharedDataName = XMLGen::get_filter_constraint_criterion_gradient_input_shared_data_name(tConstraint);
             XMLGen::append_filter_criterion_gradient_operation(aMetaData, tSharedDataName, tOutputSharedData, tStageNode);
+        }
+        if(tConstraint.greater_than())
+        {
+            XMLGen::append_negate_field_operation(tFirstPlatoMainPerformer, std::string("Constraint Gradient ") + tConstraint.id(), tStageNode);
         }
 
         auto tOutputNode = tStageNode.append_child("Output");
@@ -551,7 +559,6 @@ void append_constraint_gradient_stage_for_topology_levelset_problem
 
         auto tService = aMetaData.service(tConstraint.service()); 
         XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-        XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
 
         auto tOperationNode = tStageNode.append_child("Operation");
         XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient " + tConstraint.id(), tService.performer()}, tOperationNode);
@@ -625,7 +632,6 @@ void append_objective_value_stage_for_topology_problem
     auto tStageInputNode = tStageNode.append_child("Input");
     XMLGen::append_children( { "SharedDataName" }, { "Control" }, tStageInputNode);
     XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-    XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
 
     if(XMLGen::is_robust_optimization_problem(aMetaData))
         XMLGen::append_sample_objective_value_operation(aMetaData, tStageNode);
@@ -783,7 +789,6 @@ void append_objective_gradient_stage_for_topology_problem
     auto tStageInputNode = tStageNode.append_child("Input");
     XMLGen::append_children({"SharedDataName"}, {"Control"}, tStageInputNode);
     XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-    XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
 
     if(XMLGen::is_robust_optimization_problem(aMetaData))
     {
@@ -951,7 +956,6 @@ void append_objective_gradient_stage_for_topology_levelset_problem
     auto tStageInputNode = tStageNode.append_child("Input");
     XMLGen::append_children({"SharedDataName"}, {"Control"}, tStageInputNode);
     XMLGen::append_filter_control_operation(aMetaData, tStageNode);
-    XMLGen::append_enforce_bounds_operation(aMetaData, tStageNode);
 
     std::string tServiceID = tObjective.serviceIDs[0];
     XMLGen::Service tService = aMetaData.service(tServiceID);

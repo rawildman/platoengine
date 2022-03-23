@@ -220,8 +220,10 @@ private:
     virtual void executeCommand(const std::vector<std::string> &aArguments);
     
 private:
+    bool mPrint;
     bool mOnChange;
     bool mAppendInput;
+    short unsigned int mPrecision;
     
     std::string mName;
 

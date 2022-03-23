@@ -41,6 +41,13 @@ private:
     void setCriterionIDs(XMLGen::Criterion& aMetadata);
 
     /******************************************************************************//**
+     * \fn setVolumeBasedCriterionBlock
+     * \brief Set 'block' keyword for volume-based criteria.
+     * \param [in/out] aInputFile parsed input metadata
+    **********************************************************************************/
+    void setVolumeBasedCriterionBlock(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
      * \fn setCriterionWeights
      * \brief Set 'criterion_weights' keyword for 'composite' criteria.
      * \param [in/out] aInputFile parsed input metadata
@@ -108,6 +115,13 @@ private:
      * \param [in] aCriterion criterion metadata
     **********************************************************************************/
     void setDisplacementDirection(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
+     * \fn setTargetSolutionVector
+     * \brief Set the target solution vector member variable
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setTargetSolutionVector(XMLGen::Criterion &aMetadata);
 
     /******************************************************************************//**
      * \fn insertTag

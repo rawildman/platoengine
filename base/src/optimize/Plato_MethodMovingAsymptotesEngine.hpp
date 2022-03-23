@@ -51,7 +51,7 @@
 #include "Plato_Interface.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_EngineObjective.hpp"
-#include "Plato_DriverInterface.hpp"
+#include "Plato_OptimizerInterface.hpp"
 #include "Plato_EngineConstraint.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_MethodMovingAsymptotesParser.hpp"
@@ -64,7 +64,7 @@ namespace Plato
  * \brief PLATO Engine interface for Method of Moving AsymptotesEngine (MMA) algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class MethodMovingAsymptotesEngine : public Plato::DriverInterface<ScalarType, OrdinalType>
+class MethodMovingAsymptotesEngine : public Plato::OptimizerInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************//**
@@ -96,9 +96,9 @@ public:
      * \brief Return the algorithm type
      * \return algorithm type
     **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::optimizer::algorithm_t algorithm() const
     {
-        return (Plato::driver::driver_t::METHOD_OF_MOVING_ASYMPTOTES);
+        return (Plato::optimizer::algorithm_t::METHOD_OF_MOVING_ASYMPTOTES);
     }
 
     /******************************************************************************//**
@@ -106,19 +106,8 @@ public:
     **********************************************************************************/
     void initialize()
     {
-        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData);
-    }
-
-    /******************************************************************************//**
-     * \brief Notify PLATO Engine that optimization problem is done.
-    **********************************************************************************/
-    void finalize()
-    {
-        // OUTPUT SOLUTION
-        Plato::call_finalization_stage(mInterface, mInputData);
-
-        // DEALLOCATE MEMORY
-        mInterface->finalize();
+        Plato::initialize<ScalarType, OrdinalType>(mInterface, mInputData,
+                                                   this->mOptimizerIndex);
     }
 
     /******************************************************************************//**
@@ -126,7 +115,7 @@ public:
     **********************************************************************************/
     void run()
     {
-        mInterface->handleExceptions();
+        // INITIALIZE 
         this->initialize();
 
         // PARSE INPUT DATA
@@ -161,8 +150,15 @@ public:
         // SOLVE OPTIMIZATION PROBLEM
         Plato::AlgorithmOutputsMMA<ScalarType, OrdinalType> tOutputs;
         Plato::solve_mma<ScalarType, OrdinalType>(tObjective, tConstraints, tInputs, tOutputs);
+    }
 
-        this->finalize();
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
+    void finalize()
+    {
+        mInterface->finalize(mInputData.getFinalizationStageName());
     }
 
 private:
@@ -172,9 +168,9 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::AlgorithmInputsMMA<ScalarType, OrdinalType> & aInput)
     {
-        auto tInputData = mInterface->getInputData();
-        auto tOptimizerNode = tInputData.get<Plato::InputData>("Optimizer");
+        auto tOptimizerNode = this->getOptimizerNode(mInterface);
         Plato::MethodMovingAsymptotesParser<ScalarType, OrdinalType> tParser;
+
         mObjFuncStageName = tParser.getObjectiveStageName(tOptimizerNode);
         mConstraintStageNames = tParser.getConstraintStageNames(tOptimizerNode);
         mConstraintTargetValues = tParser.getConstraintTargetValues(tOptimizerNode);
@@ -339,7 +335,7 @@ private:
                             std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>>& aConstraints)
     {
         // SET OBJECTIVE FUNCTION
-        aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface);
+        aObjective = std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(mInputData, mInterface, this);
         aObjective->allocateControlContainers(aNumControls);
 
         // SET CONSTRAINTS

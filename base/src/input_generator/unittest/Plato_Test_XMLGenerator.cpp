@@ -391,28 +391,73 @@ TEST(PlatoTestXMLGenerator, parseTokens)
     char buffer[MAX_CHARS_PER_LINE];
 
     buffer[0] = '\0';
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 0);
     buffer[0] = '\t';
     buffer[1] = '\0';
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 0);
     strcpy(buffer, "   car");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 1);
     tokens.clear();
     buffer[0] = '\t';
     strcpy(&(buffer[1]), "   car");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 1);
     tokens.clear();
     strcpy(buffer, "   car\tbus   trike\t");
-    tester.publicParseTokens(buffer, tokens);
+    tester.publicParse_Tokens(buffer, tokens);
     EXPECT_EQ((int)tokens.size(), 3);
     EXPECT_EQ(tokens[0], "car");
     EXPECT_EQ(tokens[1], "bus");
     EXPECT_EQ(tokens[2], "trike");
 }
+
+
+TEST(PlatoTestXMLGenerator, parseCommentTokens)
+{
+    XMLGenerator_UnitTester tester;
+    std::vector<std::string> tokens;
+    char buffer[MAX_CHARS_PER_LINE];
+
+    //Comment as first character
+    strcpy(buffer, "#");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 0);
+    //Comment as first character
+    strcpy(buffer, "#   car\tbus   trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 0);
+
+    //Comment after tab
+    tokens.clear();
+    strcpy(buffer, "   car\t#bus   trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 1);
+    EXPECT_EQ(tokens[0], "car");
+
+    //Comment  mid
+    tokens.clear();
+    strcpy(buffer, "   car\t bus #  trike\t");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 2);
+    EXPECT_EQ(tokens[0], "car");
+    EXPECT_EQ(tokens[1], "bus");
+
+
+    //Comment  end
+    tokens.clear();
+    strcpy(buffer, "   car\t bus  trike\t #");
+    tester.publicParse_Tokens(buffer, tokens);
+    EXPECT_EQ((int)tokens.size(), 3);
+    EXPECT_EQ(tokens[0], "car");
+    EXPECT_EQ(tokens[1], "bus");
+    EXPECT_EQ(tokens[2], "trike");
+
+}
+
+
 
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
 {
@@ -1338,7 +1383,7 @@ TEST(PlatoTestXMLGenerator, parseBlocks)
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
-    EXPECT_EQ(tester.publicParseBlocks(iss), false);
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
     stringInput = "begin block 1\n"
             "bad_keywordl\n"
             "end block\n";
@@ -1346,14 +1391,14 @@ TEST(PlatoTestXMLGenerator, parseBlocks)
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
-    EXPECT_EQ(tester.publicParseBlocks(iss), false);
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
     stringInput = "begin block 1\n"
             "end block\n";
     iss.str(stringInput);
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
-    EXPECT_EQ(tester.publicParseBlocks(iss), true);
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
     stringInput = "begin block\n"
             "material 1\n"
             "end block\n";
@@ -1362,21 +1407,181 @@ TEST(PlatoTestXMLGenerator, parseBlocks)
     iss.seekg (0);
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseBlocks(iss), false);
-    stringInput = "begin block 44\n"
-            "material 89\n"
+    stringInput = "begin block 42\n"
+            "name blocky\n"
+            "material 890\n"
             "end block\n"
-            "begin block 33\n"
-            "material 34\n"
+            "begin block 31\n"
+            "material 4\n"
+            "element_type tet10\n"
             "end block\n";
     iss.str(stringInput);
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseBlocks(iss), true);
-    EXPECT_EQ(tester.getBlockID(0), "44");
-    EXPECT_EQ(tester.getBlockMaterialID(0), "89");
-    EXPECT_EQ(tester.getBlockID(1), "33");
-    EXPECT_EQ(tester.getBlockMaterialID(1), "34");
+    EXPECT_EQ(tester.getBlockID(0), "42");
+    EXPECT_EQ(tester.getBlockName(0), "blocky");
+    EXPECT_EQ(tester.getBlockMaterialID(0), "890");
+    EXPECT_EQ(tester.getBlockID(1), "31");
+    EXPECT_EQ(tester.getBlockName(1), "block_31");
+    EXPECT_EQ(tester.getBlockMaterialID(1), "4");
+    EXPECT_EQ(tester.getBlockElementType(1), "tet10");
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block -1 -3 1 2 3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block -1 -2 -3 1 1 2 3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block 1 -2 -3 1 2 3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block -1 -2 -3 1 -12 3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block -1 -2 -3 1 2 -3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseBlocks(iss), std::runtime_error);
+    stringInput = "begin block 1\n"
+            "material 1\n"
+            "sub_block -1 -2 -3 1 2 3\n"
+            "end block\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseBlocks(iss), true);
+    EXPECT_EQ(tester.getBlockID(0), "1");
+    EXPECT_EQ(tester.getBlockMaterialID(0), "1");
+    auto tBoundingBox = tester.getBoundingBox(0);
+    std::vector<double> tGoldBoundingBox = {-1, -2, -3, 1, 2, 3};
+    for (int iIndex = 0; iIndex < tBoundingBox.size(); iIndex++)
+        EXPECT_EQ(tBoundingBox[iIndex], tGoldBoundingBox[iIndex]);
+}
+
+TEST(PlatoTestXMLGenerator, parseCriteria)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    stringInput = "begin criterion\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 1\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion\n"
+            "bad_keyword\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 1\n"
+            "type\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 1\n"
+            "type not_a_type\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 1\n"
+            "type mechanical_compliance\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_NO_THROW(tester.publicParseCriteria(iss));
+    EXPECT_EQ(tester.getCriterionID("1"), "1");
+    EXPECT_EQ(tester.getCriterionType("1"), "mechanical_compliance");
+    stringInput = "begin criterion 7\n"
+            "type mechanical_compliance\n"
+            "block 2\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 7\n"
+            "type volume_average_von_mises\n"
+            "block\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 7\n"
+            "type volume_average_von_mises\n"
+            "block 2 3\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_THROW(tester.publicParseCriteria(iss), std::runtime_error);
+    stringInput = "begin criterion 7\n"
+            "type volume_average_von_mises\n"
+            "block 31\n"
+            "end criterion\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_NO_THROW(tester.publicParseCriteria(iss));
+    EXPECT_EQ(tester.getCriterionID("7"), "7");
+    EXPECT_EQ(tester.getCriterionType("7"), "volume_average_von_mises");
+    EXPECT_EQ(tester.getCriterionBlock("7"), "31");
 }
 
 TEST(PlatoTestXMLGenerator, SROM_SolveSromProblem_ReadSampleProbPairsFromFile)
@@ -1885,11 +2090,11 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_pressure\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_pressure\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2122,11 +2327,11 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_pressure\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_pressure\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2273,11 +2478,11 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_pressure\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_pressure\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2422,11 +2627,11 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_temperature\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_temperature\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2593,11 +2798,11 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumUndefined)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_temperature\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_temperature\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2739,11 +2944,11 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_temperature\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_temperature\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"
@@ -2883,11 +3088,11 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
         "end criterion\n"
         "begin criterion 2\n"
         "  type mean_surface_temperature\n"
-        "  location_names inlet\n"
+        "  location_name inlet\n"
         "end criterion\n"
         "begin criterion 3\n"
         "  type mean_surface_temperature\n"
-        "  location_names outlet\n"
+        "  location_name outlet\n"
         "end criterion\n"
         "begin criterion 4\n"
         "   type volume\n"

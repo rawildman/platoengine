@@ -706,6 +706,8 @@ void Tet10::init()
   myDim = 3;
   NODECONNECT = UNSET_VAR_INDEX;
   GLOBALID    = UNSET_VAR_INDEX;
+  blockTopology = Teuchos::rcp(new shards::CellTopology(shards::getCellTopologyData<shards::Tetrahedron<10> >() ) );
+  blockBasis = new Intrepid::Basis_HGRAD_TET_C2_FEM<double, Intrepid::FieldContainer<double> >() ;
 }
 
 Tet10::~Tet10()

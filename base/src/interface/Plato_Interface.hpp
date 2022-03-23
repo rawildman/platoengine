@@ -81,12 +81,12 @@ enum stage_index_t
 };
 
 /**
- * This class provides an interface between PlatoEngine and the 
- * hosted codes. 
+ * This class provides an interface between PlatoEngine and the
+ * hosted codes.
  */
 
 /******************************************************************************/
-//!  Interface between optimizer and Plato
+//!  Interface between driver and Plato
 /*!
  This should be separated into two virtual bases.
  */
@@ -98,15 +98,14 @@ public:
     Interface(const int & aCommID, const std::string & a_XML_String, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
     virtual ~Interface();
 
-    // optimizer interface
-    void finalize();
+    void registerApplication(Plato::Application* aApplication);
+
+    // driver interface
+    void run();
+    void perform();
     void compute(const std::string & stageName, Teuchos::ParameterList & aArguments);
     void compute(const std::vector<std::string> & stageNames, Teuchos::ParameterList & aArguments);
-
-    // TODO: deprecate this function.  'registerPerformer' is misleading.  
-    void registerPerformer(Plato::Application* aApplication){ this->registerApplication(aApplication); }
-    void registerApplication(Plato::Application* aApplication);
-    void perform();
+    void finalize( std::string aStageName = std::string() );
 
     // data motion
     int size(const std::string & aName) const;
@@ -140,7 +139,9 @@ private:
     int getStageIndex(std::string aStageName) const;
 
     void createStages();
+    void updateStages();
     void createPerformers();
+    void reinitializePerformer();
     void createSharedData(Plato::Application* aApplication);
 
     void exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,

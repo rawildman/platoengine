@@ -113,6 +113,11 @@ public:
     void initialize();
 
     /******************************************************************************//**
+     * @brief reinitialize
+    **********************************************************************************/
+    void reinitialize();
+
+    /******************************************************************************//**
      * @brief Perform local operation
      * @param [in] aOperationName local operation name
     **********************************************************************************/
@@ -401,6 +406,10 @@ private:
     void createLocalData(Plato::LocalArg aArguments);
 
 private:
+
+    void deleteData( bool deleteTimers );
+    void initialize( bool initializeTimers );
+
     MPI_Comm mLocalComm; /*!< local communicator */
     LightMP* mLightMp; /*!< application-specific services */
     SystemContainer* mSysGraph; /*!< parallel graph services */
@@ -408,6 +417,7 @@ private:
     Plato::AbstractFilter* mFilter; /*!< filter services */
     Plato::InputData mAppfileData; /*!< PLATO application input data */
     Plato::InputData mInputfileData; /*!< Shared input data */
+    std::shared_ptr<pugi::xml_document> mInputTree{nullptr}; /*!< Original input tree */
 
 #ifdef GEOMETRY
     std::map<std::string,std::shared_ptr<Plato::MLSstruct>> mMLS;  /*!< Moving Least Squared (MLS) metadata */

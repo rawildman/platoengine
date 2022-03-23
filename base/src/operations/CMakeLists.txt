@@ -10,6 +10,7 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_SystemCallOperation.cpp
                         Plato_Aggregator.cpp
                         Plato_DesignVolume.cpp
+                        Plato_Reinitialize.cpp
                         Plato_EnforceBounds.cpp
                         Plato_UpdateProblem.cpp
                         Plato_CSMMeshOutput.cpp
@@ -41,6 +42,7 @@ set(${LIB_NAME}_HEADERS Plato_Filter.hpp
                         Plato_SystemCallOperation.hpp
                         Plato_Aggregator.hpp
                         Plato_DesignVolume.hpp
+                        Plato_Reinitialize.hpp
                         Plato_EnforceBounds.hpp
                         Plato_UpdateProblem.hpp
                         Plato_CSMMeshOutput.hpp

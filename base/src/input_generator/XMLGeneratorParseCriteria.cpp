@@ -91,12 +91,17 @@ void ParseCriteria::allocate()
     insertTag("minimum_ersatz_material_value");
     insertTag("criterion_ids");
     insertTag("criterion_weights");
-    insertTag("location_names");
-    insertTag("location_types");
+    insertTag("location_name");
+    insertTag("location_type");
     insertTag("conductivity_ratios");
     insertTag("displacement_direction");
     insertTag("measure_magnitude", "false");
     insertTag("target", "0.0");
+    insertTag("target_solution_vector");
+    insertTag("target_magnitude");
+    insertTag("target_solution");
+
+    insertTag("block");
 
     insertTag("mass");
     insertTag("cgx");
@@ -213,6 +218,44 @@ void ParseCriteria::setCriterionIDs(XMLGen::Criterion &aMetadata)
     }
 }
 
+void ParseCriteria::setVolumeBasedCriterionBlock(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("block");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        if(aMetadata.type() != "volume_average_von_mises")
+            THROWERR("ParseCriteria: Criterion computation in block is only supported for volume_average_von_mises type");
+
+        std::vector<std::string> tBlocks;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tBlocks);
+
+        if(tBlocks.size() > 1)
+            THROWERR("ParseCriteria: Only one block may be specified for criterion computation in block");
+
+        aMetadata.block(tBlocks[0]);
+    }
+}
+
+void ParseCriteria::setTargetSolutionVector(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "displacement")
+    {
+        auto tItr = mTags.find("target_solution_vector");
+        std::string tValues = tItr->second.first.second;
+        if (tItr != mTags.end() && !tValues.empty())
+        {
+            std::vector<std::string> tDirection;
+            char tValuesBuffer[10000];
+            strcpy(tValuesBuffer, tValues.c_str());
+            XMLGen::parse_tokens(tValuesBuffer, tDirection);
+            aMetadata.targetSolutionVector(tDirection);
+        }
+    }
+}
+
 void ParseCriteria::setDisplacementDirection(XMLGen::Criterion &aMetadata)
 {
     if(aMetadata.type() == "displacement")
@@ -238,13 +281,13 @@ void ParseCriteria::errorCheckDisplacementCriterion(XMLGen::Criterion &aMetadata
 {
     if(aMetadata.type() == "displacement")
     {
-        if(aMetadata.location_types().empty())
+        if(aMetadata.location_type().empty())
         {
-            THROWERR("Displacement criterion must have 'location_types' option set.");
+            THROWERR("Displacement criterion must have 'location_type' option set.");
         }
-        if(aMetadata.location_names().empty())
+        if(aMetadata.location_name().empty())
         {
-            THROWERR("Displacement criterion must have 'location_names' option set.");
+            THROWERR("Displacement criterion must have 'location_name' option set.");
         }
         if(aMetadata.displacementDirection().size() == 0)
         {
@@ -271,10 +314,12 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
 {
     this->setCriterionType(aMetadata);
     this->setCriterionIDs(aMetadata);
+    this->setVolumeBasedCriterionBlock(aMetadata);
     this->setCriterionWeights(aMetadata);
     this->setMassProperties(aMetadata);
     this->checkVolumePenaltyExponent(aMetadata);
     this->setDisplacementDirection(aMetadata);
+    this->setTargetSolutionVector(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
     this->setTags(aMetadata);

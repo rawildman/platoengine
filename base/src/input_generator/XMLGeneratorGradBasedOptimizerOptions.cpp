@@ -746,6 +746,10 @@ void generate_target_value_entries
         double tReferenceValue = fabs(tAbsoluteTargetValue) < 1e-16 ? 1.0 : std::atof(aConstraint.absoluteTarget().c_str());
         tReferenceValue *= std::atof(aConstraint.divisor().c_str());
         aKeyToValueMap["ReferenceValue"] = std::to_string(tReferenceValue);
+        if(aConstraint.greater_than())
+        {
+            aKeyToValueMap["AbsoluteTargetValue"].insert(0,1,'-');
+        }
     }
 }
 // function generate_target_value_entries

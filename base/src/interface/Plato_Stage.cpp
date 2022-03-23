@@ -77,6 +77,66 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         currentOperationIndex()
 /******************************************************************************/
 {
+    this->initializeSharedData(aStageInputData,aPerformer,aSharedData);
+
+    // Parse/Create Operations
+    //
+    Plato::OperationFactory opFactory;
+
+    const int tNumOperations = aStageInputData.getNumOperations(m_name);
+    for(int tOperationIndex = 0; tOperationIndex < tNumOperations; tOperationIndex++)
+    {
+        const Plato::OperationInputDataMng & tOperationDataMng = aStageInputData.getOperationInputData(m_name, tOperationIndex);
+        m_operations.push_back(opFactory.create(tOperationDataMng, aPerformer, aSharedData));
+    }
+}
+
+/******************************************************************************/
+Stage::~Stage()
+/******************************************************************************/
+{
+    const size_t num_operations = m_operations.size();
+    for(size_t operation_index = 0u; operation_index < num_operations; operation_index++)
+    {
+        delete m_operations[operation_index];
+    }
+    m_operations.clear();
+}
+
+/******************************************************************************/
+void Stage::update(const Plato::StageInputDataMng & aStageInputData,
+		   const std::shared_ptr<Plato::Performer> aPerformer,
+		   const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // If the shared data is recreated then the stage and its
+    // operations must be updated so to have the new links to the
+    // shared data.
+
+    // Clear the input and output data.
+    m_inputData.clear();
+    m_outputData.clear();
+
+    this->initializeSharedData(aStageInputData,aPerformer,aSharedData);
+
+    // Update the operations.
+    const size_t num_operations = m_operations.size();
+    for(size_t tOperationIndex = 0u; tOperationIndex < num_operations; tOperationIndex++)
+    {
+        const Plato::OperationInputDataMng & tOperationDataMng =
+	  aStageInputData.getOperationInputData(m_name, tOperationIndex);
+
+        m_operations[tOperationIndex]->update(tOperationDataMng, aPerformer, aSharedData);
+    }
+}
+
+/******************************************************************************/
+void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
+                                 const std::shared_ptr<Plato::Performer> aPerformer,
+                                 const std::vector<Plato::SharedData*>& aSharedData)
+/******************************************************************************/
+{
+    // Get the input shared data.
     int tNumInputs = aStageInputData.getNumInputs();
     for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
     {
@@ -94,9 +154,7 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         }
     }
 
-    // TODO: find input SharedValues
-    //
-
+    // Get the output shared data.
     int tNumOutputs = aStageInputData.getNumOutputs();
     for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
     {
@@ -114,32 +172,6 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         }
     }
 
-    // TODO: find output SharedValues
-    //
-
-    // parse/create Operations
-    //
-    Plato::OperationFactory opFactory;
-
-    const int tNumOperations = aStageInputData.getNumOperations(m_name);
-    for(int tOperationIndex = 0; tOperationIndex < tNumOperations; tOperationIndex++)
-    {
-        const Plato::OperationInputDataMng & tOperationDataMng = aStageInputData.getOperationInputData(m_name, tOperationIndex);
-        m_operations.push_back(opFactory.create(tOperationDataMng, aPerformer, aSharedData));
-    }
-
-}
-
-/******************************************************************************/
-Stage::~Stage()
-/******************************************************************************/
-{
-    const size_t num_operations = m_operations.size();
-    for(size_t operation_index = 0u; operation_index < num_operations; operation_index++)
-    {
-        delete m_operations[operation_index];
-    }
-    m_operations.clear();
 }
 
 /******************************************************************************/
@@ -165,6 +197,7 @@ std::vector<std::string> Stage::getOutputDataNames() const
     }
     return tNames;
 }
+
 /******************************************************************************/
 void Stage::begin()
 /******************************************************************************/

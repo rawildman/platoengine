@@ -48,13 +48,13 @@
 
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
+#include "Plato_EnforceBounds.hpp"
 #include "Plato_InitializeValues.hpp"
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
 #include "Plato_UnitTestUtils.hpp"
-
 
 namespace PlatoTestOperations
 {
@@ -603,6 +603,30 @@ TEST(InitializeValues, getValuesFromCSMFile)
     EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(8), .1);
     EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(9), .1);
     EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(10), .1);
+}
+
+TEST(EnforceBounds, applyBounds)
+{
+    Plato::InputData tNode;
+    Plato::EnforceBounds tEnforceBounds(NULL, tNode);
+
+    int tLength = 10;
+    double tDataToBound[10] = {1, -3, 5, 10, 2, 7, 22, 33, 0, 0};
+    double tLowerBound[10] =  {1.5, 0, 5, -10, 3, 7, -1, 14, -1, -1};
+    double tUpperBound[10] =  {2, 1, 5, 1, 3.3, 7.5, 0, 15, 0, 1};
+
+    tEnforceBounds.applyBounds(tLength, tLowerBound, tUpperBound, tDataToBound); 
+
+    EXPECT_EQ(tDataToBound[0], 1.5);
+    EXPECT_EQ(tDataToBound[1], 0);
+    EXPECT_EQ(tDataToBound[2], 5);
+    EXPECT_EQ(tDataToBound[3], 1);
+    EXPECT_EQ(tDataToBound[4], 3);
+    EXPECT_EQ(tDataToBound[5], 7);
+    EXPECT_EQ(tDataToBound[6], 0);
+    EXPECT_EQ(tDataToBound[7], 15);
+    EXPECT_EQ(tDataToBound[8], 0);
+    EXPECT_EQ(tDataToBound[9], 0);
 }
 
 

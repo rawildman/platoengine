@@ -154,22 +154,25 @@ void Aggregator::aggregateScalarField(const AggStruct& aAggStruct, const decltyp
     const int fw = 10; // field width
     const int pn = 4;  // precision
 
+    std::string tFieldSeparator("|");
+
     std::stringstream tMessage;
-    tMessage << "# Scalar Field";
+    tMessage << "  Scalar Field";
     reportStatus(tMessage.str());
     tMessage.str(std::string());
-    tMessage << "#";
-    tMessage << setw(fw) << "Input";
-    tMessage << setw(fw) << "Norm";
-    tMessage << setw(fw) << "Weight";
+    tMessage << " ";
+    tMessage << setw(fw) << "Input" << tFieldSeparator;
+    tMessage << setw(fw) << "Norm" << tFieldSeparator;
+    tMessage << setw(fw) << "Weight" << tFieldSeparator;
     if(!mWeightNormals.empty())
     {
-        tMessage << setw(fw) << "Normal";
-        tMessage << setw(fw) << "Adj Wt";
+        tMessage << setw(fw) << "Normal" << tFieldSeparator;
+        tMessage << setw(fw) << "Adj Wt" << tFieldSeparator;
     }
-    tMessage << setw(fw) << "Weighted";
+    tMessage << setw(fw) << "Weighted" << tFieldSeparator;
     tMessage << setw(fw) << "Name";
     reportStatus(tMessage.str());
+    tMessage.str(std::string());
 
     auto& tField = *(mPlatoApp->getNodeField(aAggStruct.mOutputName));
     double* tToData;
@@ -203,19 +206,20 @@ void Aggregator::aggregateScalarField(const AggStruct& aAggStruct, const decltyp
         }
 
         auto tInputName = mPlatoApp->getSharedDataName(aAggStruct.mInputNames[tIval]);
-        tMessage << "#";
-        tMessage << setw(fw) << tIval;
-        tMessage << setw(fw) << setprecision(pn) << tFromDataNorm[tIval];
-        tMessage << setw(fw) << setprecision(pn) << mWeights[tIval];
+        tMessage << " ";
+        tMessage << setw(fw) << tIval << tFieldSeparator;
+        tMessage << setw(fw) << setprecision(pn) << tFromDataNorm[tIval] << tFieldSeparator;
+        tMessage << setw(fw) << setprecision(pn) << mWeights[tIval] << tFieldSeparator;
         if(!mWeightNormals.empty())
         {
             std::vector<double>* data = mPlatoApp->getValue(mWeightNormals[tIval]);
-            tMessage << setw(fw) << setprecision(pn) << *(data->data());
-            tMessage << setw(fw) << setprecision(pn) << aWeights[tIval];
+            tMessage << setw(fw) << setprecision(pn) << *(data->data()) << tFieldSeparator;
+            tMessage << setw(fw) << setprecision(pn) << aWeights[tIval] << tFieldSeparator;
         }
-        tMessage << setw(fw) << setprecision(pn) << tFromDataNorm[tIval]*aWeights[tIval];
+        tMessage << setw(fw) << setprecision(pn) << tFromDataNorm[tIval]*aWeights[tIval] << tFieldSeparator;
         tMessage << "      " << tInputName;
         reportStatus(tMessage.str());
+        tMessage.str(std::string());
     }
 }
 
@@ -227,22 +231,25 @@ void Aggregator::aggregateScalar(const AggStruct& aAggStruct, const decltype(mWe
     const int fw = 10;
     const int pn = 4;
 
+    std::string tFieldSeparator("|");
+
     std::stringstream tMessage;
-    tMessage << "# Scalar";
+    tMessage << "  Scalar";
     reportStatus(tMessage.str());
     tMessage.str(std::string());
-    tMessage << "#";
-    tMessage << setw(fw) << "Input";
-    tMessage << setw(fw) << "Value";
-    tMessage << setw(fw) << "Weight";
+    tMessage << " ";
+    tMessage << setw(fw) << "Input" << tFieldSeparator;
+    tMessage << setw(fw) << "Value" << tFieldSeparator;
+    tMessage << setw(fw) << "Weight" << tFieldSeparator;
     if(!mWeightNormals.empty())
     {
-        tMessage << setw(fw) << "Normal";
-        tMessage << setw(fw) << "Adj Wt";
+        tMessage << setw(fw) << "Normal" << tFieldSeparator;
+        tMessage << setw(fw) << "Adj Wt" << tFieldSeparator;
     }
-    tMessage << setw(fw) << "Weighted";
+    tMessage << setw(fw) << "Weighted" << tFieldSeparator;
     tMessage << setw(fw) << "Name";
     reportStatus(tMessage.str());
+    tMessage.str(std::string());
 
     std::vector<double>& tToData = *(mPlatoApp->getValue(aAggStruct.mOutputName));
 
@@ -273,27 +280,29 @@ void Aggregator::aggregateScalar(const AggStruct& aAggStruct, const decltype(mWe
         for(int tIval = 0; tIval < tNvals; tIval++)
         {
             auto tInputName = mPlatoApp->getSharedDataName(aAggStruct.mInputNames[tIval]);
-            tMessage << "#";
-            tMessage << setw(fw) << tIval;
-            tMessage << setw(fw) << setprecision(pn) << tFromData[tIval][tIndex];
-            tMessage << setw(fw) << setprecision(pn) << mWeights[tIval];
+            tMessage << " ";
+            tMessage << setw(fw) << tIval << tFieldSeparator;
+            tMessage << setw(fw) << setprecision(pn) << tFromData[tIval][tIndex] << tFieldSeparator;
+            tMessage << setw(fw) << setprecision(pn) << mWeights[tIval] << tFieldSeparator;
             if(!mWeightNormals.empty())
             {
                 std::vector<double>* data = mPlatoApp->getValue(mWeightNormals[tIval]);
-                tMessage << setw(fw) << setprecision(pn) << *(data->data());
-                tMessage << setw(fw) << setprecision(pn) << aWeights[tIval];
+                tMessage << setw(fw) << setprecision(pn) << *(data->data()) << tFieldSeparator;
+                tMessage << setw(fw) << setprecision(pn) << aWeights[tIval] << tFieldSeparator;
             }
-            tMessage << setw(fw) << setprecision(pn) << tFromData[tIval][tIndex]*aWeights[tIval];
+            tMessage << setw(fw) << setprecision(pn) << tFromData[tIval][tIndex]*aWeights[tIval] << tFieldSeparator;
             tMessage << "      " << tInputName;
             reportStatus(tMessage);
+            tMessage.str(std::string());
 
             tToData[tIndex] += tFromData[tIval][tIndex] * aWeights[tIval];
         }
 
-        tMessage << "#";
-        tMessage << setw(fw) << "Output";
-        tMessage << setw(fw) << setprecision(pn) << tToData[tIndex];
+        tMessage << " ";
+        tMessage << setw(fw) << "Output" << tFieldSeparator;
+        tMessage << setw(fw) << setprecision(pn) << tToData[tIndex] << tFieldSeparator;
         reportStatus(tMessage);
+        tMessage.str(std::string());
     }
 }
 

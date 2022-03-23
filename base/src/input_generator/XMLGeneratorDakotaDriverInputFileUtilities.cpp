@@ -219,12 +219,15 @@ void append_dakota_driver_variables_block
     XMLGen::parse_csm_file_for_design_variable_data(tCsmFile,tVariablesStrings,tNumParameters);
     tCsmFile.close();
 
+    if (tNumParameters != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
+        THROWERR("Number of design variables specified in input deck does not match number in csm file.")
+
     fprintf(fp, "\n variables\n");
     fprintf(fp, "   continuous_design = %d\n", tNumParameters);
     for (auto& tString : tVariablesStrings)
     {
         tString += "\n";
-        fprintf(fp, tString.c_str());
+        fprintf(fp, "%s", tString.c_str());
     }
 }
 
@@ -305,17 +308,18 @@ void append_surrogate_based_global_responses_block
     for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
     {
         std::string tCriterionId = tObjective.criteriaIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
         auto& tCriterion = aMetaData.criterion(tCriterionId);
         auto tCriterionType = Plato::tolower(tCriterion.type());
-        tDescriptorString += std::string(" '") + tCriterionType + std::string("'");
+        tDescriptorString += std::string(" '") + tCriterionType + std::string("_scenario") + tScenarioID + std::string("'");
         tScalesString += std::string(" ") + tObjective.weights[i];
     }
     fprintf(fp, "   objective_functions = %zu\n", tObjective.criteriaIDs.size());
 
     tDescriptorString += "\n";
     tScalesString += "\n";
-    fprintf(fp, tDescriptorString.c_str());
-    fprintf(fp, tScalesString.c_str());
+    fprintf(fp, "%s", tDescriptorString.c_str());
+    fprintf(fp, "%s", tScalesString.c_str());
 }
 
 }

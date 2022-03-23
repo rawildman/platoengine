@@ -277,6 +277,13 @@ void negate_scalar_values(std::vector<std::string>& aInputs);
 bool have_auxiliary_mesh(const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
+ * \fn create_subblock
+ * \brief determine whether we are generating a sub-block
+ * \param [in]     aMetaData Plato problem input data
+**********************************************************************************/
+bool create_subblock(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
  * \fn get_design_variable_name
  * \brief Return design variable name for topology optimization problems.
  * \param [in] aMetaData  Plato problem input metadata
@@ -319,6 +326,24 @@ int num_cache_states(const std::vector<XMLGen::Service> &aServices);
 std::string append_concurrent_tag_to_file_string
 (const std::string& aFileString,
  const std::string& aTag);
+
+/******************************************************************************//**
+ * \fn get_unique_decomp_service
+ * \brief Get service ID for unique application of decomp 
+ * \param [in] aMetaData Input metadata
+**********************************************************************************/
+std::string get_unique_decomp_service
+(const XMLGen::InputData& aXMLMetaData);
+
+/******************************************************************************//**
+ * \fn service_needs_decomp
+ * \brief Determine if service needs decomp
+ * \param [in] aService service to check
+ * \param [in] hasBeenDecompedForThisNumberOfProcessors map to check if decomped
+**********************************************************************************/
+bool service_needs_decomp
+(const XMLGen::Service& aService,
+ std::map<std::string,int>& hasBeenDecompedForThisNumberOfProcessors);
 
 }
 // namespace XMLGen

@@ -86,6 +86,11 @@ public:
     void initialize();
 
     /******************************************************************************//**
+     * @brief reinitialize
+    **********************************************************************************/
+    void reinitialize();
+
+    /******************************************************************************//**
      * @brief Perform local operation
      * @param [in] aOperationName local operation name
     **********************************************************************************/
@@ -154,7 +159,6 @@ public:
                 mParameterIndex = (int)value[0];
             }
         }
-
     }
 
     /******************************************************************************//**
@@ -181,6 +185,12 @@ private:
 
     int mParameterIndex;
 
+    void *mESPInterface;
+    void loadESPInterface();
+    typedef ESPType* (*create_t)(std::string, std::string, int);
+    typedef void (*destroy_t)(ESPType *esp);
+    create_t mCreateESP;
+    destroy_t mDestroyESP;
     std::shared_ptr<ESPType> mESP;
 
     std::vector<ScalarType> mParameters;
@@ -190,6 +200,4 @@ private:
     Plato::TimersTree* mTimersTree;
 
     bool hasChanged();
-
 };
-

@@ -49,6 +49,18 @@ bool is_volume_constraint_defined_and_computed_by_platomain
 (const XMLGen::InputData& aXMLMetaData);
 
 /******************************************************************************//**
+ * \fn get_volume_criterion_defined_and_computed_by_platomain
+ * \brief Return true if volume criterion is defined and plato main is responsible \n
+ *  for its calculation.
+ * \param [in] aXMLMetaData Plato problem input data
+ * \param [in] aIdentifierString Identifier string for criterion
+ * \return flag
+**********************************************************************************/
+bool get_volume_criterion_defined_and_computed_by_platomain
+(const XMLGen::InputData& aXMLMetaData,
+ std::string& aIdentifierString);
+
+/******************************************************************************//**
  * \fn get_platomain_volume_constraint_id
  * \brief Return the id of volume constraint if platomain is the performer
  * \param [in] aXMLMetaData Plato problem input data
@@ -297,6 +309,28 @@ void append_initialize_geometry_operation_to_plato_main_operation
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn write_cubit_journal_file_tet10_conversion
+ * \brief Write a cubit journal file that converts the tet4s to tet10s
+ * \param [in]     fileName the file name of the journal file to write
+ * \param [in]     meshName the exodus file name to be used in the journal file
+ * \param [in]    blockList the list of exodus blocks to convert (all)
+**********************************************************************************/
+void write_cubit_journal_file_tet10_conversion(std::string fileName, 
+const std::string& meshName, 
+std::vector<XMLGen::Block> blockList);
+
+/******************************************************************************//**
+ * \fn write_cubit_journal_file_subblock_from_bounding_box
+ * \brief Write a cubit journal file that creates a sub block from the bounding box 
+ * \param [in]     fileName the file name of the journal file to write
+ * \param [in]     meshName the exodus file name to be used in the journal file
+ * \param [in]    blockList the list of exodus blocks to operate over (blockList must be of length 2 or an error will be thrown)
+**********************************************************************************/
+void write_cubit_journal_file_subblock_from_bounding_box(std::string fileName, 
+const std::string& meshName, 
+std::vector<XMLGen::Block> blockList);
+
+/******************************************************************************//**
  * \fn append_tet10_conversion_operation_to_plato_main_operation
  * \brief Append operation for converting to tet10
  * \param [in]     aXMLMetaData Plato problem input data
@@ -305,6 +339,28 @@ void append_initialize_geometry_operation_to_plato_main_operation
 void append_tet10_conversion_operation_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_subblock_creation_operation_to_plato_main_operation
+ * \brief Append operation for splitting block 1 into 1 and 2 by bounding box
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument  pugi::xml_document
+**********************************************************************************/
+void append_subblock_creation_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_cubit_systemcall_operation_commands
+ * \brief Helper function for appending operation commands for any cubit conversions
+ * \param [in/out] aDocument  pugi::xml_document
+ * \param [in]     aName Name of operation
+ * \param [in]     aCommand System call command of operation
+**********************************************************************************/
+void append_cubit_systemcall_operation_commands
+(pugi::xml_document& aDocument,
+const std::string &aName,
+const std::string &aCommand);
 
 /******************************************************************************//**
  * \fn append_mesh_join_operation_to_plato_main_operation
@@ -351,6 +407,16 @@ void append_update_geometry_on_change_operation_commands
  const std::string& aName,
  const std::string& aCommand,
  const std::string& aTag);
+
+/******************************************************************************//**
+ * \fn append_reinitialize_operation_to_plato_main_operation
+ * \brief Append operation for reinitializing plato services
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument  pugi::xml_document
+**********************************************************************************/
+void append_reinitialize_operation_to_plato_main_operation
+ (const XMLGen::InputData& aXMLMetaData,
+  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
  * \fn append_initialize_density_field_operation
@@ -463,6 +529,40 @@ void append_compute_volume_gradient_to_plato_main_operation
  pugi::xml_document& aDocument);
 
 /******************************************************************************//**
+ * \fn append_compute_volume_criterion_value_operation_to_plato_main_operation
+ * \brief Append compute volume criterion value operation to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_compute_volume_criterion_value_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_decomp_operations_for_physics_performers_to_plato_main_operation
+ * \brief Append decomp operations for physics performers to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_decomp_operations_for_physics_performers_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_decomp_operations
+ * \brief Append decomp operations for physics performer to PUGI XML document.
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+ * \param [in]     aService     Plato service for physics performer
+ * \param [in]     aEvaluation  concurrent evaluation id
+**********************************************************************************/
+void append_decomp_operations
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument,
+ const XMLGen::Service& aService,
+ int aEvaluation);
+
+/******************************************************************************//**
  * \fn append_fixed_blocks_identification_numbers_to_operation
  * \brief Append fixed blocks identification numbers operation to PUGI XML document.
  * \param [in]     aXMLMetaData Plato problem input data
@@ -539,6 +639,26 @@ void append_copy_value_to_plato_main_operation
  * \param [in/out] aDocument    pugi::xml_document
 **********************************************************************************/
 void append_copy_field_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_negate_value_to_plato_main_operation
+ * \brief Append operation for negating a value
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_negate_value_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document& aDocument);
+
+/******************************************************************************//**
+ * \fn append_negate_field_to_plato_main_operation
+ * \brief Append operation for negating a field
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_negate_field_to_plato_main_operation
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument);
 

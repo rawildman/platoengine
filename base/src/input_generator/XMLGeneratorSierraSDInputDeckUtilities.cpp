@@ -643,9 +643,16 @@ void writeInverseMethodObjective(const std::string &tDiscretization, const XMLGe
         outfile << "  inverse_method_objective = eigen-inverse" << std::endl;
     }
 }
-
 /**************************************************************************/
-void append_case
+void append_case_dakota_problem
+(const XMLGen::Criterion &aCriterion,
+ std::ostream &outfile)
+{
+    outfile << "  case = compute_criterion" << std::endl;
+    outfile << "  criterion = " << aCriterion.type() << std::endl;
+}
+/**************************************************************************/
+void append_case_gradient_based_problem
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Criterion &aCriterion,
  const XMLGen::Scenario &aScenario,
@@ -707,6 +714,25 @@ void append_case
     }
 }
 /**************************************************************************/
+void append_case
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Criterion &aCriterion,
+ const XMLGen::Scenario &aScenario,
+ std::ostream &outfile)
+{
+    if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
+        aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        append_case_gradient_based_problem(aMetaData, aCriterion, aScenario, outfile);
+    }
+    else if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
+    {
+        append_case_dakota_problem(aCriterion, outfile);
+    }
+    if (!aCriterion.block().empty())
+        outfile << "  criterion_block = " << aCriterion.block() << std::endl;
+}
+/**************************************************************************/
 void append_normalization_parameter
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Criterion &aCriterion,
@@ -726,6 +752,9 @@ void append_normalization_parameter
         tNormalizeObjective = false;
     }
     if (isModalCriterion(aCriterion)) {
+        tNormalizeObjective = false;
+    }
+    if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA) {
         tNormalizeObjective = false;
     }
     if(tNormalizeObjective == false)

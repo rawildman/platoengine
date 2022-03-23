@@ -142,6 +142,18 @@ void RocketDesignApp::initialize()
 }
 
 /******************************************************************************//**
+ * @brief Rellocate memory
+**********************************************************************************/
+void RocketDesignApp::reinitialize()
+{
+    mDefinedOperations.clear();
+    mSharedDataMap.clear();
+    mDefinedDataLayout.clear();
+    mObjective = nullptr;
+    initialize();
+}
+
+/******************************************************************************//**
  * @brief Perform an operation, e.g. evaluate objective function
  * @param [in] aOperationName name of operation
 **********************************************************************************/

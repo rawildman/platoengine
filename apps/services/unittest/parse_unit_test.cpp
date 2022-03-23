@@ -102,7 +102,7 @@ TEST(DISABLED_ParseTest, test1)
     MPI_Comm tLocalComm;
     pi->getLocalComm(tLocalComm);
     PlatoApp* pa = new PlatoApp(plato_main_xml_string, plato_app_xml_string, tLocalComm);
-    pi->registerPerformer(pa);
+    pi->registerApplication(pa);
 
     // delete memory
     delete pa;

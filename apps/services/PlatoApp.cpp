@@ -59,58 +59,191 @@
 
 #include "Plato_Operations_incl.hpp"
 
-void PlatoApp::importData(const std::string & aArgumentName, const Plato::SharedData & aImportData)
+PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
+        mLocalComm(aLocalComm),
+        mLightMp(nullptr),
+        mSysGraph(nullptr),
+        mMeshServices(nullptr),
+        mFilter(nullptr),
+        mAppfileData("Appfile Data"),
+        mInputfileData("Inputfile Data"),
+        mTimersTree(nullptr)
 {
-    this->importDataT(aArgumentName, aImportData);
+    WorldComm.init(aLocalComm);
 }
 
-void PlatoApp::exportData(const std::string & aArgumentName, Plato::SharedData & aExportData)
+PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
+        mLocalComm(aLocalComm),
+        mLightMp(nullptr),
+        mSysGraph(nullptr),
+        mMeshServices(nullptr),
+        mFilter(nullptr),
+        mAppfileData("Appfile Data"),
+        mInputfileData("Inputfile Data"),
+        mTimersTree(nullptr)
 {
-    this->exportDataT(aArgumentName, aExportData);
-}
+    WorldComm.init(aLocalComm);
 
-void PlatoApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
-{
-    aMyOwnedGlobalIDs.clear();
+    const char* input_char = getenv("PLATO_APP_FILE");
+    Plato::Parser* parser = new Plato::PugiParser();
+    mAppfileData = parser->parseFile(input_char);
 
-    if(aDataLayout == Plato::data::layout_t::VECTOR_FIELD)
+    // create the FEM utility object
+    std::string tInputfile;
+    if(aArgc == 2)
     {
-        // Plato::data::layout_t = VECTOR_FIELD
-        int tMyNumElements = mSysGraph->getRowMap()->NumMyElements();
-        aMyOwnedGlobalIDs.resize(tMyNumElements);
-        mSysGraph->getRowMap()->MyGlobalElements(aMyOwnedGlobalIDs.data());
-    }
-    else if(aDataLayout == Plato::data::layout_t::SCALAR_FIELD)
-    {
-        // Plato::data::layout_t = SCALAR_FIELD
-        int tMyNumElements = mSysGraph->getNodeRowMap()->NumMyElements();
-        aMyOwnedGlobalIDs.resize(tMyNumElements);
-        mSysGraph->getNodeRowMap()->MyGlobalElements(aMyOwnedGlobalIDs.data());
-    }
-    else if(aDataLayout == Plato::data::layout_t::ELEMENT_FIELD)
-    {
-        if(mLightMp == nullptr)
-        {
-            aMyOwnedGlobalIDs.resize(0);
-        }
-        else
-        {
-            int tMyNumElements = mLightMp->getMesh()->getNumElems();
-            int* tElemGlobalIds = mLightMp->getMesh()->elemGlobalIds;
-            aMyOwnedGlobalIDs.resize(tMyNumElements);
-            std::copy(tElemGlobalIds, tElemGlobalIds + tMyNumElements, aMyOwnedGlobalIDs.begin());
-        }
+        tInputfile = aArgv[1];
     }
     else
     {
-        throw ParsingException("PlatoApp::exportDataMap: Unknown Data Layout requested.");
+        tInputfile = "platomain.xml";
     }
+    mInputfileData = parser->parseFile(tInputfile.c_str());
+    auto tMeshSpec = mInputfileData.getByName<Plato::InputData>("mesh");
+    if (tMeshSpec.size() != 0)
+    {
+        mLightMp = new LightMP(tInputfile);
+        mInputTree = mLightMp->getInput();
+    }
+
+    if (parser)
+    {
+        delete parser;
+        parser = nullptr;
+    }
+
+    // parse/create the MLS PointArrays
+    auto tPointArrayInputs = mInputfileData.getByName<Plato::InputData>("PointArray");
+    for(auto tPointArrayInput=tPointArrayInputs.begin(); tPointArrayInput!=tPointArrayInputs.end(); ++tPointArrayInput)
+    {
+#ifdef GEOMETRY
+        auto tPointArrayName = Plato::Get::String(*tPointArrayInput,"Name");
+        auto tPointArrayDims = Plato::Get::Int(*tPointArrayInput,"Dimensions");
+        if( mMLS.count(tPointArrayName) != 0 )
+        {
+            throw Plato::ParsingException("PointArray names must be unique.");
+        }
+        else
+        {
+            if( tPointArrayDims == 1 )
+            {
+                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
+                    {   Plato::any(Plato::Geometry::MovingLeastSquares<1,double>(*tPointArrayInput)),1}));
+            }
+            else if( tPointArrayDims == 2 )
+            {
+                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
+                    {   Plato::any(Plato::Geometry::MovingLeastSquares<2,double>(*tPointArrayInput)),2}));
+            }
+            else if( tPointArrayDims == 3 )
+            {
+                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
+                    {   Plato::any(Plato::Geometry::MovingLeastSquares<3,double>(*tPointArrayInput)),3}));
+            }
+        }
+#else
+        throw ParsingException("PlatoApp was not compiled with PointArray support.  Turn on 'GEOMETRY' option and rebuild.");
+#endif
+    }
+}
+
+PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp_XML_File, MPI_Comm& aLocalComm) :
+        mLocalComm(aLocalComm),
+        mSysGraph(nullptr),
+        mMeshServices(nullptr),
+        mFilter(nullptr),
+        mAppfileData("Input Data"),
+        mTimersTree(nullptr)
+{
+    WorldComm.init(aLocalComm);
+
+    const char* input_char = getenv("PLATO_APP_FILE");
+    Plato::Parser* parser = new Plato::PugiParser();
+    mAppfileData = parser->parseFile(input_char);
+
+    std::shared_ptr<pugi::xml_document> tTempDoc = std::make_shared<pugi::xml_document>();
+    tTempDoc->load_string(aPhysics_XML_File.c_str());
+
+    mInputfileData = parser->parseFile(aPhysics_XML_File.c_str());
+    mLightMp = new LightMP(tTempDoc);
+}
+
+PlatoApp::~PlatoApp()
+{
+    deleteData( true );
+}
+
+void PlatoApp::deleteData( bool deleteTimers )
+{
+    if(mLightMp)
+    {
+        delete mLightMp;
+        mLightMp = nullptr;
+    }
+
+    if(mSysGraph)
+    {
+        delete mSysGraph;
+        mSysGraph = nullptr;
+    }
+
+    if(mMeshServices)
+    {
+        delete mMeshServices;
+        mMeshServices = nullptr;
+    }
+
+    for(auto& tMyValue : mValueMap)
+    {
+        delete tMyValue.second;
+    }
+    mValueMap.clear();
+
+    for(auto& tMyField : mNodeFieldMap)
+    {
+        delete tMyField.second;
+    }
+    mNodeFieldMap.clear();
+
+    for(auto& tMyOperation : mOperationMap)
+    {
+        delete tMyOperation.second;
+    }
+    mOperationMap.clear();
+
+    if(mFilter)
+    {
+        delete mFilter;
+        mFilter = nullptr;
+    }
+
+    if(deleteTimers && mTimersTree)
+    {
+        mTimersTree->print_results();
+        delete mTimersTree;
+        mTimersTree = nullptr;
+    }
+}
+
+void PlatoApp::finalize()
+{
 }
 
 void PlatoApp::initialize()
 {
-    // conditionally begin timers
-    if(mAppfileData.size<Plato::InputData>("Timers"))
+    this->initialize( true );
+}
+
+void PlatoApp::reinitialize()
+{
+    this->deleteData( false );
+    this->initialize( false );
+}
+
+void PlatoApp::initialize( bool initializeTimers )
+{
+    // Conditionally begin the timers
+    if(initializeTimers && mAppfileData.size<Plato::InputData>("Timers"))
     {
         auto tTimersNode = mAppfileData.get<Plato::InputData>("Timers");
         if(tTimersNode.size<std::string>("time") > 0)
@@ -123,12 +256,27 @@ void PlatoApp::initialize()
         }
     }
 
-    // Define system graph and mesh services (e.g. output) for problems with shared data fields (mesh-based fields)
+    if( mInputTree != nullptr )
+        mLightMp = new LightMP(mInputTree);
+
+    // Define system graph and mesh services (e.g. output) for
+    // problems with shared data fields (mesh-based fields)
     const int tDofsPerNode = 1;
     if(mLightMp != nullptr)
     {
+        if(mSysGraph)
+        {
+            delete mSysGraph;
+        }
+
+        mSysGraph = new SystemContainer(mLightMp->getMesh(), tDofsPerNode);
+
+        if(mMeshServices)
+        {
+            delete mMeshServices;
+        }
+
         mMeshServices = new MeshServices(mLightMp->getMesh());
-        mSysGraph = new SystemContainer(mLightMp->getMesh(), tDofsPerNode, mLightMp->getInput());
     }
 
     // If PlatoApp operations file is defined, parse/create requested operations
@@ -429,6 +577,14 @@ void PlatoApp::initialize()
                 continue;
             }
 
+            tFunctions.push_back("Reinitialize");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::Reinitialize(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             std::stringstream tMessage;
             tMessage << "Cannot find specified Function: " << tStrFunction << std::endl;
             tMessage << "Available Functions: " << std::endl;
@@ -446,6 +602,67 @@ void PlatoApp::initialize()
     {
         mLightMp->setWriteTimeStepDuringSetup(false);
         mLightMp->finalizeSetup();
+    }
+}
+
+void PlatoApp::compute(const std::string & aOperationName)
+{
+    auto it = mOperationMap.find(aOperationName);
+    if(it == mOperationMap.end())
+    {
+        std::stringstream ss;
+        ss << "Request for operation ('" << aOperationName << "') that doesn't exist.";
+        throw Plato::LogicException(ss.str());
+    }
+
+    (*mOperationMap[aOperationName])();
+}
+
+void PlatoApp::importData(const std::string & aArgumentName, const Plato::SharedData & aImportData)
+{
+    this->importDataT(aArgumentName, aImportData);
+}
+
+void PlatoApp::exportData(const std::string & aArgumentName, Plato::SharedData & aExportData)
+{
+    this->exportDataT(aArgumentName, aExportData);
+}
+
+void PlatoApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
+{
+    aMyOwnedGlobalIDs.clear();
+
+    if(aDataLayout == Plato::data::layout_t::VECTOR_FIELD)
+    {
+        // Plato::data::layout_t = VECTOR_FIELD
+        int tMyNumElements = mSysGraph->getRowMap()->NumMyElements();
+        aMyOwnedGlobalIDs.resize(tMyNumElements);
+        mSysGraph->getRowMap()->MyGlobalElements(aMyOwnedGlobalIDs.data());
+    }
+    else if(aDataLayout == Plato::data::layout_t::SCALAR_FIELD)
+    {
+        // Plato::data::layout_t = SCALAR_FIELD
+        int tMyNumElements = mSysGraph->getNodeRowMap()->NumMyElements();
+        aMyOwnedGlobalIDs.resize(tMyNumElements);
+        mSysGraph->getNodeRowMap()->MyGlobalElements(aMyOwnedGlobalIDs.data());
+    }
+    else if(aDataLayout == Plato::data::layout_t::ELEMENT_FIELD)
+    {
+        if(mLightMp == nullptr)
+        {
+            aMyOwnedGlobalIDs.resize(0);
+        }
+        else
+        {
+            int tMyNumElements = mLightMp->getMesh()->getNumElems();
+            int* tElemGlobalIds = mLightMp->getMesh()->elemGlobalIds;
+            aMyOwnedGlobalIDs.resize(tMyNumElements);
+            std::copy(tElemGlobalIds, tElemGlobalIds + tMyNumElements, aMyOwnedGlobalIDs.begin());
+        }
+    }
+    else
+    {
+        throw ParsingException("PlatoApp::exportDataMap: Unknown Data Layout requested.");
     }
 }
 
@@ -502,68 +719,6 @@ void PlatoApp::createLocalData(Plato::LocalArg aLocalArguments)
         }
         std::vector<double>* tNewData = new std::vector<double>(aLocalArguments.mLength);
         mValueMap[aLocalArguments.mName] = tNewData;
-    }
-}
-
-void PlatoApp::compute(const std::string & aOperationName)
-{
-    auto it = mOperationMap.find(aOperationName);
-    if(it == mOperationMap.end())
-    {
-        std::stringstream ss;
-        ss << "Request for operation ('" << aOperationName << "') that doesn't exist.";
-        throw Plato::LogicException(ss.str());
-    }
-
-    (*mOperationMap[aOperationName])();
-}
-
-void PlatoApp::finalize()
-{
-}
-
-PlatoApp::~PlatoApp()
-{
-    if(mLightMp)
-    {
-        delete mLightMp;
-        mLightMp = nullptr;
-    }
-    if(mSysGraph)
-    {
-        delete mSysGraph;
-        mSysGraph = nullptr;
-    }
-    if(mMeshServices)
-    {
-        delete mMeshServices;
-        mMeshServices = nullptr;
-    }
-    for(auto& tMyValue : mValueMap)
-    {
-        delete tMyValue.second;
-    }
-    mValueMap.clear();
-    for(auto& tMyField : mNodeFieldMap)
-    {
-        delete tMyField.second;
-    }
-    mNodeFieldMap.clear();
-    for(auto& tMyOperation : mOperationMap)
-    {
-        delete tMyOperation.second;
-    }
-    mOperationMap.clear();
-    if(mFilter)
-    {
-        delete mFilter;
-        mFilter = nullptr;
-    }
-    if(mTimersTree)
-    {
-        mTimersTree->print_results();
-        delete mTimersTree;
-        mTimersTree = nullptr;
     }
 }
 
@@ -671,16 +826,19 @@ Plato::AbstractFilter* PlatoApp::getFilter()
         {
             return nullptr;
         }
+
         if(mTimersTree)
         {
             mTimersTree->begin_partition(Plato::timer_partition_t::timer_partition_t::filter);
         }
+
         mFilter = Plato::build_filter(mAppfileData, mLocalComm, mLightMp->getMesh());
         if(mTimersTree)
         {
             mTimersTree->end_partition();
         }
     }
+
     return mFilter;
 }
 
@@ -699,110 +857,3 @@ Plato::TimersTree* PlatoApp::getTimersTree()
     return mTimersTree;
 }
 
-PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
-        mLocalComm(aLocalComm),
-        mLightMp(nullptr),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Appfile Data"),
-        mInputfileData("Inputfile Data"),
-        mTimersTree(nullptr)
-{
-    WorldComm.init(aLocalComm);
-}
-
-PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
-        mLocalComm(aLocalComm),
-        mLightMp(nullptr),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Appfile Data"),
-        mInputfileData("Inputfile Data"),
-        mTimersTree(nullptr)
-{
-    WorldComm.init(aLocalComm);
-
-    const char* input_char = getenv("PLATO_APP_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mAppfileData = parser->parseFile(input_char);
-
-    // create the FEM utility object
-    std::string tInputfile;
-    if(aArgc == 2)
-    {
-        tInputfile = aArgv[1];
-    }
-    else
-    {
-        tInputfile = "platomain.xml";
-    }
-    mInputfileData = parser->parseFile(tInputfile.c_str());
-    auto tMeshSpec = mInputfileData.getByName<Plato::InputData>("mesh");
-    if (tMeshSpec.size() != 0)
-    {
-        mLightMp = new LightMP(tInputfile);
-    }
-
-    if (parser)
-    {
-        delete parser;
-        parser = nullptr;
-    }
-
-    // parse/create the MLS PointArrays
-    auto tPointArrayInputs = mInputfileData.getByName<Plato::InputData>("PointArray");
-    for(auto tPointArrayInput=tPointArrayInputs.begin(); tPointArrayInput!=tPointArrayInputs.end(); ++tPointArrayInput)
-    {
-#ifdef GEOMETRY
-        auto tPointArrayName = Plato::Get::String(*tPointArrayInput,"Name");
-        auto tPointArrayDims = Plato::Get::Int(*tPointArrayInput,"Dimensions");
-        if( mMLS.count(tPointArrayName) != 0 )
-        {
-            throw Plato::ParsingException("PointArray names must be unique.");
-        }
-        else
-        {
-            if( tPointArrayDims == 1 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<1,double>(*tPointArrayInput)),1}));
-            }
-            else if( tPointArrayDims == 2 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<2,double>(*tPointArrayInput)),2}));
-            }
-            else if( tPointArrayDims == 3 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<3,double>(*tPointArrayInput)),3}));
-            }
-        }
-#else
-        throw ParsingException("PlatoApp was not compiled with PointArray support.  Turn on 'GEOMETRY' option and rebuild.");
-#endif
-    }
-}
-
-PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp_XML_File, MPI_Comm& aLocalComm) :
-        mLocalComm(aLocalComm),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Input Data"),
-        mTimersTree(nullptr)
-{
-    WorldComm.init(aLocalComm);
-
-    const char* input_char = getenv("PLATO_APP_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mAppfileData = parser->parseFile(input_char);
-
-    std::shared_ptr<pugi::xml_document> tTempDoc = std::make_shared<pugi::xml_document>();
-    tTempDoc->load_string(aPhysics_XML_File.c_str());
-
-    mInputfileData = parser->parseFile(aPhysics_XML_File.c_str());
-    mLightMp = new LightMP(tTempDoc);
-}

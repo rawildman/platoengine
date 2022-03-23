@@ -30,6 +30,7 @@ private:
     std::vector<std::string> mCriterionWeights;
     std::vector<std::string> mCriterionIDs;
     std::vector<std::string> mDisplacementDirection;
+    std::vector<std::string> mTargetSolutionVector;
     std::vector<std::string> mModesToExclude;
     std::vector<std::string> mMatchNodesetIDs;
     std::map<std::string, std::pair<double,double>> mMassProperties;
@@ -425,6 +426,26 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn targetSolutionVector
+     * \brief User-specified solution vector
+     * \param [in] aInput list of solution components
+     **********************************************************************************/
+    void targetSolutionVector(const std::vector<std::string>& aInput)
+    {
+        this->mTargetSolutionVector = aInput;
+    }
+
+    /******************************************************************************//**
+     * \fn targetSolutionVector
+     * \brief Return user-specified solution vector
+     * \return value
+     **********************************************************************************/
+    std::vector<std::string> targetSolutionVector() const
+    {
+        return this->mTargetSolutionVector;
+    }
+
+    /******************************************************************************//**
      * \fn criterionWeights
      * \brief Set weight strings for composite criteria
      * \param [in] aInput list of IDs
@@ -482,8 +503,31 @@ public:
         return (this->value("shape_sideset"));
     }
 
+    /******************************************************************************//**
+     * \fn ref_data_file
+     * \brief Return string value ref_data_file
+     * \return value
+    **********************************************************************************/
     std::string ref_data_file() const {
         return this->value("ref_data_file");
+    }
+
+    /******************************************************************************//**
+     * \fn block
+     * \brief Set string value for block where criterion is computed
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void block(const std::string& aInput) {
+        this->append("block", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn block
+     * \brief Return string value for block where criterion is computed
+     * \return value
+    **********************************************************************************/
+    std::string block() const {
+        return (this->value("block"));
     }
 
     /******************************************************************************//**
@@ -532,8 +576,8 @@ public:
     std::string volume_penalty_divisor() const { return this->value("volume_penalty_divisor"); }
     std::string volume_penalty_bias() const { return this->value("volume_penalty_bias"); }
     std::string surface_area_sideset_id() const { return this->value("surface_area_sideset_id"); }
-    std::string location_names() const { return this->value("location_names"); }
-    std::string location_types() const { return this->value("location_types"); }
+    std::string location_name() const { return this->value("location_name"); }
+    std::string location_type() const { return this->value("location_type"); }
     std::string measure_magnitude() const { return this->value("measure_magnitude"); }
 
     // Sierra/SD modal objectives
@@ -544,6 +588,8 @@ public:
     std::string camp_max_iter() const { return this->value("camp_max_iter"); }
 
     std::string target() const { return this->value("target"); }
+    std::string target_magnitude() const { return this->value("target_magnitude"); }
+    std::string target_solution() const { return this->value("target_solution"); }
 };
 // struct Criterion
 

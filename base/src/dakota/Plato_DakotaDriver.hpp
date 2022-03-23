@@ -94,12 +94,17 @@ public:
     ~DakotaDriver(){ return; }
 
     /******************************************************************************//**
+     * @brief Return true if the last driver
+    **********************************************************************************/
+    virtual bool lastDriver() const { return true; }
+
+    /******************************************************************************//**
      * \brief Return the driver type
      * \return driver type
      **********************************************************************************/
-    Plato::driver::driver_t type() const
+    Plato::driver_t driver() const
     {
-        return (Plato::driver::driver_t::PLATO_DAKOTA_DRIVER);
+        return (Plato::driver_t::PLATO_DAKOTA_DRIVER);
     }
 
     /******************************************************************************//**
@@ -118,8 +123,6 @@ public:
         // some optimizers used by Dakota allow floating point exceptions
         // so we don't want them to send SIGFPE
         fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-
-        mInterface->handleExceptions();
 
         this->initialize();
 

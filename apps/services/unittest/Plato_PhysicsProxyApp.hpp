@@ -71,6 +71,7 @@ public:
 
     void finalize();
     void initialize();
+    void reinitialize();
     void compute(const std::string & aOperationName);
     void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
     void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);

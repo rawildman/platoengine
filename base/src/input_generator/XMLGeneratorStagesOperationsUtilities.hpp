@@ -302,6 +302,30 @@ void append_copy_value_operation
  pugi::xml_node &aParentNode);
 
 /******************************************************************************//**
+ * \fn append_negate_value_operation
+ * \brief Append operation negating a value
+ * \param [in]  aPlatoMainPerformer performer doing the copy
+ * \param [in]  aSharedDataName name of shared data to be negated
+ * \param [out] aParentNode  parent xml node
+**********************************************************************************/
+void append_negate_value_operation
+(const std::string &aPlatoMainPerformer,
+ const std::string &aSharedDataName,
+ pugi::xml_node &aParentNode);
+
+/******************************************************************************//**
+ * \fn append_negate_field_operation
+ * \brief Append operation negating a field
+ * \param [in]  aPlatoMainPerformer performer doing the copy
+ * \param [in]  aSharedDataName name of shared data to be negated
+ * \param [out] aParentNode  parent xml node
+**********************************************************************************/
+void append_negate_field_operation
+(const std::string &aPlatoMainPerformer,
+ const std::string &aSharedDataName,
+ pugi::xml_node &aParentNode);
+
+/******************************************************************************//**
  * \fn append_reinitialize_on_change_operation
  * \brief Append operation for reinitializing performer after geometry and mesh are updated.
  * \param [in]  aPerformer Performer name

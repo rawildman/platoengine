@@ -131,9 +131,21 @@ namespace XMLGen
     joinedMeshFile.data(), exodusFile.data());
   }
 
+  void append_tet10_conversion_operation_lines_for_dakota_workflow(FILE* aFile,const std::string &aEvaluations)
+  {
+    for (int iEvaluation = 0; iEvaluation < std::stoi(aEvaluations); iEvaluation++)
+      fprintf(aFile, "cd evaluations_%d; cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off; cd ..\n", iEvaluation);
+  }
+
   void append_tet10_conversion_operation_line(FILE* aFile)
   {
-    fprintf(aFile, "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off; \\\n");
+    fprintf(aFile, "cubit -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off; \n");
+  }
+
+  void append_subblock_creation_operation_lines_for_dakota_workflow(FILE* aFile,const std::string &aEvaluations)
+  {
+    for (int iEvaluation = 0; iEvaluation < std::stoi(aEvaluations); iEvaluation++)
+      fprintf(aFile, "cd evaluations_%d; cubit -input subBlock.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off; cd ..\n", iEvaluation);
   }
 
   void append_decomp_lines_for_prune_and_refine(const XMLGen::InputData& aInputData, FILE*& fp)
@@ -160,6 +172,16 @@ namespace XMLGen
   void append_decomp_line(FILE*& fp, const int& num_processors, const std::string& mesh_file_name)
   {
     fprintf(fp, "decomp -p %d %s\n", num_processors, mesh_file_name.c_str());
+  }
+
+  void append_decomp_lines_for_dakota_workflow(FILE*& fp, const std::string& num_processors, int num_evaluations, const std::string& mesh_file_name)
+  {
+    for (int iEvaluation = 0; iEvaluation < num_evaluations; iEvaluation++)
+    {
+      std::string tTag = std::string("_") + std::to_string(iEvaluation);
+      std::string appended_mesh_file_name = XMLGen::append_concurrent_tag_to_file_string(mesh_file_name,tTag);
+      fprintf(fp, "cd evaluations_%d; decomp -p %s %s; cd ..\n", iEvaluation, num_processors.c_str(), appended_mesh_file_name.c_str());
+    }
   }
 
   void append_prune_and_refine_lines_to_mpirun_launch_script(const XMLGen::InputData& aInputData, FILE*& fp)
@@ -268,8 +290,17 @@ namespace XMLGen
             bool need_to_decompose = num_procs.compare("1") != 0;
             if(need_to_decompose)
             {
-                if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0)
-                  XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
+                if(hasBeenDecompedForThisNumberOfProcessors[num_procs]++ == 0) {
+                  if (aInputData.optimization_parameters().optimizationType() == OT_DAKOTA)
+                  {
+                    auto tMeshName = aInputData.optimization_parameters().csm_exodus_file();
+                    int tNumEvaluations = std::stoi(aInputData.optimization_parameters().concurrent_evaluations());
+                    XMLGen::append_decomp_lines_for_dakota_workflow(fp, num_procs, tNumEvaluations, tMeshName);
+                  }
+                  else
+                    XMLGen::append_decomp_line(fp, num_procs, aInputData.mesh.run_name);
+                }
+
                 if(tCriterion.value("ref_data_file").length() > 0)
                   XMLGen::append_decomp_line(fp, num_procs, tCriterion.value("ref_data_file"));
             }
@@ -343,34 +374,59 @@ namespace XMLGen
     }
   }
 
+  void append_sierra_sd_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const int aEvaluation)
+  {
+    if(aInputData.service(aServiceID).path().length() != 0)
+    {
+        fprintf(aFile, "%s --beta -i ", aInputData.service(aServiceID).path().c_str());
+    }
+    else
+    {
+        fprintf(aFile, "plato_sd_main --beta -i ");
+    }
+    if (aEvaluation == -1)
+    {
+        fprintf(aFile, "sierra_sd_%s_input_deck.i \\\n", aServiceID.c_str());
+    }
+    else
+    {
+        auto tEvaluationString = std::to_string(aEvaluation);
+        fprintf(aFile, "evaluations_%s/sierra_sd_%s_input_deck_%s.i \\\n", tEvaluationString.c_str(), aServiceID.c_str(), tEvaluationString.c_str());
+    }
+  }
+
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
   {
-    std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesName;
+    std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesPath;
 
     XMLGen::determine_mpi_env_and_separation_strings(envString,separationString);
     XMLGen::determine_mpi_launch_strings(aInputData,tLaunchString,tNumProcsString);
-    tPlatoServicesName = "PlatoEngineServices";   
 
-    std::string num_opt_procs = aInputData.optimization_parameters().concurrent_evaluations();
-    XMLGen::assert_is_positive_integer(num_opt_procs);
-
-    // Now add the main mpirun call.
-    fprintf(fp, ": %s %s %s PLATO_PERFORMER_ID%s%d \\\n", tNumProcsString.c_str(), num_opt_procs.c_str(),
-                                envString.c_str(),separationString.c_str(), aNextPerformerID);
-    fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
-    fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
-
-    auto tPlatoMainServiceId = aInputData.getFirstPlatoMainId();
-    std::string tPlatoMainPath = aInputData.service(tPlatoMainServiceId).path();
+    std::string tPlatoServicesName = "PlatoEngineServices";   
+    auto tPlatoMainService = aInputData.service(aInputData.getFirstPlatoMainId());
+    std::string tPlatoMainPath = tPlatoMainService.path();
     if(tPlatoMainPath.length() != 0)
     {
       size_t tPos = tPlatoMainPath.rfind("/");
       std::string tPathToExecutable = tPlatoMainPath.substr(0, tPos);
-      std::string tPlatoServicesPath = tPathToExecutable + std::string("/") + tPlatoServicesName;
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoServicesPath.c_str());
+      tPlatoServicesPath = tPathToExecutable + std::string("/") + tPlatoServicesName;
     }
     else
-      fprintf(fp, "%s plato_main_input_deck.xml \\\n", tPlatoServicesName.c_str());
+      tPlatoServicesPath = tPlatoServicesName;
+
+    auto tEvaluations = std::stoi(aInputData.optimization_parameters().concurrent_evaluations());
+    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+    {
+      fprintf(fp, ": %s %s %s PLATO_PERFORMER_ID%s%d \\\n", tNumProcsString.c_str(), tPlatoMainService.numberProcessors().c_str(),
+                                  envString.c_str(),separationString.c_str(), aNextPerformerID);
+      fprintf(fp, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", envString.c_str(),separationString.c_str());
+      fprintf(fp, "%s PLATO_APP_FILE%splato_main_operations.xml \\\n", envString.c_str(),separationString.c_str());
+
+      auto tEvaluationString = std::to_string(iEvaluation);
+      fprintf(fp, "%s evaluations_%s/plato_main_input_deck_%s.xml \\\n", tPlatoServicesPath.c_str(), tEvaluationString.c_str(), tEvaluationString.c_str());
+
+      aNextPerformerID++;
+    }
   }
 
   void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp)

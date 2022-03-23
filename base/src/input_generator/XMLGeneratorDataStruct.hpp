@@ -59,6 +59,7 @@ struct Block
     std::string name;
     std::string material_id;
     std::string element_type;
+    std::vector<double> bounding_box;
 };
 
 struct Mesh
@@ -177,6 +178,15 @@ public:
         return tReturn; 
     }
 
+    bool needNegateOperation() const
+    {
+        bool tReturnValue = false;
+        for(auto& tConstraint : constraints)
+        {
+            tReturnValue = tReturnValue || tConstraint.greater_than();
+        }
+        return tReturnValue;
+    }
     bool needToAggregate() const
     {
         bool tReturnValue = false;

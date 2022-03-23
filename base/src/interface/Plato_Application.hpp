@@ -51,6 +51,7 @@
 #define SRC_APPLICATION_HPP_
 
 #include <string>
+#include <iostream>
 #include <vector>
 
 #include "Plato_SharedData.hpp"
@@ -74,6 +75,8 @@ public:
     virtual void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) = 0;
     virtual void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) = 0;
     virtual void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) = 0;
+
+    virtual void reinitialize() { std::cout << "WARNING: default Plato::Application::reinitialize() was called." << std::endl; }
 };
 
 } // End namespace Plato

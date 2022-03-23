@@ -103,6 +103,21 @@ std::string Constraint::divisor() const
     return (this->getValue("divisor"));
 }
 
+void Constraint::type(const std::string& aInput)
+{
+    mMetaData["type"] = aInput;
+}
+
+std::string Constraint::type() const
+{
+    return (this->getValue("type"));
+}
+
+bool Constraint::greater_than() const
+{
+    return (this->getValue("type") == "greater_than");
+}
+
 void Constraint::scenario(const std::string& aInput)
 {
     mMetaData["scenario"] = aInput;

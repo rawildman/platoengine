@@ -53,6 +53,7 @@
 #include <cstddef>
 #include <iterator>
 #include <algorithm>
+#include "Plato_Macros.hpp"
 
 namespace Plato
 {
@@ -149,9 +150,30 @@ void system(const char* aString)
 /**********************************************************************************/
 
 /**********************************************************************************/
-int system_with_return(const char* aString)
+void system_with_throw(const char* aString)
+{
+  auto tExitStatus = std::system(aString);
+  if (tExitStatus)
+  {
+      std::string tErrorMessage = std::string("System call ' ") + aString + std::string(" 'exited with exit status: ") + std::to_string(tExitStatus);
+      THROWERR(tErrorMessage)
+  }
+}
+/**********************************************************************************/
+
+/**********************************************************************************/
+int system_with_status(const char* aString)
 {
   return std::system(aString);
+}
+/**********************************************************************************/
+
+/**********************************************************************************/
+void fread(void* aBuffer, std::size_t aSize, std::size_t aCount, std::FILE* aFile)
+{
+  size_t return_val = std::fread(aBuffer, aSize, aCount, aFile);
+  size_t temp = return_val;
+  return_val = temp;
 }
 /**********************************************************************************/
 

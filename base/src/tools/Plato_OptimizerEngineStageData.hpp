@@ -305,8 +305,8 @@ public:
     std::string getCacheStageName() const;
     void setCacheStageName(const std::string & aInput);
 
-    std::string getUpdateProblemStageName() const;
-    void setUpdateProblemStageName(const std::string & aInput);
+    std::vector<std::string> getUpdateProblemStageNames() const;
+    void setUpdateProblemStageNames(const std::vector<std::string> & aInput);
 
     std::string  getObjectiveValueOutputName() const;
     void setObjectiveValueOutputName(const std::string & aInput);
@@ -504,7 +504,16 @@ private:
     bool mDisablePostSmoothing;
     bool mResetAlgorithmOnUpdate;
 
+    size_t mMaxNumAugLagSubProbIter;
+    size_t mMaxNumIterations;
+    size_t mLimitedMemoryStorage;
+    size_t mProblemUpdateFrequency;
+
     int mGCMMAMaxInnerIterations;
+    int mKSMaxTrustRegionIterations;
+    int mDerivativeCheckerFinalSuperscript;
+    int mDerivativeCheckerInitialSuperscript;
+
     double mInitialMovingAsymptoteScaleFactor;
     double mGCMMAInnerKKTTolerance;
     double mCCSAOuterKKTTolerance;
@@ -512,8 +521,6 @@ private:
     double mGCMMAInnerControlStagnationTolerance;
     double mCCSAOuterObjectiveStagnationTolerance;
     double mCCSAOuterStationarityTolerance;
-
-    int mKSMaxTrustRegionIterations;
     double mKSTrustRegionExpansionFactor;
     double mKSTrustRegionContractionFactor;
     double mKSOuterGradientTolerance;
@@ -526,35 +533,24 @@ private:
     double mKSTrustRegionRatioLow;
     double mKSTrustRegionRatioMid;
     double mKSTrustRegionRatioUpper;
-
-    size_t mMaxNumAugLagSubProbIter;
     double mFeasibilityTolerance;
     double mMinTrustRegionRadius;
     double mMaxTrustRegionRadius;
     double mAugLagPenaltyParameter;
     double mAugLagPenaltyScaleParameter;
-
     double mOCControlStagnationTolerance;
     double mOCObjectiveStagnationTolerance;
     double mOCGradientTolerance;
-
-    size_t mMaxNumIterations;
-    size_t mLimitedMemoryStorage;
-    size_t mProblemUpdateFrequency;
-
-    int mDerivativeCheckerFinalSuperscript;
-    int mDerivativeCheckerInitialSuperscript;
 
     std::string mAlgebra;
     std::string mStateName;
     std::string mHessianType;
     std::string mInputFileName;
     std::string mCacheStageName;
-    std::string mUpdateProblemStageName;
     std::string mOutputStageName;
     std::string mObjectiveValueOutputName;
-    std::string mObjectiveHessianOutputName;
     std::string mObjectiveGradientOutputName;
+    std::string mObjectiveHessianOutputName;
     std::string mInitializationStageName;
     std::string mInitialControlDataName;
     std::string mFinalizationStageName;
@@ -565,12 +561,13 @@ private:
     std::string mUpperBoundValueName;
     std::string mUpperBoundVectorName;
     std::string mObjectiveValueStageName;
-    std::string mObjectiveHessianStageName;
     std::string mObjectiveGradientStageName;
+    std::string mObjectiveHessianStageName;
 
     std::vector<double> mInitialGuess;
     std::vector<double> mLowerBoundValues;
     std::vector<double> mUpperBoundValues;
+
     std::map<std::string, double> mConstraintNormalizedTargetValues;
     std::map<std::string, double> mConstraintAbsoluteTargetValues;
     std::map<std::string, double> mConstraintReferenceValues;
@@ -580,11 +577,12 @@ private:
     std::vector<std::string> mConstraintValueNames;
     std::vector<std::string> mDescentDirectionNames;
     std::vector<std::string> mConstraintValueStageNames;
-    std::vector<std::string> mConstraintHessianStageNames;
     std::vector<std::string> mConstraintGradientStageNames;
+    std::vector<std::string> mConstraintHessianStageNames;
+    std::vector<std::string> mUpdateProblemStageNames;
 
-    std::map<std::string, std::string> mConstraintHessianNames;
     std::map<std::string, std::string> mConstraintGradientNames;
+    std::map<std::string, std::string> mConstraintHessianNames;
     std::map<std::string, std::string> mConstraintReferenceValueNames;
 
     // USING DEFAULT COPY AND ASSIGNMENT CONSTRUCTORS
