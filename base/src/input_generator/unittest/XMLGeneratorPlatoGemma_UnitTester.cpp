@@ -601,20 +601,20 @@ pre_process_criterion_value_argument_data
     return tSharedDataArguments;
 }
 
-void copy_file_into_subdirectories
+void move_file_to_subdirectories
 (const std::string& aFileName,
- const XMLGen::OperationMetaData& aOperationMetaData)
+ const std::vector<std::string>& aSubDirs)
 {
-    for(auto& tSubDirName : aOperationMetaData.get("subdirectories"))
+    for(auto& tSubDir : aSubDirs)
     {
-        auto tCommand = std::string("mkdir -p ") + tSubDirName;
+        auto tCommand = std::string("mkdir -p ") + tSubDir;
         Plato::system(tCommand.c_str());
-        tCommand = std::string("cp ") + aFileName + " " + tSubDirName;
+        tCommand = std::string("cp ") + aFileName + " " + tSubDir;
         Plato::system(tCommand.c_str());
     }    
 }
 
-void copy_file_into_subdirectory
+void move_file_to_subdirectory
 (const std::string& aFileName,
  const std::string& aSubDirName, 
  const XMLGen::OperationMetaData& aOperationMetaData)
@@ -799,7 +799,7 @@ void write_input_deck
         auto tInputKeyValuePairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
         auto tFileName = tDescriptors.empty() ? tInputFileName : tInputFileName + ".template";
         XMLGen::matched_power_balance::write_input_deck_to_file(tFileName, tInputKeyValuePairs);
-        XMLGen::copy_file_into_subdirectories(tFileName, aOperationMetaData);
+        XMLGen::move_file_to_subdirectories(tFileName, aOperationMetaData.get("subdirectories"));
         auto tCommand = std::string("rm -f ") + tFileName;
         Plato::system(tCommand.c_str());
     }
@@ -869,8 +869,8 @@ void write_web_app_input_deck
     XMLGen::flask::write_web_app_executable("run_web_app", ".py", aOperationMetaData);
     for(auto& tFileName : aOperationMetaData.get("run_app_files"))
     {
-        auto tIndex = &tFileName - &aOperationMetaData.get("run_app_files")[0];
-        XMLGen::copy_file_into_subdirectory(tFileName, aOperationMetaData.get("subdirectories")[tIndex], aOperationMetaData);
+         auto tIndex = &tFileName - &aOperationMetaData.get("run_app_files")[0];
+        XMLGen::move_file_to_subdirectory(tFileName, aOperationMetaData.get("subdirectories")[tIndex], aOperationMetaData);
         auto tCommand = std::string("rm -f ") + tFileName;
         Plato::system(tCommand.c_str());
     }
@@ -987,16 +987,14 @@ TEST(PlatoTestXMLGenerator, write_web_app_input_deck)
     Plato::system("rm -rf gemma_evaluation_1/");
 }
 
-TEST(PlatoTestXMLGenerator, copy_file_into_subdirectories)
+TEST(PlatoTestXMLGenerator, move_file_to_subdirectories)
 {
     std::ofstream tOutFile;
     tOutFile.open("dummy.txt", std::ofstream::out | std::ofstream::trunc);
     tOutFile << "hello";
     tOutFile.close();
 
-    XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("subdirectories", "dummy_dir");
-    XMLGen::copy_file_into_subdirectories("dummy.txt", tOperationMetaData);
+    XMLGen::move_file_to_subdirectories("dummy.txt", {"dummy_dir"});
 
     auto tReadData = XMLGen::read_data_from_file("./dummy_dir/dummy.txt");
     auto tGoldString = std::string("hello");

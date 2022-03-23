@@ -329,10 +329,10 @@ void SystemCall::executeCommand(const std::vector<std::string> &aArguments)
     }
 
     // make system call and throw error if exit status non-zero
-    Plato::system_with_throw(cmd.c_str());
+    Plato::system_with_throw(mCommandPlusArguments.c_str());
     if (mPrint)
     {
-        Plato::Console::Status("Executed command: " + cmd);
+        Plato::Console::Status("Executed command: " + mCommandPlusArguments);
     }
 }
 
