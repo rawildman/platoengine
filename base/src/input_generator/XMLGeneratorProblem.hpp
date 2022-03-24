@@ -91,9 +91,22 @@ void write_optimization_problem
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData);
 
 /******************************************************************************//**
+ * \fn write_dakota_esp_problem
+ * \brief Write input files needed to solve problems with dakota and engineering sketch pad (esp).
+ * \param [in] aInputData input metadata
+ * \param [in] aPreProcessedMetaData pre process metadata for problems with \n 
+ *    concurrent app evaluations
+**********************************************************************************/
+void write_dakota_esp_problem
+(XMLGen::InputData& aMetaData,
+ const std::vector<XMLGen::InputData>& aPreProcessedMetaData);
+
+/******************************************************************************//**
  * \fn write_dakota_problem
  * \brief Write input files needed to solve problems with dakota.
  * \param [in] aInputData input metadata
+ * \param [in] aPreProcessedMetaData pre process metadata for problems with \n 
+ *    concurrent app evaluations
 **********************************************************************************/
 void write_dakota_problem
 (XMLGen::InputData& aMetaData,
