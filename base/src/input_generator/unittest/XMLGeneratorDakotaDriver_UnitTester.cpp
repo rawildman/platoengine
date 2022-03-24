@@ -8,17 +8,19 @@
 
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
+#include "XMLGeneratorProblem.hpp"
+#include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParseMetadata.hpp"
-#include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
-#include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
-#include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
-#include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
-#include "XMLGeneratorProblem.hpp"
+#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
+#include "XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp"
 #include "XMLGeneratorDakotaDriverInputFileUtilities.hpp"
+#include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
+#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
+#include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -3503,11 +3505,11 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaListToPlatoAnalyzeInputFileForDakotaDr
 TEST(PlatoTestXMLGenerator, CheckThatDirectoryExists)
 {
     std::string tDirectoryName = "evaluations_0";
-    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    ASSERT_FALSE(XMLGen::subdirectory_exists(tDirectoryName));
     Plato::system("mkdir evaluations_0");
-    ASSERT_TRUE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    ASSERT_TRUE(XMLGen::subdirectory_exists(tDirectoryName));
     Plato::system("rm -rf evaluations_0");
-    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    ASSERT_FALSE(XMLGen::subdirectory_exists(tDirectoryName));
 }
 
 TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)

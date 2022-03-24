@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <map>
+
+#include "XMLGeneratorServiceMetadata.hpp"
+
 namespace XMLGen
 {
 
@@ -68,6 +72,14 @@ bool need_update_problem_stage(const XMLGen::InputData& aMetaData);
  * \param [in] aServices List of services to check
 **********************************************************************************/
 int num_cache_states(const std::vector<XMLGen::Service> &aServices);
+
+/******************************************************************************//**
+ * \fn is_physics_performer
+ * \brief check if service is physics performer
+ * \param [in] aMetaData input metadata
+**********************************************************************************/
+bool is_physics_performer
+(XMLGen::InputData& aMetaData);
 
 }
 // namespace XMLGen

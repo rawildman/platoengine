@@ -333,5 +333,13 @@ void move_file_to_subdirectory
 (const std::string& aFileName,
  const std::string& aSubDirName);
 
+/******************************************************************************//**
+ * \fn subdirectory_exists
+ * \brief check if performer subdirectory exists
+ * \param [in] aDirectoryName input name of directory
+**********************************************************************************/
+bool subdirectory_exists
+(const std::string& aDirectoryName);
+
 }
 // namespace XMLGen

@@ -601,5 +601,20 @@ void move_file_to_subdirectory
 // function move_file_to_subdirectory
 /******************************************************************************/
 
+/******************************************************************************/
+bool subdirectory_exists
+(const std::string& aDirectoryName)
+{
+    bool tReturn = true;
+    auto tCommand = std::string("[ -d \"") + aDirectoryName + std::string("\" ]");
+    auto tExitStatus = Plato::system_with_status(tCommand.c_str());
+    if (tExitStatus)
+        tReturn = false;
+
+    return tReturn;
+}
+// function subdirectory_exists
+/******************************************************************************/
+
 }
 // namespace XMLGen

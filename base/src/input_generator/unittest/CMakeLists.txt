@@ -21,6 +21,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
                                       ../XMLGenerator.cpp
+                                      ../XMLGeneratorProblem.cpp
                                       ../XMLGeneratorParseRun.cpp
                                       ../XMLGeneratorUtilities.cpp
                                       ../XMLGeneratorParseBlock.cpp

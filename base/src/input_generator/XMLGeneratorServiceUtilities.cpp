@@ -150,5 +150,19 @@ void check_plato_app_service_type(const std::string& aType)
 // function check_plato_app_service_type
 /******************************************************************************/
 
+/******************************************************************************/
+bool is_physics_performer
+(XMLGen::InputData& aMetaData)
+{
+    bool tReturn = false;
+    if (aMetaData.services().size() > 0)
+        if (aMetaData.services()[0].code() == "plato_analyze" || aMetaData.services()[0].code() == "sierra_sd")
+            tReturn = true;
+
+    return tReturn;
+}
+// function is_physics_performer
+/******************************************************************************/
+
 }
 // namespace XMLGen

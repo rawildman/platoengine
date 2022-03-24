@@ -3,6 +3,7 @@
 ###############################################################################
 SET(XMLGenerator_SRCS XMLGenerator_Main.cpp 
                       XMLGenerator.cpp
+                      XMLGeneratorProblem.cpp
                       XMLGeneratorParseBlock.cpp
                       XMLGeneratorParseLoads.cpp
                       XMLGeneratorParseOutput.cpp
