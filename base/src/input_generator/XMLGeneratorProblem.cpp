@@ -219,7 +219,7 @@ void write_optimization_problem
 }
 // write_optimization_problem
 
-void write_dakota_problem
+void write_dakota_esp_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
@@ -243,6 +243,13 @@ void write_dakota_problem
 
     XMLGen::write_plato_main_input_deck_file(aMetaData);
     XMLGen::write_dakota_driver_input_deck(aMetaData);
+}
+
+void write_dakota_problem
+(XMLGen::InputData& aMetaData,
+ const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
+{
+    XMLGen::Problem::write_dakota_esp_problem(aMetaData, aPreProcessedMetaData);
 }
 // function write_dakota_problem
 
