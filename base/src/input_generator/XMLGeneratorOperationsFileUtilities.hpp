@@ -21,12 +21,10 @@ struct OperationArgument;
 /******************************************************************************//**
  * \fn append_evaluation_subdirectories
  * \brief Set subdirectories associated with each concurrent performer evaluation.
- * \param [in]  aSubDirBaseName     base name for the subdirectories
- * \param [out] aOperationMetaData  operation metadata structure
+ * \param [in] aOperationMetaData  operation metadata structure
 **********************************************************************************/
 void append_evaluation_subdirectories
-(const std::string& aSubDirBaseName, 
- XMLGen::OperationMetaData& aOperationMetaData);
+(XMLGen::OperationMetaData& aOperationMetaData);
 
 /******************************************************************************//**
  * \fn append_concurrent_evaluation_index_to_option

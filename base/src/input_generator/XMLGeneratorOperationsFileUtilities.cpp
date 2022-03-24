@@ -17,15 +17,16 @@ namespace XMLGen
 {
 
 void append_evaluation_subdirectories
-(const std::string& aSubDirBaseName, 
- XMLGen::OperationMetaData& aOperationMetaData)
+(XMLGen::OperationMetaData& aOperationMetaData)
 {
     auto tConcurrentEvals = aOperationMetaData.is_defined("concurrent_evaluations") && !aOperationMetaData.front("concurrent_evaluations").empty() 
         ? aOperationMetaData.front("concurrent_evaluations") : "1";
     auto tNumConcurrentEvals = std::stoi(tConcurrentEvals);
+
+    auto tBaseSubDirName = aOperationMetaData.front("base_subdirectory_name");
     for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
     {
-        auto tDirectoryName = aSubDirBaseName + "_" + std::to_string(tEvalIndex) + std::string("/");
+        auto tDirectoryName = tBaseSubDirName + "_" + std::to_string(tEvalIndex) + std::string("/");
         aOperationMetaData.append("subdirectories", tDirectoryName);
     }
 }
