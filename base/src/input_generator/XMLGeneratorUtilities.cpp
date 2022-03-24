@@ -572,5 +572,34 @@ std::string append_concurrent_tag_to_file_string
 // function append_concurrent_tag_to_file_string
 /******************************************************************************/
 
+/******************************************************************************/
+void move_file_to_subdirectories
+(const std::string& aFileName,
+ const std::vector<std::string>& aSubDirs)
+{
+    for(auto& tSubDir : aSubDirs)
+    {
+        auto tCommand = std::string("mkdir -p ") + tSubDir;
+        Plato::system(tCommand.c_str());
+        tCommand = std::string("cp ") + aFileName + " " + tSubDir;
+        Plato::system(tCommand.c_str());
+    }    
+}
+// function move_file_to_subdirectories
+/******************************************************************************/
+
+/******************************************************************************/
+void move_file_to_subdirectory
+(const std::string& aFileName,
+ const std::string& aSubDirName)
+{
+    auto tCommand = std::string("mkdir -p ") + aSubDirName;
+    Plato::system(tCommand.c_str());
+    tCommand = std::string("cp ") + aFileName + " " + aSubDirName;
+    Plato::system(tCommand.c_str());
+}
+// function move_file_to_subdirectory
+/******************************************************************************/
+
 }
 // namespace XMLGen

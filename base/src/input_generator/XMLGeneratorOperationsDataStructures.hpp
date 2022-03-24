@@ -14,16 +14,53 @@ namespace XMLGen
 {
 
 /******************************************************************************//**
+ * \class FileFormats
+ * \brief Class used to define app-specific options that depend on the service \n 
+ *    type: 'web_app', 'plato_app', 'system_call'.
+**********************************************************************************/
+struct FileFormats
+{
+    virtual std::string filename(const std::string& aSolverType, const std::string& aFileFormat) const = 0;
+};
+// struct FileFormats
+
+/******************************************************************************//**
  * \class AppOptions
  * \brief Class used to define app-specific options that depend on the service \n 
  *    type: 'web_app', 'plato_app', 'system_call'.
 **********************************************************************************/
 struct AppOptions
 {
-public:
+    /******************************************************************************//**
+     * \fn otags
+     * \brief Return outer tags of multi-dimensional associative container.
+     * \return sequence container with outer tags
+    **********************************************************************************/
     virtual std::vector<std::string> otags() const = 0;
+
+    /******************************************************************************//**
+     * \fn get
+     * \brief Return constant reference to sequence container
+     * \param [in] aOuterKeys multi-dimensional associative container's outer keys
+     * \param [in] aInnerKeys multi-dimensional associative container's inner keys
+     * \return sequence container with values
+    **********************************************************************************/
     virtual const std::string& get(const std::string& aOuterKey, const std::string& aInnerKey) const = 0;
+
+    /******************************************************************************//**
+     * \fn get
+     * \brief Return inner associative container.
+     * \param [in] aOuterKey multi-dimensional associative container's outer keys
+     * \return associative container
+    **********************************************************************************/
     virtual const std::unordered_map<std::string, std::string>& get(const std::string& aOuterKey) const = 0;
+
+    /******************************************************************************//**
+     * \fn set
+     * \param [in] aOuterKeys multi-dimensional associative container's outer keys
+     * \param [in] aInnerKeys multi-dimensional associative container's inner keys
+     * \param [in] aValue     parameter value
+    **********************************************************************************/
     virtual void set(const std::string& aOuterKey, const std::string& aInnerKey, const std::string& aValues) = 0;
 };
 // class AppOptions

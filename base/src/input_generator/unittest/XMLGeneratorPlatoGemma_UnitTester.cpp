@@ -10,793 +10,15 @@
 
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
+#include "XMLGeneratorFlaskUtilities.hpp"
+#include "XMLGeneratorGemmaUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorServiceUtilities.hpp"
+#include "XMLGeneratorCriteriaUtilities.hpp"
 #include "XMLGeneratorScenarioUtilities.hpp"
 #include "XMLGeneratorOperationsFileUtilities.hpp"
 #include "XMLGeneratorOperationsDataStructures.hpp"
-
-namespace XMLGen
-{
-
-struct FileFormats
-{
-    virtual std::string filename(const std::string& aSolverType, const std::string& aFileFormat) const = 0;
-};
-// struct FileFormats
-
-namespace gemma
-{
-
-struct Files : public XMLGen::FileFormats
-{
-private:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> mMap;
-
-public:
-    Files()
-    {
-        this->build();
-    }
-
-    std::string filename(const std::string& aSolverType, const std::string& aFileFormat) const
-    {
-        auto tOuterItr = mMap.find(aSolverType);
-        if(tOuterItr == mMap.end())
-        {
-            auto tMsg = std::string("Gemma solver '") + aSolverType + "' is not supported by Plato. Supported Gemma solvers are:\n" ;
-            for(auto tPair : mMap)
-            {
-                tMsg = tMsg + "  " + tPair.first + "\n";
-            }
-            THROWERR(tMsg)
-        }
-
-        auto tInnerItr = tOuterItr->second.find(aFileFormat);
-        if(tInnerItr == tOuterItr->second.end())
-        {
-            auto tMsg = std::string("Gemma file format '") + aFileFormat + "' is not supported by Plato. Supported Gemma file formats are:\n" ;
-            for(auto tPair : tOuterItr->second)
-            {
-                tMsg = tMsg + "  " + tPair.first + "\n";
-            }
-            THROWERR(tMsg)
-        }
-        return tInnerItr->second;
-    }
-
-private:
-    void build()
-    {
-        mMap["matched_power_balance"]["output"] = std::string("matched_power_balance.dat");
-        mMap["matched_power_balance"]["input"] = std::string("gemma_matched_power_balance_input_deck.yaml");
-
-        mMap["unmatched_power_balance"]["output"] = std::string("unmatched_power_balance.dat");
-        mMap["unmatched_power_balance"]["input"] = std::string("gemma_unmatched_power_balance_input_deck.yaml");
-    }
-};
-
-struct Options : public XMLGen::AppOptions
-{
-private:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> mMap;
-
-public:
-    Options()
-    {
-        this->build();
-    }
-
-    const std::string& get(const std::string& aOuterKey, const std::string& aInnerKey) const
-    {
-        auto tOuterItr = mMap.find(aOuterKey);
-        if(tOuterItr == mMap.end())
-        {
-            THROWERR(std::string("Did not find outer key '") + aOuterKey + "' in associative container.")
-        }
-        auto tInnerItr = tOuterItr->second.find(aInnerKey);
-        if(tInnerItr == tOuterItr->second.end())
-        {
-            THROWERR(std::string("Did not find inner key '") + aInnerKey + "' in associative container.")
-        }
-        return tInnerItr->second;
-    }
-
-    const std::unordered_map<std::string, std::string>& get(const std::string& aOuterKey) const
-    {
-        auto tOuterItr = mMap.find(aOuterKey);
-        if(tOuterItr == mMap.end())
-        {
-            THROWERR(std::string("Did not find outer key '") + aOuterKey + "' in associative container.")
-        }
-        return tOuterItr->second;
-    }
-
-    void set(const std::string& aOuterKey, const std::string& aInnerKey, const std::string& aValues)
-    {
-        mMap[aOuterKey][aInnerKey] = aValues;
-    }
-
-    std::vector<std::string> otags() const
-    {
-        std::vector<std::string> tOutput;
-        for(auto tPair : mMap)
-        {
-            tOutput.push_back(tPair.first);
-        }
-        return tOutput;
-    }
-
-private:
-    void build()
-    {
-        // operation executable name defaults
-        mMap["commands"]["web_app"] = "curl";
-        mMap["commands"]["plato_app"] = ""; // to be determined once the plato-gemma app is implemented
-        mMap["commands"]["system_call"] = "gemma";
-    
-        // function name defaults
-        mMap["functions"]["web_app"] = "SystemCall";
-        mMap["functions"]["plato_app"] = ""; // to be determined once the plato-gemma app is implemented
-        mMap["functions"]["system_call"] = "SystemCallMPI";
-        
-        // app executable name defaults
-        mMap["executables"]["web_app"] = "gemma";
-        mMap["executables"]["plato_app"] = ""; // to be determined once the plato-gemma app is implemented
-        mMap["executables"]["system_call"] = "gemma";
-    }
-};
-
-}
-// namespace gemma
-
-void set_general_run_system_call_options
-(const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    aOperationMetaData.set("concurrent_evaluations", {tNumConcurrentEvals});
-    XMLGen::set_operation_option_from_service_metadata("type", aInputMetaData, aOperationMetaData);
-    XMLGen::set_operation_option_from_service_metadata("number_processors", aInputMetaData, aOperationMetaData);
-}
-
-size_t get_web_port_number
-(const size_t aEvalIndex,
- const XMLGen::OperationMetaData& aOperationMetaData,
- const size_t& tDefaultBaseWebPortNum = 7000)
-{
-    auto tBaseWebPortNumber = aOperationMetaData.is_defined("base_web_port_number") ? std::stoi(aOperationMetaData.front("base_web_port_number")) : tDefaultBaseWebPortNum;
-    auto tWebPortNumber = tBaseWebPortNumber + aEvalIndex;
-    return tWebPortNumber;
-}
-
-void append_run_system_call_shared_data_arguments
-(XMLGen::OperationMetaData& aOperationMetaData)
-{
-    XMLGen::gemma::Files tFileFormats; 
-    for(auto& tType : aOperationMetaData.get("type"))
-    {
-        XMLGen::check_app_service_type(tType);
-        if(tType == "system_call")
-        {
-            auto tInputFileName = tFileFormats.filename(aOperationMetaData.front("algorithm"), "input");
-            aOperationMetaData.append("arguments", tInputFileName);
-        }
-        else
-        {
-            auto tConcurrentEvalIndex = &tType - &aOperationMetaData.get("type")[0];
-            auto tWebPortNum = XMLGen::get_web_port_number(tConcurrentEvalIndex, aOperationMetaData);
-            auto tArgument = std::string("http://localhost:") + std::to_string(tWebPortNum) + "/run_" 
-                + aOperationMetaData.get("executables")[tConcurrentEvalIndex] + "/";
-            aOperationMetaData.append("arguments", tArgument);
-        }
-    }
-}
-
-void write_run_system_call_operation
-(const XMLGen::OperationMetaData& aOperationMetaData,
- pugi::xml_document& aDocument)
-{
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
-    {
-        auto tSuffix = std::string("_") + std::to_string(tIndex);
-        auto tOperation = aDocument.append_child("Operation");
-
-        auto tFuncName = std::string("aprepro") + tSuffix;
-        std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "AppendInput", "ChDir", "Argument"};
-        std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tIndex], 
-                                          aOperationMetaData.get("names")[tIndex], 
-                                          aOperationMetaData.get("commands")[tIndex], 
-                                          "true", "false",
-                                          aOperationMetaData.get("subdirectories")[tIndex],
-                                          aOperationMetaData.get("arguments")[tIndex]};
-        XMLGen::append_children(tKeys, tVals, tOperation);
-    }
-}
-
-std::string get_data_group_type(const std::string& aDataGroup)
-{
-    auto tDataGroupType = XMLGen::to_lower( aDataGroup.substr(0, aDataGroup.find_first_of("_")) );
-    tDataGroupType = tDataGroupType == "column" ? "Column" : "Row";
-    return tDataGroupType;
-}
-
-std::string get_data_group_index(const std::string& aDataGroup)
-{
-    auto tDataGroupIndex = aDataGroup.substr(aDataGroup.find_first_of("_")+1);
-    return tDataGroupIndex;
-}
-
-void check_if_files_are_defined
-(const std::string& aKey, 
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    if( !aOperationMetaData.is_defined(aKey) )
-    {
-        return;
-    }
-
-    std::vector<std::string> tFileNames;
-    auto tProposedAppFileName = aOperationMetaData.front("base_output_file");
-    for(auto& tFileName : aOperationMetaData.get(aKey))
-    {
-        for(auto& tDirectoryName : aOperationMetaData.get("subdirectories"))
-        {
-            auto tProposedAppFilePath = std::string("./") + tDirectoryName + tProposedAppFileName;
-            auto tMyFileName = tFileName.empty() ? tProposedAppFilePath : tFileName;
-            tFileNames.push_back(tMyFileName);
-        }
-    }
-    aOperationMetaData.set(aKey, tFileNames);
-}
-
-void write_harvest_objective_data_from_file_operation
-(const std::vector<XMLGen::OperationArgument>& aOutputs,
- const XMLGen::OperationMetaData& aOperationMetaData,
- pugi::xml_document& aDocument)
-{
-    if(!aOperationMetaData.is_defined("objective_data_files"))
-    {
-        return;
-    }
-    auto tNumCriteria = aOperationMetaData.get("objective_criteria_ids").size();
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumCriteria) tCriteriaIndex = 0; tCriteriaIndex < tNumCriteria; tCriteriaIndex++)
-    {
-        auto tObjectiveCriterionID = aOperationMetaData.get("objective_criteria_ids")[tCriteriaIndex];
-        for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
-        {
-            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
-            std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", tDataGroupType};
-
-            auto tFileIndex = (tNumCriteria * tCriteriaIndex) + tEvalIndex;
-            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
-            auto tFuncName = std::string("harvest_objective_criterion_id_") + tObjectiveCriterionID + "_eval_" + std::to_string(tEvalIndex);
-            std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
-                                               aOperationMetaData.get("objective_data_files")[tFileIndex],
-                                               aOperationMetaData.get("objective_data_extraction_operations")[tCriteriaIndex],
-                                               tDataGroupIndex };
-
-            auto tOperation = aDocument.append_child("Operation");
-            XMLGen::append_children(tKeys, tVals, tOperation);
-            XMLGen::append_shared_data_argument_to_operation(aOutputs[tEvalIndex], tOperation);
-        }
-    }
-}
-
-void write_harvest_constraint_data_from_file_operation
-(const std::vector<XMLGen::OperationArgument>& aOutputs,
- const XMLGen::OperationMetaData& aOperationMetaData,
- pugi::xml_document& aDocument)
-{
-    if(!aOperationMetaData.is_defined("constraint_data_files"))
-    {
-        return;
-    }
-    auto tNumCriteria = aOperationMetaData.get("constraint_criteria_ids").size();
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumCriteria) tCriteriaIndex = 0; tCriteriaIndex < tNumCriteria; tCriteriaIndex++)
-    {
-        auto tConstraintCriterionID = aOperationMetaData.get("constraint_criteria_ids")[tCriteriaIndex];
-        for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
-        {
-            auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("constraint_data_groups")[tCriteriaIndex]);
-            std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", tDataGroupType};
-            
-            auto tFileIndex = (tNumCriteria * tCriteriaIndex) + tEvalIndex;
-            auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("constraint_data_groups")[tCriteriaIndex]);
-            auto tFuncName = std::string("harvest_constraint_criterion_id_") + tConstraintCriterionID + "_eval_" + std::to_string(tEvalIndex);
-            std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
-                                               aOperationMetaData.get("constraint_data_files")[tFileIndex],
-                                               aOperationMetaData.get("constraint_data_extraction_operations")[tCriteriaIndex],
-                                               tDataGroupIndex };
-
-            auto tOperation = aDocument.append_child("Operation");
-            XMLGen::append_children(tKeys, tVals, tOperation);
-            XMLGen::append_shared_data_argument_to_operation(aOutputs[tEvalIndex], tOperation);
-        }
-    }
-}
-
-std::vector<std::string> 
-get_criteria_ids
-(const std::string& aType,
- const XMLGen::InputData& aInputMetaData)
-{
-    std::vector<std::string> tOutput;
-    auto tLowerType = XMLGen::to_lower(aType);
-    for(auto& tCriterion : aInputMetaData.criteria())
-    {
-        if(tLowerType == tCriterion.type())
-        {
-            tOutput.push_back(tCriterion.id());
-        }
-    }
-    return tOutput;
-}
-
-void append_system_call_constraint_criteria_options
-(const std::vector<std::string>& aCriteriaIDs,
- const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData) 
-{
-   for(auto tConstraint : aInputMetaData.constraints)
-   {
-       auto tItr = std::find(aCriteriaIDs.begin(), aCriteriaIDs.end(), tConstraint.criterion());
-       if(tItr != aCriteriaIDs.end())
-       {
-           auto tCriterionID = tConstraint.criterion();
-           auto tCriterion = aInputMetaData.criterion(tCriterionID);
-           aOperationMetaData.append("constraint_criteria_ids", tCriterionID);
-           aOperationMetaData.append("constraint_data_files", tCriterion.value("data_file"));
-           aOperationMetaData.append("constraint_data_groups", tCriterion.value("data_group"));
-           aOperationMetaData.append("constraint_data_extraction_operations", tCriterion.value("data_extraction_operation"));
-       }
-   }
-}
-
-void append_system_call_objective_criteria_options
-(const std::vector<std::string>& aCriteriaIDs,
- const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    for(auto tCriterionID : aInputMetaData.objective.criteriaIDs)
-    {
-        auto tItr = std::find(aCriteriaIDs.begin(), aCriteriaIDs.end(), tCriterionID);
-        if(tItr != aCriteriaIDs.end())
-        {
-            auto tCriterion = aInputMetaData.criterion(tCriterionID);
-            aOperationMetaData.append("objective_criteria_ids", tCriterionID);
-            aOperationMetaData.append("objective_data_files", tCriterion.value("data_file"));
-            aOperationMetaData.append("objective_data_groups", tCriterion.value("data_group"));
-            aOperationMetaData.append("objective_data_extraction_operations", tCriterion.value("data_extraction_operation"));
-        }
-    }
-} 
-
-void pre_process_general_harvest_data_from_file_operation_options
-(const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
-    XMLGen::append_concurrent_evaluation_index_to_option("names", "harvest_data_", aOperationMetaData);
-}
-
-void pre_process_aprepro_system_call_inputs
-(const XMLGen::OperationMetaData& aOperationMetaData,
- std::vector<XMLGen::OperationArgument>& aSharedDataArgs)
-{
-    auto tSize = aOperationMetaData.get("descriptors").size();
-    if(tSize <= 0)
-    {
-        THROWERR("Number of parameters can not be less or equal than zero.")
-    }
-
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
-    {
-        XMLGen::OperationArgument tSharedDataArgument;
-        auto tName = std::string("parameters_") + std::to_string(tIndex);
-        tSharedDataArgument.set("name", tName);
-        tSharedDataArgument.set("type", "input");
-        tSharedDataArgument.set("layout", "scalar");
-        auto tSrSize = std::to_string(tSize);
-        tSharedDataArgument.set("size", tSrSize);
-        aSharedDataArgs.push_back(tSharedDataArgument);
-    }
-}
-
-void are_aprepro_input_options_defined
-(const XMLGen::OperationMetaData& aOperationMetaData)
-{
-    std::vector<std::string> tValidKeys = {"concurrent_evaluations", "names", "options", "arguments", "commands", "functions"};
-    for(auto& tValidKey : tValidKeys)
-    {
-        if(!aOperationMetaData.is_defined(tValidKey))
-        {
-            auto tDefinedKeys = aOperationMetaData.keys();
-            auto tMsg = std::string("Did not find aprepro system call option '") + tValidKey + "' for matched power balance use case. " 
-                + "The following keys are defined in the aprepro operation metadata cabinet: \n";
-            for(auto tKey : tDefinedKeys)
-            {
-                tMsg = tMsg + "  " + tKey + "\n";
-            }
-            THROWERR(tMsg)
-        }
-    }
-}
-
-std::vector<XMLGen::OperationArgument>
-pre_process_criterion_value_argument_data
-(const std::string& aCriterionType,
- const XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tLowerCriterionType = XMLGen::to_lower(aCriterionType);
-    auto tGetFuncArgument = tLowerCriterionType == "objective" ? "objective_criteria_ids" : "constraint_criteria_ids";
-    if(!aOperationMetaData.is_defined(tGetFuncArgument))
-    {
-        return std::vector<XMLGen::OperationArgument>();
-    }
-
-    std::vector<XMLGen::OperationArgument> tSharedDataArguments;
-    auto tNumCriteria = aOperationMetaData.get(tGetFuncArgument).size();
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumCriteria) tCriteriaIndex = 0; tCriteriaIndex < tNumCriteria; tCriteriaIndex++)
-    {
-        auto tCriterionID = aOperationMetaData.get(tGetFuncArgument)[tCriteriaIndex];
-        for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
-        {
-            XMLGen::OperationArgument tSharedDataArgument;
-            auto tArgumentName = tLowerCriterionType + " value for criterion " + tCriterionID 
-                + std::string(" and evaluation ") + std::to_string(tIndex);
-            tSharedDataArgument.set("name", tArgumentName);
-            tSharedDataArgument.set("type", "output");
-            tSharedDataArgument.set("layout", "scalar");
-            tSharedDataArgument.set("size", "1");
-            tSharedDataArguments.push_back(tSharedDataArgument);
-        }
-    }
-
-    return tSharedDataArguments;
-}
-
-void move_file_to_subdirectories
-(const std::string& aFileName,
- const std::vector<std::string>& aSubDirs)
-{
-    for(auto& tSubDir : aSubDirs)
-    {
-        auto tCommand = std::string("mkdir -p ") + tSubDir;
-        Plato::system(tCommand.c_str());
-        tCommand = std::string("cp ") + aFileName + " " + tSubDir;
-        Plato::system(tCommand.c_str());
-    }    
-}
-
-void move_file_to_subdirectory
-(const std::string& aFileName,
- const std::string& aSubDirName, 
- const XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tCommand = std::string("mkdir -p ") + aSubDirName;
-    Plato::system(tCommand.c_str());
-    tCommand = std::string("cp ") + aFileName + " " + aSubDirName;
-    Plato::system(tCommand.c_str());
-}
-
-void append_web_port_numbers
-(XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tNumConcurrentEvals = std::stoi(aOperationMetaData.front("concurrent_evaluations"));
-    for(decltype(tNumConcurrentEvals) tIndex = 0; tIndex < tNumConcurrentEvals; tIndex++)
-    {
-        auto tWebPortNum = std::to_string(XMLGen::get_web_port_number(tIndex, aOperationMetaData));
-        aOperationMetaData.append("web_port_numbers", tWebPortNum);
-    }
-}
-
-namespace flask
-{
-
-void write_web_app_executable
-(const std::string& aBaseFileName,
- const std::string& aFileExtension,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    for(auto& tWebPortNum : aOperationMetaData.get("web_port_numbers"))
-    {
-        auto tIndex = &tWebPortNum - &aOperationMetaData.get("web_port_numbers")[0];
-        auto tFileName = aBaseFileName + "_" + std::to_string(tIndex) + aFileExtension;
-        aOperationMetaData.append("run_app_files", tFileName);
-
-        std::ofstream tOutFile;
-        tOutFile.open(tFileName, std::ofstream::out | std::ofstream::trunc);
-        tOutFile << "from flask import Flask\n";
-        tOutFile << "import subprocess\n";
-        tOutFile << "app = Flask(__name__)\n\n";
-    
-        tOutFile << "@app.route(\'" << "/run_" + aOperationMetaData.get("executables")[tIndex] + "/\')\n";
-        tOutFile << "def run_gemma():\n";
-        tOutFile << "    tExitStatus = subprocess.call([";
-        for(auto& tArgument : aOperationMetaData.get("arguments"))
-        {
-            auto tIndex = &tArgument - &aOperationMetaData.get("arguments")[0];
-            auto tDelimiter = tIndex !=  (aOperationMetaData.get("arguments").size() - 1u) ? ", " : "";
-            tOutFile << "\"" << tArgument << "\"" << tDelimiter;
-        }
-        tOutFile << "])\n";
-        tOutFile << "    return str(tExitStatus)\n";
-        tOutFile << "if __name__ == \'__main__\':\n";
-        tOutFile << "    app.run(host=\'0.0.0.0\', port=" << tWebPortNum << ")";
-    
-        tOutFile.close();
-    }
-}
-
-}
-// namespace flask
-
-void append_app_options
-(const XMLGen::AppOptions& aAppOptions,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    auto tOuterTags = aAppOptions.otags();
-    for(auto& tTag : tOuterTags)
-    {
-        XMLGen::append_operation_options_based_on_app_type(tTag, aAppOptions.get(tTag), aOperationMetaData);
-    }
-}
-
-namespace matched_power_balance
-{
-
-void preprocess_aprepro_system_call_options
-(const XMLGen::InputData& aInputMetaData,
- XMLGen::OperationMetaData& aOperationMetaData)
-{
-    XMLGen::gemma::Files tFileFormats; 
-    auto tInputFileName = tFileFormats.filename("matched_power_balance", "input");
-    aOperationMetaData.append("input_file", tInputFileName);
-    aOperationMetaData.append("template_file", tInputFileName + ".template");
-    auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
-    auto tDescriptors = aInputMetaData.optimization_parameters().descriptors();
-    aOperationMetaData.set("descriptors", tDescriptors);
-    auto tSize = tDescriptors.size();
-    if(tSize <= 0)
-    {
-        THROWERR("Number of parameters can not be less or equal than zero.")
-    }
-}
-
-void write_aprepro_system_call_operation
-(const std::string& aBaseSubDirName,
- const XMLGen::InputData& aInputMetaData,
- pugi::xml_document& tDocument)
-{
-     XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("base_subdirectory_name", aBaseSubDirName);
-
-    XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(aInputMetaData, tOperationMetaData);
-    XMLGen::append_evaluation_subdirectories(tOperationMetaData);
-    XMLGen::set_aprepro_system_call_options(tOperationMetaData);
-    
-    std::vector<XMLGen::OperationArgument> tSharedDataArgs;
-    XMLGen::pre_process_aprepro_system_call_inputs(tOperationMetaData, tSharedDataArgs);
-    
-    XMLGen::are_aprepro_input_options_defined(tOperationMetaData);
-    XMLGen::write_aprepro_system_call_operation(tSharedDataArgs, tOperationMetaData, tDocument);
-}
-
-void are_inputs_defined(const std::unordered_map<std::string,std::string>& aKeyValuePairs)
-{
-    std::vector<std::string> tValidKeys = 
-        {"cavity_radius", "cavity_height", "conductivity", "slot_length", "slot_width", "slot_depth", "frequency_min", "frequency_max", "frequency_step"};
-    for(auto& tKey : tValidKeys)
-    {
-        auto tItr = aKeyValuePairs.find(tKey);
-        if(tItr == aKeyValuePairs.end() || tItr->second.empty())
-        {
-            THROWERR(std::string("Input key '") + tKey + "' was not properly defined by the user in the plato input deck. " 
-                + "Either the parameter was not defined in the input deck or its value is empty.")
-        }
-    }
-}
-
-void write_input_deck_to_file
-(const std::string& aFileName, 
- const std::unordered_map<std::string,std::string>& aKeyValuePairs)
-{
-    XMLGen::matched_power_balance::are_inputs_defined(aKeyValuePairs);
-
-    std::ofstream tOutFile;
-    tOutFile.open(aFileName, std::ofstream::out | std::ofstream::trunc);
-    tOutFile << "%YAML 1.1\n";
-    tOutFile << "---\n\n";
-
-    tOutFile << "Gemma-dynamic:\n\n";
-
-    tOutFile << "  Global:\n";
-    tOutFile << "    Description: Higgins cylinder\n";
-    tOutFile << "    Solution type: power balance\n\n";
-
-    tOutFile << "  Power balance: \n";
-    tOutFile << "    Algorithm: matched bound\n";
-    tOutFile << "    Radius: " << aKeyValuePairs.at("cavity_radius") << "\n";
-    tOutFile << "    Height: " << aKeyValuePairs.at("cavity_height") << "\n";
-    tOutFile << "    Conductivity: " << aKeyValuePairs.at("conductivity") << "\n";
-    tOutFile << "    Slot length: " << aKeyValuePairs.at("slot_length") << "\n";
-    tOutFile << "    Slot width: " << aKeyValuePairs.at("slot_width") << "\n";
-    tOutFile << "    Slot depth: " << aKeyValuePairs.at("slot_depth") << "\n";
-    tOutFile << "    Start frequency range: " << aKeyValuePairs.at("frequency_min") << "\n";
-    tOutFile << "    End frequency range: " << aKeyValuePairs.at("frequency_max") << "\n";
-    tOutFile << "    Frequency interval size: " << aKeyValuePairs.at("frequency_step") << "\n\n";;
-
-    tOutFile << "...\n";
-    tOutFile.close();
-}
-
-std::unordered_map<std::string,std::string> 
-get_input_key_value_pairs
-(const XMLGen::Scenario& aScenario,
- const XMLGen::Material& aMaterial,
- const std::vector<std::string>& aDescriptors)
-{
-    std::unordered_map<std::string,std::string> tMap;
-    tMap["slot_width"] = XMLGen::set_descriptor_value("slot_width", aScenario.getValue("slot_width"), aDescriptors);
-    tMap["slot_depth"] = XMLGen::set_descriptor_value("slot_depth", aScenario.getValue("slot_depth"), aDescriptors);
-    tMap["slot_length"] = XMLGen::set_descriptor_value("slot_length", aScenario.getValue("slot_length"), aDescriptors);
-    tMap["cavity_radius"] = XMLGen::set_descriptor_value("cavity_radius", aScenario.getValue("cavity_radius"), aDescriptors);
-    tMap["cavity_height"] = XMLGen::set_descriptor_value("cavity_height", aScenario.getValue("cavity_height"), aDescriptors);
-    tMap["frequency_min"] = XMLGen::set_descriptor_value("frequency_min", aScenario.getValue("frequency_min"), aDescriptors);
-    tMap["frequency_max"] = XMLGen::set_descriptor_value("frequency_max", aScenario.getValue("frequency_max"), aDescriptors);
-    tMap["frequency_step"] = XMLGen::set_descriptor_value("frequency_step", aScenario.getValue("frequency_step"), aDescriptors);
-    tMap["conductivity"] = XMLGen::set_descriptor_value("conductivity", aMaterial.property("conductivity"), aDescriptors);
-    return tMap;
-}
-
-void write_input_deck
-(const XMLGen::InputData& aInputMetaData,
- const XMLGen::OperationMetaData& aOperationMetaData)
-{
-    XMLGen::gemma::Files tFileFormats; 
-    auto tInputFileName = tFileFormats.filename("matched_power_balance", "input");
-    auto tDescriptors = aInputMetaData.optimization_parameters().descriptors();
-    auto tUniqueScenarioIDs = XMLGen::get_unique_scenario_ids(aOperationMetaData.front("code"), aInputMetaData);
-    for(auto& tScenarioID : tUniqueScenarioIDs)
-    {
-        auto tScenario = aInputMetaData.scenario(tScenarioID);
-        auto tMaterialID = tScenario.material();
-        auto tMaterial = aInputMetaData.material(tMaterialID);
-        auto tInputKeyValuePairs = XMLGen::matched_power_balance::get_input_key_value_pairs(tScenario, tMaterial, tDescriptors);
-        auto tFileName = tDescriptors.empty() ? tInputFileName : tInputFileName + ".template";
-        XMLGen::matched_power_balance::write_input_deck_to_file(tFileName, tInputKeyValuePairs);
-        XMLGen::move_file_to_subdirectories(tFileName, aOperationMetaData.get("subdirectories"));
-        auto tCommand = std::string("rm -f ") + tFileName;
-        Plato::system(tCommand.c_str());
-    }
-}
-
-void write_run_system_call_operation
-(const std::string& aBaseSubDirName,
- const XMLGen::InputData& aInputMetaData,
- pugi::xml_document& tDocument)
-{
-    XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("base_subdirectory_name", aBaseSubDirName);
-
-    tOperationMetaData.append("code", "gemma");
-    tOperationMetaData.append("base_web_port_number", "7000");
-    tOperationMetaData.append("algorithm", "matched_power_balance");
-    XMLGen::set_general_run_system_call_options(aInputMetaData, tOperationMetaData);
-
-    XMLGen::gemma::Options tAppOptions;
-    XMLGen::append_app_options(tAppOptions, tOperationMetaData);
-    
-    XMLGen::append_evaluation_subdirectories(tOperationMetaData);
-    XMLGen::append_concurrent_evaluation_index_to_option("names", "gemma_", tOperationMetaData);
-    XMLGen::append_run_system_call_shared_data_arguments(tOperationMetaData);
-    XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
-}
-
-void write_harvest_data_from_file_operation
-(const std::string& aBaseSubDirName,
- const XMLGen::InputData& aInputMetaData,
- pugi::xml_document& aDocument)
-{
-    XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("base_subdirectory_name", aBaseSubDirName);
-
-    XMLGen::gemma::Files tFileFormats;
-    tOperationMetaData.append("base_output_file", tFileFormats.filename("matched_power_balance", "output"));
-
-    XMLGen::pre_process_general_harvest_data_from_file_operation_options(aInputMetaData, tOperationMetaData);
-    XMLGen::append_evaluation_subdirectories(tOperationMetaData);
-
-    auto tCriteriaIDs = XMLGen::get_criteria_ids("system_call", aInputMetaData);
-    XMLGen::append_system_call_objective_criteria_options(tCriteriaIDs, aInputMetaData, tOperationMetaData);
-    XMLGen::append_system_call_constraint_criteria_options(tCriteriaIDs, aInputMetaData, tOperationMetaData);
-
-    XMLGen::check_if_files_are_defined("objective_data_files", tOperationMetaData);
-    auto tObjectiveSharedDataArgs = XMLGen::pre_process_criterion_value_argument_data("objective", tOperationMetaData);
-    XMLGen::write_harvest_objective_data_from_file_operation(tObjectiveSharedDataArgs, tOperationMetaData, aDocument);
-    
-    XMLGen::check_if_files_are_defined("constraint_data_files", tOperationMetaData);
-    auto tConstraintSharedDataArgs = XMLGen::pre_process_criterion_value_argument_data("constraint", tOperationMetaData);
-    XMLGen::write_harvest_constraint_data_from_file_operation(tConstraintSharedDataArgs, tOperationMetaData, aDocument);
-}
-
-void write_web_app_input_deck
-(XMLGen::OperationMetaData& aOperationMetaData)
-{
-    XMLGen::gemma::Files tFileFormats;
-    aOperationMetaData.set("arguments", {"gemma", tFileFormats.filename("matched_power_balance", "input")});
-    XMLGen::append_web_port_numbers(aOperationMetaData);
-    XMLGen::flask::write_web_app_executable("run_web_app", ".py", aOperationMetaData);
-    for(auto& tFileName : aOperationMetaData.get("run_app_files"))
-    {
-         auto tIndex = &tFileName - &aOperationMetaData.get("run_app_files")[0];
-        XMLGen::move_file_to_subdirectory(tFileName, aOperationMetaData.get("subdirectories")[tIndex], aOperationMetaData);
-        auto tCommand = std::string("rm -f ") + tFileName;
-        Plato::system(tCommand.c_str());
-    }
-}
-
-}
-// namespace matched_power_balance
-
-namespace gemma
-{
-
-void write_web_app_input_deck(const XMLGen::InputData& aInputMetaData)
-{
-    XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("code", "gemma");
-    tOperationMetaData.append("base_web_port_number", "7000");
-    tOperationMetaData.append("base_subdirectory_name", "gemma_evaluation");
-    auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
-
-    XMLGen::gemma::Options tAppOptions;
-    XMLGen::set_operation_option_from_service_metadata("type", aInputMetaData, tOperationMetaData);
-    XMLGen::append_operation_options_based_on_app_type("executables", tAppOptions.get("executables"), tOperationMetaData);
-
-    XMLGen::append_evaluation_subdirectories(tOperationMetaData);
-    XMLGen::matched_power_balance::write_web_app_input_deck(tOperationMetaData);
-}
-
-void write_input_deck(const XMLGen::InputData& aInputMetaData)
-{
-    XMLGen::OperationMetaData tOperationMetaData;
-    tOperationMetaData.append("code", "gemma");
-    tOperationMetaData.append("base_subdirectory_name", "gemma_evaluation");
-    auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
-    tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
-    XMLGen::append_evaluation_subdirectories(tOperationMetaData);
-    XMLGen::matched_power_balance::write_input_deck(aInputMetaData, tOperationMetaData);
-}
-
-void write_system_call_app_operation_files(const XMLGen::InputData& aInputMetaData)
-{ 
-    pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_aprepro_system_call_operation("gemma_evaluation", aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_run_system_call_operation("gemma_evaluation", aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("gemma_evaluation", aInputMetaData, tDocument);
-    tDocument.save_file("plato_gemma_app_operation_file.xml", "  ");
-}
-
-void write_operation_file(const XMLGen::InputData& aInputMetaData)
-{
-    XMLGen::gemma::write_system_call_app_operation_files(aInputMetaData);
-}
-
-}
-// namespace gemma
-
-}
-// namespace XMLGen
+#include "XMLGeneratorGemmaMatchedPowerBalanceUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -1128,7 +350,7 @@ TEST(PlatoTestXMLGenerator, write_harvest_data_from_file_operation_matched_power
     Plato::system("rm -f dummy.txt");
 }
 
-TEST(PlatoTestXMLGenerator, pre_process_criterion_value_argument_data)
+TEST(PlatoTestXMLGenerator, get_criterion_value_argument_metadata)
 {
     XMLGen::InputData tInputMetaData;
 
@@ -1136,7 +358,7 @@ TEST(PlatoTestXMLGenerator, pre_process_criterion_value_argument_data)
     tOperationMetaData.append("concurrent_evaluations", "2");
     tOperationMetaData.append("objective_criteria_ids", "10");
 
-    auto tSharedDataArgs = XMLGen::pre_process_criterion_value_argument_data("objective", tOperationMetaData);
+    auto tSharedDataArgs = XMLGen::get_criterion_value_argument_metadata("objective", tOperationMetaData);
     EXPECT_EQ(2u, tSharedDataArgs.size());
     EXPECT_STREQ("1", tSharedDataArgs[0].get("size").c_str());
     EXPECT_STREQ("objective value for criterion 10 and evaluation 0", tSharedDataArgs[0].get("name").c_str());
@@ -1245,7 +467,7 @@ TEST(PlatoTestXMLGenerator, append_system_call_constraint_criteria_options)
     EXPECT_STREQ("matched_power_balance.dat", tOperationMetaData.get("constraint_data_files").front().c_str());
 }
 
-TEST(PlatoTestXMLGenerator, pre_process_general_harvest_data_from_file_operation_options)
+TEST(PlatoTestXMLGenerator, append_general_harvest_data_from_file_operation_options)
 {
     XMLGen::InputData tMetaData;
     // define optimization parameters 
@@ -1254,14 +476,14 @@ TEST(PlatoTestXMLGenerator, pre_process_general_harvest_data_from_file_operation
     tMetaData.set(tOptParams);
     // call function
     XMLGen::OperationMetaData tOperationMetaData;
-    XMLGen::pre_process_general_harvest_data_from_file_operation_options(tMetaData, tOperationMetaData);
+    XMLGen::append_general_harvest_data_from_file_operation_options(tMetaData, tOperationMetaData);
     EXPECT_STREQ("2", tOperationMetaData.get("concurrent_evaluations").front().c_str());
     EXPECT_EQ(2u, tOperationMetaData.get("names").size());
     EXPECT_STREQ("harvest_data_0", tOperationMetaData.get("names")[0].c_str());
     EXPECT_STREQ("harvest_data_1", tOperationMetaData.get("names")[1].c_str());
 }
 
-TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balance)
+TEST(PlatoTestXMLGenerator, write_run_app_via_system_call_operation_matched_power_balance)
 {
     XMLGen::InputData tMetaData;
     // define service
@@ -1283,7 +505,7 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balanc
     tMetaData.set(tOptParams);
 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_run_system_call_operation("gemma_evaluation", tMetaData, tDocument);
+    XMLGen::matched_power_balance::write_run_app_via_system_call_operation("gemma_evaluation", tMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
@@ -1292,7 +514,7 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation_matched_power_balanc
     Plato::system("rm -f dummy.txt");
 }
 
-TEST(PlatoTestXMLGenerator, write_run_system_call_operation)
+TEST(PlatoTestXMLGenerator, write_run_app_via_system_call_operation)
 {
     pugi::xml_document tDocument;
     XMLGen::OperationMetaData tOperationMetaData;
@@ -1309,7 +531,7 @@ TEST(PlatoTestXMLGenerator, write_run_system_call_operation)
     tOperationMetaData.append("arguments", "http://localhost:7000/run_gemma/");
     tOperationMetaData.append("arguments", "http://localhost:7001/run_gemma/");
 
-    XMLGen::write_run_system_call_operation(tOperationMetaData, tDocument);
+    XMLGen::write_run_app_via_system_call_operation_to_file(tOperationMetaData, tDocument);
     tDocument.save_file("dummy.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("dummy.txt");
@@ -1351,7 +573,7 @@ TEST(PlatoTestXMLGenerator, append_run_system_call_shared_data_arguments)
     EXPECT_STREQ("http://localhost:8002/run_gemma/", tOperationMetaDataTwo.get("arguments")[2].c_str());
 }
 
-TEST(PlatoTestXMLGenerator, set_general_run_system_call_options)
+TEST(PlatoTestXMLGenerator, set_general_run_app_via_system_call_options)
 {
     XMLGen::InputData tMetaData;
     // define service
@@ -1374,7 +596,7 @@ TEST(PlatoTestXMLGenerator, set_general_run_system_call_options)
 
     XMLGen::OperationMetaData tOperationMetaData;
     tOperationMetaData.append("code", "gemma");
-    EXPECT_NO_THROW(XMLGen::set_general_run_system_call_options(tMetaData, tOperationMetaData));
+    EXPECT_NO_THROW(XMLGen::set_general_run_app_via_system_call_options(tMetaData, tOperationMetaData));
 
     // test output
     auto tKeys = tOperationMetaData.keys();
@@ -1651,7 +873,7 @@ TEST(PlatoTestXMLGenerator, write_aprepro_system_call_operation)
     Plato::system("rm -f dummy.txt");
 }
 
-TEST(PlatoTestXMLGenerator, pre_process_aprepro_system_call_inputs)
+TEST(PlatoTestXMLGenerator, set_input_args_metadata_for_aprepro_operation)
 {
     // define optmization parameters
     XMLGen::OperationMetaData tOperationMetaData;
@@ -1659,8 +881,7 @@ TEST(PlatoTestXMLGenerator, pre_process_aprepro_system_call_inputs)
     tOperationMetaData.set("descriptors", tDescriptors);
     tOperationMetaData.append("concurrent_evaluations", "3");
 
-    std::vector<XMLGen::OperationArgument> tData;
-    XMLGen::pre_process_aprepro_system_call_inputs(tOperationMetaData, tData);
+    auto tData = XMLGen::set_input_args_metadata_for_aprepro_operation(tOperationMetaData);
     EXPECT_EQ(3u, tData.size());
 
     EXPECT_STREQ("3", tData[0].get("size").c_str());
@@ -1692,7 +913,7 @@ TEST(PlatoTestXMLGenerator, append_concurrent_evaluation_index_to_option)
     EXPECT_STREQ("aprepro_2", tOutput[2].c_str());
 }
 
-TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_options_matched_power_balance)
+TEST(PlatoTestXMLGenerator, append_general_aprepro_operation_options)
 {
     XMLGen::InputData tMetaData;
     // define optmization parameters
@@ -1703,17 +924,14 @@ TEST(PlatoTestXMLGenerator, preprocess_aprepro_system_call_options_matched_power
     tMetaData.set(tOptParams);
 
     XMLGen::OperationMetaData tOperationMetaData;
-    XMLGen::matched_power_balance::preprocess_aprepro_system_call_options(tMetaData, tOperationMetaData);
+    XMLGen::append_general_aprepro_operation_options(tMetaData, tOperationMetaData);
 
     auto tMyDescriptors = tOperationMetaData.get("descriptors");
     EXPECT_EQ(3u, tMyDescriptors.size());
     EXPECT_STREQ(tDescriptors[0].c_str(), tMyDescriptors[0].c_str());
     EXPECT_STREQ(tDescriptors[1].c_str(), tMyDescriptors[1].c_str());
     EXPECT_STREQ(tDescriptors[2].c_str(), tMyDescriptors[2].c_str());
-
     EXPECT_STREQ("3", tOperationMetaData.get("concurrent_evaluations").front().c_str());
-    EXPECT_STREQ("gemma_matched_power_balance_input_deck.yaml", tOperationMetaData.get("input_file").front().c_str());
-    EXPECT_STREQ("gemma_matched_power_balance_input_deck.yaml.template", tOperationMetaData.get("template_file").front().c_str());
 }
 
 TEST(PlatoTestXMLGenerator, write_gemma_input_deck_matched_power_balance)

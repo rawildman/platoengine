@@ -313,5 +313,25 @@ std::string append_concurrent_tag_to_file_string
 (const std::string& aFileString,
  const std::string& aTag);
 
+/******************************************************************************//**
+ * \fn move_file_to_subdirectories
+ * \brief Move file to subdirectories
+ * \param [in] aFileName file to move into subdirectories
+ * \param [in] aSubDirs  sequence container with subdirectory names
+**********************************************************************************/
+void move_file_to_subdirectories
+(const std::string& aFileName,
+ const std::vector<std::string>& aSubDirs);
+
+/******************************************************************************//**
+ * \fn move_file_to_subdirectory
+ * \brief Move file to subdirectory
+ * \param [in] aFileName   file to move into subdirectory
+ * \param [in] aSubDirName subdirectory name
+**********************************************************************************/
+void move_file_to_subdirectory
+(const std::string& aFileName,
+ const std::string& aSubDirName);
+
 }
 // namespace XMLGen
