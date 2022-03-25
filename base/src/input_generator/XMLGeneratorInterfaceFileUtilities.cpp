@@ -153,5 +153,51 @@ void append_method_options
 // function append_method_options
 /******************************************************************************/
 
+/******************************************************************************/
+void append_platoservice
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId)
+{
+    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+    {
+        auto tPerformerNode = aDocument.append_child("Performer");
+        std::string tPerformerName = std::string("plato_services_") + std::to_string(iEvaluation);
+        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(aPerformerId) };
+        XMLGen::append_children( tKeywords, tValues, tPerformerNode);
+        aPerformerId++;
+    }
+}
+// function append_method_options
+/******************************************************************************/
+
+/******************************************************************************/
+void append_physics_performer
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId)
+{
+    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    for(auto& tService : aMetaData.services())
+    {
+        if(tService.code() == "plato_analyze" || tService.code() == "sierra_sd")
+        {
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            {
+                auto tPerformerNode = aDocument.append_child("Performer");
+                std::string tPerformerName = tService.performer() + std::string("_") + std::to_string(iEvaluation);
+                std::vector<std::string> tValues = { tPerformerName, tService.code(), std::to_string(aPerformerId) };
+                XMLGen::append_children( tKeywords, tValues, tPerformerNode);
+                aPerformerId++;
+            }
+        }
+    }
+}
+// function append_physics_performer
+/******************************************************************************/
+
 }
 // namespace XMLGen

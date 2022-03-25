@@ -17,6 +17,9 @@
 namespace XMLGen
 {
 
+namespace dakota
+{
+
 /******************************************************************************/
 void write_dakota_interface_xml_file
 (const XMLGen::InputData& aMetaData)
@@ -25,77 +28,35 @@ void write_dakota_interface_xml_file
 
     XMLGen::append_include_defines_xml_data(aMetaData, tDocument);
     XMLGen::append_console_data(aMetaData, tDocument);
-    XMLGen::append_dakota_performer_data(aMetaData, tDocument);
-    XMLGen::append_dakota_shared_data(aMetaData, tDocument);
-    XMLGen::append_dakota_stages(aMetaData, tDocument);
-    XMLGen::append_dakota_driver_options(aMetaData, tDocument);
+    XMLGen::dakota::append_performer_data(aMetaData, tDocument);
+    XMLGen::dakota::append_shared_data(aMetaData, tDocument);
+    XMLGen::dakota::append_stages(aMetaData, tDocument);
+    XMLGen::dakota::append_driver_options(aMetaData, tDocument);
 
     tDocument.save_file("interface.xml", "  ");
 }
 /******************************************************************************/
 
 /******************************************************************************/
-void append_dakota_performer_data
+void append_performer_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
     XMLGen::append_plato_main_performer(aMetaData, aDocument);
 
     int tPerformerId = 1;
-    XMLGen::append_physics_performers_dakota_usecase(aMetaData, aDocument, tPerformerId);
-    XMLGen::append_platoservices_dakota_usecase(aMetaData, aDocument, tPerformerId);
+    XMLGen::append_physics_performer(aMetaData, aDocument, tPerformerId);
+    XMLGen::append_platoservice(aMetaData, aDocument, tPerformerId);
 }
 /******************************************************************************/
 
 /******************************************************************************/
-void append_physics_performers_dakota_usecase
-(const XMLGen::InputData& aMetaData,
- pugi::xml_document& aDocument,
- int& aPerformerId)
-{
-    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
-    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
-    for(auto& tService : aMetaData.services())
-    {
-        if(tService.code() == "plato_analyze" || tService.code() == "sierra_sd")
-        {
-            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
-            {
-                auto tPerformerNode = aDocument.append_child("Performer");
-                std::string tPerformerName = tService.performer() + std::string("_") + std::to_string(iEvaluation);
-                std::vector<std::string> tValues = { tPerformerName, tService.code(), std::to_string(aPerformerId) };
-                XMLGen::append_children( tKeywords, tValues, tPerformerNode);
-                aPerformerId++;
-            }
-        }
-    }
-}
-
-/******************************************************************************/
-void append_platoservices_dakota_usecase
-(const XMLGen::InputData& aMetaData,
- pugi::xml_document& aDocument,
- int& aPerformerId)
-{
-    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
-    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
-    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
-    {
-        auto tPerformerNode = aDocument.append_child("Performer");
-        std::string tPerformerName = std::string("plato_services_") + std::to_string(iEvaluation);
-        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(aPerformerId) };
-        XMLGen::append_children( tKeywords, tValues, tPerformerNode);
-        aPerformerId++;
-    }
-}
-
-/******************************************************************************/
-void append_dakota_shared_data
+void append_shared_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    XMLGen::append_concurrent_design_variables_shared_data(aMetaData, aDocument);
-    XMLGen::append_dakota_criterion_shared_data(aMetaData, aDocument);
+    XMLGen::dakota::append_concurrent_design_variables_shared_data(aMetaData, aDocument);
+    XMLGen::dakota::append_dakota_criterion_shared_data(aMetaData, aDocument);
 }
 /******************************************************************************/
 
@@ -155,12 +116,12 @@ void append_dakota_criterion_shared_data
 }
 
 /******************************************************************************/
-void append_dakota_stages
+void append_stages
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    XMLGen::append_initialize_stage(aMetaData, aDocument);
-    XMLGen::append_criterion_value_stages(aMetaData, aDocument);
+    XMLGen::dakota::append_initialize_stage(aMetaData, aDocument);
+    XMLGen::dakota::append_criterion_value_stages(aMetaData, aDocument);
 }
 
 /******************************************************************************/
@@ -170,13 +131,13 @@ void append_initialize_stage
 {
     auto tStageNode = aDocument.append_child("Stage");
     XMLGen::append_children( { "Name" }, { "Initialize Meshes" }, tStageNode);
-    XMLGen::append_design_parameters_input(tStageNode);
+    XMLGen::dakota::append_design_parameters_input(tStageNode);
 
-    XMLGen::append_concurrent_update_geometry_on_change_operation(tStageNode);
-    XMLGen::append_concurrent_physics_performer_subblock_creation_operation(aMetaData,tStageNode);
-    XMLGen::append_concurrent_physics_performer_tet10_conversion_operation(aMetaData,tStageNode);
-    XMLGen::append_concurrent_physics_performer_decomp_operation(aMetaData,tStageNode);
-    XMLGen::append_concurrent_reinitialize_on_change_operation(aMetaData,tStageNode);
+    XMLGen::dakota::append_concurrent_update_geometry_on_change_operation(tStageNode);
+    XMLGen::dakota::append_concurrent_physics_performer_subblock_creation_operation(aMetaData,tStageNode);
+    XMLGen::dakota::append_concurrent_physics_performer_tet10_conversion_operation(aMetaData,tStageNode);
+    XMLGen::dakota::append_concurrent_physics_performer_decomp_operation(aMetaData,tStageNode);
+    XMLGen::dakota::append_concurrent_reinitialize_on_change_operation(aMetaData,tStageNode);
 }
 
 /******************************************************************************/
@@ -286,8 +247,8 @@ void append_criterion_value_stages
  pugi::xml_document& aDocument)
 {
     int tCriteriaCounter = 0;
-    XMLGen::append_objective_criterion_value_stages(aMetaData,aDocument,tCriteriaCounter);
-    XMLGen::append_constraint_criterion_value_stages(aMetaData,aDocument,tCriteriaCounter);
+    XMLGen::dakota::append_objective_criterion_value_stages(aMetaData,aDocument,tCriteriaCounter);
+    XMLGen::dakota::append_constraint_criterion_value_stages(aMetaData,aDocument,tCriteriaCounter);
 }
 
 /******************************************************************************/
@@ -310,7 +271,7 @@ void append_objective_criterion_value_stages
         auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
         XMLGen::Service tService = aMetaData.service(tServiceID); 
 
-        XMLGen::append_concurrent_criterion_value_operation(tStageNode, tService, tIdentifierString);
+        XMLGen::dakota::append_concurrent_criterion_value_operation(tStageNode, tService, tIdentifierString);
         aCriterionNumber++;
     }
 }
@@ -358,22 +319,22 @@ void append_constraint_criterion_value_stages
         auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
         XMLGen::Service tService = aMetaData.service(tServiceID); 
 
-        XMLGen::append_concurrent_criterion_value_operation(tStageNode, tService, tIdentifierString);
+        XMLGen::dakota::append_concurrent_criterion_value_operation(tStageNode, tService, tIdentifierString);
         aCriterionNumber++;
     }
 }
 
 /******************************************************************************/
-void append_dakota_driver_options
+void append_driver_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
  {
     auto tDriverNode = aDocument.append_child("DakotaDriver");
-    XMLGen::append_initialize_stage_options(tDriverNode);
+    XMLGen::dakota::append_initialize_stage_options(tDriverNode);
 
     int tCriteriaCounter = 0;
-    XMLGen::append_objective_criteria_stage_options(aMetaData,tDriverNode,tCriteriaCounter);
-    XMLGen::append_constraint_criteria_stage_options(aMetaData,tDriverNode,tCriteriaCounter);
+    XMLGen::dakota::append_objective_criteria_stage_options(aMetaData,tDriverNode,tCriteriaCounter);
+    XMLGen::dakota::append_constraint_criteria_stage_options(aMetaData,tDriverNode,tCriteriaCounter);
  }
 
 /******************************************************************************/
@@ -403,7 +364,7 @@ void append_objective_criteria_stage_options
         ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
         auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
 
-        XMLGen::append_criterion_stage_options(aParentNode,tIdentifierString,aCriterionNumber);
+        XMLGen::dakota::append_criterion_stage_options(aParentNode,tIdentifierString,aCriterionNumber);
         aCriterionNumber++;
     }
  }
@@ -440,10 +401,13 @@ void append_constraint_criteria_stage_options
         ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
         auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
 
-        XMLGen::append_criterion_stage_options(aParentNode,tIdentifierString,aCriterionNumber);
+        XMLGen::dakota::append_criterion_stage_options(aParentNode,tIdentifierString,aCriterionNumber);
         aCriterionNumber++;
     }
  }
+
+}
+// namespace dakota
 
 }
 // namespace XMLGen

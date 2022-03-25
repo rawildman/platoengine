@@ -31,13 +31,13 @@ void write_performer_operation_xml_file
 (const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
- * \fn usecase_esp
+ * \fn plato_esp_problem
  * \brief Write input files needed to solve problems with dakota and engineering sketch pad (esp).
  * \param [in] aInputData input metadata
  * \param [in] aPreProcessedMetaData pre process metadata for problems with \n 
  *    concurrent app evaluations
 **********************************************************************************/
-void usecase_esp
+void plato_esp_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData);
 

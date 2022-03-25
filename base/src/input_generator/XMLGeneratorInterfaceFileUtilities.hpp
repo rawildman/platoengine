@@ -89,7 +89,31 @@ void append_gradient_value_operation_for_multi_load_case
 **********************************************************************************/
 void append_gradient_value_operation_for_non_multi_load_case
 (const XMLGen::InputData& aMetaData,
- pugi::xml_node &aParentNode);
+ pugi::xml_node         & aParentNode);
+
+/******************************************************************************//**
+ * \fn append_platoservice
+ * \brief Append performer data to interface.xml file.
+ * \param [in]     aMetaData Plato problem input metadata
+ * \param [in/out] aDocument    parent xml document
+ * \param [in]     aPerformerId performer id
+**********************************************************************************/
+void append_platoservice
+(const XMLGen::InputData & aMetaData,
+ pugi::xml_document      & aDocument,
+ int                     & aPerformerId);
+
+/******************************************************************************//**
+ * \fn append_physics_performer
+ * \brief Append performer data to interface.xml file.
+ * \param [in]     aMetaData Plato problem input metadata
+ * \param [in/out] aDocument    parent xml document
+ * \param [in]     aPerformerId performer id
+**********************************************************************************/
+void append_physics_performer
+(const XMLGen::InputData & aMetaData,
+ pugi::xml_document      & aDocument,
+ int                     & aPerformerId);
 
 }
 // namespace XMLGen

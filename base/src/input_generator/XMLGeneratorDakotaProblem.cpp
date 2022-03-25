@@ -10,9 +10,7 @@
 #include "XMLGeneratorProblemUtilities.hpp"
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
-#include "XMLGeneratorPlatoXTKInputFile.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
-#include "XMLGeneratorPlatoXTKOperationFile.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorPlatoESPInputFileUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
@@ -82,20 +80,18 @@ void write_performer_operation_xml_file
 }
 //function write_performer_operation_xml_file_dakota_problem
 
-void usecase_esp
+void plato_esp_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
     XMLGen::Problem::create_concurrent_evaluation_subdirectories(aMetaData);
     XMLGen::write_define_xml_file(aMetaData);
-    XMLGen::write_dakota_interface_xml_file(aMetaData);
+    XMLGen::dakota::write_dakota_interface_xml_file(aMetaData);
     XMLGen::generate_launch_script(aMetaData);
     XMLGen::write_dakota_plato_main_operations_xml_file(aMetaData);
     XMLGen::write_amgx_input_file(aMetaData);
     XMLGen::write_plato_esp_input_deck_file(aMetaData);
     XMLGen::write_plato_esp_operations_file(aMetaData);
-    XMLGen::write_xtk_input_deck_file(aMetaData);
-    XMLGen::write_xtk_operations_file(aMetaData);
 
     XMLGen::Problem::write_plato_services_performer_input_deck_files(aMetaData);
     for(auto tCurMetaData : aPreProcessedMetaData)
@@ -107,13 +103,13 @@ void usecase_esp
     XMLGen::write_plato_main_input_deck_file(aMetaData);
     XMLGen::write_dakota_driver_input_deck(aMetaData);
 }
-// function usecase_esp
+// function plato_esp_problem
 
 void write_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
-    XMLGen::dakota::usecase_esp(aMetaData, aPreProcessedMetaData);
+    XMLGen::dakota::plato_esp_problem(aMetaData, aPreProcessedMetaData);
 }
 // function write_problem
 

@@ -604,7 +604,9 @@ private:
         "thermoplasticity",
         "forced_convection",
         "natural_convection",
-        "laminar_flow"};
+        "laminar_flow",
+        "electromagnetics"
+    };
 
 public:
     /******************************************************************************//**
