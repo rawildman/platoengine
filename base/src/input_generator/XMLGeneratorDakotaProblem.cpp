@@ -86,7 +86,7 @@ void plato_esp_problem
 {
     XMLGen::Problem::create_concurrent_evaluation_subdirectories(aMetaData);
     XMLGen::write_define_xml_file(aMetaData);
-    XMLGen::dakota::write_dakota_interface_xml_file(aMetaData);
+    XMLGen::dakota::write_interface_xml_file(aMetaData);
     XMLGen::generate_launch_script(aMetaData);
     XMLGen::write_dakota_plato_main_operations_xml_file(aMetaData);
     XMLGen::write_amgx_input_file(aMetaData);

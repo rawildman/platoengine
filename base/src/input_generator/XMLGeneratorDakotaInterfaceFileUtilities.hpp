@@ -16,11 +16,11 @@ namespace dakota
 {
 
 /******************************************************************************//**
- * \fn write_dakota_interface_xml_file
+ * \fn write_interface_xml_file
  * \brief Write interface.xml file for dakota driver.
  * \param [in]  aMetaData Plato problem input metadata
 **********************************************************************************/
-void write_dakota_interface_xml_file
+void write_interface_xml_file
 (const XMLGen::InputData & aMetaData);
 
 /******************************************************************************//**

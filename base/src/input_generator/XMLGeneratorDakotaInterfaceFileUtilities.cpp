@@ -21,7 +21,7 @@ namespace dakota
 {
 
 /******************************************************************************/
-void write_dakota_interface_xml_file
+void write_interface_xml_file
 (const XMLGen::InputData& aMetaData)
 {
     pugi::xml_document tDocument;
