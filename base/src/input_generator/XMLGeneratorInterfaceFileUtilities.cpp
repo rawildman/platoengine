@@ -153,31 +153,34 @@ void append_method_options
 /******************************************************************************/
 
 /******************************************************************************/
-void append_platoservice
+int append_platoservice
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument,
- int& aCummulativePerformerId)
+ int aBasePerformerID)
 {
+    auto tCummulativeID = aBasePerformerID;
     std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
     for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
     {
-        aCummulativePerformerId++;
+        tCummulativeID++;
         auto tPerformerNode = aDocument.append_child("Performer");
         std::string tPerformerName = std::string("plato_services_") + std::to_string(iEvaluation);
-        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(aCummulativePerformerId) };
+        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(tCummulativeID) };
         XMLGen::append_children( tKeywords, tValues, tPerformerNode);
     }
+    return tCummulativeID;
 }
 // function append_method_options
 /******************************************************************************/
 
 /******************************************************************************/
-void append_physics_performer
+int append_physics_performer
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument,
- int& aCummulativePerformerId)
+ int aBasePerformerID)
 {
+    auto tCummulativeID = aBasePerformerID;
     std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
     for(auto& tService : aMetaData.services())
@@ -186,16 +189,49 @@ void append_physics_performer
         {
             for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
             {
-                aCummulativePerformerId++;
+                tCummulativeID++;
                 auto tPerformerNode = aDocument.append_child("Performer");
                 std::string tPerformerName = tService.performer() + std::string("_") + std::to_string(iEvaluation);
-                std::vector<std::string> tValues = { tPerformerName, tService.code(), std::to_string(aCummulativePerformerId) };
+                std::vector<std::string> tValues = { tPerformerName, tService.code(), std::to_string(tCummulativeID) };
                 XMLGen::append_children( tKeywords, tValues, tPerformerNode);
             }
         }
     }
+    return tCummulativeID;
 }
 // function append_physics_performer
+/******************************************************************************/
+
+/******************************************************************************/
+int get_number_of_shape_parameters(const XMLGen::InputData& aMetaData)
+{
+    size_t tNumParameters = 0;
+    auto tOptimizationParameters = aMetaData.optimization_parameters();
+    if( !tOptimizationParameters.num_shape_design_variables().empty() )
+    {
+        tNumParameters = std::stoi(tOptimizationParameters.num_shape_design_variables());
+    }
+    else if( !tOptimizationParameters.lower_bounds().empty() )
+    {
+        tNumParameters = tOptimizationParameters.lower_bounds().size();
+    }
+    else if( !tOptimizationParameters.upper_bounds().empty() )
+    {
+        tNumParameters = tOptimizationParameters.upper_bounds().size();
+    }
+    else if( !tOptimizationParameters.descriptors().empty() )
+    {
+        tNumParameters = tOptimizationParameters.descriptors().size();
+    }
+    else
+    {
+        THROWERR(std::string("Colud not calculate the number of shape parameters from input information. ") 
+            + "The user must defined one of the following inputs: 'num_shape_design_variables', 'lower_bounds', " 
+            + "'upper_bounds', 'descriptors'.")
+    }
+    return tNumParameters;
+}
+// function get_number_of_shape_parameters
 /******************************************************************************/
 
 }

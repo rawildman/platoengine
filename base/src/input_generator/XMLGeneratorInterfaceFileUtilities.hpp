@@ -94,26 +94,37 @@ void append_gradient_value_operation_for_non_multi_load_case
 /******************************************************************************//**
  * \fn append_platoservice
  * \brief Append performer data to interface.xml file.
- * \param [in]     aMetaData Plato problem input metadata
- * \param [in/out] aDocument    parent xml document
- * \param [in]     aPerformerId performer id
+ * \param [in]  aMetaData Plato problem input metadata
+ * \param [out] aDocument parent xml document
+ * \param [in]  aBasePerformerID base performer id
+ * \return cummulative performer id
 **********************************************************************************/
-void append_platoservice
+int append_platoservice
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument,
- int                     & aPerformerId);
+ int                       aBasePerformerID = 0);
 
 /******************************************************************************//**
  * \fn append_physics_performer
  * \brief Append performer data to interface.xml file.
- * \param [in]     aMetaData Plato problem input metadata
- * \param [in/out] aDocument    parent xml document
- * \param [in]     aPerformerId performer id
+ * \param [in]  aMetaData Plato problem input metadata
+ * \param [out] aDocument parent xml document
+ * \param [in]  aBasePerformerID base performer id
+ * \return cummulative performer id
 **********************************************************************************/
-void append_physics_performer
+int append_physics_performer
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument,
- int                     & aPerformerId);
+ int                       aBasePerformerID = 0);
+
+/******************************************************************************//**
+ * \fn get_number_of_shape_parameters
+ * \brief Return number of shape parameters.
+ * \param [in]  aMetaData Plato problem input metadata
+ * \return integer
+**********************************************************************************/
+ int get_number_of_shape_parameters
+ (const XMLGen::InputData& aMetaData);
 
 }
 // namespace XMLGen

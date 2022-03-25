@@ -919,7 +919,7 @@ TEST(PlatoTestXMLGenerator, append_general_aprepro_operation_options)
     // define optmization parameters
     XMLGen::OptimizationParameters tOptParams;
     std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
-    tOptParams.descriptors(tDescriptors);
+    tOptParams.set("descriptors", tDescriptors);
     tOptParams.append("concurrent_evaluations", "3");
     tMetaData.set(tOptParams);
 

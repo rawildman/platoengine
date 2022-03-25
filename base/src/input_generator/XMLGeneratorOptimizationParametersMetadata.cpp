@@ -130,5 +130,23 @@ std::string OptimizationParameters::mesh_map_filter_radius() const
     return (this->getValue("mesh_map_filter_radius"));
 }
 
+void OptimizationParameters::descriptors(const std::vector<std::string> &aDescriptors) 
+{ 
+    ValueData tValueData;
+    tValueData.mValue = aDescriptors;
+    tValueData.mIsDefault = false;
+    mMetaData["descriptors"] = tValueData;
+}
+
+std::vector<std::string> OptimizationParameters::find(const std::string& aKey) const
+{
+    auto tItr = mMetaData.find(aKey);
+    if(tItr == mMetaData.end())
+    {
+        return std::vector<std::string>();
+    }
+    return tItr->second.mValue;
+}
+
 }
 // namespace XMLGen

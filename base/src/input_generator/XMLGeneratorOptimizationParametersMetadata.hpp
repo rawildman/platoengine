@@ -51,7 +51,6 @@ private:
     std::vector<std::string> mSymmetryPlaneOrigin;
     std::vector<std::string> mSymmetryPlaneNormal;
     std::vector<std::string> mSymmetryPlaneLocationNames;
-    std::vector<std::string> mDescriptors;
 
 // private member functions
 private:
@@ -201,6 +200,14 @@ public:
     std::vector<std::string> values(const std::string& aTag) const;
 
     /******************************************************************************//**
+     * \fn find
+     * \brief Return sequence container associated with associative key.
+     * \param [in] aKey associative key
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> find(const std::string& aKey) const;
+
+    /******************************************************************************//**
      * \fn tags
      * \brief Return list of parameter tags.
      * \return parameter tags
@@ -241,10 +248,31 @@ public:
 
     /******************************************************************************//**
      * \fn descriptors
-     * \brief Set optimization parameter descriptors.
-     * \param [in] aDescriptors list of optimization parameter descriptors
+     * \brief Set optimizable parameter descriptors.
+     * \param [in] aDescriptors sequence container
     **********************************************************************************/
-    void descriptors(const std::vector<std::string> &aDescriptors) { mDescriptors = aDescriptors; }
+    void descriptors(const std::vector<std::string> &aDescriptors);
+
+    /******************************************************************************//**
+     * \fn descriptors
+     * \brief Return optimizable parameter descriptors.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> descriptors() const { return this->find("descriptors"); }
+
+    /******************************************************************************//**
+     * \fn lower_bounds
+     * \brief Return lower bounds for optimization parameters.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> lower_bounds() const { return this->find("lower_bounds"); }
+
+    /******************************************************************************//**
+     * \fn upper_bounds
+     * \brief Return lower bounds for optimization parameters.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> upper_bounds() const { return this->find("upper_bounds"); }
 
     /******************************************************************************//**
      * \fn setFixedBlockIDs
@@ -361,7 +389,6 @@ public:
     std::string levelset_material_box_max() const {return value("levelset_material_box_max");}
     std::string levelset_sphere_radius() const {return value("levelset_sphere_radius");}
     std::string levelset_sphere_packing_factor() const {return value("levelset_sphere_packing_factor");}
-    std::vector<std::string> descriptors() const {return mDescriptors;}
     std::vector<std::string> levelset_nodesets() const {return mLevelsetNodesets;}
     std::vector<std::string> fixed_block_ids() const {return mFixedBlockIDs;}
     std::vector<std::string> fixed_nodeset_ids() const {return mFixedNodesetIDs;}

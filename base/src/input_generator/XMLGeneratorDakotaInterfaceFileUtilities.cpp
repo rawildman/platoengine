@@ -43,8 +43,8 @@ void append_performer_data
  pugi::xml_document& aDocument)
 {
     auto tCummulativePerformerID = XMLGen::append_plato_main_performer(aMetaData, aDocument);
-    XMLGen::append_physics_performer(aMetaData, aDocument, tCummulativePerformerID);
-    XMLGen::append_platoservice(aMetaData, aDocument, tCummulativePerformerID);
+    tCummulativePerformerID = XMLGen::append_physics_performer(aMetaData, aDocument, tCummulativePerformerID);
+    tCummulativePerformerID = XMLGen::append_platoservice(aMetaData, aDocument, tCummulativePerformerID);
 }
 /******************************************************************************/
 
@@ -63,6 +63,7 @@ void append_concurrent_design_variables_shared_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
+    auto tNumParameters = XMLGen::get_number_of_shape_parameters(aMetaData);
     std::string tFirstPlatoMainPerformer = aMetaData.getFirstPlatoMainPerformer();
     auto tForNode = aDocument.append_child("For");
     tForNode.append_attribute("var") = "I";
@@ -71,7 +72,7 @@ void append_concurrent_design_variables_shared_data
     addChild(tTmpNode, "Name", "design_parameters_{I}");
     addChild(tTmpNode, "Type", "Scalar");
     addChild(tTmpNode, "Layout", "Global");
-    addChild(tTmpNode, "Size", aMetaData.optimization_parameters().num_shape_design_variables());
+    addChild(tTmpNode, "Size", std::to_string(tNumParameters));
     addChild(tTmpNode, "OwnerName", tFirstPlatoMainPerformer);
     addChild(tTmpNode, "UserName", tFirstPlatoMainPerformer);
     for(auto& tService : aMetaData.services())
