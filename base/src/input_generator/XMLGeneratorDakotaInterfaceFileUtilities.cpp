@@ -42,11 +42,9 @@ void append_performer_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
 {
-    XMLGen::append_plato_main_performer(aMetaData, aDocument);
-
-    int tPerformerId = 1;
-    XMLGen::append_physics_performer(aMetaData, aDocument, tPerformerId);
-    XMLGen::append_platoservice(aMetaData, aDocument, tPerformerId);
+    auto tCummulativePerformerID = XMLGen::append_plato_main_performer(aMetaData, aDocument);
+    XMLGen::append_physics_performer(aMetaData, aDocument, tCummulativePerformerID);
+    XMLGen::append_platoservice(aMetaData, aDocument, tCummulativePerformerID);
 }
 /******************************************************************************/
 

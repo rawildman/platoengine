@@ -11,14 +11,16 @@ namespace XMLGen
 {
 
 /******************************************************************************/
-void append_plato_main_performer
+int append_plato_main_performer
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aNode)
 {
     // The platomain optimizer should always be the first service in the list.
+    auto tPerformerID = std::string("0");
     const XMLGen::Service &tService = aXMLMetaData.service(0);
     auto tPerformerNode = aNode.append_child("Performer");
-    XMLGen::append_children( {"Name", "Code", "PerformerID"}, {tService.performer(), tService.code(), "0"}, tPerformerNode);
+    XMLGen::append_children( {"Name", "Code", "PerformerID"}, {tService.performer(), tService.code(), tPerformerID}, tPerformerNode);
+    return std::stoi(tPerformerID);
 }
 // function append_plato_main_performer
 /******************************************************************************/

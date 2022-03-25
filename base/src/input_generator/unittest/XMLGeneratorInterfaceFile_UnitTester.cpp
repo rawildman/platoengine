@@ -1306,7 +1306,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformers)
     tMetaData.mPerformerServices.push_back(tService);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
+    ASSERT_EQ(0, XMLGen::append_plato_main_performer(tMetaData, tDocument));
     ASSERT_NO_THROW(XMLGen::append_uniperformer_usecase(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");
@@ -1543,7 +1543,7 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersWithHelmholtz)
     tMetaData.mPerformerServices.push_back(tService);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_plato_main_performer(tMetaData, tDocument));
+    ASSERT_EQ(0, XMLGen::append_plato_main_performer(tMetaData, tDocument));
     ASSERT_NO_THROW(XMLGen::append_uniperformer_usecase(tMetaData, tDocument));
 
     auto tPerformer = tDocument.child("Performer");

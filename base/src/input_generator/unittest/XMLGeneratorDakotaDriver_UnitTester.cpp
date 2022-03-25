@@ -439,14 +439,16 @@ TEST(PlatoTestXMLGenerator, AppendDefinesFileToInterfaceFile)
 TEST(PlatoTestXMLGenerator, AppendPerformersToInterfaceFile_SingleObjective)
 {
     XMLGen::InputData tMetaData;
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.code("platomain");
+    tServiceOne.append("type", "plato_app");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.code("plato_analyze");
+    tServiceTwo.append("type", "plato_app");
+    tMetaData.append(tServiceTwo);
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
@@ -454,7 +456,7 @@ TEST(PlatoTestXMLGenerator, AppendPerformersToInterfaceFile_SingleObjective)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::dakota::append_performer_data(tMetaData, tDocument));
+    XMLGen::dakota::append_performer_data(tMetaData, tDocument);
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
