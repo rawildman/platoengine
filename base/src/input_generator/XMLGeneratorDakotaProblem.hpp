@@ -1,7 +1,7 @@
 /*
- * XMLGeneratorProblem.hpp
+ * XMLGeneratorDakotaProblem.hpp
  *
- *  Created on: Nov 20, 2020
+ *  Created on: March 25, 2022
  */
 
 #pragma once
@@ -11,47 +11,49 @@ namespace XMLGen
 
 struct InputData;
 
-namespace Problem
+namespace dakota
 {
 
 /******************************************************************************//**
- * \fn write_performer_operation_xml_file_gradient_based_problem
+ * \fn write_performer_input_deck_file
+ * \brief Write the input deck file for the performer in the metada
+ * \param [in] aMetaData input metadata
+**********************************************************************************/
+void write_performer_input_deck_file
+(XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn write_performer_operation_xml_file
  * \brief Write the operations file for the performer in the metada
  * \param [in] aInputData input metadata
 **********************************************************************************/
-void write_performer_operation_xml_file_gradient_based_problem
+void write_performer_operation_xml_file
 (const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
- * \fn write_performer_input_deck_file_gradient_based_problem
- * \brief Write the input deck file for the performer in the metada
+ * \fn usecase_esp
+ * \brief Write input files needed to solve problems with dakota and engineering sketch pad (esp).
  * \param [in] aInputData input metadata
+ * \param [in] aPreProcessedMetaData pre process metadata for problems with \n 
+ *    concurrent app evaluations
 **********************************************************************************/
-void write_performer_input_deck_file_gradient_based_problem
-(const XMLGen::InputData& aMetaData);
-
-/******************************************************************************//**
- * \fn write_optimization_problem
- * \brief Write input files needed to solve optimization problems with Plato Analyze.
- * \param [in] aInputData input metadata
-**********************************************************************************/
-void write_optimization_problem
-(const XMLGen::InputData& aMetaData,
+void usecase_esp
+(XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData);
 
 /******************************************************************************//**
- * \fn write_dakota_problem
+ * \fn write_problem
  * \brief Write input files needed to solve problems with dakota.
  * \param [in] aInputData input metadata
  * \param [in] aPreProcessedMetaData pre process metadata for problems with \n 
  *    concurrent app evaluations
 **********************************************************************************/
-void write_dakota_problem
+void write_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData);
 
 }
-// namespace Problem
+// namespace dakota
 
 }
 // namespace XMLGen

@@ -12,6 +12,8 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParseMetadata.hpp"
+#include "XMLGeneratorDakotaProblem.hpp"
+#include "XMLGeneratorProblemUtilities.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
@@ -3590,8 +3592,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData2));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_2_input_deck_0.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -3717,7 +3719,7 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
     auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
@@ -3833,8 +3835,8 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDAndPlatoAnalyzeInputXmlFilesForDakotaDr
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData2));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
     auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 

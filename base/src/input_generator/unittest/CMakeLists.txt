@@ -28,6 +28,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParseLoads.cpp
                                       ../XMLGeneratorParseOutput.cpp
                                       ../XMLGeneratorRunMetadata.cpp
+                                      ../XMLGeneratorDakotaProblem.cpp
                                       ../XMLGeneratorParseAssembly.cpp
                                       ../XMLGeneratorParseScenario.cpp
                                       ../XMLGeneratorParseServices.cpp
@@ -42,6 +43,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParserUtilities.cpp
                                       ../XMLGeneratorParseConstraint.cpp
                                       ../XMLGeneratorServiceMetadata.cpp
+                                      ../XMLGeneratorProblemUtilities.cpp
                                       ../XMLGeneratorServiceUtilities.cpp
                                       ../XMLGeneratorParseUncertainty.cpp
                                       ../XMLGeneratorScenarioMetadata.cpp
