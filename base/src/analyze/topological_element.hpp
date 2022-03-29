@@ -132,7 +132,7 @@ public:
   virtual int  getNnps() {return myNnps;}
   virtual int  getDim() {return myDim;}
   virtual int  getNumElem() {return myNel;}
-  virtual const char* getType() { return myType.c_str(); }
+  virtual string getType() { return myType; }
   virtual int  getBlockId() { return groupID; }
   virtual void setBlockId(int bid) { groupID = bid; }
   virtual string getBlockName() { return myName; }
