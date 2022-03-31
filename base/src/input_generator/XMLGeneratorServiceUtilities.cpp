@@ -164,5 +164,14 @@ bool is_physics_performer
 // function is_physics_performer
 /******************************************************************************/
 
+/******************************************************************************/
+std::string get_concretized_service_name
+(const XMLGen::Service& aService)
+{
+    return (std::string("plato_services_") + aService.id());
+}
+// function get_concretized_service_name
+/******************************************************************************/
+
 }
 // namespace XMLGen

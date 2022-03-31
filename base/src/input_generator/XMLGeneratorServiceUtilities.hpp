@@ -81,5 +81,14 @@ int num_cache_states(const std::vector<XMLGen::Service> &aServices);
 bool is_physics_performer
 (XMLGen::InputData& aMetaData);
 
+/******************************************************************************//**
+ * \fn get_concretized_service_name
+ * \brief Return concretized service name 
+ * \param [in] aService service metadata
+ * \return string 
+**********************************************************************************/
+std::string get_concretized_service_name
+(const XMLGen::Service& aService);
+
 }
 // namespace XMLGen

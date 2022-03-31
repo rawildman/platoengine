@@ -59,6 +59,26 @@ void append_shared_data
 /******************************************************************************/
 
 /******************************************************************************/
+void append_design_parameters_user_name
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode)
+{
+    for(auto& tService : aMetaData.services())
+    {
+        if(tService.type() == "plato_app" && tService.code() != "platomain")
+        {
+            addChild(aParentNode, "UserName", tService.performer() + std::string("_{I}"));
+        }
+        else if( tService.type() == "web_app" || tService.type() == "system_call" )
+        {
+            addChild(aParentNode, "UserName", XMLGen::get_concretized_service_name(tService) + std::string("_{I}"));
+        }
+    }
+}
+// function append_design_parameters_user_name
+/******************************************************************************/
+
+/******************************************************************************/
 void append_concurrent_design_variables_shared_data
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
@@ -75,14 +95,24 @@ void append_concurrent_design_variables_shared_data
     addChild(tTmpNode, "Size", std::to_string(tNumParameters));
     addChild(tTmpNode, "OwnerName", tFirstPlatoMainPerformer);
     addChild(tTmpNode, "UserName", tFirstPlatoMainPerformer);
-    for(auto& tService : aMetaData.services())
+    XMLGen::dakota::append_design_parameters_user_name(aMetaData, tTmpNode);
+}
+
+/******************************************************************************/
+std::string append_criterion_owner_name
+(const XMLGen::Service& aService)
+{
+    if(aService.type() == "plato_app" && aService.code() != "platomain")
     {
-        if(tService.code() == "plato_analyze" || tService.code() == "sierra_sd")
-        {
-            addChild(tTmpNode, "UserName", tService.performer() + std::string("_{I}"));
-        }
+        return XMLGen::to_lower( aService.performer() );
+    }
+    else if( aService.type() == "web_app" || aService.type() == "system_call" )
+    {
+        return ( XMLGen::get_concretized_service_name(aService) );
     }
 }
+// function append_criterion_owner_name
+/******************************************************************************/
 
 /******************************************************************************/
 void append_dakota_criterion_shared_data
@@ -100,7 +130,8 @@ void append_dakota_criterion_shared_data
         std::string tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tCriterion);
 
         XMLGen::Service tService = aMetaData.service(tServiceID);
-        auto tOwnerName = (tService.code() == "platomain") ? std::string("plato_services") : tService.performer();
+        auto tOwnerName = XMLGen::dakota::append_criterion_owner_name(tService);
+        // (tService.code() == "platomain") ? std::string("plato_services") : tService.performer();
 
         auto tForNode = aDocument.append_child("For");
         tForNode.append_attribute("var") = "I";

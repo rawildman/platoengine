@@ -44,6 +44,16 @@ void append_shared_data
  pugi::xml_document      & aDocument);
 
 /******************************************************************************//**
+ * \fn append_design_parameters_username
+ * \brief Append design parameters user name.
+ * \param [in]  aMetaData   Plato problem input metadata
+ * \param [out] aParentNode parent xml node
+**********************************************************************************/
+void append_design_parameters_username
+(const XMLGen::InputData & aMetaData,
+ pugi::xml_node          & aParentNode);
+
+/******************************************************************************//**
  * \fn append_concurrent_design_variables_shared_data
  * \brief Append parameters sensitivity shared data for shape optimization problems.
  * \param [in]  aMetaData Plato problem input metadata

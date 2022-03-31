@@ -502,14 +502,16 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjective)
     XMLGen::InputData tMetaData;
 
     // Create a service
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
 
     // Create a criterion
     XMLGen::Criterion tCriterion;
@@ -574,14 +576,16 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_MultiObjective)
     XMLGen::InputData tMetaData;
 
     // Create a service
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
 
     // Create criteria
     XMLGen::Criterion tCriterion;
@@ -664,17 +668,21 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     XMLGen::InputData tMetaData;
 
     // Create services
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("sierra_sd");
-    tMetaData.append(tService);
-    tService.id("5");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("sierra_sd");
+    tMetaData.append(tServiceTwo);
+    XMLGen::Service tServiceThree;
+    tServiceThree.id("5");
+    tServiceThree.type("plato_app");
+    tServiceThree.code("plato_analyze");
+    tMetaData.append(tServiceThree);
 
     // Create criteria
     XMLGen::Criterion tCriterion;
@@ -749,6 +757,275 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     ASSERT_STREQ("SharedData", tSharedData.name());
     tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
     tValues = {"criterion_7_service_5_scenario_3_{I}", "Scalar", "Global", "1", "plato_analyze_5_{I}", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_TRUE(tOuterSharedData.empty());
+
+    tOuterSharedData = tOuterSharedData.next_sibling("SharedData");
+    ASSERT_TRUE(tOuterSharedData.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjective_WebApp)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("web_app");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
+
+    // Create a criterion
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("num_shape_design_variables", "4");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
+
+    // TEST
+    auto tOuterSharedData = tDocument.child("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    auto tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName", "UserName"};
+    std::vector<std::string> tValues = {"design_parameters_{I}", "Scalar", "Global", "4", "platomain_1", "platomain_1", "plato_services_2_{I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"criterion_3_service_2_scenario_14_{I}", "Scalar", "Global", "1", "plato_services_2_{I}", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_TRUE(tOuterSharedData.empty());
+
+    tOuterSharedData = tOuterSharedData.next_sibling("SharedData");
+    ASSERT_TRUE(tOuterSharedData.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_MultiObjective_SystemCall)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("system_call");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("volume");
+    tMetaData.append(tCriterion);
+
+    // Create a scenario
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "multi_objective";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.criteriaIDs.push_back("7");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("num_shape_design_variables", "4");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
+
+    // TEST
+    auto tOuterSharedData = tDocument.child("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    auto tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName", "UserName"};
+    std::vector<std::string> tValues = {"design_parameters_{I}", "Scalar", "Global", "4", "platomain_1", "platomain_1", "plato_services_2_{I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"criterion_3_service_2_scenario_14_{I}", "Scalar", "Global", "1", "plato_services_2_{I}", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"criterion_7_service_2_scenario_14_{I}", "Scalar", "Global", "1", "plato_services_2_{I}", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_TRUE(tOuterSharedData.empty());
+
+    tOuterSharedData = tOuterSharedData.next_sibling("SharedData");
+    ASSERT_TRUE(tOuterSharedData.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingleConstraint_SystemCall)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create services
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("system_call");
+    tServiceTwo.code("sierra_sd");
+    tMetaData.append(tServiceTwo);
+    XMLGen::Service tServiceThree;
+    tServiceThree.id("5");
+    tServiceThree.type("system_call");
+    tServiceThree.code("plato_analyze");
+    tMetaData.append(tServiceThree);
+
+    // Create criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+    tCriterion.id("7");
+    tCriterion.type("stress_p-norm");
+    tMetaData.append(tCriterion);
+
+    // Create scenarios
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    tScenario.id("3");
+    tScenario.physics("transient_mechanics");
+    tMetaData.append(tScenario);
+    
+    // Create an objective
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tMetaData.objective = tObjective;
+
+    // Create a constraint
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("8");
+    tConstraint.criterion("7");
+    tConstraint.service("5");
+    tConstraint.scenario("3");
+    tMetaData.constraints.push_back(tConstraint);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
+    tOptimizationParameters.append("concurrent_evaluations", "2");
+    tOptimizationParameters.append("num_shape_design_variables", "4");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
+
+    // TEST
+    auto tOuterSharedData = tDocument.child("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    auto tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName", "UserName", "UserName"};
+    std::vector<std::string> tValues = {"design_parameters_{I}", "Scalar", "Global", "4", "platomain_1", "platomain_1", "plato_services_2_{I}", "plato_services_5_{I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"criterion_3_service_2_scenario_14_{I}", "Scalar", "Global", "1", "plato_services_2_{I}", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tOuterSharedData = tOuterSharedData.next_sibling("For");
+    ASSERT_FALSE(tOuterSharedData.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tOuterSharedData);
+    tSharedData = tOuterSharedData.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"criterion_7_service_5_scenario_3_{I}", "Scalar", "Global", "1", "plato_services_5_{I}", "platomain_1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tOuterSharedData = tOuterSharedData.next_sibling("For");
