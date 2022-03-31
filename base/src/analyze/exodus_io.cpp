@@ -164,6 +164,7 @@ ExodusIO::readHeader()
   int  Nel_quad8      = 0;
   int  Nel_hex8       = 0;
   int  Nel_hex20      = 0;
+  int  Nel_hex27      = 0;
   int  Nel_tet4       = 0;
   int  Nel_tet10      = 0;
   int  num_node_sets  = 0;
@@ -446,6 +447,24 @@ ExodusIO::readHeader()
       eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
+
+    } else if (!strncasecmp(elemtype, "HEX27",   5)) {
+      vector<vector<int>> tFaceGraph({
+          {0,1,5,4, 8,13,16,12,25},
+          {1,2,6,5, 9,14,17,13,24},
+          {2,3,7,6,10,15,18,14,26},
+          {3,0,4,7,11,12,19,15,23},
+          {3,2,1,0,10, 9, 8,11,21},
+          {4,5,6,7,16,17,18,19,22}});
+      Topological::Hex27* eb = new Topological::Hex27( num_elem_in_block, num_attr );
+      Nel_hex27+=num_elem_in_block;
+      eb->setDataContainer( myData );
+      eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
+      eb->registerData();
+      myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "HEX",   3)) {
       vector<vector<int>> tFaceGraph({{0,1,5,4},{1,2,6,5},{2,3,7,6},{3,0,4,7},{3,2,1,0},{4,5,6,7}});
       Topological::Hex8* eb = new Topological::Hex8( num_elem_in_block, num_attr );
@@ -477,10 +496,10 @@ ExodusIO::readHeader()
 
   bool filerr = false;
   int Nel_tot = Nel_tet4 + Nel_tet10 + Nel_truss2 + Nel_tri3 + Nel_quad4 + Nel_quad8 + 
-                Nel_hex8 + Nel_hex20;
+                Nel_hex8 + Nel_hex20 +Nel_hex27;
   if (Nel_tot == 0 || Nel_tot != Nel) filerr = true;
   if ( (Nel_quad4 + Nel_quad8 + Nel_tri3 + Nel_truss2 > 0) &&
-       (Nel_hex8 + Nel_hex20 + Nel_tet4 + Nel_tet10 == 0) && (Ndim == 3) ) filerr = true;
+       (Nel_hex8 + Nel_hex20 + Nel_hex27 + Nel_tet4 + Nel_tet10 == 0) && (Ndim == 3) ) filerr = true;
   if (filerr) {
     pXcout << "\n\n\t!!!!! Error reading exodus file !!!!!" << endl;
     pXcout << "\t  Ndim       = " << Ndim << endl;;
@@ -490,6 +509,7 @@ ExodusIO::readHeader()
     pXcout << "\t  Nel_quad8  = " << Nel_quad8 << endl;
     pXcout << "\t  Nel_hex8   = " << Nel_hex8 << endl;
     pXcout << "\t  Nel_hex20  = " << Nel_hex20 << endl;
+    pXcout << "\t  Nel_hex27  = " << Nel_hex27 << endl;
     return false;
   }
 
@@ -749,6 +769,14 @@ ExodusIO::readConn()
       }
     } else if(!strncasecmp(elemtype, "HEX20", 20)) {
       const int NNPE = 20;
+      int* loconn = connect;
+      for( int k=0; k<num_elem_in_block[i]; ++k ) {
+	eb->connectNodes(k, global_element_count, loconn);
+	loconn+=NNPE;
+        ++global_element_count;
+      }
+    } else if(!strncasecmp(elemtype, "HEX27", 27)) {
+      const int NNPE = 27;
       int* loconn = connect;
       for( int k=0; k<num_elem_in_block[i]; ++k ) {
 	eb->connectNodes(k, global_element_count, loconn);

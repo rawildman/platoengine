@@ -365,40 +365,40 @@ namespace BamG
                 for( decltype(aSpec.numZ) tIndexK=0; tIndexK<aSpec.numZ; tIndexK++)
                 {
                     int tElIndex = indexMap(tIndexI, tIndexJ, tIndexK, aSpec.numX, aSpec.numY, aSpec.numZ);
-                    tConnect[tElIndex*cNumNPE+0] = indexMap(tIndexI,   tIndexJ,   tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+1] = indexMap(tIndexI+2, tIndexJ,   tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+2] = indexMap(tIndexI+2, tIndexJ+2, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+3] = indexMap(tIndexI,   tIndexJ+2, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+4] = indexMap(tIndexI,   tIndexJ,   tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+5] = indexMap(tIndexI+2, tIndexJ,   tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+6] = indexMap(tIndexI+2, tIndexJ+2, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+7] = indexMap(tIndexI,   tIndexJ+2, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+0] = indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+1] = indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+2] = indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+3] = indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+4] = indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+5] = indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+6] = indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+7] = indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+8] = indexMap(tIndexI+1, tIndexJ,   tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+9] = indexMap(tIndexI+2, tIndexJ+1, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+10]= indexMap(tIndexI+1, tIndexJ+2, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+11]= indexMap(tIndexI,   tIndexJ+1, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+8] = indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+9] = indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+10]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+11]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+12]= indexMap(tIndexI,   tIndexJ,   tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+13]= indexMap(tIndexI+2, tIndexJ,   tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+14]= indexMap(tIndexI+2, tIndexJ+2, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+15]= indexMap(tIndexI,   tIndexJ+2, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+12]= indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+13]= indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+14]= indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+15]= indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+16]= indexMap(tIndexI+1, tIndexJ,   tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+17]= indexMap(tIndexI+2, tIndexJ+1, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+18]= indexMap(tIndexI+1, tIndexJ+2, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+19]= indexMap(tIndexI,   tIndexJ+1, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+16]= indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+17]= indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+18]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+19]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+20]= indexMap(tIndexI+1, tIndexJ+1, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+20]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+21]= indexMap(tIndexI+1, tIndexJ+1, tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+22]= indexMap(tIndexI+1, tIndexJ+1, tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+21]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+22]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+23]= indexMap(tIndexI,   tIndexJ+1, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+24]= indexMap(tIndexI+2, tIndexJ+1, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+23]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+24]= indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
 
-                    tConnect[tElIndex*cNumNPE+25]= indexMap(tIndexI+1, tIndexJ,   tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
-                    tConnect[tElIndex*cNumNPE+26]= indexMap(tIndexI+1, tIndexJ+2, tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+25]= indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+26]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
                 }
             return tConnect;
         }
