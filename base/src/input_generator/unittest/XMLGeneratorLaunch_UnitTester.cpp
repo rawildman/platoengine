@@ -861,6 +861,57 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineCommand)
   Plato::system("rm -rf command.txt");
 }
 
+TEST(PlatoTestXMLGenerator, appendPruneThresholdCommand)
+{
+  XMLGen::InputData tInputData;
+  XMLGen::OptimizationParameters tOptimizationParameters;
+  tOptimizationParameters.append("prune_mesh", "true");
+  tOptimizationParameters.append("prune_threshold", "0.6");
+  tOptimizationParameters.append("prune_and_refine_path", "path/to/some/executable");
+  tOptimizationParameters.append("number_refines", "2");
+  tOptimizationParameters.append("number_buffer_layers", "2");
+  tOptimizationParameters.append("number_prune_and_refine_processors", "10");
+  tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
+  tOptimizationParameters.append("initial_guess_field_name", "badGuess");
+  tInputData.set(tOptimizationParameters);
+  tInputData.mesh.name = "dummy.exo";
+  tInputData.mesh.run_name = "output.exo";
+  tInputData.m_UseLaunch = false;
+  FILE* fp = fopen("command.txt", "w");
+  XMLGen::append_prune_and_refine_command(tInputData, fp);
+  fclose(fp);
+
+  auto tReadData = XMLGen::read_data_from_file("command.txt");
+  std::string tGold = std::string("mpiexec-np10path/to/some/executable--mesh_with_variable=dummy_guess.exo") + 
+      std::string("--mesh_to_be_pruned=dummy.exo--result_mesh=output.exo--field_name=badGuess") + 
+      std::string("--number_of_refines=2--number_of_buffer_layers=2--prune_mesh=1--prune_threshold=0.6");
+
+  EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+  ///Threshold set but prune not turned on.
+  XMLGen::OptimizationParameters tOptimizationParameters2;
+  tOptimizationParameters2.append("prune_threshold", "0.4");
+  tOptimizationParameters2.append("number_refines", "");
+  tOptimizationParameters2.append("number_buffer_layers", "");
+  tOptimizationParameters2.append("number_prune_and_refine_processors", "");
+  tOptimizationParameters2.append("initial_guess_file_name", "");
+  tOptimizationParameters2.append("initial_guess_field_name", "");
+  tInputData.set(tOptimizationParameters2);
+
+  tInputData.mesh.name = "dummy.exo";
+  tInputData.mesh.run_name = "output.exo";
+  fp = fopen("command.txt", "w");
+  XMLGen::append_prune_and_refine_command(tInputData, fp);
+  fclose(fp);
+
+  tReadData = XMLGen::read_data_from_file("command.txt");
+  tGold = std::string("mpiexec-np0prune_and_refine--mesh_to_be_pruned=dummy.exo--result_mesh=output.exo") + 
+          std::string("--number_of_refines=0--number_of_buffer_layers=2--prune_mesh=0");
+
+  EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+  Plato::system("rm -rf command.txt");
+}
+
 TEST(PlatoTestXMLGenerator, appendPruneAndRefineCommand_invalidInput)
 {
   XMLGen::InputData tInputData;
@@ -995,6 +1046,38 @@ TEST(PlatoTestXMLGenerator, appendPruneAndRefineLinesToMPIRunLaunchScript)
   std::string tGold = std::string("mpiexec-np10path/to/some/executable--mesh_with_variable=dummy_guess.exo") + 
       std::string("--mesh_to_be_pruned=dummy.exo--result_mesh=output.exo--field_name=badGuess") + 
       std::string("--number_of_refines=2--number_of_buffer_layers=2--prune_mesh=1") +
+      std::string("epu-autooutput.exo.10.00");
+
+  EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+  Plato::system("rm -rf pruneAndRefine.txt");
+}
+
+TEST(PlatoTestXMLGenerator, appendPruneAndRefineThresholdLinesToMPIRunLaunchScript)
+{
+  XMLGen::InputData tInputData;
+  XMLGen::OptimizationParameters tOptimizationParameters;
+  tOptimizationParameters.append("prune_mesh", "true");
+  tOptimizationParameters.append("prune_threshold", "0.6");
+  tOptimizationParameters.append("prune_and_refine_path", "path/to/some/executable");
+  tOptimizationParameters.append("number_refines", "2");
+  tOptimizationParameters.append("number_buffer_layers", "2");
+  tOptimizationParameters.append("number_prune_and_refine_processors", "10");
+  tOptimizationParameters.append("initial_guess_file_name", "dummy_guess.exo");
+  tOptimizationParameters.append("initial_guess_field_name", "badGuess");
+  tOptimizationParameters.isARestartRun(true);
+  tInputData.set(tOptimizationParameters);
+  tInputData.mesh.name = "dummy.exo";
+  tInputData.mesh.run_name = "output.exo";
+  tInputData.m_UseLaunch = false;
+  FILE* fp = fopen("pruneAndRefine.txt", "w");
+  XMLGen::append_prune_and_refine_lines_to_mpirun_launch_script(tInputData, fp);
+  fclose(fp);
+
+  auto tReadData = XMLGen::read_data_from_file("pruneAndRefine.txt");
+  std::string tGold = std::string("mpiexec-np10path/to/some/executable--mesh_with_variable=dummy_guess.exo") + 
+      std::string("--mesh_to_be_pruned=dummy.exo--result_mesh=output.exo--field_name=badGuess") + 
+      std::string("--number_of_refines=2--number_of_buffer_layers=2--prune_mesh=1--prune_threshold=0.6") +
       std::string("epu-autooutput.exo.10.00");
 
   EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
