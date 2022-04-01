@@ -1116,6 +1116,7 @@ void PerceptPruneTool::find_initial_set_of_percept_elems_to_keep(
                        std::vector<proc_node_map> &procs)
 {
   int num_elems = elem_list.size();
+  double prune_threshold = tMeshManager.get_prune_threshold();
 
   percept::PerceptMesh * mesh_api = &tMeshManager.get_output_percept();
 
@@ -1157,7 +1158,7 @@ void PerceptPruneTool::find_initial_set_of_percept_elems_to_keep(
     stk::mesh::EntityId cur_node_id = tMeshManager.entity_id(all_nodes[i]);
 //    double val = mesh_api->get_max_nodal_iso_field_variable(all_nodes[i]);
     double val = tMeshManager.get_max_nodal_iso_field_variable(all_nodes[i]);
-    if(val > 0.5)
+    if(val > prune_threshold)
       node_vals[cur_node_id] = 1;
     else
       node_vals[cur_node_id] = 0;
