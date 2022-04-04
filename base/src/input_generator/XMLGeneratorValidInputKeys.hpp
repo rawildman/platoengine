@@ -1554,6 +1554,7 @@ struct ValidOptimizationParameterKeys
      "prune_and_refine_path",
      "number_buffer_layers",
      "prune_mesh",
+     "prune_threshold",
      "optimization_algorithm",
      "check_gradient",
      "check_hessian",
