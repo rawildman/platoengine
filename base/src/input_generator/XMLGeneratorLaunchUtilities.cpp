@@ -239,7 +239,7 @@ namespace XMLGen
     tCommand += (" --number_of_refines=" + tNumRefinesString);
     tCommand += (" --number_of_buffer_layers=" + tNumBufferLayersString);
     tCommand += (" --prune_mesh=" + tPruneString);
-    if(tPruneThresholdString != "" && tPruneThresholdString != "0.5")
+    if(tPruneThresholdString != "" && tPruneThresholdString != "0.5" && tPruneString == "1")
       tCommand += (" --prune_threshold=" + tPruneThresholdString);
 
     fprintf(fp, "%s\n", tCommand.c_str());
