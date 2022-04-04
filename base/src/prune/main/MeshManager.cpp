@@ -24,6 +24,7 @@ using namespace percept;
 
         {
             mPruneFlag = 1;
+            mPruneThreshold = 0.5;
             mTransferFlag = 1;
         }
 
@@ -112,6 +113,10 @@ using namespace percept;
         int MeshManager::get_prune_flag()
         {
             return mPruneFlag;
+        }
+        double MeshManager::get_prune_threshold()
+        {
+            return mPruneThreshold;
         }
 
         int MeshManager::get_transfer_flag()
@@ -259,6 +264,7 @@ using namespace percept;
           clp.setOption("number_of_refines", &mNumberOfRefines,"number of desired refines.",false);
           clp.setOption("number_of_buffer_layers",&mNumberOfBufferLayers,"number of desired buffer layers.",false);
           clp.setOption("prune_mesh",&mPruneFlag,"whether to prune the mesh.",false);
+          clp.setOption("prune_threshold",&mPruneThreshold,"threshold to prune the mesh (val>threshold are kept).",false);
 
           Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn =
                              Teuchos::CommandLineProcessor::PARSE_SUCCESSFUL;

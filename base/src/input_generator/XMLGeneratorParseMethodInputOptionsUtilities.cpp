@@ -137,6 +137,7 @@ void insert_fixed_blocks_input_options(XMLGen::MetaDataTags &aTags)
 void insert_prune_and_refine_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
+    aTags.insert({ "prune_threshold", { { {"prune_threshold"}, ""}, "" } });
     aTags.insert({ "number_refines", { { {"number_refines"}, ""}, "" } });
     aTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
     aTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });

@@ -467,6 +467,19 @@ void assert_is_positive_integer(const std::string &aString)
 /******************************************************************************/
 
 /******************************************************************************/
+void assert_is_positive_double(const std::string &aString)
+{
+    if (aString.empty())
+        THROWERR("expected a positive integer\n")
+    
+    double tVal=std::stod(aString);
+    if(tVal <= 0)
+        THROWERR("expected a positive integer\n")
+}
+// function assert_is_positive_integer
+/******************************************************************************/
+
+/******************************************************************************/
 void append_include_defines_xml_data(const XMLGen::InputData &aMetaData,
                                      pugi::xml_document &aDocument)
 {

@@ -66,6 +66,7 @@ bool STKPrune::create_mesh_apis_stand_alone(int argc, char **argv,
   mNumBufferLayers = 0;
 //  mCleanUpOrphanNodes = 1;
   mRemoveIslands = 1;
+  mPruneThreshold = 0.5;
 
   stk::ParallelMachine *comm = new stk::ParallelMachine(stk::parallel_machine_init(&argc, &argv));
   if(!comm)
@@ -165,7 +166,7 @@ bool STKPrune::run_private_stand_alone()
   std::set<PruneHandle> elems_to_keep;
   // Call the element specific functions for pruning the mesh 
   if(elem_handle_list.size() > 0)
-    pruner.prune_mesh(elem_handle_list, elems_to_keep, mNumBufferLayers, mAllowNonmanifoldConnections, mRemoveIslands, mMeshAPIIn);
+    pruner.prune_mesh(elem_handle_list, elems_to_keep, mNumBufferLayers, mAllowNonmanifoldConnections, mRemoveIslands, mMeshAPIIn,mPruneThreshold);
 
   stk::mesh::EntityVector ent_vec;
   // Delete elements that were pruned out.
@@ -210,6 +211,8 @@ bool STKPrune::read_command_line( int argc, char *argv[])
   clp.setOption("time_step",  &mTimeStep, "specify the time step to be read from the file.", false );
   clp.setOption("output_fields",  &mOutputFieldsString, "specify the fields (commma separated, no spaces) to output in the output mesh.", false );
   clp.setOption("fixed_blocks",  &mFixedBlocksString, "specify the blocks that are fixed (commma separated, no spaces).", false );
+  clp.setOption("prune_threshold",  &mPruneThreshold, "specify the threshold to prune (values greater than threshold are kept ).", false );
+  
 
   Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn =
                      Teuchos::CommandLineProcessor::PARSE_SUCCESSFUL;

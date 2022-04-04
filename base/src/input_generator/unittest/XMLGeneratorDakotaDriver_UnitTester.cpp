@@ -244,9 +244,9 @@ TEST(PlatoTestXMLGenerator, InsertPruneAndRefineInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_prune_and_refine_input_options(tTags);
-    EXPECT_EQ(5u, tTags.size());
+    EXPECT_EQ(6u, tTags.size());
 
-    std::unordered_map<std::string, std::string> tGoldValues = { {"prune_mesh",""}, {"number_refines",""}, 
+    std::unordered_map<std::string, std::string> tGoldValues = { {"prune_mesh",""}, {"prune_threshold",""},{"number_refines",""}, 
         {"number_buffer_layers", ""}, {"prune_and_refine_path", ""}, {"number_prune_and_refine_processors", ""} };
     for(auto& tPair : tTags)
     {

@@ -54,6 +54,8 @@ public:
            int get_buffer_layers();
 
            int get_prune_flag();
+           double get_prune_threshold();
+
            int get_transfer_flag();
 
            stk::ParallelMachine* get_communicator();
@@ -89,6 +91,8 @@ private:
         int mNumberOfBufferLayers;
         int mPruneFlag;
         int mTransferFlag;
+
+        double mPruneThreshold;
 
         stk::ParallelMachine mComm;
 

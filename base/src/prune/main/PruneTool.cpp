@@ -12,7 +12,8 @@ void PruneTool::prune_mesh(const std::vector<PruneHandle> &elem_list,
                                int num_buffer_layers,
                                int allow_nonmanifold_connections,
                                int remove_islands,
-                               PruneMeshAPISTK *mesh_api)
+                               PruneMeshAPISTK *mesh_api, 
+                               double prune_threshold)
 {
   int num_elems = elem_list.size();
   std::map<stk::mesh::EntityId, int> node_vals, elem_vals;
@@ -29,7 +30,7 @@ void PruneTool::prune_mesh(const std::vector<PruneHandle> &elem_list,
   ////////////////////////////////////////////////
 
   find_initial_set_of_elems_to_keep(elem_list, num_buffer_layers,
-          mesh_api, node_vals, elem_vals, procs);
+          mesh_api, node_vals, elem_vals, procs, prune_threshold);
 
   ////////////////////////////////////////////////
   // Do initial communication of boundary info
@@ -1081,7 +1082,7 @@ void PruneTool::find_initial_set_of_elems_to_keep(
                        PruneMeshAPISTK *mesh_api,
                        std::map<stk::mesh::EntityId, int> &node_vals,
                        std::map<stk::mesh::EntityId, int> &elem_vals,
-                       std::vector<proc_node_map> &procs)
+                       std::vector<proc_node_map> &procs,double prune_threshold)
 {
     int num_elems = elem_list.size();
 
@@ -1115,7 +1116,7 @@ void PruneTool::find_initial_set_of_elems_to_keep(
                 if(node_vals.count(cur_node_id) == 0) // don't process if it has already been set
                 {
                     double val = mesh_api->get_max_nodal_iso_field_variable(elem_node_list[j]);
-                    if(val > 0.5)
+                    if(val > prune_threshold)
                         node_vals[cur_node_id] = 1;
                     else
                         node_vals[cur_node_id] = 0;

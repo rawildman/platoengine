@@ -305,6 +305,7 @@ public:
     std::string prune_and_refine_path() const {return value("prune_and_refine_path");}
     std::string number_buffer_layers() const {return value("number_buffer_layers");}
     std::string prune_mesh() const {return value("prune_mesh");}
+    std::string prune_threshold() const {return value("prune_threshold");}
     std::string num_shape_design_variables() const {return value("num_shape_design_variables");}
     std::string initial_guess_file_name() const {return value("initial_guess_file_name");}
     std::string initial_guess_field_name() const {return value("initial_guess_field_name");}
