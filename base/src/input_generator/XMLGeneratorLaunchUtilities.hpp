@@ -45,6 +45,7 @@ namespace XMLGen
     std::string get_num_opt_processors(const XMLGen::InputData& aInputData);
     std::string get_num_buffer_layers(const XMLGen::InputData& aInputData);
     std::string get_prune_string(const XMLGen::InputData& aInputData);
+    std::string get_prune_threshold_string(const XMLGen::InputData& aInputData);
     std::string get_extension_string(const std::string& tNumberPruneAndRefineProcsString);
     std::string get_prune_and_refine_executable_path(const XMLGen::InputData& aInputData);
     size_t compute_number_of_nodes_needed(const size_t& aNumProcessorsNeeded, const size_t& aNumProcessorsPerNode);

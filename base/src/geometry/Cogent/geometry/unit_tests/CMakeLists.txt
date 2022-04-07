@@ -1,6 +1,4 @@
 add_executable(GeometryCylinderTest Test_Geometry_Cylinder.cpp UnitTest.cpp)
-target_include_directories(GeometryCylinderTest PRIVATE ${GTEST_INCLUDE_DIRS})
 target_link_libraries(GeometryCylinderTest Cogent)
-target_link_libraries(GeometryCylinderTest ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
-target_link_libraries(GeometryCylinderTest ${GTEST_LIBRARY_DIR}/libgtest.a)
+target_link_libraries(GeometryCylinderTest GTest::GTest ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
 add_test(NAME GeometryCylinderTest COMMAND GeometryCylinderTest)

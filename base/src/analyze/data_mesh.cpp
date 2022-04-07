@@ -78,6 +78,9 @@ DataMesh::~DataMesh()
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
 #endif //VERBOSE_DEBUG_LOCATION
 
+  delete [] nodeGlobalIds;
+  delete [] elemGlobalIds;
+  delete [] nodeOwnership;
   delete [] numDofsOnNodes;
   delete [] startingDofPlid;
 

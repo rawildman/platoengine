@@ -1563,6 +1563,7 @@ struct ValidOptimizationParameterKeys
      "prune_and_refine_path",
      "number_buffer_layers",
      "prune_mesh",
+     "prune_threshold",
      "optimization_algorithm",
      "check_gradient",
      "check_hessian",
@@ -1627,6 +1628,7 @@ struct ValidOptimizationParameterKeys
      "moga_population_size",
      "moga_niching_distance",
      "moga_max_function_evaluations",
+     "sbgo_surrogate_output_name",
      "num_sampling_method_samples",
     };
 };

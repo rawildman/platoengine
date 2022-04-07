@@ -19,7 +19,7 @@ Plato_add_test_files("${testFiles}")
 
 INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 set(PlatoXTK_UnitTester_LIBS 
-    ${GTEST_LIBRARY} 
+    GTest::GTest 
     ${PLATO_LIBRARIES} 
     ${PLATO_LIBRARIES} # NOTE: PLATO_LIBRARIES needs to be linked against twice
     ${PETSc_Libs}
