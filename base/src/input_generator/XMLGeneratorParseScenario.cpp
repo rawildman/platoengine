@@ -61,7 +61,7 @@ void ParseScenario::setBCIDs(XMLGen::Scenario &aMetadata)
         XMLGen::parse_tokens(tValuesBuffer, tBCIDs);
         aMetadata.setBCIDs(tBCIDs);
     }
-    else if (aMetadata.physics() != "modal_response")
+    else if (aMetadata.physics() != "modal_response" && aMetadata.physics() != "electromagnetics")
     {
         THROWERR("Parse Scenario: boundary_conditions are not defined");
     }
