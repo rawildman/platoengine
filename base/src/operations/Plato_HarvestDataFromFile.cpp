@@ -62,15 +62,18 @@ HarvestDataFromFile::HarvestDataFromFile(PlatoApp* aPlatoApp, Plato::InputData& 
 void HarvestDataFromFile::operator()()
 {
     // read table from disk
+    std::ofstream out_file("debug.dat");
+    out_file<<"trying to read file"<<std::endl;
     Plato::Table tTable;
     auto tFileName = mInputStrKeyValuePairs.at("File").front();
     Plato::read_table(tFileName, tTable.mData);
 
+    out_file<<"after reading file"<<std::endl;
     // evaluate operation
     tTable.mOperation = mInputStrKeyValuePairs.at("Operation").front();
     tTable.mCol = std::stoi(mInputStrKeyValuePairs.at("Column").front());
     mLocalOutputValue = Plato::compute(tTable);
-
+    out_file<<"after compute"<<std::endl;
     // set output shared data
     if(!mUnitTest)
     {
@@ -78,6 +81,8 @@ void HarvestDataFromFile::operator()()
         std::vector<double>* tOutput = mPlatoApp->getValue(tOutputArgumentName);
         (*tOutput)[0] = mLocalOutputValue;
     }
+    out_file<<"finished reading file"<<std::endl;
+    out_file.close();
 }
 
 void HarvestDataFromFile::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)

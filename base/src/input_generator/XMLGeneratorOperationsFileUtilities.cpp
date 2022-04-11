@@ -234,7 +234,9 @@ void write_run_app_via_system_call_operation_to_file
         std::vector<std::string> tVals = {aOperationMetaData.get("functions")[tIndex], 
                                           aOperationMetaData.get("names")[tIndex], 
                                           aOperationMetaData.get("commands")[tIndex], 
-                                          "true", "false",
+                                          "true", 
+                                          
+                                          "false",
                                           aOperationMetaData.get("subdirectories")[tIndex],
                                           aOperationMetaData.get("arguments")[tIndex]};
         XMLGen::append_children(tKeys, tVals, tOperation);

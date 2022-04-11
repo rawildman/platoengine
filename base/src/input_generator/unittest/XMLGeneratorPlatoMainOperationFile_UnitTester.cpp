@@ -2174,6 +2174,24 @@ TEST(PlatoTestXMLGenerator, AppendFilterControlToPlatoMainOperationForProjection
     PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Filtered Field"}, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendWaitForFileToPlatoMainOperation)
+{
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_wait_for_file_close_operation_commands(tDocument,"wait","folder","file"));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", 
+        "Command", "OnChange"};
+    std::vector<std::string> tValues = {"SystemCall", "wait", 
+        "while lsof -u $USER | grep folder/file; do sleep 1; done; ", "false"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+  
+}
+
 TEST(PlatoTestXMLGenerator, WriteCubitJournalFileTet10Conversion)
 {
     // Create a block

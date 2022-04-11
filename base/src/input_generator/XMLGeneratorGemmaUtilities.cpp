@@ -137,7 +137,7 @@ void append_general_web_app_options
 {
     aOperationMetaData.append("code", "gemma");
     aOperationMetaData.append("base_web_port_number", "7000");
-    aOperationMetaData.append("base_subdirectory_name", "gemma_evaluation");
+    aOperationMetaData.append("base_subdirectory_name", "evaluations");
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     aOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
 }
@@ -160,7 +160,7 @@ void write_input_deck
 {
     XMLGen::OperationMetaData tOperationMetaData;
     tOperationMetaData.append("code", "gemma");
-    tOperationMetaData.append("base_subdirectory_name", "gemma_evaluation");
+    tOperationMetaData.append("base_subdirectory_name", "evaluations");
     auto tNumConcurrentEvals = aInputMetaData.optimization_parameters().concurrent_evaluations();
     tOperationMetaData.append("concurrent_evaluations", tNumConcurrentEvals);
     XMLGen::append_evaluation_subdirectories(tOperationMetaData);
@@ -172,9 +172,9 @@ void write_system_call_app_operation_files
 (const XMLGen::InputData& aInputMetaData)
 { 
     pugi::xml_document tDocument;
-    XMLGen::matched_power_balance::write_aprepro_system_call_operation("gemma_evaluation", aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_run_app_via_system_call_operation("gemma_evaluation", aInputMetaData, tDocument);
-    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("gemma_evaluation", aInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_aprepro_system_call_operation("evaluations", aInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_run_app_via_system_call_operation("evaluations", aInputMetaData, tDocument);
+    XMLGen::matched_power_balance::write_harvest_data_from_file_operation("evaluations", aInputMetaData, tDocument);
     tDocument.save_file("plato_gemma_app_operation_file.xml", "  ");
 }
 // function write_system_call_app_operation_files

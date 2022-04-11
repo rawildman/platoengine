@@ -409,6 +409,20 @@ void append_update_geometry_on_change_operation_commands
  const std::string& aTag);
 
 /******************************************************************************//**
+ * \fn append_wait_for_file_close_operation_commands
+ * \brief Append commands for waiting for a file to be closed before proceding
+ * \param [in/out] pugi::xml_document
+ * \param [in]     aName operation name
+ * \param [in]     aFolder the folder to look at
+ * \param [in]     aFile the file to look at
+**********************************************************************************/
+void append_wait_for_file_close_operation_commands
+(pugi::xml_document& aDocument,
+ const std::string& aName,
+ const std::string& aFolder,
+ const std::string& aFile);
+
+/******************************************************************************//**
  * \fn append_reinitialize_operation_to_plato_main_operation
  * \brief Append operation for reinitializing plato services
  * \param [in]     aXMLMetaData Plato problem input data
