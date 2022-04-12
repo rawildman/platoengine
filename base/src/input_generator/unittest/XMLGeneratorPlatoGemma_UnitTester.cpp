@@ -368,8 +368,8 @@ TEST(PlatoTestXMLGenerator, AppendHarvestSystemCallOperationsToPlatoMainOperatio
         "Operation", 
         "Column",
         "Output"};
-    std::vector<std::string> tValues = {"HarvestDataFromFile", "harvest_data_0", 
-        "./evaluations_0/matched_power_balance.dat", 
+    std::vector<std::string> tValues = {"HarvestDataFromFile", "harvest_objective_criterion_id_2_eval_0", 
+        "./evaluations_0/gemma_matched_power_balance_input_deck_power_balance.dat", 
         "max", 
         "1",
         ""};
@@ -389,8 +389,8 @@ TEST(PlatoTestXMLGenerator, AppendHarvestSystemCallOperationsToPlatoMainOperatio
         "Operation", 
         "Column",
         "Output"};
-    tValues = {"HarvestDataFromFile", "harvest_data_1", 
-        "./evaluations_1/matched_power_balance.dat", 
+    tValues = {"HarvestDataFromFile", "harvest_objective_criterion_id_2_eval_1", 
+        "./evaluations_1/gemma_matched_power_balance_input_deck_power_balance.dat", 
         "max", 
         "1",
         ""};
