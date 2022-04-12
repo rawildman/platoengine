@@ -300,13 +300,14 @@ void write_harvest_objective_data_from_file_operation
         for(decltype(tNumConcurrentEvals) tEvalIndex = 0; tEvalIndex < tNumConcurrentEvals; tEvalIndex++)
         {
             auto tDataGroupType = XMLGen::get_data_group_type(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
-            std::vector<std::string> tKeys = {"Function", "Name", "File", "Operation", tDataGroupType};
+            std::vector<std::string> tKeys = {"Function", "Name", "File","ChDir", "Operation", tDataGroupType};
 
             auto tFileIndex = (tNumCriteria * tCriteriaIndex) + tEvalIndex;
             auto tDataGroupIndex = XMLGen::get_data_group_index(aOperationMetaData.get("objective_data_groups")[tCriteriaIndex]);
             auto tFuncName = std::string("harvest_objective_criterion_id_") + tObjectiveCriterionID + "_eval_" + std::to_string(tEvalIndex);
             std::vector<std::string> tVals = { "HarvestDataFromFile", tFuncName, 
                                                aOperationMetaData.get("objective_data_files")[tFileIndex],
+                                               aOperationMetaData.get("sub_directories")[tFileIndex],
                                                aOperationMetaData.get("objective_data_extraction_operations")[tCriteriaIndex],
                                                tDataGroupIndex };
 

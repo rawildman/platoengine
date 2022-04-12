@@ -357,18 +357,25 @@ TEST(PlatoTestXMLGenerator, AppendHarvestSystemCallOperationsToPlatoMainOperatio
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::matched_power_balance::write_harvest_data_from_file_operation("evaluations", tInputMetaData, tDocument));
+    
+    XMLGen::gemma::write_operation_file(tInputMetaData);
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
+    
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", 
+    std::vector<std::string> tKeys = {
+        "Function", 
+        "Name", 
         "File",
         "Operation", 
         "Column",
         "Output"};
-    std::vector<std::string> tValues = {"HarvestDataFromFile", "harvest_objective_criterion_id_2_eval_0", 
+    std::vector<std::string> tValues = {
+        "HarvestDataFromFile", 
+        "harvest_objective_criterion_id_2_eval_0", 
         "./evaluations_0/gemma_matched_power_balance_input_deck_power_balance.dat", 
         "max", 
         "1",
