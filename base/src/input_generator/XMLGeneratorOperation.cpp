@@ -11,33 +11,28 @@
 namespace XMLGen
 {
     
-XMLGeneratorOperation::XMLGeneratorOperation()
+XMLGeneratorOperation::XMLGeneratorOperation
+(const std::string& aName,
+ const std::string& aFunction) :
+ mName(aName),
+ mFunction(aFunction)
 {
 }
-void XMLGeneratorOperation::write
-(pugi::xml_document& aDocument)
-{
-    
 
-
-}
 void XMLGeneratorOperation::appendCommonChildren
-(pugi::xml_node &aOperationNode)
+(pugi::xml_node& aOperationNode)
 {
     addChild(aOperationNode, "Function", mFunction);
     addChild(aOperationNode, "Name", mName);
-    addChild(aOperationNode, "Command", mCommand);
 }
 
 XMLGeneratorOperationWait::XMLGeneratorOperationWait
-(std::string aName,
-    std::string aFile,
-    std::string aEvaluation)
+(const std::string& aName,
+ const std::string& aFile,
+ const std::string& aEvaluation) :
+ XMLGeneratorOperation(aName, "SystemCall"),
+ mEvaluation(aEvaluation)
 {
-    mEvaluation=aEvaluation;
-    mName = aName;
-    mFunction = "SystemCall";
-
     mCommand = std::string("while lsof -u $USER | grep ./") + aFile + "; do sleep 1; done";
     if( mEvaluation == "" )
     {
@@ -45,31 +40,32 @@ XMLGeneratorOperationWait::XMLGeneratorOperationWait
     }
     else
     {
-        mName += "_"+mEvaluation;
+        mName += "_" + mEvaluation;
         mChDir = true;
     }
     mOnChange = false;
 }
-void XMLGeneratorOperationWait::write
-(pugi::xml_document& aDocument)
+
+void XMLGeneratorOperationWait::write(pugi::xml_document& aDocument)
 {
-    pugi::xml_node tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode);
+    addChild(tOperationNode, "Command", mCommand);
     if(mChDir)
         addChild(tOperationNode, "ChDir", std::string("evaluations_") + mEvaluation);
-    addChild(tOperationNode, "OnChange", (mOnChange?"true":"false"));
-    
-    //auto tInputNode = operationNode.append_child("Input");
-    //XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
 }
 
-XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall(std::string aInputDeck, std::string aNumRanks, std::string aEvaluation)
+XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
+(const std::string& aInputDeck, 
+ const std::string& aNumRanks, 
+ const std::string& aEvaluation) :
+ XMLGeneratorOperation("gemma", "SystemCallMPI"),
+ mCommand("gemma"),
+ mArgument(aInputDeck),
+ mNumRanks(aNumRanks),
+ mEvaluation(aEvaluation)
 {
-    mFunction = "SystemCallMPI";
-    mEvaluation=aEvaluation;
-    mName = "gemma";
-
-    mCommand = "gemma";
     if( mEvaluation == "" )
     {
         mChDir = false;
@@ -80,41 +76,37 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
         mChDir = true;
     }
     mOnChange = true;
-    mNumRanks = aNumRanks;
-    mArgument = aInputDeck;
-
 }
+
  void XMLGeneratorOperationGemmaMPISystemCall::write(pugi::xml_document& aDocument)
  {
-    pugi::xml_node tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode);
+    addChild(tOperationNode, "Command", mCommand);
+
     if(mChDir)
         addChild(tOperationNode, "ChDir", std::string("evaluations_") + mEvaluation);
-    addChild(tOperationNode, "OnChange", (mOnChange?"true":"false"));
+    addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
     addChild(tOperationNode, "NumRanks", mNumRanks );
     addChild(tOperationNode, "Argument", mArgument );
     addChild(tOperationNode, "AppendInput", "false" );
  }
 
-
-XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro(std::string aInputDeck, std::vector<std::string> aOptions , std::string aEvaluation)
+XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
+(const std::string& aInputDeck, 
+ const std::vector<std::string>& aOptions, 
+ const std::string& aEvaluation) :
+ XMLGeneratorOperation("aprepro", "SystemCall"),
+ mCommand("aprepro"),
+ mEvaluation(aEvaluation)
 {
-    mFunction = "SystemCall";
-    mEvaluation=aEvaluation;
-    mName = "aprepro";
-
-    mCommand = "aprepro";
-
-    
-    mOnChange = true;
-    
     mArgument.push_back("-q");
-    mArgument.push_back(aInputDeck+".template");
+    mArgument.push_back(aInputDeck + ".template");
     mArgument.push_back(aInputDeck);
     mOptions = aOptions;
 
     mInput.mLayout = "scalar";
-    mInput.mSize = mOptions.size();
+    mInput.mSize = std::to_string(mOptions.size());
     mInput.mArgumentName = "parameters";
     if( mEvaluation == "" )
     {
@@ -126,80 +118,75 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro(std::string aInputDec
         mChDir = true;
         mInput.mArgumentName += "_" + mEvaluation;
     }
-
-
+    mOnChange = true;
 }
+
 void XMLGeneratorOperationAprepro::write(pugi::xml_document& aDocument)
 {
-    pugi::xml_node tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode);
+    addChild(tOperationNode, "Command", mCommand);
+
     if(mChDir)
         addChild(tOperationNode, "ChDir", std::string("evaluations_") + mEvaluation);
-    addChild(tOperationNode, "OnChange", (mOnChange?"true":"false"));
+    addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
     
     for( auto tA : mArgument )
         addChild(tOperationNode, "Argument", tA );
     
     addChild(tOperationNode, "AppendInput", "true" );
-    
+
     for( auto tO : mOptions )
         addChild(tOperationNode, "Option", tO );
     
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode,"ArgumentName",mInput.mArgumentName);
-    addChild(tInputNode,"Layout",mInput.mLayout);
-    addChild(tInputNode,"Size",mInput.mSize);
-    
+    addChild(tInputNode, "ArgumentName", mInput.mArgumentName);
+    addChild(tInputNode, "Layout", mInput.mLayout);
+    addChild(tInputNode, "Size", mInput.mSize);
 }
 
-/*
-
-XMLGeneratorOperationSystemCallMPI::XMLGeneratorOperationSystemCallMPI
-(const XMLGen::InputData& aInputMetaData, 
-int aCriteria, 
-int aEvaluation):XMLGeneratorOperation(aInputMetaData)
+XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFunction
+(const std::string& aFile,
+ const std::string& aMathOperation,
+ const std::string& aDataColumn,
+ const std::string& aEvaluation) : 
+ XMLGeneratorOperation("harvest_data", "HarvestDataFromFile"),
+ mFile(aFile),
+ mOperation(aMathOperation),
+ mColumn(aDataColumn),
+ mEvaluation(aEvaluation)
 {
-
-
+    mOutput.mLayout = "scalar";
+    mOutput.mSize = "1";
+    mOutput.mArgumentName = "criterion value";
+    if( mEvaluation == "" )
+    {
+        mChDir = false;
+    }
+    else
+    {
+        mName += "_" + mEvaluation;
+        mChDir = true;
+    }
+    mOnChange = true;
 }
-void XMLGeneratorOperationSystemCallMPI::write
-(pugi::xml_document& aDocument)
+
+void XMLGeneratorOperationHarvestDataFunction::write(pugi::xml_document& aDocument)
 {
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode);
 
+    if(mChDir)
+        addChild(tOperationNode, "ChDir", std::string("evaluations_") + mEvaluation);
 
+    addChild(tOperationNode, "File", mFile);
+    addChild(tOperationNode, "Operation", mOperation);
+    addChild(tOperationNode, "Column", mColumn);
+
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
+    addChild(tOutputNode, "Layout", mOutput.mLayout);
+    addChild(tOutputNode, "Size", mOutput.mSize);
 }
-
- XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFunction
- (const XMLGen::InputData& aInputMetaData, 
- int aCriteria, 
- int aEvaluation):XMLGeneratorOperation(aInputMetaData)
- {
-
-
- }
-void XMLGeneratorOperationHarvestDataFunction::write
-(pugi::xml_document& aDocument)
-{
-
-
-}
-
-XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
-(const XMLGen::InputData& aInputMetaData, 
-int aCriteria,
-int aEvaluation):XMLGeneratorOperation(aInputMetaData)
-{
-
-
-}
-
-void XMLGeneratorOperationAprepro::write
-(pugi::xml_document& aDocument)
-{
-
-
-}
-*/
-
 
 }

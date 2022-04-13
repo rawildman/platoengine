@@ -27,78 +27,73 @@ protected:
     std::string mFunction;
     std::string mName;
     bool mChDir;
-    std::string mCommand; 
     bool mOnChange;
 
     void appendCommonChildren(pugi::xml_node &aOperationNode);
 
 public:
-    XMLGeneratorOperation();
-    void write(pugi::xml_document& aDocument);
+    XMLGeneratorOperation(const std::string& aName,
+                          const std::string& aFunction);
+    virtual void write(pugi::xml_document& aDocument) = 0;
 };
 
 class XMLGeneratorOperationWait : public XMLGeneratorOperation
 {
 private:
+    std::string mCommand; 
     std::string mEvaluation;
 public:
-    XMLGeneratorOperationWait
-    (std::string aName,
-    std::string aFile,
-    std::string aEvaluation);
-    void write(pugi::xml_document& aDocument);
+    XMLGeneratorOperationWait(const std::string& aName,
+                              const std::string& aFile,
+                              const std::string& aEvaluation);
+    void write(pugi::xml_document& aDocument) override;
 };
-
 
 class XMLGeneratorOperationGemmaMPISystemCall : public XMLGeneratorOperation
 {
 private:
+    std::string mCommand; 
     std::string mNumRanks;
     std::string mArgument;
     std::string mEvaluation;
 public:
-    XMLGeneratorOperationGemmaMPISystemCall(std::string aInputDeck, std::string aNumRanks, std::string aEvaluation);
-    void write(pugi::xml_document& aDocument);
+    XMLGeneratorOperationGemmaMPISystemCall(const std::string& aInputDeck,
+                                            const std::string& aNumRanks, 
+                                            const std::string& aEvaluation);
+    void write(pugi::xml_document& aDocument) override;
 
 };
 
 class XMLGeneratorOperationAprepro : public XMLGeneratorOperation
 {
 private:
+    std::string mCommand; 
     std::vector<std::string> mArgument;
     std::vector<std::string> mOptions;
     std::string mEvaluation;
     XMLGeneratorInputOutput mInput;
 public:
-    XMLGeneratorOperationAprepro(std::string aInputDeck, std::vector<std::string> aOptions , std::string aEvaluation);
-    void write(pugi::xml_document& aDocument);
+    XMLGeneratorOperationAprepro(const std::string& aInputDeck,
+                                 const std::vector<std::string>& aOptions, 
+                                 const std::string& aEvaluation);
+    void write(pugi::xml_document& aDocument) override;
 
 };
 
-
-
-/*
 class XMLGeneratorOperationHarvestDataFunction : public XMLGeneratorOperation
 {
 private:
-    int mColumn;
+    std::string mFile;
     std::string mOperation;
-    bool mAppendInput;
-    XMLGeneratorInputOutput mPut;
+    std::string mColumn;
+    std::string mEvaluation;
+    XMLGeneratorInputOutput mOutput;
 public:
-    XMLGeneratorOperationHarvestDataFunction(const XMLGen::InputData& aInputMetaData, int aCriteria, int aEvaluation);
-    void write(pugi::xml_document& aDocument);
+    XMLGeneratorOperationHarvestDataFunction(const std::string& aFile,
+                                             const std::string& aMathOperation,
+                                             const std::string& aDataColumn,
+                                             const std::string& aEvaluation);
+    void write(pugi::xml_document& aDocument) override;
 };
 
-class XMLGeneratorOperationAprepro : public XMLGeneratorOperation
-{
-private:
-    std::vector<std::string> mArguments;
-    std::vector<std::string> mOptions;
-public:
-    XMLGeneratorOperationAprepro(const XMLGen::InputData& aInputMetaData, int aCriteria, int aEvaluation);
-    void write(pugi::xml_document& aDocument);
-};
-
-*/
 }
