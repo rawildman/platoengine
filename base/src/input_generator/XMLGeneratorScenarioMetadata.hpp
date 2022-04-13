@@ -389,6 +389,8 @@ public:
     std::string frequency_min() const {return this->getValue("frequency_min"); }
     std::string frequency_max() const {return this->getValue("frequency_max"); }
     std::string frequency_step() const {return this->getValue("frequency_step"); }
+    std::string cavity_radius() const {return this->getValue("cavity_radius"); }
+    std::string cavity_height() const {return this->getValue("cavity_height"); }
     std::string raleigh_damping_alpha() const {return this->getValue("raleigh_damping_alpha"); }
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }

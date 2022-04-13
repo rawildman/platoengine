@@ -10,6 +10,8 @@
 #include "XMLGeneratorProblemUtilities.hpp"
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
+#include "XMLGeneratorOperation.hpp"
+#include "XMLGeneratorGemmaProblem.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorPlatoESPInputFileUtilities.hpp"
@@ -105,11 +107,42 @@ void plato_esp_problem
 }
 // function plato_esp_problem
 
+void plato_gemma_problem
+(XMLGen::InputData& aMetaData,
+ const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
+{
+    XMLGen::XMLGeneratorGemmaProblem tGemma(aMetaData);
+
+    tGemma.create_evaluation_subdirectories_and_gemma_input(aMetaData);
+    pugi::xml_document tDocument;
+    tGemma.write_plato_main(tDocument);
+    tDocument.save_file("plato_main_operations.xml", "  ");
+
+    XMLGen::write_define_xml_file(aMetaData);
+    XMLGen::dakota::write_interface_xml_file(aMetaData);
+   //>>>>csm file dependent XMLGen::generate_launch_script(aMetaData);
+    
+    //>>>>csm file dependent XMLGen::Problem::write_plato_services_performer_input_deck_files(aMetaData);
+    for(auto tCurMetaData : aPreProcessedMetaData)
+    {
+        XMLGen::dakota::write_performer_operation_xml_file(tCurMetaData);
+        XMLGen::dakota::write_performer_input_deck_file(tCurMetaData);
+    }
+
+    //>>>>csm file dependent XMLGen::write_plato_main_input_deck_file(aMetaData);
+    XMLGen::write_dakota_driver_input_deck(aMetaData);
+}
+// function plato_gemma_problem
+
 void write_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
-    XMLGen::dakota::plato_esp_problem(aMetaData, aPreProcessedMetaData);
+    
+    if(aMetaData.optimization_parameters().csm_file()=="")
+        XMLGen::dakota::plato_gemma_problem(aMetaData, aPreProcessedMetaData);
+    else
+        XMLGen::dakota::plato_esp_problem(aMetaData, aPreProcessedMetaData);
 }
 // function write_problem
 

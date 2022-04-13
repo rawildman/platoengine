@@ -30,7 +30,8 @@ private:
 public:
     XMLGeneratorGemmaProblem(const InputData& aMetaData);
     void write_plato_main(pugi::xml_document& aDocument) override;
-
+    void create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData);
+    void create_matched_power_balance_input_deck(const InputData& aMetaData);
 };
 
 }

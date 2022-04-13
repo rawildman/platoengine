@@ -70,7 +70,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     tServiceOne.append("id", "1");
     tServiceOne.append("type", "system_call");
     tServiceOne.append("number_processors", "1");
-    tServiceOne.append("input_file", "match.yaml");
+   
     tInputMetaData.append(tServiceOne);
     XMLGen::Service tServiceTwo;
     tServiceTwo.append("code", "platomain");
@@ -112,8 +112,8 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_0",
         "true",
         "-q",
-        "match.yaml.template",
-        "match.yaml",
+        "matched_power_balance.yaml.template",
+        "matched_power_balance.yaml",
         "true",
         "slot_length",
         "slot_width",
@@ -149,7 +149,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_0",
         "true",
         "1",
-        "match.yaml",
+        "matched_power_balance.yaml",
         "false"};
     PlatoTestXMLGenerator::test_children(tGemmaKeys, tGemmaValues, tOperation);
 
@@ -232,8 +232,8 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_1",
         "true",
         "-q",
-        "match.yaml.template",
-        "match.yaml",
+        "matched_power_balance.yaml.template",
+        "matched_power_balance.yaml",
         "true",
         "slot_length",
         "slot_width",
@@ -258,7 +258,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_1",
         "true",
         "1",
-        "match.yaml",
+        "matched_power_balance.yaml",
         "false"};
     PlatoTestXMLGenerator::test_children(tGemmaKeys, tGemmaValues, tOperation);
     tOperation = tOperation.next_sibling("Operation");
