@@ -642,6 +642,8 @@ void Hex27::init()
   myDim = 3;
   NODECONNECT = UNSET_VAR_INDEX;
   GLOBALID    = UNSET_VAR_INDEX;
+  blockTopology = Teuchos::rcp(new shards::CellTopology(shards::getCellTopologyData<shards::Hexahedron<27> >() ) );
+  blockBasis = new Intrepid::Basis_HGRAD_HEX_C2_FEM<double, Intrepid::FieldContainer<double> >() ;
 }
 
 Hex27::~Hex27()
