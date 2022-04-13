@@ -35,6 +35,7 @@ public:
     XMLGeneratorOperation(const std::string& aName,
                           const std::string& aFunction);
     virtual void write(pugi::xml_document& aDocument) = 0;
+    std::string name();
 };
 
 class XMLGeneratorOperationWait : public XMLGeneratorOperation
@@ -87,12 +88,14 @@ private:
     std::string mOperation;
     std::string mColumn;
     std::string mEvaluation;
+    std::string mCriterion;
     XMLGeneratorInputOutput mOutput;
 public:
     XMLGeneratorOperationHarvestDataFunction(const std::string& aFile,
                                              const std::string& aMathOperation,
                                              const std::string& aDataColumn,
-                                             const std::string& aEvaluation);
+                                             const std::string& aEvaluation,
+                                             const  std::string& aCriterion);
     void write(pugi::xml_document& aDocument) override;
 };
 

@@ -75,6 +75,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoXTKInputFile.cpp
                       XMLGeneratorPlatoXTKOperationFile.cpp
 		      XMLGeneratorOperation.cpp
+		      XMLGeneratorGemmaProblem.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -161,6 +162,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
 		      XMLGeneratorOperation.hpp
+		      XMLGeneratorGemmaProblem.hpp
                       )
 
 find_package(MPI)

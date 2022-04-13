@@ -26,6 +26,11 @@ void XMLGeneratorOperation::appendCommonChildren
     addChild(aOperationNode, "Name", mName);
 }
 
+std::string XMLGeneratorOperation::name()
+{
+    return mName;
+}
+
 XMLGeneratorOperationWait::XMLGeneratorOperationWait
 (const std::string& aName,
  const std::string& aFile,
@@ -149,12 +154,14 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
 (const std::string& aFile,
  const std::string& aMathOperation,
  const std::string& aDataColumn,
- const std::string& aEvaluation) : 
+ const std::string& aEvaluation,
+ const std::string& aCriterion) : 
  XMLGeneratorOperation("harvest_data", "HarvestDataFromFile"),
  mFile(aFile),
  mOperation(aMathOperation),
  mColumn(aDataColumn),
- mEvaluation(aEvaluation)
+ mEvaluation(aEvaluation),
+ mCriterion(aCriterion)
 {
     mOutput.mLayout = "scalar";
     mOutput.mSize = "1";
@@ -168,6 +175,7 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
         mName += "_" + mEvaluation;
         mChDir = true;
     }
+    mName += "_" + mCriterion;
     mOnChange = true;
 }
 

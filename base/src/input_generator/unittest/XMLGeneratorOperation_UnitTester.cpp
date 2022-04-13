@@ -239,7 +239,7 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationNoEvaluations)
 
 TEST(PlatoTestXMLGenerator, WriteHarvestDataOperation)
 {
-    XMLGen::XMLGeneratorOperationHarvestDataFunction tHarvestData("power_balance.dat", "max", "1", "0");
+    XMLGen::XMLGeneratorOperationHarvestDataFunction tHarvestData("power_balance.dat", "max", "1", "0","3");
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tHarvestData.write(tDocument));
@@ -257,7 +257,7 @@ TEST(PlatoTestXMLGenerator, WriteHarvestDataOperation)
         "Column",
         "Output"};
     std::vector<std::string> tValues = {"HarvestDataFromFile", 
-        "harvest_data_0", 
+        "harvest_data_0_3", 
         "evaluations_0", 
         "power_balance.dat",
         "max",
