@@ -6,9 +6,7 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
-
 }
-
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData)
 {
@@ -34,9 +32,9 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData)
         std::stringstream tStringStreamEvaluation;
         tStringStreamEvaluation << iEvaluation;
         //Aprepro
-        mOperations.push_back(new XMLGeneratorOperationAprepro(tGemmaInputFile,tDescriptors,tStringStreamEvaluation.str()));
+        mOperations.push_back(std::make_shared<XMLGeneratorOperationAprepro>(tGemmaInputFile,tDescriptors,tStringStreamEvaluation.str()));
         //Gemma call
-        mOperations.push_back(new XMLGeneratorOperationGemmaMPISystemCall(tGemmaInputFile,tNumRanks,tStringStreamEvaluation.str()));
+        mOperations.push_back(std::make_shared<XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile,tNumRanks,tStringStreamEvaluation.str()));
         bool tOneWaitPerEvaluation = false;
         for (int iCriteria = 0; iCriteria < tCriteria.size(); iCriteria++)
         {
@@ -51,11 +49,11 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData)
             //Wait (only 1 per evaluation folder, but depends on the data file name)
             if(!tOneWaitPerEvaluation)
             {
-                mOperations.push_back(new XMLGeneratorOperationWait("wait",tDataFile,tStringStreamEvaluation.str()));
+                mOperations.push_back(std::make_shared<XMLGeneratorOperationWait>("wait",tDataFile,tStringStreamEvaluation.str()));
                 tOneWaitPerEvaluation=true;
             }
             //Harvest
-            mOperations.push_back(new XMLGeneratorOperationHarvestDataFunction(tDataFile,tMathOperation,tDataColumn,tStringStreamEvaluation.str(),tCriteriaID));
+            mOperations.push_back(std::make_shared<XMLGeneratorOperationHarvestDataFunction>(tDataFile,tMathOperation,tDataColumn,tStringStreamEvaluation.str(),tCriteriaID));
             }
         }
     }

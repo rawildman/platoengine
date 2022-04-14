@@ -16,7 +16,7 @@ namespace XMLGen
 class XMLGeneratorProblem
 {
 protected:
-    std::vector<XMLGeneratorOperation*> mOperations;
+    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
 public:
     XMLGeneratorProblem();
     virtual void write_plato_main(pugi::xml_document& aDocument) = 0;
