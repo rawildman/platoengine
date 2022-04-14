@@ -458,6 +458,65 @@ TEST(PlatoTestXMLGenerator, parseCommentTokens)
 }
 
 
+TEST(PlatoTestXMLGenerator, parseOptimizationParametersDakotaVectorEntries)
+{
+        XMLGenerator_UnitTester tester;
+        std::istringstream iss;
+        std::string stringInput;
+
+        // descriptors
+        stringInput = "begin optimization_parameters\n"
+                "descriptors lower mid upper\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getDescriptors()[0], "lower");
+        EXPECT_EQ(tester.getDescriptors()[1], "mid");
+        EXPECT_EQ(tester.getDescriptors()[2], "upper");
+
+        // lower bounds
+        stringInput = "begin optimization_parameters\n"
+                "lower_bounds 1 2 3\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getLowerBounds()[0], "1");
+        EXPECT_EQ(tester.getLowerBounds()[1], "2");
+        EXPECT_EQ(tester.getLowerBounds()[2], "3");
+
+        // upper bounds
+        stringInput = "begin optimization_parameters\n"
+                "upper_bounds 5 6 7\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getUpperBounds()[0], "5");
+        EXPECT_EQ(tester.getUpperBounds()[1], "6");
+        EXPECT_EQ(tester.getUpperBounds()[2], "7");
+
+        // lower bounds
+        stringInput = "begin optimization_parameters\n"
+                "mdps_partitions 1 2 3\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getMDPSPartitions()[0], "1");
+        EXPECT_EQ(tester.getMDPSPartitions()[1], "2");
+        EXPECT_EQ(tester.getMDPSPartitions()[2], "3");
+
+}
 
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
 {

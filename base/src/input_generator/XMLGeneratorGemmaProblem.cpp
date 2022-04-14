@@ -1,4 +1,5 @@
 #include "XMLGeneratorGemmaProblem.hpp"
+#include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include <sstream>
 
@@ -6,11 +7,25 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
+    mPerformers.push_back(std::make_shared<XMLGeneratorPerformer>("0","PlatoMain","PlatoMain"));
 }
 
-XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData)
+void XMLGeneratorProblem::addPlatoServicesPerformers(int aStartID, int aEndID)
 {
+    for(int iID = aStartID; iID < aEndID ; iID++)
+    {
+        std::stringstream tStringStreamID;
+        tStringStreamID << iID;
+        std::stringstream tStringStreamIDMinusOne;
+        tStringStreamIDMinusOne << (iID-1);
+        
+        mPerformers.push_back(std::make_shared<XMLGeneratorPerformer>(tStringStreamID.str(),"plato_services_"+tStringStreamIDMinusOne.str(),"plato_services"));
+    }
+}
 
+XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData):XMLGeneratorProblem()
+{
+    
   // define optimization parameters 
     auto tServices = aMetaData.services();
     std::string tNumRanks = "1";
@@ -23,10 +38,17 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData)
             tGemmaInputFile = "matched_power_balance.yaml" ; //tServices[iService].value("input_file");
         }
 
-    std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors(); 
-
+    
+    std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
+    
     auto tCriteria = aMetaData.criteria();
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+
+    addPlatoServicesPerformers(1,tEvaluations+1);
+    int tNumParams = aMetaData.optimization_parameters().descriptors().size();
+    addSharedDataPairs(tNumParams,tEvaluations);
+
+
     for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
     {
         std::stringstream tStringStreamEvaluation;
@@ -67,6 +89,25 @@ void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
     }
 
 }
+void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
+{
+    auto tConsoleNode = aDocument.append_child("Console");
+    addChild(tConsoleNode, "Enabled", "false");  /// These should belong to a XMLGeneratorProblem 
+    addChild(tConsoleNode, "Verbose", "true");
+
+    for( unsigned int tLoopInd = 0; tLoopInd < mPerformers.size(); ++tLoopInd )
+    {
+        mPerformers[tLoopInd]->write(aDocument);
+        std::cout<<mPerformers[tLoopInd]->name()<<std::endl;
+    }
+    for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
+    {
+        mSharedData[tLoopInd]->write(aDocument);
+        std::cout<<mSharedData[tLoopInd]->name()<<std::endl;
+    }
+
+
+}
 void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData)
 {
     //Create templated input deck for Gemma
@@ -80,8 +121,36 @@ void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(
         tStringStreamEvaluation <<"evaluations_"<< iEvaluation;
         tEvaluationFolders.push_back(tStringStreamEvaluation.str());
     }
-    move_file_to_subdirectories("matched_power_balance.yaml",tEvaluationFolders);
+    move_file_to_subdirectories("matched_power_balance.yaml.template",tEvaluationFolders);
 }
+
+void XMLGeneratorGemmaProblem::addSharedDataPairs(int aNumParameters, int aEvaluations)
+{
+    std::stringstream tNumParams;
+    tNumParams<<aNumParameters;
+    for(unsigned int iEvaluation = 0 ; iEvaluation < aEvaluations; iEvaluation++)
+    {
+        std::stringstream tEvaluation;
+        tEvaluation<<iEvaluation;
+        std::vector<std::string> tUserName = {"PlatoMain", std::string("plato_services_") + tEvaluation.str()} ;
+
+        mSharedData.push_back(std::make_shared<XMLGeneratorSharedData>
+        (std::string("parameters_")+tEvaluation.str(),tNumParams.str(),"PlatoMain",tUserName));
+    }
+    
+    for(unsigned int iEvaluation = 0 ; iEvaluation < aEvaluations; iEvaluation++)
+    {
+        std::stringstream tEvaluation;
+        tEvaluation<<iEvaluation;
+        std::string tOwnerName = std::string("plato_services_")+tEvaluation.str();
+        std::vector<std::string> tUserName= {"PlatoMain"};
+        mSharedData.push_back(
+            std::make_shared<XMLGeneratorSharedData>(std::string("objective_value_")+tEvaluation.str(),"1",tOwnerName,tUserName)
+            );
+    }
+    
+}
+
 
 void XMLGeneratorGemmaProblem::create_matched_power_balance_input_deck(const InputData& aMetaData)
 {
@@ -102,7 +171,7 @@ void XMLGeneratorGemmaProblem::create_matched_power_balance_input_deck(const Inp
         tFrequencyMin = tScenario[iScenario].frequency_min();
         tFrequencyMax = tScenario[iScenario].frequency_max();
         tFrequencyStep = tScenario[iScenario].frequency_step();
-        tConductivity = aMetaData.material(tScenario[iScenario].value("material")).attribute("conductivity");
+        tConductivity = aMetaData.material(tScenario[iScenario].value("material")).property("conductivity");
     }
 
     std::ofstream tOutFile;

@@ -18,6 +18,7 @@ namespace XMLGen
         std::string mArgumentName;
         std::string mLayout;
         std::string mSize;
+        std::string mSharedDataName;
     };
 
 class XMLGeneratorOperation
@@ -26,8 +27,10 @@ class XMLGeneratorOperation
 protected:
     std::string mFunction;
     std::string mName;
+    std::string mPerformerName;
     bool mChDir;
     bool mOnChange;
+    int mConcurrentEvaluations;
 
     void appendCommonChildren(pugi::xml_node &aOperationNode);
 

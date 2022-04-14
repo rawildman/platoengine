@@ -75,6 +75,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoXTKInputFile.cpp
                       XMLGeneratorPlatoXTKOperationFile.cpp
 		      XMLGeneratorOperation.cpp
+		      XMLGeneratorPerformer.cpp
+		      XMLGeneratorSharedData.cpp
 		      XMLGeneratorGemmaProblem.cpp
                       )
                       
@@ -162,6 +164,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
 		      XMLGeneratorOperation.hpp
+		      XMLGeneratorPerformer.hpp
+		      XMLGeneratorSharedData.hpp
 		      XMLGeneratorGemmaProblem.hpp
                       )
 

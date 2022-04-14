@@ -138,6 +138,30 @@ void OptimizationParameters::descriptors(const std::vector<std::string> &aDescri
     mMetaData["descriptors"] = tValueData;
 }
 
+void OptimizationParameters::lower_bounds(const std::vector<std::string> &aLowerBounds)
+{
+    ValueData tValueData;
+    tValueData.mValue = aLowerBounds;
+    tValueData.mIsDefault = false;
+    mMetaData["lower_bounds"] = tValueData;
+}
+
+void OptimizationParameters::upper_bounds(const std::vector<std::string> &aUpperBounds)
+{
+    ValueData tValueData;
+    tValueData.mValue = aUpperBounds;
+    tValueData.mIsDefault = false;
+    mMetaData["upper_bounds"] = tValueData;
+}
+
+void OptimizationParameters::mdps_partitions(const std::vector<std::string> &aMDPSPartitions)
+{
+    ValueData tValueData;
+    tValueData.mValue = aMDPSPartitions;
+    tValueData.mIsDefault = false;
+    mMetaData["mdps_partitions"] = tValueData;
+}
+
 std::vector<std::string> OptimizationParameters::find(const std::string& aKey) const
 {
     auto tItr = mMetaData.find(aKey);

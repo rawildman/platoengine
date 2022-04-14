@@ -132,6 +132,8 @@ void ParseScenario::allocate()
     mTags.insert({ "frequency_min", { { {"frequency_min"}, ""}, "" } });
     mTags.insert({ "frequency_max", { { {"frequency_max"}, ""}, "" } });
     mTags.insert({ "frequency_step", { { {"frequency_step"}, ""}, "" } });
+    mTags.insert({ "cavity_radius", { { {"cavity_radius"}, ""}, "" } });
+    mTags.insert({ "cavity_height", { { {"cavity_height"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_alpha", { { {"raleigh_damping_alpha"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_beta", { { {"raleigh_damping_beta"}, ""}, "" } });
     mTags.insert({ "complex_error_measure", { { {"complex_error_measure"}, ""}, "" } });

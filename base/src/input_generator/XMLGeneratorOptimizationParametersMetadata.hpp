@@ -275,6 +275,33 @@ public:
     std::vector<std::string> upper_bounds() const { return this->find("upper_bounds"); }
 
     /******************************************************************************//**
+     * \fn lower_bounds
+     * \brief Sets lower bounds for optimization parameters.
+    **********************************************************************************/
+    void lower_bounds(const std::vector<std::string> &aLowerBounds);
+
+    /******************************************************************************//**
+     * \fn upper_bounds
+     * \brief Sets upper bounds for optimization parameters.
+    **********************************************************************************/
+    void upper_bounds(const std::vector<std::string> &aUpperBounds);
+
+    /******************************************************************************//**
+     * \fn mdps_bounds
+     * \brief Sets mdps for optimization parameters.
+    **********************************************************************************/
+    void mdps_partitions(const std::vector<std::string> &aMDPSPartitions);
+
+    /******************************************************************************//**
+     * \fn mdps_partitions
+     * \brief set lower bounds for optimization parameters.
+     * 
+    **********************************************************************************/
+    std::vector<std::string> mdps_partitions() const { return this->find("mdps_partitions"); }
+
+
+
+    /******************************************************************************//**
      * \fn setFixedBlockIDs
      * \brief Set the fixed block ids
      * \param [in] aFixedBlockIDs vector of strings with fixed block ids
@@ -459,7 +486,7 @@ public:
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
     std::string dakota_workflow() const {return value("dakota_workflow");}
     std::string concurrent_evaluations() const {return value("concurrent_evaluations");}
-    std::string mdps_partitions() const {return value("mdps_partitions");}
+    
     std::string mdps_response_functions() const {return value("mdps_response_functions");}
     std::string sbgo_max_iterations() const {return value("sbgo_max_iterations");}
     std::string moga_population_size() const {return value("moga_population_size");}

@@ -102,8 +102,12 @@ void append_multidim_parameter_study_method_block
 
     auto tNumParameters = std::stoi(aMetaData.optimization_parameters().num_shape_design_variables());
     fprintf(fp, "       partitions =");
+
+    if(tPartitions.size()==1)
+    while(tPartitions.size() < tNumParameters)
+        tPartitions.push_back(tPartitions[0]);
     for (int iParameter = 0; iParameter < tNumParameters; iParameter++)
-        fprintf(fp, " %s ", tPartitions.c_str());
+        fprintf(fp, " %s ", tPartitions[iParameter].c_str());
     fprintf(fp, "\n");
 }
 
