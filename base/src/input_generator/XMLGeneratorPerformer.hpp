@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 
 #include "pugixml.hpp"
 
@@ -20,13 +21,18 @@ private:
     std::string mPerformerID;
     std::string mName;
     std::string mCode;
+    std::regex mTagExpression;
+    std::string mEvaluationTag;
+
+    int mConcurrentEvaluations;
     
 public:
-    XMLGeneratorPerformer(const std::string& aPerformerID,
+    XMLGeneratorPerformer(
                           const std::string& aName,
-                          const std::string& aCode);
-    void write(pugi::xml_document& aDocument);
-    std::string name();
+                          const std::string& aCode,
+                          int aConcurrentEvalutions);
+    void write(pugi::xml_document& aDocument,std::string aEvaluationNumber ="");
+    std::string name(std::string aEvaluationNumber ="");
 };
 
 }

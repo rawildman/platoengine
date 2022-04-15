@@ -7,11 +7,12 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
-    mPerformers.push_back(std::make_shared<XMLGeneratorPerformer>("0","PlatoMain","PlatoMain"));
+   // mPerformers.push_back(std::make_shared<XMLGeneratorPerformer>("0","PlatoMain","PlatoMain"));
 }
 
 void XMLGeneratorProblem::addPlatoServicesPerformers(int aStartID, int aEndID)
 {
+    /*
     for(int iID = aStartID; iID < aEndID ; iID++)
     {
         std::stringstream tStringStreamID;
@@ -20,11 +21,12 @@ void XMLGeneratorProblem::addPlatoServicesPerformers(int aStartID, int aEndID)
         tStringStreamIDMinusOne << (iID-1);
         
         mPerformers.push_back(std::make_shared<XMLGeneratorPerformer>(tStringStreamID.str(),"plato_services_"+tStringStreamIDMinusOne.str(),"plato_services"));
-    }
+    }*/
 }
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) : XMLGeneratorProblem()
 {
+    /*
     auto tServices = aMetaData.services();
     std::string tNumRanks = "1";
     std::string tGemmaInputFile; ///Where is this stored?
@@ -74,14 +76,14 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
                 mOperations.push_back(std::make_shared<XMLGeneratorOperationHarvestDataFunction>(tDataFile,tMathOperation,tDataColumn,tStringStreamEvaluation.str(),tCriteriaID));
             }
         }
-    }
+    }*/
 }
 
 void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
 {
     for( unsigned int tLoopInd = 0; tLoopInd < mOperations.size(); ++tLoopInd )
     {
-        mOperations[tLoopInd]->write(aDocument);
+        mOperations[tLoopInd]->write_definition(aDocument);
         std::cout<<mOperations[tLoopInd]->name()<<std::endl;
     }
 
@@ -121,6 +123,7 @@ void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(
 
 void XMLGeneratorGemmaProblem::addSharedDataPairs(int aNumParameters, int aEvaluations)
 {
+    /*
     std::stringstream tNumParams;
     tNumParams<<aNumParameters;
     for(unsigned int iEvaluation = 0 ; iEvaluation < aEvaluations; iEvaluation++)
@@ -143,7 +146,7 @@ void XMLGeneratorGemmaProblem::addSharedDataPairs(int aNumParameters, int aEvalu
             std::make_shared<XMLGeneratorSharedData>(std::string("objective_value_")+tEvaluation.str(),"1",tOwnerName,tUserName)
             );
     }
-    
+    */
 }
 
 void XMLGeneratorGemmaProblem::create_matched_power_balance_input_deck(const InputData& aMetaData)
