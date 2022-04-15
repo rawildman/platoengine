@@ -96,6 +96,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       # ../PlatoAnalyzeInputDeckWriter.cpp
                                       # ../SalinasInputDeckWriter.cpp)
 			              ../XMLGeneratorOperation.cpp
+                                      ../XMLGeneratorStage.cpp
 			              ../XMLGeneratorPerformer.cpp
 			              ../XMLGeneratorSharedData.cpp
 			              ../XMLGeneratorGemmaProblem.cpp

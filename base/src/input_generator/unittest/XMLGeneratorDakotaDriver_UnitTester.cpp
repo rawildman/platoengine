@@ -3802,6 +3802,7 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaListToPlatoAnalyzeInputFileForDakotaDr
 TEST(PlatoTestXMLGenerator, CheckThatDirectoryExists)
 {
     std::string tDirectoryName = "evaluations_0";
+    Plato::system("rm -rf evaluations_0");
     ASSERT_FALSE(XMLGen::subdirectory_exists(tDirectoryName));
     Plato::system("mkdir evaluations_0");
     ASSERT_TRUE(XMLGen::subdirectory_exists(tDirectoryName));

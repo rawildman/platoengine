@@ -18,8 +18,8 @@ namespace XMLGen
     mName(aName),
     mCode(aCode)
     {
-
     }
+
     void XMLGeneratorPerformer::write(pugi::xml_document& aDocument)
     {
         auto tPerformerNode = aDocument.append_child("Perfomer");
@@ -27,6 +27,7 @@ namespace XMLGen
         addChild(tPerformerNode, "Name", mName);
         addChild(tPerformerNode, "Code", mCode);
     }
+
     std::string XMLGeneratorPerformer::name()
     {
         return mName;

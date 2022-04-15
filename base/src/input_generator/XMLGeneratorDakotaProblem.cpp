@@ -111,16 +111,18 @@ void plato_gemma_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
-    XMLGen::XMLGeneratorGemmaProblem tGemma(aMetaData);
+    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(aMetaData);
 
-    tGemma.create_evaluation_subdirectories_and_gemma_input(aMetaData);
+    // Create stages, service/performer, operation, and shared data 
+
+    tGemmaProblem.create_evaluation_subdirectories_and_gemma_input(aMetaData);
     
     pugi::xml_document tDocument;
-    tGemma.write_plato_main(tDocument);
+    tGemmaProblem.write_plato_main(tDocument);
     tDocument.save_file("plato_main_operations.xml", "  ");
 
     pugi::xml_document tInterfaceDocument;
-    tGemma.write_interface(tInterfaceDocument);
+    tGemmaProblem.write_interface(tInterfaceDocument);
     tInterfaceDocument.save_file("interface.xml", "  ");
 
    /* XMLGen::write_define_xml_file(aMetaData);
