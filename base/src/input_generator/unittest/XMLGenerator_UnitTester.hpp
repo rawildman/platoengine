@@ -85,7 +85,13 @@ public:
     bool publicRunSROMForUncertainVariables(XMLGen::InputData& aInputData);
 
     std::string getBlockID(const int &aIndex) {return m_InputData.blocks[aIndex].block_id;}
+    std::string getBlockName(const int &aIndex) {return m_InputData.blocks[aIndex].name;}
     std::string getBlockMaterialID(const int &aIndex) {return m_InputData.blocks[aIndex].material_id;}
+    std::string getBlockElementType(const int &aIndex) {return m_InputData.blocks[aIndex].element_type;}
+    std::vector<double> getBoundingBox(const int &aIndex) {return m_InputData.blocks[aIndex].bounding_box;}
+    std::string getCriterionID(const std::string& aIndex) {return m_InputData.criterion(aIndex).id();}
+    std::string getCriterionType(const std::string& aIndex) {return m_InputData.criterion(aIndex).type();}
+    std::string getCriterionBlock(const std::string& aIndex) {return m_InputData.criterion(aIndex).block();}
     std::string getBCApplicationType(const std::string &aBCID);
     std::string getBCApplicationID(const std::string &aBCID);
     std::string getBCApplicationDOF(const std::string &aBCID);

@@ -63,6 +63,7 @@
       int mAllowNonmanifoldConnections;
       int mIsoOnly;
       int mTimeStep;
+      double mPruneThreshold;
       PruneMeshAPISTK *mMeshAPIIn;
       PruneMeshAPISTK *mMeshAPIOut;
     };

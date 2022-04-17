@@ -305,6 +305,7 @@ public:
     std::string prune_and_refine_path() const {return value("prune_and_refine_path");}
     std::string number_buffer_layers() const {return value("number_buffer_layers");}
     std::string prune_mesh() const {return value("prune_mesh");}
+    std::string prune_threshold() const {return value("prune_threshold");}
     std::string num_shape_design_variables() const {return value("num_shape_design_variables");}
     std::string initial_guess_file_name() const {return value("initial_guess_file_name");}
     std::string initial_guess_field_name() const {return value("initial_guess_field_name");}
@@ -403,6 +404,7 @@ public:
     std::string moga_niching_distance() const {return value("moga_niching_distance");}
     std::string num_sampling_method_samples() const {return value("num_sampling_method_samples");}
     std::string moga_max_function_evaluations() const {return value("moga_max_function_evaluations");}
+    std::string sbgo_surrogate_output_name() const {return value("sbgo_surrogate_output_name");}
     std::string amgx_solver_tolerance() const {return value("amgx_solver_tolerance");}
     std::string amgx_max_iterations() const {return value("amgx_max_iterations");}
     std::string amgx_print_solver_stats() const {return value("amgx_print_solver_stats");}

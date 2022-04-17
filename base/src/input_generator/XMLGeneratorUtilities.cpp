@@ -467,6 +467,19 @@ void assert_is_positive_integer(const std::string &aString)
 /******************************************************************************/
 
 /******************************************************************************/
+void assert_is_positive_double(const std::string &aString)
+{
+    if (aString.empty())
+        THROWERR("expected a positive integer\n")
+    
+    double tVal=std::stod(aString);
+    if(tVal <= 0)
+        THROWERR("expected a positive integer\n")
+}
+// function assert_is_positive_integer
+/******************************************************************************/
+
+/******************************************************************************/
 void append_include_defines_xml_data(const XMLGen::InputData &aMetaData,
                                      pugi::xml_document &aDocument)
 {
@@ -498,6 +511,17 @@ bool have_auxiliary_mesh(const XMLGen::InputData& aMetaData)
     return aMetaData.mesh.auxiliary_mesh_name.size() > 0;
 }
 // function have_auxiliary_mesh
+/******************************************************************************/
+
+/******************************************************************************/
+bool create_subblock(const XMLGen::InputData& aMetaData)
+{
+    if(aMetaData.blocks.size() > 0)
+        return aMetaData.blocks[0].bounding_box.size() != 0;
+    else
+        return false;
+}
+// function create_subblock
 /******************************************************************************/
 
 /******************************************************************************/

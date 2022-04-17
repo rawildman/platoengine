@@ -10,7 +10,7 @@ endif()
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/base/src/geometry/BamG)
 
-set(BamG_UnitTester_LIBS BamGlib ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} )
+set(BamG_UnitTester_LIBS BamGlib GTest::GTest ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} )
 add_executable(BamG_UnitTester ${BamG_UnitTester_SRCS})
 target_link_libraries(BamG_UnitTester ${BamG_UnitTester_LIBS})
 add_test(NAME BamG_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/geometry/BamG/unittest/BamG_UnitTester)

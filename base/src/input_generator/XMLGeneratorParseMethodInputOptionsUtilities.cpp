@@ -137,6 +137,7 @@ void insert_fixed_blocks_input_options(XMLGen::MetaDataTags &aTags)
 void insert_prune_and_refine_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
+    aTags.insert({ "prune_threshold", { { {"prune_threshold"}, ""}, "" } });
     aTags.insert({ "number_refines", { { {"number_refines"}, ""}, "" } });
     aTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
     aTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });
@@ -173,6 +174,7 @@ void insert_dakota_moga_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "moga_niching_distance", { { {"moga_niching_distance"}, ""}, "0.2" } });
     aTags.insert({ "num_sampling_method_samples", { { {"num_sampling_method_samples"}, ""}, "15" } }); 
     aTags.insert({ "moga_max_function_evaluations", { { {"moga_max_function_evaluations"}, ""}, "20000" } });
+    aTags.insert({ "sbgo_surrogate_output_name", { { {"sbgo_surrogate_output_name"}, ""}, "" } });
 }
 // function insert_dakota_moga_input_options
 /******************************************************************************/

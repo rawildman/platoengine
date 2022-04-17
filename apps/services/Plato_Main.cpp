@@ -68,14 +68,6 @@
 #include <fenv.h>
 #endif
 
-void safeExit(){
-#if defined(GEOMETRY) || defined(AMFILTER_ENABLED)
-    Kokkos::finalize();
-#endif
-    MPI_Finalize();
-    exit(0);
-}
-
 void writeSplashScreen();
 
 /******************************************************************************/
@@ -94,6 +86,18 @@ int main(int aArgc, char *aArgv[])
 #endif
 
     Plato::Interface* tPlatoInterface = nullptr;
+    PlatoApp *tPlatoApp = nullptr;
+
+    auto safeExit = [&]() {
+        delete tPlatoInterface;
+        delete tPlatoApp;
+#if defined(GEOMETRY) || defined(AMFILTER_ENABLED)
+        Kokkos::finalize();
+#endif
+        MPI_Finalize();
+        exit(0);
+    };
+
     try
     {
         tPlatoInterface = new Plato::Interface();
@@ -112,7 +116,6 @@ int main(int aArgc, char *aArgv[])
     tPlatoInterface->getLocalComm(tLocalComm);
 
     // Create Plato services application and register it with the Plato interface
-    PlatoApp *tPlatoApp = nullptr;
     try
     {
         if(aArgc > static_cast<int>(1))
@@ -183,16 +186,6 @@ int main(int aArgc, char *aArgv[])
     catch(...)
     {
         safeExit();
-    }
-
-    if(tPlatoApp)
-    {
-        delete tPlatoApp;
-    }
-
-    if(tPlatoInterface)
-    {
-        delete tPlatoInterface;
     }
 
     safeExit();

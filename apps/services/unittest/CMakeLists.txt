@@ -93,8 +93,7 @@ SET(PlatoMainUnitTester_HDRS Plato_StructuralTopologyOptimizationProxyGoldResult
 							 Plato_StkMeshUtils.hpp
 							 )
 
-set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/tpls/gtest/include
-                       ${CMAKE_SOURCE_DIR}/apps/services
+set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/apps/services
                        ${CMAKE_SOURCE_DIR}/apps/services/proxy
                        ${CMAKE_SOURCE_DIR}/apps/services/unittest
                        ${CMAKE_SOURCE_DIR}/base/src/analyze
@@ -145,7 +144,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
 # actual target:
 set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_ADDITIONAL_LIBS} ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} 
-                             ${NLOPT_LIBRARY} ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
+                             ${NLOPT_LIBRARY} GTest::GTest ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
                              ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
 
 if( DAKOTADRIVER )

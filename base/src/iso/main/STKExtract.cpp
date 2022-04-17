@@ -44,6 +44,7 @@
 #include "IVEMeshAPI.hpp"
 #include "IVEMeshAPISTK.hpp"
 #include "IsoVolumeExtractionTool.hpp"
+#include "Plato_FreeFunctions.hpp"
 
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_io/IossBridge.hpp>
@@ -362,7 +363,7 @@ bool STKExtract::run_extraction(int iteration, int num_materials)
                 command += stl_filename;
                 command += ".*";
                 printf("\nExecuting system call: %s\n", command.c_str());
-                system(command.c_str());
+                Plato::system_with_throw(command.c_str());
             }
         }
 
@@ -383,13 +384,13 @@ bool STKExtract::run_extraction(int iteration, int num_materials)
             {
                 std::string command = "epu -auto " + tmp_file + " > epu.log";
                 printf("\nExecuting system call: %s\n", command.c_str());
-                system(command.c_str());
+                Plato::system_with_throw(command.c_str());
 
                 command = "rm ";
                 command += save_str;
                 command += ".*";
                 printf("\nExecuting system call: %s\n", command.c_str());
-                system(command.c_str());
+                Plato::system_with_throw(command.c_str());
             }
         }
     }
@@ -459,7 +460,7 @@ void STKExtract::concatenate_stl_files(std::string &filename)
 
           int cur_num_tri;
           // read the number of tris
-          fread(&cur_num_tri, num_bytes, 1, cur_fp);
+          Plato::fread(&cur_num_tri, num_bytes, 1, cur_fp);
 
           // increment the global num tris
           num_tris += cur_num_tri;
@@ -469,11 +470,11 @@ void STKExtract::concatenate_stl_files(std::string &filename)
           {
             float cur[12];
             // Read in all the data for this tri
-            fread(cur, sizeof(float), 12, cur_fp);
+            Plato::fread(cur, sizeof(float), 12, cur_fp);
 
             // read in the attribute at the end
             unsigned short attrib = 0;
-            fread(&attrib, sizeof(unsigned short), 1, cur_fp);
+            Plato::fread(&attrib, sizeof(unsigned short), 1, cur_fp);
 
             // write the tri info out into the concatenated file
             fwrite(cur, sizeof(float), 12, stl_fp);

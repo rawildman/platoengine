@@ -239,6 +239,14 @@ std::vector<std::string> transform_value_tokens
 void assert_is_positive_integer(const std::string& aString);
 
 /******************************************************************************//**
+ * \fn assert_is_positive_double
+ * \brief Assert if input string is a positive double.
+ * \param [in] aString input string
+**********************************************************************************/
+void assert_is_positive_double(const std::string& aString);
+
+
+/******************************************************************************//**
  * \fn is_shape_optimization_problem
  * \brief Check if this is a shape optimization problem
  * \param [in] aMetaData Input metadata
@@ -275,6 +283,13 @@ void negate_scalar_values(std::vector<std::string>& aInputs);
  * \param [in]     aMetaData Plato problem input data
 **********************************************************************************/
 bool have_auxiliary_mesh(const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn create_subblock
+ * \brief determine whether we are generating a sub-block
+ * \param [in]     aMetaData Plato problem input data
+**********************************************************************************/
+bool create_subblock(const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
  * \fn get_design_variable_name
