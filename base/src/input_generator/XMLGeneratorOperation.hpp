@@ -51,7 +51,9 @@ public:
     virtual void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") = 0;
     virtual void write_interface(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") = 0;
     
+    //void for_write_definition(pugi::xml_document& aDocument, std::string aLoopMaxVar);
     void addNameTag();
+    int evaluations(){return mConcurrentEvaluations;}
     std::string name(std::string aEvaluationNumber = "");
 };
 

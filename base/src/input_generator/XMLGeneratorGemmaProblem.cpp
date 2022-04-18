@@ -27,7 +27,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::string tDataColumn;
     std::string tMathOperation;
     std::string tDataFile;
-
+    auto tCriteria = aMetaData.criteria();
     for (int iCriteria = 0; iCriteria < tCriteria.size(); iCriteria++)
     if(tCriteria[iCriteria].type()=="system_call")
     {
@@ -37,7 +37,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     }
 
     std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
-    auto tCriteria = aMetaData.criteria();
+    
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
     int tNumParams = aMetaData.optimization_parameters().descriptors().size();
     
@@ -46,16 +46,16 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,tEvaluations);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1",tPerformer,tUserPerformersJustMain,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",mPerformerMain,tUserPerformers,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
     mSharedData.push_back(tOutputSharedData);
 
-    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, tPerformer, tEvaluations );
-    std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile , tNumRanks, tPerformer, tEvaluations);
-    std::shared_ptr<XMLGen::XMLGeneratorOperationWait> tWait = std::make_shared<XMLGen::XMLGeneratorOperationWait>("Wait", tDataFile, tPerformer, tEvaluations);
-    std::shared_ptr<XMLGen::XMLGeneratorOperationHarvestDataFunction> tHarvestData = std::make_shared<XMLGen::XMLGeneratorOperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, tPerformer, tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
+    std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile , tNumRanks, mPerformer, tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorOperationWait> tWait = std::make_shared<XMLGen::XMLGeneratorOperationWait>("Wait", tDataFile, mPerformer, tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorOperationHarvestDataFunction> tHarvestData = std::make_shared<XMLGen::XMLGeneratorOperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
 
     mOperations.push_back(tAprepro);
     mOperations.push_back(tGemma);
@@ -68,7 +68,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     XMLGen::XMLGeneratorStage tCriterionStage("Criterion Value",tInputSharedData,tOutputSharedData);
     tCriterionStage.addStageOperation(tGemma);
     tCriterionStage.addStageOperation(tWait);
-    tCriterionStage.addStageOperation(tHarvest);
+    tCriterionStage.addStageOperation(tHarvestData);
     
 }
 
@@ -76,7 +76,8 @@ void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
 {
     for( unsigned int tLoopInd = 0; tLoopInd < mOperations.size(); ++tLoopInd )
     {
-        mOperations[tLoopInd]->write_definition(aDocument);
+        for(unsigned int iEvaluations = 0; iEvaluations < mOperations[tLoopInd]->evaluations(); ++iEvaluations)
+        mOperations[tLoopInd]->write_definition(aDocument,std::to_string(iEvaluations));
         std::cout<<mOperations[tLoopInd]->name()<<std::endl;
     }
 
@@ -88,16 +89,18 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
     addChild(tConsoleNode, "Enabled", "false");  /// These should belong to a XMLGeneratorProblem 
     addChild(tConsoleNode, "Verbose", "true");
 
-    for( unsigned int tLoopInd = 0; tLoopInd < mPerformers.size(); ++tLoopInd )
-    {
-        mPerformers[tLoopInd]->write(aDocument);
-        std::cout<<mPerformers[tLoopInd]->name()<<std::endl;
-    }
+    mPerformerMain->write(aDocument);
+    mPerformer->write(aDocument);
+    
     for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
     {
         mSharedData[tLoopInd]->write(aDocument);
         std::cout<<mSharedData[tLoopInd]->name()<<std::endl;
     }
+    for(unsigned int iStage = 0 ; iStage < mStages.size(); ++iStage)
+        mStages[iStage].write(aDocument); ///NEED FOR LOOP WRAPPER 
+
+    //Write dakota stage
 }
 
 void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData)

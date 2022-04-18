@@ -38,6 +38,12 @@ void XMLGeneratorOperation::addNameTag()
     mName += "_" + mEvaluationTag;
 }
 
+/*void XMLGeneratorOperation::for_write_definition(pugi::xml_document& aDocument, std::string aLoopMaxVar)
+{
+    auto tOperationNode = aDocument.append_child(std::string("For var=\"") + mEvaluationTag + "\" in=\"" + aLoopMaxVar+ "\"");
+    write_definition(aDocument);
+}*/
+
 std::string XMLGeneratorOperation::name(std::string aEvaluationNumber)
 {
     if(aEvaluationNumber=="")

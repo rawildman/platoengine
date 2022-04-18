@@ -10,6 +10,7 @@
 #include "XMLGeneratorOperation.hpp"
 #include "XMLGeneratorPerformer.hpp"
 #include "XMLGeneratorSharedData.hpp"
+#include "XMLGeneratorStage.hpp"
 #include "XMLGeneratorUtilities.hpp"
 
 namespace XMLGen
