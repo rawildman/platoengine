@@ -5,40 +5,40 @@
  */
 
 #include "XMLGeneratorStage.hpp"
-
+#include "XMLGeneratorUtilities.hpp"
 
 namespace XMLGen
 {
     
 XMLGeneratorStage::XMLGeneratorStage
 (const std::string& aName,
- const std::string& aInputSharedData,
- const std::string& aOutputSharedData):
+ std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
+ std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData):
  mName(aName),
  mInputSharedData(aInputSharedData),
  mOutputSharedData(aOutputSharedData)
 {
 }
 
-void XMLGeneratorStage::addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation, int aPriority)
+void XMLGeneratorStage::addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation)
 {
-    mOperationQueue.push(std::make_pair(aPriority,aOperation));
+    //mOperationQueue.push(std::make_pair(aPriority,aOperation));
+    mOperationQueue.push_back(aOperation);
 }
 
 void XMLGeneratorStage::write
 (pugi::xml_document& aDocument)
 {
-    /*
     auto tStageNode = aDocument.append_child("Stage");
+    
     addChild(tStageNode, "Name", mName);
 
-    this->write_input();
-    for(tOperationName : mOperationNames)
+    for(unsigned int iOperation = 0; iOperation < mOperationQueue.size(); ++iOperation)
     {
-        auto tOperation = XMLGen::find_operation(tOperationName); // NEED TO IMPLEMENT THIS IN UTILITIES
-        tOperation.write_interface(); // NEED TO IMPLEMENT THIS IN OPERATION CLASS
+        mOperationQueue[iOperation]->write_interface(aDocument);
+        
     }
-    this->write_output();*/
+    
 }
 
 }

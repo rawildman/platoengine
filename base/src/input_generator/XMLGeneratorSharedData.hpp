@@ -11,6 +11,8 @@
 
 #include "pugixml.hpp"
 
+#include "XMLGeneratorPerformer.hpp"
+
 namespace XMLGen
 {
 
@@ -21,8 +23,8 @@ private:
     
     std::string mName;
     std::string mSize;
-    std::string mOwnerName;
-    std::vector<std::string> mUserName;
+    std::shared_ptr<XMLGeneratorPerformer> mOwnerPerformer;
+    std::vector< std::shared_ptr<XMLGeneratorPerformer>> mUserPerformers;
     int mConcurrentEvaluations;
     
     std::string mEvaluationTag;
@@ -30,8 +32,8 @@ private:
 public:
     XMLGeneratorSharedData(const std::string& aName,
                           const std::string& aSize,
-                          const std::string& aOwnerName,
-                          const std::vector<std::string>& aUserName,
+                          std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
+                          const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
                           int aConcurrentEvaluations);
     void write(pugi::xml_document& aDocument,std::string aEvaluationNumber = "");
     

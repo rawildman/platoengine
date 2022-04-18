@@ -15,9 +15,11 @@ namespace XMLGen
 XMLGeneratorOperation::XMLGeneratorOperation
 (const std::string& aName,
  const std::string& aFunction,
+ std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) :
  mName(aName),
  mFunction(aFunction),
+ mPerformer(aPerformer),
  mConcurrentEvaluations(aConcurrentEvaluations)
 {
     mEvaluationTag = "{E}";
@@ -49,11 +51,12 @@ std::string XMLGeneratorOperation::name(std::string aEvaluationNumber)
 XMLGeneratorOperationWait::XMLGeneratorOperationWait
 (const std::string& aName,
  const std::string& aFile,
+ std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) :
- XMLGeneratorOperation(aName, "SystemCall",aConcurrentEvaluations)
+ XMLGeneratorOperation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
 {
     mCommand = std::string("while lsof -u $USER | grep ./") + aFile + "; do sleep 1; done";
-    mPerformerName = "plato_services";
+    
     if( mConcurrentEvaluations == 0 )
     {
         mChDir = false;
@@ -61,7 +64,6 @@ XMLGeneratorOperationWait::XMLGeneratorOperationWait
     else
     {
         addNameTag();
-        mPerformerName += "_" + mEvaluationTag;
         mChDir = true;
     }
     mOnChange = false;
@@ -89,19 +91,20 @@ void XMLGeneratorOperationWait::write_interface(pugi::xml_document& aDocument, s
 {
     auto tOperationNode = aDocument.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName", mPerformerName);
+    addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationNumber));
 }
 
 XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
 (const std::string& aInputDeck, 
  const std::string& aNumRanks, 
+ std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("gemma", "SystemCallMPI",aConcurrentEvaluations),
+ XMLGeneratorOperation("gemma", "SystemCallMPI",aPerformer, aConcurrentEvaluations),
  mCommand("gemma"),
  mArgument(aInputDeck),
  mNumRanks(aNumRanks)
 {
-    mPerformerName = "plato_services";
+    
     if( mConcurrentEvaluations == 0 )
     {
         mChDir = false;
@@ -110,7 +113,6 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     {
         addNameTag();
         mChDir = true;
-        mPerformerName += "_" + mEvaluationTag;
     }
     mOnChange = true;
 }
@@ -139,15 +141,16 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
 {
     auto tOperationNode = aDocument.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName", mPerformerName);
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
 }
 
 XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
 (const std::string& aInputDeck, 
  const std::vector<std::string>& aOptions, 
- std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
+ std::shared_ptr<XMLGeneratorSharedData> aSharedData,
+ std::shared_ptr<XMLGeneratorPerformer> aPerformer, 
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("aprepro", "SystemCall",aConcurrentEvaluations),
+ XMLGeneratorOperation("aprepro", "SystemCall", aPerformer, aConcurrentEvaluations),
  mCommand("aprepro")
 {
     mArgument.push_back("-q");
@@ -157,10 +160,11 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
 
     mInput.mLayout = "scalar";
     mInput.mSize = std::to_string(mOptions.size());
-    mInput.mArgumentName = "parameters";
+    
     mInput.mSharedData = aSharedData;
 
-    mPerformerName = "plato_services";
+    mInput.mArgumentName = aSharedData->name("");
+
     if( mConcurrentEvaluations == 0 )
     {
         mChDir = false;
@@ -169,8 +173,7 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
     {
         addNameTag();
         mChDir = true;
-        mInput.mArgumentName += "_" + mEvaluationTag;
-        mPerformerName += "_" + mEvaluationTag;
+       
     }
     mOnChange = true;
 }
@@ -209,7 +212,7 @@ void XMLGeneratorOperationAprepro::write_interface(pugi::xml_document& aDocument
 {
     auto tOperationNode = aDocument.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName", mPerformerName);
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
     auto tInputNode = tOperationNode.append_child("Input");
     addChild(tInputNode, "ArgumentName",std::regex_replace (mInput.mArgumentName,mTagExpression,aEvaluationNumber) );
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationNumber));
@@ -219,16 +222,19 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
 (const std::string& aFile,
  const std::string& aMathOperation,
  const std::string& aDataColumn,
+ std::shared_ptr<XMLGeneratorSharedData> aSharedData,
+ std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) : 
- XMLGeneratorOperation("harvest_data", "HarvestDataFromFile",aConcurrentEvaluations),
+ XMLGeneratorOperation("harvest_data", "HarvestDataFromFile", aPerformer, aConcurrentEvaluations),
  mFile(aFile),
  mOperation(aMathOperation),
  mColumn(aDataColumn)
 {
     mOutput.mLayout = "scalar";
     mOutput.mSize = "1";
-    mOutput.mArgumentName = "criterion value";
-    mPerformerName = "plato_services";
+    mOutput.mSharedData = aSharedData;
+    mOutput.mArgumentName = mOutput.mSharedData->name();
+    
     if( mConcurrentEvaluations == 0 )
     {
         mChDir = false;
@@ -237,7 +243,6 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
     {
         addNameTag();
         mChDir = true;
-        mPerformerName += "_" + mEvaluationTag;
     }
     
     mOnChange = true;
@@ -262,7 +267,7 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_docume
     addChild(tOperationNode, "Column", mColumn);
 
     auto tOutputNode = tOperationNode.append_child("Output");
-    addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
+    addChild(tOutputNode, "ArgumentName", std::regex_replace (mOutput.mArgumentName,mTagExpression,aEvaluationNumber) );
     addChild(tOutputNode, "Layout", mOutput.mLayout);
     addChild(tOutputNode, "Size", mOutput.mSize);
 }
@@ -272,7 +277,7 @@ void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_documen
 {
     auto tOperationNode = aDocument.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName", mPerformerName);
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
     auto tOutputNode = tOperationNode.append_child("Output");
     addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
     addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationNumber));

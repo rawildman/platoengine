@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include "pugixml.hpp"
+#include "XMLGeneratorStage.hpp"
 #include "XMLGeneratorOperation.hpp"
 #include "XMLGeneratorSharedData.hpp"
 #include "XMLGeneratorPerformer.hpp"
@@ -37,10 +38,10 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithTag)
     std::vector<std::string> tValues = {
         "{E+1}", 
         "name_{E}", 
-        "Code"};
+        "code"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
-    tOperation = tOperation.next_sibling("SharedData");
+    tOperation = tOperation.next_sibling("Performer");
     ASSERT_TRUE(tOperation.empty());
 }
 
@@ -65,10 +66,10 @@ TEST(PlatoTestXMLGenerator, WritePerformer)
     std::vector<std::string> tValues = {
         "3", 
         "name_2", 
-        "Code"};
+        "code"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
-    tOperation = tOperation.next_sibling("SharedData");
+    tOperation = tOperation.next_sibling("Performer");
     ASSERT_TRUE(tOperation.empty());
 }
 
@@ -76,8 +77,10 @@ TEST(PlatoTestXMLGenerator, WritePerformer)
 
 TEST(PlatoTestXMLGenerator, WriteSharedDataWithTag)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write(tDocument));
@@ -101,8 +104,8 @@ TEST(PlatoTestXMLGenerator, WriteSharedDataWithTag)
         "Scalar", 
         "Global",
         "3",
-        "platomain_1",
-        "platomain_1",
+        "platomain",
+        "platomain",
         "plato_services_{E}"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -112,8 +115,11 @@ TEST(PlatoTestXMLGenerator, WriteSharedDataWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteSharedData)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write(tDocument,"2"));
@@ -137,8 +143,8 @@ TEST(PlatoTestXMLGenerator, WriteSharedData)
         "Scalar", 
         "Global",
         "3",
-        "platomain_1",
-        "platomain_1",
+        "platomain",
+        "platomain",
         "plato_services_2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -151,7 +157,8 @@ TEST(PlatoTestXMLGenerator, WriteSharedData)
 
 TEST(PlatoTestXMLGenerator, WriteWaitOperation)
 {
-    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
 
    // ASSERT_STREQ("wait_{E}", tWait.name());
     //ASSERT_STREQ("wait_1", tWait.name("1"));
@@ -182,7 +189,8 @@ TEST(PlatoTestXMLGenerator, WriteWaitOperation)
 
 TEST(PlatoTestXMLGenerator, WriteWaitOperationNoEvaluation)
 {
-    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", 0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 0);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tWait.write_definition(tDocument,""));
@@ -208,7 +216,8 @@ TEST(PlatoTestXMLGenerator, WriteWaitOperationNoEvaluation)
 
 TEST(PlatoTestXMLGenerator, WriteWaitOperationWithTag)
 {
-    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer,  1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tWait.write_definition(tDocument,""));
@@ -236,7 +245,8 @@ TEST(PlatoTestXMLGenerator, WriteWaitOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteWaitOperationInterfaceWithTag)
 {
-    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tWait.write_interface(tDocument));
@@ -263,7 +273,8 @@ TEST(PlatoTestXMLGenerator, WriteWaitOperationInterfaceWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperation)
 {
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,"1"));
@@ -297,7 +308,8 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperation)
 
 TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationNoEvaluations)
 {
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", 0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 0);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,""));
@@ -329,7 +341,8 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationNoEvaluations)
 
 TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationWithTag)
 {
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,""));
@@ -363,7 +376,8 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationInterfaceFile)
 {
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", 1);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_interface(tDocument));
@@ -389,9 +403,12 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIOperationInterfaceFile)
 
 TEST(PlatoTestXMLGenerator, WriteApreproOperation)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,2);
-    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, 2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    
+    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, tPerformer, 2);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAprepro.write_definition(tDocument,"2"));
@@ -432,7 +449,7 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperation)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"parameters_2", "scalar", "3"};
+    tValues = {"design_parameters_2", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -443,10 +460,12 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperation)
 
 TEST(PlatoTestXMLGenerator, WriteApreproOperationWithTag)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
-    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, 2);
+    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, tPerformer, 2);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAprepro.write_definition(tDocument,""));
@@ -487,7 +506,7 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationWithTag)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"parameters_{E}", "scalar", "3"};
+    tValues = {"design_parameters_{E}", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -498,10 +517,12 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteApreproOperationInterfaceFile)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
-    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, 2);
+    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"}, tSharedData, tPerformer, 2);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAprepro.write_interface(tDocument,"2"));
@@ -536,10 +557,13 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationInterfaceFile)
 
 TEST(PlatoTestXMLGenerator, WriteApreproOperationNoEvaluations)
 {
-    std::vector<std::string> tUserNames = {"platomain_1","plato_services"};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3","platomain_1",tUserNames,0);
-    
-    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", {"l", "w", "d"},tSharedData, 0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,0);
+    std::vector<std::string> vars = {"l","w","d"};
+
+    XMLGen::XMLGeneratorOperationAprepro tAprepro("match.yaml", vars, tSharedData, tPerformer, 0);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAprepro.write_definition(tDocument));
@@ -578,7 +602,7 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationNoEvaluations)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"parameters", "scalar", "3"};
+    tValues = {"design_parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -589,7 +613,12 @@ TEST(PlatoTestXMLGenerator, WriteApreproOperationNoEvaluations)
 
 TEST(PlatoTestXMLGenerator, WriteHarvestDataOperation)
 {
-    XMLGen::XMLGeneratorOperationHarvestDataFunction tHarvestData("power_balance.dat", "max", "1", 3);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","3",tPerformerMain,tUserPerformers,0);
+    
+    XMLGen::XMLGeneratorOperationHarvestDataFunction tHarvestData("power_balance.dat", "max", "1", tSharedData, tPerformer, 3);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tHarvestData.write_definition(tDocument,"0"));
@@ -626,5 +655,73 @@ TEST(PlatoTestXMLGenerator, WriteHarvestDataOperation)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
+
+TEST(PlatoTestXMLGenerator, WriteStage)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {tPerformerMain};
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1",tPerformer,tUserPerformersJustMain,2);
+    
+    std::vector<std::string> vars = {"l","w","d"};
+    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", vars, tInputSharedData, tPerformer, 2 );
+                                                                
+    std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>("match.yaml", "2", tPerformer, 2);
+
+    XMLGen::XMLGeneratorStage tStage("Stage",tInputSharedData,tOutputSharedData);
+    tStage.addStageOperation(tAprepro);
+    tStage.addStageOperation(tGemma);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tStage.write(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+    tDocument.save_file("dummy.txt", " ");
+/*
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Command", 
+        "OnChange",
+        "Argument",
+        "Argument",
+        "Argument",
+        "AppendInput",
+        "Option",
+        "Option",
+        "Option",
+        "Input"};
+    std::vector<std::string> tValues = {"SystemCall", 
+        "aprepro", 
+        "aprepro", 
+        "true",
+        "-q",
+        "match.yaml.template",
+        "match.yaml",
+        "true",
+        "l",
+        "w",
+        "d",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"design_parameters", "scalar", "3"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());*/
+}
+
+
 
 }

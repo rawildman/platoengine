@@ -14,28 +14,21 @@ namespace XMLGen
     XMLGeneratorSharedData::XMLGeneratorSharedData
     (const std::string& aName,
     const std::string& aSize,
-    const std::string& aOwnerName,
-    const std::vector<std::string>& aUserName,
+    std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
+    const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
     int aConcurrentEvaluations) :
     mSize(aSize),
     mConcurrentEvaluations(aConcurrentEvaluations)
     {
         mName = aName;
-        mOwnerName = aOwnerName;
-        mUserName = aUserName;
+        mOwnerPerformer = aOwnerPerformer;
+        mUserPerformers = aUserPerformers;
         mEvaluationTag = "{E}";
         mTagExpression = "\\{E\\}";
         
         if(mConcurrentEvaluations!=0)
         {
             mName += "_" + mEvaluationTag;
-            if(mOwnerName == "platomain_1")
-            {
-                for(unsigned int iUserName = 1 ; iUserName < mUserName.size(); iUserName++)
-                    mUserName[iUserName] += "_" + mEvaluationTag;
-            }
-            else
-                mOwnerName  += "_" + mEvaluationTag;
         }
     }
     void XMLGeneratorSharedData::write(pugi::xml_document& aDocument,std::string aEvaluationNumber)
@@ -51,9 +44,9 @@ namespace XMLGen
         addChild(tSharedDataNode, "Type", "Scalar");
         addChild(tSharedDataNode, "Layout", "Global");
         addChild(tSharedDataNode, "Size", mSize);
-        addChild(tSharedDataNode, "OwnerName", std::regex_replace (mOwnerName,mTagExpression,tEvaluationTag));
-        for(unsigned int iUserName = 0 ; iUserName < mUserName.size(); iUserName++)
-            addChild(tSharedDataNode, "UserName", std::regex_replace (mUserName[iUserName],mTagExpression,tEvaluationTag));
+        addChild(tSharedDataNode, "OwnerName", std::regex_replace (mOwnerPerformer->name(aEvaluationNumber),mTagExpression,tEvaluationTag));
+        for(unsigned int iUserPerformer = 0 ; iUserPerformer < mUserPerformers.size(); iUserPerformer++)
+            addChild(tSharedDataNode, "UserName", mUserPerformers[iUserPerformer]->name(aEvaluationNumber));
     }
     
     

@@ -22,7 +22,9 @@ private:
     std::string mName;
     std::string mCode;
     std::regex mTagExpression;
+    
     std::string mEvaluationTag;
+    std::string mPerformerEvaluationTag;
 
     int mConcurrentEvaluations;
     

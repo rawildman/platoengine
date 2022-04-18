@@ -19,27 +19,45 @@ namespace XMLGen
     mCode(aCode),
     mConcurrentEvaluations(aConcurrentEvaluations)
     {
-        mEvaluationTag = "{E}";
-        mTagExpression = "\\{E\\}"; 
-
-        if(mConcurrentEvaluations!=0)
+        if(mName == "PlatoMain")
         {
-            mName += "_" + mEvaluationTag;
-            mPerformerID = "{E+1}";
+            mPerformerID = "0";
+            mCode = mName;
         }
+        else
+        {
+            mEvaluationTag = "{E}";
+            mTagExpression = "\\{E\\}"; 
+            mPerformerEvaluationTag = "{E+1}";
+           
+
+            if(mConcurrentEvaluations!=0)
+            {
+                mName += "_" + mEvaluationTag;
+                mPerformerID = mPerformerEvaluationTag ;
+            }
+        }
+
     }
 
     void XMLGeneratorPerformer::write(pugi::xml_document& aDocument,std::string aEvaluationNumber)
     {
        
         std::string tEvaluationTag; 
+        std::string tPerformerEvaluationTag;
         if(aEvaluationNumber == "")
+        {
             tEvaluationTag = mEvaluationTag;
+            tPerformerEvaluationTag = mPerformerEvaluationTag;
+        }
         else
-            tEvaluationTag = std::to_string(std::stoi(aEvaluationNumber)+1);
+        {
+            tEvaluationTag = aEvaluationNumber;
+            tPerformerEvaluationTag = std::to_string(std::stoi(aEvaluationNumber)+1);
+        }
 
-        auto tPerformerNode = aDocument.append_child("Perfomer");
-        addChild(tPerformerNode, "PerformerID", std::regex_replace (mPerformerID,mTagExpression,tEvaluationTag));
+        auto tPerformerNode = aDocument.append_child("Performer");
+        addChild(tPerformerNode, "PerformerID", tPerformerEvaluationTag);
         addChild(tPerformerNode, "Name",name(aEvaluationNumber));
         addChild(tPerformerNode, "Code", mCode);
     }

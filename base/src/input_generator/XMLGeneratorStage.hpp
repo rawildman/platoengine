@@ -7,9 +7,10 @@
 
 #include <vector>
 #include <string>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include "pugixml.hpp"
 #include "XMLGeneratorOperation.hpp"
+#include "XMLGeneratorSharedData.hpp"
 
 namespace XMLGen
 {
@@ -21,17 +22,17 @@ class XMLGeneratorStage
     
 private:
     std::string mName;
-    std::string mInputSharedData;
-    std::string mOutputSharedData;
-    std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
-
+    std::shared_ptr<XMLGeneratorSharedData> mInputSharedData;
+    std::shared_ptr<XMLGeneratorSharedData> mOutputSharedData;
+    //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
+    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperationQueue;
 public:
     XMLGeneratorStage
     (const std::string& aName,
-    const std::string& aInputSharedData,
-    const std::string& aOutputSharedData);
+    std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
+    std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData);
 
-    void addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation, int aPriority);
+    void addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation);
     void write(pugi::xml_document& aDocument);
 };
 

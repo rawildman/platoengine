@@ -18,11 +18,13 @@ namespace XMLGen
 class XMLGeneratorProblem
 {
 protected:
-    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
-    std::vector<std::shared_ptr<XMLGeneratorPerformer>> mPerformers;
-    std::vector<std::shared_ptr<XMLGeneratorSharedData>> mSharedData;
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> mPerformerMain;
+    std::shared_ptr<XMLGeneratorPerformer> mPerformer;
 
-    void addPlatoServicesPerformers(int aStartID, int aEndID);
+    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
+    std::vector<XMLGeneratorStage> mStages;
+    
+    std::vector<std::shared_ptr<XMLGeneratorSharedData>> mSharedData;
 
 public:
     XMLGeneratorProblem();
@@ -34,7 +36,7 @@ public:
 class XMLGeneratorGemmaProblem : public XMLGeneratorProblem 
 {
 private:
-    void addSharedDataPairs(int aNumParameters, int aEvaluations);
+    
 
 public:
     XMLGeneratorGemmaProblem(const InputData& aMetaData);
