@@ -239,7 +239,8 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
     mOutput.mLayout = "scalar";
     mOutput.mSize = "1";
     mOutput.mSharedData = aSharedData;
-    mOutput.mArgumentName = mOutput.mSharedData->name();
+    // mOutput.mArgumentName = mOutput.mSharedData->name();
+    mOutput.mArgumentName = "criterion value";
     
     if( mConcurrentEvaluations == 0 )
     {
@@ -273,7 +274,8 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_docume
     addChild(tOperationNode, "Column", mColumn);
 
     auto tOutputNode = tOperationNode.append_child("Output");
-    addChild(tOutputNode, "ArgumentName", std::regex_replace (mOutput.mArgumentName,mTagExpression,aEvaluationNumber) );
+    // addChild(tOutputNode, "ArgumentName", std::regex_replace (mOutput.mArgumentName,mTagExpression,aEvaluationNumber) );
+    addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
     addChild(tOutputNode, "Layout", mOutput.mLayout);
     addChild(tOutputNode, "Size", mOutput.mSize);
 }

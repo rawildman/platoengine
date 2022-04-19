@@ -201,13 +201,13 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     tCriterionTwo.append("data_extraction_operation", "max");
     tCriterionTwo.append("data_file", "matched_power_balance.dat");
     tInputMetaData.append(tCriterionTwo);
-    XMLGen::Criterion tCriterionThree;
-    tCriterionThree.id("3");
-    tCriterionThree.type("system_call");
-    tCriterionThree.append("data_group", "2");
-    tCriterionThree.append("data_extraction_operation", "max");
-    tCriterionThree.append("data_file", "matched_power_balance.dat");
-    tInputMetaData.append(tCriterionThree);
+    // XMLGen::Criterion tCriterionThree;
+    // tCriterionThree.id("3");
+    // tCriterionThree.type("system_call");
+    // tCriterionThree.append("data_group", "2");
+    // tCriterionThree.append("data_extraction_operation", "max");
+    // tCriterionThree.append("data_file", "matched_power_balance.dat");
+    // tInputMetaData.append(tCriterionThree);
     // define objective
     XMLGen::Objective tObjective;
     tObjective.criteriaIDs.push_back("1");
