@@ -19,10 +19,11 @@ namespace XMLGen
     mCode(aCode),
     mConcurrentEvaluations(aConcurrentEvaluations)
     {
-        if(mName == "PlatoMain")
+        if(mName == "platomain")
         {
             mPerformerID = "0";
             mCode = mName;
+            mConcurrentEvaluations = 0;
         }
         else
         {
@@ -35,6 +36,11 @@ namespace XMLGen
             {
                 mName += "_" + mEvaluationTag;
                 mPerformerID = mPerformerEvaluationTag ;
+            }
+            else
+            {
+                mPerformerID = 1;
+
             }
         }
 
@@ -55,6 +61,8 @@ namespace XMLGen
             tEvaluationTag = aEvaluationNumber;
             tPerformerEvaluationTag = std::to_string(std::stoi(aEvaluationNumber)+1);
         }
+        if(mName == "platomain")
+            tPerformerEvaluationTag = "0";
 
         auto tPerformerNode = aDocument.append_child("Performer");
         addChild(tPerformerNode, "PerformerID", tPerformerEvaluationTag);
@@ -68,5 +76,9 @@ namespace XMLGen
             return mName;
         else
             return std::regex_replace (mName,mTagExpression,aEvaluationNumber) ;
+    }
+    std::string XMLGeneratorPerformer::ID(std::string aEvaluationNumber)
+    {
+        return std::regex_replace (mName,mTagExpression,aEvaluationNumber) ;
     }
 }

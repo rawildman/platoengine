@@ -31,7 +31,7 @@ namespace XMLGen
             mName += "_" + mEvaluationTag;
         }
     }
-    void XMLGeneratorSharedData::write(pugi::xml_document& aDocument,std::string aEvaluationNumber)
+    void XMLGeneratorSharedData::write_interface(pugi::xml_node& aNode,std::string aEvaluationNumber)
     {
         std::string tEvaluationTag;
         if(aEvaluationNumber == "")
@@ -39,7 +39,7 @@ namespace XMLGen
         else
             tEvaluationTag = aEvaluationNumber;
 
-        auto tSharedDataNode = aDocument.append_child("SharedData");
+        auto tSharedDataNode = aNode.append_child("SharedData");
         addChild(tSharedDataNode, "Name", name(aEvaluationNumber));
         addChild(tSharedDataNode, "Type", "Scalar");
         addChild(tSharedDataNode, "Layout", "Global");
@@ -49,6 +49,18 @@ namespace XMLGen
             addChild(tSharedDataNode, "UserName", mUserPerformers[iUserPerformer]->name(aEvaluationNumber));
     }
     
+    void XMLGeneratorSharedData::write_stage(pugi::xml_node& aNode,std::string aEvaluationNumber)
+    {
+        std::string tEvaluationTag;
+        if(aEvaluationNumber == "")
+            tEvaluationTag = mEvaluationTag;
+        else
+            tEvaluationTag = aEvaluationNumber;
+
+        auto tSharedDataNode = aNode.append_child("SharedData");
+        addChild(tSharedDataNode, "Name", name(aEvaluationNumber));
+
+    }
     
     std::string XMLGeneratorSharedData::name(std::string aEvaluationNumber)
     {

@@ -35,9 +35,11 @@ public:
                           std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
                           const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
                           int aConcurrentEvaluations);
-    void write(pugi::xml_document& aDocument,std::string aEvaluationNumber = "");
+    void write_interface(pugi::xml_node& aNode,std::string aEvaluationNumber = "");
+    void write_stage(pugi::xml_node& aNode,std::string aEvaluationNumber = "");
     
     std::string name(std::string aEvaluationNumber = "");
+    int evaluations(){return mConcurrentEvaluations;}
 };
 
 }

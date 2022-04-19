@@ -83,7 +83,7 @@ TEST(PlatoTestXMLGenerator, WriteSharedDataWithTag)
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tSharedData->write(tDocument));
+    ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -122,7 +122,7 @@ TEST(PlatoTestXMLGenerator, WriteSharedData)
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tSharedData->write(tDocument,"2"));
+    ASSERT_NO_THROW(tSharedData->write_interface(tDocument,"2"));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
@@ -249,6 +249,7 @@ TEST(PlatoTestXMLGenerator, WriteWaitOperationInterfaceWithTag)
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
 
     pugi::xml_document tDocument;
+
     ASSERT_NO_THROW(tWait.write_interface(tDocument));
     ASSERT_FALSE(tDocument.empty());
 

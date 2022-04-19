@@ -32,9 +32,11 @@ public:
     XMLGeneratorPerformer(
                           const std::string& aName,
                           const std::string& aCode,
-                          int aConcurrentEvalutions);
+                          int aConcurrentEvalutions = 0);
     void write(pugi::xml_document& aDocument,std::string aEvaluationNumber ="");
     std::string name(std::string aEvaluationNumber ="");
+    int evaluations(){return mConcurrentEvaluations;}
+    std::string ID(std::string aEvaluationNumber);
 };
 
 }

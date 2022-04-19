@@ -34,6 +34,7 @@ public:
 
     void addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation);
     void write(pugi::xml_document& aDocument);
+    std::string name(){return mName;}
 };
 
 }

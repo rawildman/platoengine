@@ -1,6 +1,7 @@
 #include "XMLGeneratorGemmaProblem.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include <fstream>
 #include <sstream>
 
 namespace XMLGen
@@ -8,6 +9,11 @@ namespace XMLGen
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
     mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    
+    mInterfaceFileName = "interface.xml";
+    mOperationsFileName = "platomain_operations.xml";
+    mInputDeckName = "platomain_input_deck.xml";
+    mMPISourceName = "mpirun.source";
 }
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) : XMLGeneratorProblem()
@@ -69,6 +75,12 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     tCriterionStage.addStageOperation(tGemma);
     tCriterionStage.addStageOperation(tWait);
     tCriterionStage.addStageOperation(tHarvestData);
+
+    mStages.push_back(tInitializeStage);
+    mStages.push_back(tCriterionStage);
+
+
+  //  mDakotaStage = std::make_shared<XMLGeneratorStage>("Dakota",tInputSharedData,tOutputSharedData);
     
 }
 
@@ -90,17 +102,61 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
     addChild(tConsoleNode, "Verbose", "true");
 
     mPerformerMain->write(aDocument);
-    mPerformer->write(aDocument);
+    for(unsigned int iEvaluation = 0; iEvaluation < mPerformer->evaluations(); ++iEvaluation)
+    mPerformer->write(aDocument,std::to_string(iEvaluation));
     
     for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
     {
-        mSharedData[tLoopInd]->write(aDocument);
-        std::cout<<mSharedData[tLoopInd]->name()<<std::endl;
+        if(mSharedData[tLoopInd]->evaluations()==0)
+            mSharedData[tLoopInd]->write_interface(aDocument);
+        else
+        {
+            auto tForNode = aDocument.append_child("For");
+            tForNode.append_attribute("var") = "E";
+            tForNode.append_attribute("in") = "Parameters";
+            mSharedData[tLoopInd]->write_interface(tForNode);  
+        }
     }
+    
+    int tDakotaIndexInfo = -1;
     for(unsigned int iStage = 0 ; iStage < mStages.size(); ++iStage)
-        mStages[iStage].write(aDocument); ///NEED FOR LOOP WRAPPER 
-
+    {
+        mStages[iStage].write(aDocument); 
+        if(mStages[iStage].name() == "Criterion Value")
+            tDakotaIndexInfo = iStage;
+    }
     //Write dakota stage
+    //This does not appear to fit the pattern, so I will semi-hard code this here:
+    //auto tDakotaNode aDocument.append_child("DakotaDriver");
+    //auto tDakotaStage tDakotaNode.append_child("Stage");
+    //addChild(tDakotaStage, "StageTag", mStages[tDakotaIndexInfo].name());
+    
+/*
+    <DakotaDriver>
+
+    <Stage>
+
+        <StageTag>criterion_value_0</StageTag>
+        <StageName>Criterion 0 Value</StageName>
+
+        <For var="PerformerIndex" in="Performers">
+        <Input>
+            <Tag>continuous</Tag>
+            <SharedDataName>parameters_{PerformerIndex}</SharedDataName>
+        </Input>
+        </For>
+
+        <For var="PerformerIndex" in="Performers">
+        <Output>
+            <SharedDataName>objective_value_{PerformerIndex}</SharedDataName>
+        </Output>
+        </For>
+
+    </Stage>
+
+    </DakotaDriver>
+    */
+
 }
 
 void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData)
@@ -158,6 +214,25 @@ void XMLGeneratorGemmaProblem::create_matched_power_balance_input_deck(const Inp
     tOutFile << "    Frequency interval size: " << tFrequencyStep << "\n\n";;
 
     tOutFile << "...\n";
+    tOutFile.close();
+}
+
+void XMLGeneratorGemmaProblem::write_mpisource(std::string aFileName)
+{
+    std::ofstream tOutFile(aFileName.c_str());
+    tOutFile<<"mpirun --oversubscribe -np 1 -x PLATO_PERFORMER_ID=0 \\\n";
+    tOutFile<<"-x PLATO_INTERFACE_FILE="<<mInterfaceFileName<<" \\\n";
+    tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
+    tOutFile<<"PlatoMain "<<mInputDeckName<<" \\\n";
+
+    //TODO Number of processors for a service engine....
+    for(int iPerformer = 0; iPerformer < mPerformer->evaluations(); ++iPerformer )
+    {
+        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(std::to_string(iPerformer))<<" \\\n";
+        tOutFile<<"-x PLATO_INTERFACE_FILE="<<mInterfaceFileName<<" \\\n";
+        tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
+        tOutFile<<"PlatoEngineServices "<<mInputDeckName<<" \\\n";
+    }
     tOutFile.close();
 }
 

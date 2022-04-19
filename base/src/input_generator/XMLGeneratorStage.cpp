@@ -33,10 +33,35 @@ void XMLGeneratorStage::write
     
     addChild(tStageNode, "Name", mName);
 
+    if(mInputSharedData->evaluations()==0)
+        mInputSharedData->write_stage(tStageNode);
+    else
+    {
+        auto tForNode = tStageNode.append_child("For");
+        tForNode.append_attribute("var") = "E";
+        tForNode.append_attribute("in") = "Parameters";
+        mInputSharedData->write_stage(tForNode);  
+    }
     for(unsigned int iOperation = 0; iOperation < mOperationQueue.size(); ++iOperation)
     {
-        mOperationQueue[iOperation]->write_interface(aDocument);
-        
+        if(mOperationQueue[iOperation]->evaluations() == 0)
+            mOperationQueue[iOperation]->write_interface(tStageNode); 
+        else
+        {
+            auto tForNode = tStageNode.append_child("For");
+            tForNode.append_attribute("var") = "E";
+            tForNode.append_attribute("in") = "Parameters";
+            mOperationQueue[iOperation]->write_interface(tForNode);  
+        }
+    }
+    if(mOutputSharedData->evaluations()==0)
+        mOutputSharedData->write_stage(tStageNode);
+    else
+    {
+        auto tForNode = tStageNode.append_child("For");
+        tForNode.append_attribute("var") = "E";
+        tForNode.append_attribute("in") = "Parameters";
+        mOutputSharedData->write_stage(tForNode);  
     }
     
 }

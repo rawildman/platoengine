@@ -125,6 +125,7 @@ void plato_gemma_problem
     tGemmaProblem.write_interface(tInterfaceDocument);
     tInterfaceDocument.save_file("interface.xml", "  ");
 
+    tGemmaProblem.write_mpisource("mpirun.source");
    /* XMLGen::write_define_xml_file(aMetaData);
     XMLGen::dakota::write_interface_xml_file(aMetaData);
    //>>>>csm file dependent XMLGen::generate_launch_script(aMetaData);
@@ -137,7 +138,8 @@ void plato_gemma_problem
     }
 
     //>>>>csm file dependent XMLGen::write_plato_main_input_deck_file(aMetaData);
-    XMLGen::write_dakota_driver_input_deck(aMetaData);*/
+    */
+   //XMLGen::write_dakota_driver_input_deck(aMetaData);
 }
 // function plato_gemma_problem
 

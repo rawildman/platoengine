@@ -93,9 +93,9 @@ void XMLGeneratorOperationWait::write_definition(pugi::xml_document& aDocument, 
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
 }
 
-void XMLGeneratorOperationWait::write_interface(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationWait::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
 {
-    auto tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
     addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationNumber));
 }
@@ -143,9 +143,9 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     addChild(tOperationNode, "AppendInput", "false" );
  }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_interface(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+ void XMLGeneratorOperationGemmaMPISystemCall::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
 {
-    auto tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
 }
@@ -214,9 +214,9 @@ void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocumen
     addChild(tInputNode, "Size", mInput.mSize);
 }
 
-void XMLGeneratorOperationAprepro::write_interface(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationAprepro::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
 {
-    auto tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
     auto tInputNode = tOperationNode.append_child("Input");
@@ -281,9 +281,9 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_docume
 }
 
 
-void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
 {
-    auto tOperationNode = aDocument.append_child("Operation");
+    auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationNumber));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
     auto tOutputNode = tOperationNode.append_child("Output");

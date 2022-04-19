@@ -25,12 +25,20 @@ protected:
     std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
     std::vector<XMLGeneratorStage> mStages;
     
+    std::shared_ptr<XMLGeneratorStage> mDakotaStage;
+
     std::vector<std::shared_ptr<XMLGeneratorSharedData>> mSharedData;
+
+    std::string mInterfaceFileName;
+    std::string mOperationsFileName;
+    std::string mInputDeckName;
+    std::string mMPISourceName;
 
 public:
     XMLGeneratorProblem();
     virtual void write_plato_main(pugi::xml_document& aDocument) = 0;
     virtual void write_interface(pugi::xml_document& aDocument) = 0;
+    virtual void write_mpisource(std::string aFileName) = 0;
 
 };
 
@@ -43,6 +51,7 @@ public:
     XMLGeneratorGemmaProblem(const InputData& aMetaData);
     void write_plato_main(pugi::xml_document& aDocument) override;
     void write_interface(pugi::xml_document& aDocument) override;
+    void write_mpisource(std::string aFileName) override;
     void create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData);
     void create_matched_power_balance_input_deck(const InputData& aMetaData);
 };
