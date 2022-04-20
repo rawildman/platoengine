@@ -42,7 +42,7 @@ std::string XMLGeneratorFileObject::tag(std::string aEvaluationString)
         return aEvaluationString;
 }
 
-pugi::xml_node XMLGeneratorFileObject::for_node(pugi::xml_node& aNode, std::string aXMLLoopVectorName)
+pugi::xml_node XMLGeneratorFileObject::forNode(pugi::xml_node& aNode, std::string aXMLLoopVectorName)
 {
     if(mConcurrentEvaluations == 0)
         return aNode; 

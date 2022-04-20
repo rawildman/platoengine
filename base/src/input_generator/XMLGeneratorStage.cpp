@@ -33,18 +33,36 @@ void XMLGeneratorStage::write
     
     addChild(tStageNode, "Name", name());
 
-    auto tForOrStageNode = for_node(tStageNode,"Parameters");
-    mInputSharedData->write_stage(tForOrStageNode);
-    
+    this->appendInput(tStageNode);
+
     for(unsigned int iOperation = 0; iOperation < mOperationQueue.size(); ++iOperation)
     {
-        tForOrStageNode = for_node(tStageNode,"Parameters");
+        auto tForOrStageNode = forNode(tStageNode,"Parameters");
         mOperationQueue[iOperation]->write_interface(tForOrStageNode); 
     }
 
-    tForOrStageNode = for_node(tStageNode,"Parameters");
-    mOutputSharedData->write_stage(tForOrStageNode);
-    
+    this->appendOutput(tStageNode);
 }
+
+void XMLGeneratorStage::appendInput(pugi::xml_node& aNode)
+{
+    if(mInputSharedData)
+    {
+        auto tForOrStageNode = forNode(aNode,"Parameters");
+        auto tSharedDataNode = tForOrStageNode.append_child("Input");
+        XMLGen::append_children({"SharedDataName"},{mInputSharedData->name()},tSharedDataNode);
+    }
+}
+
+void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
+{
+    if(mOutputSharedData)
+    {
+        auto tForOrStageNode = forNode(aNode,"Parameters");
+        auto tSharedDataNode = tForOrStageNode.append_child("Input");
+        XMLGen::append_children({"SharedDataName"},{mOutputSharedData->name()},tSharedDataNode);
+    }
+}
+
 
 }

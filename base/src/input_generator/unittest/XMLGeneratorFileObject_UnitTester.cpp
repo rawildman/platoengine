@@ -8,11 +8,38 @@
 #include "pugixml.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
 #include "XMLGeneratorFileObject.hpp"
+#include "XMLGeneratorUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, FileObjectTagFunctions)
+TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
+{
+    
+    XMLGen::XMLGeneratorFileObject tFileObject("name");
+    ASSERT_NO_THROW(tFileObject.name());
+    ASSERT_STREQ("name", tFileObject.name().c_str());
+    ASSERT_STREQ("name", tFileObject.name("").c_str());
+    ASSERT_STREQ("name", tFileObject.name("1").c_str());
+
+    ASSERT_EQ(0,tFileObject.evaluations());
+
+    ASSERT_STREQ("", tFileObject.tag().c_str());
+    ASSERT_STREQ("", tFileObject.tag("").c_str());
+    ASSERT_STREQ("", tFileObject.tag("1").c_str());
+
+    pugi::xml_document tDocument;
+    auto tForNode = tFileObject.forNode(tDocument,std::string("Parameters"));
+    XMLGen::addChild(tForNode, "File", "test");
+
+    auto tempForNode = tDocument.child("For");
+    ASSERT_TRUE(tempForNode.empty());
+
+    PlatoTestXMLGenerator::test_children({"File"}, {"test"}, tDocument);
+    
+}
+
+TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
 {
     
     XMLGen::XMLGeneratorFileObject tFileObject("name",3);
@@ -29,32 +56,16 @@ TEST(PlatoTestXMLGenerator, FileObjectTagFunctions)
     ASSERT_STREQ("{I}", tFileObject.tag("{I}").c_str());
 
     pugi::xml_document tDocument;
-    auto tForNode = tFileObject.for_node(tDocument,std::string("Parameters"));
+    auto tForNode = tFileObject.forNode(tDocument,std::string("Parameters"));
+    XMLGen::addChild(tForNode, "File", "test");
 
-    ASSERT_FALSE(tForNode.empty());
-    ASSERT_STREQ("For", tForNode.name());
-    
-}
+    auto tempForNode = tDocument.child("For");
+    ASSERT_FALSE(tempForNode.empty());
 
-TEST(PlatoTestXMLGenerator, FileObjectNoConcurrency)
-{
-    
-    XMLGen::XMLGeneratorFileObject tFileObject("name");
-    ASSERT_NO_THROW(tFileObject.name());
-    ASSERT_STREQ("name", tFileObject.name().c_str());
-    ASSERT_STREQ("name", tFileObject.name("").c_str());
-    ASSERT_STREQ("name", tFileObject.name("1").c_str());
-
-    ASSERT_EQ(0,tFileObject.evaluations());
-
-    ASSERT_STREQ("", tFileObject.tag().c_str());
-    ASSERT_STREQ("", tFileObject.tag("").c_str());
-    ASSERT_STREQ("", tFileObject.tag("1").c_str());
-
-    pugi::xml_document tDocument;
-    auto tForNode = tFileObject.for_node(tDocument,std::string("Parameters"));
-
-    ASSERT_STREQ("", tForNode.name());
+    ASSERT_STREQ("For", tempForNode.name());
+    auto tFileNode = tempForNode.child("File");
+    ASSERT_FALSE(tFileNode.empty());
+    ASSERT_STREQ("File", tFileNode.name());
     
 }
 

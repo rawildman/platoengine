@@ -35,10 +35,4 @@ namespace XMLGen
             addChild(tSharedDataNode, "UserName", mUserPerformers[iUserPerformer]->name(aEvaluationString));
     }
     
-    void XMLGeneratorSharedData::write_stage(pugi::xml_node& aNode,std::string aEvaluationString)
-    {    
-        auto tSharedDataNode = aNode.append_child("SharedData");
-        addChild(tSharedDataNode, "Name", name(aEvaluationString));
-    }
-    
 }

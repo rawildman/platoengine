@@ -8,7 +8,7 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
-    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     
     mInterfaceFileName = "interface.xml";
     mOperationsFileName = "platomain_operations.xml";
@@ -47,7 +47,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
     int tNumParams = aMetaData.optimization_parameters().descriptors().size();
     
-    mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",tEvaluations);
+    mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",std::stoi(tNumRanks),tEvaluations);
     
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
@@ -101,9 +101,9 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
     addChild(tConsoleNode, "Enabled", "false");  /// These should belong to a XMLGeneratorProblem 
     addChild(tConsoleNode, "Verbose", "true");
 
-    mPerformerMain->write(aDocument);
+    mPerformerMain->write_interface(aDocument);
     for(unsigned int iEvaluation = 0; iEvaluation < mPerformer->evaluations(); ++iEvaluation)
-    mPerformer->write(aDocument,std::to_string(iEvaluation));
+    mPerformer->write_interface(aDocument,1,std::to_string(iEvaluation));
     
     for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
     {
@@ -228,7 +228,7 @@ void XMLGeneratorGemmaProblem::write_mpisource(std::string aFileName)
     //TODO Number of processors for a service engine....
     for(int iPerformer = 0; iPerformer < mPerformer->evaluations(); ++iPerformer )
     {
-        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(std::to_string(iPerformer))<<" \\\n";
+        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(1,std::to_string(iPerformer))<<" \\\n";
         tOutFile<<"-x PLATO_INTERFACE_FILE="<<mInterfaceFileName<<" \\\n";
         tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
         tOutFile<<"PlatoEngineServices "<<mInputDeckName<<" \\\n";

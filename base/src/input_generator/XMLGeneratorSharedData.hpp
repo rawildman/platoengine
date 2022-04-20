@@ -32,7 +32,6 @@ public:
                           const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
                           int aConcurrentEvaluations);
     void write_interface(pugi::xml_node& aNode,std::string aEvaluationString = "");
-    void write_stage(pugi::xml_node& aNode,std::string aEvaluationString = "");
     
 };
 

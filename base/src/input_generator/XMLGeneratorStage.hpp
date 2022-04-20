@@ -28,6 +28,10 @@ private:
     std::shared_ptr<XMLGeneratorSharedData> mOutputSharedData;
     //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
     std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperationQueue;
+
+    void appendInput(pugi::xml_node& aNode);
+    void appendOutput(pugi::xml_node& aNode);
+
 public:
     XMLGeneratorStage
     (const std::string& aName,
