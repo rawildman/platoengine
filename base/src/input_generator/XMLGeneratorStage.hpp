@@ -9,6 +9,8 @@
 #include <string>
 //#include <bits/stdc++.h>
 #include "pugixml.hpp"
+
+#include "XMLGeneratorFileObject.hpp"
 #include "XMLGeneratorOperation.hpp"
 #include "XMLGeneratorSharedData.hpp"
 
@@ -17,11 +19,11 @@ namespace XMLGen
 
 typedef std::pair<int,std::shared_ptr<XMLGeneratorOperation>> mPriorityOperation;
 
-class XMLGeneratorStage
+class XMLGeneratorStage : public XMLGeneratorFileObject
 {
     
 private:
-    std::string mName;
+    
     std::shared_ptr<XMLGeneratorSharedData> mInputSharedData;
     std::shared_ptr<XMLGeneratorSharedData> mOutputSharedData;
     //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
@@ -34,7 +36,6 @@ public:
 
     void addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation);
     void write(pugi::xml_document& aDocument);
-    std::string name(){return mName;}
 };
 
 }

@@ -14,71 +14,41 @@ namespace XMLGen
     (
     const std::string& aName,
     const std::string& aCode,
-    int aConcurrentEvaluations) :
-    mName(aName),
-    mCode(aCode),
-    mConcurrentEvaluations(aConcurrentEvaluations)
+    int aConcurrentEvaluations) : 
+    XMLGeneratorFileObject(aName,aConcurrentEvaluations),
+    mCode(aCode)
     {
-        if(mName == "platomain")
+        if(name() == "platomain") ///NEED Singleton for main 
         {
             mPerformerID = "0";
-            mCode = mName;
-            mConcurrentEvaluations = 0;
+            mCode = name();
         }
         else
         {
-            mEvaluationTag = "{E}";
-            mTagExpression = "\\{E\\}"; 
-            mPerformerEvaluationTag = "{E+1}";
-           
-
-            if(mConcurrentEvaluations!=0)
-            {
-                mName += "_" + mEvaluationTag;
-                mPerformerID = mPerformerEvaluationTag ;
-            }
+            if(evaluations()!=0)
+                mPerformerID = "{E+1}" ;
             else
-            {
                 mPerformerID = 1;
-
-            }
         }
 
     }
 
-    void XMLGeneratorPerformer::write(pugi::xml_document& aDocument,std::string aEvaluationNumber)
+    void XMLGeneratorPerformer::write(pugi::xml_document& aDocument,std::string aEvaluationString)
     {
-       
-        std::string tEvaluationTag; 
-        std::string tPerformerEvaluationTag;
-        if(aEvaluationNumber == "")
-        {
-            tEvaluationTag = mEvaluationTag;
-            tPerformerEvaluationTag = mPerformerEvaluationTag;
-        }
-        else
-        {
-            tEvaluationTag = aEvaluationNumber;
-            tPerformerEvaluationTag = std::to_string(std::stoi(aEvaluationNumber)+1);
-        }
-        if(mName == "platomain")
-            tPerformerEvaluationTag = "0";
-
         auto tPerformerNode = aDocument.append_child("Performer");
-        addChild(tPerformerNode, "PerformerID", tPerformerEvaluationTag);
-        addChild(tPerformerNode, "Name",name(aEvaluationNumber));
+        addChild(tPerformerNode, "PerformerID", ID(aEvaluationString));
+        addChild(tPerformerNode, "Name",name(aEvaluationString));
         addChild(tPerformerNode, "Code", mCode);
     }
 
-    std::string XMLGeneratorPerformer::name(std::string aEvaluationNumber)
+    std::string XMLGeneratorPerformer::ID(std::string aEvaluationString)
     {
-        if(aEvaluationNumber=="")
-            return mName;
+        ///ID tag is off by 1 from evaluation number because PlatoMain has special role
+        if(name() == "platomain" )
+            return std::string("0");
+        if(aEvaluationString == "")
+           return  mPerformerID;
         else
-            return std::regex_replace (mName,mTagExpression,aEvaluationNumber) ;
-    }
-    std::string XMLGeneratorPerformer::ID(std::string aEvaluationNumber)
-    {
-        return std::regex_replace (mName,mTagExpression,aEvaluationNumber) ;
+            return std::to_string(std::stoi(aEvaluationString)+1);
     }
 }

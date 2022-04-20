@@ -9,34 +9,30 @@
 #include <string>
 #include <regex>
 
+#include "XMLGeneratorFileObject.hpp"
+
 #include "pugixml.hpp"
+
 
 namespace XMLGen
 {
 
-class XMLGeneratorPerformer
+class XMLGeneratorPerformer : public XMLGeneratorFileObject
 {
     
 private:
     std::string mPerformerID;
-    std::string mName;
     std::string mCode;
-    std::regex mTagExpression;
     
-    std::string mEvaluationTag;
-    std::string mPerformerEvaluationTag;
-
-    int mConcurrentEvaluations;
     
 public:
     XMLGeneratorPerformer(
                           const std::string& aName,
                           const std::string& aCode,
                           int aConcurrentEvalutions = 0);
-    void write(pugi::xml_document& aDocument,std::string aEvaluationNumber ="");
-    std::string name(std::string aEvaluationNumber ="");
-    int evaluations(){return mConcurrentEvaluations;}
-    std::string ID(std::string aEvaluationNumber);
+    void write(pugi::xml_document& aDocument,std::string aEvaluationString ="");
+    
+    std::string ID(std::string aEvaluationString = "");
 };
 
 }

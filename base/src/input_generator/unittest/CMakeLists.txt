@@ -20,6 +20,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
+                                      XMLGeneratorFileObject_UnitTester.cpp
                                       XMLGeneratorPerformer_UnitTester.cpp
                                       XMLGeneratorSharedData_UnitTester.cpp
                                       XMLGeneratorOperation_UnitTester.cpp
@@ -97,6 +98,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                                       # ../PlatoAnalyzeInputDeckWriter.cpp
                                       # ../SalinasInputDeckWriter.cpp)
+			              ../XMLGeneratorFileObject.cpp
 			              ../XMLGeneratorOperation.cpp
                                       ../XMLGeneratorStage.cpp
 			              ../XMLGeneratorPerformer.cpp

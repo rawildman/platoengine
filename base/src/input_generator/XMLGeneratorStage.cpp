@@ -14,7 +14,7 @@ XMLGeneratorStage::XMLGeneratorStage
 (const std::string& aName,
  std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
  std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData):
- mName(aName),
+ XMLGeneratorFileObject(aName),
  mInputSharedData(aInputSharedData),
  mOutputSharedData(aOutputSharedData)
 {
@@ -31,38 +31,19 @@ void XMLGeneratorStage::write
 {
     auto tStageNode = aDocument.append_child("Stage");
     
-    addChild(tStageNode, "Name", mName);
+    addChild(tStageNode, "Name", name());
 
-    if(mInputSharedData->evaluations()==0)
-        mInputSharedData->write_stage(tStageNode);
-    else
-    {
-        auto tForNode = tStageNode.append_child("For");
-        tForNode.append_attribute("var") = "E";
-        tForNode.append_attribute("in") = "Parameters";
-        mInputSharedData->write_stage(tForNode);  
-    }
+    auto tForOrStageNode = for_node(tStageNode,"Parameters");
+    mInputSharedData->write_stage(tForOrStageNode);
+    
     for(unsigned int iOperation = 0; iOperation < mOperationQueue.size(); ++iOperation)
     {
-        if(mOperationQueue[iOperation]->evaluations() == 0)
-            mOperationQueue[iOperation]->write_interface(tStageNode); 
-        else
-        {
-            auto tForNode = tStageNode.append_child("For");
-            tForNode.append_attribute("var") = "E";
-            tForNode.append_attribute("in") = "Parameters";
-            mOperationQueue[iOperation]->write_interface(tForNode);  
-        }
+        tForOrStageNode = for_node(tStageNode,"Parameters");
+        mOperationQueue[iOperation]->write_interface(tForOrStageNode); 
     }
-    if(mOutputSharedData->evaluations()==0)
-        mOutputSharedData->write_stage(tStageNode);
-    else
-    {
-        auto tForNode = tStageNode.append_child("For");
-        tForNode.append_attribute("var") = "E";
-        tForNode.append_attribute("in") = "Parameters";
-        mOutputSharedData->write_stage(tForNode);  
-    }
+
+    tForOrStageNode = for_node(tStageNode,"Parameters");
+    mOutputSharedData->write_stage(tForOrStageNode);
     
 }
 

@@ -155,7 +155,8 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
 
     XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",tInputSharedData,tOutputSharedData);
 
-    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", {"l", "w", "d"}, tInputSharedData, tPerformer, 2);
+    std::vector<std::string> tDescriptors = {"l", "w", "d"};
+    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", tDescriptors, tInputSharedData, tPerformer, 2);
     tInitializeStage.addStageOperation(tAprepro);
 
     pugi::xml_document tDocument;

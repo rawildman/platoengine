@@ -17,41 +17,22 @@ XMLGeneratorOperation::XMLGeneratorOperation
  const std::string& aFunction,
  std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) :
- mName(aName),
+ XMLGeneratorFileObject(aName,aConcurrentEvaluations),
  mFunction(aFunction),
- mPerformer(aPerformer),
- mConcurrentEvaluations(aConcurrentEvaluations)
+ mPerformer(aPerformer)
 {
-    mEvaluationTag = "{E}";
-    mTagExpression = "\\{E\\}";
+    if( evaluations() == 0 )
+        mChDir = false;
+    else
+        mChDir = true;
 }
 
 void XMLGeneratorOperation::appendCommonChildren
 (pugi::xml_node& aOperationNode,
- std::string aEvaluationNumber)
+ std::string aEvaluationString)
 {
     addChild(aOperationNode, "Function", mFunction);
-    addChild(aOperationNode, "Name", name(aEvaluationNumber));
-}
-void XMLGeneratorOperation::addNameTag()
-{
-    mName += "_" + mEvaluationTag;
-}
-
-/*void XMLGeneratorOperation::for_write_definition(pugi::xml_document& aDocument, std::string aLoopMaxVar)
-{
-    auto tOperationNode = aDocument.append_child(std::string("For var=\"") + mEvaluationTag + "\" in=\"" + aLoopMaxVar+ "\"");
-    write_definition(aDocument);
-}*/
-
-std::string XMLGeneratorOperation::name(std::string aEvaluationNumber)
-{
-    if(aEvaluationNumber=="")
-        return mName;
-    else
-    {
-        return std::regex_replace (mName,mTagExpression,aEvaluationNumber);
-    }    
+    addChild(aOperationNode, "Name", name(aEvaluationString));
 }
 
 XMLGeneratorOperationWait::XMLGeneratorOperationWait
@@ -62,42 +43,24 @@ XMLGeneratorOperationWait::XMLGeneratorOperationWait
  XMLGeneratorOperation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
 {
     mCommand = std::string("while lsof -u $USER | grep ./") + aFile + "; do sleep 1; done";
-    
-    if( mConcurrentEvaluations == 0 )
-    {
-        mChDir = false;
-    }
-    else
-    {
-        addNameTag();
-        mChDir = true;
-    }
-    mOnChange = false;
-    
+    mOnChange = false;    
 }
 
-void XMLGeneratorOperationWait::write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationWait::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    appendCommonChildren(tOperationNode,aEvaluationNumber);
-
-    std::string tEvaluationTag;
-    if(aEvaluationNumber == "")
-        tEvaluationTag = mEvaluationTag;
-    else
-        tEvaluationTag = aEvaluationNumber;
-
+    appendCommonChildren(tOperationNode,aEvaluationString);
     addChild(tOperationNode, "Command", mCommand);
     if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tEvaluationTag);
+        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
 }
 
-void XMLGeneratorOperationWait::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
+void XMLGeneratorOperationWait::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
-    addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationNumber));
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationString));
 }
 
 XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
@@ -110,44 +73,27 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
  mArgument(aInputDeck),
  mNumRanks(aNumRanks)
 {
-    
-    if( mConcurrentEvaluations == 0 )
-    {
-        mChDir = false;
-    }
-    else
-    {
-        addNameTag();
-        mChDir = true;
-    }
     mOnChange = true;
 }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+ void XMLGeneratorOperationGemmaMPISystemCall::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
  {
     auto tOperationNode = aDocument.append_child("Operation");
-    appendCommonChildren(tOperationNode,aEvaluationNumber);
+    appendCommonChildren(tOperationNode,aEvaluationString);
     addChild(tOperationNode, "Command", mCommand);
-
-    std::string tEvaluationTag;
-    if(aEvaluationNumber == "")
-        tEvaluationTag = mEvaluationTag;
-    else
-        tEvaluationTag = aEvaluationNumber;
-
     if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tEvaluationTag);
+        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
     addChild(tOperationNode, "NumRanks", mNumRanks );
     addChild(tOperationNode, "Argument", mArgument );
     addChild(tOperationNode, "AppendInput", "false" );
  }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
+ void XMLGeneratorOperationGemmaMPISystemCall::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
-    addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
 }
 
 XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
@@ -169,35 +115,19 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
     
     mInput.mSharedData = aSharedData;
 
-    mInput.mArgumentName = aSharedData->name("");
+    //mInput.mArgumentName = aSharedData->name("");
 
-    if( mConcurrentEvaluations == 0 )
-    {
-        mChDir = false;
-    }
-    else
-    {
-        addNameTag();
-        mChDir = true;
-       
-    }
     mOnChange = true;
 }
 
-void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    appendCommonChildren(tOperationNode,aEvaluationNumber);
+    appendCommonChildren(tOperationNode,aEvaluationString);
     addChild(tOperationNode, "Command", mCommand);
 
-    std::string tEvaluationTag;
-    if(aEvaluationNumber == "")
-        tEvaluationTag = mEvaluationTag;
-    else
-        tEvaluationTag = aEvaluationNumber;
-
     if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tEvaluationTag);
+        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString) );
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
     
     for( auto tA : mArgument )
@@ -209,19 +139,19 @@ void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocumen
         addChild(tOperationNode, "Option", tO );
     
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName",std::regex_replace (mInput.mArgumentName,mTagExpression,tEvaluationTag) );
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
     addChild(tInputNode, "Layout", mInput.mLayout);
     addChild(tInputNode, "Size", mInput.mSize);
 }
 
-void XMLGeneratorOperationAprepro::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
+void XMLGeneratorOperationAprepro::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
-    addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName",std::regex_replace (mInput.mArgumentName,mTagExpression,aEvaluationNumber) );
-    addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationNumber));
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 
 XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFunction
@@ -239,56 +169,37 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
     mOutput.mLayout = "scalar";
     mOutput.mSize = "1";
     mOutput.mSharedData = aSharedData;
-    // mOutput.mArgumentName = mOutput.mSharedData->name();
-    mOutput.mArgumentName = "criterion value";
-    
-    if( mConcurrentEvaluations == 0 )
-    {
-        mChDir = false;
-    }
-    else
-    {
-        addNameTag();
-        mChDir = true;
-    }
+    //mOutput.mArgumentName = mOutput.mSharedData->name();
     
     mOnChange = true;
 }
 
-void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber)
+void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
-    appendCommonChildren(tOperationNode,aEvaluationNumber);
-
-    std::string tEvaluationTag;
-    if(aEvaluationNumber == "")
-        tEvaluationTag = mEvaluationTag;
-    else
-        tEvaluationTag = aEvaluationNumber;
+    appendCommonChildren(tOperationNode,aEvaluationString);
 
     if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tEvaluationTag);
+        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
 
     addChild(tOperationNode, "File", mFile);
     addChild(tOperationNode, "Operation", mOperation);
     addChild(tOperationNode, "Column", mColumn);
 
     auto tOutputNode = tOperationNode.append_child("Output");
-    // addChild(tOutputNode, "ArgumentName", std::regex_replace (mOutput.mArgumentName,mTagExpression,aEvaluationNumber) );
-    addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
     addChild(tOutputNode, "Layout", mOutput.mLayout);
     addChild(tOutputNode, "Size", mOutput.mSize);
 }
 
-
-void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber)
+void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
-    addChild(tOperationNode, "Name", name(aEvaluationNumber));
-    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationNumber));
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
     auto tOutputNode = tOperationNode.append_child("Output");
-    addChild(tOutputNode, "ArgumentName", mOutput.mArgumentName);
-    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationNumber));
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
 }
 
 }

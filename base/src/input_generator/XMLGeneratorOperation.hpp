@@ -20,41 +20,32 @@ namespace XMLGen
 
     struct XMLGeneratorInputOutput
     {
-        std::string mArgumentName;
+        //std::string mArgumentName;
         std::string mLayout;
         std::string mSize;
         std::shared_ptr<XMLGeneratorSharedData> mSharedData;
     };
 
-class XMLGeneratorOperation
+class XMLGeneratorOperation : public XMLGeneratorFileObject
 {
-private:
-    std::string mName;
-    
+
 protected:
     std::string mFunction;
     std::shared_ptr<XMLGeneratorPerformer> mPerformer;
-    
-    std::string mEvaluationTag;
     bool mChDir;
     bool mOnChange;
-    int mConcurrentEvaluations;
-    std::regex mTagExpression;
-
-    void appendCommonChildren(pugi::xml_node &aOperationNode,std::string aEvaluationNumber);
+    
+    void appendCommonChildren(pugi::xml_node &aOperationNode,std::string aEvaluationString);
 
 public:
     XMLGeneratorOperation(const std::string& aName,
                           const std::string& aFunction,
                           std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                           int aConcurrentEvaluations);
-    virtual void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") = 0;
-    virtual void write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber = "") = 0;
+    virtual void write_definition(pugi::xml_document& aDocument, std::string aEvaluationString = "") = 0;
+    virtual void write_interface(pugi::xml_node& aNode, std::string aEvaluationString = "") = 0;
     
     //void for_write_definition(pugi::xml_document& aDocument, std::string aLoopMaxVar);
-    void addNameTag();
-    int evaluations(){return mConcurrentEvaluations;}
-    std::string name(std::string aEvaluationNumber = "");
 };
 
 class XMLGeneratorOperationWait : public XMLGeneratorOperation
@@ -67,8 +58,8 @@ public:
                               const std::string& aFile,
                               std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                               int aConcurrentEvaluations);
-    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") override;
-    void write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber = "") override;
+    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, std::string aEvaluationString = "") override;
 };
 
 class XMLGeneratorOperationGemmaMPISystemCall : public XMLGeneratorOperation
@@ -83,8 +74,8 @@ public:
                                             const std::string& aNumRanks, 
                                             std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                                             int aConcurrentEvaluations);
-    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") override;
-    void write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber = "") override;
+    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, std::string aEvaluationString = "") override;
 };
 
 class XMLGeneratorOperationAprepro : public XMLGeneratorOperation
@@ -100,8 +91,8 @@ public:
                                  std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
                                  std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                                  int aConcurrentEvaluations);
-    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") override;
-    void write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber = "") override;
+    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, std::string aEvaluationString = "") override;
 };
 
 class XMLGeneratorOperationHarvestDataFunction : public XMLGeneratorOperation
@@ -120,8 +111,8 @@ public:
                                              std::shared_ptr<XMLGeneratorSharedData> aSharedData,
                                              std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                                              int aConcurrentEvaluations);
-    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationNumber = "") override;
-    void write_interface(pugi::xml_node& aNode, std::string aEvaluationNumber = "") override;
+    void write_definition(pugi::xml_document& aDocument, std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, std::string aEvaluationString = "") override;
 };
 
 }
