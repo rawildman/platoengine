@@ -144,16 +144,22 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
     tMaterial.id("1");
     tMaterial.property("conductivity", "1e6");
     tInputMetaData.append(tMaterial);
-/*
-    // define operations
-    std::vector<XMLGen::XMLGeneratorOperation> tOperations;
-    std::vector<std::string> tDescriptors =  {"l", "w", "d"};
-    tOperations.push_back(std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", tDescriptors, "2"));
 
-    XMLGen::Stage tInitializeStage("Initialize Input", "design_parameters", "");
+    // set up stage
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",0);
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3", tPerformerMain, tUserPerformers, 2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1", tPerformer, tUserPerformers, 2);
+
+    XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",tInputSharedData,tOutputSharedData);
+
+    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", {"l", "w", "d"}, tInputSharedData, tPerformer, 2);
+    tInitializeStage.addStageOperation(tAprepro);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tInitializeStage.write(tDocument, tOperations));
+    ASSERT_NO_THROW(tInitializeStage.write(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // STAGE INPUTS
@@ -168,7 +174,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
     ASSERT_STREQ("Input", tInput.name());
     PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"design_parameters_{I}"}, tInput);
 
-    // UPDATE GEOMETRY ON CHANGE OPERATION
+    // APREPRO OPERATION
     auto tOuterOperation = tStage.child("Operation");
     ASSERT_FALSE(tOuterOperation.empty());
     tForNode = tOuterOperation.child("For");
@@ -182,7 +188,6 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
-*/
 }
 
 TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
@@ -242,7 +247,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_plato_main(tDocument));
-    tDocument.save_file("platomain.xml");
 
     ASSERT_FALSE(tDocument.empty());
 
@@ -490,7 +494,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_interface(tDocument));
-    tDocument.save_file("platointerface.xml");
 
     ASSERT_FALSE(tDocument.empty());
 
@@ -680,7 +683,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
-
 
 TEST(PlatoTestXMLGenerator, move_file_to_subdirectories)
 {
