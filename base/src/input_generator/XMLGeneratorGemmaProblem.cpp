@@ -52,8 +52,8 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",mPerformerMain,tUserPerformers,tEvaluations);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1",mPerformer,tUserPerformersJustMain,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",mPerformerMain,tUserPerformers,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion value","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
     mSharedData.push_back(tOutputSharedData);

@@ -13,12 +13,12 @@
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataWithTag)
+TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
@@ -51,13 +51,13 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedData)
+TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument,"2"));
@@ -89,5 +89,84 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedData)
     tOperation = tOperation.next_sibling("SharedData");
     ASSERT_TRUE(tOperation.empty());
 }
+
+
+TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers);
+    
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("SharedData");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("SharedData", tOperation.name());
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "Type", 
+        "Layout",
+        "Size",
+        "OwnerName",
+        "UserName",
+        "UserName"};
+    
+    std::vector<std::string> tValues = {
+        "design_parameters", 
+        "Scalar", 
+        "Global",
+        "3",
+        "platomain",
+        "platomain",
+        "plato_services"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("SharedData");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+
+TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataNodalFieldNoConcurrency)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
+    
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("design_parameters",tPerformerMain,tUserPerformers);
+    
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("SharedData");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("SharedData", tOperation.name());
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "Type", 
+        "Layout",
+        "OwnerName",
+        "UserName",
+        "UserName"};
+    
+    std::vector<std::string> tValues = {
+        "design_parameters", 
+        "Scalar", 
+        "Nodal Field",
+        "platomain",
+        "platomain",
+        "plato_services"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("SharedData");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 
 }

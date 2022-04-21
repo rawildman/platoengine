@@ -150,8 +150,8 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("design_parameters","3", tPerformerMain, tUserPerformers, 2);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedData>("criterion value","1", tPerformer, tUserPerformers, 2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3", tPerformerMain, tUserPerformers, 2);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion value","1", tPerformer, tUserPerformers, 2);
 
     XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",tInputSharedData,tOutputSharedData);
 
