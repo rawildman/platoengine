@@ -26,7 +26,6 @@
 #include "XMLGeneratorGemmaProblem.hpp"
 #include "XMLGeneratorOperation.hpp"
 
-
 namespace PlatoTestXMLGenerator
 {
 
@@ -118,129 +117,37 @@ TEST(PlatoTestXMLGenerator, WriteGemmaInputDeckMatchedPowerBalanceToSubdirectori
     Plato::system("rm -rf evaluations_1");
 }
 
-
-
-
-/*
-TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
-{
-    XMLGen::InputData tInputMetaData;
-
-    // define optimization parameters 
-    XMLGen::OptimizationParameters tOptParams;
-    tOptParams.append("concurrent_evaluations", "2");
-    tInputMetaData.set(tOptParams);
-
-    // define scenario
-    XMLGen::Scenario tScenario;
-    tScenario.append("id", "1");
-    tScenario.append("material", "1");
-    tScenario.append("frequency_min", "50");
-    tScenario.append("frequency_max", "300");
-    tScenario.append("frequency_step", "7");
-    tScenario.append("cavity_radius", "0.1016");
-    tScenario.append("cavity_height", "0.1018");
-    tScenario.append("physics", "electromagnetics");
-    tInputMetaData.append(tScenario);
-
-    // define material
-    XMLGen::Material tMaterial;
-    tMaterial.id("1");
-    tMaterial.property("conductivity", "1e6");
-    tInputMetaData.append(tMaterial);
-
-    // set up stage
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
-
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3", tPerformerMain, tUserPerformers, 2);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion value","1", tPerformer, tUserPerformers, 2);
-
-    XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",tInputSharedData,tOutputSharedData);
-
-    std::vector<std::string> tDescriptors = {"l", "w", "d"};
-    std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>("match.yaml", tDescriptors, tInputSharedData, tPerformer, 2);
-    tInitializeStage.addStageOperation(tAprepro);
-
-    pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tInitializeStage.write(tDocument));
-    ASSERT_FALSE(tDocument.empty());
-
-    // STAGE INPUTS
-    auto tStage = tDocument.child("Stage");
-    ASSERT_FALSE(tStage.empty());
-    ASSERT_STREQ("Stage", tStage.name());
-    auto tName = tStage.child("Name");
-    ASSERT_STREQ("Initialize Input", tName.child_value());
-    auto tForNode = tStage.child("For");
-    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
-    auto tInput = tForNode.child("Input");
-    ASSERT_STREQ("Input", tInput.name());
-    PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"design_parameters_{I}"}, tInput);
-
-    // APREPRO OPERATION
-    auto tOuterOperation = tStage.child("Operation");
-    ASSERT_FALSE(tOuterOperation.empty());
-    tForNode = tOuterOperation.child("For");
-    ASSERT_FALSE(tForNode.empty());
-    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
-    auto tOperation = tForNode.child("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    std::vector<std::string> tKeys = {"Name", "PerformerName", "Input"};
-    std::vector<std::string> tValues = {"aprepro_{I}", "plato_services_{I}", ""};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    auto tOpInputs = tOperation.child("Input");
-    ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
-}
-*/
-
 TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
 {
-    // use case: gemma call is defined by a system call mpi operation
     XMLGen::InputData tInputMetaData;
-    // define criterion
-    XMLGen::Criterion tCriterionOne;
-    tCriterionOne.id("1");
-    tCriterionOne.type("volume");
-    tInputMetaData.append(tCriterionOne);
-    XMLGen::Criterion tCriterionTwo;
-    tCriterionTwo.id("2");
-    tCriterionTwo.type("system_call");
-    tCriterionTwo.append("data_group", "1");
-    tCriterionTwo.append("data_extraction_operation", "max");
-    tCriterionTwo.append("data_file", "matched_power_balance.dat");
-    tInputMetaData.append(tCriterionTwo);
-    // XMLGen::Criterion tCriterionThree;
-    // tCriterionThree.id("3");
-    // tCriterionThree.type("system_call");
-    // tCriterionThree.append("data_group", "2");
-    // tCriterionThree.append("data_extraction_operation", "max");
-    // tCriterionThree.append("data_file", "matched_power_balance.dat");
-    // tInputMetaData.append(tCriterionThree);
-    // define objective
+
+    // define criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("2");
+    tCriterion.type("system_call");
+    tCriterion.append("data_group", "1");
+    tCriterion.append("data_extraction_operation", "max");
+    tCriterion.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterion);
+
+    // define objective 
     XMLGen::Objective tObjective;
-    tObjective.criteriaIDs.push_back("1");
     tObjective.criteriaIDs.push_back("2");
     tInputMetaData.objective = tObjective;
-    // define constraints
-    XMLGen::Constraint tConstraint;
-    tConstraint.criterion("3");
-    tInputMetaData.constraints.push_back(tConstraint);
+
     // define optimization parameters 
     XMLGen::OptimizationParameters tOptParams;
     std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
     tOptParams.descriptors(tDescriptors);
     tOptParams.append("concurrent_evaluations", "2");
     tInputMetaData.set(tOptParams);
-    // service parameters
+
+    // define services
     XMLGen::Service tServiceOne;
     tServiceOne.append("code", "gemma");
     tServiceOne.append("id", "1");
     tServiceOne.append("type", "system_call");
     tServiceOne.append("number_processors", "1");
-   
     tInputMetaData.append(tServiceOne);
     XMLGen::Service tServiceTwo;
     tServiceTwo.append("code", "platomain");
@@ -253,17 +160,13 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_plato_main(tDocument));
-
     ASSERT_FALSE(tDocument.empty());
 
-    // Aprepro 
-    // TEST RESULTS AGAINST GOLD VALUES
-    std::cout<<"APREPRO"<<std::endl;
+    // APREPRO OPERATIONS
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-
-    std::vector<std::string> tApreproKeys = {"Function",
+    std::vector<std::string> tKeys = {"Function",
         "Name", 
         "Command",
         "ChDir", 
@@ -276,7 +179,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "Option",
         "Option",
         "Input"};
-    std::vector<std::string> tApreproValues = {"SystemCall", 
+    std::vector<std::string> tValues = {"SystemCall", 
         "aprepro_0", 
         "aprepro", 
         "evaluations_0",
@@ -289,22 +192,17 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "slot_width",
         "slot_depth",
         ""};
-    
-    PlatoTestXMLGenerator::test_children(tApreproKeys, tApreproValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    std::vector<std::string> tApreproSubKeys = {"ArgumentName", "Layout", "Size"};
-    std::vector<std::string> tApreproSubValues = {"design_parameters_0", "scalar", "3"};
-    PlatoTestXMLGenerator::test_children(tApreproSubKeys, tApreproSubValues, tInput);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout", "Size"}, {"parameters", "scalar", "3"}, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-    std::cout<<"APREPRO 2"<<std::endl;
-    ///Second Evaluation
-    tApreproValues = {"SystemCall", 
+    tValues = {"SystemCall", 
         "aprepro_1", 
         "aprepro", 
         "evaluations_1",
@@ -317,22 +215,18 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "slot_width",
         "slot_depth",
         ""};
-    
-    PlatoTestXMLGenerator::test_children(tApreproKeys, tApreproValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tApreproSubValues = {"design_parameters_1", "scalar", "3"};
-    PlatoTestXMLGenerator::test_children(tApreproSubKeys, tApreproSubValues, tInput);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout", "Size"}, {"parameters", "scalar", "3"}, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
 
+    // GEMMA CALL OPERATIONS
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-
-    std::cout<<"GEMMA MPI"<<std::endl;
-    //Gemma MPI Calls 
-    std::vector<std::string> tGemmaKeys = {"Function",
+    tKeys = {"Function",
         "Name", 
         "Command", 
         "ChDir",
@@ -340,7 +234,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "NumRanks",
         "Argument",
         "AppendInput"};
-    std::vector<std::string> tGemmaValues = {"SystemCallMPI", 
+    tValues = {"SystemCallMPI", 
         "gemma_0", 
         "gemma", 
         "evaluations_0",
@@ -348,12 +242,11 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "1",
         "matched_power_balance.yaml",
         "false"};
-    PlatoTestXMLGenerator::test_children(tGemmaKeys, tGemmaValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-    std::cout<<"GEMMA 2"<<std::endl;
-    tGemmaValues = {"SystemCallMPI", 
+    tValues = {"SystemCallMPI", 
         "gemma_1", 
         "gemma", 
         "evaluations_1",
@@ -361,20 +254,18 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "1",
         "matched_power_balance.yaml",
         "false"};
-    PlatoTestXMLGenerator::test_children(tGemmaKeys, tGemmaValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    // WAIT OPERATIONS
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-
-    //Wait Harvest Harvest  
-    std::cout<<"WAIT"<<std::endl;
-    ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function",
+    tKeys = {"Function",
         "Name", 
         "Command", 
         "ChDir",
         "OnChange"};
-    std::vector<std::string> tValues = {"SystemCall", 
-        "Wait_0", 
+    tValues = {"SystemCall", 
+        "wait_0", 
         "while lsof -u $USER | grep ./matched_power_balance.dat; do sleep 1; done", 
         "evaluations_0",
         "false"};
@@ -382,63 +273,55 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-
-    std::cout<<"WAIT 2"<<std::endl;
     tValues = {"SystemCall", 
-        "Wait_1", 
+        "wait_1", 
         "while lsof -u $USER | grep ./matched_power_balance.dat; do sleep 1; done", 
         "evaluations_1",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    
+    // HARVEST DATA OPERATIONS
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-    
-    //Harvest Data Calls (2 total)
-
-    std::vector<std::string> tHarvestKeys = {"Function",
+    tKeys = {"Function",
         "Name", 
         "ChDir",
         "File", 
         "Operation",
         "Column",
         "Output"};
-    std::vector<std::string> tHarvestValues = {"HarvestDataFromFile", 
+    tValues = {"HarvestDataFromFile", 
         "harvest_data_0", 
         "evaluations_0", 
         "matched_power_balance.dat",
         "max",
         "1",
         ""};
-    std::cout<<"HARVEST"<<std::endl;
-    PlatoTestXMLGenerator::test_children(tHarvestKeys, tHarvestValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tOutput = tOperation.child("Output");
     ASSERT_FALSE(tOutput.empty());
-    std::vector<std::string> tHarvestSubKeys = {"ArgumentName", "Layout", "Size"};
-    std::vector<std::string> tHarvestSubValues = {"criterion value", "scalar", "1"};
-    PlatoTestXMLGenerator::test_children(tHarvestSubKeys, tHarvestSubValues, tOutput);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout", "Size"}, {"criterion value", "scalar", "1"}, tOutput);
     tOutput = tOutput.next_sibling("Output");
     ASSERT_TRUE(tOutput.empty());
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
-    std::cout<<"HARVEST 2"<<std::endl;
-    tHarvestValues = {"HarvestDataFromFile", 
+    tValues = {"HarvestDataFromFile", 
         "harvest_data_1", 
         "evaluations_1", 
         "matched_power_balance.dat",
         "max",
         "1",
         ""};
-    PlatoTestXMLGenerator::test_children(tHarvestKeys, tHarvestValues, tOperation);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tOutput = tOperation.child("Output");
     ASSERT_FALSE(tOutput.empty());
-    PlatoTestXMLGenerator::test_children(tHarvestSubKeys, tHarvestSubValues, tOutput);
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout", "Size"}, {"criterion value", "scalar", "1"}, tOutput);
     tOutput = tOutput.next_sibling("Output");
     ASSERT_TRUE(tOutput.empty());
 
-    //End of the line
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }

@@ -36,7 +36,7 @@ void XMLGeneratorOperation::appendCommonChildren
 }
 
 pugi::xml_node XMLGeneratorOperation::forNode(pugi::xml_node& aNode, 
-                                               std::string aXMLLoopVectorName)
+                                              const std::string& aXMLLoopVectorName)
 {
     if(evaluations() == 0)
         return aNode; 
@@ -127,10 +127,7 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
 
     mInput.mLayout = "scalar";
     mInput.mSize = std::to_string(mOptions.size());
-    
     mInput.mSharedData = aSharedData;
-
-    //mInput.mArgumentName = aSharedData->name("");
 
     mOnChange = true;
 }
@@ -154,7 +151,7 @@ void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocumen
         addChild(tOperationNode, "Option", tO );
     
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "ArgumentName", "parameters");
     addChild(tInputNode, "Layout", mInput.mLayout);
     addChild(tInputNode, "Size", mInput.mSize);
 }
@@ -165,7 +162,7 @@ void XMLGeneratorOperationAprepro::write_interface(pugi::xml_node& aNode, std::s
     addChild(tOperationNode, "Name", name(aEvaluationString));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "ArgumentName", "parameters");
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 
@@ -250,7 +247,7 @@ void XMLGeneratorOperationCubitTet10Conversion::write_definition(pugi::xml_docum
     addChild(tOperationNode, "AppendInput", "false" );
 
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "ArgumentName", "parameters");
 }
 
 void XMLGeneratorOperationCubitTet10Conversion::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
@@ -259,7 +256,7 @@ void XMLGeneratorOperationCubitTet10Conversion::write_interface(pugi::xml_node& 
     addChild(tOperationNode, "Name", name(aEvaluationString));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
     auto tInputNode = tOperationNode.append_child("Input");
-    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "ArgumentName", "parameters");
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 

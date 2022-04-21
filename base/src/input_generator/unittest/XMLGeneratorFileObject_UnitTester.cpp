@@ -15,7 +15,6 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
 {
-    
     XMLGen::XMLGeneratorFileObject tFileObject("name");
     ASSERT_NO_THROW(tFileObject.name());
     ASSERT_STREQ("name", tFileObject.name().c_str());
@@ -36,12 +35,10 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
     ASSERT_TRUE(tempForNode.empty());
 
     PlatoTestXMLGenerator::test_children({"File"}, {"test"}, tDocument);
-    
 }
 
 TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
 {
-    
     XMLGen::XMLGeneratorFileObject tFileObject("name",3);
     ASSERT_NO_THROW(tFileObject.name());
     ASSERT_STREQ("name_{E}", tFileObject.name().c_str());
@@ -71,8 +68,6 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
     
     tempForNode = tempForNode.next_sibling("For");
     ASSERT_TRUE(tempForNode.empty());
-    
 }
-
 
 }

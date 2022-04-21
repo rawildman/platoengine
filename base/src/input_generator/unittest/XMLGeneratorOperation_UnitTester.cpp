@@ -18,13 +18,54 @@
 namespace PlatoTestXMLGenerator
 {
 
+TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationNoConcurrency)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 0);
+
+    pugi::xml_document tDocument;
+    auto tForNode = tWait.forNode(tDocument,std::string("Parameters"));
+    XMLGen::addChild(tForNode, "File", "test");
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    auto tempForNode = tDocument.child("For");
+    ASSERT_TRUE(tempForNode.empty());
+
+    PlatoTestXMLGenerator::test_children({"File"}, {"test"}, tDocument);
+}
+
+TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 2);
+
+    pugi::xml_document tDocument;
+    auto tForNode = tWait.forNode(tDocument,std::string("Parameters"));
+    XMLGen::addChild(tForNode, "File", "test");
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    auto tempForNode = tOperation.child("For");
+    ASSERT_FALSE(tempForNode.empty());
+
+    ASSERT_STREQ("For", tempForNode.name());
+    auto tFileNode = tempForNode.child("File");
+    ASSERT_FALSE(tFileNode.empty());
+    ASSERT_STREQ("File", tFileNode.name());
+    
+    tempForNode = tempForNode.next_sibling("For");
+    ASSERT_TRUE(tempForNode.empty());
+
+    tOperation = tempForNode.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
-
-   // ASSERT_STREQ("wait_{E}", tWait.name());
-    //ASSERT_STREQ("wait_1", tWait.name("1"));
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tWait.write_definition(tDocument,"0"));
@@ -49,18 +90,6 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
-
-TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
-{
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 2);
-
-    //Need to copy FileObject unit test and add outer Operation loop    
-    ASSERT_FALSE(true);
-
-}
-
-
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
 {
@@ -323,7 +352,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"design_parameters_2", "scalar", "3"};
+    tValues = {"parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -380,7 +409,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"design_parameters_{E}", "scalar", "3"};
+    tValues = {"parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -419,7 +448,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceApreproOperationWithConcurrency)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "SharedDataName"};
-    tValues = {"Parameters", "design_parameters_2"};
+    tValues = {"parameters", "design_parameters_2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -475,7 +504,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"design_parameters", "scalar", "3"};
+    tValues = {"parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -607,7 +636,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCubitTet10OperationWithTag)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName"};
-    tValues = {"design_parameters_{E}"};
+    tValues = {"parameters"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -646,7 +675,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCubitTet10Operation)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "SharedDataName"};
-    tValues = {"Parameters", "design_parameters_2"};
+    tValues = {"parameters", "design_parameters_2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -679,11 +708,9 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10FileNoConcurrency)
 
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
-
     ASSERT_THROW(tReadData = XMLGen::read_data_from_file("evaluations_0/toTet10.jou"),std::runtime_error);
 
     Plato::system("rm -rf toTet10.jou");
-
 }
 
 TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10File)

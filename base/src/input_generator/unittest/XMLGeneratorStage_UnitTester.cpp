@@ -15,15 +15,6 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
-
-/*
-   
-    Only Input Shared
-    Only output SHared
-    Both 
-
-*/
-
 namespace PlatoTestXMLGenerator
 {
 
@@ -65,7 +56,6 @@ TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationNoConcurrencyNoSharedData)
     ASSERT_TRUE(tStageNode.empty());
 
 }
-
 
 TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationWithConcurrencyNoSharedData)
 {
@@ -120,13 +110,11 @@ TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationWithConcurrencyNoSharedDat
 
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteStageTwoWaitOperationsNoConcurrencyNoSharedData)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
-    
     
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tOperations;
     tOperations.push_back(std::make_shared<XMLGen::XMLGeneratorOperationWait> ("wait1", "file", tPerformer, 0));
@@ -170,7 +158,6 @@ TEST(PlatoTestXMLGenerator, WriteStageTwoWaitOperationsNoConcurrencyNoSharedData
 
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputSharedData)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
@@ -209,14 +196,12 @@ TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputSharedData)
 
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyOutputSharedData)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     
-    //std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("input","3",tPerformerMain,tUserPerformers);
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("output","3",tPerformerMain,tUserPerformers);
 
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tOperations;
@@ -249,7 +234,6 @@ TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyOutputSharedData)
 
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputAndOutputSharedData)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
@@ -281,7 +265,10 @@ TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputAndOutputShar
     std::vector<std::string> tValues = {"input"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
-    auto tOutput = tInput.next_sibling("Output");
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    auto tOutput = tStageNode.child("Output");
     ASSERT_FALSE(tOutput.empty());
 
     tValues = {"output"};

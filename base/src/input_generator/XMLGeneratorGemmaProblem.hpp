@@ -45,6 +45,7 @@ public:
 class XMLGeneratorGemmaProblem : public XMLGeneratorProblem 
 {
 private:
+    // void addOperationsAndStages(pugi::xml_document& aDocument) override;
     
 
 public:

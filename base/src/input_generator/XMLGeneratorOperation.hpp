@@ -47,7 +47,8 @@ public:
     virtual void write_interface(pugi::xml_node& aNode, 
                                  std::string aEvaluationString = "") = 0;
 
-    pugi::xml_node forNode(pugi::xml_node& aNode, std::string aXMLLoopVectorName);
+    pugi::xml_node forNode(pugi::xml_node& aNode, 
+                           const std::string& aXMLLoopVectorName);
 };
 
 class XMLGeneratorOperationWait : public XMLGeneratorOperation
