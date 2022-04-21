@@ -63,18 +63,9 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::shared_ptr<XMLGen::XMLGeneratorOperationWait> tWait = std::make_shared<XMLGen::XMLGeneratorOperationWait>("Wait", tDataFile, mPerformer, tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorOperationHarvestDataFunction> tHarvestData = std::make_shared<XMLGen::XMLGeneratorOperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
 
-    mOperations.push_back(tAprepro);
-    mOperations.push_back(tGemma);
-    mOperations.push_back(tWait);
-    mOperations.push_back(tHarvestData);
-
-    XMLGen::XMLGeneratorStage tInitializeStage("Initialize",tInputSharedData,tOutputSharedData);
-    tInitializeStage.addStageOperation(tAprepro);
-
-    XMLGen::XMLGeneratorStage tCriterionStage("Criterion Value",tInputSharedData,tOutputSharedData);
-    tCriterionStage.addStageOperation(tGemma);
-    tCriterionStage.addStageOperation(tWait);
-    tCriterionStage.addStageOperation(tHarvestData);
+    XMLGen::XMLGeneratorStage tInitializeStage("Initialize",{tAprepro},tInputSharedData,tOutputSharedData);
+    
+    XMLGen::XMLGeneratorStage tCriterionStage("Criterion Value",{tGemma,tWait,tHarvestData},tInputSharedData,tOutputSharedData);
 
     mStages.push_back(tInitializeStage);
     mStages.push_back(tCriterionStage);

@@ -23,6 +23,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorFileObject_UnitTester.cpp
                                       XMLGeneratorPerformer_UnitTester.cpp
                                       XMLGeneratorSharedData_UnitTester.cpp
+                                      XMLGeneratorStage_UnitTester.cpp
                                       XMLGeneratorOperation_UnitTester.cpp
                                       ../XMLGenerator.cpp
                                       ../XMLGeneratorProblem.cpp

@@ -59,6 +59,8 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
     auto tForNode = tFileObject.forNode(tDocument,std::string("Parameters"));
     XMLGen::addChild(tForNode, "File", "test");
 
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_TRUE(tOperation.empty());
     auto tempForNode = tDocument.child("For");
     ASSERT_FALSE(tempForNode.empty());
 
@@ -67,6 +69,10 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
     ASSERT_FALSE(tFileNode.empty());
     ASSERT_STREQ("File", tFileNode.name());
     
+    tempForNode = tempForNode.next_sibling("For");
+    ASSERT_TRUE(tempForNode.empty());
+    
 }
+
 
 }

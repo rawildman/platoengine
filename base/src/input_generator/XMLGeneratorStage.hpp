@@ -17,7 +17,7 @@
 namespace XMLGen
 {
 
-typedef std::pair<int,std::shared_ptr<XMLGeneratorOperation>> mPriorityOperation;
+//typedef std::pair<int,std::shared_ptr<XMLGeneratorOperation>> mPriorityOperation;
 
 class XMLGeneratorStage : public XMLGeneratorFileObject
 {
@@ -27,7 +27,7 @@ private:
     std::shared_ptr<XMLGeneratorSharedData> mInputSharedData;
     std::shared_ptr<XMLGeneratorSharedData> mOutputSharedData;
     //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
-    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperationQueue;
+    std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
 
     void appendInput(pugi::xml_node& aNode);
     void appendOutput(pugi::xml_node& aNode);
@@ -35,10 +35,10 @@ private:
 public:
     XMLGeneratorStage
     (const std::string& aName,
-    std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
-    std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData);
+    const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
+    std::shared_ptr<XMLGeneratorSharedData> aInputSharedData = nullptr,
+    std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData = nullptr);
 
-    void addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation);
     void write(pugi::xml_document& aDocument);
 };
 

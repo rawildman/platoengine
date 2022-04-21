@@ -50,6 +50,18 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
+{
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 2);
+
+    //Need to copy FileObject unit test and add outer Operation loop    
+    ASSERT_FALSE(true);
+
+}
+
+
+
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);

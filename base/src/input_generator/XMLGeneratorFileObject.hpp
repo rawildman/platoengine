@@ -36,6 +36,7 @@ public:
     std::string name(std::string aEvaluationString = "");
     std::string tag(std::string aEvaluationString = "");
 
+    std::string loopVar(){return "E";}
     pugi::xml_node forNode(pugi::xml_node& aNode, std::string aXMLLoopVectorName);
 
 };

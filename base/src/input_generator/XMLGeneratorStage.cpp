@@ -12,18 +12,14 @@ namespace XMLGen
     
 XMLGeneratorStage::XMLGeneratorStage
 (const std::string& aName,
+ const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
  std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
  std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData):
  XMLGeneratorFileObject(aName),
  mInputSharedData(aInputSharedData),
- mOutputSharedData(aOutputSharedData)
+ mOutputSharedData(aOutputSharedData),
+ mOperations(aOperations)
 {
-}
-
-void XMLGeneratorStage::addStageOperation(std::shared_ptr<XMLGeneratorOperation> aOperation)
-{
-    //mOperationQueue.push(std::make_pair(aPriority,aOperation));
-    mOperationQueue.push_back(aOperation);
 }
 
 void XMLGeneratorStage::write
@@ -35,10 +31,10 @@ void XMLGeneratorStage::write
 
     this->appendInput(tStageNode);
 
-    for(unsigned int iOperation = 0; iOperation < mOperationQueue.size(); ++iOperation)
+    for(unsigned int iOperation = 0; iOperation < mOperations.size(); ++iOperation)
     {
-        auto tForOrStageNode = forNode(tStageNode,"Parameters");
-        mOperationQueue[iOperation]->write_interface(tForOrStageNode); 
+        auto tForOrStageNode = mOperations[iOperation]->forNode(tStageNode,"Parameters");
+        mOperations[iOperation]->write_interface(tForOrStageNode); 
     }
 
     this->appendOutput(tStageNode);
@@ -59,7 +55,7 @@ void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
     if(mOutputSharedData)
     {
         auto tForOrStageNode = forNode(aNode,"Parameters");
-        auto tSharedDataNode = tForOrStageNode.append_child("Input");
+        auto tSharedDataNode = tForOrStageNode.append_child("Output");
         XMLGen::append_children({"SharedDataName"},{mOutputSharedData->name()},tSharedDataNode);
     }
 }

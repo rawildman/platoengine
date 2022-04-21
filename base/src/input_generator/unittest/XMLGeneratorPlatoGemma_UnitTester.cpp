@@ -118,6 +118,10 @@ TEST(PlatoTestXMLGenerator, WriteGemmaInputDeckMatchedPowerBalanceToSubdirectori
     Plato::system("rm -rf evaluations_1");
 }
 
+
+
+
+/*
 TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
 {
     XMLGen::InputData tInputMetaData;
@@ -190,6 +194,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeInputStageToInterfaceFile)
     ASSERT_FALSE(tOpInputs.empty());
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
 }
+*/
 
 TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
 {
@@ -496,8 +501,12 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_interface(tDocument));
 
+    tDocument.save_file("gemmatest.xml");
+
     ASSERT_FALSE(tDocument.empty());
 
+    //Ryan, this was copied from other test but didn't add the preamble stuff (Console, Performers, For Loops over Shared Data)
+    //Number of ranks is not pulled in correctly in GemmaProblem constructor.
     // Aprepro 
     // TEST RESULTS AGAINST GOLD VALUES
     std::cout<<"APREPRO"<<std::endl;

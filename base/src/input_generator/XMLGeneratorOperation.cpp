@@ -35,6 +35,21 @@ void XMLGeneratorOperation::appendCommonChildren
     addChild(aOperationNode, "Name", name(aEvaluationString));
 }
 
+pugi::xml_node XMLGeneratorOperation::forNode(pugi::xml_node& aNode, 
+                                               std::string aXMLLoopVectorName)
+{
+    if(evaluations() == 0)
+        return aNode; 
+    else
+    {
+        auto tOperation = aNode.append_child("Operation");
+        auto tForNode = tOperation.append_child("For");
+        tForNode.append_attribute("var") = loopVar().c_str();
+        tForNode.append_attribute("in") = aXMLLoopVectorName.c_str();
+        return tForNode;
+    }
+}
+
 XMLGeneratorOperationWait::XMLGeneratorOperationWait
 (const std::string& aName,
  const std::string& aFile,
