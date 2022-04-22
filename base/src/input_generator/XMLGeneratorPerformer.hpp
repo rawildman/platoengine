@@ -32,13 +32,13 @@ public:
                           int aConcurrentEvalutions = 0);
 
     void write_interface(pugi::xml_document& aDocument,
-                int aIDOffset = 1,
-               std::string aEvaluationString ="");
+                         int aIDOffset = 0,
+                         std::string aEvaluationString = "");
     
     int numberRanks(){return mNumberRanks;}
     
     std::string ID(int aIDOffset = 1,
-                    std::string aEvaluationString = "");
+                   std::string aEvaluationString = "");
 };
 
 }

@@ -8,7 +8,7 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
-    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
     
     mInterfaceFileName = "interface.xml";
     mOperationsFileName = "plato_main_operations.xml";
@@ -18,6 +18,7 @@ XMLGeneratorProblem::XMLGeneratorProblem()
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) : XMLGeneratorProblem()
 {
+    mVerbose = aMetaData.optimization_parameters().verbose();
     auto tServices = aMetaData.services();
     std::string tNumRanks = "1";
     std::string tGemmaInputFile; ///Where is this stored?
@@ -89,13 +90,16 @@ void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
 
 void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
 {
+    auto tIncludeNode = aDocument.append_child("include");
+    tIncludeNode.append_attribute("filename") = "defines.xml";
+
     auto tConsoleNode = aDocument.append_child("Console");
-    addChild(tConsoleNode, "Enabled", "false");  /// These should belong to a XMLGeneratorProblem 
-    addChild(tConsoleNode, "Verbose", "true");
+    XMLGen::addChild(tConsoleNode, "Enabled", "true"); 
+    XMLGen::addChild(tConsoleNode, "Verbose", mVerbose.c_str());
 
     mPerformerMain->write_interface(aDocument);
     for(unsigned int iEvaluation = 0; iEvaluation < mPerformer->evaluations(); ++iEvaluation)
-    mPerformer->write_interface(aDocument,1,std::to_string(iEvaluation));
+        mPerformer->write_interface(aDocument, 1 ,std::to_string(iEvaluation));
     
     for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
     {

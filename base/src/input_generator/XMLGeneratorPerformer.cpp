@@ -37,24 +37,25 @@ namespace XMLGen
 
     void XMLGeneratorPerformer::write_interface
     (pugi::xml_document& aDocument,
-    int aIDOffset,
-    std::string aEvaluationString)
+     int aIDOffset,
+     std::string aEvaluationString)
     {
         auto tPerformerNode = aDocument.append_child("Performer");
-        addChild(tPerformerNode, "PerformerID", ID(aIDOffset,aEvaluationString));
-        addChild(tPerformerNode, "Name",name(aEvaluationString));
+        addChild(tPerformerNode, "PerformerID", ID(aIDOffset, aEvaluationString));
+        addChild(tPerformerNode, "Name", name(aEvaluationString));
         addChild(tPerformerNode, "Code", mCode);
     }
 
     std::string XMLGeneratorPerformer::ID(int aIDOffset,
-                                        std::string aEvaluationString)
+                                          std::string aEvaluationString)
     {
         ///ID tag is off by 1 from evaluation number because PlatoMain has special role
-        if(name() == "platomain" )
-            return std::string("0");
+        // if(name() == "platomain" )
+        //     return std::string("0");
         if(aEvaluationString == "")
-           return  std::string("{E+")+std::to_string(aIDOffset)+"}";
+           return  std::to_string(aIDOffset);
         else
-            return std::to_string(std::stoi(aEvaluationString)+aIDOffset);
+            // return std::to_string(std::stoi(aEvaluationString) + aIDOffset);
+            return  std::string("{E+") +std::to_string(aIDOffset) + "}";
     }
 }

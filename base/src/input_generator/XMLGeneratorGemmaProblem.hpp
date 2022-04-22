@@ -33,6 +33,7 @@ protected:
     std::string mOperationsFileName;
     std::string mInputDeckName;
     std::string mMPISourceName;
+    std::string mVerbose;
 
 public:
     XMLGeneratorProblem();
