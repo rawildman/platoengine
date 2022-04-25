@@ -15,8 +15,8 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -42,8 +42,8 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
         "Scalar", 
         "Global",
         "3",
-        "platomain",
-        "platomain",
+        "platomain_1",
+        "platomain_1",
         "plato_services_{E}"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -53,8 +53,8 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
@@ -81,8 +81,8 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
         "Scalar", 
         "Global",
         "3",
-        "platomain",
-        "platomain",
+        "platomain_1",
+        "platomain_1",
         "plato_services_2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -90,11 +90,10 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
     ASSERT_TRUE(tOperation.empty());
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers);
@@ -121,8 +120,8 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
         "Scalar", 
         "Global",
         "3",
-        "platomain",
-        "platomain",
+        "platomain_1",
+        "platomain_1",
         "plato_services"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -130,11 +129,10 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataNodalFieldNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("design_parameters",tPerformerMain,tUserPerformers);
@@ -159,14 +157,13 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataNodalFieldNoConcurren
         "design_parameters", 
         "Scalar", 
         "Nodal Field",
-        "platomain",
-        "platomain",
+        "platomain_1",
+        "platomain_1",
         "plato_services"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tOperation = tOperation.next_sibling("SharedData");
     ASSERT_TRUE(tOperation.empty());
 }
-
 
 }

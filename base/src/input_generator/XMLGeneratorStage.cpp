@@ -40,13 +40,18 @@ void XMLGeneratorStage::write
     this->appendOutput(tStageNode);
 }
 
-void XMLGeneratorStage::appendInput(pugi::xml_node& aNode)
+void XMLGeneratorStage::appendInput
+(pugi::xml_node& aNode,
+ const std::string& aTag)
 {
     if(mInputSharedData)
     {
-        auto tForOrStageNode = forNode(aNode,"Parameters");
+        auto tForOrStageNode = mInputSharedData->forNode(aNode,"Parameters");
         auto tSharedDataNode = tForOrStageNode.append_child("Input");
-        XMLGen::append_children({"SharedDataName"},{mInputSharedData->name()},tSharedDataNode);
+        if (aTag == "")
+            XMLGen::append_children({"SharedDataName"},{mInputSharedData->name()},tSharedDataNode);
+        else
+            XMLGen::append_children({"Tag", "SharedDataName"},{aTag, mInputSharedData->name()},tSharedDataNode);
     }
 }
 
@@ -54,11 +59,23 @@ void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
 {
     if(mOutputSharedData)
     {
-        auto tForOrStageNode = forNode(aNode,"Parameters");
+        auto tForOrStageNode = mOutputSharedData->forNode(aNode,"Parameters");
         auto tSharedDataNode = tForOrStageNode.append_child("Output");
         XMLGen::append_children({"SharedDataName"},{mOutputSharedData->name()},tSharedDataNode);
     }
 }
 
+void XMLGeneratorStage::write_dakota
+(pugi::xml_node& aDocument,
+ const std::string& aStageTag)
+{
+    auto tStageNode = aDocument.append_child("Stage");
+    
+    addChild(tStageNode, "StageTag", aStageTag);
+    addChild(tStageNode, "StageName", name());
+
+    this->appendInput(tStageNode,"continuous");
+    this->appendOutput(tStageNode);
+}
 
 }

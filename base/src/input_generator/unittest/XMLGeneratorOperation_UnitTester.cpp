@@ -20,7 +20,7 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 0);
 
     pugi::xml_document tDocument;
@@ -38,7 +38,7 @@ TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 2);
 
     pugi::xml_document tDocument;
@@ -64,7 +64,7 @@ TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
 
     pugi::xml_document tDocument;
@@ -93,7 +93,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 0);
 
     pugi::xml_document tDocument;
@@ -120,7 +120,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer,  1);
 
     pugi::xml_document tDocument;
@@ -149,7 +149,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceWaitOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationWait tWait("wait", "file", tPerformer, 1);
 
     pugi::xml_document tDocument;
@@ -212,7 +212,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 0);
 
     pugi::xml_document tDocument;
@@ -245,7 +245,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
@@ -280,7 +280,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceGemmaMPIOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
@@ -306,7 +306,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceGemmaMPIOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
@@ -363,8 +363,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -420,8 +420,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceApreproOperationWithConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -459,8 +459,8 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceApreproOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,0);
     std::vector<std::string> vars = {"l","w","d"};
@@ -515,8 +515,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionHarvestDataOperationWithConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion value","3",tPerformerMain,tUserPerformers,2);
     
@@ -560,8 +560,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionHarvestDataOperationWithConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceHarvestDataOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion_1_service_1_scenario_1","3",tPerformerMain,tUserPerformers,3);
     
@@ -597,11 +597,10 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceHarvestDataOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteDefinitionCubitTet10OperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -647,8 +646,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCubitTet10OperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceCubitTet10Operation)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -690,8 +689,8 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10FileNoConcurrency)
     Plato::system("rm -rf evaluations_0");
     Plato::system("rm -rf evaluations_1");
 
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,0);
     
@@ -715,8 +714,8 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10FileNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10File)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -747,8 +746,8 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10File)
 
 TEST(PlatoTestXMLGenerator, WriteDefinitionCubitSubBlockOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -794,8 +793,8 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCubitSubBlockOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceCubitSubBlockOperation)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -833,8 +832,8 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCubitSubBlockOperation)
 
 TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFile)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
@@ -865,8 +864,8 @@ TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFile)
 
 TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFileNoConcurrency)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,0);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,0);
     
@@ -889,10 +888,9 @@ TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFileNoConcurrency
 
 }
 
-
 TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);    
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);    
     XMLGen::XMLGeneratorOperationDecomp tDecomp("myFile.exo", 16 , tPerformer, 2);
 
     pugi::xml_document tDocument;
@@ -925,7 +923,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteInterfaceDecompOperationInterfaceFile)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);    
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);    
     XMLGen::XMLGeneratorOperationDecomp tDecomp("myFile.exo", 16 , tPerformer, 2);
 
     pugi::xml_document tDocument;
@@ -946,6 +944,5 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceDecompOperationInterfaceFile)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
-
 
 }

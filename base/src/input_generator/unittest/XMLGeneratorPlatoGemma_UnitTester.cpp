@@ -390,29 +390,211 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     tChild = tConsole.child("Verbose");
     ASSERT_STREQ("true", tChild.child_value());
 
-    // // PERFORMERS
+    // PERFORMERS
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
     PlatoTestXMLGenerator::test_children({"Name", "Code", "PerformerID"}, {"platomain_1", "platomain", "0"}, tPerformer);
 
-    // NEED FOR LOOP
-    // tPerformer = tPerformer.next_sibling("Performer");
-    // ASSERT_FALSE(tPerformer.empty());
-    // ASSERT_STREQ("Performer", tPerformer.name());
-    // tKeys = {"Name", "Code", "PerformerID"};
-    // tValues = {"plato_services_2_0", "platomain", "1"};
-    // PlatoTestXMLGenerator::test_children(tKeys, tValues, tPerformer);
+    auto tPerformerForNode = tPerformer.next_sibling("For");
+    ASSERT_FALSE(tPerformerForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Performers"}, tPerformerForNode);
+    auto tInnerPerformer = tPerformerForNode.child("Performer");
+    ASSERT_FALSE(tInnerPerformer.empty());
+    PlatoTestXMLGenerator::test_children({"Name", "Code", "PerformerID"}, {"plato_services_{E}", "plato_services", "{E+1}"}, tInnerPerformer);
 
-    // tPerformer = tPerformer.next_sibling("Performer");
-    // ASSERT_TRUE(tPerformer.empty());
+    tInnerPerformer = tInnerPerformer.next_sibling("Performer");
+    ASSERT_TRUE(tInnerPerformer.empty());
+
+    tPerformer = tPerformer.next_sibling("Performer");
+    ASSERT_TRUE(tPerformer.empty());
 
     // SHARED DATA
+    auto tSharedDataForNode = tPerformerForNode.next_sibling("For");
+    ASSERT_FALSE(tSharedDataForNode.empty());
+    auto tInnerSharedData = tSharedDataForNode.child("SharedData");
+    ASSERT_FALSE(tInnerSharedData.empty());
+    std::vector<std::string> tKeys = {"Name",
+        "Type", 
+        "Layout",
+        "Size", 
+        "OwnerName",
+        "UserName",
+        "UserName"};
+    std::vector<std::string> tValues = {"design_parameters_{E}", 
+        "Scalar", 
+        "Global", 
+        "3",
+        "platomain_1",
+        "platomain_1",
+        "plato_services_{E}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInnerSharedData);
+    tInnerSharedData = tInnerSharedData.next_sibling("SharedData");
+    ASSERT_TRUE(tInnerSharedData.empty());
+
+    tSharedDataForNode = tSharedDataForNode.next_sibling("For");
+    ASSERT_FALSE(tSharedDataForNode.empty());
+    tInnerSharedData = tSharedDataForNode.child("SharedData");
+    ASSERT_FALSE(tInnerSharedData.empty());
+    tKeys = {"Name",
+        "Type", 
+        "Layout",
+        "Size", 
+        "OwnerName",
+        "UserName"};
+    tValues = {"criterion_X_service_X_scenario_X_{E}", 
+        "Scalar", 
+        "Global", 
+        "1",
+        "plato_services_{E}",
+        "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInnerSharedData);
+    tInnerSharedData = tInnerSharedData.next_sibling("SharedData");
+    ASSERT_TRUE(tInnerSharedData.empty());
 
     // INITIALIZE STAGE
+    auto tStage = tDocument.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    auto tName = tStage.child("Name");
+    ASSERT_STREQ("Initialize Input", tName.child_value());
+    auto tForNode = tStage.child("For");
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    auto tInputs = tForNode.child("Input");
+    ASSERT_FALSE(tInputs.empty());
+    ASSERT_STREQ("Input", tInputs.name());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"design_parameters_{E}"}, tInputs);
+
+    auto tOuterOperation = tStage.child("Operation");
+    ASSERT_FALSE(tOuterOperation.empty());
+    tForNode = tOuterOperation.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    auto tOperation = tForNode.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName", "Input"};
+    tValues = {"aprepro_{E}", "plato_services_{E}", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOpInputs = tOperation.child("Input");
+    ASSERT_FALSE(tOpInputs.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"parameters", "design_parameters_{E}"}, tOpInputs);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOuterOperation.empty());
 
     // CRITERION 0 STAGE
+    tStage = tStage.next_sibling("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    tName = tStage.child("Name");
+    ASSERT_STREQ("Compute Criterion 0 Value", tName.child_value());
+
+    tOuterOperation = tStage.child("Operation");
+    ASSERT_FALSE(tOuterOperation.empty());
+    tForNode = tOuterOperation.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    tOperation = tForNode.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"gemma_{E}", "plato_services_{E}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOuterOperation.empty());
+    tForNode = tOuterOperation.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    tOperation = tForNode.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"wait_{E}", "plato_services_{E}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    tOuterOperation = tOuterOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOuterOperation.empty());
+    tForNode = tOuterOperation.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    tOperation = tForNode.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName", "Output"};
+    tValues = {"harvest_data_{E}", "plato_services_{E}", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOpOutputs = tOperation.child("Output");
+    ASSERT_FALSE(tOpOutputs.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion value", "criterion_X_service_X_scenario_X_{E}"}, tOpOutputs);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    tForNode = tOuterOperation.next_sibling("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    auto tOutputs = tForNode.child("Output");
+    ASSERT_FALSE(tOutputs.empty());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"criterion_X_service_X_scenario_X_{E}"}, tOutputs);
+
+    tForNode = tForNode.next_sibling("For");
+    ASSERT_TRUE(tForNode.empty());
+
+    tStage = tStage.next_sibling("Stage");
+    ASSERT_TRUE(tStage.empty());
 
     // DAKOTA DRIVER
+    auto tDriver = tDocument.child("DakotaDriver");
+    ASSERT_FALSE(tDriver.empty());
+    ASSERT_STREQ("DakotaDriver", tDriver.name());
+    tStage = tDriver.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    tKeys = {"StageTag", "StageName", "For"};
+    tValues = {"initialize", "Initialize Input", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tStage);
+    tForNode = tStage.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    tInputs = tForNode.child("Input");
+    ASSERT_FALSE(tInputs.empty());
+    tKeys = {"Tag", "SharedDataName"};
+    tValues = {"continuous", "design_parameters_{E}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInputs);
+
+    tInputs = tInputs.next_sibling("Input");
+    ASSERT_TRUE(tInputs.empty());
+
+    tForNode = tForNode.next_sibling("For");
+    ASSERT_TRUE(tForNode.empty());
+
+    tStage = tStage.next_sibling("Stage");
+    ASSERT_FALSE(tStage.empty());
+    tKeys = {"StageTag", "StageName", "For"};
+    tValues = {"criterion_value_0", "Compute Criterion 0 Value", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tStage);
+    tForNode = tStage.child("For");
+    ASSERT_FALSE(tForNode.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
+    tOutputs = tForNode.child("Output");
+    ASSERT_FALSE(tOutputs.empty());
+    tKeys = {"SharedDataName"};
+    tValues = {"criterion_X_service_X_scenario_X_{E}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutputs);
+
+    tOutputs = tOutputs.next_sibling("Output");
+    ASSERT_TRUE(tOutputs.empty());
+
+    tForNode = tForNode.next_sibling("For");
+    ASSERT_TRUE(tForNode.empty());
+
+    tStage = tStage.next_sibling("Stage");
+    ASSERT_TRUE(tStage.empty());
 }
 
 TEST(PlatoTestXMLGenerator, move_file_to_subdirectories)

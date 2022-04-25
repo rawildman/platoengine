@@ -8,7 +8,7 @@ namespace XMLGen
 {
 XMLGeneratorProblem::XMLGeneratorProblem()
 {
-    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
+    mPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1", "platomain");
     
     mInterfaceFileName = "interface.xml";
     mOperationsFileName = "plato_main_operations.xml";
@@ -33,11 +33,13 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::string tDataColumn, tMathOperation, tDataFile;
     auto tCriteria = aMetaData.criteria();
     for (int iCriteria = 0; iCriteria < tCriteria.size(); iCriteria++)
-    if(tCriteria[iCriteria].type() == "system_call")
     {
-        tDataColumn = tCriteria[iCriteria].value("data_group");
-        tMathOperation = tCriteria[iCriteria].value("data_extraction_operation");
-        tDataFile = tCriteria[iCriteria].value("data_file");
+        if(tCriteria[iCriteria].type() == "system_call")
+        {
+            tDataColumn = tCriteria[iCriteria].value("data_group");
+            tMathOperation = tCriteria[iCriteria].value("data_extraction_operation");
+            tDataFile = tCriteria[iCriteria].value("data_file");
+        }
     }
 
     std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
@@ -45,13 +47,14 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
     int tNumParams = aMetaData.optimization_parameters().descriptors().size();
     
-    mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",std::stoi(tNumRanks),tEvaluations);
+    int tOffset = 1;
+    mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",tOffset,std::stoi(tNumRanks),tEvaluations);
     
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters","3",mPerformerMain,tUserPerformers,tEvaluations);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion value","1",mPerformer,tUserPerformersJustMain,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters",std::to_string(tNumParams),mPerformerMain,tUserPerformers,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion_X_service_X_scenario_X","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
     mSharedData.push_back(tOutputSharedData);
@@ -66,9 +69,8 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     mOperations.push_back(tWait);
     mOperations.push_back(tHarvestData);
 
-    XMLGen::XMLGeneratorStage tInitializeStage("Initialize",{tAprepro},tInputSharedData,tOutputSharedData);
-    
-    XMLGen::XMLGeneratorStage tCriterionStage("Criterion Value",{tGemma,tWait,tHarvestData},tInputSharedData,tOutputSharedData);
+    XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",{tAprepro},tInputSharedData,nullptr);
+    XMLGen::XMLGeneratorStage tCriterionStage("Compute Criterion 0 Value",{tGemma,tWait,tHarvestData},nullptr,tOutputSharedData);
 
     mStages.push_back(tInitializeStage);
     mStages.push_back(tCriterionStage);
@@ -98,8 +100,8 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
     XMLGen::addChild(tConsoleNode, "Verbose", mVerbose.c_str());
 
     mPerformerMain->write_interface(aDocument);
-    for(unsigned int iEvaluation = 0; iEvaluation < mPerformer->evaluations(); ++iEvaluation)
-        mPerformer->write_interface(aDocument, 1 ,std::to_string(iEvaluation));
+    auto tForOrDocumentNode = mPerformer->forNode(aDocument,"Performers");
+    mPerformer->write_interface(tForOrDocumentNode);
     
     for( unsigned int tLoopInd = 0; tLoopInd < mSharedData.size(); ++tLoopInd )
     {
@@ -114,45 +116,12 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
         }
     }
     
-    int tDakotaIndexInfo = -1;
     for(unsigned int iStage = 0 ; iStage < mStages.size(); ++iStage)
-    {
         mStages[iStage].write(aDocument); 
-        if(mStages[iStage].name() == "Criterion Value")
-            tDakotaIndexInfo = iStage;
-    }
-    //Write dakota stage
-    //This does not appear to fit the pattern, so I will semi-hard code this here:
-    //auto tDakotaNode aDocument.append_child("DakotaDriver");
-    //auto tDakotaStage tDakotaNode.append_child("Stage");
-    //addChild(tDakotaStage, "StageTag", mStages[tDakotaIndexInfo].name());
-    
-/*
-    <DakotaDriver>
 
-    <Stage>
-
-        <StageTag>criterion_value_0</StageTag>
-        <StageName>Criterion 0 Value</StageName>
-
-        <For var="PerformerIndex" in="Performers">
-        <Input>
-            <Tag>continuous</Tag>
-            <SharedDataName>parameters_{PerformerIndex}</SharedDataName>
-        </Input>
-        </For>
-
-        <For var="PerformerIndex" in="Performers">
-        <Output>
-            <SharedDataName>objective_value_{PerformerIndex}</SharedDataName>
-        </Output>
-        </For>
-
-    </Stage>
-
-    </DakotaDriver>
-    */
-
+    auto tDriver = aDocument.append_child("DakotaDriver");
+    mStages[0].write_dakota(tDriver,"initialize");
+    mStages[1].write_dakota(tDriver,"criterion_value_0");
 }
 
 void XMLGeneratorGemmaProblem::create_evaluation_subdirectories_and_gemma_input(const InputData& aMetaData)
@@ -224,7 +193,7 @@ void XMLGeneratorGemmaProblem::write_mpisource(std::string aFileName)
     //TODO Number of processors for a service engine....
     for(int iPerformer = 0; iPerformer < mPerformer->evaluations(); ++iPerformer )
     {
-        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(1,std::to_string(iPerformer))<<" \\\n";
+        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(std::to_string(iPerformer))<<" \\\n";
         tOutFile<<"-x PLATO_INTERFACE_FILE="<<mInterfaceFileName<<" \\\n";
         tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
         tOutFile<<"PlatoEngineServices "<<mInputDeckName<<" \\\n";

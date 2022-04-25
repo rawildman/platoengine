@@ -29,17 +29,19 @@ private:
     //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
     std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
 
-    void appendInput(pugi::xml_node& aNode);
+    void appendInput(pugi::xml_node& aNode,
+                     const std::string& aTag = "");
     void appendOutput(pugi::xml_node& aNode);
 
 public:
-    XMLGeneratorStage
-    (const std::string& aName,
-    const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
-    std::shared_ptr<XMLGeneratorSharedData> aInputSharedData = nullptr,
-    std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData = nullptr);
+    XMLGeneratorStage(const std::string& aName,
+                      const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
+                      std::shared_ptr<XMLGeneratorSharedData> aInputSharedData = nullptr,
+                      std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData = nullptr);
 
     void write(pugi::xml_document& aDocument);
+    void write_dakota(pugi::xml_node& aDocument,
+                      const std::string& aStageTag);
 };
 
 }

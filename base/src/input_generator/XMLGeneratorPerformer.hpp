@@ -24,21 +24,21 @@ private:
     std::string mPerformerID;
     std::string mCode;
     int mNumberRanks;
+    int mIdOffset;
        
 public:
     XMLGeneratorPerformer(const std::string& aName,
                           const std::string& aCode,
+                          int aIdOffset = 0,
                           int aNumberRanks = 1,
                           int aConcurrentEvalutions = 0);
 
-    void write_interface(pugi::xml_document& aDocument,
-                         int aIDOffset = 0,
+    void write_interface(pugi::xml_node& aNode,
                          std::string aEvaluationString = "");
     
     int numberRanks(){return mNumberRanks;}
     
-    std::string ID(int aIDOffset = 1,
-                   std::string aEvaluationString = "");
+    std::string ID(const std::string& aEvaluationString);
 };
 
 }

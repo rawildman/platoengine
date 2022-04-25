@@ -38,11 +38,17 @@ TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationNoConcurrencyNoSharedData)
     ASSERT_FALSE(tStageNode.empty());
     ASSERT_STREQ("Stage", tStageNode.name());
 
+    auto tInput = tStageNode.child("Input");
+    ASSERT_TRUE(tInput.empty());
+    
+    auto tOutput = tStageNode.child("Output");
+    ASSERT_TRUE(tOutput.empty());
+
     PlatoTestXMLGenerator::test_children({"Name","Operation"}, {"name",""}, tStageNode);
 
     auto tOperation = tStageNode.child("Operation");
     ASSERT_FALSE(tOperation.empty());
-    
+
     std::vector<std::string> tKeys = {"Name",
         "PerformerName"};
     std::vector<std::string> tValues = {"wait", 
@@ -59,10 +65,9 @@ TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationNoConcurrencyNoSharedData)
 
 TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationWithConcurrencyNoSharedData)
 {
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain",16,0);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain","platomain");
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
-    
     
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tOperations;
     tOperations.push_back(std::make_shared<XMLGen::XMLGeneratorOperationWait> ("wait", "file", tPerformer, 2));
@@ -76,6 +81,12 @@ TEST(PlatoTestXMLGenerator, WriteStageOneWaitOperationWithConcurrencyNoSharedDat
     auto tStageNode = tDocument.child("Stage");
     ASSERT_FALSE(tStageNode.empty());
     ASSERT_STREQ("Stage", tStageNode.name());
+
+    auto tInput = tStageNode.child("Input");
+    ASSERT_TRUE(tInput.empty());
+    
+    auto tOutput = tStageNode.child("Output");
+    ASSERT_TRUE(tOutput.empty());
 
     PlatoTestXMLGenerator::test_children({"Name","Operation"}, {"name",""}, tStageNode);
 
@@ -191,9 +202,11 @@ TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputSharedData)
     tInput = tInput.next_sibling("Operation");
     ASSERT_TRUE(tInput.empty());
 
+    auto tOutput = tStageNode.child("Output");
+    ASSERT_TRUE(tOutput.empty());
+
     tStageNode = tStageNode.next_sibling("Stage");
     ASSERT_TRUE(tStageNode.empty());
-
 }
 
 TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyOutputSharedData)
@@ -229,9 +242,11 @@ TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyOutputSharedData)
     tOutput = tOutput.next_sibling("Operation");
     ASSERT_TRUE(tOutput.empty());
 
+    auto tInput = tStageNode.child("Input");
+    ASSERT_TRUE(tInput.empty());
+
     tStageNode = tStageNode.next_sibling("Stage");
     ASSERT_TRUE(tStageNode.empty());
-
 }
 
 TEST(PlatoTestXMLGenerator, WriteStageNoOperationNoConcurrencyInputAndOutputSharedData)
