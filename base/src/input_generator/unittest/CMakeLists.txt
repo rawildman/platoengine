@@ -39,8 +39,6 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParseServices.cpp
                                       ../XMLGeneratorParseMaterial.cpp
                                       ../XMLGeneratorParseCriteria.cpp
-                                      ../XMLGeneratorFlaskUtilities.cpp
-                                      ../XMLGeneratorGemmaUtilities.cpp
                                       ../XMLGeneratorOutputMetadata.cpp
                                       ../XMLGeneratorParseObjective.cpp
                                       ../XMLGeneratorOutputUtilities.cpp
@@ -52,8 +50,6 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorServiceUtilities.cpp
                                       ../XMLGeneratorParseUncertainty.cpp
                                       ../XMLGeneratorScenarioMetadata.cpp
-                                      ../XMLGeneratorCriteriaUtilities.cpp
-                                      ../XMLGeneratorScenarioUtilities.cpp
                                       ../XMLGeneratorSierraSDUtilities.cpp
                                       ../XMLGeneratorPlatoXTKInputFile.cpp
                                       ../XMLGeneratorConstraintMetadata.cpp
@@ -65,11 +61,8 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoAnalyzeUtilities.cpp
                                       ../XMLGeneratorLaunchUtilities.cpp
                                       ../XMLGeneratorInterfaceFileUtilities.cpp
-                                      ../XMLGeneratorOperationsFileUtilities.cpp
-                                      ../XMLGeneratorOperationsDataStructures.cpp
                                       ../XMLGeneratorDakotaInterfaceFileUtilities.cpp
                                       ../XMLGeneratorDakotaDriverInputFileUtilities.cpp
-                                      ../XMLGeneratorGemmaMatchedPowerBalanceUtilities.cpp
                                       ../XMLGeneratorGradBasedOptimizerOptions.cpp
                                       ../XMLGeneratorStagesOperationsUtilities.cpp
                                       ../XMLGeneratorMaterialFunctionInterface.cpp

@@ -15,8 +15,6 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorDakotaProblem.cpp
                       XMLGeneratorOutputMetadata.cpp 
                       XMLGeneratorParseObjective.cpp
-                      XMLGeneratorGemmaUtilities.cpp
-                      XMLGeneratorFlaskUtilities.cpp
                       XMLGeneratorOutputUtilities.cpp
                       XMLGeneratorStagesUtilities.cpp
                       XMLGeneratorParseConstraint.cpp
@@ -26,9 +24,7 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorServiceUtilities.cpp
                       XMLGeneratorScenarioMetadata.cpp
                       XMLGeneratorParseUncertainty.cpp
-                      XMLGeneratorCriteriaUtilities.cpp
                       XMLGeneratorSierraSDUtilities.cpp
-                      XMLGeneratorScenarioUtilities.cpp
                       XMLGeneratorConstraintMetadata.cpp
                       XMLGeneratorSharedDataUtilities.cpp
                       XMLGeneratorPerformersUtilities.cpp
@@ -36,11 +32,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorDefinesFileUtilities.cpp
                       XMLGeneratorPlatoAnalyzeUtilities.cpp
                       XMLGeneratorInterfaceFileUtilities.cpp
-                      XMLGeneratorOperationsFileUtilities.cpp
-                      XMLGeneratorOperationsDataStructures.cpp
                       XMLGeneratorDakotaInterfaceFileUtilities.cpp
                       XMLGeneratorDakotaDriverInputFileUtilities.cpp 
-                      XMLGeneratorGemmaMatchedPowerBalanceUtilities.cpp
                       XMLGeneratorGradBasedOptimizerOptions.cpp
                       XMLGeneratorStagesOperationsUtilities.cpp
                       XMLGeneratorParseOptimizationParameters.cpp
@@ -86,11 +79,9 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorProblem.hpp 
                       XMLGeneratorDataStruct.hpp
                       XMLGeneratorDakotaProblem.hpp
-                      XMLGeneratorGemmaUtilities.hpp
                       XMLGeneratorValidInputKeys.hpp
                       XMLGeneratorRandomMetadata.hpp
                       XMLGeneratorOutputMetadata.hpp 
-                      XMLGeneratorFlaskUtilities.hpp
                       XMLGeneratorStagesUtilities.hpp
                       XMLGeneratorParserUtilities.hpp 
                       XMLGeneratorOutputUtilities.hpp
@@ -101,9 +92,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorAssemblyMetadata.hpp
                       XMLGeneratorBoundaryMetadata.hpp
                       XMLGeneratorMaterialMetadata.hpp 
-                      XMLGeneratorCriteriaUtilities.hpp
                       XMLGeneratorSierraSDUtilities.hpp
-                      XMLGeneratorScenarioUtilities.hpp
                       XMLGeneratorCriterionMetadata.hpp 
                       XMLGeneratorConstraintMetadata.hpp
                       XMLGeneratorSharedDataUtilities.hpp
@@ -112,11 +101,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorDefinesFileUtilities.hpp 
                       XMLGeneratorPlatoAnalyzeUtilities.hpp 
                       XMLGeneratorInterfaceFileUtilities.hpp
-                      XMLGeneratorOperationsFileUtilities.hpp
-                      XMLGeneratorOperationsDataStructures.hpp
                       XMLGeneratorDakotaInterfaceFileUtilities.hpp 
                       XMLGeneratorDakotaDriverInputFileUtilities.hpp 
-                      XMLGeneratorGemmaMatchedPowerBalanceUtilities.hpp
                       XMLGeneratorGradBasedOptimizerOptions.hpp
                       XMLGeneratorStagesOperationsUtilities.hpp
                       XMLGeneratorOptimizationParametersMetadata.hpp
