@@ -256,8 +256,12 @@ void PlatoApp::initialize( bool initializeTimers )
         }
     }
 
-    if( mInputTree != nullptr )
+    if( mInputTree != nullptr ) {
+        if (mLightMp != nullptr) {
+            delete mLightMp;
+        }
         mLightMp = new LightMP(mInputTree);
+    }
 
     // Define system graph and mesh services (e.g. output) for
     // problems with shared data fields (mesh-based fields)
