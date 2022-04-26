@@ -343,9 +343,9 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
         "match.yaml.template",
         "match.yaml",
         "true",
-        "l",
-        "w",
-        "d",
+        "l=",
+        "w=",
+        "d=",
         ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -400,9 +400,9 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
         "match.yaml.template",
         "match.yaml",
         "true",
-        "l",
-        "w",
-        "d",
+        "l=",
+        "w=",
+        "d=",
         ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -495,9 +495,9 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
         "match.yaml.template",
         "match.yaml",
         "true",
-        "l",
-        "w",
-        "d",
+        "l=",
+        "w=",
+        "d=",
         ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -532,15 +532,13 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionHarvestDataOperationWithConcurrency)
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Function",
         "Name", 
-        "ChDir",
         "File", 
         "Operation",
         "Column",
         "Output"};
     std::vector<std::string> tValues = {"HarvestDataFromFile", 
         "harvest_data_0", 
-        "evaluations_0", 
-        "power_balance.dat",
+        "./evaluations_0/power_balance.dat",
         "max",
         "1",
         ""};

@@ -186,12 +186,12 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_0",
         "true",
         "-q",
-        "matched_power_balance.yaml.template",
-        "matched_power_balance.yaml",
+        "gemma_matched_power_balance_input_deck.yaml.template",
+        "gemma_matched_power_balance_input_deck.yaml",
         "true",
-        "slot_length",
-        "slot_width",
-        "slot_depth",
+        "slot_length=",
+        "slot_width=",
+        "slot_depth=",
         ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -209,12 +209,12 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_1",
         "true",
         "-q",
-        "matched_power_balance.yaml.template",
-        "matched_power_balance.yaml",
+        "gemma_matched_power_balance_input_deck.yaml.template",
+        "gemma_matched_power_balance_input_deck.yaml",
         "true",
-        "slot_length",
-        "slot_width",
-        "slot_depth",
+        "slot_length=",
+        "slot_width=",
+        "slot_depth=",
         ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -241,7 +241,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_0",
         "true",
         "1",
-        "matched_power_balance.yaml",
+        "gemma_matched_power_balance_input_deck.yaml",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -253,7 +253,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "evaluations_1",
         "true",
         "1",
-        "matched_power_balance.yaml",
+        "gemma_matched_power_balance_input_deck.yaml",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -286,15 +286,13 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     ASSERT_FALSE(tOperation.empty());
     tKeys = {"Function",
         "Name", 
-        "ChDir",
         "File", 
         "Operation",
         "Column",
         "Output"};
     tValues = {"HarvestDataFromFile", 
         "harvest_data_0", 
-        "evaluations_0", 
-        "matched_power_balance.dat",
+        "./evaluations_0/matched_power_balance.dat",
         "max",
         "1",
         ""};
@@ -310,8 +308,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     ASSERT_FALSE(tOperation.empty());
     tValues = {"HarvestDataFromFile", 
         "harvest_data_1", 
-        "evaluations_1", 
-        "matched_power_balance.dat",
+        "./evaluations_1/matched_power_balance.dat",
         "max",
         "1",
         ""};
@@ -373,8 +370,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     ASSERT_NO_THROW(tGemmaProblem.write_interface(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
-//    tDocument.save_file("ryan_test.xml", "  ");
-
     // INCLUDE DEFINES
     auto tInclude = tDocument.child("include");
     ASSERT_FALSE(tInclude.empty());
@@ -387,7 +382,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     ASSERT_FALSE(tConsole.empty());
     ASSERT_STREQ("Console", tConsole.name());
     auto tChild = tConsole.child("Enabled");
-    ASSERT_STREQ("true", tChild.child_value());
+    ASSERT_STREQ("false", tChild.child_value());
     tChild = tConsole.child("Verbose");
     ASSERT_STREQ("true", tChild.child_value());
 
