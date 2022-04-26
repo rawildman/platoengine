@@ -23,12 +23,14 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     auto tServices = aMetaData.services();
     std::string tNumRanks = "1";
     std::string tGemmaInputFile; ///Where is this stored?
+    std::string tGemmaPath;
 
     for (unsigned int iService = 0 ; iService < tServices.size(); iService++)
     if(tServices[iService].code()=="gemma")
     {
         tNumRanks = tServices[iService].numberProcessors();
         tGemmaInputFile = "matched_power_balance.yaml" ; //tServices[iService].value("input_file");
+        tGemmaPath = tServices[iService].path();
     }
 
     std::string tDataColumn, tMathOperation, tDataFile;
@@ -61,7 +63,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     mSharedData.push_back(tOutputSharedData);
 
     std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
-    std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile , tNumRanks, mPerformer, tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile, tGemmaPath, tNumRanks, mPerformer, tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorOperationWait> tWait = std::make_shared<XMLGen::XMLGeneratorOperationWait>("wait", tDataFile, mPerformer, tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorOperationHarvestDataFunction> tHarvestData = std::make_shared<XMLGen::XMLGeneratorOperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
 
@@ -103,8 +105,8 @@ void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
     tIncludeNode.append_attribute("filename") = "defines.xml";
 
     auto tConsoleNode = aDocument.append_child("Console");
-    XMLGen::addChild(tConsoleNode, "Enabled", "true"); 
-    XMLGen::addChild(tConsoleNode, "Verbose", mVerbose.c_str());
+    XMLGen::addChild(tConsoleNode, "Enabled", "false"); 
+    XMLGen::addChild(tConsoleNode, "Verbose", "true"); //mVerbose.c_str());
 
     mPerformerMain->write_interface(aDocument);
     auto tForOrDocumentNode = mPerformer->forNode(aDocument,"Performers");

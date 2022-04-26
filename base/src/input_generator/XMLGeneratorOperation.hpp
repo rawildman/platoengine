@@ -73,9 +73,11 @@ private:
     std::string mCommand; 
     std::string mNumRanks;
     std::string mArgument;
+    std::string mPath;
     
 public:
     XMLGeneratorOperationGemmaMPISystemCall(const std::string& aInputDeck,
+                                            const std::string& aPath,
                                             const std::string& aNumRanks, 
                                             std::shared_ptr<XMLGeneratorPerformer> aPerformer,
                                             int aConcurrentEvaluations);

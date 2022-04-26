@@ -80,13 +80,15 @@ void XMLGeneratorOperationWait::write_interface(pugi::xml_node& aNode, std::stri
 
 XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
 (const std::string& aInputDeck, 
+ const std::string& aPath,
  const std::string& aNumRanks, 
  std::shared_ptr<XMLGeneratorPerformer> aPerformer,
  int aConcurrentEvaluations) :
  XMLGeneratorOperation("gemma", "SystemCallMPI",aPerformer, aConcurrentEvaluations),
  mCommand("gemma"),
  mArgument(aInputDeck),
- mNumRanks(aNumRanks)
+ mNumRanks(aNumRanks),
+ mPath(aPath)
 {
     mOnChange = true;
 }
@@ -95,7 +97,7 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
  {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
-    addChild(tOperationNode, "Command", mCommand);
+    addChild(tOperationNode, "Command", mPath+mCommand);
     if(mChDir)
         addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));

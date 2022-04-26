@@ -178,7 +178,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithConcurrency)
 {
     int numRanks = 16;
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",numRanks,2);
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml","", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,"1"));
@@ -213,7 +213,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithConcurrency)
 TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 0);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml","" ,"2", tPerformer, 0);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,""));
@@ -246,7 +246,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
 TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml","path/", "2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_definition(tDocument,""));
@@ -266,7 +266,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
         "AppendInput"};
     std::vector<std::string> tValues = {"SystemCallMPI", 
         "gemma_{E}", 
-        "gemma", 
+        "path/gemma", 
         "evaluations_{E}",
         "true",
         "2",
@@ -281,7 +281,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
 TEST(PlatoTestXMLGenerator, WriteInterfaceGemmaMPIOperationWithTag)
 {
     std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
-    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "2", tPerformer, 1);
+    XMLGen::XMLGeneratorOperationGemmaMPISystemCall tGemma("match.yaml", "","2", tPerformer, 1);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemma.write_interface(tDocument));
