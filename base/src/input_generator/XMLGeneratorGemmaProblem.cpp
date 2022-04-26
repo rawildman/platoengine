@@ -14,6 +14,7 @@ XMLGeneratorProblem::XMLGeneratorProblem()
     mOperationsFileName = "plato_main_operations.xml";
     mInputDeckName = "plato_main_input_deck.xml";
     mMPISourceName = "mpirun.source";
+    mDefinesFileName = "defines.xml";
 }
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) : XMLGeneratorProblem()
@@ -45,7 +46,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
     
     auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
-    int tNumParams = aMetaData.optimization_parameters().descriptors().size();
+    mNumParams = aMetaData.optimization_parameters().descriptors().size();
     
     int tOffset = 1;
     mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",tOffset,std::stoi(tNumRanks),tEvaluations);
@@ -53,7 +54,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters",std::to_string(tNumParams),mPerformerMain,tUserPerformers,tEvaluations);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters",std::to_string(mNumParams),mPerformerMain,tUserPerformers,tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion_X_service_X_scenario_X","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
@@ -87,7 +88,13 @@ void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
         for(unsigned int iEvaluations = 0; iEvaluations < mOperations[tLoopInd]->evaluations(); ++iEvaluations)
         mOperations[tLoopInd]->write_definition(aDocument,std::to_string(iEvaluations));
     }
+}
 
+void XMLGeneratorGemmaProblem::write_plato_main_input(pugi::xml_document& aDocument)
+{    
+    auto tOutput = aDocument.append_child("output");
+    XMLGen::addChild(tOutput, "file", "platomain");
+    XMLGen::addChild(tOutput, "format", "exodus");
 }
 
 void XMLGeneratorGemmaProblem::write_interface(pugi::xml_document& aDocument)
@@ -190,15 +197,33 @@ void XMLGeneratorGemmaProblem::write_mpisource(std::string aFileName)
     tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
     tOutFile<<"PlatoMain "<<mInputDeckName<<" \\\n";
 
-    //TODO Number of processors for a service engine....
     for(int iPerformer = 0; iPerformer < mPerformer->evaluations(); ++iPerformer )
     {
-        tOutFile<<": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(std::to_string(iPerformer))<<" \\\n";
+        tOutFile<<mPerformer->return_mpirun(std::to_string(iPerformer)); //": -np 1 -x PLATO_PERFORMER_ID="<<mPerformer->ID(std::to_string(iPerformer))<<" \\\n";
         tOutFile<<"-x PLATO_INTERFACE_FILE="<<mInterfaceFileName<<" \\\n";
         tOutFile<<"-x PLATO_APP_FILE="<<mOperationsFileName<<" \\\n";
         tOutFile<<"PlatoEngineServices "<<mInputDeckName<<" \\\n";
     }
     tOutFile.close();
+}
+
+void XMLGeneratorGemmaProblem::write_defines()
+{
+    pugi::xml_document tDocument;
+    pugi::xml_node tNode = tDocument;
+    auto tArrayNode = tNode.append_child("Array");
+    tArrayNode.append_attribute("name") = "Parameters";
+    tArrayNode.append_attribute("type") = "int";
+    tArrayNode.append_attribute("from") = "0";
+    tArrayNode.append_attribute("to") = mNumParams-1;
+
+    auto tArrayNode2 = tNode.append_child("Array");
+    tArrayNode2.append_attribute("name") = "Performers";
+    tArrayNode2.append_attribute("type") = "int";
+    tArrayNode2.append_attribute("from") = "0";
+    tArrayNode2.append_attribute("to") = mPerformer->evaluations()-1;
+
+    tDocument.save_file(mDefinesFileName.c_str(), " ");
 }
 
 }

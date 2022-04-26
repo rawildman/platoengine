@@ -47,6 +47,8 @@ public:
                                  int aConcurrentEvaluations = 0);
     void write_interface(pugi::xml_node& aNode,
                          std::string aEvaluationString = "") override;
+
+    std::string size(){return mSize;}
     
 };
 

@@ -34,6 +34,14 @@ namespace XMLGen
         addChild(tPerformerNode, "Code", mCode);
     }
 
+    std::string XMLGeneratorPerformer::return_mpirun(std::string aEvaluationString)
+    {
+        return std::string(": -np ") + 
+                std::to_string(mNumberRanks) + 
+                " -x PLATO_PERFORMER_ID=" + 
+                ID(aEvaluationString) + 
+                " \\\n";
+    }
     std::string XMLGeneratorPerformer::ID(const std::string& aEvaluationString)
     {
         if(evaluations() == 0)

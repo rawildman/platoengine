@@ -155,4 +155,31 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyAndOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
+
+TEST(PlatoTestXMLGenerator, PerformerMpiRunLine)
+{
+    int tNumRanks = 16;
+    int tOffset = 1;
+    int tConcurrentEvaluations = 3;
+    XMLGen::XMLGeneratorPerformer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+
+    ASSERT_EQ(": -np 16 -x PLATO_PERFORMER_ID=2 \\\n" , tPerformer.return_mpirun("1"));
+
+    tNumRanks = 4;
+    tOffset = 3;
+    tConcurrentEvaluations = 0;
+    XMLGen::XMLGeneratorPerformer tPerformer2("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+
+    ASSERT_EQ(": -np 4 -x PLATO_PERFORMER_ID=3 \\\n" , tPerformer2.return_mpirun(""));
+
+    tNumRanks = 1;
+    tOffset = 3;
+    tConcurrentEvaluations = 3;
+    XMLGen::XMLGeneratorPerformer tPerformer3("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+
+    ASSERT_EQ(": -np 1 -x PLATO_PERFORMER_ID=5 \\\n" , tPerformer3.return_mpirun("2"));
+
+}
+
+
 }

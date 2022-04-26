@@ -111,6 +111,7 @@ void plato_gemma_problem
 (XMLGen::InputData& aMetaData,
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
+
     XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(aMetaData);
 
     // Create stages, service/performer, operation, and shared data 
@@ -125,21 +126,14 @@ void plato_gemma_problem
     tGemmaProblem.write_interface(tInterfaceDocument);
     tInterfaceDocument.save_file("interface.xml", "  ");
 
-    tGemmaProblem.write_mpisource("mpirun.source");
-   /* XMLGen::write_define_xml_file(aMetaData);
-    XMLGen::dakota::write_interface_xml_file(aMetaData);
-   //>>>>csm file dependent XMLGen::generate_launch_script(aMetaData);
-    
-    //>>>>csm file dependent XMLGen::Problem::write_plato_services_performer_input_deck_files(aMetaData);
-    for(auto tCurMetaData : aPreProcessedMetaData)
-    {
-        XMLGen::dakota::write_performer_operation_xml_file(tCurMetaData);
-        XMLGen::dakota::write_performer_input_deck_file(tCurMetaData);
-    }
+    pugi::xml_document tPlatoMainDocument;
+    tGemmaProblem.write_plato_main_input(tPlatoMainDocument);
+    tPlatoMainDocument.save_file("plato_main_input_deck.xml", "  ");
 
-    //>>>>csm file dependent XMLGen::write_plato_main_input_deck_file(aMetaData);
-    */
-   //XMLGen::write_dakota_driver_input_deck(aMetaData);
+    tGemmaProblem.write_mpisource("mpirun.source");
+    tGemmaProblem.write_defines();
+
+    XMLGen::write_dakota_driver_input_deck(aMetaData);
 }
 // function plato_gemma_problem
 

@@ -4602,6 +4602,38 @@ TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile)
     Plato::system("rm -rf rocker.csm");
 }
 
+TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFileFromDescriptors)
+{
+    // create metadata
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("dakota_workflow", "sbgo");
+    tOptimizationParameters.append("concurrent_evaluations", "6");
+    tOptimizationParameters.descriptors({"sl" ,  "sw"});
+    tOptimizationParameters.lower_bounds({"0",  "0.1"});
+    tOptimizationParameters.upper_bounds({"1",  "1.1"});
+    tOptimizationParameters.mdps_partitions({"2",  "3"});
+    
+    tMetaData.set(tOptimizationParameters);
+
+    FILE* fp2=fopen("appendParameters.txt", "w");
+    ASSERT_NO_THROW(XMLGen::append_dakota_driver_variables_block(tMetaData, fp2));
+    fclose(fp2);
+
+    auto tReadData = XMLGen::read_data_from_file("appendParameters.txt");
+    auto tGold = std::string("variables") + 
+        std::string("continuous_design=2") + 
+        std::string("descriptors'sl''sw'") +
+        std::string("lower_bounds00.1") +
+        std::string("upper_bounds11.1");
+
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+    Plato::system("rm -rf appendParameters.txt");
+    
+}
+
+
 TEST(PlatoTestXMLGenerator, AppendInterfaceToDakotaDriverInputFile_MDPS)
 {
     XMLGen::InputData tMetaData;

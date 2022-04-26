@@ -35,6 +35,8 @@ public:
 
     void write_interface(pugi::xml_node& aNode,
                          std::string aEvaluationString = "");
+
+    std::string return_mpirun(std::string aEvaluationString = "");
     
     int numberRanks(){return mNumberRanks;}
     

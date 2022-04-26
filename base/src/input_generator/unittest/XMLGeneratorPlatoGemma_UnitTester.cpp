@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include "pugixml.hpp"
+#include <fstream>
 
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
@@ -372,7 +373,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     ASSERT_NO_THROW(tGemmaProblem.write_interface(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("ryan_test.xml", "  ");
+//    tDocument.save_file("ryan_test.xml", "  ");
 
     // INCLUDE DEFINES
     auto tInclude = tDocument.child("include");
@@ -596,6 +597,210 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     tStage = tStage.next_sibling("Stage");
     ASSERT_TRUE(tStage.empty());
 }
+
+TEST(PlatoTestXMLGenerator, WriteGemmaMPIRunFile)
+{
+    XMLGen::InputData tInputMetaData;
+
+    // define criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("2");
+    tCriterion.type("system_call");
+    tCriterion.append("data_group", "1");
+    tCriterion.append("data_extraction_operation", "max");
+    tCriterion.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterion);
+
+    // define objective 
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("2");
+    tInputMetaData.objective = tObjective;
+
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+
+    // define services
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "system_call");
+    tServiceOne.append("number_processors", "13");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+
+    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+
+    tGemmaProblem.write_mpisource("mpifile");
+
+    std::string tLine;
+    std::ifstream tInFile("mpifile");
+
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("mpirun --oversubscribe -np 1 -x PLATO_PERFORMER_ID=0 \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_INTERFACE_FILE=interface.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_APP_FILE=plato_main_operations.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("PlatoMain plato_main_input_deck.xml \\",tLine);
+    
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ(": -np 13 -x PLATO_PERFORMER_ID=1 \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_INTERFACE_FILE=interface.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_APP_FILE=plato_main_operations.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("PlatoEngineServices plato_main_input_deck.xml \\",tLine);
+    
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ(": -np 13 -x PLATO_PERFORMER_ID=2 \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_INTERFACE_FILE=interface.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("-x PLATO_APP_FILE=plato_main_operations.xml \\",tLine);
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("PlatoEngineServices plato_main_input_deck.xml \\",tLine);
+    
+    std::getline(tInFile,tLine);
+    EXPECT_TRUE(tInFile.eof());
+
+    tInFile.close();
+    Plato::system("rm -f mpifile");
+
+}
+
+
+TEST(PlatoTestXMLGenerator, WriteGemmaDefinesFile)
+{
+    XMLGen::InputData tInputMetaData;
+
+    // define criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("2");
+    tCriterion.type("system_call");
+    tCriterion.append("data_group", "1");
+    tCriterion.append("data_extraction_operation", "max");
+    tCriterion.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterion);
+
+    // define objective 
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("2");
+    tInputMetaData.objective = tObjective;
+
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+
+    // define services
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "system_call");
+    tServiceOne.append("number_processors", "1");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+
+    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+
+    tGemmaProblem.write_defines();
+
+    std::string tLine;
+    std::ifstream tInFile("defines.xml");
+
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("<?xml version=\"1.0\"?>",tLine);
+    
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("<Array name=\"Parameters\" type=\"int\" from=\"0\" to=\"2\" />",tLine);
+    
+    EXPECT_NO_THROW(std::getline(tInFile,tLine));
+    ASSERT_EQ("<Array name=\"Performers\" type=\"int\" from=\"0\" to=\"1\" />",tLine);
+    
+    std::getline(tInFile,tLine);
+    EXPECT_TRUE(tInFile.eof());
+    tInFile.close();
+    //Plato::system("rm -f defines.xml");
+}
+
+
+
+TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainInput)
+{
+    XMLGen::InputData tInputMetaData;
+
+    // define criteria
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("2");
+    tCriterion.type("system_call");
+    tCriterion.append("data_group", "1");
+    tCriterion.append("data_extraction_operation", "max");
+    tCriterion.append("data_file", "matched_power_balance.dat");
+    tInputMetaData.append(tCriterion);
+
+    // define objective 
+    XMLGen::Objective tObjective;
+    tObjective.criteriaIDs.push_back("2");
+    tInputMetaData.objective = tObjective;
+
+    // define optimization parameters 
+    XMLGen::OptimizationParameters tOptParams;
+    std::vector<std::string> tDescriptors = {"slot_length", "slot_width", "slot_depth"};
+    tOptParams.descriptors(tDescriptors);
+    tOptParams.append("concurrent_evaluations", "2");
+    tInputMetaData.set(tOptParams);
+
+    // define services
+    XMLGen::Service tServiceOne;
+    tServiceOne.append("code", "gemma");
+    tServiceOne.append("id", "1");
+    tServiceOne.append("type", "system_call");
+    tServiceOne.append("number_processors", "1");
+    tInputMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.append("code", "platomain");
+    tServiceTwo.append("id", "2");
+    tServiceTwo.append("type", "plato_app");
+    tServiceTwo.append("number_processors", "2");
+    tInputMetaData.append(tServiceTwo);
+
+    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tGemmaProblem.write_plato_main_input(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("main.xml", "  ");
+
+    auto tOutput = tDocument.child("output");
+    ASSERT_FALSE(tOutput.empty());
+    
+    std::vector<std::string> tKeys = {"file", "format"};
+    std::vector<std::string> tValues = {"platomain", "exodus"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("output");
+    ASSERT_TRUE(tOutput.empty());
+}
+
 
 TEST(PlatoTestXMLGenerator, move_file_to_subdirectories)
 {
