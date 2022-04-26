@@ -111,7 +111,7 @@ public:
   int getNnpeInBlk(int blk);
 
   virtual Topological::Element* getElemBlk(int);
-  virtual const char*  getElemTypeInBlk(int blk) = 0;
+  virtual std::string getElemTypeInBlk(int blk) = 0;
   virtual int  getNumElemBlks() = 0;
   virtual int  getBlockId(int blk) = 0;     // given an index find the id
   virtual int  getBlockIndex(int blk) = 0;  // given an id find the index
@@ -222,7 +222,7 @@ public:
 
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
-  virtual const char*  getElemTypeInBlk(int blk);
+  virtual std::string getElemTypeInBlk(int blk);
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);
@@ -255,7 +255,7 @@ public:
 
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
-  virtual const char*  getElemTypeInBlk(int blk);
+  virtual std::string getElemTypeInBlk(int blk);
   virtual int  getNumElemBlks();
   virtual int  getBlockId(int blk);
   virtual int  getBlockIndex(int blk);

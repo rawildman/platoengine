@@ -7,7 +7,11 @@
 #define BAMG_COMPUTE(function) {\
           if( matches(aSpec.meshType, "hex8") ) { return Hex8::function(aSpec); } \
           else \
+          if( matches(aSpec.meshType, "hex27") ) { return Hex27::function(aSpec); } \
+          else \
           if( matches(aSpec.meshType, "tet4") ) { return Tet4::function(aSpec); } \
+          else \
+          if( matches(aSpec.meshType, "tet10") ) { return Tet10::function(aSpec); } \
           else \
           if( matches(aSpec.meshType, "quad4") ) { return Quad4::function(aSpec); } \
           else \
@@ -229,6 +233,44 @@ namespace BamG
          * \param [in] aHex8SideSets Hex8 side sets
         **********************************************************************************/
         SideSetMap fromHex8(const SideSetMap& aHex8SideSets);
+    }
+
+    namespace Tet10
+    {
+        /******************************************************************************//**
+         * \brief Generate Tet10 coordinates
+         * \param [in] aSpec MeshSpec with mesh definition
+         *
+         * The Hex8 implementation is used to compute the Tet10 grid.
+        **********************************************************************************/
+        Array2D generateCoords(const MeshSpec & aSpec);
+
+        /******************************************************************************//**
+         * \brief Generate Tet10 mesh connectivity
+         * \param [in] aSpec MeshSpec with mesh definition
+         *
+         * The element indices are computed by first generating a Hex8 mesh then applying
+         * a hex-to-tet stencil.
+        **********************************************************************************/
+        IArray generateConnectivity(const MeshSpec & aSpec);
+
+        IArrayMap generateNodeSets(const MeshSpec & aSpec);
+
+        SideSetMap generateSideSets(const MeshSpec & aSpec);
+
+        Uint getNumNPE(const MeshSpec & aSpec);
+
+        /******************************************************************************//**
+         * \brief Create a Tet10 mesh connectivity from a Hex8 mesh connectivity
+         * \param [in] aHex8Conn Hex8 connectivity
+        **********************************************************************************/
+        IArray fromHex27(const IArray& aHex8Conn);
+
+        /******************************************************************************//**
+         * \brief Create Tet10 side sets from Hex8 side sets
+         * \param [in] aHex8SideSets Hex8 side sets
+        **********************************************************************************/
+        SideSetMap fromHex(const SideSetMap& aHex8SideSets);
     }
 
     namespace Tri3

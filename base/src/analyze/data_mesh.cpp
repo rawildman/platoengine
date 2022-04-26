@@ -746,10 +746,10 @@ int StrMesh::getNumElemInBlk(int block)
 
 
 //*********************************************************************
-const char* StrMesh::getElemTypeInBlk(int blk)
+std::string StrMesh::getElemTypeInBlk(int blk)
 //*********************************************************************
 {
-  return NULL;
+  return std::string("");
 }
 
 //*********************************************************************
@@ -931,7 +931,7 @@ UnsMesh::getElemToNodeConnInBlk(int blk)
   return pnc;
 }
 
-const char*
+std::string
 UnsMesh::getElemTypeInBlk(int blk)
 {
   assert((size_t)blk < myElemBlk.size());
