@@ -150,7 +150,7 @@ void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocumen
     addChild(tOperationNode, "AppendInput", "true" );
 
     for( auto tO : mOptions )
-        addChild(tOperationNode, "Option", tO );
+        addChild(tOperationNode, "Option", tO + std::string("=") );
     
     auto tInputNode = tOperationNode.append_child("Input");
     addChild(tInputNode, "ArgumentName", "parameters");
@@ -194,9 +194,10 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_docume
     appendCommonChildren(tOperationNode,aEvaluationString);
 
     if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
+        addChild(tOperationNode, "File", std::string("./evaluations_") + tag(aEvaluationString) + std::string("/") + mFile);
+    else
+        addChild(tOperationNode, "File", mFile);
 
-    addChild(tOperationNode, "File", mFile);
     addChild(tOperationNode, "Operation", mOperation);
     addChild(tOperationNode, "Column", mColumn);
 

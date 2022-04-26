@@ -29,7 +29,7 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     if(tServices[iService].code()=="gemma")
     {
         tNumRanks = tServices[iService].numberProcessors();
-        tGemmaInputFile = "matched_power_balance.yaml" ; //tServices[iService].value("input_file");
+        tGemmaInputFile = "gemma_matched_power_balance_input_deck.yaml" ; //tServices[iService].value("input_file");
         tGemmaPath = tServices[iService].path();
     }
 
