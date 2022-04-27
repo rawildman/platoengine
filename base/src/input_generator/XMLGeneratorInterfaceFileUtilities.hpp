@@ -117,14 +117,5 @@ int append_physics_performer
  pugi::xml_document      & aDocument,
  int                       aBasePerformerID = 0);
 
-/******************************************************************************//**
- * \fn get_number_of_shape_parameters
- * \brief Return number of shape parameters.
- * \param [in]  aMetaData Plato problem input metadata
- * \return integer
-**********************************************************************************/
- int get_number_of_shape_parameters
- (const XMLGen::InputData& aMetaData);
-
 }
 // namespace XMLGen

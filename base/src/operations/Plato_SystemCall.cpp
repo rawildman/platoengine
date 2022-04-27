@@ -92,30 +92,15 @@ SystemCall::SystemCall(const Plato::InputData & aNode)
     this->setOptions(aNode);
 }
 
-void SystemCall::areNumOptionsGreaterThanNumParams(const Plato::SystemCallMetadata& aMetaData)
+void SystemCall::setInputSharedDataNames(const Plato::InputData& aNode)
 {
-    if(mOptions.empty())
-    {return;}
-    
-    auto tNumOptions = mOptions.size();
-    auto tTotalNumParameters = this->countTotalNumParameters(aMetaData);
-    if(tNumOptions > tTotalNumParameters)
+    for(Plato::InputData& tInputNode : aNode.getByName<Plato::InputData>("Input"))
     {
-        THROWERR(std::string("Number of options cannot exceed the number of total input parameters. ") 
-            + "The number of options is set to '" + std::to_string(tNumOptions) 
-            + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
-    }
-}
-
-void SystemCall::setOptions(const Plato::InputData& aNode)
-{
-    auto tNumOptions = aNode.getByName<std::string>("Option").size();
-    mOptions = std::vector<std::string>(tNumOptions, "");
-    
-    size_t tIndex = 0;
-    for(auto tStrValue : aNode.getByName<std::string>("Option"))
-    {
-        mOptions[tIndex++] = tStrValue;
+        auto tSize = this->getSize(tInputNode);
+        auto tLayout = this->getLayout(tInputNode);
+        auto tArgumentName = Plato::Get::String(tInputNode, "ArgumentName");
+        mInputArgumentNameToAttributesMap[tArgumentName] = std::make_pair(tLayout, tSize);
+        mInputNames.push_back(tArgumentName);
     }
 }
 
@@ -159,15 +144,39 @@ std::string SystemCall::getLayout(const Plato::InputData& aInputNode)
     return tLowerLayout;
 }
 
-void SystemCall::setInputSharedDataNames(const Plato::InputData& aNode)
+void SystemCall::setArguments(const Plato::InputData& aNode)
 {
-    for(Plato::InputData& tInputNode : aNode.getByName<Plato::InputData>("Input"))
+    // set arguments
+    for(auto& tStrValue : aNode.getByName<std::string>("Argument"))
     {
-        auto tSize = this->getSize(tInputNode);
-        auto tLayout = this->getLayout(tInputNode);
-        auto tArgumentName = Plato::Get::String(tInputNode, "ArgumentName");
-        mInputArgumentNameToAttributesMap[tArgumentName] = std::make_pair(tLayout, tSize);
-        mInputNames.push_back(tArgumentName);
+        mArguments.push_back(tStrValue);
+    }
+}
+
+void SystemCall::setOptions(const Plato::InputData& aNode)
+{
+    auto tNumOptions = aNode.getByName<std::string>("Option").size();
+    mOptions = std::vector<std::string>(tNumOptions, "");
+    
+    size_t tIndex = 0;
+    for(auto tStrValue : aNode.getByName<std::string>("Option"))
+    {
+        mOptions[tIndex++] = tStrValue;
+    }
+}
+
+void SystemCall::areNumOptionsGreaterThanNumParams(const Plato::SystemCallMetadata& aMetaData)
+{
+    if(mOptions.empty())
+    {return;}
+    
+    auto tNumOptions = mOptions.size();
+    auto tTotalNumParameters = this->countTotalNumParameters(aMetaData);
+    if(tNumOptions > tTotalNumParameters)
+    {
+        THROWERR(std::string("Number of options cannot exceed the number of total input parameters. ") 
+            + "The number of options is set to '" + std::to_string(tNumOptions) 
+            + "' while the number of input parameters is set to '" + std::to_string(tTotalNumParameters) + ".")
     }
 }
 
@@ -179,15 +188,6 @@ size_t SystemCall::countTotalNumParameters(const Plato::SystemCallMetadata& aMet
         tTotalNumParameters += tInputArgumentPair.second->size();
     }
     return tTotalNumParameters;
-}
-
-void SystemCall::setArguments(const Plato::InputData& aNode)
-{
-    // set arguments
-    for(auto& tStrValue : aNode.getByName<std::string>("Argument"))
-    {
-        mArguments.push_back(tStrValue);
-    }
 }
 
 bool SystemCall::checkForLocalParameterChanges(const Plato::SystemCallMetadata& aMetaData)
@@ -260,7 +260,10 @@ void SystemCall::appendOptionsAndValues(const Plato::SystemCallMetadata& aMetaDa
         for(size_t tIndex=0; tIndex<tInputArgument->size(); ++tIndex)
         {
             std::stringstream tDataString;
-            tDataString << std::setprecision(mPrecision) << mOptions[tIndex] << tInputArgument->data()[tIndex];
+            if(mOptions.empty())
+                tDataString << std::setprecision(mPrecision) << tInputArgument->data()[tIndex];
+            else
+                tDataString << std::setprecision(mPrecision) << mOptions[tIndex] << tInputArgument->data()[tIndex];
             aArguments.push_back(tDataString.str());
         }
     }

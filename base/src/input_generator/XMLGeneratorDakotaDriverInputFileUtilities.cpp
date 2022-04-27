@@ -5,8 +5,8 @@
  */
 
 #include "XMLGeneratorDakotaDriverInputFileUtilities.hpp"
+#include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
-
 
 namespace XMLGen
 {
@@ -100,9 +100,7 @@ void append_multidim_parameter_study_method_block
     fprintf(fp, "\n method\n");
     fprintf(fp, "   multidim_parameter_study\n");
 
-    auto tNumParameters = std::stoi(aMetaData.optimization_parameters().num_shape_design_variables());
-    auto tDescriptors = aMetaData.optimization_parameters().descriptors();
-    tNumParameters = ( tNumParameters < tDescriptors.size() ? tDescriptors.size() : tNumParameters );
+    auto tNumParameters = XMLGen::get_number_of_shape_parameters(aMetaData);
 
     fprintf(fp, "       partitions =");
 

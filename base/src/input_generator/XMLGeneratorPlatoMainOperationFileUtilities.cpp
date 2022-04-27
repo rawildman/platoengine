@@ -1127,6 +1127,8 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");
     addChild(aInputNode, "ArgumentName", "Parameters");
+    addChild(aInputNode, "Layout", "scalar");
+    addChild(aInputNode, "Size", std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData)));
 }
 // function append_update_geometry_on_change_operation_commands
 /******************************************************************************/

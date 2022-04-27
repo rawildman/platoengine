@@ -1930,6 +1930,7 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "3");
     tXMLMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1953,8 +1954,8 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1973,8 +1974,8 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");

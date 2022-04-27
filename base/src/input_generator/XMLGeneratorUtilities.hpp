@@ -349,5 +349,14 @@ void move_file_to_subdirectory
 bool subdirectory_exists
 (const std::string& aDirectoryName);
 
+/******************************************************************************//**
+ * \fn get_number_of_shape_parameters
+ * \brief Return number of shape parameters.
+ * \param [in]  aMetaData Plato problem input metadata
+ * \return integer
+**********************************************************************************/
+ int get_number_of_shape_parameters
+ (const XMLGen::InputData& aMetaData);
+
 }
 // namespace XMLGen
