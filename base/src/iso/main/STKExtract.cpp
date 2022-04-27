@@ -216,6 +216,8 @@ bool STKExtract::create_mesh_apis_with_existing_stk_mesh(stk::ParallelMachine *c
   return true;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 bool STKExtract::run_extraction(int iteration, int num_materials)
 {
     if(mMeshOut == "")
@@ -397,7 +399,11 @@ bool STKExtract::run_extraction(int iteration, int num_materials)
 
     return true;
 }
+#pragma GCC diagnostic pop
 
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 void STKExtract::concatenate_stl_files(std::string &filename)
 {
     // Strip off the ".exo" at the end and replace it with ".stl"
@@ -492,6 +498,7 @@ void STKExtract::concatenate_stl_files(std::string &filename)
       fclose(stl_fp);
     }
 }
+#pragma GCC diagnostic pop
 
 void STKExtract::write_tris_to_stl(FILE *fp, std::vector<IVEHandle> &tri_list)
 {

@@ -89,11 +89,11 @@ int main(int aArgc, char *aArgv[])
     PlatoApp *tPlatoApp = nullptr;
 
     auto safeExit = [&]() {
+        delete tPlatoInterface;
+        delete tPlatoApp;
 #if defined(GEOMETRY) || defined(AMFILTER_ENABLED)
         Kokkos::finalize();
 #endif
-        delete tPlatoInterface;
-        delete tPlatoApp;
         MPI_Finalize();
         exit(0);
     };

@@ -321,6 +321,185 @@ namespace BamG
 
     } // end namespace Hex8
 
+    namespace Hex27
+    {
+        const Uint cNumDims = 3;
+        const Uint cNumNPE  = 27;
+
+        Uint getNumNPE(const MeshSpec & aSpec) { return cNumNPE; }
+
+        int indexMap(int i, int j, int k, int I, int J, int K)
+        {
+            assert( i >= 0 && i < I );
+            assert( j >= 0 && j < J );
+            assert( k >= 0 && k < K );
+            return K*J*i + K*j + k;
+        }
+
+        Array2D
+        generateCoords(const MeshSpec & aSpec)
+        {
+            auto tNumPoints = (2*aSpec.numX+1)*(2*aSpec.numY+1)*(2*aSpec.numZ+1);
+            Array2D tCoords(Hex27::cNumDims, Array(tNumPoints));
+
+            Array::size_type tLocalNodeIndex = 0;
+            for( decltype(aSpec.numX) tIndexI=0; tIndexI<=2*aSpec.numX; tIndexI++ )
+              for( decltype(aSpec.numY) tIndexJ=0; tIndexJ<=2*aSpec.numY; tIndexJ++ )
+                for( decltype(aSpec.numZ) tIndexK=0; tIndexK<=2*aSpec.numZ; tIndexK++ )
+                {
+                    tCoords[BamG::Dim::X][tLocalNodeIndex] = tIndexI*aSpec.dimX / (2*aSpec.numX);
+                    tCoords[BamG::Dim::Y][tLocalNodeIndex] = tIndexJ*aSpec.dimY / (2*aSpec.numY);
+                    tCoords[BamG::Dim::Z][tLocalNodeIndex] = tIndexK*aSpec.dimZ / (2*aSpec.numZ);
+                    tLocalNodeIndex++;
+                }
+            return tCoords;
+        }
+
+        IArray
+        generateConnectivity(const MeshSpec & aSpec)
+        {
+            auto tNumElems = (aSpec.numX)*(aSpec.numY)*(aSpec.numZ);
+            IArray tConnect(Hex27::cNumNPE*tNumElems);
+            for( decltype(aSpec.numX) tIndexI=0; tIndexI<aSpec.numX; tIndexI++)
+              for( decltype(aSpec.numY) tIndexJ=0; tIndexJ<aSpec.numY; tIndexJ++)
+                for( decltype(aSpec.numZ) tIndexK=0; tIndexK<aSpec.numZ; tIndexK++)
+                {
+                    int tElIndex = indexMap(tIndexI, tIndexJ, tIndexK, aSpec.numX, aSpec.numY, aSpec.numZ);
+                    tConnect[tElIndex*cNumNPE+0] = indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+1] = indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+2] = indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+3] = indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+4] = indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+5] = indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+6] = indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+7] = indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+8] = indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+9] = indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+10]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+11]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+12]= indexMap(2*tIndexI,   2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+13]= indexMap(2*tIndexI+2, 2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+14]= indexMap(2*tIndexI+2, 2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+15]= indexMap(2*tIndexI,   2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+16]= indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+17]= indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+18]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+19]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+20]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+21]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK,   2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+22]= indexMap(2*tIndexI+1, 2*tIndexJ+1, 2*tIndexK+2, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+23]= indexMap(2*tIndexI,   2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+24]= indexMap(2*tIndexI+2, 2*tIndexJ+1, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+                    tConnect[tElIndex*cNumNPE+25]= indexMap(2*tIndexI+1, 2*tIndexJ,   2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                    tConnect[tElIndex*cNumNPE+26]= indexMap(2*tIndexI+1, 2*tIndexJ+2, 2*tIndexK+1, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+                }
+            return tConnect;
+        }
+
+        IArray
+        getNodes(const MeshSpec& aSpec, Uint aFromX, Uint aFromY, Uint aFromZ, Uint aToX, Uint aToY, Uint aToZ)
+        { 
+            IArray tNodes((2*(aToX-aFromX)+1)*(2*(aToY-aFromY)+1)*(2*(aToZ-aFromZ)+1));
+            Uint tIndex = 0;
+            for( Uint tIndexI=2*aFromX; tIndexI<=2*aToX; tIndexI++ )
+              for( Uint tIndexJ=2*aFromY; tIndexJ<=2*aToY; tIndexJ++ )
+                for( Uint tIndexK=2*aFromZ; tIndexK<=2*aToZ; tIndexK++ )
+                  tNodes[tIndex++] = indexMap(tIndexI, tIndexJ, tIndexK, 2*aSpec.numX+1, 2*aSpec.numY+1, 2*aSpec.numZ+1);
+
+            return tNodes;
+        }
+
+        IArrayMap
+        generateNodeSets(const MeshSpec & aSpec)
+        {
+            IArrayMap tNodeSets;
+
+            auto nX = aSpec.numX;
+            auto nY = aSpec.numY;
+            auto nZ = aSpec.numZ;
+
+            tNodeSets["x-"] = getNodes(aSpec, 0,  0,  0,  0,  nY, nZ);
+            tNodeSets["x+"] = getNodes(aSpec, nX, 0,  0,  nX, nY, nZ);
+            tNodeSets["y-"] = getNodes(aSpec, 0,  0,  0,  nX, 0,  nZ);
+            tNodeSets["y+"] = getNodes(aSpec, 0,  nY, 0,  nX, nY, nZ);
+            tNodeSets["z-"] = getNodes(aSpec, 0,  0,  0,  nX, nY, 0 );
+            tNodeSets["z+"] = getNodes(aSpec, 0,  0,  nZ, nX, nY, nZ);
+
+            tNodeSets["y-z-"] = getNodes(aSpec, 0, 0,  0,  nX, 0,  0 );
+            tNodeSets["y-z+"] = getNodes(aSpec, 0, 0,  nZ, nX, 0,  nZ);
+            tNodeSets["y+z-"] = getNodes(aSpec, 0, nY, 0,  nX, nY, 0 );
+            tNodeSets["y+z+"] = getNodes(aSpec, 0, nY, nZ, nX, nY, nZ);
+
+            tNodeSets["x-z-"] = getNodes(aSpec, 0,  0, 0,  0,  nY, 0 );
+            tNodeSets["x-z+"] = getNodes(aSpec, 0,  0, nZ, 0,  nY, nZ);
+            tNodeSets["x+z-"] = getNodes(aSpec, nX, 0, 0,  nX, nY, 0 );
+            tNodeSets["x+z+"] = getNodes(aSpec, nX, 0, nZ, nX, nY, nZ);
+
+            tNodeSets["x-y-"] = getNodes(aSpec, 0,  0,  0,  0, 0,  nZ);
+            tNodeSets["x-y+"] = getNodes(aSpec, 0,  nY, 0,  0, nY, nZ);
+            tNodeSets["x+y-"] = getNodes(aSpec, nX, 0,  0, nX, 0,  nZ);
+            tNodeSets["x+y+"] = getNodes(aSpec, nX, nY, 0, nX, nY, nZ);
+
+            tNodeSets["x-y-z-"] = getNodes(aSpec, 0,  0,  0,  0,  0,  0 );
+            tNodeSets["x-y-z+"] = getNodes(aSpec, 0,  0,  nZ, 0,  0,  nZ);
+            tNodeSets["x-y+z-"] = getNodes(aSpec, 0,  nY,  0, 0,  nY, 0 );
+            tNodeSets["x-y+z+"] = getNodes(aSpec, 0,  nY, nZ, 0,  nY, nZ);
+            tNodeSets["x+y-z-"] = getNodes(aSpec, nX, 0,  0,  nX, 0,  0 );
+            tNodeSets["x+y-z+"] = getNodes(aSpec, nX, 0,  nZ, nX, 0,  nZ);
+            tNodeSets["x+y+z-"] = getNodes(aSpec, nX, nY,  0, nX, nY, 0 );
+            tNodeSets["x+y+z+"] = getNodes(aSpec, nX, nY, nZ, nX, nY, nZ);
+
+            return tNodeSets;
+        }
+
+        SideSet
+        getSides(const MeshSpec& aSpec, std::string face, Uint aFromX, Uint aFromY, Uint aFromZ, Uint aNumX, Uint aNumY, Uint aNumZ)
+        { 
+            SideSet tSideSet;
+
+            std::map<std::string, Uint> faceMap{{"y-",1},{"x+",2},{"y+",3},{"x-",4},{"z-",5},{"z+",6}};
+
+            auto tNumFaces = aNumX*aNumY*aNumZ;
+
+            tSideSet.elements = IArray(tNumFaces);
+            tSideSet.faces = IArray(tNumFaces, faceMap[face]);
+
+            Uint tIndex = 0;
+            for( Uint tIndexI=aFromX; tIndexI<(aFromX+aNumX); tIndexI++ )
+              for( Uint tIndexJ=aFromY; tIndexJ<(aFromY+aNumY); tIndexJ++ )
+                for( Uint tIndexK=aFromZ; tIndexK<(aFromZ+aNumZ); tIndexK++ )
+                  tSideSet.elements[tIndex++] = indexMap(tIndexI, tIndexJ, tIndexK, aSpec.numX, aSpec.numY, aSpec.numZ);
+
+            return tSideSet;
+        }
+
+        SideSetMap
+        generateSideSets(const MeshSpec & aSpec)
+        {
+            SideSetMap tSideSets;
+
+            auto nX = aSpec.numX;
+            auto nY = aSpec.numY;
+            auto nZ = aSpec.numZ;
+            
+            tSideSets["x-"] = getSides(aSpec, "x-", 0,    0,    0,    1,  nY, nZ);
+            tSideSets["x+"] = getSides(aSpec, "x+", nX-1, 0,    0,    1,  nY, nZ);
+            tSideSets["y-"] = getSides(aSpec, "y-", 0,    0,    0,    nX, 1,  nZ);
+            tSideSets["y+"] = getSides(aSpec, "y+", 0,    nY-1, 0,    nX, 1,  nZ);
+            tSideSets["z-"] = getSides(aSpec, "z-", 0,    0,    0,    nX, nY, 1 );
+            tSideSets["z+"] = getSides(aSpec, "z+", 0,    0,    nZ-1, nX, nY, 1 );
+
+            return tSideSets;
+        }
+
+    } // end namespace Hex8
     namespace Quad4
     {
         const Uint cNumDims = 2;
@@ -620,6 +799,118 @@ namespace BamG
         }
 
     } // end namespace Tet4
+
+    namespace Tet10
+    {
+        const Uint cNumNPE  = 10;
+        const Uint cTetPerHex = 6;
+
+        Uint getNumNPE(const MeshSpec & aSpec) { return cNumNPE; }
+
+        Array2D
+        generateCoords(const MeshSpec & aSpec)
+        {
+            return Hex27::generateCoords(aSpec);
+        }
+        IArray
+        generateConnectivity(const MeshSpec & aSpec)
+        {
+            auto tHex27Conn = Hex27::generateConnectivity(aSpec);
+
+            return Tet10::fromHex27(tHex27Conn);
+        }
+
+        IArray
+        fromHex27(const IArray & aHex27Conn)
+        {
+            const IArray2D cH2T = {
+                { 0, 2, 3, 6,21,10,11,20,14,26},
+                { 0, 3, 7, 6,11,15,23,20,26,18},
+                { 0, 7, 4, 6,23,19,12,20,18,22},
+                { 0, 4, 5, 6,12,16,25,20,22,17},
+                { 0, 5, 1, 6,25,13, 8,20,17,24},
+                { 0, 1, 2, 6, 8, 9,21,20,24,14}};
+
+            auto tNumHex27Elems = aHex27Conn.size()/Hex27::cNumNPE;
+            auto tNumTet10Elems = tNumHex27Elems*cTetPerHex;
+
+            IArray tTet10Conn(tNumTet10Elems*Tet10::cNumNPE);
+
+            Uint iTotalTets = 0;
+            for( decltype(tNumHex27Elems) iHex=0; iHex<tNumHex27Elems; iHex++ )
+            {
+                for( Uint iLocalTet=0; iLocalTet<cTetPerHex; iLocalTet++ )
+                {
+                    for( Uint iLocalVert=0; iLocalVert<Tet10::cNumNPE; iLocalVert++ )
+                    {
+                        tTet10Conn[iTotalTets*Tet10::cNumNPE+iLocalVert] = aHex27Conn[iHex*Hex27::cNumNPE+cH2T[iLocalTet][iLocalVert]];
+                    }
+                    iTotalTets++;
+                }
+            }
+            return tTet10Conn;
+        }
+        IArrayMap
+        generateNodeSets(const MeshSpec & aSpec)
+        {
+            return Hex27::generateNodeSets(aSpec);
+        }
+
+        SideSetMap
+        fromHex(const SideSetMap & aHexSideSets)
+        {
+            SideSetMap tSideSets;
+
+            std::map<Uint, const IArray2D> cH2T =
+            {
+              {1,{{3,4},{4,4}}},
+              {2,{{4,2},{5,2}}},
+              {3,{{0,2},{1,2}}},
+              {4,{{1,4},{2,4}}},
+              {5,{{0,4},{5,4}}},
+              {6,{{2,2},{3,2}}}
+            };
+
+            for( auto& tEntry : aHexSideSets )
+            {
+                SideSet tTetSideSet;
+                auto& tTetElems = tTetSideSet.elements;
+                auto& tTetFaces = tTetSideSet.faces;
+
+                auto& tName = tEntry.first;
+                auto& tSideSet = tEntry.second;
+
+                auto& tHexElems = tSideSet.elements;
+                auto& tHexFaces = tSideSet.faces;
+
+                auto tNumSides = tHexElems.size();
+                for( decltype(tNumSides) iSide=0; iSide<tNumSides; iSide++ )
+                {
+                    auto tHexElem = tHexElems[iSide];
+                    auto tHexFace = tHexFaces[iSide];
+
+                    const auto& tTetSides = cH2T[tHexFace];
+                    for( auto tTetSide : tTetSides )
+                    {
+                        tTetElems.push_back(tHexElem*cTetPerHex +  tTetSide[0]);
+                        tTetFaces.push_back(tTetSide[1]);
+                    }
+                }
+                tSideSets[tName] = tTetSideSet;
+            }
+
+            return tSideSets;
+        }
+
+        SideSetMap
+        generateSideSets(const MeshSpec & aSpec)
+        {
+            SideSetMap tSideSets = Hex8::generateSideSets(aSpec);
+
+            return Tet10::fromHex(tSideSets);
+        }
+
+    } // end namespace Tet10
 
     namespace Tri3
     {
