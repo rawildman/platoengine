@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <string>
-//#include <bits/stdc++.h>
 #include "pugixml.hpp"
 
 #include "XMLGeneratorFileObject.hpp"
@@ -17,8 +16,6 @@
 namespace XMLGen
 {
 
-//typedef std::pair<int,std::shared_ptr<XMLGeneratorOperation>> mPriorityOperation;
-
 class XMLGeneratorStage : public XMLGeneratorFileObject
 {
     
@@ -26,7 +23,6 @@ private:
     
     std::shared_ptr<XMLGeneratorSharedData> mInputSharedData;
     std::shared_ptr<XMLGeneratorSharedData> mOutputSharedData;
-    //std::priority_queue<mPriorityOperation, std::vector<mPriorityOperation>, std::greater<mPriorityOperation> > mOperationQueue;
     std::vector<std::shared_ptr<XMLGeneratorOperation>> mOperations;
 
     void appendInput(pugi::xml_node& aNode,

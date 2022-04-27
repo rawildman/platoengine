@@ -11,16 +11,15 @@
 namespace XMLGen
 {
     XMLGeneratorPerformer::XMLGeneratorPerformer
-    (
-    const std::string& aName,
-    const std::string& aCode,
-    int aIdOffset,
-    int aNumberRanks,
-    int aConcurrentEvaluations) : 
-    XMLGeneratorFileObject(aName, aConcurrentEvaluations),
-    mCode(aCode),
-    mIdOffset(aIdOffset),
-    mNumberRanks(aNumberRanks)
+    (const std::string& aName,
+     const std::string& aCode,
+     int aIdOffset,
+     int aNumberRanks,
+     int aConcurrentEvaluations) : 
+     XMLGeneratorFileObject(aName, aConcurrentEvaluations),
+     mCode(aCode),
+     mIdOffset(aIdOffset),
+     mNumberRanks(aNumberRanks)
     {
     }
 

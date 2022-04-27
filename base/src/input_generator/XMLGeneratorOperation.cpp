@@ -35,8 +35,9 @@ void XMLGeneratorOperation::appendCommonChildren
     addChild(aOperationNode, "Name", name(aEvaluationString));
 }
 
-pugi::xml_node XMLGeneratorOperation::forNode(pugi::xml_node& aNode, 
-                                              const std::string& aXMLLoopVectorName)
+pugi::xml_node XMLGeneratorOperation::forNode
+(pugi::xml_node& aNode, 
+ const std::string& aXMLLoopVectorName)
 {
     if(evaluations() == 0)
         return aNode; 
@@ -61,7 +62,9 @@ XMLGeneratorOperationWait::XMLGeneratorOperationWait
     mOnChange = false;    
 }
 
-void XMLGeneratorOperationWait::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationWait::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -71,7 +74,9 @@ void XMLGeneratorOperationWait::write_definition(pugi::xml_document& aDocument, 
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
 }
 
-void XMLGeneratorOperationWait::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationWait::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -93,7 +98,9 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     mOnChange = true;
 }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+ void XMLGeneratorOperationGemmaMPISystemCall::write_definition
+ (pugi::xml_document& aDocument, 
+  std::string aEvaluationString)
  {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -106,7 +113,9 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     addChild(tOperationNode, "AppendInput", "false" );
  }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+ void XMLGeneratorOperationGemmaMPISystemCall::write_interface
+ (pugi::xml_node& aNode, 
+  std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -134,7 +143,9 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
     mOnChange = true;
 }
 
-void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationAprepro::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -158,7 +169,9 @@ void XMLGeneratorOperationAprepro::write_definition(pugi::xml_document& aDocumen
     addChild(tInputNode, "Size", mInput.mSize);
 }
 
-void XMLGeneratorOperationAprepro::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationAprepro::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -183,12 +196,13 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
     mOutput.mLayout = "scalar";
     mOutput.mSize = "1";
     mOutput.mSharedData = aSharedData;
-    //mOutput.mArgumentName = mOutput.mSharedData->name();
     
     mOnChange = true;
 }
 
-void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationHarvestDataFunction::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -207,7 +221,9 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition(pugi::xml_docume
     addChild(tOutputNode, "Size", mOutput.mSize);
 }
 
-void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationHarvestDataFunction::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -216,7 +232,6 @@ void XMLGeneratorOperationHarvestDataFunction::write_interface(pugi::xml_node& a
     addChild(tOutputNode, "ArgumentName", "criterion value");
     addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
 }
-
 
 XMLGeneratorOperationCubitTet10Conversion::XMLGeneratorOperationCubitTet10Conversion
 (const std::string& aExodusFileName, 
@@ -234,7 +249,9 @@ XMLGeneratorOperationCubitTet10Conversion::XMLGeneratorOperationCubitTet10Conver
     writeTet10ConversionFile(aExodusFileName,aBlockList);
 }
 
-void XMLGeneratorOperationCubitTet10Conversion::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationCubitTet10Conversion::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -253,7 +270,9 @@ void XMLGeneratorOperationCubitTet10Conversion::write_definition(pugi::xml_docum
     addChild(tInputNode, "ArgumentName", "parameters");
 }
 
-void XMLGeneratorOperationCubitTet10Conversion::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationCubitTet10Conversion::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -267,7 +286,6 @@ void XMLGeneratorOperationCubitTet10Conversion::writeTet10ConversionFile
 (std::string aExodusFileName,
  std::vector<std::string> aBlockList)
 {
-    //Something to consider is where the file should be created and whether subfolders exist at this time 
     std::ofstream tOutFile("toTet10.jou");
     tOutFile<<"import mesh \""<<aExodusFileName<<"\" no_geom\n";
     for( auto tB : aBlockList )
@@ -302,7 +320,9 @@ XMLGeneratorOperationCubitSubBlock::XMLGeneratorOperationCubitSubBlock
     writeSubBlockFile(aExodusFileName,aBoundingBox);
 }
 
-void XMLGeneratorOperationCubitSubBlock::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationCubitSubBlock::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -321,7 +341,9 @@ void XMLGeneratorOperationCubitSubBlock::write_definition(pugi::xml_document& aD
     addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
 }
 
-void XMLGeneratorOperationCubitSubBlock::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationCubitSubBlock::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
@@ -336,7 +358,6 @@ void XMLGeneratorOperationCubitSubBlock::writeSubBlockFile
  std::vector<std::string> aBoundingBox)
 {
     std::vector<std::string> tCoords = {"x_coord >= ", "and y_coord >= ", "and z_coord >= ", "and x_coord <= ", "and y_coord <= ", "and z_coord <= " };
-    //Something to consider is where the file should be created and whether subfolders exist at this time 
     std::ofstream tOutFile("subBlock.jou");
     tOutFile<<"import mesh \""<<aExodusFileName<<"\" no_geom\n";
     tOutFile<<"delete block all\n";
@@ -374,7 +395,9 @@ XMLGeneratorOperationDecomp::XMLGeneratorOperationDecomp
     mOnChange = false;
 }
 
-void XMLGeneratorOperationDecomp::write_definition(pugi::xml_document& aDocument, std::string aEvaluationString)
+void XMLGeneratorOperationDecomp::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
@@ -387,13 +410,13 @@ void XMLGeneratorOperationDecomp::write_definition(pugi::xml_document& aDocument
         addChild(tOperationNode, "Argument", tA );    
 }
 
-void XMLGeneratorOperationDecomp::write_interface(pugi::xml_node& aNode, std::string aEvaluationString)
+void XMLGeneratorOperationDecomp::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
 {
     auto tOperationNode = aNode.append_child("Operation");
     addChild(tOperationNode, "Name", name(aEvaluationString));
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
 }
-
-
 
 }

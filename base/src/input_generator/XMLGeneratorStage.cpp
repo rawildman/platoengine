@@ -14,7 +14,7 @@ XMLGeneratorStage::XMLGeneratorStage
 (const std::string& aName,
  const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
  std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
- std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData):
+ std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData) :
  XMLGeneratorFileObject(aName),
  mInputSharedData(aInputSharedData),
  mOutputSharedData(aOutputSharedData),

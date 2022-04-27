@@ -32,6 +32,7 @@ std::string XMLGeneratorFileObject::name(std::string aEvaluationString)
         return std::regex_replace (mName,mTagExpression,aEvaluationString);
     }    
 }
+
 std::string XMLGeneratorFileObject::tag(std::string aEvaluationString)
 {
     if(mConcurrentEvaluations == 0)
@@ -42,8 +43,9 @@ std::string XMLGeneratorFileObject::tag(std::string aEvaluationString)
         return aEvaluationString;
 }
 
-pugi::xml_node XMLGeneratorFileObject::forNode(pugi::xml_node& aNode, 
-                                               std::string aXMLLoopVectorName)
+pugi::xml_node XMLGeneratorFileObject::forNode
+(pugi::xml_node& aNode, 
+ std::string aXMLLoopVectorName)
 {
     if(mConcurrentEvaluations == 0)
         return aNode; 

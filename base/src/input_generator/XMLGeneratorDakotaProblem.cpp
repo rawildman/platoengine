@@ -114,12 +114,10 @@ void plato_gemma_problem
 
     XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(aMetaData);
 
-    // Create stages, service/performer, operation, and shared data 
-
     tGemmaProblem.create_evaluation_subdirectories_and_gemma_input(aMetaData);
     
     pugi::xml_document tDocument;
-    tGemmaProblem.write_plato_main(tDocument);
+    tGemmaProblem.write_plato_main_operations(tDocument);
     tDocument.save_file("plato_main_operations.xml", "  ");
 
     pugi::xml_document tInterfaceDocument;
@@ -130,7 +128,7 @@ void plato_gemma_problem
     tGemmaProblem.write_plato_main_input(tPlatoMainDocument);
     tPlatoMainDocument.save_file("plato_main_input_deck.xml", "  ");
 
-    tGemmaProblem.write_mpisource("mpirun.source");
+    tGemmaProblem.write_mpirun("mpirun.source");
     tGemmaProblem.write_defines();
 
     XMLGen::write_dakota_driver_input_deck(aMetaData);

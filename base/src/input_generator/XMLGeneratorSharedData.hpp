@@ -49,7 +49,6 @@ public:
                          std::string aEvaluationString = "") override;
 
     std::string size(){return mSize;}
-    
 };
 
 class XMLGeneratorSharedDataNodalField : public XMLGeneratorSharedData

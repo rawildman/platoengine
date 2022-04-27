@@ -18,12 +18,12 @@
 namespace XMLGen
 {
 
-    struct XMLGeneratorInputOutput
-    {
-        std::string mLayout;
-        std::string mSize;
-        std::shared_ptr<XMLGeneratorSharedData> mSharedData;
-    };
+struct XMLGeneratorInputOutput
+{
+    std::string mLayout;
+    std::string mSize;
+    std::shared_ptr<XMLGeneratorSharedData> mSharedData;
+};
 
 class XMLGeneratorOperation : public XMLGeneratorFileObject
 {
@@ -136,13 +136,13 @@ private:
     XMLGeneratorInputOutput mInput;
 
     void writeTet10ConversionFile(std::string aExodusFileName,
-                                    std::vector<std::string> aBlockList);
+                                  std::vector<std::string> aBlockList);
 public:
     XMLGeneratorOperationCubitTet10Conversion(const std::string& aExodusFileName,
-                                 const std::vector<std::string>& aBlockList, 
-                                 std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
-                                 std::shared_ptr<XMLGeneratorPerformer> aPerformer,
-                                 int aConcurrentEvaluations);
+                                              const std::vector<std::string>& aBlockList, 
+                                              std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
+                                              std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                              int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
     void write_interface(pugi::xml_node& aNode, 
@@ -158,19 +158,18 @@ private:
     XMLGeneratorInputOutput mInput;
 
     void writeSubBlockFile(std::string aExodusFileName,
-                                    std::vector<std::string> aBoundingBox);
+                           std::vector<std::string> aBoundingBox);
 public:
     XMLGeneratorOperationCubitSubBlock(const std::string& aExodusFileName,
-                                 const std::vector<std::string>& aBoundingBox, 
-                                 std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
-                                 std::shared_ptr<XMLGeneratorPerformer> aPerformer,
-                                 int aConcurrentEvaluations);
+                                       const std::vector<std::string>& aBoundingBox, 
+                                       std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
+                                       std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                       int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
     void write_interface(pugi::xml_node& aNode, 
                          std::string aEvaluationString = "") override;
 };
-
 
 class XMLGeneratorOperationDecomp : public XMLGeneratorOperation
 {
@@ -180,14 +179,13 @@ private:
     
 public:
     XMLGeneratorOperationDecomp(const std::string& aExodusFileName,
-                                 int aNumberOfPartitions, 
-                                 std::shared_ptr<XMLGeneratorPerformer> aPerformer,
-                                 int aConcurrentEvaluations);
+                                int aNumberOfPartitions, 
+                                std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
     void write_interface(pugi::xml_node& aNode, 
                          std::string aEvaluationString = "") override;
 };
-
 
 }

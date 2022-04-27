@@ -19,49 +19,52 @@ XMLGeneratorProblem::XMLGeneratorProblem()
 
 XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) : XMLGeneratorProblem()
 {
+    // Parsing
     mVerbose = aMetaData.optimization_parameters().verbose();
-    auto tServices = aMetaData.services();
+    mNumParams = aMetaData.optimization_parameters().descriptors().size();
+
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
+
     std::string tNumRanks = "1";
     std::string tGemmaInputFile; ///Where is this stored?
     std::string tGemmaPath;
-
-    for (unsigned int iService = 0 ; iService < tServices.size(); iService++)
-    if(tServices[iService].code()=="gemma")
+    for (const auto& iService : aMetaData.services())
     {
-        tNumRanks = tServices[iService].numberProcessors();
-        tGemmaInputFile = "gemma_matched_power_balance_input_deck.yaml" ; //tServices[iService].value("input_file");
-        tGemmaPath = tServices[iService].path();
-    }
-
-    std::string tDataColumn, tMathOperation, tDataFile;
-    auto tCriteria = aMetaData.criteria();
-    for (int iCriteria = 0; iCriteria < tCriteria.size(); iCriteria++)
-    {
-        if(tCriteria[iCriteria].type() == "system_call")
+        if(iService.code() == "gemma")
         {
-            tDataColumn = tCriteria[iCriteria].value("data_group");
-            tMathOperation = tCriteria[iCriteria].value("data_extraction_operation");
-            tDataFile = tCriteria[iCriteria].value("data_file");
+            tNumRanks = iService.numberProcessors();
+            tGemmaInputFile = "gemma_matched_power_balance_input_deck.yaml" ; //tServices[iService].value("input_file");
+            tGemmaPath = iService.path();
         }
     }
 
-    std::vector<std::string> tDescriptors = aMetaData.optimization_parameters().descriptors();
+    std::string tDataColumn, tMathOperation, tDataFile;
+    for (const auto& iCriterion : aMetaData.criteria())
+    {
+        if(iCriterion.type() == "system_call")
+        {
+            tDataColumn = iCriterion.value("data_group");
+            tMathOperation = iCriterion.value("data_extraction_operation");
+            tDataFile = iCriterion.value("data_file");
+        }
+    }
     
-    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
-    mNumParams = aMetaData.optimization_parameters().descriptors().size();
-    
+    // this->initializePerformers();
     int tOffset = 1;
     mPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",tOffset,std::stoi(tNumRanks),tEvaluations);
     
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {mPerformerMain,mPerformer};
     std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformersJustMain = {mPerformerMain};
 
+    // this->initializeSharedData();
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tInputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("design_parameters",std::to_string(mNumParams),mPerformerMain,tUserPerformers,tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorSharedData> tOutputSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("criterion_X_service_X_scenario_X","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
     mSharedData.push_back(tOutputSharedData);
-
+    
+    // this->initializeOperations();
     std::shared_ptr<XMLGen::XMLGeneratorOperationAprepro> tAprepro = std::make_shared<XMLGen::XMLGeneratorOperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
     std::shared_ptr<XMLGen::XMLGeneratorOperationGemmaMPISystemCall> tGemma = std::make_shared<XMLGen::XMLGeneratorOperationGemmaMPISystemCall>(tGemmaInputFile, tGemmaPath, tNumRanks, mPerformer, tEvaluations);
     std::shared_ptr<XMLGen::XMLGeneratorOperationWait> tWait = std::make_shared<XMLGen::XMLGeneratorOperationWait>("wait", tDataFile, mPerformer, tEvaluations);
@@ -72,18 +75,16 @@ XMLGeneratorGemmaProblem::XMLGeneratorGemmaProblem(const InputData& aMetaData) :
     mOperations.push_back(tWait);
     mOperations.push_back(tHarvestData);
 
+    // this->initializeStages();
     XMLGen::XMLGeneratorStage tInitializeStage("Initialize Input",{tAprepro},tInputSharedData,nullptr);
     XMLGen::XMLGeneratorStage tCriterionStage("Compute Criterion 0 Value",{tGemma,tWait,tHarvestData},nullptr,tOutputSharedData);
 
     mStages.push_back(tInitializeStage);
     mStages.push_back(tCriterionStage);
 
-
-  //  mDakotaStage = std::make_shared<XMLGeneratorStage>("Dakota",tInputSharedData,tOutputSharedData);
-    
 }
 
-void XMLGeneratorGemmaProblem::write_plato_main(pugi::xml_document& aDocument)
+void XMLGeneratorGemmaProblem::write_plato_main_operations(pugi::xml_document& aDocument)
 {
     for( unsigned int tLoopInd = 0; tLoopInd < mOperations.size(); ++tLoopInd )
     {
@@ -191,7 +192,7 @@ void XMLGeneratorGemmaProblem::create_matched_power_balance_input_deck(const Inp
     tOutFile.close();
 }
 
-void XMLGeneratorGemmaProblem::write_mpisource(std::string aFileName)
+void XMLGeneratorGemmaProblem::write_mpirun(std::string aFileName)
 {
     std::ofstream tOutFile(aFileName.c_str());
     tOutFile<<"mpirun --oversubscribe -np 1 -x PLATO_PERFORMER_ID=0 \\\n";

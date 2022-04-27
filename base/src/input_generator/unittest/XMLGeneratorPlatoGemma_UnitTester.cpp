@@ -153,7 +153,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tGemmaProblem.write_plato_main(tDocument));
+    ASSERT_NO_THROW(tGemmaProblem.write_plato_main_operations(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // APREPRO OPERATIONS
@@ -627,7 +627,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIRunFile)
 
     XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
 
-    tGemmaProblem.write_mpisource("mpifile");
+    tGemmaProblem.write_mpirun("mpifile");
 
     std::string tLine;
     std::ifstream tInFile("mpifile");
