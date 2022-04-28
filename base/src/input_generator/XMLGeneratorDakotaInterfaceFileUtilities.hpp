@@ -33,6 +33,17 @@ void append_performer_data
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument);
 
+void append_physics_performers_dakota_usecase
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId);
+
+void append_platoservices_dakota_usecase
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId);
+
+
 /******************************************************************************//**
  * \fn append_shared_data
  * \brief Append shared data to interface.xml file.
