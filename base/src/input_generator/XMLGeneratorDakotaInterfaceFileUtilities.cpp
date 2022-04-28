@@ -102,14 +102,14 @@ void append_concurrent_design_variables_shared_data
 std::string append_criterion_owner_name
 (const XMLGen::Service& aService)
 {
-    if(aService.type() == "plato_app" && aService.code() != "platomain")
-    {
+    //if(aService.type() == "plato_app" && aService.code() != "platomain")
+    //{
         return XMLGen::to_lower( aService.performer() );
-    }
-    else if( aService.type() == "web_app" || aService.type() == "system_call" )
-    {
-        return ( XMLGen::get_concretized_service_name(aService) );
-    }
+    //}
+    //else //if( aService.type() == "web_app" || aService.type() == "system_call" )
+    //{
+    //    return ( XMLGen::get_concretized_service_name(aService) );
+   // }
 }
 // function append_criterion_owner_name
 /******************************************************************************/
