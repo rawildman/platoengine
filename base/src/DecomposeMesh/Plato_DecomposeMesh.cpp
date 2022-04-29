@@ -68,13 +68,28 @@ void decomposeMesh(MPI_Comm aComm, const std::string& aMeshFile)
     ioBroker.property_add(Ioss::Property("DECOMPOSITION_METHOD", "RCB"));
     ioBroker.add_mesh_database(aMeshFile, stk::io::READ_MESH);
     ioBroker.create_input_mesh();
+    ioBroker.add_all_mesh_fields_as_input_fields();
     ioBroker.populate_bulk_data();
-
-    // Write the spread file.
+    std::vector<double> tTimeSteps = ioBroker.get_time_steps();
     size_t index = ioBroker.create_output_mesh(aMeshFile, stk::io::WRITE_RESULTS);
     ioBroker.set_active_mesh(index);
-    ioBroker.write_output_mesh(index);
+    stk::mesh::FieldVector all_fields = ioBroker.meta_data().get_fields();
+    for(size_t j=0; j<all_fields.size(); ++j)
+    {
+        stk::mesh::FieldBase* cur_field = all_fields[j];
+        const Ioss::Field::RoleType* tRoleType = stk::io::get_field_role(*cur_field);
+        if(tRoleType && *tRoleType == Ioss::Field::TRANSIENT)
+            ioBroker.add_field(index, *cur_field);
+    }
+    for(size_t i=0; i<tTimeSteps.size(); ++i)
+    {
+        ioBroker.read_defined_input_fields((int)(i+1));
+        ioBroker.begin_output_step(index, tTimeSteps[i]);
+        ioBroker.write_defined_output_fields(index);
+        ioBroker.end_output_step(index);
+    }
 
+    ioBroker.write_output_mesh(index);
     MPI_Barrier(aComm);
 #endif
 }
