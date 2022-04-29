@@ -425,6 +425,27 @@ function( Plato_add_xmlgen_custom_command_test TEST_NAME XMLGEN_COMMAND CUSTOM_C
 endfunction( Plato_add_xmlgen_custom_command_test )
 
 ###############################################################################
+## Plato_add_xmlgen_no_run_custom_command_test( 
+## )
+###############################################################################
+
+function( Plato_add_xmlgen_no_run_custom_command_test TEST_NAME XMLGEN_COMMAND CUSTOM_COMMAND )
+
+  set( RUN_COMMAND "cat mpirun.source defines.xml plato_main_operations.xml interface.xml > xmlout.tmp" )
+
+    add_test(NAME ${TEST_NAME}
+           COMMAND ${CMAKE_COMMAND} 
+           -DTEST_COMMAND=${RUN_COMMAND}
+           -DXMLGEN_COMMAND=${XMLGEN_COMMAND}
+           -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR} 
+           -DOUT_FILE=${OUT_FILE} 
+           -DGOLD_FILE=${GOLD_FILE} 
+           -DCUSTOM_COMMAND=${CUSTOM_COMMAND}
+           -P ${CMAKE_SOURCE_DIR}/base/config/runxmlgencustomcommandtest.cmake)
+
+endfunction( Plato_add_xmlgen_no_run_custom_command_test )
+
+###############################################################################
 ## Plato_add_awk_test( 
 ##    TEST_NAME      == test name
 ##    NUM_PROCS      == number of processors to use for test
