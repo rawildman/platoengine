@@ -39,6 +39,8 @@
 // *************************************************************************
 //@HEADER
 */
+#include <vector>
+#include <unistd.h>
 
 namespace Plato
 {
@@ -49,8 +51,22 @@ namespace Utils
 template<typename T>
 T* byName(const std::vector<T*> & aArgumentVector, const std::string & aName);
 
+/******************************************************************************//**
+ * \brief Utility function used to avoid warning related to unused variables.
+ * \param [in] aInput input
+**********************************************************************************/
 template<typename Type>
 void ignore_unused(Type& aInput);
+
+/******************************************************************************//**
+ * \brief Call the chdir command to change the current working directory. chdir \n
+ *     changes the current working directory of the calling process to the directory \n
+ *     specified in aPath if it is not an empty string.
+ * \param [in] aPath directory path
+**********************************************************************************/
+inline void change_directory(const std::string& aPath);
+
+inline std::string current_working_directory();
 
 }
 // namespace Utils
@@ -58,6 +74,7 @@ void ignore_unused(Type& aInput);
 }
 // namespace Plato
 
+/************* byName **************/
 template <typename T>
 T* Plato::Utils::byName(const std::vector<T*> & aArgumentVector, const std::string & aName)
 {
@@ -68,7 +85,31 @@ T* Plato::Utils::byName(const std::vector<T*> & aArgumentVector, const std::stri
   }
   return nullptr;
 }
+/************* byName **************/
 
+/************* ignore_unused **************/
 template<typename Type>
 void Plato::Utils::ignore_unused(Type& aInput)
 { return; }
+/************** ignore_unused **************/
+
+/************** change_directory **************/
+inline void Plato::Utils::change_directory(const std::string& aPath)
+{
+    if(!aPath.empty())
+    {
+        auto tTrash = chdir(aPath.c_str());
+        Plato::Utils::ignore_unused(tTrash);
+    }
+}
+/************** change_directory **************/
+
+/************** current_working_directory **************/
+inline std::string Plato::Utils::current_working_directory()
+{
+    char* tCWD = get_current_dir_name();
+    std::string tOutput(tCWD);
+    std::free(tCWD);
+    return tOutput;
+}
+/************** current_working_directory **************/

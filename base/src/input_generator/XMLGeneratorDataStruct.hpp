@@ -443,6 +443,10 @@ public:
 
         return mCriteria[tIndex];
     }
+    const std::vector<XMLGen::Criterion>& criteria() const
+    {
+        return mCriteria;
+    }
     void set(const std::vector<XMLGen::Criterion>& aCriteria)
     {
         mCriteria = aCriteria;
@@ -467,6 +471,30 @@ public:
     void set(XMLGen::OptimizationParameters aOptimizationParameters)
     {
         mOptimizationParameters = aOptimizationParameters;
+    }
+
+    void append(const XMLGen::Material& aMaterial)
+    {
+        materials.push_back(aMaterial);
+    }
+    const XMLGen::Material& material(const std::string& aMaterialID) const
+    {
+        auto tIndex = 0;
+        bool tFound = false;
+        for(auto& tMaterial : materials)
+        {
+            tIndex = &tMaterial - &materials[0];
+            if(tMaterial.id() == aMaterialID)
+            {
+                tFound = true;
+                break;
+            }
+        }
+        if(!tFound)
+        {
+            THROWERR(std::string("Did not find material with id '") + aMaterialID + "' in materials list.")
+        }
+        return materials[tIndex];
     }
 
     XMLGen::Objective objective;

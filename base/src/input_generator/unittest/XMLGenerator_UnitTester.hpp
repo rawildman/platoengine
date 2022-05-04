@@ -128,6 +128,10 @@ public:
     std::string getCheckGradient() {return m_InputData.optimization_parameters().check_gradient();}
     std::string getCheckHessian() {return m_InputData.optimization_parameters().check_hessian();}
     XMLGen::OptimizationType getOptimizationType() {return m_InputData.optimization_parameters().optimizationType();}
+    std::vector<std::string> getDescriptors() {return m_InputData.optimization_parameters().descriptors();}
+    std::vector<std::string> getLowerBounds() {return m_InputData.optimization_parameters().lower_bounds();}
+    std::vector<std::string> getUpperBounds() {return m_InputData.optimization_parameters().upper_bounds();}
+    std::vector<std::string> getMDPSPartitions() {return m_InputData.optimization_parameters().mdps_partitions();}
     std::string getConcurrentEvaluations() {return m_InputData.optimization_parameters().concurrent_evaluations();}
     std::string getMeshName() {return m_InputData.mesh.name;}
     std::string getAuxiliaryMeshName() {return m_InputData.mesh.auxiliary_mesh_name;}

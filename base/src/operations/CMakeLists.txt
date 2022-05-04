@@ -7,6 +7,7 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_CopyValue.cpp
                         Plato_Roughness.cpp
                         Plato_SystemCall.cpp
+                        Plato_SystemCallOperation.cpp
                         Plato_Aggregator.cpp
                         Plato_DesignVolume.cpp
                         Plato_Reinitialize.cpp
@@ -22,6 +23,7 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_WriteGlobalValue.cpp
                         Plato_CSMParameterOutput.cpp
                         Plato_OperationsUtilities.cpp
+                        Plato_HarvestDataFromFile.cpp
                         Plato_NormalizeObjectiveValue.cpp
                         Plato_MeanPlusVarianceMeasure.cpp
                         Plato_MeanPlusVarianceGradient.cpp
@@ -37,6 +39,7 @@ set(${LIB_NAME}_HEADERS Plato_Filter.hpp
                         Plato_CopyValue.hpp
                         Plato_Roughness.hpp
                         Plato_SystemCall.hpp
+                        Plato_SystemCallOperation.hpp
                         Plato_Aggregator.hpp
                         Plato_DesignVolume.hpp
                         Plato_Reinitialize.hpp
@@ -52,6 +55,7 @@ set(${LIB_NAME}_HEADERS Plato_Filter.hpp
                         Plato_InitializeValues.hpp
                         Plato_WriteGlobalValue.hpp
                         Plato_CSMParameterOutput.hpp
+                        Plato_HarvestDataFromFile.hpp
                         Plato_OperationsUtilities.hpp
                         Plato_NormalizeObjectiveValue.hpp
                         Plato_MeanPlusVarianceMeasure.hpp

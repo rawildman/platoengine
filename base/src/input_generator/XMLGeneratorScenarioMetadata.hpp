@@ -29,15 +29,6 @@ private:
 // private member functions
 private:
     /******************************************************************************//**
-     * \fn getValue
-     * \brief Return string value for property with input tag; else, throw an error if \n
-     * property is not defined in the metadata.
-     * \param [in] aTag property tag
-     * \return property string value
-    **********************************************************************************/
-    std::string getValue(const std::string& aTag) const;
-
-    /******************************************************************************//**
      * \fn getBool
      * \brief Return bool value for property with input tag; else, throw an error if \n
      * property is not defined in the metadata.
@@ -47,6 +38,15 @@ private:
     bool getBool(const std::string& aTag) const;
 
 public:
+    /******************************************************************************//**
+     * \fn getValue
+     * \brief Return string value for property with input tag; else, throw an error if \n
+     * property is not defined in the metadata.
+     * \param [in] aTag property tag
+     * \return property string value
+    **********************************************************************************/
+    std::string getValue(const std::string& aTag) const;
+    
     /******************************************************************************//**
      * \fn loadIDs
      * \brief Return scenario loadIDs
@@ -389,6 +389,8 @@ public:
     std::string frequency_min() const {return this->getValue("frequency_min"); }
     std::string frequency_max() const {return this->getValue("frequency_max"); }
     std::string frequency_step() const {return this->getValue("frequency_step"); }
+    std::string cavity_radius() const {return this->getValue("cavity_radius"); }
+    std::string cavity_height() const {return this->getValue("cavity_height"); }
     std::string raleigh_damping_alpha() const {return this->getValue("raleigh_damping_alpha"); }
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }

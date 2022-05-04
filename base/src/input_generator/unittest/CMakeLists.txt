@@ -5,8 +5,9 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGenerator_UnitTester.cpp
                                       Plato_Test_XMLGenerator.cpp
                                       XMLGeneratorSrom_UnitTester.cpp
-                                      XMLGeneratorDefineFile_UnitTester.cpp
                                       XMLGeneratorLaunch_UnitTester.cpp
+                                      XMLGeneratorPlatoGemma_UnitTester.cpp
+                                      XMLGeneratorDefineFile_UnitTester.cpp
                                       XMLGeneratorDakotaDriver_UnitTester.cpp
                                       XMLGeneratorParseMetaData_UnitTester.cpp
                                       XMLGeneratorInterfaceFile_UnitTester.cpp
@@ -19,12 +20,20 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
+                                      XMLGeneratorFileObject_UnitTester.cpp
+                                      XMLGeneratorPerformer_UnitTester.cpp
+                                      XMLGeneratorSharedData_UnitTester.cpp
+                                      XMLGeneratorStage_UnitTester.cpp
+                                      XMLGeneratorOperation_UnitTester.cpp
                                       ../XMLGenerator.cpp
+                                      ../XMLGeneratorProblem.cpp
                                       ../XMLGeneratorParseRun.cpp
                                       ../XMLGeneratorUtilities.cpp
+                                      ../XMLGeneratorParseBlock.cpp
                                       ../XMLGeneratorParseLoads.cpp
                                       ../XMLGeneratorParseOutput.cpp
                                       ../XMLGeneratorRunMetadata.cpp
+                                      ../XMLGeneratorDakotaProblem.cpp
                                       ../XMLGeneratorParseAssembly.cpp
                                       ../XMLGeneratorParseScenario.cpp
                                       ../XMLGeneratorParseServices.cpp
@@ -32,12 +41,13 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParseCriteria.cpp
                                       ../XMLGeneratorOutputMetadata.cpp
                                       ../XMLGeneratorParseObjective.cpp
-                                      ../XMLGeneratorParseBlock.cpp
                                       ../XMLGeneratorOutputUtilities.cpp
                                       ../XMLGeneratorStagesUtilities.cpp
                                       ../XMLGeneratorParserUtilities.cpp
                                       ../XMLGeneratorParseConstraint.cpp
                                       ../XMLGeneratorServiceMetadata.cpp
+                                      ../XMLGeneratorProblemUtilities.cpp
+                                      ../XMLGeneratorServiceUtilities.cpp
                                       ../XMLGeneratorParseUncertainty.cpp
                                       ../XMLGeneratorScenarioMetadata.cpp
                                       ../XMLGeneratorSierraSDUtilities.cpp
@@ -82,6 +92,12 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                                       # ../PlatoAnalyzeInputDeckWriter.cpp
                                       # ../SalinasInputDeckWriter.cpp)
+			              ../XMLGeneratorFileObject.cpp
+			              ../XMLGeneratorOperation.cpp
+                                      ../XMLGeneratorStage.cpp
+			              ../XMLGeneratorPerformer.cpp
+			              ../XMLGeneratorSharedData.cpp
+			              ../XMLGeneratorGemmaProblem.cpp
                                       )
 
 SET(PlatoXMLGenerator_UnitTester_HDRS XMLGenerator_UnitTester.hpp

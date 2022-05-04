@@ -364,6 +364,10 @@ std::stringstream read_data_from_file(const std::string &aFilename)
 {
     std::ifstream tReadFile;
     tReadFile.open(aFilename);
+    if(!tReadFile.is_open())
+    {
+        THROWERR(std::string("Error while reading file '") + aFilename + "'. Is the requested file on disk?")
+    }
     std::string tInputString;
     std::stringstream tReadData;
     while (tReadFile >> tInputString)
@@ -568,39 +572,6 @@ int count_number_of_reinitializations_needed
 /******************************************************************************/
 
 /******************************************************************************/
-bool need_update_problem_stage
-(const XMLGen::InputData& aMetaData)
-{
-    for (auto &tService : aMetaData.services())
-    {
-        if (tService.updateProblem())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-// function need_update_problem_stage
-/******************************************************************************/
-
-/******************************************************************************/
-int num_cache_states
-(const std::vector<XMLGen::Service> &aServices)
-{
-    int tNumCacheStates = 0;
-    for(auto &tService : aServices)
-    {
-        if(tService.cacheState())
-        {
-            tNumCacheStates++;
-        }
-    }
-    return tNumCacheStates;
-}
-// function num_cache_states
-/******************************************************************************/
-
-/******************************************************************************/
 std::string append_concurrent_tag_to_file_string
 (const std::string& aFileString,
  const std::string& aTag)
@@ -615,52 +586,79 @@ std::string append_concurrent_tag_to_file_string
 /******************************************************************************/
 
 /******************************************************************************/
-std::string get_unique_decomp_service
-(const XMLGen::InputData& aMetaData)
+void move_file_to_subdirectories
+(const std::string& aFileName,
+ const std::vector<std::string>& aSubDirs)
 {
-    std::string tReturn = "";
-    std::map<std::string,int> hasBeenDecompedForThisNumberOfProcessors;
-    for(size_t i=0; i<aMetaData.objective.serviceIDs.size(); ++i)
+    for(auto& tSubDir : aSubDirs)
     {
-        XMLGen::Service tService = aMetaData.service(aMetaData.objective.serviceIDs[i]);
-        if(tService.code() != "plato_analyze" && tService.code() != "platomain")
-            if (service_needs_decomp(tService, hasBeenDecompedForThisNumberOfProcessors))
-                tReturn = aMetaData.objective.serviceIDs[i];
-    }
-    for(auto& tConstraint : aMetaData.constraints)
-    {
-        XMLGen::Service tService = aMetaData.service(tConstraint.service());
-        if(tService.code() != "plato_analyze" && tService.code() != "platomain")
-            if (service_needs_decomp(tService, hasBeenDecompedForThisNumberOfProcessors))
-                tReturn = tConstraint.service();
-    }
+        auto tCommand = std::string("mkdir -p ") + tSubDir;
+        Plato::system(tCommand.c_str());
+        tCommand = std::string("cp ") + aFileName + " " + tSubDir;
+        Plato::system(tCommand.c_str());
+    }    
+}
+// function move_file_to_subdirectories
+/******************************************************************************/
+
+/******************************************************************************/
+void move_file_to_subdirectory
+(const std::string& aFileName,
+ const std::string& aSubDirName)
+{
+    auto tCommand = std::string("mkdir -p ") + aSubDirName;
+    Plato::system(tCommand.c_str());
+    tCommand = std::string("cp ") + aFileName + " " + aSubDirName;
+    Plato::system(tCommand.c_str());
+}
+// function move_file_to_subdirectory
+/******************************************************************************/
+
+/******************************************************************************/
+bool subdirectory_exists
+(const std::string& aDirectoryName)
+{
+    bool tReturn = true;
+    auto tCommand = std::string("[ -d \"") + aDirectoryName + std::string("\" ]");
+    auto tExitStatus = Plato::system_with_status(tCommand.c_str());
+    if (tExitStatus)
+        tReturn = false;
+
     return tReturn;
 }
-// function get_unique_decomp_service
+// function subdirectory_exists
 /******************************************************************************/
 
 /******************************************************************************/
-bool service_needs_decomp
-(const XMLGen::Service& aService,
- std::map<std::string,int>& hasBeenDecompedForThisNumberOfProcessors)
+int get_number_of_shape_parameters(const XMLGen::InputData& aMetaData)
 {
-    std::string num_procs = aService.numberProcessors();
-    assert_is_positive_integer(num_procs);
-    bool need_to_decompose = num_procs.compare("1") != 0;
-    if(need_to_decompose)
+    size_t tNumParameters = 0;
+    auto tOptimizationParameters = aMetaData.optimization_parameters();
+    if( !tOptimizationParameters.num_shape_design_variables().empty() )
     {
-        bool has_been_decomposed = hasBeenDecompedForThisNumberOfProcessors[num_procs]++ != 0;
-        if (hasBeenDecompedForThisNumberOfProcessors.size() > 1)
-            THROWERR("MESH HAS ALREADY BEEN DECOMPED FOR A DIFFERENT NUMBER OF PROCESSORS.")
-
-        if (!has_been_decomposed)
-        {
-            return true;
-        }
+        tNumParameters = std::stoi(tOptimizationParameters.num_shape_design_variables());
     }
-    return false;
+    else if( !tOptimizationParameters.lower_bounds().empty() )
+    {
+        tNumParameters = tOptimizationParameters.lower_bounds().size();
+    }
+    else if( !tOptimizationParameters.upper_bounds().empty() )
+    {
+        tNumParameters = tOptimizationParameters.upper_bounds().size();
+    }
+    else if( !tOptimizationParameters.descriptors().empty() )
+    {
+        tNumParameters = tOptimizationParameters.descriptors().size();
+    }
+    else
+    {
+        THROWERR(std::string("Colud not calculate the number of shape parameters from input information. ") 
+            + "The user must defined one of the following inputs: 'num_shape_design_variables', 'lower_bounds', " 
+            + "'upper_bounds', 'descriptors'.")
+    }
+    return tNumParameters;
 }
-// function service_needs_decomp
+// function get_number_of_shape_parameters
 /******************************************************************************/
 
 }

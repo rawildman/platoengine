@@ -18,7 +18,7 @@ namespace XMLGen
 
 void ParseOptimizationParameters::setTags(XMLGen::OptimizationParameters &aOptimizationParameters)
 {
-    ValidOptimizationParameterKeys tValidKeys;
+    XMLGen::ValidOptimizationParameterKeys tValidKeys;
     for(auto& tTag : mTags)
     {
         if(tValidKeys.mKeys.find(tTag.first) == tValidKeys.mKeys.end())
@@ -179,6 +179,7 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
     this->setEnforceBounds(aMetadata); // this needs to be called after the fixed blocks processing to get correct defaults.
     this->setLevelsetNodesetIDs(aMetadata);
     this->setMaterialBoxExtents(aMetadata);
+    this->setDakotaDescriptorsAndBounds(aMetadata);
     this->checkHeavisideFilterParams(aMetadata);
     this->setMeshMapData(aMetadata);
     this->setCSMParameters(aMetadata);
@@ -433,6 +434,54 @@ void ParseOptimizationParameters::setMaterialBoxExtents(XMLGen::OptimizationPara
             THROWERR("Parse Optimization Parameters: Levelset material box min or max is not fully defined.");
         }
     }
+}
+
+void ParseOptimizationParameters::setDakotaDescriptorsAndBounds(XMLGen::OptimizationParameters& aMetadata)
+{
+    auto tItr = mTags.find("descriptors");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tList;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tList);
+        aMetadata.descriptors(tList);
+    }
+
+    tItr = mTags.find("lower_bounds");
+    tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tList;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tList);
+        aMetadata.lower_bounds(tList);
+    }
+
+    tItr = mTags.find("upper_bounds");
+    tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tList;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tList);
+        aMetadata.upper_bounds(tList);
+    }
+
+    tItr = mTags.find("mdps_partitions");
+    tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tList;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tList);
+        aMetadata.mdps_partitions(tList);
+    }
+
 }
 
 void ParseOptimizationParameters::setFixedNodesetIDs(XMLGen::OptimizationParameters &aMetadata)

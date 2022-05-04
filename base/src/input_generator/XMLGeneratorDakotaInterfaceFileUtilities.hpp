@@ -12,57 +12,57 @@
 namespace XMLGen
 {
 
+namespace dakota
+{
+
 /******************************************************************************//**
- * \fn write_dakota_interface_xml_file
+ * \fn write_interface_xml_file
  * \brief Write interface.xml file for dakota driver.
  * \param [in]  aMetaData Plato problem input metadata
 **********************************************************************************/
-void write_dakota_interface_xml_file
+void write_interface_xml_file
 (const XMLGen::InputData & aMetaData);
 
 /******************************************************************************//**
- * \fn append_dakota_performer_data
+ * \fn append_performer_data
  * \brief Append performer data to interface.xml file.
  * \param [in]     aMetaData Plato problem input metadata
  * \param [in/out] aDocument    parent xml document
 **********************************************************************************/
-void append_dakota_performer_data
+void append_performer_data
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument);
 
-/******************************************************************************//**
- * \fn append_physics_performers_dakota_usecase
- * \brief Append performer data to interface.xml file.
- * \param [in]     aMetaData Plato problem input metadata
- * \param [in/out] aDocument    parent xml document
- * \param [in]     aPerformerId performer id
-**********************************************************************************/
 void append_physics_performers_dakota_usecase
-(const XMLGen::InputData & aMetaData,
- pugi::xml_document      & aDocument,
- int                     & aPerformerId);
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId);
 
-/******************************************************************************//**
- * \fn append_platoservices_dakota_usecase
- * \brief Append performer data to interface.xml file.
- * \param [in]     aMetaData Plato problem input metadata
- * \param [in/out] aDocument    parent xml document
- * \param [in]     aPerformerId performer id
-**********************************************************************************/
 void append_platoservices_dakota_usecase
-(const XMLGen::InputData & aMetaData,
- pugi::xml_document      & aDocument,
- int                     & aPerformerId);
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int& aPerformerId);
+
 
 /******************************************************************************//**
- * \fn append_dakota_shared_data
+ * \fn append_shared_data
  * \brief Append shared data to interface.xml file.
  * \param [in]     aMetaData Plato problem input metadata
  * \param [in/out] aDocument    parent xml document
 **********************************************************************************/
-void append_dakota_shared_data
+void append_shared_data
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument);
+
+/******************************************************************************//**
+ * \fn append_design_parameters_username
+ * \brief Append design parameters user name.
+ * \param [in]  aMetaData   Plato problem input metadata
+ * \param [out] aParentNode parent xml node
+**********************************************************************************/
+void append_design_parameters_username
+(const XMLGen::InputData & aMetaData,
+ pugi::xml_node          & aParentNode);
 
 /******************************************************************************//**
  * \fn append_concurrent_design_variables_shared_data
@@ -85,12 +85,12 @@ void append_dakota_criterion_shared_data
  pugi::xml_document      & aDocument);
 
 /******************************************************************************//**
- * \fn append_dakota_stages
+ * \fn append_stages
  * \brief Append stages to interface.xml file.
  * \param [in]     aMetaData Plato problem input metadata
  * \param [in/out] aDocument    parent xml document
 **********************************************************************************/
-void append_dakota_stages
+void append_stages
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument);
 
@@ -209,12 +209,12 @@ void append_constraint_criterion_value_stages
  int                     & aCriterionNumber);
 
 /******************************************************************************//**
- * \fn append_dakota_driver_options
+ * \fn append_driver_options
  * \brief Append dakota driver options/stages to interface.xml file.
  * \param [in]     aMetaData Plato problem input metadata
  * \param [in/out] aDocument    parent xml document
 **********************************************************************************/
-void append_dakota_driver_options
+void append_driver_options
 (const XMLGen::InputData & aMetaData,
  pugi::xml_document      & aDocument);
 
@@ -260,6 +260,9 @@ void append_constraint_criteria_stage_options
 (const XMLGen::InputData & aMetaData,
  pugi::xml_node          & aParentNode,
  int                     & aCriterionNumber);
+
+}
+// namespace dakota
 
 }
 // namespace XMLGen

@@ -137,7 +137,11 @@ struct ValidCriterionParameterKeys
         "izz", 
         "ixz", 
         "iyz", 
-        "ixy"
+        "ixy",
+        // system call
+        "data_file",
+        "data_group",
+        "data_extraction_operation"
     };
 };
 
@@ -235,7 +239,8 @@ private:
         "modal_projection_error",
         "mass_properties",
         "displacement",
-        "volume_average_von_mises"
+        "volume_average_von_mises",
+        "system_call"
     };
 
 public:
@@ -545,7 +550,8 @@ private:
         {"thermoplasticity", "solid"},
         {"frequency_response_function", "solid"},
         {"modal_response", "solid"},
-        {"steady_state_incompressible_fluids", "fluid"}
+        {"steady_state_incompressible_fluids", "fluid"},
+        {"electromagnetics", "electromagnetics"}
     };
 
 public:
@@ -600,7 +606,9 @@ private:
         "thermoplasticity",
         "forced_convection",
         "natural_convection",
-        "laminar_flow"};
+        "laminar_flow",
+        "electromagnetics"
+    };
 
 public:
     /******************************************************************************//**
@@ -699,7 +707,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk", "gemma"};
 };
 // struct ValidCodeKeys
 
@@ -1139,6 +1147,12 @@ private:
                 { "reynolds_number", {"Reynolds Number", "double"} },
                 { "impermeability_number", {"Impermeability Number", "double"} }
             }
+        },
+
+        { "electromagnetics",
+            {
+                { "conductivity", { "Conductivity", "double" } }
+            }
         }
     };
 
@@ -1502,8 +1516,11 @@ struct ValidOptimizationParameterKeys
      **/
     std::unordered_set<std::string> mKeys =
     {
-     "discretization",
      "verbose",
+     "descriptors",
+     "lower_bounds",
+     "upper_bounds",
+     "discretization",
      "enforce_bounds",
      "number_refines",
      "mma_move_limit",

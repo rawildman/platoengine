@@ -83,7 +83,7 @@ int DakotaAppInterface::derived_map_ac(const Dakota::String &aAnalysisDriverName
 int DakotaAppInterface::derived_map_of(const Dakota::String &of_name)
 {
     THROWERR(std::string("derived_map_of is not supported with Plato Dakota Driver, Plato should always use wait_local_evaluations"))
-    return 0; /* can be used to call output functions in other apps. the function is called one per iteration */
+    return 0; /* can be used to call output functions in other apps. the function is called once per iteration */
 }
 
 void DakotaAppInterface::wait_local_evaluations(Dakota::PRPQueue &aParamResponsePairQueue)

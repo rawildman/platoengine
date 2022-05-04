@@ -2,6 +2,7 @@
 # Sources:
 ###############################################################################
 SET(Plato_Operations_UnitTester_SRCS ../Plato_InitializeValues.cpp
+                                     ../Plato_HarvestDataFromFile.cpp
                                         Plato_Test_Operations.cpp
                                         Operations_UnitMain.cpp)
 

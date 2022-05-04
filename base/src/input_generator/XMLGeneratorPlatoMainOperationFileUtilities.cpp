@@ -11,6 +11,7 @@
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorFixedBlockUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
@@ -1126,9 +1127,26 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");
     addChild(aInputNode, "ArgumentName", "Parameters");
+    addChild(aInputNode, "Layout", "scalar");
+    addChild(aInputNode, "Size", std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData)));
 }
 // function append_update_geometry_on_change_operation_commands
 /******************************************************************************/
+
+void append_wait_for_file_close_operation_commands
+(pugi::xml_document& aDocument,
+ const std::string& aName,
+ const std::string& aFolder,
+ const std::string& aFile)
+ {
+    pugi::xml_node tNode = aDocument.append_child("Operation");
+   
+    addChild(tNode, "Function", "SystemCall");
+    addChild(tNode, "Name", aName);
+    std::string tCommand = "while lsof -u $USER | grep " + aFolder + "/" + aFile + "; do sleep 1; done; ";
+    addChild(tNode, "Command", tCommand);
+    addChild(tNode, "OnChange", "false");
+ }
 
 /******************************************************************************/
 void append_reinitialize_operation_to_plato_main_operation

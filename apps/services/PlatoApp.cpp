@@ -317,6 +317,14 @@ void PlatoApp::initialize( bool initializeTimers )
                 continue;
             }
 
+            tFunctions.push_back("HarvestDataFromFile");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::HarvestDataFromFile(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("ReciprocateObjectiveValue");
             if(tStrFunction == tFunctions.back())
             {
@@ -360,7 +368,7 @@ void PlatoApp::initialize( bool initializeTimers )
             tFunctions.push_back("SystemCall");
             if(tStrFunction == tFunctions.back())
             {
-                mOperationMap[tStrName] = new Plato::SystemCall(this, tNode);
+                mOperationMap[tStrName] = new Plato::SystemCallOperation(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
             }
@@ -368,7 +376,7 @@ void PlatoApp::initialize( bool initializeTimers )
             tFunctions.push_back("SystemCallMPI");
             if(tStrFunction == tFunctions.back())
             {
-                mOperationMap[tStrName] = new Plato::SystemCallMPI(this, tNode);
+                mOperationMap[tStrName] = new Plato::SystemCallMPIOperation(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
             }

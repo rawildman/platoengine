@@ -5,8 +5,8 @@
  */
 
 #include "XMLGeneratorDakotaDriverInputFileUtilities.hpp"
+#include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
-
 
 namespace XMLGen
 {
@@ -100,10 +100,15 @@ void append_multidim_parameter_study_method_block
     fprintf(fp, "\n method\n");
     fprintf(fp, "   multidim_parameter_study\n");
 
-    auto tNumParameters = std::stoi(aMetaData.optimization_parameters().num_shape_design_variables());
+    auto tNumParameters = XMLGen::get_number_of_shape_parameters(aMetaData);
+
     fprintf(fp, "       partitions =");
+
+    if(tPartitions.size()==1)
+    while(tPartitions.size() < tNumParameters)
+        tPartitions.push_back(tPartitions[0]);
     for (int iParameter = 0; iParameter < tNumParameters; iParameter++)
-        fprintf(fp, " %s ", tPartitions.c_str());
+        fprintf(fp, " %s ", tPartitions[iParameter].c_str());
     fprintf(fp, "\n");
 }
 
@@ -225,16 +230,41 @@ void append_dakota_driver_variables_block
         "       lower_bounds",
         "       upper_bounds",
         "       initial_point"};
-
+    
     auto tCsmFileName = aMetaData.optimization_parameters().csm_file();
-    std::ifstream tCsmFile;
-    tCsmFile.open(tCsmFileName.c_str()); // open a file
+    auto tDescriptors = aMetaData.optimization_parameters().descriptors();
     int tNumParameters = 0;
-    XMLGen::parse_csm_file_for_design_variable_data(tCsmFile,tVariablesStrings,tNumParameters);
-    tCsmFile.close();
+    
+    if(tCsmFileName != "")
+    {
+        std::ifstream tCsmFile;
+        tCsmFile.open(tCsmFileName.c_str()); // open a file
+        
+        XMLGen::parse_csm_file_for_design_variable_data(tCsmFile,tVariablesStrings,tNumParameters);
+        tCsmFile.close();
 
-    if (tNumParameters != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
-        THROWERR("Number of design variables specified in input deck does not match number in csm file.")
+        if (tNumParameters != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
+            THROWERR("Number of design variables specified in input deck does not match number in csm file.")
+    }
+    else if(tDescriptors.size()!=0)
+    {
+        tVariablesStrings = {
+        "       descriptors",
+        "       lower_bounds",
+        "       upper_bounds"};
+        tNumParameters = tDescriptors.size();
+        for(auto iDescriptor : tDescriptors )
+        tVariablesStrings[0] += "  '" + iDescriptor + "'  ";
+        
+        auto tLowerBounds = aMetaData.optimization_parameters().lower_bounds();
+        for(auto iLowerBounds : tLowerBounds )
+        tVariablesStrings[1] += "  " + iLowerBounds + "  ";
+        
+        auto tUpperBounds = aMetaData.optimization_parameters().upper_bounds();
+        for(auto iUpperBounds : tUpperBounds )
+        tVariablesStrings[2] += "  " + iUpperBounds + "  ";
+
+    }
 
     fprintf(fp, "\n variables\n");
     fprintf(fp, "   continuous_design = %d\n", tNumParameters);

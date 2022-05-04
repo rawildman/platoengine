@@ -1083,7 +1083,7 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainPerformer)
     tService.id("1");
     tService.code("platomain");
     tInputData.append(tService);
-    XMLGen::append_plato_main_performer(tInputData, tDocument);
+    ASSERT_EQ(0, XMLGen::append_plato_main_performer(tInputData, tDocument));
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES

@@ -3,6 +3,8 @@
 ###############################################################################
 SET(XMLGenerator_SRCS XMLGenerator_Main.cpp 
                       XMLGenerator.cpp
+                      XMLGeneratorProblem.cpp
+                      XMLGeneratorParseBlock.cpp
                       XMLGeneratorParseLoads.cpp
                       XMLGeneratorParseOutput.cpp
                       XMLGeneratorParseScenario.cpp
@@ -10,14 +12,16 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseMaterial.cpp
                       XMLGeneratorParseAssembly.cpp
                       XMLGeneratorParseCriteria.cpp
+                      XMLGeneratorDakotaProblem.cpp
                       XMLGeneratorOutputMetadata.cpp 
                       XMLGeneratorParseObjective.cpp
-                      XMLGeneratorParseBlock.cpp
                       XMLGeneratorOutputUtilities.cpp
                       XMLGeneratorStagesUtilities.cpp
                       XMLGeneratorParseConstraint.cpp
                       XMLGeneratorParserUtilities.cpp
                       XMLGeneratorServiceMetadata.cpp
+                      XMLGeneratorProblemUtilities.cpp
+                      XMLGeneratorServiceUtilities.cpp
                       XMLGeneratorScenarioMetadata.cpp
                       XMLGeneratorParseUncertainty.cpp
                       XMLGeneratorSierraSDUtilities.cpp
@@ -63,18 +67,27 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseRun.cpp
                       XMLGeneratorPlatoXTKInputFile.cpp
                       XMLGeneratorPlatoXTKOperationFile.cpp
+		      XMLGeneratorFileObject.cpp
+		      XMLGeneratorOperation.cpp
+                      XMLGeneratorStage.cpp
+		      XMLGeneratorPerformer.cpp
+		      XMLGeneratorSharedData.cpp
+		      XMLGeneratorGemmaProblem.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
                       XMLGeneratorProblem.hpp 
                       XMLGeneratorDataStruct.hpp
+                      XMLGeneratorDakotaProblem.hpp
                       XMLGeneratorValidInputKeys.hpp
                       XMLGeneratorRandomMetadata.hpp
                       XMLGeneratorOutputMetadata.hpp 
                       XMLGeneratorStagesUtilities.hpp
                       XMLGeneratorParserUtilities.hpp 
-                      XMLGeneratorServiceMetadata.hpp
                       XMLGeneratorOutputUtilities.hpp
+                      XMLGeneratorServiceMetadata.hpp
+                      XMLGeneratorProblemUtilities.hpp
+                      XMLGeneratorServiceUtilities.hpp
                       XMLGeneratorScenarioMetadata.hpp
                       XMLGeneratorAssemblyMetadata.hpp
                       XMLGeneratorBoundaryMetadata.hpp
@@ -87,7 +100,7 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorUncertaintyMetadata.hpp
                       XMLGeneratorDefinesFileUtilities.hpp 
                       XMLGeneratorPlatoAnalyzeUtilities.hpp 
-                      XMLGeneratorInterfaceFileUtilities.hpp 
+                      XMLGeneratorInterfaceFileUtilities.hpp
                       XMLGeneratorDakotaInterfaceFileUtilities.hpp 
                       XMLGeneratorDakotaDriverInputFileUtilities.hpp 
                       XMLGeneratorGradBasedOptimizerOptions.hpp
@@ -138,6 +151,12 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPlatoXTKOperationFile.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
+		      XMLGeneratorFileObject.hpp
+		      XMLGeneratorOperation.hpp
+                      XMLGeneratorStage.hpp
+		      XMLGeneratorPerformer.hpp
+		      XMLGeneratorSharedData.hpp
+		      XMLGeneratorGemmaProblem.hpp
                       )
 
 find_package(MPI)
