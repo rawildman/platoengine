@@ -63,6 +63,8 @@ void decomposeMesh(MPI_Comm aComm, const std::string& aMeshFile)
     MPI_Comm_rank(aComm, &tMyRank);
     MPI_Comm_size(aComm, &tSize);
 
+    if (tSize <= 1) return;
+
     // Read the serial mesh
     stk::io::StkMeshIoBroker ioBroker(aComm);
     ioBroker.property_add(Ioss::Property("DECOMPOSITION_METHOD", "RCB"));
