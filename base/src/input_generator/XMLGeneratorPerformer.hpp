@@ -23,8 +23,8 @@ class XMLGeneratorPerformer : public XMLGeneratorFileObject
 private:
     std::string mPerformerID;
     std::string mCode;
-    int mNumberRanks;
     int mIdOffset;
+    int mNumberRanks;
        
 public:
     XMLGeneratorPerformer(const std::string& aName,
