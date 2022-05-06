@@ -356,11 +356,13 @@ void append_subblock_creation_operation_to_plato_main_operation
  * \param [in/out] aDocument  pugi::xml_document
  * \param [in]     aName Name of operation
  * \param [in]     aCommand System call command of operation
+ * \param [in]     aNumParameters Number of shape parameters
 **********************************************************************************/
 void append_cubit_systemcall_operation_commands
 (pugi::xml_document& aDocument,
 const std::string &aName,
-const std::string &aCommand);
+const std::string &aCommand,
+const std::string &aNumParameters);
 
 /******************************************************************************//**
  * \fn append_mesh_join_operation_to_plato_main_operation

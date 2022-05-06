@@ -276,50 +276,6 @@ TEST(LocalOperation, SystemCall_constructor)
         auto tItr = std::find(tGoldInputs.begin(), tGoldInputs.end(), tInput);
         EXPECT_TRUE(tItr != tGoldInputs.end());
     }
-
-    createMatchedYAMLTemplateFile();
-
-    Plato::SystemCallMetadata tMetaData;
-    std::vector<double> tParameters= {1,2};
-    tMetaData.mInputArgumentMap["Parameters_0"] = &tParameters;
-    tSystemCall(tMetaData);
-    EXPECT_STREQ("mkdir evaluation0; mv matched.yaml.template evaluation0; cd evaluation0; aprepro matched.yaml.template matched.yaml -q r=1 h=2", tSystemCall.commandPlusArguments().c_str());
-
-    auto tFileContentCreated = PlatoTest::read_data_from_file("./evaluation0/matched.yaml");
-    auto tGold = std::string("%YAML1.1---Gemma-dynamic:Global:Description:HigginscylinderSolutiontype:powerbalancePowerbalance:Algorithm:matchedboundRadius:1#originalvaluer=0.1016Height:2#originalvalueh=0.1016Conductivity:2.6e7Slotlength:0.0508Slotwidth:2.54e-3Slotdepth:0.006350Startfrequencyrange:1e9Endfrequencyrange:2.2e9Frequencyintervalsize:1e7...");
-    EXPECT_STREQ(tFileContentCreated.str().c_str(),tGold.c_str());
-
-    auto tTrash = std::system("rm -rf evaluation0");
-    Plato::Utils::ignore_unused(tTrash);
-}
-
-
-TEST(LocalOperation, SystemCallOperation_CallSerialGemma)
-{
-    Plato::InputData tInputNode("Operation");
-    tInputNode.add<std::string>("Function", "SystemCall");
-    tInputNode.add<std::string>("Name", "aprepro_0");
-    tInputNode.add<std::string>("NumRanks", "1");
-    tInputNode.add<std::string>("ChDir", "evaluation_0");
-    tInputNode.add<std::string>("Command", "gemma");
-    tInputNode.add<std::string>("OnChange", "true");
-    tInputNode.add<std::string>("AppendInput", "false");
-    tInputNode.add<std::string>("Argument", "matched.yaml");
-
-    auto tTrash = std::system("mkdir -p evaluation_0");
-    Plato::Utils::ignore_unused(tTrash);
-
-    createMatchedYAMLFile();
-
-    tTrash = std::system("cp matched.yaml evaluation_0");
-    Plato::Utils::ignore_unused(tTrash);
-
-    Plato::SystemCall tSystemCall(tInputNode);
-    Plato::SystemCallMetadata tMetaData;
-    tSystemCall(tMetaData);
-
-    std::ifstream tFileOnDisk("./evaluation_0/matched_power_balance.dat");
-    EXPECT_TRUE(tFileOnDisk.good());
 }
 
 TEST(LocalOperation, SystemCallOperation_CallSerialGemma_Delete)

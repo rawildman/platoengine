@@ -264,6 +264,8 @@ void append_concurrent_physics_performer_decomp_operation
         auto tService = aMetaData.service(tDecompServiceID);
         std::string tName = std::string("decomp_mesh_") + tService.performer() + std::string("_{I}");
         XMLGen::append_children({"Name", "PerformerName"}, {tName, "plato_services_{I}"}, tOperationNode);
+        auto tInputNode = tOperationNode.append_child("Input");
+        XMLGen::append_children({"SharedDataName", "ArgumentName"}, {"design_parameters_{I}", "Parameters"}, tInputNode);
     }
 }
 

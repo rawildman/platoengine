@@ -877,9 +877,12 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     tOperation = tForNode.child("Operation");
     ASSERT_FALSE(tOperation.empty());
-    tKeys = {"Name", "PerformerName"};
-    tValues = {"decomp_mesh_sierra_sd_21_{I}", "plato_services_{I}"};
+    tKeys = {"Name", "PerformerName", "Input"};
+    tValues = {"decomp_mesh_sierra_sd_21_{I}", "plato_services_{I}", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.child("Input");
+    ASSERT_FALSE(tOpInputs.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
 
     // REINITIALIZE ON CHANGE OPERATION 
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -1720,6 +1723,7 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "7");
     tXMLMetaData.set(tOptimizationParameters);
 
     // Create services
@@ -1768,8 +1772,8 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1784,8 +1788,8 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1800,6 +1804,7 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "7");
     tXMLMetaData.set(tOptimizationParameters);
 
     // Create services
@@ -1856,8 +1861,8 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1872,8 +1877,8 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -2088,6 +2093,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Mult
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "41");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2098,16 +2104,26 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Mult
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo"};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "41"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo"};
+    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "41"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -2165,6 +2181,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Sing
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "14");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2175,16 +2192,26 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Sing
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo"};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo"};
+    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());

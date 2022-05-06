@@ -962,7 +962,8 @@ void append_tet10_conversion_operation_to_plato_main_operation
         write_cubit_journal_file_tet10_conversion("toTet10.jou", exodusFile, aXMLMetaData.blocks);
         std::string tName = "ToTet10 On Change";  
         std::string tCommand =  std::string("cubit -input toTet10.jou ") + tOptions;
-        append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+        std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+        append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
     }
     else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
     {
@@ -975,7 +976,8 @@ void append_tet10_conversion_operation_to_plato_main_operation
             write_cubit_journal_file_tet10_conversion("evaluations" + tTag + "/toTet10.jou", exodusFile, aXMLMetaData.blocks);
             std::string tName = std::string("convert_to_tet10") + tTag;
             std::string tCommand = std::string("cd evaluations") + tTag + std::string("; cubit -input toTet10.jou ") + tOptions;
-            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+            std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
         }
     }
 }
@@ -1000,7 +1002,8 @@ void append_subblock_creation_operation_to_plato_main_operation
             write_cubit_journal_file_subblock_from_bounding_box("evaluations" + tTag + "/subBlock.jou", exodusFile, aXMLMetaData.blocks);
             std::string tName = std::string("create_sub_block") + tTag;
             std::string tCommand = std::string("cd evaluations") + tTag + std::string("; cubit -input subBlock.jou ") + tOptions;
-            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+            std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
         }
     }
 }
@@ -1008,7 +1011,11 @@ void append_subblock_creation_operation_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
-void append_cubit_systemcall_operation_commands(pugi::xml_document& aDocument, const std::string &aName, const std::string &aCommand)
+void append_cubit_systemcall_operation_commands
+(pugi::xml_document& aDocument, 
+ const std::string &aName, 
+ const std::string &aCommand,
+ const std::string &aNumParameters)
 {
     pugi::xml_node operationNode = aDocument.append_child("Operation");
     addChild(operationNode, "Function", "SystemCall");
@@ -1017,7 +1024,7 @@ void append_cubit_systemcall_operation_commands(pugi::xml_document& aDocument, c
     addChild(operationNode, "OnChange", "true");
     addChild(operationNode, "AppendInput", "false");
     auto tInputNode = operationNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", aNumParameters}, tInputNode);
 }
 // function append_cubit_systemcall_operation_commands
 /******************************************************************************/
@@ -1591,9 +1598,12 @@ void append_decomp_operations
     std::string tCommand = std::string("cd evaluations") + tTag + std::string("; ") + tDecompString;
 
     auto tOperation = aDocument.append_child("Operation");
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", tName, tCommand};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange"};
+    std::vector<std::string> tValues = {"SystemCall", tName, tCommand, "true"};
     XMLGen::append_children(tKeys, tValues, tOperation);
+    auto tInputNode = tOperation.append_child("Input");
+    std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+    XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", tNumParameters}, tInputNode);
 }
 // function append_decomp_operations
 /******************************************************************************/
