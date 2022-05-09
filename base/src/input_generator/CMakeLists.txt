@@ -73,6 +73,8 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
 		      XMLGeneratorPerformer.cpp
 		      XMLGeneratorSharedData.cpp
 		      XMLGeneratorGemmaProblem.cpp
+		      OptimizationAlgorithm.cpp
+		      OptimizationAlgorithmFactory.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -157,6 +159,8 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
 		      XMLGeneratorPerformer.hpp
 		      XMLGeneratorSharedData.hpp
 		      XMLGeneratorGemmaProblem.hpp
+		      OptimizationAlgorithm.hpp
+		      OptimizationAlgorithmFactory.hpp
                       )
 
 find_package(MPI)

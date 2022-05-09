@@ -25,6 +25,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorSharedData_UnitTester.cpp
                                       XMLGeneratorStage_UnitTester.cpp
                                       XMLGeneratorOperation_UnitTester.cpp
+                                      OptimizationAlgorithm_UnitTester.cpp
                                       ../XMLGenerator.cpp
                                       ../XMLGeneratorProblem.cpp
                                       ../XMLGeneratorParseRun.cpp
@@ -98,6 +99,8 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
 			              ../XMLGeneratorPerformer.cpp
 			              ../XMLGeneratorSharedData.cpp
 			              ../XMLGeneratorGemmaProblem.cpp
+                                      ../OptimizationAlgorithmFactory.cpp
+                                      ../OptimizationAlgorithm.cpp
                                       )
 
 SET(PlatoXMLGenerator_UnitTester_HDRS XMLGenerator_UnitTester.hpp
