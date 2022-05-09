@@ -44,9 +44,6 @@ public:
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
-
-
-
 class OptimizationAlgorithmROL : public OptimizationAlgorithm
 {
 private:
@@ -69,4 +66,4 @@ public:
 
 
 
-}
+} //namespace

@@ -1,7 +1,8 @@
 #include "OptimizationAlgorithm.hpp"
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
-
+namespace XMLGen
+{
 
 OptimizationAlgorithm::OptimizationAlgorithm(const OptimizationParameters& aParameters)
 {
@@ -10,6 +11,7 @@ OptimizationAlgorithm::OptimizationAlgorithm(const OptimizationParameters& aPara
 
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
 {
 
 }
@@ -24,6 +26,7 @@ void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
 }
 
 OptimizationAlgorithmPlatoKSBC::OptimizationAlgorithmPlatoKSBC(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
 {
 
 }
@@ -39,6 +42,7 @@ void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 //****************************ROL **********************************************//
 OptimizationAlgorithmROL::OptimizationAlgorithmROL(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
 {
 
 }
@@ -54,6 +58,7 @@ void OptimizationAlgorithmROL::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 //****************************Dakota **********************************************//
 OptimizationAlgorithmDakota::OptimizationAlgorithmDakota(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
 {
 
 }
@@ -66,3 +71,5 @@ void OptimizationAlgorithmDakota::writeAuxiliaryFiles(pugi::xml_node& aNode)
 {
 
 }
+
+}//namespace
