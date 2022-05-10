@@ -17,8 +17,15 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithm)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.optimization_type("OT_DAKOTA");
-    tOptimizationParameters.optimization_algorithm("oc");
+    
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    tOptimizationParameters.append("OCControlStagnationTolerance" ,"1e-2");
+    tOptimizationParameters.append("OCObjectiveStagnationTolerance" ,"1e-5");
+    tOptimizationParameters.append("OCGradientTolerance" ,"1e-8");
+    tOptimizationParameters.append("ProblemUpdateFrequency" ,"5");
+    tOptimizationParameters.append("MaxIterations" ,"10");
+
+    
     tMetaData.set(tOptimizationParameters);
    
     XMLGen::OptimizationAlgorithmFactory tFactory;
@@ -29,6 +36,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithm)
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
     ASSERT_FALSE(tDocument.empty());
+    tDocument.save_file("testinterface.xml","");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOptimizer = tDocument.child("Optimizer");
@@ -39,22 +47,24 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithm)
         "Options",
 	"Convergence"};
     std::vector<std::string> tValues = {
-        "Dakota asdf",
+        "OC",
         "",
-	""
+	    ""
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptimizer);
 
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
     tKeys = {
-        "Pe",
-        "Ops",
-        "Coce"};
+        "OCControlStagnationTolerance",
+        "OCObjectiveStagnationTolerance",
+        "OCGradientTolerance",
+        "ProblemUpdateFrequency"};
     tValues = {
-        "Daasdf",
-        "asdf",
-        "asdf"
+        "1e-2",
+        "1e-5",
+        "1e-8",
+        "5"
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
 
@@ -63,12 +73,11 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithm)
     tKeys = {
         "MaxIterations"};
     tValues = {
-        "15"
+        "10"
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
 
     tConvergence = tConvergence.next_sibling("Convergence");
-
 
     tOptions = tOptions.next_sibling("Options");
     ASSERT_TRUE(tOptimizer.empty());

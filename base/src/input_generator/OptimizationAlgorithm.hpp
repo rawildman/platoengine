@@ -27,6 +27,10 @@ public:
 class OptimizationAlgorithmPlatoOC : public OptimizationAlgorithm
 {
 private:
+    std::string mControlStagnationTolerance;
+    std::string mObjectiveStagnationTolerance;
+    std::string mGradientTolerance;
+    std::string mProblemUpdateFrequency;
 
 public:
     OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters);
