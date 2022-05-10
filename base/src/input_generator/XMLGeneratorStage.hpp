@@ -38,6 +38,9 @@ public:
     void write(pugi::xml_document& aDocument);
     void write_dakota(pugi::xml_node& aDocument,
                       const std::string& aStageTag);
+
+    std::string inputSharedDataName();
+    std::string outputSharedDataName();
 };
 
 }

@@ -65,6 +65,22 @@ void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
     }
 }
 
+std::string XMLGeneratorStage::inputSharedDataName()
+{
+    if(mInputSharedData)
+        return mInputSharedData->name();
+    else 
+        return "";
+}
+
+std::string XMLGeneratorStage::outputSharedDataName()
+{
+    if(mOutputSharedData)
+        return mOutputSharedData->name();
+    else 
+        return "";
+}
+
 void XMLGeneratorStage::write_dakota
 (pugi::xml_node& aDocument,
  const std::string& aStageTag)

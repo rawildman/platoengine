@@ -1,6 +1,7 @@
 #include "OptimizationAlgorithm.hpp"
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include <regex>
 
 namespace XMLGen
 {
@@ -14,6 +15,24 @@ void OptimizationAlgorithm::appendOutputStage(pugi::xml_node& aNode)
 {
     auto tOutput = aNode.append_child("Output");
     addChild(tOutput,"OutputStage","Output To File");
+}
+
+void OptimizationAlgorithm::assignSharedData(std::vector<std::shared_ptr<XMLGeneratorSharedData> > &aSharedData)
+{
+    mSharedData = aSharedData;
+}
+
+void OptimizationAlgorithm::appendOptimizationVariables(pugi::xml_node& aNode)
+{ 
+    auto tOptimizationVar = aNode.append_child("OptimizationVariables");
+    
+    for(auto iShared : mSharedData)
+    {
+        auto tName = iShared->name();
+        tName = std::regex_replace (tName,std::regex(" "),"") + std::string("Name");
+        addChild(tOptimizationVar,tName,iShared->name());    
+    }
+
 }
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
@@ -39,6 +58,7 @@ void OptimizationAlgorithmPlatoOC::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
+    appendOptimizationVariables(tOptimizer);
     
 }
 
@@ -103,6 +123,7 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
+    appendOptimizationVariables(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -172,6 +193,7 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
+    appendOptimizationVariables(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -220,6 +242,7 @@ void OptimizationAlgorithmPlatoMMA::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
+    appendOptimizationVariables(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)

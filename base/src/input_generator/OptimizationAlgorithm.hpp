@@ -8,20 +8,30 @@
 #include <string>
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorSharedData.hpp"
+#include "XMLGeneratorStage.hpp"
 
 namespace XMLGen
 {
 
 class OptimizationAlgorithm
 {
+
+using StagePtr = std::shared_ptr<XMLGeneratorStage>;
+
 protected:
    std::string mPackage;
    std::string mMaxIterations;
 
    void appendOutputStage(pugi::xml_node& aNode);
+   void appendOptimizationVariables(pugi::xml_node& aNode);
 
 public:
     OptimizationAlgorithm(const OptimizationParameters& aParameters);
+    void assignOptimizationVariables(StagePtr aInitialization, 
+                                     StagePtr aUpperBound, 
+                                     StagePtr aLowerBound);
+
     virtual void writeInterface(pugi::xml_node& aNode) = 0;
     virtual void writeAuxiliaryFiles(pugi::xml_node& aNode) = 0;
 };
