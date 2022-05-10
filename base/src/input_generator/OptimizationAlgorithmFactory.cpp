@@ -20,9 +20,10 @@ std::shared_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::create(cons
             return std::make_shared<OptimizationAlgorithmPlatoOC>(aMetaData.optimization_parameters());
         if(tOptimizationAlgorithm == "ksbc" )
             return std::make_shared<OptimizationAlgorithmPlatoKSBC>(aMetaData.optimization_parameters());
-
-//           tOptimizationAlgorithm == "mma" || 
-  //         tOptimizationAlgorithm == "ksal" )
+        if(tOptimizationAlgorithm == "ksal" )
+            return std::make_shared<OptimizationAlgorithmPlatoKSAL>(aMetaData.optimization_parameters());
+        if(tOptimizationAlgorithm == "mma" )
+            return std::make_shared<OptimizationAlgorithmPlatoMMA>(aMetaData.optimization_parameters());
 
         if(tOptimizationAlgorithm == "rol_linear_constraint" || 
            tOptimizationAlgorithm == "rol_bound_constraint" || 

@@ -70,6 +70,53 @@ public:
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
+class OptimizationAlgorithmPlatoKSAL : public OptimizationAlgorithm
+{
+private:
+    std::string mMaxNumOuterIterations;
+    std::string mTrustRegionExpansionFactor;
+    std::string mTrustRegionContractionFactor;
+    std::string mMaxTrustRegionIterations;
+
+    std::string mInitialRadiusScale;
+    std::string mMaxRadiusScale;
+    std::string mHessianType;
+    std::string mMinTrustRegionRadius;
+    std::string mLimitedMemoryStorage;
+    
+    std::string mOuterGradientTolerance;
+    std::string mOuterStationarityTolerance;
+    std::string mOuterStagnationTolerance;
+    std::string mOuterControlStagnationTolerance;
+    std::string mOuterActualReductionTolerance;
+    
+    std::string mProblemUpdateFrequency;
+    std::string mDisablePostSmoothing;
+    std::string mTrustRegionRatioLow;
+    std::string mTrustRegionRatioMid;
+    std::string mTrustRegionRatioUpper;
+
+    std::string mPenaltyParam;
+    std::string mPenaltyParamScaleFactor;
+
+public:
+    OptimizationAlgorithmPlatoKSAL(const OptimizationParameters& aParameters);
+    void writeInterface(pugi::xml_node& aNode) override;
+    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+};
+
+class OptimizationAlgorithmPlatoMMA : public OptimizationAlgorithm
+{
+private:
+    
+
+public:
+    OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters);
+    void writeInterface(pugi::xml_node& aNode) override;
+    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+};
+
+
 class OptimizationAlgorithmROL : public OptimizationAlgorithm
 {
 private:
