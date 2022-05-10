@@ -24,11 +24,12 @@ std::shared_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::create(cons
             return std::make_shared<OptimizationAlgorithmPlatoKSAL>(aMetaData.optimization_parameters());
         if(tOptimizationAlgorithm == "mma" )
             return std::make_shared<OptimizationAlgorithmPlatoMMA>(aMetaData.optimization_parameters());
-
-        if(tOptimizationAlgorithm == "rol_linear_constraint" || 
-           tOptimizationAlgorithm == "rol_bound_constraint" || 
-           tOptimizationAlgorithm == "rol_augmented_lagrangian")
-            return std::make_shared<OptimizationAlgorithmROL>(aMetaData.optimization_parameters());
+        if(tOptimizationAlgorithm == "rol_linear_constraint")
+            return std::make_shared<OptimizationAlgorithmROLLC>(aMetaData.optimization_parameters());
+        if(tOptimizationAlgorithm == "rol_bound_constraint")
+            return std::make_shared<OptimizationAlgorithmROLBC>(aMetaData.optimization_parameters());
+        if(tOptimizationAlgorithm == "rol_augmented_lagrangian")
+            return std::make_shared<OptimizationAlgorithmROLAL>(aMetaData.optimization_parameters());
     }
     if(tOptimizationType == "OT_DAKOTA" )
         return std::make_shared<OptimizationAlgorithmDakota>(aMetaData.optimization_parameters());

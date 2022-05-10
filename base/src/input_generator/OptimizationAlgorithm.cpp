@@ -182,11 +182,32 @@ void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
 OptimizationAlgorithmPlatoMMA::OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
-   
+    mMaxNumOuterIterations = aParameters.max_iterations(); //<<<<<<<<<<<<<<<<<
+    mMoveLimit = aParameters.mma_move_limit();
+    mAsymptoteExpansion = aParameters.mma_asymptote_expansion();
+    mAsymptoteContraction = aParameters.mma_asymptote_contraction();
+    mMaxNumSubProblemIter = aParameters.mma_max_sub_problem_iterations();
+    mControlStagnationTolerance = aParameters.mma_control_stagnation_tolerance();
+    mObjectiveStagnationTolerance = aParameters.mma_objective_stagnation_tolerance();
+    mOutputSubProblemDiagnostics = aParameters.mma_output_subproblem_diagnostics();
+    mSubProblemInitialPenalty = aParameters.mma_sub_problem_initial_penalty();
+    mSubProblemPenaltyMultiplier = aParameters.mma_sub_problem_penalty_multiplier();
+    mSubProblemFeasibilityTolerance = aParameters.mma_sub_problem_feasibility_tolerance();
+    mUpdateFrequency = aParameters.problem_update_frequency();
+    mUseIpoptForMMASubproblem = aParameters.mma_use_ipopt_sub_problem_solver();
 }
 void OptimizationAlgorithmPlatoMMA::writeInterface(pugi::xml_node& aNode)
 {
-   
+    auto tOptimizer = aNode.append_child("Optimizer");
+    addChild(tOptimizer, "Package","MMA");
+    
+    auto tOptions = tOptimizer.append_child("Options");
+    
+    addChild(tOptions, "FILL",mMaxNumOuterIterations);
+    
+    auto tConvergence = tOptimizer.append_child("Convergence");
+    addChild(tConvergence, "MaxIterations",mMaxIterations);
+
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -198,17 +219,47 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 
 //****************************ROL **********************************************//
-OptimizationAlgorithmROL::OptimizationAlgorithmROL(const OptimizationParameters& aParameters)
+OptimizationAlgorithmROLLC::OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
 
 }
-void OptimizationAlgorithmROL::writeInterface(pugi::xml_node& aNode)
+void OptimizationAlgorithmROLLC::writeInterface(pugi::xml_node& aNode)
 {
 
 }
 
-void OptimizationAlgorithmROL::writeAuxiliaryFiles(pugi::xml_node& aNode)
+void OptimizationAlgorithmROLLC::writeAuxiliaryFiles(pugi::xml_node& aNode)
+{
+
+}
+
+OptimizationAlgorithmROLBC::OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
+{
+
+}
+void OptimizationAlgorithmROLBC::writeInterface(pugi::xml_node& aNode)
+{
+
+}
+
+void OptimizationAlgorithmROLBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
+{
+
+}
+
+OptimizationAlgorithmROLAL::OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters)
+: OptimizationAlgorithm(aParameters)
+{
+
+}
+void OptimizationAlgorithmROLAL::writeInterface(pugi::xml_node& aNode)
+{
+
+}
+
+void OptimizationAlgorithmROLAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
 {
 
 }

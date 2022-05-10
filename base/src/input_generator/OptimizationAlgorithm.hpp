@@ -108,7 +108,19 @@ public:
 class OptimizationAlgorithmPlatoMMA : public OptimizationAlgorithm
 {
 private:
-    
+     std::string mMaxNumOuterIterations;
+     std::string mMoveLimit;
+     std::string mAsymptoteExpansion;
+     std::string mAsymptoteContraction;
+     std::string mMaxNumSubProblemIter;
+     std::string mControlStagnationTolerance;
+     std::string mObjectiveStagnationTolerance;
+     std::string mOutputSubProblemDiagnostics;
+     std::string mSubProblemInitialPenalty;
+     std::string mSubProblemPenaltyMultiplier;
+     std::string mSubProblemFeasibilityTolerance;
+     std::string mUpdateFrequency;
+     std::string mUseIpoptForMMASubproblem;
 
 public:
     OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters);
@@ -117,12 +129,32 @@ public:
 };
 
 
-class OptimizationAlgorithmROL : public OptimizationAlgorithm
+class OptimizationAlgorithmROLLC : public OptimizationAlgorithm
 {
 private:
 
 public:
-    OptimizationAlgorithmROL(const OptimizationParameters& aParameters);
+    OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters);
+    void writeInterface(pugi::xml_node& aNode) override;
+    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+};
+
+class OptimizationAlgorithmROLBC : public OptimizationAlgorithm
+{
+private:
+
+public:
+    OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters);
+    void writeInterface(pugi::xml_node& aNode) override;
+    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+};
+
+class OptimizationAlgorithmROLAL : public OptimizationAlgorithm
+{
+private:
+
+public:
+    OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
