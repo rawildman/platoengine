@@ -18,6 +18,8 @@ protected:
    std::string mPackage;
    std::string mMaxIterations;
 
+   void appendOutputStage(pugi::xml_node& aNode);
+
 public:
     OptimizationAlgorithm(const OptimizationParameters& aParameters);
     virtual void writeInterface(pugi::xml_node& aNode) = 0;

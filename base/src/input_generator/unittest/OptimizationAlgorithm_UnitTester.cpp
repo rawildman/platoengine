@@ -13,6 +13,115 @@
 namespace PlatoTestXMLGenerator
 {
 
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCCheckOutput)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    ASSERT_NO_THROW(tFactory.create(tMetaData));
+
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tOutput = tOptimizer.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    std::vector<std::string> tKeys = {
+        "OutputStage"};
+    std::vector<std::string>  tValues = {
+        "Output To File"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+
+}
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterfaceAllIgnore)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    ASSERT_NO_THROW(tFactory.create(tMetaData));
+
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tOptions = tOptimizer.child("Options");
+    ASSERT_FALSE(tOptions.empty());
+    std::vector<std::string> tKeys = {
+        "OCControlStagnationTolerance",
+        "OCObjectiveStagnationTolerance",
+        "OCGradientTolerance",
+        "ProblemUpdateFrequency"};
+    std::vector<std::string> tValues = {
+        "IGNORE",
+        "IGNORE",
+        "IGNORE",
+        "IGNORE"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
+
+    auto tConvergence = tOptimizer.child("Convergence");
+    ASSERT_FALSE(tConvergence.empty());
+    tKeys = {
+        "MaxIterations"};
+    tValues = {
+        "IGNORE"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConvergence);
+
+    auto tOutput = tOptimizer.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    tKeys = {
+        "OutputStage"};
+    tValues = {
+        "Output To File"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tConvergence = tConvergence.next_sibling("Convergence");
+    ASSERT_TRUE(tConvergence.empty());
+
+    tOptions = tOptions.next_sibling("Options");
+    ASSERT_TRUE(tOptions.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+
+}
+
+
 TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface)
 {
     XMLGen::InputData tMetaData;
@@ -35,31 +144,19 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
     ASSERT_FALSE(tDocument.empty());
-    tDocument.save_file("testinterface.xml","");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOptimizer = tDocument.child("Optimizer");
     ASSERT_FALSE(tOptimizer.empty());
 
-    std::vector<std::string> tKeys = {
-        "Package",
-        "Options",
-	    "Convergence"};
-    std::vector<std::string> tValues = {
-        "OC",
-        "",
-	    ""
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptimizer);
-
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
-    tKeys = {
+    std::vector<std::string> tKeys = {
         "OCControlStagnationTolerance",
         "OCObjectiveStagnationTolerance",
         "OCGradientTolerance",
         "ProblemUpdateFrequency"};
-    tValues = {
+    std::vector<std::string> tValues = {
         "1e-2",
         "1e-5",
         "1e-8",
@@ -127,27 +224,15 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBCInterfa
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
     ASSERT_FALSE(tDocument.empty());
-    tDocument.save_file("testinterface.xml","");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOptimizer = tDocument.child("Optimizer");
     ASSERT_FALSE(tOptimizer.empty());
 
-    std::vector<std::string> tKeys = {
-        "Package",
-        "Options",
-	    "Convergence"};
-    std::vector<std::string> tValues = {
-        "KSBC",
-        "",
-	    ""
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptimizer);
-
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
     
-    tKeys = {
+    std::vector<std::string> tKeys = {
         "MaxNumOuterIterations",
         "KSTrustRegionExpansionFactor",
         "KSTrustRegionContractionFactor",
@@ -169,7 +254,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBCInterfa
         "KSTrustRegionRatioUpper"
         };
 
-    tValues = {
+    std::vector<std::string> tValues = {
         "10",
         "4",
         ".5",
@@ -241,8 +326,8 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterfa
     tOptimizationParameters.append("ks_trust_region_ratio_mid" ,".2");
     tOptimizationParameters.append("ks_trust_region_ratio_high" ,".45");
 
-    tOptimizationParameters.append("al_penalty_param" ,".2");
-    tOptimizationParameters.append("al_penalty_param_scale_factor" ,".45");
+    tOptimizationParameters.append("al_penalty_parameter" ,".2");
+    tOptimizationParameters.append("al_penalty_scale_factor" ,".45");
     
     tMetaData.set(tOptimizationParameters);
    
@@ -254,27 +339,15 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterfa
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
     ASSERT_FALSE(tDocument.empty());
-    tDocument.save_file("testinterface.xml","");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOptimizer = tDocument.child("Optimizer");
     ASSERT_FALSE(tOptimizer.empty());
 
-    std::vector<std::string> tKeys = {
-        "Package",
-        "Options",
-	    "Convergence"};
-    std::vector<std::string> tValues = {
-        "KSBC",
-        "",
-	    ""
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptimizer);
-
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
     
-    tKeys = {
+    std::vector<std::string> tKeys = {
         "MaxNumOuterIterations",
         "KSTrustRegionExpansionFactor",
         "KSTrustRegionContractionFactor",
@@ -298,7 +371,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterfa
         "AugLagPenaltyParamScaleFactor"
         };
 
-    tValues = {
+    std::vector<std::string> tValues = {
         "10",
         "4",
         ".5",
@@ -341,5 +414,96 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterfa
     ASSERT_TRUE(tOptimizer.empty());
 
 }
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMAInterface)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    
+    tOptimizationParameters.append("optimization_algorithm" ,"mma");
+    tOptimizationParameters.append("max_iterations" ,"10");
+    tOptimizationParameters.append("mma_move_limit" ,"4");
+    tOptimizationParameters.append("mma_asymptote_expansion" ,".5");
+    tOptimizationParameters.append("mma_asymptote_contraction" ,"5");
+    tOptimizationParameters.append("mma_max_sub_problem_iterations" ,".25");
+    tOptimizationParameters.append("mma_sub_problem_initial_penalty" ,".9");
+    tOptimizationParameters.append("mma_sub_problem_penalty_multiplier" ,"1");
+    tOptimizationParameters.append("mma_sub_problem_feasibility_tolerance" ,"1e-12");
+    tOptimizationParameters.append("mma_use_ipopt_sub_problem_solver" ,"true");
+    tOptimizationParameters.append("mma_control_stagnation_tolerance" ,"1e-11");
+    tOptimizationParameters.append("mma_objective_stagnation_tolerance" ,"1e-11");
+    tOptimizationParameters.append("problem_update_frequency" ,"55");
+    tOptimizationParameters.append("mma_output_subproblem_diagnostics" ,"1e-11");
+    
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    ASSERT_NO_THROW(tFactory.create(tMetaData));
+
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+    tDocument.save_file("testinterface.xml","");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tOptions = tOptimizer.child("Options");
+    ASSERT_FALSE(tOptions.empty());
+    
+    std::vector<std::string> tKeys = {
+        "MaxNumOuterIterations",
+        "MoveLimit",
+        "AsymptoteExpansion",
+        "AsymptoteContraction",
+        "MaxNumSubProblemIter",
+        "ControlStagnationTolerance",
+        "ObjectiveStagnationTolerance",
+        "OutputSubProblemDiagnostics",
+        "SubProblemInitialPenalty",
+        "SubProblemPenaltyMultiplier",
+        "SubProblemFeasibilityTolerance",
+        "UpdateFrequency",
+        "UseIpoptForMMASubproblem"
+        };
+
+   std::vector<std::string> tValues = {
+        "10",
+        "4",
+        ".5",
+        "5",
+        ".25",
+        "1e-11",
+        "1e-11",
+        "1e-11",
+        ".9",
+        "1",
+        "1e-12",
+        "55",
+        "true"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
+
+    auto tConvergence = tOptimizer.child("Convergence");
+    ASSERT_FALSE(tConvergence.empty());
+    tKeys = {
+        "MaxIterations"};
+    tValues = {
+        "10"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConvergence);
+
+    tConvergence = tConvergence.next_sibling("Convergence");
+
+    tOptions = tOptions.next_sibling("Options");
+    ASSERT_TRUE(tOptions.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+
+}
+
 
 }//namespace

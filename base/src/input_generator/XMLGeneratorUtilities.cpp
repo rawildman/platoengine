@@ -103,6 +103,16 @@ bool addChild(pugi::xml_node parent_node,
 // function addChild
 /******************************************************************************/
 
+bool addChildCheckEmpty(pugi::xml_node parent_node, 
+          const std::string &name, 
+          const std::string &value)
+{
+    pugi::xml_node tmp_node = parent_node.append_child(name.c_str());
+    tmp_node = tmp_node.append_child(pugi::node_pcdata);
+    tmp_node.set_value(set_value_keyword_to_ignore_if_empty(value).c_str());
+    return true;
+}
+
 /******************************************************************************/
 bool addNTVParameter(pugi::xml_node parent_node,
                  const std::string &name,

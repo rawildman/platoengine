@@ -10,6 +10,11 @@ OptimizationAlgorithm::OptimizationAlgorithm(const OptimizationParameters& aPara
     mMaxIterations = aParameters.max_iterations();
 }
 
+void OptimizationAlgorithm::appendOutputStage(pugi::xml_node& aNode)
+{
+    auto tOutput = aNode.append_child("Output");
+    addChild(tOutput,"OutputStage","Output To File");
+}
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
@@ -24,24 +29,17 @@ void OptimizationAlgorithmPlatoOC::writeInterface(pugi::xml_node& aNode)
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","OC");
     
-    /*if(mControlStagnationTolerance != "" || 
-       mObjectiveStagnationTolerance != "" || 
-       mGradientTolerance != ""|| 
-       mProblemUpdateFrequency != "")*/
-    {   
-        auto tOptions = tOptimizer.append_child("Options");
-        if(mControlStagnationTolerance!="")    
-            addChild(tOptions, "OCControlStagnationTolerance",mControlStagnationTolerance);
-        if(mObjectiveStagnationTolerance != "")
-            addChild(tOptions, "OCObjectiveStagnationTolerance",mObjectiveStagnationTolerance);
-        if(mGradientTolerance != "")
-            addChild(tOptions, "OCGradientTolerance",mGradientTolerance);
-        if(mProblemUpdateFrequency != "")
-            addChild(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
-    }
-    auto tConvergence = tOptimizer.append_child("Convergence");
-    addChild(tConvergence, "MaxIterations",mMaxIterations);
+    auto tOptions = tOptimizer.append_child("Options");    
+    addChildCheckEmpty(tOptions, "OCControlStagnationTolerance",mControlStagnationTolerance);
+    addChildCheckEmpty(tOptions, "OCObjectiveStagnationTolerance",mObjectiveStagnationTolerance);
+    addChildCheckEmpty(tOptions, "OCGradientTolerance",mGradientTolerance);
+    addChildCheckEmpty(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
 
+    auto tConvergence = tOptimizer.append_child("Convergence");
+    addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
+
+    appendOutputStage(tOptimizer);
+    
 }
 
 void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -81,29 +79,30 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface(pugi::xml_node& aNode)
     addChild(tOptimizer, "Package","KSBC");
     
     auto tOptions = tOptimizer.append_child("Options");
-    addChild(tOptions, "MaxNumOuterIterations",mMaxNumOuterIterations);
-    addChild(tOptions, "KSTrustRegionExpansionFactor",mTrustRegionExpansionFactor);
-    addChild(tOptions, "KSTrustRegionContractionFactor",mTrustRegionContractionFactor);
-    addChild(tOptions, "KSMaxTrustRegionIterations",mMaxTrustRegionIterations);
-    addChild(tOptions, "KSInitialRadiusScale",mInitialRadiusScale);
-    addChild(tOptions, "KSMaxRadiusScale",mMaxRadiusScale);
-    addChild(tOptions, "HessianType",mHessianType);
-    addChild(tOptions, "MinTrustRegionRadius",mMinTrustRegionRadius);
-    addChild(tOptions, "LimitedMemoryStorage",mLimitedMemoryStorage);
-    addChild(tOptions, "KSOuterGradientTolerance",mOuterGradientTolerance);
-    addChild(tOptions, "KSOuterStationarityTolerance",mOuterStationarityTolerance);
-    addChild(tOptions, "KSOuterStagnationTolerance",mOuterStagnationTolerance);
-    addChild(tOptions, "KSOuterControlStagnationTolerance",mOuterControlStagnationTolerance);
-    addChild(tOptions, "KSOuterActualReductionTolerance",mOuterActualReductionTolerance);
-    addChild(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
-    addChild(tOptions, "DisablePostSmoothing",mDisablePostSmoothing);
-    addChild(tOptions, "KSTrustRegionRatioLow",mTrustRegionRatioLow);
-    addChild(tOptions, "KSTrustRegionRatioMid",mTrustRegionRatioMid);
-    addChild(tOptions, "KSTrustRegionRatioUpper",mTrustRegionRatioUpper);
+    addChildCheckEmpty(tOptions, "MaxNumOuterIterations",mMaxNumOuterIterations);
+    addChildCheckEmpty(tOptions, "KSTrustRegionExpansionFactor",mTrustRegionExpansionFactor);
+    addChildCheckEmpty(tOptions, "KSTrustRegionContractionFactor",mTrustRegionContractionFactor);
+    addChildCheckEmpty(tOptions, "KSMaxTrustRegionIterations",mMaxTrustRegionIterations);
+    addChildCheckEmpty(tOptions, "KSInitialRadiusScale",mInitialRadiusScale);
+    addChildCheckEmpty(tOptions, "KSMaxRadiusScale",mMaxRadiusScale);
+    addChildCheckEmpty(tOptions, "HessianType",mHessianType);
+    addChildCheckEmpty(tOptions, "MinTrustRegionRadius",mMinTrustRegionRadius);
+    addChildCheckEmpty(tOptions, "LimitedMemoryStorage",mLimitedMemoryStorage);
+    addChildCheckEmpty(tOptions, "KSOuterGradientTolerance",mOuterGradientTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterStationarityTolerance",mOuterStationarityTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterStagnationTolerance",mOuterStagnationTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterControlStagnationTolerance",mOuterControlStagnationTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterActualReductionTolerance",mOuterActualReductionTolerance);
+    addChildCheckEmpty(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
+    addChildCheckEmpty(tOptions, "DisablePostSmoothing",mDisablePostSmoothing);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioLow",mTrustRegionRatioLow);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioMid",mTrustRegionRatioMid);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioUpper",mTrustRegionRatioUpper);
 
     auto tConvergence = tOptimizer.append_child("Convergence");
-    addChild(tConvergence, "MaxIterations",mMaxIterations);
+    addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
+    appendOutputStage(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -143,35 +142,36 @@ OptimizationAlgorithmPlatoKSAL::OptimizationAlgorithmPlatoKSAL(const Optimizatio
 void OptimizationAlgorithmPlatoKSAL::writeInterface(pugi::xml_node& aNode)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
-    addChild(tOptimizer, "Package","KSBC");
+    addChild(tOptimizer, "Package","KSAL");
     
     auto tOptions = tOptimizer.append_child("Options");
-    addChild(tOptions, "MaxNumOuterIterations",mMaxNumOuterIterations);
-    addChild(tOptions, "KSTrustRegionExpansionFactor",mTrustRegionExpansionFactor);
-    addChild(tOptions, "KSTrustRegionContractionFactor",mTrustRegionContractionFactor);
-    addChild(tOptions, "KSMaxTrustRegionIterations",mMaxTrustRegionIterations);
-    addChild(tOptions, "KSInitialRadiusScale",mInitialRadiusScale);
-    addChild(tOptions, "KSMaxRadiusScale",mMaxRadiusScale);
-    addChild(tOptions, "HessianType",mHessianType);
-    addChild(tOptions, "MinTrustRegionRadius",mMinTrustRegionRadius);
-    addChild(tOptions, "LimitedMemoryStorage",mLimitedMemoryStorage);
-    addChild(tOptions, "KSOuterGradientTolerance",mOuterGradientTolerance);
-    addChild(tOptions, "KSOuterStationarityTolerance",mOuterStationarityTolerance);
-    addChild(tOptions, "KSOuterStagnationTolerance",mOuterStagnationTolerance);
-    addChild(tOptions, "KSOuterControlStagnationTolerance",mOuterControlStagnationTolerance);
-    addChild(tOptions, "KSOuterActualReductionTolerance",mOuterActualReductionTolerance);
-    addChild(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
-    addChild(tOptions, "DisablePostSmoothing",mDisablePostSmoothing);
-    addChild(tOptions, "KSTrustRegionRatioLow",mTrustRegionRatioLow);
-    addChild(tOptions, "KSTrustRegionRatioMid",mTrustRegionRatioMid);
-    addChild(tOptions, "KSTrustRegionRatioUpper",mTrustRegionRatioUpper);
+    addChildCheckEmpty(tOptions, "MaxNumOuterIterations",mMaxNumOuterIterations);
+    addChildCheckEmpty(tOptions, "KSTrustRegionExpansionFactor",mTrustRegionExpansionFactor);
+    addChildCheckEmpty(tOptions, "KSTrustRegionContractionFactor",mTrustRegionContractionFactor);
+    addChildCheckEmpty(tOptions, "KSMaxTrustRegionIterations",mMaxTrustRegionIterations);
+    addChildCheckEmpty(tOptions, "KSInitialRadiusScale",mInitialRadiusScale);
+    addChildCheckEmpty(tOptions, "KSMaxRadiusScale",mMaxRadiusScale);
+    addChildCheckEmpty(tOptions, "HessianType",mHessianType);
+    addChildCheckEmpty(tOptions, "MinTrustRegionRadius",mMinTrustRegionRadius);
+    addChildCheckEmpty(tOptions, "LimitedMemoryStorage",mLimitedMemoryStorage);
+    addChildCheckEmpty(tOptions, "KSOuterGradientTolerance",mOuterGradientTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterStationarityTolerance",mOuterStationarityTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterStagnationTolerance",mOuterStagnationTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterControlStagnationTolerance",mOuterControlStagnationTolerance);
+    addChildCheckEmpty(tOptions, "KSOuterActualReductionTolerance",mOuterActualReductionTolerance);
+    addChildCheckEmpty(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
+    addChildCheckEmpty(tOptions, "DisablePostSmoothing",mDisablePostSmoothing);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioLow",mTrustRegionRatioLow);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioMid",mTrustRegionRatioMid);
+    addChildCheckEmpty(tOptions, "KSTrustRegionRatioUpper",mTrustRegionRatioUpper);
 
-    addChild(tOptions, "AugLagPenaltyParam",mPenaltyParam);
-    addChild(tOptions, "AugLagPenaltyParamScaleFactor",mPenaltyParamScaleFactor);
+    addChildCheckEmpty(tOptions, "AugLagPenaltyParam",mPenaltyParam);
+    addChildCheckEmpty(tOptions, "AugLagPenaltyParamScaleFactor",mPenaltyParamScaleFactor);
     
     auto tConvergence = tOptimizer.append_child("Convergence");
-    addChild(tConvergence, "MaxIterations",mMaxIterations);
+    addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
+    appendOutputStage(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -202,12 +202,24 @@ void OptimizationAlgorithmPlatoMMA::writeInterface(pugi::xml_node& aNode)
     addChild(tOptimizer, "Package","MMA");
     
     auto tOptions = tOptimizer.append_child("Options");
-    
-    addChild(tOptions, "FILL",mMaxNumOuterIterations);
-    
-    auto tConvergence = tOptimizer.append_child("Convergence");
-    addChild(tConvergence, "MaxIterations",mMaxIterations);
+    addChildCheckEmpty(tOptions, "MaxNumOuterIterations",mMaxNumOuterIterations);
+    addChildCheckEmpty(tOptions, "MoveLimit",mMoveLimit);
+    addChildCheckEmpty(tOptions, "AsymptoteExpansion",mAsymptoteExpansion);
+    addChildCheckEmpty(tOptions, "AsymptoteContraction",mAsymptoteContraction);
+    addChildCheckEmpty(tOptions, "MaxNumSubProblemIter",mMaxNumSubProblemIter);
+    addChildCheckEmpty(tOptions, "ControlStagnationTolerance",mControlStagnationTolerance);
+    addChildCheckEmpty(tOptions, "ObjectiveStagnationTolerance",mObjectiveStagnationTolerance);
+    addChildCheckEmpty(tOptions, "OutputSubProblemDiagnostics",mOutputSubProblemDiagnostics);
+    addChildCheckEmpty(tOptions, "SubProblemInitialPenalty",mSubProblemInitialPenalty);
+    addChildCheckEmpty(tOptions, "SubProblemPenaltyMultiplier",mSubProblemPenaltyMultiplier);
+    addChildCheckEmpty(tOptions, "SubProblemFeasibilityTolerance",mSubProblemFeasibilityTolerance);
+    addChildCheckEmpty(tOptions, "UpdateFrequency",mUpdateFrequency);
+    addChildCheckEmpty(tOptions, "UseIpoptForMMASubproblem",mUseIpoptForMMASubproblem);
 
+    auto tConvergence = tOptimizer.append_child("Convergence");
+    addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
+
+    appendOutputStage(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -215,6 +227,57 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 }
 
+/*OC
+ std::vector<std::string> tKeys =
+        {"ValueName", "InitializationStage", "FilteredName", "LowerBoundValueName", "LowerBoundVectorName",
+         "UpperBoundValueName", "UpperBoundVectorName", "SetLowerBoundsStage", "SetUpperBoundsStage"};
+    std::vector<std::string> tValues;
+    if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
+    {
+        tValues =
+            {"Control", "Initial Guess", "Topology", "Lower Bound Value", "Lower Bound Vector",
+             "Upper Bound Value", "Upper Bound Vector", "Set Lower Bounds", "Set Upper Bounds"};
+    }
+    else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        tValues =
+            {"Design Parameters", "Initialize Design Parameters", "Topology", "Lower Bound Value", "Lower Bound Vector",
+             "Upper Bound Value", "Upper Bound Vector", "Set Lower Bounds", "Set Upper Bounds"};
+    }
+  <OptimizationVariables>
+    <ValueName>Control</ValueName>
+    <InitializationStage>Initial Guess</InitializationStage>
+    <FilteredName>Topology</FilteredName>
+    <LowerBoundValueName>Lower Bound Value</LowerBoundValueName>
+    <LowerBoundVectorName>Lower Bound Vector</LowerBoundVectorName>
+    <UpperBoundValueName>Upper Bound Value</UpperBoundValueName>
+    <UpperBoundVectorName>Upper Bound Vector</UpperBoundVectorName>
+    <SetLowerBoundsStage>Set Lower Bounds</SetLowerBoundsStage>
+    <SetUpperBoundsStage>Set Upper Bounds</SetUpperBoundsStage>
+  </OptimizationVariables>
+  <Objective>
+    <GradientStageName>Compute Objective Gradient</GradientStageName>
+    <ValueStageName>Compute Objective Value</ValueStageName>
+    <GradientName>Objective Gradient</GradientName>
+    <ValueName>Objective Value</ValueName>
+  </Objective>
+  <Constraint>
+    <GradientName>Constraint Gradient 1</GradientName>
+    <NormalizedTargetValue>0.3</NormalizedTargetValue>
+    <ValueStageName>Compute Constraint Value 1</ValueStageName>
+    <ReferenceValueName>Design Volume</ReferenceValueName>
+    <GradientStageName>Compute Constraint Gradient 1</GradientStageName>
+    <ValueName>Constraint Value 1</ValueName>
+  </Constraint>
+  <BoundConstraint>
+    <Upper>1.0</Upper>
+    <Lower>0.0</Lower>
+  </BoundConstraint>
+</Optimizer>
+
+
+
+*/
 
 
 
