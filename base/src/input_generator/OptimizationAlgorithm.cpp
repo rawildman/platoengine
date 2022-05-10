@@ -17,23 +17,32 @@ void OptimizationAlgorithm::appendOutputStage(pugi::xml_node& aNode)
     addChild(tOutput,"OutputStage","Output To File");
 }
 
-void OptimizationAlgorithm::assignSharedData(std::vector<std::shared_ptr<XMLGeneratorSharedData> > &aSharedData)
-{
-    mSharedData = aSharedData;
-}
-
-void OptimizationAlgorithm::appendOptimizationVariables(pugi::xml_node& aNode)
+void OptimizationAlgorithm::appendOptimizationVariables
+(pugi::xml_node& aNode,
+ StagePtr aInitialization,
+ StagePtr aUpperBound,
+ StagePtr aLowerBound)
 { 
     auto tOptimizationVar = aNode.append_child("OptimizationVariables");
-    
-    for(auto iShared : mSharedData)
+    if (aInitialization)
     {
-        auto tName = iShared->name();
-        tName = std::regex_replace (tName,std::regex(" "),"") + std::string("Name");
-        addChild(tOptimizationVar,tName,iShared->name());    
+        addChild(tOptimizationVar, "ValueName", aInitialization->outputSharedDataName());
+        addChild(tOptimizationVar, "InitializationStage", aInitialization->name());
     }
-
+    if (aLowerBound)
+    {
+        addChild(tOptimizationVar, "LowerBoundValueName", aLowerBound->inputSharedDataName());
+        addChild(tOptimizationVar, "LowerBoundVectorName", aLowerBound->outputSharedDataName());
+        addChild(tOptimizationVar, "SetLowerBoundsStage", aLowerBound->name());
+    }
+    if (aUpperBound)
+    {
+        addChild(tOptimizationVar, "UpperBoundValueName", aUpperBound->inputSharedDataName());
+        addChild(tOptimizationVar, "UpperBoundVectorName", aUpperBound->outputSharedDataName());
+        addChild(tOptimizationVar, "SetUpperBoundsStage", aUpperBound->name());
+    }
 }
+
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
@@ -43,7 +52,11 @@ OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationPar
     mGradientTolerance = aParameters.oc_gradient_tolerance();
     mProblemUpdateFrequency = aParameters.problem_update_frequency();
 }
-void OptimizationAlgorithmPlatoOC::writeInterface(pugi::xml_node& aNode)
+void OptimizationAlgorithmPlatoOC::writeInterface
+(pugi::xml_node& aNode,
+ StagePtr aInitialization,
+ StagePtr aUpperBound,
+ StagePtr aLowerBound)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","OC");
@@ -58,8 +71,7 @@ void OptimizationAlgorithmPlatoOC::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
-    appendOptimizationVariables(tOptimizer);
-    
+    appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
 }
 
 void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -93,7 +105,11 @@ OptimizationAlgorithmPlatoKSBC::OptimizationAlgorithmPlatoKSBC(const Optimizatio
     mTrustRegionRatioMid = aParameters.ks_trust_region_ratio_mid();
     mTrustRegionRatioUpper = aParameters.ks_trust_region_ratio_high();
 }
-void OptimizationAlgorithmPlatoKSBC::writeInterface(pugi::xml_node& aNode)
+void OptimizationAlgorithmPlatoKSBC::writeInterface
+(pugi::xml_node& aNode,
+ StagePtr aInitialization,
+ StagePtr aUpperBound,
+ StagePtr aLowerBound)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSBC");
@@ -123,7 +139,7 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
-    appendOptimizationVariables(tOptimizer);
+    appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
 }
 
 void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -160,7 +176,11 @@ OptimizationAlgorithmPlatoKSAL::OptimizationAlgorithmPlatoKSAL(const Optimizatio
     mPenaltyParam = aParameters.al_penalty_parameter();
     mPenaltyParamScaleFactor = aParameters.al_penalty_scale_factor();
 }
-void OptimizationAlgorithmPlatoKSAL::writeInterface(pugi::xml_node& aNode)
+void OptimizationAlgorithmPlatoKSAL::writeInterface
+(pugi::xml_node& aNode,
+ StagePtr aInitialization,
+ StagePtr aUpperBound,
+ StagePtr aLowerBound)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSAL");
@@ -193,7 +213,7 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
-    appendOptimizationVariables(tOptimizer);
+    appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
 }
 
 void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -218,7 +238,11 @@ OptimizationAlgorithmPlatoMMA::OptimizationAlgorithmPlatoMMA(const OptimizationP
     mUpdateFrequency = aParameters.problem_update_frequency();
     mUseIpoptForMMASubproblem = aParameters.mma_use_ipopt_sub_problem_solver();
 }
-void OptimizationAlgorithmPlatoMMA::writeInterface(pugi::xml_node& aNode)
+void OptimizationAlgorithmPlatoMMA::writeInterface
+(pugi::xml_node& aNode,
+ StagePtr aInitialization,
+ StagePtr aUpperBound,
+ StagePtr aLowerBound)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","MMA");
@@ -242,7 +266,7 @@ void OptimizationAlgorithmPlatoMMA::writeInterface(pugi::xml_node& aNode)
     addChildCheckEmpty(tConvergence, "MaxIterations",mMaxIterations);
 
     appendOutputStage(tOptimizer);
-    appendOptimizationVariables(tOptimizer);
+    appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -304,66 +328,66 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 
 
-//****************************ROL **********************************************//
-OptimizationAlgorithmROLLC::OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters)
-: OptimizationAlgorithm(aParameters)
-{
+// //****************************ROL **********************************************//
+// OptimizationAlgorithmROLLC::OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters)
+// : OptimizationAlgorithm(aParameters)
+// {
 
-}
-void OptimizationAlgorithmROLLC::writeInterface(pugi::xml_node& aNode)
-{
+// }
+// void OptimizationAlgorithmROLLC::writeInterface(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-void OptimizationAlgorithmROLLC::writeAuxiliaryFiles(pugi::xml_node& aNode)
-{
+// void OptimizationAlgorithmROLLC::writeAuxiliaryFiles(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-OptimizationAlgorithmROLBC::OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters)
-: OptimizationAlgorithm(aParameters)
-{
+// OptimizationAlgorithmROLBC::OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters)
+// : OptimizationAlgorithm(aParameters)
+// {
 
-}
-void OptimizationAlgorithmROLBC::writeInterface(pugi::xml_node& aNode)
-{
+// }
+// void OptimizationAlgorithmROLBC::writeInterface(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-void OptimizationAlgorithmROLBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
-{
+// void OptimizationAlgorithmROLBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-OptimizationAlgorithmROLAL::OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters)
-: OptimizationAlgorithm(aParameters)
-{
+// OptimizationAlgorithmROLAL::OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters)
+// : OptimizationAlgorithm(aParameters)
+// {
 
-}
-void OptimizationAlgorithmROLAL::writeInterface(pugi::xml_node& aNode)
-{
+// }
+// void OptimizationAlgorithmROLAL::writeInterface(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-void OptimizationAlgorithmROLAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
-{
+// void OptimizationAlgorithmROLAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-//****************************Dakota **********************************************//
-OptimizationAlgorithmDakota::OptimizationAlgorithmDakota(const OptimizationParameters& aParameters)
-: OptimizationAlgorithm(aParameters)
-{
+// //****************************Dakota **********************************************//
+// OptimizationAlgorithmDakota::OptimizationAlgorithmDakota(const OptimizationParameters& aParameters)
+// : OptimizationAlgorithm(aParameters)
+// {
 
-}
-void OptimizationAlgorithmDakota::writeInterface(pugi::xml_node& aNode)
-{
+// }
+// void OptimizationAlgorithmDakota::writeInterface(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
-void OptimizationAlgorithmDakota::writeAuxiliaryFiles(pugi::xml_node& aNode)
-{
+// void OptimizationAlgorithmDakota::writeAuxiliaryFiles(pugi::xml_node& aNode)
+// {
 
-}
+// }
 
 }//namespace

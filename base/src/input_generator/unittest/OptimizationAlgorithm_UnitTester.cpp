@@ -11,110 +11,12 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorSharedData.hpp"
 #include "XMLGeneratorPerformer.hpp"
+#include "XMLGeneratorStage.hpp"
 
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCCheckOutput)
-{
-    XMLGen::InputData tMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    
-    tOptimizationParameters.append("optimization_algorithm" ,"oc");
-    
-    tMetaData.set(tOptimizationParameters);
-   
-    XMLGen::OptimizationAlgorithmFactory tFactory;
-    ASSERT_NO_THROW(tFactory.create(tMetaData));
-
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
-
-    pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
-    ASSERT_FALSE(tDocument.empty());
-
-    // TEST RESULTS AGAINST GOLD VALUES
-    auto tOptimizer = tDocument.child("Optimizer");
-    ASSERT_FALSE(tOptimizer.empty());
-
-    auto tOutput = tOptimizer.child("Output");
-    ASSERT_FALSE(tOutput.empty());
-    std::vector<std::string> tKeys = {
-        "OutputStage"};
-    std::vector<std::string>  tValues = {
-        "Output To File"
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
-
-    tOutput = tOutput.next_sibling("Output");
-    ASSERT_TRUE(tOutput.empty());
-
-    tOptimizer = tOptimizer.next_sibling("Optimizer");
-    ASSERT_TRUE(tOptimizer.empty());
-
-}
-
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCCheckOptimizationVariables)
-{
-    XMLGen::InputData tMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    
-    tOptimizationParameters.append("optimization_algorithm" ,"oc");
-    
-    tMetaData.set(tOptimizationParameters);
-   
-    XMLGen::OptimizationAlgorithmFactory tFactory;
-    ASSERT_NO_THROW(tFactory.create(tMetaData));
-
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
-
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformer = std::make_shared<XMLGen::XMLGeneratorPerformer>("plato_services","plato_services",1,16,2);
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain,tPerformer};
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData0 = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData1 = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Lower Bound Vector","5",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData2 = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tSharedData3 = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Upper Bound Vector","5",tPerformerMain,tUserPerformers);
-    
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorSharedData>> tSharedData = {tSharedData0, tSharedData1, tSharedData2, tSharedData3};
-
-    tAlgo->assignSharedData(tSharedData);
-
-    pugi::xml_document tDocument;
-    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
-    ASSERT_FALSE(tDocument.empty());
-
-    tDocument.save_file("testinterface.xml","  ");
-    // TEST RESULTS AGAINST GOLD VALUES
-    auto tOptimizer = tDocument.child("Optimizer");
-    ASSERT_FALSE(tOptimizer.empty());
-
-    auto tOV = tOptimizer.child("OptimizationVariables");
-    ASSERT_FALSE(tOV.empty());
-    std::vector<std::string> tKeys = {
-        "LowerBoundValueName",
-        "LowerBoundVectorName",
-        "UpperBoundValueName",
-        "UpperBoundVectorName"
-        };
-    std::vector<std::string>  tValues = {
-        "Lower Bound Value",
-        "Lower Bound Vector",
-        "Upper Bound Value",
-        "Upper Bound Vector"
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOV);
-
-    tOV = tOV.next_sibling("OptimizationVariables");
-    ASSERT_TRUE(tOV.empty());
-
-    tOptimizer = tOptimizer.next_sibling("Optimizer");
-    ASSERT_TRUE(tOptimizer.empty());
-
-}
-
-
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterfaceAllIgnore)
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOptions_AllIgnore)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -160,18 +62,6 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tConvergence);
 
-    auto tOutput = tOptimizer.child("Output");
-    ASSERT_FALSE(tOutput.empty());
-    tKeys = {
-        "OutputStage"};
-    tValues = {
-        "Output To File"
-        };
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
-
-    tOutput = tOutput.next_sibling("Output");
-    ASSERT_TRUE(tOutput.empty());
-
     tConvergence = tConvergence.next_sibling("Convergence");
     ASSERT_TRUE(tConvergence.empty());
 
@@ -180,11 +70,9 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
-
 }
 
-
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface)
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOptions)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -242,10 +130,9 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOCInterface
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
-
 }
 
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBCInterface)
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBC_CheckOptions)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -355,10 +242,9 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBCInterfa
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
-
 }
 
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterface)
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSAL_CheckOptions)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -474,10 +360,9 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSALInterfa
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
-
 }
 
-TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMAInterface)
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMA_CheckOptions)
 {
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -564,8 +449,112 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMAInterfac
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
-
 }
 
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOutput)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-}//namespace
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tOutput = tOptimizer.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    std::vector<std::string> tKeys = {
+        "OutputStage"};
+    std::vector<std::string>  tValues = {
+        "Output To File"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+}
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOptimizationVariables)
+{
+    // create algorithm
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    // create stages
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain};
+
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tNullOperations = {nullptr};
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tControlSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Control",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorStage> tInitialGuessStage = std::make_shared<XMLGen::XMLGeneratorStage>("Initial Guess",tNullOperations,nullptr,tControlSharedData);
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tLowerBoundValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tLowerBoundVectorSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorStage> tLowerBoundStage = std::make_shared<XMLGen::XMLGeneratorStage>("Set Lower Bounds",tNullOperations,tLowerBoundValueSharedData,tLowerBoundVectorSharedData);
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tUpperBoundValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tUpperBoundVectorSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorStage> tUpperBoundStage = std::make_shared<XMLGen::XMLGeneratorStage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
+
+    // write interface
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument,tInitialGuessStage,tUpperBoundStage,tLowerBoundStage));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tOV = tOptimizer.child("OptimizationVariables");
+    ASSERT_FALSE(tOV.empty());
+    std::vector<std::string> tKeys = {
+        "ValueName",
+        "InitializationStage",
+        "LowerBoundValueName",
+        "LowerBoundVectorName",
+        "SetLowerBoundsStage",
+        "UpperBoundValueName",
+        "UpperBoundVectorName",
+        "SetUpperBoundsStage"
+        };
+    std::vector<std::string>  tValues = {
+        "Control",
+        "Initial Guess",
+        "Lower Bound Value",
+        "Lower Bound Vector",
+        "Set Lower Bounds",
+        "Upper Bound Value",
+        "Upper Bound Vector",
+        "Set Upper Bounds"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOV);
+
+    tOV = tOV.next_sibling("OptimizationVariables");
+    ASSERT_TRUE(tOV.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+}
+
+}

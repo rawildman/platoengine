@@ -8,7 +8,6 @@
 #include <string>
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorSharedData.hpp"
 #include "XMLGeneratorStage.hpp"
 
 namespace XMLGen
@@ -16,23 +15,23 @@ namespace XMLGen
 
 class OptimizationAlgorithm
 {
-
-using StagePtr = std::shared_ptr<XMLGeneratorStage>;
-
 protected:
+   using StagePtr = std::shared_ptr<XMLGeneratorStage>;
    std::string mPackage;
    std::string mMaxIterations;
 
    void appendOutputStage(pugi::xml_node& aNode);
-   void appendOptimizationVariables(pugi::xml_node& aNode);
+   void appendOptimizationVariables(pugi::xml_node& aNode,
+                                    StagePtr aInitialization,
+                                    StagePtr aUpperBound,
+                                    StagePtr aLowerBound);
 
 public:
     OptimizationAlgorithm(const OptimizationParameters& aParameters);
-    void assignOptimizationVariables(StagePtr aInitialization, 
-                                     StagePtr aUpperBound, 
-                                     StagePtr aLowerBound);
-
-    virtual void writeInterface(pugi::xml_node& aNode) = 0;
+    virtual void writeInterface(pugi::xml_node& aNode,
+                                StagePtr aInitialization = nullptr,
+                                StagePtr aUpperBound = nullptr,
+                                StagePtr aLowerBound = nullptr) = 0;
     virtual void writeAuxiliaryFiles(pugi::xml_node& aNode) = 0;
 };
 
@@ -46,7 +45,10 @@ private:
 
 public:
     OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
+    void writeInterface(pugi::xml_node& aNode,
+                        StagePtr aInitialization = nullptr,
+                        StagePtr aUpperBound = nullptr,
+                        StagePtr aLowerBound = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -78,7 +80,10 @@ private:
       
 public:
     OptimizationAlgorithmPlatoKSBC(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
+    void writeInterface(pugi::xml_node& aNode,
+                        StagePtr aInitialization = nullptr,
+                        StagePtr aUpperBound = nullptr,
+                        StagePtr aLowerBound = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -113,7 +118,10 @@ private:
 
 public:
     OptimizationAlgorithmPlatoKSAL(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
+    void writeInterface(pugi::xml_node& aNode,
+                        StagePtr aInitialization = nullptr,
+                        StagePtr aUpperBound = nullptr,
+                        StagePtr aLowerBound = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -136,51 +144,64 @@ private:
 
 public:
     OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
+    void writeInterface(pugi::xml_node& aNode,
+                        StagePtr aInitialization = nullptr,
+                        StagePtr aUpperBound = nullptr,
+                        StagePtr aLowerBound = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
 
-class OptimizationAlgorithmROLLC : public OptimizationAlgorithm
-{
-private:
+// class OptimizationAlgorithmROLLC : public OptimizationAlgorithm
+// {
+// private:
 
-public:
-    OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
+// public:
+//     OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters);
+//     void writeInterface(pugi::xml_node& aNode,
+//                         StagePtr aInitialization = nullptr,
+//                         StagePtr aUpperBound = nullptr,
+//                         StagePtr aLowerBound = nullptr) override;
+//     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+// };
 
-class OptimizationAlgorithmROLBC : public OptimizationAlgorithm
-{
-private:
+// class OptimizationAlgorithmROLBC : public OptimizationAlgorithm
+// {
+// private:
 
-public:
-    OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
+// public:
+//     OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters);
+//     void writeInterface(pugi::xml_node& aNode,
+//                         StagePtr aInitialization = nullptr,
+//                         StagePtr aUpperBound = nullptr,
+//                         StagePtr aLowerBound = nullptr) override;
+//     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+// };
 
-class OptimizationAlgorithmROLAL : public OptimizationAlgorithm
-{
-private:
+// class OptimizationAlgorithmROLAL : public OptimizationAlgorithm
+// {
+// private:
 
-public:
-    OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
+// public:
+//     OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters);
+//     void writeInterface(pugi::xml_node& aNode,
+//                         StagePtr aInitialization = nullptr,
+//                         StagePtr aUpperBound = nullptr,
+//                         StagePtr aLowerBound = nullptr) override;
+//     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+// };
 
-class OptimizationAlgorithmDakota : public OptimizationAlgorithm
-{
-private:
+// class OptimizationAlgorithmDakota : public OptimizationAlgorithm
+// {
+// private:
 
-public:
-    OptimizationAlgorithmDakota(const OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
-
-
+// public:
+//     OptimizationAlgorithmDakota(const OptimizationParameters& aParameters);
+//     void writeInterface(pugi::xml_node& aNode,
+//                         StagePtr aInitialization = nullptr,
+//                         StagePtr aUpperBound = nullptr,
+//                         StagePtr aLowerBound = nullptr) override;
+//     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
+// };
 
 } //namespace
