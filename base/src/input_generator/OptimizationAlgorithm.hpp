@@ -25,13 +25,18 @@ protected:
                                     StagePtr aInitialization,
                                     StagePtr aUpperBound,
                                     StagePtr aLowerBound);
+   void appendObjectiveData(pugi::xml_node& aNode,
+                            StagePtr aObjectiveValue,
+                            StagePtr aObjectiveGradient);
 
 public:
     OptimizationAlgorithm(const OptimizationParameters& aParameters);
     virtual void writeInterface(pugi::xml_node& aNode,
                                 StagePtr aInitialization = nullptr,
                                 StagePtr aUpperBound = nullptr,
-                                StagePtr aLowerBound = nullptr) = 0;
+                                StagePtr aLowerBound = nullptr,
+                                StagePtr aObjectiveValue = nullptr,
+                                StagePtr aObjectiveGradient = nullptr) = 0;
     virtual void writeAuxiliaryFiles(pugi::xml_node& aNode) = 0;
 };
 
@@ -48,7 +53,9 @@ public:
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr) override;
+                        StagePtr aLowerBound = nullptr,
+                        StagePtr aObjectiveValue = nullptr,
+                        StagePtr aObjectiveGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -83,7 +90,9 @@ public:
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr) override;
+                        StagePtr aLowerBound = nullptr,
+                        StagePtr aObjectiveValue = nullptr,
+                        StagePtr aObjectiveGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -121,7 +130,9 @@ public:
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr) override;
+                        StagePtr aLowerBound = nullptr,
+                        StagePtr aObjectiveValue = nullptr,
+                        StagePtr aObjectiveGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -147,7 +158,9 @@ public:
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr) override;
+                        StagePtr aLowerBound = nullptr,
+                        StagePtr aObjectiveValue = nullptr,
+                        StagePtr aObjectiveGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 

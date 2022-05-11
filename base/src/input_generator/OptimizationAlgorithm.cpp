@@ -43,6 +43,24 @@ void OptimizationAlgorithm::appendOptimizationVariables
     }
 }
 
+void OptimizationAlgorithm::appendObjectiveData
+(pugi::xml_node& aNode,
+ StagePtr aObjectiveValue,
+ StagePtr aObjectiveGradient)
+{ 
+    auto tObjective = aNode.append_child("Objective");
+    if (aObjectiveValue)
+    {
+        addChild(tObjective, "ValueStageName", aObjectiveValue->name());
+        addChild(tObjective, "ValueName", aObjectiveValue->outputSharedDataName());
+    }
+    if (aObjectiveGradient)
+    {
+        addChild(tObjective, "GradientStageName", aObjectiveGradient->name());
+        addChild(tObjective, "GradientName", aObjectiveGradient->outputSharedDataName());
+    }
+}
+
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
@@ -56,7 +74,9 @@ void OptimizationAlgorithmPlatoOC::writeInterface
 (pugi::xml_node& aNode,
  StagePtr aInitialization,
  StagePtr aUpperBound,
- StagePtr aLowerBound)
+ StagePtr aLowerBound,
+ StagePtr aObjectiveValue,
+ StagePtr aObjectiveGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","OC");
@@ -72,6 +92,7 @@ void OptimizationAlgorithmPlatoOC::writeInterface
 
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
+    appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
 }
 
 void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -109,7 +130,9 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface
 (pugi::xml_node& aNode,
  StagePtr aInitialization,
  StagePtr aUpperBound,
- StagePtr aLowerBound)
+ StagePtr aLowerBound,
+ StagePtr aObjectiveValue,
+ StagePtr aObjectiveGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSBC");
@@ -140,6 +163,7 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface
 
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
+    appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
 }
 
 void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -180,7 +204,9 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface
 (pugi::xml_node& aNode,
  StagePtr aInitialization,
  StagePtr aUpperBound,
- StagePtr aLowerBound)
+ StagePtr aLowerBound,
+ StagePtr aObjectiveValue,
+ StagePtr aObjectiveGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSAL");
@@ -214,6 +240,7 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface
 
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
+    appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
 }
 
 void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -242,7 +269,9 @@ void OptimizationAlgorithmPlatoMMA::writeInterface
 (pugi::xml_node& aNode,
  StagePtr aInitialization,
  StagePtr aUpperBound,
- StagePtr aLowerBound)
+ StagePtr aLowerBound,
+ StagePtr aObjectiveValue,
+ StagePtr aObjectiveGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","MMA");
@@ -267,6 +296,7 @@ void OptimizationAlgorithmPlatoMMA::writeInterface
 
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
+    appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)

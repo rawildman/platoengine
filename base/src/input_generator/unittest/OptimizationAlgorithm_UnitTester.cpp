@@ -392,7 +392,6 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMA_CheckOp
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
     ASSERT_FALSE(tDocument.empty());
-    tDocument.save_file("testinterface.xml","  ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOptimizer = tDocument.child("Optimizer");
@@ -552,6 +551,61 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
 
     tOV = tOV.next_sibling("OptimizationVariables");
     ASSERT_TRUE(tOV.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+}
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObjective)
+{
+    // create algorithm
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    tMetaData.set(tOptimizationParameters);
+   
+    XMLGen::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    // create stages
+    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain};
+
+    std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tNullOperations = {nullptr};
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tObjectiveValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Objective Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorStage> tObjectiveValueStage = std::make_shared<XMLGen::XMLGeneratorStage>("Compute Objective Value",tNullOperations,nullptr,tObjectiveValueSharedData);
+
+    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tObjectiveGradientSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
+    std::shared_ptr<XMLGen::XMLGeneratorStage> tObjectiveGradientStage = std::make_shared<XMLGen::XMLGeneratorStage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
+
+    // write interface
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument,nullptr,nullptr,nullptr,tObjectiveValueStage,tObjectiveGradientStage));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tObjective = tOptimizer.child("Objective");
+    ASSERT_FALSE(tObjective.empty());
+    std::vector<std::string> tKeys = {
+        "ValueStageName",
+        "ValueName",
+        "GradientStageName",
+        "GradientName"
+        };
+    std::vector<std::string>  tValues = {
+        "Compute Objective Value",
+        "Objective Value",
+        "Compute Objective Gradient",
+        "Objective Gradient"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tObjective);
+
+    tObjective = tObjective.next_sibling("Objective");
+    ASSERT_TRUE(tObjective.empty());
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());
