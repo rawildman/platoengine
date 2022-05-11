@@ -261,4 +261,27 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationComputeCriterion : public Operation
+{
+private:
+    InputOutput mInput;
+    InputOutput mOutput;
+    bool mIsValue;
+    std::string mCriterion;
+    double mTarget;
+
+public:
+    OperationComputeCriterion(const std::string& aName,
+                       bool aIsValue,
+                       std::string aCriterion, 
+                       std::shared_ptr<SharedData> aInputSharedData,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer,
+                       double aTarget = 0.0 );
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 }
