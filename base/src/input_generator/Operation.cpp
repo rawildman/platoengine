@@ -1,23 +1,23 @@
 /*
- * XMLGeneratorOperation.cpp
+ * Operation.cpp
  *
  *  Created on: April 12, 2022
  */
 
-#include "XMLGeneratorOperation.hpp"
+#include "Operation.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include <regex>
-
-namespace XMLGen
+using namespace XMLGen;
+namespace PDir
 {
     
-XMLGeneratorOperation::XMLGeneratorOperation
+Operation::Operation
 (const std::string& aName,
  const std::string& aFunction,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+ std::shared_ptr<Performer> aPerformer,
  int aConcurrentEvaluations) :
- XMLGeneratorFileObject(aName,aConcurrentEvaluations),
+ FileObject(aName,aConcurrentEvaluations),
  mFunction(aFunction),
  mPerformer(aPerformer)
 {
@@ -27,7 +27,7 @@ XMLGeneratorOperation::XMLGeneratorOperation
         mChDir = true;
 }
 
-void XMLGeneratorOperation::appendCommonChildren
+void Operation::appendCommonChildren
 (pugi::xml_node& aOperationNode,
  std::string aEvaluationString)
 {
@@ -35,7 +35,7 @@ void XMLGeneratorOperation::appendCommonChildren
     addChild(aOperationNode, "Name", name(aEvaluationString));
 }
 
-pugi::xml_node XMLGeneratorOperation::forNode
+pugi::xml_node Operation::forNode
 (pugi::xml_node& aNode, 
  const std::string& aXMLLoopVectorName)
 {
@@ -51,18 +51,18 @@ pugi::xml_node XMLGeneratorOperation::forNode
     }
 }
 
-XMLGeneratorOperationWait::XMLGeneratorOperationWait
+OperationWait::OperationWait
 (const std::string& aName,
  const std::string& aFile,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+ std::shared_ptr<Performer> aPerformer,
  int aConcurrentEvaluations) :
- XMLGeneratorOperation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
+ Operation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
 {
     mCommand = std::string("while lsof -u $USER | grep ./") + aFile + "; do sleep 1; done";
     mOnChange = false;    
 }
 
-void XMLGeneratorOperationWait::write_definition
+void OperationWait::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -74,7 +74,7 @@ void XMLGeneratorOperationWait::write_definition
     addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
 }
 
-void XMLGeneratorOperationWait::write_interface
+void OperationWait::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {
@@ -83,13 +83,13 @@ void XMLGeneratorOperationWait::write_interface
     addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationString));
 }
 
-XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
+OperationGemmaMPISystemCall::OperationGemmaMPISystemCall
 (const std::string& aInputDeck, 
  const std::string& aPath,
  const std::string& aNumRanks, 
- std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+ std::shared_ptr<Performer> aPerformer,
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("gemma", "SystemCallMPI",aPerformer, aConcurrentEvaluations),
+ Operation("gemma", "SystemCallMPI",aPerformer, aConcurrentEvaluations),
  mCommand("gemma"),
  mArgument(aInputDeck),
  mNumRanks(aNumRanks),
@@ -98,7 +98,7 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     mOnChange = true;
 }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_definition
+ void OperationGemmaMPISystemCall::write_definition
  (pugi::xml_document& aDocument, 
   std::string aEvaluationString)
  {
@@ -113,7 +113,7 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     addChild(tOperationNode, "AppendInput", "false" );
  }
 
- void XMLGeneratorOperationGemmaMPISystemCall::write_interface
+ void OperationGemmaMPISystemCall::write_interface
  (pugi::xml_node& aNode, 
   std::string aEvaluationString)
 {
@@ -122,13 +122,13 @@ XMLGeneratorOperationGemmaMPISystemCall::XMLGeneratorOperationGemmaMPISystemCall
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
 }
 
-XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
+OperationAprepro::OperationAprepro
 (const std::string& aInputDeck, 
  const std::vector<std::string>& aOptions, 
- std::shared_ptr<XMLGeneratorSharedData> aSharedData,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer, 
+ std::shared_ptr<SharedData> aSharedData,
+ std::shared_ptr<Performer> aPerformer, 
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("aprepro", "SystemCall", aPerformer, aConcurrentEvaluations),
+ Operation("aprepro", "SystemCall", aPerformer, aConcurrentEvaluations),
  mCommand("aprepro")
 {
     mArgument.push_back("-q");
@@ -143,7 +143,7 @@ XMLGeneratorOperationAprepro::XMLGeneratorOperationAprepro
     mOnChange = true;
 }
 
-void XMLGeneratorOperationAprepro::write_definition
+void OperationAprepro::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -169,7 +169,7 @@ void XMLGeneratorOperationAprepro::write_definition
     addChild(tInputNode, "Size", mInput.mSize);
 }
 
-void XMLGeneratorOperationAprepro::write_interface
+void OperationAprepro::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {
@@ -181,14 +181,14 @@ void XMLGeneratorOperationAprepro::write_interface
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 
-XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFunction
+OperationHarvestDataFunction::OperationHarvestDataFunction
 (const std::string& aFile,
  const std::string& aMathOperation,
  const std::string& aDataColumn,
- std::shared_ptr<XMLGeneratorSharedData> aSharedData,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+ std::shared_ptr<SharedData> aSharedData,
+ std::shared_ptr<Performer> aPerformer,
  int aConcurrentEvaluations) : 
- XMLGeneratorOperation("harvest_data", "HarvestDataFromFile", aPerformer, aConcurrentEvaluations),
+ Operation("harvest_data", "HarvestDataFromFile", aPerformer, aConcurrentEvaluations),
  mFile(aFile),
  mOperation(aMathOperation),
  mColumn(aDataColumn)
@@ -200,7 +200,7 @@ XMLGeneratorOperationHarvestDataFunction::XMLGeneratorOperationHarvestDataFuncti
     mOnChange = true;
 }
 
-void XMLGeneratorOperationHarvestDataFunction::write_definition
+void OperationHarvestDataFunction::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -221,7 +221,7 @@ void XMLGeneratorOperationHarvestDataFunction::write_definition
     addChild(tOutputNode, "Size", mOutput.mSize);
 }
 
-void XMLGeneratorOperationHarvestDataFunction::write_interface
+void OperationHarvestDataFunction::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {
@@ -233,13 +233,13 @@ void XMLGeneratorOperationHarvestDataFunction::write_interface
     addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
 }
 
-XMLGeneratorOperationCubitTet10Conversion::XMLGeneratorOperationCubitTet10Conversion
+OperationCubitTet10Conversion::OperationCubitTet10Conversion
 (const std::string& aExodusFileName, 
  const std::vector<std::string>& aBlockList, 
- std::shared_ptr<XMLGeneratorSharedData> aSharedData,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer, 
+ std::shared_ptr<SharedData> aSharedData,
+ std::shared_ptr<Performer> aPerformer, 
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("cubit_convert_to_tet10", "SystemCall", aPerformer, aConcurrentEvaluations),
+ Operation("cubit_convert_to_tet10", "SystemCall", aPerformer, aConcurrentEvaluations),
  mCommand("cubit")
 {
     mArgument.push_back(" -input toTet10.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off");
@@ -249,7 +249,7 @@ XMLGeneratorOperationCubitTet10Conversion::XMLGeneratorOperationCubitTet10Conver
     writeTet10ConversionFile(aExodusFileName,aBlockList);
 }
 
-void XMLGeneratorOperationCubitTet10Conversion::write_definition
+void OperationCubitTet10Conversion::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -270,7 +270,7 @@ void XMLGeneratorOperationCubitTet10Conversion::write_definition
     addChild(tInputNode, "ArgumentName", "parameters");
 }
 
-void XMLGeneratorOperationCubitTet10Conversion::write_interface
+void OperationCubitTet10Conversion::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {
@@ -282,7 +282,7 @@ void XMLGeneratorOperationCubitTet10Conversion::write_interface
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 
-void XMLGeneratorOperationCubitTet10Conversion::writeTet10ConversionFile
+void OperationCubitTet10Conversion::writeTet10ConversionFile
 (std::string aExodusFileName,
  std::vector<std::string> aBlockList)
 {
@@ -304,13 +304,13 @@ void XMLGeneratorOperationCubitTet10Conversion::writeTet10ConversionFile
     }
 }
 
-XMLGeneratorOperationCubitSubBlock::XMLGeneratorOperationCubitSubBlock
+OperationCubitSubBlock::OperationCubitSubBlock
 (const std::string& aExodusFileName, 
  const std::vector<std::string>& aBoundingBox, 
- std::shared_ptr<XMLGeneratorSharedData> aSharedData,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer, 
+ std::shared_ptr<SharedData> aSharedData,
+ std::shared_ptr<Performer> aPerformer, 
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("create_sub_block", "SystemCall", aPerformer, aConcurrentEvaluations),
+ Operation("create_sub_block", "SystemCall", aPerformer, aConcurrentEvaluations),
  mCommand("cubit")
 {
     mArgument.push_back(" -input subBlock.jou -batch -nographics -nogui -noecho -nojournal -nobanner -information off");
@@ -320,7 +320,7 @@ XMLGeneratorOperationCubitSubBlock::XMLGeneratorOperationCubitSubBlock
     writeSubBlockFile(aExodusFileName,aBoundingBox);
 }
 
-void XMLGeneratorOperationCubitSubBlock::write_definition
+void OperationCubitSubBlock::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -341,7 +341,7 @@ void XMLGeneratorOperationCubitSubBlock::write_definition
     addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
 }
 
-void XMLGeneratorOperationCubitSubBlock::write_interface
+void OperationCubitSubBlock::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {
@@ -353,7 +353,7 @@ void XMLGeneratorOperationCubitSubBlock::write_interface
     addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
 }
 
-void XMLGeneratorOperationCubitSubBlock::writeSubBlockFile
+void OperationCubitSubBlock::writeSubBlockFile
 (std::string aExodusFileName,
  std::vector<std::string> aBoundingBox)
 {
@@ -380,12 +380,12 @@ void XMLGeneratorOperationCubitSubBlock::writeSubBlockFile
     }
 }
 
-XMLGeneratorOperationDecomp::XMLGeneratorOperationDecomp
+OperationDecomp::OperationDecomp
 (const std::string& aExodusFileName, 
  int aNumberOfPartitions,
- std::shared_ptr<XMLGeneratorPerformer> aPerformer, 
+ std::shared_ptr<Performer> aPerformer, 
  int aConcurrentEvaluations) :
- XMLGeneratorOperation("decomp_mesh", "SystemCall", aPerformer, aConcurrentEvaluations),
+ Operation("decomp_mesh", "SystemCall", aPerformer, aConcurrentEvaluations),
  mCommand("decomp")
 {
     mArgument.push_back(" -p ");
@@ -395,7 +395,7 @@ XMLGeneratorOperationDecomp::XMLGeneratorOperationDecomp
     mOnChange = false;
 }
 
-void XMLGeneratorOperationDecomp::write_definition
+void OperationDecomp::write_definition
 (pugi::xml_document& aDocument, 
  std::string aEvaluationString)
 {
@@ -410,7 +410,7 @@ void XMLGeneratorOperationDecomp::write_definition
         addChild(tOperationNode, "Argument", tA );    
 }
 
-void XMLGeneratorOperationDecomp::write_interface
+void OperationDecomp::write_interface
 (pugi::xml_node& aNode, 
  std::string aEvaluationString)
 {

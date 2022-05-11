@@ -1,5 +1,5 @@
 /*
- * XMLGeneratorPerformer.hpp
+ * Performer.hpp
  *
  *  Created on: April 12, 2022
  */
@@ -9,15 +9,15 @@
 #include <string>
 #include <regex>
 
-#include "XMLGeneratorFileObject.hpp"
+#include "FileObject.hpp"
 
 #include "pugixml.hpp"
 
 
-namespace XMLGen
+namespace PDir
 {
 
-class XMLGeneratorPerformer : public XMLGeneratorFileObject
+class Performer : public FileObject
 {
     
 private:
@@ -27,7 +27,7 @@ private:
     int mNumberRanks;
        
 public:
-    XMLGeneratorPerformer(const std::string& aName,
+    Performer(const std::string& aName,
                           const std::string& aCode,
                           int aIdOffset = 0,
                           int aNumberRanks = 1,

@@ -7,11 +7,11 @@
 
 #include "pugixml.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
-#include "XMLGeneratorFileObject.hpp"
+#include "FileObject.hpp"
 #include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorSharedData.hpp"
-#include "XMLGeneratorPerformer.hpp"
-#include "XMLGeneratorStage.hpp"
+#include "SharedData.hpp"
+#include "Performer.hpp"
+#include "Stage.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -25,10 +25,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -86,10 +86,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -165,10 +165,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBC_CheckO
 
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -279,10 +279,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSAL_CheckO
     
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -384,10 +384,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMA_CheckOp
     
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -459,10 +459,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOut
     
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
+    PDir::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -496,25 +496,25 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    PDir::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // create stages
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
 
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tNullOperations = {nullptr};
+    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tControlSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Control",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorStage> tInitialGuessStage = std::make_shared<XMLGen::XMLGeneratorStage>("Initial Guess",tNullOperations,nullptr,tControlSharedData);
+    std::shared_ptr<PDir::SharedData> tControlSharedData = std::make_shared<PDir::SharedDataNodalField>("Control",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tInitialGuessStage = std::make_shared<PDir::Stage>("Initial Guess",tNullOperations,nullptr,tControlSharedData);
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tLowerBoundValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tLowerBoundVectorSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorStage> tLowerBoundStage = std::make_shared<XMLGen::XMLGeneratorStage>("Set Lower Bounds",tNullOperations,tLowerBoundValueSharedData,tLowerBoundVectorSharedData);
+    std::shared_ptr<PDir::SharedData> tLowerBoundValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tLowerBoundVectorSharedData = std::make_shared<PDir::SharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tLowerBoundStage = std::make_shared<PDir::Stage>("Set Lower Bounds",tNullOperations,tLowerBoundValueSharedData,tLowerBoundVectorSharedData);
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tUpperBoundValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tUpperBoundVectorSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorStage> tUpperBoundStage = std::make_shared<XMLGen::XMLGeneratorStage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
+    std::shared_ptr<PDir::SharedData> tUpperBoundValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tUpperBoundVectorSharedData = std::make_shared<PDir::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tUpperBoundStage = std::make_shared<PDir::Stage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
 
     // write interface
     pugi::xml_document tDocument;
@@ -564,20 +564,20 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObj
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    XMLGen::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<XMLGen::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    PDir::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // create stages
-    std::shared_ptr<XMLGen::XMLGeneratorPerformer> tPerformerMain = std::make_shared<XMLGen::XMLGeneratorPerformer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorPerformer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
 
-    std::vector<std::shared_ptr<XMLGen::XMLGeneratorOperation>> tNullOperations = {nullptr};
+    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tObjectiveValueSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataGlobal>("Objective Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorStage> tObjectiveValueStage = std::make_shared<XMLGen::XMLGeneratorStage>("Compute Objective Value",tNullOperations,nullptr,tObjectiveValueSharedData);
+    std::shared_ptr<PDir::SharedData> tObjectiveValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Objective Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tObjectiveValueStage = std::make_shared<PDir::Stage>("Compute Objective Value",tNullOperations,nullptr,tObjectiveValueSharedData);
 
-    std::shared_ptr<XMLGen::XMLGeneratorSharedData> tObjectiveGradientSharedData = std::make_shared<XMLGen::XMLGeneratorSharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
-    std::shared_ptr<XMLGen::XMLGeneratorStage> tObjectiveGradientStage = std::make_shared<XMLGen::XMLGeneratorStage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
+    std::shared_ptr<PDir::SharedData> tObjectiveGradientSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tObjectiveGradientStage = std::make_shared<PDir::Stage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
 
     // write interface
     pugi::xml_document tDocument;

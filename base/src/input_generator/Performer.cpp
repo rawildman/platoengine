@@ -1,29 +1,29 @@
 /*
- * XMLGeneratorPerformer.cpp
+ * Performer.cpp
  *
  *  Created on: April 14, 2022
  */
 
-#include "XMLGeneratorPerformer.hpp"
+#include "Performer.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
-
-namespace XMLGen
+using namespace XMLGen;
+namespace PDir
 {
-    XMLGeneratorPerformer::XMLGeneratorPerformer
+    Performer::Performer
     (const std::string& aName,
      const std::string& aCode,
      int aIdOffset,
      int aNumberRanks,
      int aConcurrentEvaluations) : 
-     XMLGeneratorFileObject(aName, aConcurrentEvaluations),
+     FileObject(aName, aConcurrentEvaluations),
      mCode(aCode),
      mIdOffset(aIdOffset),
      mNumberRanks(aNumberRanks)
     {
     }
 
-    void XMLGeneratorPerformer::write_interface
+    void Performer::write_interface
     (pugi::xml_node& aNode,
      std::string aEvaluationString)
     {
@@ -33,7 +33,7 @@ namespace XMLGen
         addChild(tPerformerNode, "Code", mCode);
     }
 
-    std::string XMLGeneratorPerformer::return_mpirun(std::string aEvaluationString)
+    std::string Performer::return_mpirun(std::string aEvaluationString)
     {
         return std::string(": -np ") + 
                 std::to_string(mNumberRanks) + 
@@ -41,7 +41,7 @@ namespace XMLGen
                 ID(aEvaluationString) + 
                 " \\\n";
     }
-    std::string XMLGeneratorPerformer::ID(const std::string& aEvaluationString)
+    std::string Performer::ID(const std::string& aEvaluationString)
     {
         if(evaluations() == 0)
             return std::to_string(mIdOffset);

@@ -1,5 +1,5 @@
 /*
- * XMLGeneratorOperation.hpp
+ * Operation.hpp
  *
  *  Created on: April 12, 2022
  */
@@ -12,25 +12,25 @@
 
 #include "pugixml.hpp"
 
-#include "XMLGeneratorSharedData.hpp"
-#include "XMLGeneratorPerformer.hpp"
+#include "SharedData.hpp"
+#include "Performer.hpp"
 
-namespace XMLGen
+namespace PDir
 {
 
-struct XMLGeneratorInputOutput
+struct InputOutput
 {
     std::string mLayout;
     std::string mSize;
-    std::shared_ptr<XMLGeneratorSharedData> mSharedData;
+    std::shared_ptr<SharedData> mSharedData;
 };
 
-class XMLGeneratorOperation : public XMLGeneratorFileObject
+class Operation : public FileObject
 {
 
 protected:
     std::string mFunction;
-    std::shared_ptr<XMLGeneratorPerformer> mPerformer;
+    std::shared_ptr<Performer> mPerformer;
     bool mChDir;
     bool mOnChange;
     
@@ -38,9 +38,9 @@ protected:
                               std::string aEvaluationString);
 
 public:
-    XMLGeneratorOperation(const std::string& aName,
+    Operation(const std::string& aName,
                           const std::string& aFunction,
-                          std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                          std::shared_ptr<Performer> aPerformer,
                           int aConcurrentEvaluations);
     virtual void write_definition(pugi::xml_document& aDocument, 
                                   std::string aEvaluationString = "") = 0;
@@ -51,15 +51,15 @@ public:
                            const std::string& aXMLLoopVectorName);
 };
 
-class XMLGeneratorOperationWait : public XMLGeneratorOperation
+class OperationWait : public Operation
 {
 private:
     std::string mCommand; 
     
 public:
-    XMLGeneratorOperationWait(const std::string& aName,
+    OperationWait(const std::string& aName,
                               const std::string& aFile,
-                              std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                              std::shared_ptr<Performer> aPerformer,
                               int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -67,7 +67,7 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationGemmaMPISystemCall : public XMLGeneratorOperation
+class OperationGemmaMPISystemCall : public Operation
 {
 private:
     std::string mCommand; 
@@ -76,10 +76,10 @@ private:
     std::string mPath;
     
 public:
-    XMLGeneratorOperationGemmaMPISystemCall(const std::string& aInputDeck,
+    OperationGemmaMPISystemCall(const std::string& aInputDeck,
                                             const std::string& aPath,
                                             const std::string& aNumRanks, 
-                                            std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                            std::shared_ptr<Performer> aPerformer,
                                             int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -87,19 +87,19 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationAprepro : public XMLGeneratorOperation
+class OperationAprepro : public Operation
 {
 private:
     std::string mCommand; 
     std::vector<std::string> mArgument;
     std::vector<std::string> mOptions;
-    XMLGeneratorInputOutput mInput;
+    InputOutput mInput;
 
 public:
-    XMLGeneratorOperationAprepro(const std::string& aInputDeck,
+    OperationAprepro(const std::string& aInputDeck,
                                  const std::vector<std::string>& aOptions, 
-                                 std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
-                                 std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                 std::shared_ptr<SharedData> aSharedData, 
+                                 std::shared_ptr<Performer> aPerformer,
                                  int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -107,19 +107,19 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationHarvestDataFunction : public XMLGeneratorOperation
+class OperationHarvestDataFunction : public Operation
 {
 private:
     std::string mFile;
     std::string mOperation;
     std::string mColumn;
-    XMLGeneratorInputOutput mOutput;
+    InputOutput mOutput;
 public:
-    XMLGeneratorOperationHarvestDataFunction(const std::string& aFile,
+    OperationHarvestDataFunction(const std::string& aFile,
                                              const std::string& aMathOperation,
                                              const std::string& aDataColumn,
-                                             std::shared_ptr<XMLGeneratorSharedData> aSharedData,
-                                             std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                             std::shared_ptr<SharedData> aSharedData,
+                                             std::shared_ptr<Performer> aPerformer,
                                              int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -127,21 +127,21 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationCubitTet10Conversion : public XMLGeneratorOperation
+class OperationCubitTet10Conversion : public Operation
 {
 private:
     std::string mCommand; 
     std::vector<std::string> mArgument;
     std::vector<std::string> mOptions;
-    XMLGeneratorInputOutput mInput;
+    InputOutput mInput;
 
     void writeTet10ConversionFile(std::string aExodusFileName,
                                   std::vector<std::string> aBlockList);
 public:
-    XMLGeneratorOperationCubitTet10Conversion(const std::string& aExodusFileName,
+    OperationCubitTet10Conversion(const std::string& aExodusFileName,
                                               const std::vector<std::string>& aBlockList, 
-                                              std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
-                                              std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                              std::shared_ptr<SharedData> aSharedData, 
+                                              std::shared_ptr<Performer> aPerformer,
                                               int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -149,21 +149,21 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationCubitSubBlock : public XMLGeneratorOperation
+class OperationCubitSubBlock : public Operation
 {
 private:
     std::string mCommand; 
     std::vector<std::string> mArgument;
     std::vector<std::string> mOptions;
-    XMLGeneratorInputOutput mInput;
+    InputOutput mInput;
 
     void writeSubBlockFile(std::string aExodusFileName,
                            std::vector<std::string> aBoundingBox);
 public:
-    XMLGeneratorOperationCubitSubBlock(const std::string& aExodusFileName,
+    OperationCubitSubBlock(const std::string& aExodusFileName,
                                        const std::vector<std::string>& aBoundingBox, 
-                                       std::shared_ptr<XMLGeneratorSharedData> aSharedData, 
-                                       std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                       std::shared_ptr<SharedData> aSharedData, 
+                                       std::shared_ptr<Performer> aPerformer,
                                        int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;
@@ -171,16 +171,16 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
-class XMLGeneratorOperationDecomp : public XMLGeneratorOperation
+class OperationDecomp : public Operation
 {
 private:
     std::string mCommand; 
     std::vector<std::string> mArgument;
     
 public:
-    XMLGeneratorOperationDecomp(const std::string& aExodusFileName,
+    OperationDecomp(const std::string& aExodusFileName,
                                 int aNumberOfPartitions, 
-                                std::shared_ptr<XMLGeneratorPerformer> aPerformer,
+                                std::shared_ptr<Performer> aPerformer,
                                 int aConcurrentEvaluations);
     void write_definition(pugi::xml_document& aDocument, 
                           std::string aEvaluationString = "") override;

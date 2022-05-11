@@ -8,15 +8,15 @@
 #include <string>
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorStage.hpp"
+#include "Stage.hpp"
 
-namespace XMLGen
+namespace PDir
 {
 
 class OptimizationAlgorithm
 {
 protected:
-   using StagePtr = std::shared_ptr<XMLGeneratorStage>;
+   using StagePtr = std::shared_ptr<Stage>;
    std::string mPackage;
    std::string mMaxIterations;
 
@@ -30,7 +30,7 @@ protected:
                             StagePtr aObjectiveGradient);
 
 public:
-    OptimizationAlgorithm(const OptimizationParameters& aParameters);
+    OptimizationAlgorithm(const XMLGen::OptimizationParameters& aParameters);
     virtual void writeInterface(pugi::xml_node& aNode,
                                 StagePtr aInitialization = nullptr,
                                 StagePtr aUpperBound = nullptr,
@@ -49,7 +49,7 @@ private:
     std::string mProblemUpdateFrequency;
 
 public:
-    OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters);
+    OptimizationAlgorithmPlatoOC(const XMLGen::OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
@@ -86,7 +86,7 @@ private:
     std::string mTrustRegionRatioUpper;
       
 public:
-    OptimizationAlgorithmPlatoKSBC(const OptimizationParameters& aParameters);
+    OptimizationAlgorithmPlatoKSBC(const XMLGen::OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
@@ -126,7 +126,7 @@ private:
     std::string mPenaltyParamScaleFactor;
 
 public:
-    OptimizationAlgorithmPlatoKSAL(const OptimizationParameters& aParameters);
+    OptimizationAlgorithmPlatoKSAL(const XMLGen::OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,
@@ -154,7 +154,7 @@ private:
      std::string mUseIpoptForMMASubproblem;
 
 public:
-    OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters);
+    OptimizationAlgorithmPlatoMMA(const XMLGen::OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,

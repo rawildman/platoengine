@@ -10,14 +10,14 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "OptimizationAlgorithm.hpp"
 
-namespace XMLGen
+namespace PDir
 {
 
 class OptimizationAlgorithmFactory
 {
 public:
     OptimizationAlgorithmFactory();
-    std::shared_ptr<OptimizationAlgorithm> create(const InputData& aMetaData);
+    std::shared_ptr<OptimizationAlgorithm> create(const XMLGen::InputData& aMetaData);
 
 };
 

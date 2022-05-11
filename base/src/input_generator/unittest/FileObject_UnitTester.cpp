@@ -1,5 +1,5 @@
  /*
- * XMLGeneratorPlatoGemma_UnitTester.cpp
+ * FileObject_UnitTester.cpp
  *
  *  Created on: April 12, 2022
  */
@@ -7,7 +7,7 @@
 
 #include "pugixml.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
-#include "XMLGeneratorFileObject.hpp"
+#include "FileObject.hpp"
 #include "XMLGeneratorUtilities.hpp"
 
 namespace PlatoTestXMLGenerator
@@ -15,7 +15,7 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
 {
-    XMLGen::XMLGeneratorFileObject tFileObject("name");
+    PDir::FileObject tFileObject("name");
     ASSERT_NO_THROW(tFileObject.name());
     ASSERT_STREQ("name", tFileObject.name().c_str());
     ASSERT_STREQ("name", tFileObject.name("").c_str());
@@ -39,7 +39,7 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
 {
-    XMLGen::XMLGeneratorFileObject tFileObject("name",3);
+    PDir::FileObject tFileObject("name",3);
     ASSERT_NO_THROW(tFileObject.name());
     ASSERT_STREQ("name_{E}", tFileObject.name().c_str());
     ASSERT_STREQ("name_{E}", tFileObject.name("").c_str());

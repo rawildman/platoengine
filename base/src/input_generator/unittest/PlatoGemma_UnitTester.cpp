@@ -16,9 +16,9 @@
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLGeneratorServiceUtilities.hpp"
 
-#include "XMLGeneratorGemmaProblem.hpp"
-#include "XMLGeneratorStage.hpp"
-#include "XMLGeneratorOperation.hpp"
+#include "GemmaProblem.hpp"
+#include "Stage.hpp"
+#include "Operation.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -52,7 +52,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaInputDeckMatchedPowerBalance)
     tMaterial.property("conductivity", "1e6");
     tInputMetaData.append(tMaterial);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
     ASSERT_NO_THROW(tGemmaProblem.create_matched_power_balance_input_deck(tInputMetaData));
 
     auto tReadData = XMLGen::read_data_from_file("gemma_matched_power_balance_input_deck.yaml.template");
@@ -92,7 +92,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaInputDeckMatchedPowerBalanceToSubdirectori
     tMaterial.property("conductivity", "1e6");
     tInputMetaData.append(tMaterial);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
     ASSERT_NO_THROW(tGemmaProblem.create_evaluation_subdirectories_and_gemma_input(tInputMetaData));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/gemma_matched_power_balance_input_deck.yaml.template");
@@ -150,7 +150,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     tServiceTwo.append("number_processors", "2");
     tInputMetaData.append(tServiceTwo);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_plato_main_operations(tDocument));
@@ -357,7 +357,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     tServiceTwo.append("number_processors", "2");
     tInputMetaData.append(tServiceTwo);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_interface(tDocument));
@@ -625,7 +625,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaMPIRunFile)
     tServiceTwo.append("number_processors", "2");
     tInputMetaData.append(tServiceTwo);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
 
     tGemmaProblem.write_mpirun("mpifile");
 
@@ -707,7 +707,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaDefinesFile)
     tServiceTwo.append("number_processors", "2");
     tInputMetaData.append(tServiceTwo);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
 
     tGemmaProblem.write_defines();
 
@@ -770,7 +770,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainInput)
     tServiceTwo.append("number_processors", "2");
     tInputMetaData.append(tServiceTwo);
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(tInputMetaData);
+    PDir::GemmaProblem tGemmaProblem(tInputMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tGemmaProblem.write_plato_main_input(tDocument));

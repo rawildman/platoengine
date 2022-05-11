@@ -67,12 +67,12 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseRun.cpp
                       XMLGeneratorPlatoXTKInputFile.cpp
                       XMLGeneratorPlatoXTKOperationFile.cpp
-		      XMLGeneratorFileObject.cpp
-		      XMLGeneratorOperation.cpp
-                      XMLGeneratorStage.cpp
-		      XMLGeneratorPerformer.cpp
-		      XMLGeneratorSharedData.cpp
-		      XMLGeneratorGemmaProblem.cpp
+		      FileObject.cpp
+		      Operation.cpp
+                      Stage.cpp
+		      Performer.cpp
+		      SharedData.cpp
+		      GemmaProblem.cpp
 		      OptimizationAlgorithm.cpp
 		      OptimizationAlgorithmFactory.cpp
                       )
@@ -153,12 +153,12 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPlatoXTKOperationFile.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
-		      XMLGeneratorFileObject.hpp
-		      XMLGeneratorOperation.hpp
-                      XMLGeneratorStage.hpp
-		      XMLGeneratorPerformer.hpp
-		      XMLGeneratorSharedData.hpp
-		      XMLGeneratorGemmaProblem.hpp
+		      FileObject.hpp
+		      Operation.hpp
+                      Stage.hpp
+		      Performer.hpp
+		      SharedData.hpp
+		      GemmaProblem.hpp
 		      OptimizationAlgorithm.hpp
 		      OptimizationAlgorithmFactory.hpp
                       )

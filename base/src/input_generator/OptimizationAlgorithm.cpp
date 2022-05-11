@@ -2,11 +2,11 @@
 #include "pugixml.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include <regex>
-
-namespace XMLGen
+using namespace XMLGen;
+namespace PDir
 {
 
-OptimizationAlgorithm::OptimizationAlgorithm(const OptimizationParameters& aParameters)
+OptimizationAlgorithm::OptimizationAlgorithm(const XMLGen::OptimizationParameters& aParameters)
 {
     mMaxIterations = aParameters.max_iterations();
 }
@@ -62,7 +62,7 @@ void OptimizationAlgorithm::appendObjectiveData
 }
 
 //****************************PLATO **********************************************//
-OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const OptimizationParameters& aParameters)
+OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
     mControlStagnationTolerance = aParameters.oc_control_stagnation_tolerance();
@@ -100,7 +100,7 @@ void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 }
 
-OptimizationAlgorithmPlatoKSBC::OptimizationAlgorithmPlatoKSBC(const OptimizationParameters& aParameters)
+OptimizationAlgorithmPlatoKSBC::OptimizationAlgorithmPlatoKSBC(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
     mMaxNumOuterIterations= aParameters.max_iterations(); ///<<<<<<<<<
@@ -171,7 +171,7 @@ void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 }
 
-OptimizationAlgorithmPlatoKSAL::OptimizationAlgorithmPlatoKSAL(const OptimizationParameters& aParameters)
+OptimizationAlgorithmPlatoKSAL::OptimizationAlgorithmPlatoKSAL(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
    mMaxNumOuterIterations= aParameters.max_iterations(); ///<<<<<<<<<
@@ -248,7 +248,7 @@ void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 }
 
-OptimizationAlgorithmPlatoMMA::OptimizationAlgorithmPlatoMMA(const OptimizationParameters& aParameters)
+OptimizationAlgorithmPlatoMMA::OptimizationAlgorithmPlatoMMA(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
     mMaxNumOuterIterations = aParameters.max_iterations(); //<<<<<<<<<<<<<<<<<
@@ -359,7 +359,7 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 
 // //****************************ROL **********************************************//
-// OptimizationAlgorithmROLLC::OptimizationAlgorithmROLLC(const OptimizationParameters& aParameters)
+// OptimizationAlgorithmROLLC::OptimizationAlgorithmROLLC(const XMLGen::OptimizationParameters& aParameters)
 // : OptimizationAlgorithm(aParameters)
 // {
 
@@ -374,7 +374,7 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 // }
 
-// OptimizationAlgorithmROLBC::OptimizationAlgorithmROLBC(const OptimizationParameters& aParameters)
+// OptimizationAlgorithmROLBC::OptimizationAlgorithmROLBC(const XMLGen::OptimizationParameters& aParameters)
 // : OptimizationAlgorithm(aParameters)
 // {
 
@@ -389,7 +389,7 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 
 // }
 
-// OptimizationAlgorithmROLAL::OptimizationAlgorithmROLAL(const OptimizationParameters& aParameters)
+// OptimizationAlgorithmROLAL::OptimizationAlgorithmROLAL(const XMLGen::OptimizationParameters& aParameters)
 // : OptimizationAlgorithm(aParameters)
 // {
 
@@ -405,7 +405,7 @@ void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)
 // }
 
 // //****************************Dakota **********************************************//
-// OptimizationAlgorithmDakota::OptimizationAlgorithmDakota(const OptimizationParameters& aParameters)
+// OptimizationAlgorithmDakota::OptimizationAlgorithmDakota(const XMLGen::OptimizationParameters& aParameters)
 // : OptimizationAlgorithm(aParameters)
 // {
 

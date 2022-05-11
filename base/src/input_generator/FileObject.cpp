@@ -1,16 +1,16 @@
 /*
- * XMLGeneratorFileObject.cpp
+ * FileObject.cpp
  *
  *  Created on: April 20, 2022
  */
 
-#include "XMLGeneratorFileObject.hpp"
+#include "FileObject.hpp"
 #include <regex>
 
-namespace XMLGen
+namespace PDir
 {
 
-XMLGeneratorFileObject::XMLGeneratorFileObject
+FileObject::FileObject
 (const std::string& aName,
  int aConcurrentEvaluations) :
  mName(aName),
@@ -23,7 +23,7 @@ XMLGeneratorFileObject::XMLGeneratorFileObject
         mName += "_" + mEvaluationTag;
 }
 
-std::string XMLGeneratorFileObject::name(std::string aEvaluationString)
+std::string FileObject::name(std::string aEvaluationString)
 {
     if(aEvaluationString=="")
         return mName;
@@ -33,7 +33,7 @@ std::string XMLGeneratorFileObject::name(std::string aEvaluationString)
     }    
 }
 
-std::string XMLGeneratorFileObject::tag(std::string aEvaluationString)
+std::string FileObject::tag(std::string aEvaluationString)
 {
     if(mConcurrentEvaluations == 0)
         return std::string("");
@@ -43,7 +43,7 @@ std::string XMLGeneratorFileObject::tag(std::string aEvaluationString)
         return aEvaluationString;
 }
 
-pugi::xml_node XMLGeneratorFileObject::forNode
+pugi::xml_node FileObject::forNode
 (pugi::xml_node& aNode, 
  std::string aXMLLoopVectorName)
 {

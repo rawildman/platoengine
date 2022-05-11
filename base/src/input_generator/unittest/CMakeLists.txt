@@ -6,7 +6,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       Plato_Test_XMLGenerator.cpp
                                       XMLGeneratorSrom_UnitTester.cpp
                                       XMLGeneratorLaunch_UnitTester.cpp
-                                      XMLGeneratorPlatoGemma_UnitTester.cpp
+                                      PlatoGemma_UnitTester.cpp
                                       XMLGeneratorDefineFile_UnitTester.cpp
                                       XMLGeneratorDakotaDriver_UnitTester.cpp
                                       XMLGeneratorParseMetaData_UnitTester.cpp
@@ -20,11 +20,11 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
-                                      XMLGeneratorFileObject_UnitTester.cpp
-                                      XMLGeneratorPerformer_UnitTester.cpp
-                                      XMLGeneratorSharedData_UnitTester.cpp
-                                      XMLGeneratorStage_UnitTester.cpp
-                                      XMLGeneratorOperation_UnitTester.cpp
+                                      FileObject_UnitTester.cpp
+                                      Performer_UnitTester.cpp
+                                      SharedData_UnitTester.cpp
+                                      Stage_UnitTester.cpp
+                                      Operation_UnitTester.cpp
                                       OptimizationAlgorithm_UnitTester.cpp
                                       ../XMLGenerator.cpp
                                       ../XMLGeneratorProblem.cpp
@@ -93,12 +93,12 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoMainConstraintGradientOperationInterface.cpp
                                       # ../PlatoAnalyzeInputDeckWriter.cpp
                                       # ../SalinasInputDeckWriter.cpp)
-			              ../XMLGeneratorFileObject.cpp
-			              ../XMLGeneratorOperation.cpp
-                                      ../XMLGeneratorStage.cpp
-			              ../XMLGeneratorPerformer.cpp
-			              ../XMLGeneratorSharedData.cpp
-			              ../XMLGeneratorGemmaProblem.cpp
+			              ../FileObject.cpp
+			              ../Operation.cpp
+                                      ../Stage.cpp
+			              ../Performer.cpp
+			              ../SharedData.cpp
+			              ../GemmaProblem.cpp
                                       ../OptimizationAlgorithmFactory.cpp
                                       ../OptimizationAlgorithm.cpp
                                       )

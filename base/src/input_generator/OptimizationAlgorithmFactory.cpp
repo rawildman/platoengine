@@ -1,7 +1,7 @@
 #include "OptimizationAlgorithmFactory.hpp"
 #include "OptimizationAlgorithm.hpp"
-
-namespace XMLGen
+using namespace XMLGen;
+namespace PDir
 {
 
 OptimizationAlgorithmFactory::OptimizationAlgorithmFactory()
@@ -9,7 +9,7 @@ OptimizationAlgorithmFactory::OptimizationAlgorithmFactory()
 
 }
 
-std::shared_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::create(const InputData& aMetaData)
+std::shared_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::create(const XMLGen::InputData& aMetaData)
 {
     auto tOptimizationAlgorithm = aMetaData.optimization_parameters().optimization_algorithm();  
     auto tOptimizationType = aMetaData.optimization_parameters().optimization_type();
