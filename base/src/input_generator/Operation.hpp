@@ -244,4 +244,21 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationCopy : public Operation
+{
+private:
+    InputOutput mInput;
+    InputOutput mOutput;
+public:
+    OperationCopy(const std::string& aName,
+                       bool isValue,
+                       std::shared_ptr<SharedData> aInputSharedData,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 }

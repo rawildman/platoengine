@@ -1236,8 +1236,6 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceInitializeUniformOperation)
     ASSERT_NO_THROW(tInitialize.write_interface(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("testint.xml","  ");
-
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -1268,5 +1266,113 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceInitializeUniformOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, WriteDefinitionCopyFieldOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Input Field",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Output Field",tPerformerMain,tUserPerformers);
+
+    PDir::OperationCopy tCopy("Copy Field",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tCopy.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"CopyField", 
+        "Copy Field", 
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Input Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Output Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceCopyValueOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Input Value",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Output Value",tPerformerMain,tUserPerformers);
+
+    PDir::OperationCopy tCopy("Copy Value",true,tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tCopy.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Copy Value", 
+        "platomain",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Input Value","Input Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Output Value","Output Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
 
 }

@@ -552,5 +552,45 @@ void OperationInitializeUniformField::write_interface
 
 }
 
-
+OperationCopy::OperationCopy
+(const std::string& aName,
+bool isValue,
+std::shared_ptr<SharedData> aInputSharedData,
+std::shared_ptr<SharedData> aOutputSharedData,
+std::shared_ptr<Performer> aPerformer):
+Operation(aName, (isValue?"CopyValue":"CopyField"), aPerformer, 0)
+{
+    mInput.mSharedData = aInputSharedData;
+    mOutput.mSharedData = aOutputSharedData;
 }
+
+void OperationCopy::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+void OperationCopy::write_interface
+(pugi::xml_node& aNode, 
+std::string aEvaluationString)
+{
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
+
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+} //namespace
