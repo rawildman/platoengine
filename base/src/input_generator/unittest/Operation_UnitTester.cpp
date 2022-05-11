@@ -1019,8 +1019,6 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
     ASSERT_NO_THROW(tSetBounds.write_interface(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("testint.xml","  ");
-
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -1062,5 +1060,213 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
+
+TEST(PlatoTestXMLGenerator, WriteDefinitionFilterOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Field",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Filtered Field",tPerformerMain,tUserPerformers);
+
+    PDir::OperationFilter tFilter("Filter Control",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tFilter.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Gradient", 
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"Filter", 
+        "Filter Control", 
+        "False", 
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Filtered Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceFilterOperationGradient)
+{
+      std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Field",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Filtered Field",tPerformerMain,tUserPerformers);
+
+    PDir::OperationFilter tFilter("Filter Control",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tFilter.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Filter Control", 
+        "platomain",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Field","Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Filtered Field","Filtered Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteDefinitionInitializeUniformOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Initialized Field",tPerformerMain,tUserPerformers);
+
+    PDir::OperationInitializeUniformField tInitialize("Initialize Field",0.25,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tInitialize.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Method", 
+        "Uniform",
+        "Output"};
+    std::vector<std::string> tValues = {"InitializeField", 
+        "Initialize Field", 
+        "Uniform", 
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tUniform = tOperation.child("Uniform");
+    ASSERT_FALSE(tUniform.empty());
+
+    tKeys = {"Value"};
+    tValues = {"0.250000"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tUniform);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Initialized Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceInitializeUniformOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Initialized Field",tPerformerMain,tUserPerformers);
+
+    PDir::OperationInitializeUniformField tInitialize("Initialize Field",0.25,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tInitialize.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("testint.xml","  ");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Initialize Field", 
+        "platomain",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Initialized Field","Initialized Field"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 
 }

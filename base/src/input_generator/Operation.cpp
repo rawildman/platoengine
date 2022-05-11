@@ -428,7 +428,6 @@ std::shared_ptr<SharedData> aInputSharedData,
 std::shared_ptr<SharedData> aOutputSharedData,
 std::shared_ptr<Performer> aPerformer) :
 Operation(aName, (aIsLower?"SetLowerBounds":"SetUpperBounds"), aPerformer, 0),
-mPerformer(aPerformer),
 mUseCase(aUseCase),
 mDiscretization(aDiscretization)
 {
@@ -469,6 +468,89 @@ void OperationSetBounds::write_interface
 
 }
 
+OperationFilter::OperationFilter
+(const std::string& aName,
+bool aIsGradient,
+std::shared_ptr<SharedData> aInputSharedData,
+std::shared_ptr<SharedData> aOutputSharedData,
+std::shared_ptr<Performer> aPerformer) :
+Operation(aName, "Filter", aPerformer, 0),
+mIsGradient(aIsGradient)
+{
+    mInput.mSharedData = aInputSharedData;
+    mOutput.mSharedData = aOutputSharedData;
+}
+
+void OperationFilter::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);
+    addChild(tOperationNode, "Gradient",(mIsGradient?"True":"False"));
+    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+void OperationFilter::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
+
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
+
+}
+
+
+OperationInitializeUniformField::OperationInitializeUniformField
+(const std::string& aName,
+double aInitialValue,
+std::shared_ptr<SharedData> aOutputSharedData,
+std::shared_ptr<Performer> aPerformer) :
+Operation(aName, "InitializeField", aPerformer, 0)
+{
+    mOutput.mSharedData = aOutputSharedData;
+    mInitialValue = aInitialValue;
+}
+
+void OperationInitializeUniformField::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);
+    addChild(tOperationNode, "Method","Uniform");
+    auto tUniformNode = tOperationNode.append_child("Uniform");
+    addChild(tUniformNode,"Value",std::to_string(mInitialValue));
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+void OperationInitializeUniformField::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
+
+}
 
 
 }

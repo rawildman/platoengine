@@ -195,13 +195,47 @@ private:
     InputOutput mOutput;
     std::string mUseCase;
     std::string mDiscretization;
-    std::shared_ptr<Performer> mPerformer;
+    
 public:
     OperationSetBounds(const std::string& aName,
                        bool aIsLower,
                        const std::string& aUseCase,
                        const std::string& aDiscretization,
                        std::shared_ptr<SharedData> aInputSharedData,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
+class OperationFilter : public Operation
+{
+private:
+    InputOutput mInput;
+    InputOutput mOutput;
+    bool mIsGradient;
+public:
+    OperationFilter(const std::string& aName,
+                       bool aIsGradient,
+                       std::shared_ptr<SharedData> aInputSharedData,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
+class OperationInitializeUniformField : public Operation
+{
+private:
+    InputOutput mOutput;
+    double mInitialValue;
+public:
+    OperationInitializeUniformField(const std::string& aName,
+                       double aInitialValue,
                        std::shared_ptr<SharedData> aOutputSharedData,
                        std::shared_ptr<Performer> aPerformer);
     void write_definition(pugi::xml_document& aDocument, 
