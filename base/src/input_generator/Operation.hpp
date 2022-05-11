@@ -188,4 +188,26 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationSetBounds : public Operation
+{
+private:
+    InputOutput mInput;
+    InputOutput mOutput;
+    std::string mUseCase;
+    std::string mDiscretization;
+    std::shared_ptr<Performer> mPerformer;
+public:
+    OperationSetBounds(const std::string& aName,
+                       bool aIsLower,
+                       const std::string& aUseCase,
+                       const std::string& aDiscretization,
+                       std::shared_ptr<SharedData> aInputSharedData,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 }

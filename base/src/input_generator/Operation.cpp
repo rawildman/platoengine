@@ -419,4 +419,56 @@ void OperationDecomp::write_interface
     addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
 }
 
+OperationSetBounds::OperationSetBounds
+(const std::string& aName,
+bool aIsLower,
+const std::string& aUseCase,
+const std::string& aDiscretization,
+std::shared_ptr<SharedData> aInputSharedData,
+std::shared_ptr<SharedData> aOutputSharedData,
+std::shared_ptr<Performer> aPerformer) :
+Operation(aName, (aIsLower?"SetLowerBounds":"SetUpperBounds"), aPerformer, 0),
+mPerformer(aPerformer),
+mUseCase(aUseCase),
+mDiscretization(aDiscretization)
+{
+    mInput.mSharedData = aInputSharedData;
+    mOutput.mSharedData = aOutputSharedData;
+}
+
+void OperationSetBounds::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);
+    addChild(tOperationNode, "UseCase",mUseCase);
+    addChild(tOperationNode, "Discretization",mDiscretization);
+    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+void OperationSetBounds::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tInputNode = tOperationNode.append_child("Input");
+    addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tInputNode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
+
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
+
+}
+
+
+
 }

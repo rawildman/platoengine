@@ -902,6 +902,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
     std::vector<std::string> tKeys = {"Function",
         "Name", 
         "Command", 
+        "ChDir",
         "Argument",
         "Argument",
         "Argument",
@@ -915,6 +916,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
         " ",
         "myFile.exo"};
     
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
@@ -939,6 +941,124 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceDecompOperationInterfaceFile)
         "decomp_mesh_2", 
         "plato_services_2"};
     
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteDefinitionSetBoundsOperationLower)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,0);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
+
+    PDir::OperationSetBounds tSetBounds("Compute Lower Bounds",true,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSetBounds.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "UseCase", 
+        "Discretization",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"SetLowerBounds", 
+        "Compute Lower Bounds", 
+        "solid", 
+        "density",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Lower Bound Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Lower Bound Vector"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,0);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
+
+    PDir::OperationSetBounds tSetBounds("Compute Upper Bounds",false,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSetBounds.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("testint.xml","  ");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Compute Upper Bounds", 
+        "platomain",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Upper Bound Value","Upper Bound Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Upper Bound Vector","Upper Bound Vector"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
 }
