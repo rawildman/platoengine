@@ -61,6 +61,36 @@ void OptimizationAlgorithm::appendObjectiveData
     }
 }
 
+void OptimizationAlgorithm::appendConstraintData
+(pugi::xml_node& aNode,
+ StagePtr aConstraintValue,
+ StagePtr aConstraintGradient)
+{ 
+    auto tConstraint = aNode.append_child("Constraint");
+    if (aConstraintValue)
+    {
+        addChild(tConstraint, "ValueStageName", aConstraintValue->name());
+        addChild(tConstraint, "ValueName", aConstraintValue->outputSharedDataName());
+    }
+    if (aConstraintGradient)
+    {
+        addChild(tConstraint, "GradientStageName", aConstraintGradient->name());
+        addChild(tConstraint, "GradientName", aConstraintGradient->outputSharedDataName());
+    }
+    addChild(tConstraint, "NormalizedTargetValue", "");
+    addChild(tConstraint, "AbsoluteTargetValue", "");
+    addChild(tConstraint, "ReferenceValueName", "");
+    addChild(tConstraint, "ReferenceValue", "");
+}
+
+void OptimizationAlgorithm::appendBoundsData
+(pugi::xml_node& aNode)
+{ 
+    auto tBounds = aNode.append_child("BoundConstraint");
+    addChild(tBounds, "Upper", "1.0");
+    addChild(tBounds, "Lower", "0.0");
+}
+
 //****************************PLATO **********************************************//
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
@@ -76,7 +106,9 @@ void OptimizationAlgorithmPlatoOC::writeInterface
  StagePtr aUpperBound,
  StagePtr aLowerBound,
  StagePtr aObjectiveValue,
- StagePtr aObjectiveGradient)
+ StagePtr aObjectiveGradient,
+ StagePtr aConstraintValue,
+ StagePtr aConstraintGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","OC");
@@ -93,6 +125,8 @@ void OptimizationAlgorithmPlatoOC::writeInterface
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
     appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
+    appendConstraintData(tOptimizer, aConstraintValue, aConstraintGradient);
+    appendBoundsData(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -132,7 +166,9 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface
  StagePtr aUpperBound,
  StagePtr aLowerBound,
  StagePtr aObjectiveValue,
- StagePtr aObjectiveGradient)
+ StagePtr aObjectiveGradient,
+ StagePtr aConstraintValue,
+ StagePtr aConstraintGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSBC");
@@ -164,6 +200,8 @@ void OptimizationAlgorithmPlatoKSBC::writeInterface
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
     appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
+    appendConstraintData(tOptimizer, aConstraintValue, aConstraintGradient);
+    appendBoundsData(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSBC::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -206,7 +244,9 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface
  StagePtr aUpperBound,
  StagePtr aLowerBound,
  StagePtr aObjectiveValue,
- StagePtr aObjectiveGradient)
+ StagePtr aObjectiveGradient,
+ StagePtr aConstraintValue,
+ StagePtr aConstraintGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","KSAL");
@@ -241,6 +281,8 @@ void OptimizationAlgorithmPlatoKSAL::writeInterface
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
     appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
+    appendConstraintData(tOptimizer, aConstraintValue, aConstraintGradient);
+    appendBoundsData(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoKSAL::writeAuxiliaryFiles(pugi::xml_node& aNode)
@@ -271,7 +313,9 @@ void OptimizationAlgorithmPlatoMMA::writeInterface
  StagePtr aUpperBound,
  StagePtr aLowerBound,
  StagePtr aObjectiveValue,
- StagePtr aObjectiveGradient)
+ StagePtr aObjectiveGradient,
+ StagePtr aConstraintValue,
+ StagePtr aConstraintGradient)
 {
     auto tOptimizer = aNode.append_child("Optimizer");
     addChild(tOptimizer, "Package","MMA");
@@ -297,6 +341,8 @@ void OptimizationAlgorithmPlatoMMA::writeInterface
     appendOutputStage(tOptimizer);
     appendOptimizationVariables(tOptimizer, aInitialization, aUpperBound, aLowerBound);
     appendObjectiveData(tOptimizer, aObjectiveValue, aObjectiveGradient);
+    appendConstraintData(tOptimizer, aConstraintValue, aConstraintGradient);
+    appendBoundsData(tOptimizer);
 }
 
 void OptimizationAlgorithmPlatoMMA::writeAuxiliaryFiles(pugi::xml_node& aNode)

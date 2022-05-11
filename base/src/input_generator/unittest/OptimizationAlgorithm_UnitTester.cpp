@@ -490,7 +490,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOut
 
 TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOptimizationVariables)
 {
-    // create algorithm
+    // CREATE ALGORITHM
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
@@ -499,7 +499,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     PDir::OptimizationAlgorithmFactory tFactory;
     std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
-    // create stages
+    // CREATE STAGES
     std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
     std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
 
@@ -516,7 +516,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     std::shared_ptr<PDir::SharedData> tUpperBoundVectorSharedData = std::make_shared<PDir::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::Stage> tUpperBoundStage = std::make_shared<PDir::Stage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
 
-    // write interface
+    // WRITE INTERFACE
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument,tInitialGuessStage,tUpperBoundStage,tLowerBoundStage));
     ASSERT_FALSE(tDocument.empty());
@@ -558,7 +558,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
 
 TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObjective)
 {
-    // create algorithm
+    // CREATE ALGORITHM
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
@@ -567,7 +567,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObj
     PDir::OptimizationAlgorithmFactory tFactory;
     std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
-    // create stages
+    // CREATE STAGES
     std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
     std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
 
@@ -579,7 +579,7 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObj
     std::shared_ptr<PDir::SharedData> tObjectiveGradientSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::Stage> tObjectiveGradientStage = std::make_shared<PDir::Stage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
 
-    // write interface
+    // WRITE INTERFACE
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument,nullptr,nullptr,nullptr,tObjectiveValueStage,tObjectiveGradientStage));
     ASSERT_FALSE(tDocument.empty());
@@ -606,6 +606,108 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObj
 
     tObjective = tObjective.next_sibling("Objective");
     ASSERT_TRUE(tObjective.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+}
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckSingleConstraint)
+{
+    // CREATE ALGORITHM
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    tMetaData.set(tOptimizationParameters);
+   
+    PDir::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    // CREATE STAGES
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
+
+    std::shared_ptr<PDir::SharedData> tConstraintValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Constraint Value 1","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tConstraintValueStage = std::make_shared<PDir::Stage>("Compute Constraint Value 1",tNullOperations,nullptr,tConstraintValueSharedData);
+
+    std::shared_ptr<PDir::SharedData> tConstraintGradientSharedData = std::make_shared<PDir::SharedDataNodalField>("Constraint Gradient 1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::Stage> tConstraintGradientStage = std::make_shared<PDir::Stage>("Compute Constraint Gradient 1",tNullOperations,nullptr,tConstraintGradientSharedData);
+
+    // WRITE INTERFACE
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument,nullptr,nullptr,nullptr,nullptr,nullptr,tConstraintValueStage,tConstraintGradientStage));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tConstraint = tOptimizer.child("Constraint");
+    ASSERT_FALSE(tConstraint.empty());
+    std::vector<std::string> tKeys = {
+        "ValueStageName",
+        "ValueName",
+        "GradientStageName",
+        "GradientName",
+        "NormalizedTargetValue",
+        "AbsoluteTargetValue",
+        "ReferenceValueName",
+        "ReferenceValue"
+        };
+    std::vector<std::string>  tValues = {
+        "Compute Constraint Value 1",
+        "Constraint Value 1",
+        "Compute Constraint Gradient 1",
+        "Constraint Gradient 1",
+        "NEED TO ADD",
+        "NEED TO ADD",
+        "NEED TO ADD",
+        "NEED TO ADD"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraint);
+
+    tConstraint = tConstraint.next_sibling("Constraint");
+    ASSERT_TRUE(tConstraint.empty());
+
+    tOptimizer = tOptimizer.next_sibling("Optimizer");
+    ASSERT_TRUE(tOptimizer.empty());
+}
+
+TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckBoundConstraint)
+{
+    // CREATE ALGORITHM
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("optimization_algorithm" ,"oc");
+    tMetaData.set(tOptimizationParameters);
+   
+    PDir::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+
+    // WRITE INTERFACE
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOptimizer = tDocument.child("Optimizer");
+    ASSERT_FALSE(tOptimizer.empty());
+
+    auto tBounds = tOptimizer.child("BoundConstraint");
+    ASSERT_FALSE(tBounds.empty());
+    std::vector<std::string> tKeys = {
+        "Upper",
+        "Lower"
+        };
+    std::vector<std::string>  tValues = {
+        "1.0",
+        "0.0"
+        };
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tBounds);
+
+    tBounds = tBounds.next_sibling("BoundConstraint");
+    ASSERT_TRUE(tBounds.empty());
 
     tOptimizer = tOptimizer.next_sibling("Optimizer");
     ASSERT_TRUE(tOptimizer.empty());

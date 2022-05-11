@@ -28,6 +28,10 @@ protected:
    void appendObjectiveData(pugi::xml_node& aNode,
                             StagePtr aObjectiveValue,
                             StagePtr aObjectiveGradient);
+   void appendConstraintData(pugi::xml_node& aNode,
+                             StagePtr aConstraintValue,
+                             StagePtr aConstraintGradient);
+   void appendBoundsData(pugi::xml_node& aNode);
 
 public:
     OptimizationAlgorithm(const XMLGen::OptimizationParameters& aParameters);
@@ -36,7 +40,9 @@ public:
                                 StagePtr aUpperBound = nullptr,
                                 StagePtr aLowerBound = nullptr,
                                 StagePtr aObjectiveValue = nullptr,
-                                StagePtr aObjectiveGradient = nullptr) = 0;
+                                StagePtr aObjectiveGradient = nullptr,
+                                StagePtr aConstraintValue = nullptr,
+                                StagePtr aConstraintdient = nullptr) = 0;
     virtual void writeAuxiliaryFiles(pugi::xml_node& aNode) = 0;
 };
 
@@ -55,7 +61,9 @@ public:
                         StagePtr aUpperBound = nullptr,
                         StagePtr aLowerBound = nullptr,
                         StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr) override;
+                        StagePtr aObjectiveGradient = nullptr,
+                        StagePtr aConstraintValue = nullptr,
+                        StagePtr aConstraintGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -92,7 +100,9 @@ public:
                         StagePtr aUpperBound = nullptr,
                         StagePtr aLowerBound = nullptr,
                         StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr) override;
+                        StagePtr aObjectiveGradient = nullptr,
+                        StagePtr aConstraintValue = nullptr,
+                        StagePtr aConstraintGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -132,7 +142,9 @@ public:
                         StagePtr aUpperBound = nullptr,
                         StagePtr aLowerBound = nullptr,
                         StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr) override;
+                        StagePtr aObjectiveGradient = nullptr,
+                        StagePtr aConstraintValue = nullptr,
+                        StagePtr aConstraintGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
@@ -160,7 +172,9 @@ public:
                         StagePtr aUpperBound = nullptr,
                         StagePtr aLowerBound = nullptr,
                         StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr) override;
+                        StagePtr aObjectiveGradient = nullptr,
+                        StagePtr aConstraintValue = nullptr,
+                        StagePtr aConstraintGradient = nullptr) override;
     void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
 };
 
