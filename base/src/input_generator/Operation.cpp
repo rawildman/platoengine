@@ -421,13 +421,13 @@ void OperationDecomp::write_interface
 
 OperationSetBounds::OperationSetBounds
 (const std::string& aName,
-bool aIsLower,
+upperLower aUpperLower,
 const std::string& aUseCase,
 const std::string& aDiscretization,
 std::shared_ptr<SharedData> aInputSharedData,
 std::shared_ptr<SharedData> aOutputSharedData,
 std::shared_ptr<Performer> aPerformer) :
-Operation(aName, (aIsLower?"SetLowerBounds":"SetUpperBounds"), aPerformer, 0),
+Operation(aName, (aUpperLower==lower?"SetLowerBounds":"SetUpperBounds"), aPerformer, 0),
 mUseCase(aUseCase),
 mDiscretization(aDiscretization)
 {
@@ -470,12 +470,12 @@ void OperationSetBounds::write_interface
 
 OperationFilter::OperationFilter
 (const std::string& aName,
-bool aIsGradient,
+returnVariable aReturnVar,
 std::shared_ptr<SharedData> aInputSharedData,
 std::shared_ptr<SharedData> aOutputSharedData,
 std::shared_ptr<Performer> aPerformer) :
 Operation(aName, "Filter", aPerformer, 0),
-mIsGradient(aIsGradient)
+mReturnVar(aReturnVar)
 {
     mInput.mSharedData = aInputSharedData;
     mOutput.mSharedData = aOutputSharedData;
@@ -487,7 +487,7 @@ void OperationFilter::write_definition
 {
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
-    addChild(tOperationNode, "Gradient",(mIsGradient?"True":"False"));
+    addChild(tOperationNode, "Gradient",(mReturnVar==gradient?"True":"False"));
     
     auto tInputNode = tOperationNode.append_child("Input");
     addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
@@ -554,11 +554,11 @@ void OperationInitializeUniformField::write_interface
 
 OperationCopy::OperationCopy
 (const std::string& aName,
-bool isValue,
+copyVariable aCopyVar,
 std::shared_ptr<SharedData> aInputSharedData,
 std::shared_ptr<SharedData> aOutputSharedData,
 std::shared_ptr<Performer> aPerformer):
-Operation(aName, (isValue?"CopyValue":"CopyField"), aPerformer, 0)
+Operation(aName, (aCopyVar == copyvalue ?"CopyValue":"CopyField"), aPerformer, 0)
 {
     mInput.mSharedData = aInputSharedData;
     mOutput.mSharedData = aOutputSharedData;
@@ -595,14 +595,14 @@ std::string aEvaluationString)
 
 OperationComputeCriterion::OperationComputeCriterion
 (const std::string& aName,
-bool aIsValue,
+returnVariable aReturnVariable,
 std::string aCriterion, 
 std::shared_ptr<SharedData> aInputSharedData,
 std::shared_ptr<SharedData> aOutputSharedData,
 std::shared_ptr<Performer> aPerformer,
 double aTarget):
-Operation(aName, (aIsValue?"ComputeCriterionValue":"ComputeCriterionGradient"), aPerformer, 0),
-mIsValue(aIsValue),
+Operation(aName, (aReturnVariable==value?"ComputeCriterionValue":"ComputeCriterionGradient"), aPerformer, 0),
+mReturnVariable(aReturnVariable),
 mCriterion(aCriterion),
 mTarget(aTarget)
 {
@@ -617,12 +617,16 @@ void OperationComputeCriterion::write_definition
     auto tOperationNode = aDocument.append_child("Operation");
     appendCommonChildren(tOperationNode,aEvaluationString);
     addChild(tOperationNode, "Criterion",mCriterion);
-    if(mIsValue)
+    if(mReturnVariable==value)
         addChild(tOperationNode, "Target",std::to_string(mTarget));
 
     auto tInputNode = tOperationNode.append_child("Input");
     addChild(tInputNode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
     auto tOutputNode = tOperationNode.append_child("Output");
+    if(mReturnVariable==value)
+        addChild(tOutputNode, "Argument", "Value");
+    else
+        addChild(tOutputNode, "Argument", "Gradient");
     addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
 }
 

@@ -17,6 +17,9 @@
 
 namespace PDir
 {
+enum returnVariable {value, gradient};
+enum upperLower {upper , lower};
+enum copyVariable {copyvalue , copyfield};
 
 struct InputOutput
 {
@@ -198,7 +201,7 @@ private:
     
 public:
     OperationSetBounds(const std::string& aName,
-                       bool aIsLower,
+                       upperLower aUpperLower,
                        const std::string& aUseCase,
                        const std::string& aDiscretization,
                        std::shared_ptr<SharedData> aInputSharedData,
@@ -215,10 +218,10 @@ class OperationFilter : public Operation
 private:
     InputOutput mInput;
     InputOutput mOutput;
-    bool mIsGradient;
+    returnVariable mReturnVar;
 public:
     OperationFilter(const std::string& aName,
-                       bool aIsGradient,
+                       returnVariable aReturnVar,
                        std::shared_ptr<SharedData> aInputSharedData,
                        std::shared_ptr<SharedData> aOutputSharedData,
                        std::shared_ptr<Performer> aPerformer);
@@ -251,7 +254,7 @@ private:
     InputOutput mOutput;
 public:
     OperationCopy(const std::string& aName,
-                       bool isValue,
+                       copyVariable aCopyVar,
                        std::shared_ptr<SharedData> aInputSharedData,
                        std::shared_ptr<SharedData> aOutputSharedData,
                        std::shared_ptr<Performer> aPerformer);
@@ -266,13 +269,13 @@ class OperationComputeCriterion : public Operation
 private:
     InputOutput mInput;
     InputOutput mOutput;
-    bool mIsValue;
+    returnVariable mReturnVariable;
     std::string mCriterion;
     double mTarget;
 
 public:
     OperationComputeCriterion(const std::string& aName,
-                       bool aIsValue,
+                       returnVariable aReturnVariable,
                        std::string aCriterion, 
                        std::shared_ptr<SharedData> aInputSharedData,
                        std::shared_ptr<SharedData> aOutputSharedData,

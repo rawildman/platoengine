@@ -955,7 +955,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionSetBoundsOperationLower)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
 
-    PDir::OperationSetBounds tSetBounds("Compute Lower Bounds",true,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationSetBounds tSetBounds("Compute Lower Bounds",PDir::lower,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSetBounds.write_definition(tDocument,""));
@@ -1013,7 +1013,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
 
-    PDir::OperationSetBounds tSetBounds("Compute Upper Bounds",false,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationSetBounds tSetBounds("Compute Upper Bounds",PDir::upper,"solid","density",tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSetBounds.write_interface(tDocument,""));
@@ -1069,7 +1069,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionFilterOperation)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Field",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Filtered Field",tPerformerMain,tUserPerformers);
 
-    PDir::OperationFilter tFilter("Filter Control",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationFilter tFilter("Filter Control",PDir::value,tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tFilter.write_definition(tDocument,""));
@@ -1124,7 +1124,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceFilterOperationGradient)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Field",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Filtered Field",tPerformerMain,tUserPerformers);
 
-    PDir::OperationFilter tFilter("Filter Control",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationFilter tFilter("Filter Control",PDir::gradient,tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tFilter.write_interface(tDocument,""));
@@ -1274,7 +1274,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCopyFieldOperation)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Input Field",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Output Field",tPerformerMain,tUserPerformers);
 
-    PDir::OperationCopy tCopy("Copy Field",false,tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationCopy tCopy("Copy Field",PDir::copyfield,tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tCopy.write_definition(tDocument,""));
@@ -1327,7 +1327,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCopyValueOperation)
     std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Input Value",tPerformerMain,tUserPerformers);
     std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Output Value",tPerformerMain,tUserPerformers);
 
-    PDir::OperationCopy tCopy("Copy Value",true,tInputSharedData,tOutputSharedData,tPerformerMain);
+    PDir::OperationCopy tCopy("Copy Value",PDir::copyvalue,tInputSharedData,tOutputSharedData,tPerformerMain);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tCopy.write_interface(tDocument,""));
@@ -1375,4 +1375,287 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCopyValueOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValue)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("plato_analyze","plato_analyze",0,1,2);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Value",tPerformerMain,tUserPerformers);
+
+    PDir::OperationComputeCriterion tObjective("Compute Objective Value",PDir::value,"My Objective",tInputSharedData,tOutputSharedData,tPerformerMain,0.01);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tObjective.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Criterion",
+        "Target",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"ComputeCriterionValue", 
+        "Compute Objective Value", 
+        "My Objective",
+        "0.010000",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"Argument","ArgumentName"};
+    tValues = {"Value","Objective Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
 }
+
+TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValueNoTargetGiven)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("plato_analyze","plato_analyze",0,1,2);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Value",tPerformerMain,tUserPerformers);
+
+    PDir::OperationComputeCriterion tObjective("Compute Objective Value",PDir::value,"My Objective",tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tObjective.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Criterion",
+        "Target",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"ComputeCriterionValue", 
+        "Compute Objective Value", 
+        "My Objective",
+        "0.000000",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"Argument","ArgumentName"};
+    tValues = {"Value","Objective Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationValue)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("plato_analyze","plato_analyze",0,1,2);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Value",tPerformerMain,tUserPerformers);
+
+    PDir::OperationComputeCriterion tObjective("Compute Objective Value",PDir::value,"My Objective",tInputSharedData,tOutputSharedData,tPerformerMain,0.01);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tObjective.write_interface(tDocument,"2"));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Compute Objective Value", 
+        "plato_analyze_2",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Topology","Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Objective Value","Objective Value"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationGradient)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("plato_analyze","plato_analyze",0,1,2);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
+
+    PDir::OperationComputeCriterion tObjective("Compute Objective Gradient",PDir::gradient,"My Objective",tInputSharedData,tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tObjective.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("testint.xml","  ");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Criterion",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {"ComputeCriterionGradient", 
+        "Compute Objective Gradient", 
+        "My Objective",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"Argument","ArgumentName"};
+    tValues = {"Gradient","Objective Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationGradient)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("plato_analyze","plato_analyze",0,1,2);
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
+
+    PDir::OperationComputeCriterion tObjective("Compute Objective Gradient",PDir::gradient,"My Objective",tInputSharedData,tOutputSharedData,tPerformerMain,0.01);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tObjective.write_interface(tDocument,"2"));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Compute Objective Gradient", 
+        "plato_analyze_2",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"Topology","Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Objective Gradient","Objective Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tInput = tInput.next_sibling("Input");
+    ASSERT_TRUE(tInput.empty());
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+} 
