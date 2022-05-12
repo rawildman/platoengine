@@ -1882,5 +1882,132 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceComputeVolumeSIMPOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, WriteDefinitionWriteOutputOperation)
+{
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<director::SharedData> tOutputSharedData1 = std::make_shared<director::SharedDataNodalField>("displacement X",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData2 = std::make_shared<director::SharedDataNodalField>("displacement Y",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData3 = std::make_shared<director::SharedDataNodalField>("displacement Z",tPerformerMain,tUserPerformers);
+    std::vector<std::shared_ptr<director::SharedData>> tOutputs = {tOutputSharedData1, tOutputSharedData2, tOutputSharedData3};
+
+    director::OperationWriteOutput tWriteOutput("Write Output",tOutputs,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tWriteOutput.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("test.xml","  ");
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Output",
+        "Output",
+        "Output"};
+    std::vector<std::string> tValues = {"WriteOutput", 
+        "Write Output", 
+        "",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    
+    auto tIO = tOperation.child("Output");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"displacement X"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"displacement Y"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"displacement Z"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_TRUE(tIO.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceWriteOutputOperation)
+{
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<director::SharedData> tOutputSharedData1 = std::make_shared<director::SharedDataNodalField>("displacement X",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData2 = std::make_shared<director::SharedDataNodalField>("displacement Y",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData3 = std::make_shared<director::SharedDataNodalField>("displacement Z",tPerformerMain,tUserPerformers);
+    std::vector<std::shared_ptr<director::SharedData>> tOutputs = {tOutputSharedData1, tOutputSharedData2, tOutputSharedData3};
+
+    director::OperationWriteOutput tWriteOutput("Write Output",tOutputs,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tWriteOutput.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("test.xml","  ");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Output",
+        "Output",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Write Output", 
+        "platomain",
+        "",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"displacement X","displacement X"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"displacement Y","displacement Y"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"displacement Z","displacement Z"};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 
 } 

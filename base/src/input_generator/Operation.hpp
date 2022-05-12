@@ -318,5 +318,20 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationWriteOutput : public Operation
+{
+private:
+    std::vector<InputOutput> mOutputs;
+    
+public:
+    OperationWriteOutput(const std::string& aName,
+                       std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 
 }
