@@ -648,5 +648,37 @@ void OperationComputeCriterion::write_interface
 
 }
 
+OperationDesignVolume::OperationDesignVolume
+(const std::string& aName,
+std::shared_ptr<SharedData> aOutputSharedData,
+std::shared_ptr<Performer> aPerformer):
+Operation(aName, "DesignVolume", aPerformer, 0)
+{
+    mOutput.mSharedData = aOutputSharedData;
+}
+
+void OperationDesignVolume::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);    
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+}
+
+void OperationDesignVolume::write_interface
+(pugi::xml_node& aNode, 
+std::string aEvaluationString)
+{
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tOutputNode = tOperationNode.append_child("Output");
+    addChild(tOutputNode, "ArgumentName", mOutput.mSharedData->name(aEvaluationString));
+    addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
+}
+
 
 } //namespace

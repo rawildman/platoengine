@@ -287,4 +287,18 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationDesignVolume : public Operation
+{
+private:
+    InputOutput mOutput;
+public:
+    OperationDesignVolume(const std::string& aName,
+                       std::shared_ptr<SharedData> aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 }

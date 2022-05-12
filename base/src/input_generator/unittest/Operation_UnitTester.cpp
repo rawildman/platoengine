@@ -1658,4 +1658,89 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationGradient)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, WriteDefinitionDesignVolumeOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Design Volume",tPerformerMain,tUserPerformers);
+
+    PDir::OperationDesignVolume tDesignVolume("Design Volume",tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tDesignVolume.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "Output"};
+    std::vector<std::string> tValues = {"DesignVolume", 
+        "Design Volume", 
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Design Volume"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceDesignVolumeOperation)
+{
+    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataNodalField>("Design Volume",tPerformerMain,tUserPerformers);
+
+    PDir::OperationDesignVolume tDesignVolume("Design Volume",tOutputSharedData,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tDesignVolume.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Design Volume", 
+        "platomain",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Design Volume","Design Volume"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+
+
 } 
