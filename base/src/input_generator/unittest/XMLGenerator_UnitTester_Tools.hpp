@@ -52,7 +52,7 @@ inline void print_children(const pugi::xml_node& aParentNode)
  * \param [in] aValues     children values
  * \param [in] aParentNode pugi::xml_node
 **********************************************************************************/
-inline void test_children
+inline void test_children_old
 (const std::vector<std::string>& aKeys,
  const std::vector<std::string>& aValues,
  const pugi::xml_node& aParentNode)
@@ -82,6 +82,50 @@ inline void test_children
     }
 }
 // function test_children
+
+/******************************************************************************//**
+ * \fn test_children
+ * \brief Test children associated with PUGI XML node.
+ * \param [in] aKeys       children keys
+ * \param [in] aValues     children values
+ * \param [in] aParentNode pugi::xml_node
+**********************************************************************************/
+inline void test_children
+(const std::vector<std::string>& aKeys,
+ const std::vector<std::string>& aValues,
+ const pugi::xml_node& aParentNode)
+{
+    ASSERT_TRUE(aKeys.size() == aValues.size());
+    unsigned int iIndex = 0;
+    for(auto& tChild : aParentNode.children())
+    {
+        ASSERT_TRUE(iIndex < aKeys.size());
+
+        //auto tItr = std::find(aKeys.begin(), aKeys.end(), tChild.name());
+        if(tChild.name() != aKeys[iIndex])
+        {
+            std::cout << "Did not find child at index "<<iIndex<<".\n";
+            std::cout << "Child  = \"" << tChild.name() << "\"\n";
+            std::cout << "Gold  = \"" << aKeys[iIndex] << "\"\n";
+            PlatoTestXMLGenerator::print_elements(aKeys);
+        }
+        ASSERT_STREQ(aKeys[iIndex].c_str(), tChild.name());
+
+        if(tChild.child_value() != aValues[iIndex] )
+        {
+            std::cout << "Did not find child value at index "<<iIndex<<".\n";
+            std::cout << "Child Value = \"" << tChild.child_value() << "\"\n";
+            std::cout << "Gold Value = \"" << aValues[iIndex] << "\"\n";
+            std::cout << "Gold children values are:\n";
+            PlatoTestXMLGenerator::print_elements(aValues);
+        }
+        ASSERT_STREQ(aValues[iIndex].c_str(), tChild.child_value());
+        iIndex++;
+    }
+}
+// function test_children
+
+
 
 /******************************************************************************//**
  * \fn test_children

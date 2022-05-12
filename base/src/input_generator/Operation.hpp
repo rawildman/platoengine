@@ -333,5 +333,28 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+enum layout {elementvalue, nodalfield};
+struct Aggregate
+{
+   layout mLayout;
+   std::vector<std::shared_ptr<SharedData> > mInput;
+   std::shared_ptr<SharedData> mOutput;
+};
+
+class OperationAggregator : public Operation
+{
+private:
+    std::vector<Aggregate> mAggregates;
+    
+public:
+    OperationAggregator(const std::string& aName,
+                       std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
 
 }

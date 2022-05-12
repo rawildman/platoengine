@@ -797,5 +797,31 @@ void OperationWriteOutput::write_interface
     }
  }
 
+OperationAggregator::OperationAggregator
+(const std::string& aName,
+ std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+ std::shared_ptr<Performer> aPerformer):
+Operation(aName, "Aggregator", aPerformer, 0)
+{
+   
+}
+
+void OperationAggregator::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);
+}
+
+void OperationAggregator::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
+ {
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+ }
+
 
 } //namespace
