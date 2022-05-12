@@ -301,4 +301,22 @@ public:
                          std::string aEvaluationString = "") override;
 };
 
+class OperationComputeVolumeSIMP : public Operation
+{
+private:
+    InputOutput mInput;
+    std::vector<InputOutput> mOutputs;
+    
+public:
+    OperationComputeVolumeSIMP(const std::string& aName,
+                       std::shared_ptr<SharedData> aInputSharedData,
+                       std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+                       std::shared_ptr<Performer> aPerformer);
+    void write_definition(pugi::xml_document& aDocument, 
+                          std::string aEvaluationString = "") override;
+    void write_interface(pugi::xml_node& aNode, 
+                         std::string aEvaluationString = "") override;
+};
+
+
 }

@@ -680,5 +680,63 @@ std::string aEvaluationString)
     addChild(tOutputNode, "SharedDataName", mOutput.mSharedData->name(aEvaluationString));
 }
 
+OperationComputeVolumeSIMP::OperationComputeVolumeSIMP
+(const std::string& aName,
+ std::shared_ptr<SharedData> aInputSharedData,
+ std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+ std::shared_ptr<Performer> aPerformer):
+Operation(aName, "ComputeVolume", aPerformer, 0)
+{
+    mInput.mSharedData = aInputSharedData;
+    for( auto iSd : aOutputSharedData )
+    {
+        InputOutput tOut;
+        tOut.mSharedData = iSd;
+        mOutputs.push_back(tOut);
+    }
+}
+
+void OperationComputeVolumeSIMP::write_definition
+(pugi::xml_document& aDocument, 
+ std::string aEvaluationString)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    appendCommonChildren(tOperationNode,aEvaluationString);
+    addChild(tOperationNode, "PenaltyModel","SIMP");
+    
+    auto tIONode = tOperationNode.append_child("Input");
+    addChild(tIONode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    
+    for(auto iOutput : mOutputs)
+    {   
+        tIONode = tOperationNode.append_child("Output");
+        addChild(tIONode, "ArgumentName", iOutput.mSharedData->name(aEvaluationString));
+    }
+    
+    auto tSIMPNode = tOperationNode.append_child("SIMP");
+    addChild(tSIMPNode, "PenaltyExponent","1.0");
+    addChild(tSIMPNode, "MinimumValue","0.0");
+}
+
+void OperationComputeVolumeSIMP::write_interface
+(pugi::xml_node& aNode, 
+ std::string aEvaluationString)
+ {
+    auto tOperationNode = aNode.append_child("Operation");
+    addChild(tOperationNode, "Name", name(aEvaluationString));
+    addChild(tOperationNode, "PerformerName",  mPerformer->name(aEvaluationString));
+    
+    auto tIONode = tOperationNode.append_child("Input");
+    addChild(tIONode, "ArgumentName", mInput.mSharedData->name(aEvaluationString));
+    addChild(tIONode, "SharedDataName", mInput.mSharedData->name(aEvaluationString));
+
+    for(auto iOutput : mOutputs)
+    {   
+        tIONode = tOperationNode.append_child("Output");
+        addChild(tIONode, "ArgumentName", iOutput.mSharedData->name(aEvaluationString));
+        addChild(tIONode, "SharedDataName", iOutput.mSharedData->name(aEvaluationString));
+    }
+
+ }
 
 } //namespace

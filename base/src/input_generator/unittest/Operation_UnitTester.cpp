@@ -1741,6 +1741,146 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceDesignVolumeOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, WriteDefinitionComputeVolumeSIMPOperation)
+{
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<director::SharedData> tInputSharedData = std::make_shared<director::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData1 = std::make_shared<director::SharedDataNodalField>("Volume",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData2 = std::make_shared<director::SharedDataNodalField>("Volume Gradient",tPerformerMain,tUserPerformers);
+    std::vector<std::shared_ptr<director::SharedData>> tOutputs = {tOutputSharedData1 , tOutputSharedData2};
+
+    director::OperationComputeVolumeSIMP tSIMP("Compute Volume",tInputSharedData,tOutputs,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSIMP.write_definition(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("test.xml","  ");
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Function",
+        "Name", 
+        "PenaltyModel",
+        "Input",
+        "Output",
+        "Output",
+        "SIMP"};
+    std::vector<std::string> tValues = {"ComputeVolume", 
+        "Compute Volume", 
+        "SIMP",
+        "",
+        "",
+        "",
+        ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    
+    auto tIO = tOperation.child("Input");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Volume"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_FALSE(tIO.empty());
+
+    tKeys = {"ArgumentName"};
+    tValues = {"Volume Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tIO = tIO.next_sibling("Output");
+    ASSERT_TRUE(tIO.empty());
+
+    auto tSIMPNode = tOperation.child("SIMP");
+    tKeys = {"PenaltyExponent", "MinimumValue"};
+    tValues = {"1.0","0.0"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+
+    tSIMPNode = tOperation.next_sibling("SIMP");
+    ASSERT_TRUE(tSIMPNode.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, WriteInterfaceComputeVolumeSIMPOperation)
+{
+      std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
+
+    std::shared_ptr<director::SharedData> tInputSharedData = std::make_shared<director::SharedDataNodalField>("Topology",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData1 = std::make_shared<director::SharedDataNodalField>("Volume",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tOutputSharedData2 = std::make_shared<director::SharedDataNodalField>("Volume Gradient",tPerformerMain,tUserPerformers);
+    std::vector<std::shared_ptr<director::SharedData>> tOutputs = {tOutputSharedData1 , tOutputSharedData2};
+
+    director::OperationComputeVolumeSIMP tSIMP("Compute Volume",tInputSharedData,tOutputs,tPerformerMain);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(tSIMP.write_interface(tDocument,""));
+    ASSERT_FALSE(tDocument.empty());
+
+    tDocument.save_file("test.xml","  ");
+
+    // TEST RESULTS AGAINST GOLD VALUES
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {
+        "Name", 
+        "PerformerName",
+        "Input",
+        "Output",
+        "Output"};
+    std::vector<std::string> tValues = {
+        "Compute Volume", 
+        "platomain",
+        "",
+        "",
+        ""};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Topology","Topology"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Volume","Volume"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_FALSE(tOutput.empty());
+
+    tKeys = {"ArgumentName","SharedDataName"};
+    tValues = {"Volume Gradient","Volume Gradient"};
+    
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
 
 
 } 
