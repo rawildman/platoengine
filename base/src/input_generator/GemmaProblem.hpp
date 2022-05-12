@@ -13,7 +13,7 @@
 #include "Stage.hpp"
 #include "XMLGeneratorUtilities.hpp"
 
-namespace PDir
+namespace director
 {
 
 class Problem

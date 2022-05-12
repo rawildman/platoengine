@@ -10,7 +10,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "OptimizationAlgorithm.hpp"
 
-namespace PDir
+namespace director
 {
 
 class OptimizationAlgorithmFactory

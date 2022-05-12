@@ -10,7 +10,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "Stage.hpp"
 
-namespace PDir
+namespace director
 {
 
 class OptimizationAlgorithm

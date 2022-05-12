@@ -9,7 +9,7 @@
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include <regex>
 using namespace XMLGen;
-namespace PDir
+namespace director
 {
     
 Operation::Operation

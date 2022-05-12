@@ -25,10 +25,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -86,10 +86,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -165,10 +165,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSBC_CheckO
 
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -279,10 +279,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoKSAL_CheckO
     
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -384,10 +384,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoMMA_CheckOp
     
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -459,10 +459,10 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOut
     
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
+    director::OptimizationAlgorithmFactory tFactory;
     ASSERT_NO_THROW(tFactory.create(tMetaData));
 
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tAlgo->writeInterface(tDocument));
@@ -496,25 +496,25 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    director::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // CREATE STAGES
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
 
-    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
+    std::vector<std::shared_ptr<director::Operation>> tNullOperations = {nullptr};
 
-    std::shared_ptr<PDir::SharedData> tControlSharedData = std::make_shared<PDir::SharedDataNodalField>("Control",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tInitialGuessStage = std::make_shared<PDir::Stage>("Initial Guess",tNullOperations,nullptr,tControlSharedData);
+    std::shared_ptr<director::SharedData> tControlSharedData = std::make_shared<director::SharedDataNodalField>("Control",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tInitialGuessStage = std::make_shared<director::Stage>("Initial Guess",tNullOperations,nullptr,tControlSharedData);
 
-    std::shared_ptr<PDir::SharedData> tLowerBoundValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::SharedData> tLowerBoundVectorSharedData = std::make_shared<PDir::SharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tLowerBoundStage = std::make_shared<PDir::Stage>("Set Lower Bounds",tNullOperations,tLowerBoundValueSharedData,tLowerBoundVectorSharedData);
+    std::shared_ptr<director::SharedData> tLowerBoundValueSharedData = std::make_shared<director::SharedDataGlobal>("Lower Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tLowerBoundVectorSharedData = std::make_shared<director::SharedDataNodalField>("Lower Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tLowerBoundStage = std::make_shared<director::Stage>("Set Lower Bounds",tNullOperations,tLowerBoundValueSharedData,tLowerBoundVectorSharedData);
 
-    std::shared_ptr<PDir::SharedData> tUpperBoundValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::SharedData> tUpperBoundVectorSharedData = std::make_shared<PDir::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tUpperBoundStage = std::make_shared<PDir::Stage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
+    std::shared_ptr<director::SharedData> tUpperBoundValueSharedData = std::make_shared<director::SharedDataGlobal>("Upper Bound Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tUpperBoundVectorSharedData = std::make_shared<director::SharedDataNodalField>("Upper Bound Vector",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tUpperBoundStage = std::make_shared<director::Stage>("Set Upper Bounds",tNullOperations,tUpperBoundValueSharedData,tUpperBoundVectorSharedData);
 
     // WRITE INTERFACE
     pugi::xml_document tDocument;
@@ -564,20 +564,20 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckObj
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    director::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // CREATE STAGES
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
 
-    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
+    std::vector<std::shared_ptr<director::Operation>> tNullOperations = {nullptr};
 
-    std::shared_ptr<PDir::SharedData> tObjectiveValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Objective Value","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tObjectiveValueStage = std::make_shared<PDir::Stage>("Compute Objective Value",tNullOperations,nullptr,tObjectiveValueSharedData);
+    std::shared_ptr<director::SharedData> tObjectiveValueSharedData = std::make_shared<director::SharedDataGlobal>("Objective Value","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tObjectiveValueStage = std::make_shared<director::Stage>("Compute Objective Value",tNullOperations,nullptr,tObjectiveValueSharedData);
 
-    std::shared_ptr<PDir::SharedData> tObjectiveGradientSharedData = std::make_shared<PDir::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tObjectiveGradientStage = std::make_shared<PDir::Stage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
+    std::shared_ptr<director::SharedData> tObjectiveGradientSharedData = std::make_shared<director::SharedDataNodalField>("Objective Gradient",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tObjectiveGradientStage = std::make_shared<director::Stage>("Compute Objective Gradient",tNullOperations,nullptr,tObjectiveGradientSharedData);
 
     // WRITE INTERFACE
     pugi::xml_document tDocument;
@@ -619,20 +619,20 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckSin
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    director::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // CREATE STAGES
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain};
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
 
-    std::vector<std::shared_ptr<PDir::Operation>> tNullOperations = {nullptr};
+    std::vector<std::shared_ptr<director::Operation>> tNullOperations = {nullptr};
 
-    std::shared_ptr<PDir::SharedData> tConstraintValueSharedData = std::make_shared<PDir::SharedDataGlobal>("Constraint Value 1","1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tConstraintValueStage = std::make_shared<PDir::Stage>("Compute Constraint Value 1",tNullOperations,nullptr,tConstraintValueSharedData);
+    std::shared_ptr<director::SharedData> tConstraintValueSharedData = std::make_shared<director::SharedDataGlobal>("Constraint Value 1","1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tConstraintValueStage = std::make_shared<director::Stage>("Compute Constraint Value 1",tNullOperations,nullptr,tConstraintValueSharedData);
 
-    std::shared_ptr<PDir::SharedData> tConstraintGradientSharedData = std::make_shared<PDir::SharedDataNodalField>("Constraint Gradient 1",tPerformerMain,tUserPerformers);
-    std::shared_ptr<PDir::Stage> tConstraintGradientStage = std::make_shared<PDir::Stage>("Compute Constraint Gradient 1",tNullOperations,nullptr,tConstraintGradientSharedData);
+    std::shared_ptr<director::SharedData> tConstraintGradientSharedData = std::make_shared<director::SharedDataNodalField>("Constraint Gradient 1",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::Stage> tConstraintGradientStage = std::make_shared<director::Stage>("Compute Constraint Gradient 1",tNullOperations,nullptr,tConstraintGradientSharedData);
 
     // WRITE INTERFACE
     pugi::xml_document tDocument;
@@ -682,8 +682,8 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckBou
     tOptimizationParameters.append("optimization_algorithm" ,"oc");
     tMetaData.set(tOptimizationParameters);
    
-    PDir::OptimizationAlgorithmFactory tFactory;
-    std::shared_ptr<PDir::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
+    director::OptimizationAlgorithmFactory tFactory;
+    std::shared_ptr<director::OptimizationAlgorithm> tAlgo = tFactory.create(tMetaData);
 
     // WRITE INTERFACE
     pugi::xml_document tDocument;

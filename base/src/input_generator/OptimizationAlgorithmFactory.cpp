@@ -1,7 +1,7 @@
 #include "OptimizationAlgorithmFactory.hpp"
 #include "OptimizationAlgorithm.hpp"
 using namespace XMLGen;
-namespace PDir
+namespace director
 {
 
 OptimizationAlgorithmFactory::OptimizationAlgorithmFactory()

@@ -7,7 +7,7 @@
 #include "FileObject.hpp"
 #include <regex>
 
-namespace PDir
+namespace director
 {
 
 FileObject::FileObject

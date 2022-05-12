@@ -13,7 +13,7 @@
 #include "FileObject.hpp"
 #include "Performer.hpp"
 
-namespace PDir
+namespace director
 {
 
 class SharedData : public FileObject

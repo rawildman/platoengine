@@ -13,7 +13,7 @@
 #include "Operation.hpp"
 #include "SharedData.hpp"
 
-namespace PDir
+namespace director
 {
 
 class Stage : public FileObject

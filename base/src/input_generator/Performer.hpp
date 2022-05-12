@@ -14,7 +14,7 @@
 #include "pugixml.hpp"
 
 
-namespace PDir
+namespace director
 {
 
 class Performer : public FileObject

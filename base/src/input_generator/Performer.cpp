@@ -8,7 +8,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 using namespace XMLGen;
-namespace PDir
+namespace director
 {
     Performer::Performer
     (const std::string& aName,

@@ -112,7 +112,7 @@ void plato_gemma_problem
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
 
-    PDir::GemmaProblem tGemmaProblem(aMetaData);
+    director::GemmaProblem tGemmaProblem(aMetaData);
 
     tGemmaProblem.create_evaluation_subdirectories_and_gemma_input(aMetaData);
     

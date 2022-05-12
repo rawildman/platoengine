@@ -12,7 +12,7 @@
 
 #include "pugixml.hpp"
 
-namespace PDir
+namespace director
 {
 
 class FileObject

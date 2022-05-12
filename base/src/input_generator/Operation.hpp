@@ -15,7 +15,7 @@
 #include "SharedData.hpp"
 #include "Performer.hpp"
 
-namespace PDir
+namespace director
 {
 enum returnVariable {value, gradient};
 enum upperLower {upper , lower};

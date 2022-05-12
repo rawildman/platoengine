@@ -9,7 +9,7 @@
 
 using namespace XMLGen;
 
-namespace PDir
+namespace director
 {
     
 Stage::Stage

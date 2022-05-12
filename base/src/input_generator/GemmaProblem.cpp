@@ -4,11 +4,11 @@
 #include <fstream>
 #include <sstream>
 
-namespace PDir
+namespace director
 {
 Problem::Problem()
 {
-    mPerformerMain = std::make_shared<PDir::Performer>("platomain_1", "platomain");
+    mPerformerMain = std::make_shared<director::Performer>("platomain_1", "platomain");
     
     mInterfaceFileName = "interface.xml";
     mOperationsFileName = "plato_main_operations.xml";
@@ -52,23 +52,23 @@ GemmaProblem::GemmaProblem(const XMLGen::InputData& aMetaData) : Problem()
     
     // this->initializePerformers();
     int tOffset = 1;
-    mPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",tOffset,std::stoi(tNumRanks),tEvaluations);
+    mPerformer = std::make_shared<director::Performer>("plato_services","plato_services",tOffset,std::stoi(tNumRanks),tEvaluations);
     
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {mPerformerMain,mPerformer};
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformersJustMain = {mPerformerMain};
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {mPerformerMain,mPerformer};
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformersJustMain = {mPerformerMain};
 
     // this->initializeSharedData();
-    std::shared_ptr<PDir::SharedData> tInputSharedData = std::make_shared<PDir::SharedDataGlobal>("design_parameters",std::to_string(mNumParams),mPerformerMain,tUserPerformers,tEvaluations);
-    std::shared_ptr<PDir::SharedData> tOutputSharedData = std::make_shared<PDir::SharedDataGlobal>("criterion_X_service_X_scenario_X","1",mPerformer,tUserPerformersJustMain,tEvaluations);
+    std::shared_ptr<director::SharedData> tInputSharedData = std::make_shared<director::SharedDataGlobal>("design_parameters",std::to_string(mNumParams),mPerformerMain,tUserPerformers,tEvaluations);
+    std::shared_ptr<director::SharedData> tOutputSharedData = std::make_shared<director::SharedDataGlobal>("criterion_X_service_X_scenario_X","1",mPerformer,tUserPerformersJustMain,tEvaluations);
     
     mSharedData.push_back(tInputSharedData);
     mSharedData.push_back(tOutputSharedData);
     
     // this->initializeOperations();
-    std::shared_ptr<PDir::OperationAprepro> tAprepro = std::make_shared<PDir::OperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
-    std::shared_ptr<PDir::OperationGemmaMPISystemCall> tGemma = std::make_shared<PDir::OperationGemmaMPISystemCall>(tGemmaInputFile, tGemmaPath, tNumRanks, mPerformer, tEvaluations);
-    std::shared_ptr<PDir::OperationWait> tWait = std::make_shared<PDir::OperationWait>("wait", tDataFile, mPerformer, tEvaluations);
-    std::shared_ptr<PDir::OperationHarvestDataFunction> tHarvestData = std::make_shared<PDir::OperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
+    std::shared_ptr<director::OperationAprepro> tAprepro = std::make_shared<director::OperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
+    std::shared_ptr<director::OperationGemmaMPISystemCall> tGemma = std::make_shared<director::OperationGemmaMPISystemCall>(tGemmaInputFile, tGemmaPath, tNumRanks, mPerformer, tEvaluations);
+    std::shared_ptr<director::OperationWait> tWait = std::make_shared<director::OperationWait>("wait", tDataFile, mPerformer, tEvaluations);
+    std::shared_ptr<director::OperationHarvestDataFunction> tHarvestData = std::make_shared<director::OperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
 
     mOperations.push_back(tAprepro);
     mOperations.push_back(tGemma);
@@ -76,8 +76,8 @@ GemmaProblem::GemmaProblem(const XMLGen::InputData& aMetaData) : Problem()
     mOperations.push_back(tHarvestData);
 
     // this->initializeStages();
-    PDir::Stage tInitializeStage("Initialize Input",{tAprepro},tInputSharedData,nullptr);
-    PDir::Stage tCriterionStage("Compute Criterion 0 Value",{tGemma,tWait,tHarvestData},nullptr,tOutputSharedData);
+    director::Stage tInitializeStage("Initialize Input",{tAprepro},tInputSharedData,nullptr);
+    director::Stage tCriterionStage("Compute Criterion 0 Value",{tGemma,tWait,tHarvestData},nullptr,tOutputSharedData);
 
     mStages.push_back(tInitializeStage);
     mStages.push_back(tCriterionStage);

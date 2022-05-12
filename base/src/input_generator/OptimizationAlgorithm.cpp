@@ -3,7 +3,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include <regex>
 using namespace XMLGen;
-namespace PDir
+namespace director
 {
 
 OptimizationAlgorithm::OptimizationAlgorithm(const XMLGen::OptimizationParameters& aParameters)

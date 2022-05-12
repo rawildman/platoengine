@@ -15,10 +15,10 @@ namespace PlatoTestXMLGenerator
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
 {
-    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,2);
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
-    std::shared_ptr<PDir::SharedData> tSharedData = std::make_shared<PDir::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<director::SharedData> tSharedData = std::make_shared<director::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
@@ -53,11 +53,11 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalWithTag)
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
 {
-    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,2);
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
     
-    std::shared_ptr<PDir::SharedData> tSharedData = std::make_shared<PDir::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
+    std::shared_ptr<director::SharedData> tSharedData = std::make_shared<director::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers,2);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument,"2"));
@@ -92,11 +92,11 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobal)
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
 {
-    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,0);
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
     
-    std::shared_ptr<PDir::SharedData> tSharedData = std::make_shared<PDir::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tSharedData = std::make_shared<director::SharedDataGlobal>("design_parameters","3",tPerformerMain,tUserPerformers);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
@@ -131,11 +131,11 @@ TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataGlobalNoConcurrency)
 
 TEST(PlatoTestXMLGenerator, WriteDesignParametersSharedDataNodalFieldNoConcurrency)
 {
-    std::shared_ptr<PDir::Performer> tPerformer = std::make_shared<PDir::Performer>("plato_services","plato_services",1,16,0);
-    std::shared_ptr<PDir::Performer> tPerformerMain = std::make_shared<PDir::Performer>("platomain_1","platomain");
-    std::vector<std::shared_ptr<PDir::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
+    std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
+    std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain_1","platomain");
+    std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain,tPerformer};
     
-    std::shared_ptr<PDir::SharedData> tSharedData = std::make_shared<PDir::SharedDataNodalField>("design_parameters",tPerformerMain,tUserPerformers);
+    std::shared_ptr<director::SharedData> tSharedData = std::make_shared<director::SharedDataNodalField>("design_parameters",tPerformerMain,tUserPerformers);
     
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(tSharedData->write_interface(tDocument));
