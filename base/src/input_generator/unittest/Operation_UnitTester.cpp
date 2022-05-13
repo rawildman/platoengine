@@ -1806,7 +1806,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionComputeVolumeSIMPOperation)
     auto tSIMPNode = tOperation.child("SIMP");
     tKeys = {"PenaltyExponent", "MinimumValue"};
     tValues = {"1.0","0.0"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tIO);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSIMPNode);
 
     tSIMPNode = tOperation.next_sibling("SIMP");
     ASSERT_TRUE(tSIMPNode.empty());
