@@ -2512,8 +2512,8 @@ TEST(PlatoTestXMLGenerator, TOLSGenerateModelOutput)
     auto tOutput = tOperation.child("Output");
     ASSERT_FALSE(tOutput.empty());
 
-    tKeys   = {"ArgumentName", "SharedDataName"};
-    tValues = {"Initial Control", "Initial Control"};
+    tKeys   = { "SharedDataName","ArgumentName"};
+    tValues = { "Initial Control","Initial Control"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
     
 }
@@ -2543,7 +2543,7 @@ TEST(PlatoTestXMLGenerator, TOLSInitialGuessData)
     auto tSD = tDocument.child("SharedData");
     ASSERT_FALSE(tSD.empty());
     std::vector<std::string> tKeys =   {"Name",            "Type",   "Layout",     "OwnerName","UserName",   "UserName"};
-    std::vector<std::string> tValues = {"Initial Control", "Scalar", "Nodal Field","xtk_3",    "platomain_1","platomain_1"};
+    std::vector<std::string> tValues = {"Initial Control", "Scalar", "Nodal Field","xtk_3",    "platomain_1","xtk_3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSD);
 }
 
@@ -2782,7 +2782,7 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
 
     pugi::xml_document tDocument;
     XMLGen::append_update_problem_stage(tMetaData, tDocument);
-    //tDocument.save_file("xml_xtk.txt", " ");
+    tDocument.save_file("xml_xtk.txt", " ");
 
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -2802,7 +2802,7 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
     tValues = {"Field", "Control"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     
-    auto tOutput = tOperation.child("Ouput");
+    auto tOutput = tOperation.next_sibling("Ouput");
     tKeys =   {"ArgumentName", "SharedDataName"};
     tValues = {"Filtered Field", "Topology"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
