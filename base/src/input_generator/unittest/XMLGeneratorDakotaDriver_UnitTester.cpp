@@ -837,7 +837,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({"SharedDataName","ArgumentName"}, { "design_parameters_{I}", "Parameters"}, tOpInputs);
 
     // CREATE SUBBLOCK OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -852,7 +852,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // CONVERT TO TET10 OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -867,7 +867,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // DECOMP OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -882,7 +882,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // REINITIALIZE ON CHANGE OPERATION 
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -897,7 +897,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -906,7 +906,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -959,7 +959,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName" ,"ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // REINITIALIZE ON CHANGE OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -974,7 +974,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -983,7 +983,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}", "Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -992,7 +992,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName", "ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tForNode.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1056,7 +1056,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1141,7 +1141,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_MultiObje
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1177,7 +1177,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_MultiObje
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_7_service_1_scenario_14 value", "criterion_7_service_1_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_7_service_1_scenario_14_{I}","criterion_7_service_1_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1271,7 +1271,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1307,7 +1307,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_7_service_5_scenario_3 value", "criterion_7_service_5_scenario_3_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_7_service_5_scenario_3_{I}","criterion_7_service_5_scenario_3 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());

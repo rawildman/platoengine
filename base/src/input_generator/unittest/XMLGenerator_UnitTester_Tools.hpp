@@ -100,8 +100,6 @@ inline void test_children
     for(auto& tChild : aParentNode.children())
     {
         ASSERT_TRUE(iIndex < aKeys.size());
-
-        //auto tItr = std::find(aKeys.begin(), aKeys.end(), tChild.name());
         if(tChild.name() != aKeys[iIndex])
         {
             std::cout << "Did not find child at index "<<iIndex<<".\n";
@@ -122,6 +120,9 @@ inline void test_children
         ASSERT_STREQ(aValues[iIndex].c_str(), tChild.child_value());
         iIndex++;
     }
+    if(iIndex < aKeys.size())
+        std::cout << "Too many key-values!" <<std::endl;
+    ASSERT_EQ(iIndex , aKeys.size()); ///
 }
 // function test_children
 

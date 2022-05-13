@@ -37,6 +37,10 @@ TEST(PlatoTestXMLGenerator, AppendWriteOutputPlatoAnalyzeOperation)
 TEST(PlatoTestXMLGenerator, AppendComputeQoiStatisticsOperation)
 {
     XMLGen::InputData tMetaData;
+    XMLGen::Service tService;
+    tService.id("0");
+    tService.code("platomain");
+    tMetaData.append(tService);
     XMLGen::Output tOutputMetadata;
     tOutputMetadata.appendRandomQoI("vonmises", "element field");
     tMetaData.mOutputMetaData.push_back(tOutputMetadata);
@@ -44,12 +48,13 @@ TEST(PlatoTestXMLGenerator, AppendComputeQoiStatisticsOperation)
     pugi::xml_document tDocument;
     XMLGen::append_compute_qoi_statistics_operation(tMetaData, tDocument);
 
+    tDocument.save_file("testdoc.xml", "  ");
     // TEST OPERATION ARGUMENTS
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Name", "PerformerName", "For", "Output", "Output"};
-    std::vector<std::string> tValues = {"compute vonmises statistics", "platomain", "", "", ""};
+    std::vector<std::string> tValues = {"compute vonmises statistics", "platomain_0", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     // TEST OUTPUTS
@@ -1932,8 +1937,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageWithHelmholtz)
 
     // FILTER GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tKeys = {"Name", "PerformerName", "Input", "Input", "Output"};
-    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", "", ""};
+    tKeys = {"Name", "PerformerName", "Input", "Output"};//<<<removed 1 input
+    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", ""};//<<<removed 1 ""
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Criterion Gradient - criterion_3_service_2_scenario_14"}, tOpInputs);
@@ -1991,6 +1996,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_constraint_gradient_stage(tMetaData, tDocument));
 
+    tDocument.save_file("testdoc.xml","  ");
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());

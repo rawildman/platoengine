@@ -382,14 +382,14 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     // PERFORMERS
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
-    PlatoTestXMLGenerator::test_children({"Name", "Code", "PerformerID"}, {"platomain_1", "platomain", "0"}, tPerformer);
+    PlatoTestXMLGenerator::test_children({"PerformerID", "Name", "Code" }, {"0","platomain_1", "platomain"}, tPerformer);
 
     auto tPerformerForNode = tPerformer.next_sibling("For");
     ASSERT_FALSE(tPerformerForNode.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Performers"}, tPerformerForNode);
     auto tInnerPerformer = tPerformerForNode.child("Performer");
     ASSERT_FALSE(tInnerPerformer.empty());
-    PlatoTestXMLGenerator::test_children({"Name", "Code", "PerformerID"}, {"plato_services_{E}", "plato_services", "{E+1}"}, tInnerPerformer);
+    PlatoTestXMLGenerator::test_children({"PerformerID","Name", "Code" }, {"{E+1}", "plato_services_{E}", "plato_services"}, tInnerPerformer);
 
     tInnerPerformer = tInnerPerformer.next_sibling("Performer");
     ASSERT_TRUE(tInnerPerformer.empty());
