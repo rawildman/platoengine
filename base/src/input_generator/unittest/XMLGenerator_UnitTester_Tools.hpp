@@ -29,6 +29,14 @@ inline void print_elements(const std::vector<std::string>& aInput)
         std::cout << "Array[" << tIndex << "] = " << tElement << "\n";
     }
 }
+
+inline void print_key_value_pairs(const std::vector<std::string>& aKey,const std::vector<std::string>& aValue)
+{
+    if(aKey.size() == aValue.size())
+    for(unsigned int iKey = 0; iKey < aKey.size(); ++iKey)
+        std::cout << "Array[" << iKey << "] = ( " << aKey[iKey] <<" , "<<aValue[iKey]<< ") \n";
+}
+
 // function print_elements
 
 /******************************************************************************//**
@@ -95,8 +103,17 @@ inline void test_children
  const std::vector<std::string>& aValues,
  const pugi::xml_node& aParentNode)
 {
+    if(aParentNode.children().begin()==aParentNode.children().end())
+    {
+        std::cout<<"Empty children (so sad)." << std::endl;
+        std::cout<<"These were the golden values you thought you were testing:" << std::endl;
+        PlatoTestXMLGenerator::print_key_value_pairs(aKeys,aValues);
+    }
+    ASSERT_FALSE(aParentNode.children().begin()==aParentNode.children().end());
+    
     ASSERT_TRUE(aKeys.size() == aValues.size());
     unsigned int iIndex = 0;
+    
     for(auto& tChild : aParentNode.children())
     {
         ASSERT_TRUE(iIndex < aKeys.size());
@@ -121,7 +138,11 @@ inline void test_children
         iIndex++;
     }
     if(iIndex < aKeys.size())
-        std::cout << "Too many key-values!" <<std::endl;
+     {
+        std::cout << "Too many key-value pairs." <<std::endl;
+        std::cout << "Golden pairs are:\n";
+        PlatoTestXMLGenerator::print_key_value_pairs(aKeys,aValues);
+     }
     ASSERT_EQ(iIndex , aKeys.size()); ///
 }
 // function test_children

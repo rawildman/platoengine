@@ -284,5 +284,31 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassTooFewKeyValues)
     ASSERT_GT(fails,0);
 }
 
+
+TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassEmptyNode)
+{
+    
+    pugi::xml_document tDocument;
+    auto tOperationNode = tDocument.append_child("Operation");
+    
+    std::vector<std::string> tKeys = {
+        "File"};
+    std::vector<std::string> tValues = {
+        "test"};
+     
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_children(tKeys,tValues, tOperationNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+}
+
 }
   
