@@ -1165,14 +1165,19 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataForNondeterministicUsecase)
 TEST(PlatoTestXMLGenerator, AppendFilterControlOperation)
 {
     pugi::xml_document tDocument;
+    XMLGen::Service tService;
+    tService.id("0");
+    tService.code("platomain");
     XMLGen::InputData tInputData;
+    tInputData.append(tService);
+    
     XMLGen::append_filter_control_operation(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output"};
-    std::vector<std::string> tGoldValues = {"Filter Control", "platomain", "", ""};
+    std::vector<std::string> tGoldValues = {"Filter Control", "platomain_0", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tInput = tDocument.child("Input");
@@ -1714,11 +1719,12 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     XMLGen::append_constraint_gradient_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
+
     // TEST RESULTS AGAINST GOLD VALUES
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
-    std::vector<std::string> tGoldKeys = {"Name", "Type", "Input", "Operation", "Operation", "Operation", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 3", "volume", "", "", "", "", ""};
+    std::vector<std::string> tGoldKeys = {"Name",  "Input", "Operation", "Operation", "Operation", "Output"};
+    std::vector<std::string> tGoldValues = {"Compute Constraint Gradient 3",  "", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tStage);
 
     auto tOuterInput = tStage.child("Input");
@@ -1732,6 +1738,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     tGoldKeys = {"SharedDataName"};
     tGoldValues = {"Constraint Gradient 3"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOuterOutput);
+
 
     auto tOperation = tStage.child("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -1762,9 +1769,10 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     ASSERT_FALSE(tConstraintOutput.empty());
     tGoldValues = {"Volume", "Criterion Value - criterion_1_service_1_scenario_"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintOutput);
-    tConstraintOutput = tOperation.next_sibling("Output");
+    tConstraintOutput = tConstraintOutput.next_sibling("Output");
     ASSERT_FALSE(tConstraintOutput.empty());
-    tGoldValues = {"Volume Gradient", "Constraint Gradient 3"};
+    tGoldKeys = { "ArgumentName","SharedDataName"};
+    tGoldValues = {"Volume Gradient", "Criterion Gradient - criterion_1_service_1_scenario_"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintOutput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1777,15 +1785,19 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStage)
     tGoldKeys = {"ArgumentName", "SharedDataName"};
     tGoldValues = {"Field", "Control"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterInput);
+    
     tFilterInput = tFilterInput.next_sibling("Input");
     ASSERT_FALSE(tFilterInput.empty());
     tGoldKeys = {"ArgumentName", "SharedDataName"};
     tGoldValues = {"Gradient", "Criterion Gradient - criterion_1_service_1_scenario_"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterInput);
-    tFilterOutput = tOperation.child("Output");
-    ASSERT_FALSE(tFilterOutput.empty());
+
+    tFilterInput = tFilterInput.next_sibling("Output");
+    ASSERT_FALSE(tFilterInput.empty());
+    tGoldKeys = {"ArgumentName", "SharedDataName"};
     tGoldValues = {"Filtered Gradient", "Constraint Gradient 3"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterOutput);
+    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tFilterInput);
+
 }
 
 TEST(PlatoTestXMLGenerator, AppendNondeterministicParameters)

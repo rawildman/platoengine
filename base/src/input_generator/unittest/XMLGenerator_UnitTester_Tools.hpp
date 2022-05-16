@@ -122,7 +122,7 @@ inline void test_children
             std::cout << "Did not find child at index "<<iIndex<<".\n";
             std::cout << "Child  = \"" << tChild.name() << "\"\n";
             std::cout << "Gold  = \"" << aKeys[iIndex] << "\"\n";
-            PlatoTestXMLGenerator::print_elements(aKeys);
+            PlatoTestXMLGenerator::print_key_value_pairs(aKeys,aValues);
         }
         ASSERT_STREQ(aKeys[iIndex].c_str(), tChild.name());
 
@@ -132,7 +132,7 @@ inline void test_children
             std::cout << "Child Value = \"" << tChild.child_value() << "\"\n";
             std::cout << "Gold Value = \"" << aValues[iIndex] << "\"\n";
             std::cout << "Gold children values are:\n";
-            PlatoTestXMLGenerator::print_elements(aValues);
+            PlatoTestXMLGenerator::print_key_value_pairs(aKeys,aValues);
         }
         ASSERT_STREQ(aValues[iIndex].c_str(), tChild.child_value());
         iIndex++;

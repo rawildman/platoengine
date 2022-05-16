@@ -1689,17 +1689,20 @@ TEST(PlatoTestXMLGenerator, AppendOutputToPlatoMainOperation)
     tXMLMetaData.append(tScenario);
     ASSERT_NO_THROW(XMLGen::append_output_to_plato_main_operation(tXMLMetaData, tDocument));
     ASSERT_FALSE(tDocument.empty());
-
+   
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    PlatoTestXMLGenerator::test_children({"Function", "Name", "Input", "Input"}, {"PlatoMainOutput", "Plato Main Output", "", ""}, tOperation);
+    PlatoTestXMLGenerator::test_children({"Function", "Name", "Input", "Input","Input"}, {"PlatoMainOutput", "PlatoMainOutput", "", "",""}, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout"}, {"topology", "Nodal Field"}, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_FALSE(tInput.empty());
     PlatoTestXMLGenerator::test_children({"ArgumentName", "Layout"}, {"control", "Nodal Field"}, tInput);
+    tInput = tInput.next_sibling("Input");
+    ASSERT_FALSE(tInput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"objective gradient"}, tInput);
 }
 
 TEST(PlatoTestXMLGenerator, AppendSurfaceExtractionToOutputOperation)
@@ -1807,7 +1810,7 @@ TEST(PlatoTestXMLGenerator, AppendChildrenToOutputOperation)
     XMLGen::append_children_to_output_operation(tXMLMetaData, tOperation);
     ASSERT_FALSE(tOperation.empty());
     PlatoTestXMLGenerator::test_children({"Function", "Name", "WriteRestart", "OutputFrequency", "MaxIterations"},
-                                         {"PlatoMainOutput", "Plato Main Output", "true", "10", "100"}, tOperation);
+                                         {"PlatoMainOutput", "PlatoMainOutput", "true", "10", "100"}, tOperation);
 }
 
 TEST(PlatoTestXMLGenerator, AppendNonDeterministicQoiInputsToOutputOperation)
