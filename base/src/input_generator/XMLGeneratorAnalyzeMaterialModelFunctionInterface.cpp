@@ -90,19 +90,17 @@ void append_isotropic_linear_elastic_material_to_plato_problem
 {
     auto tElasticModel = aParentNode.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {aMaterial.name()}, tElasticModel);
+    auto tIsotropicLinearElasticModel = tElasticModel.append_child("ParameterList");
+    XMLGen::append_attributes({"name"}, {"Isotropic Linear Elastic"}, tIsotropicLinearElasticModel);
+    XMLGen::Private::append_material_property("poissons_ratio", aMaterial, tIsotropicLinearElasticModel);
+    XMLGen::Private::append_material_property("youngs_modulus", aMaterial, tIsotropicLinearElasticModel);
     if(aMaterial.property("mass_density").empty() == false)
     {
         std::vector<std::string> tKeys = {"name", "type", "value"};
         std::vector<std::string> tValues = {"Density", "double", aMaterial.property("mass_density")};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tElasticModel);
+        XMLGen::Private::append_material_property("mass_density", aMaterial, tIsotropicLinearElasticModel);
     }
-    auto tIsotropicLinearElasticModel = tElasticModel.append_child("ParameterList");
-    XMLGen::append_attributes({"name"}, {"Isotropic Linear Elastic"}, tIsotropicLinearElasticModel);
-    XMLGen::Private::append_material_property("poissons_ratio", aMaterial, tIsotropicLinearElasticModel);
-    XMLGen::Private::append_material_property("youngs_modulus", aMaterial, tIsotropicLinearElasticModel);
-
-
-    XMLGen::Private::append_material_property("mass_density", aMaterial, tIsotropicLinearElasticModel);
 }
 // function append_isotropic_linear_elastic_material_to_plato_problem
 
