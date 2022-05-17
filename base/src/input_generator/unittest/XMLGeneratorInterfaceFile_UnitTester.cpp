@@ -2782,8 +2782,7 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
 
     pugi::xml_document tDocument;
     XMLGen::append_update_problem_stage(tMetaData, tDocument);
-    tDocument.save_file("xml_xtk.txt", " ");
-
+    
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
 
@@ -2802,10 +2801,10 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
     tValues = {"Field", "Control"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     
-    auto tOutput = tOperation.child("Ouput");
+    auto tOutput = tOperation.child("Output");
     tKeys =   {"ArgumentName", "SharedDataName"};
     tValues = {"Filtered Field", "Topology"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);//<<<<<<<<<<<<<<<<<<<<<<why
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
 
     tOperation = tOperation.next_sibling("Operation");
     tKeys =   {"Name","PerformerName","Input"};
@@ -2918,7 +2917,7 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
-    //tDocument.save_file("xtk_xml.txt", " ");
+    tDocument.save_file("dummy.xml", "    >     ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
