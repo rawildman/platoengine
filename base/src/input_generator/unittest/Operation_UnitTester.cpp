@@ -18,7 +18,7 @@
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationNoConcurrency)
+TEST(OperationTest, OuterOperationForNodeWaitOperationNoConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
     director::OperationWait tWait("wait", "file", tPerformer, 0);
@@ -36,7 +36,7 @@ TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationNoConcurrency)
     PlatoTestXMLGenerator::test_children({"File"}, {"test"}, tDocument);
 }
 
-TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
+TEST(OperationTest, OuterOperationForNodeWaitOperationWithConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationWait tWait("wait", "file", tPerformer, 2);
@@ -62,7 +62,7 @@ TEST(PlatoTestXMLGenerator, OuterOperationForNodeWaitOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
+TEST(OperationTest, WriteDefinitionWaitOperationWithConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationWait tWait("wait", "file", tPerformer, 1);
@@ -91,7 +91,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
+TEST(OperationTest, WriteDefinitionWaitOperationNoConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationWait tWait("wait", "file", tPerformer, 0);
@@ -118,7 +118,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationNoConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithTag)
+TEST(OperationTest, WriteDefinitionWaitOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationWait tWait("wait", "file", tPerformer,  1);
@@ -147,7 +147,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWaitOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceWaitOperationWithTag)
+TEST(OperationTest, WriteInterfaceWaitOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationWait tWait("wait", "file", tPerformer, 1);
@@ -174,7 +174,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceWaitOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithConcurrency)
+TEST(OperationTest, WriteDefinitionGemmaMPIOperationWithConcurrency)
 {
     int numRanks = 16;
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",numRanks,2);
@@ -210,7 +210,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
+TEST(OperationTest, WriteDefinitionGemmaMPIOperationNoConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationGemmaMPISystemCall tGemma("match.yaml","" ,"2", tPerformer, 0);
@@ -243,7 +243,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationNoConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
+TEST(OperationTest, WriteDefinitionGemmaMPIOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationGemmaMPISystemCall tGemma("match.yaml","path/", "2", tPerformer, 1);
@@ -278,7 +278,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionGemmaMPIOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceGemmaMPIOperationWithTag)
+TEST(OperationTest, WriteInterfaceGemmaMPIOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     director::OperationGemmaMPISystemCall tGemma("match.yaml", "","2", tPerformer, 1);
@@ -304,7 +304,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceGemmaMPIOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
+TEST(OperationTest, WriteDefinitionApreproOperationWithConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -361,7 +361,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
+TEST(OperationTest, WriteDefinitionApreproOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -418,7 +418,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceApreproOperationWithConcurrency)
+TEST(OperationTest, WriteInterfaceApreproOperationWithConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -457,7 +457,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceApreproOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
+TEST(OperationTest, WriteDefinitionApreproOperationNoConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -513,7 +513,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionApreproOperationNoConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionHarvestDataOperationWithConcurrency)
+TEST(OperationTest, WriteDefinitionHarvestDataOperationWithConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -556,7 +556,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionHarvestDataOperationWithConcurrency)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceHarvestDataOperationWithTag)
+TEST(OperationTest, WriteInterfaceHarvestDataOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -595,7 +595,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceHarvestDataOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionCubitTet10OperationWithTag)
+TEST(OperationTest, WriteDefinitionCubitTet10OperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -642,7 +642,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCubitTet10OperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceCubitTet10Operation)
+TEST(OperationTest, WriteInterfaceCubitTet10Operation)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -681,7 +681,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCubitTet10Operation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10FileNoConcurrency)
+TEST(OperationTest, WriteCubitTet10OperationToTet10FileNoConcurrency)
 {
     Plato::system("rm -rf toTet10.jou");
     Plato::system("rm -rf evaluations_0");
@@ -710,7 +710,7 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10FileNoConcurrency)
     Plato::system("rm -rf toTet10.jou");
 }
 
-TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10File)
+TEST(OperationTest, WriteCubitTet10OperationToTet10File)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -742,7 +742,7 @@ TEST(PlatoTestXMLGenerator, WriteCubitTet10OperationToTet10File)
 
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionCubitSubBlockOperationWithTag)
+TEST(OperationTest, WriteDefinitionCubitSubBlockOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -789,7 +789,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCubitSubBlockOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceCubitSubBlockOperation)
+TEST(OperationTest, WriteInterfaceCubitSubBlockOperation)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -828,7 +828,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCubitSubBlockOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFile)
+TEST(OperationTest, WriteCubitSubBlockOperationSubBlockFile)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -860,7 +860,7 @@ TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFile)
 
 }
 
-TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFileNoConcurrency)
+TEST(OperationTest, WriteCubitSubBlockOperationSubBlockFileNoConcurrency)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
@@ -886,7 +886,7 @@ TEST(PlatoTestXMLGenerator, WriteCubitSubBlockOperationSubBlockFileNoConcurrency
 
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
+TEST(OperationTest, WriteDefinitionDecompOperationWithTag)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);    
     director::OperationDecomp tDecomp("myFile.exo", 16 , tPerformer, 2);
@@ -921,7 +921,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionDecompOperationWithTag)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceDecompOperationInterfaceFile)
+TEST(OperationTest, WriteInterfaceDecompOperationInterfaceFile)
 {
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,2);    
     director::OperationDecomp tDecomp("myFile.exo", 16 , tPerformer, 2);
@@ -946,7 +946,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceDecompOperationInterfaceFile)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionSetBoundsOperationLower)
+TEST(OperationTest, WriteDefinitionSetBoundsOperationLower)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
@@ -1004,7 +1004,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionSetBoundsOperationLower)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
+TEST(OperationTest, WriteInterfaceSetBoundsInterfaceFileUpper)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::shared_ptr<director::Performer> tPerformer = std::make_shared<director::Performer>("plato_services","plato_services",1,16,0);
@@ -1061,7 +1061,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceSetBoundsInterfaceFileUpper)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionFilterOperation)
+TEST(OperationTest, WriteDefinitionFilterOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1116,7 +1116,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionFilterOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceFilterOperationGradient)
+TEST(OperationTest, WriteInterfaceFilterOperationGradient)
 {
       std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1172,7 +1172,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceFilterOperationGradient)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionInitializeUniformOperation)
+TEST(OperationTest, WriteDefinitionInitializeUniformOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1223,7 +1223,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionInitializeUniformOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceInitializeUniformOperation)
+TEST(OperationTest, WriteInterfaceInitializeUniformOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1266,7 +1266,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceInitializeUniformOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionCopyFieldOperation)
+TEST(OperationTest, WriteDefinitionCopyFieldOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1319,7 +1319,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionCopyFieldOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceCopyValueOperation)
+TEST(OperationTest, WriteInterfaceCopyValueOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1375,7 +1375,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCopyValueOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValue)
+TEST(OperationTest, WriteDefinitionComputeCriterionOperationValue)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("plato_analyze","plato_analyze",0,1,2);
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1432,7 +1432,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValue)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValueNoTargetGiven)
+TEST(OperationTest, WriteDefinitionComputeCriterionOperationValueNoTargetGiven)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("plato_analyze","plato_analyze",0,1,2);
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1489,7 +1489,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationValueNoTarge
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationValue)
+TEST(OperationTest, WriteInterfaceComputeCriterionOperationValue)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("plato_analyze","plato_analyze",0,1,2);
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1545,7 +1545,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationValue)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationGradient)
+TEST(OperationTest, WriteDefinitionComputeCriterionOperationGradient)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("plato_analyze","plato_analyze",0,1,2);
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1602,7 +1602,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionComputeCriterionOperationGradient)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationGradient)
+TEST(OperationTest, WriteInterfaceComputeCriterionOperationGradient)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("plato_analyze","plato_analyze",0,1,2);
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1658,7 +1658,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceComputeCriterionOperationGradient)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionDesignVolumeOperation)
+TEST(OperationTest, WriteDefinitionDesignVolumeOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1698,7 +1698,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionDesignVolumeOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceDesignVolumeOperation)
+TEST(OperationTest, WriteInterfaceDesignVolumeOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1741,7 +1741,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceDesignVolumeOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionComputeVolumeSIMPOperation)
+TEST(OperationTest, WriteDefinitionComputeVolumeSIMPOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1815,7 +1815,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionComputeVolumeSIMPOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceComputeVolumeSIMPOperation)
+TEST(OperationTest, WriteInterfaceComputeVolumeSIMPOperation)
 {
       std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1882,7 +1882,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceComputeVolumeSIMPOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteDefinitionWriteOutputOperation)
+TEST(OperationTest, WriteDefinitionWriteOutputOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};
@@ -1943,7 +1943,7 @@ TEST(PlatoTestXMLGenerator, WriteDefinitionWriteOutputOperation)
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WriteInterfaceWriteOutputOperation)
+TEST(OperationTest, WriteInterfaceWriteOutputOperation)
 {
     std::shared_ptr<director::Performer> tPerformerMain = std::make_shared<director::Performer>("platomain","platomain");
     std::vector<std::shared_ptr<director::Performer>> tUserPerformers = {tPerformerMain};

@@ -12,7 +12,7 @@
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyNoOffset)
+TEST(PerformerTest, WritePerformerNoConcurrencyNoOffset)
 {
     director::Performer tPerformer("platomain_1", "platomain");
 
@@ -46,7 +46,7 @@ TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyNoOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyWithOffset)
+TEST(PerformerTest, WritePerformerNoConcurrencyWithOffset)
 {
     int tNumRanks = 1;
     int tOffset = 13;
@@ -83,7 +83,7 @@ TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyWithOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyNoOffset)
+TEST(PerformerTest, WritePerformerWithConcurrencyNoOffset)
 {
     int tNumRanks = 1;
     int tOffset = 0;
@@ -119,7 +119,7 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyNoOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyAndOffset)
+TEST(PerformerTest, WritePerformerWithConcurrencyAndOffset)
 {
     int tNumRanks = 1;
     int tOffset = 1;
@@ -156,7 +156,7 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyAndOffset)
 }
 
 
-TEST(PlatoTestXMLGenerator, PerformerMpiRunLine)
+TEST(PerformerTest, PerformerMpiRunLine)
 {
     int tNumRanks = 16;
     int tOffset = 1;

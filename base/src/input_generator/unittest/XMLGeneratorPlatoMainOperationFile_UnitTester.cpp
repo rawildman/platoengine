@@ -1620,7 +1620,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticObjectiveGradientToPlatoMainOperatio
     tInnerFor = tOuterFor.child("For");
     ASSERT_FALSE(tInnerFor.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"PerformerSampleIndex", "PerformerSamples"}, tInnerFor);
-    tInnerForInput = tInnerFor.append_child("Input");
+    tInnerForInput = tInnerFor.child("Input");
     ASSERT_FALSE(tInnerForInput.empty());
     tKeys = {"ArgumentName", "Probability"};
     tValues ={"Objective Gradient {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}",

@@ -13,7 +13,7 @@
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
+TEST(FileObjectTest, FileObjectFunctionsNoConcurrency)
 {
     director::FileObject tFileObject("name");
     ASSERT_NO_THROW(tFileObject.name());
@@ -37,7 +37,7 @@ TEST(PlatoTestXMLGenerator, FileObjectFunctionsNoConcurrency)
     PlatoTestXMLGenerator::test_children({"File"}, {"test"}, tDocument);
 }
 
-TEST(PlatoTestXMLGenerator, FileObjectFunctionsWithConcurrency)
+TEST(FileObjectTest, FileObjectFunctionsWithConcurrency)
 {
     director::FileObject tFileObject("name",3);
     ASSERT_NO_THROW(tFileObject.name());
