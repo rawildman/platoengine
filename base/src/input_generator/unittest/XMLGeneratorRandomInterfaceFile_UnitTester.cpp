@@ -196,7 +196,6 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainOutputStageDeterministic)
     pugi::xml_document tDocument;
     XMLGen::append_plato_main_output_stage(tXMLMetaData, tDocument);
 
-    //tDocument.save_file("dummy.xml", "    >     ");
     // TEST RESULTS
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -1138,35 +1137,6 @@ TEST(PlatoTestXMLGenerator, AppendPhysicsPerformersForNondeterministicUsecase)
     ASSERT_TRUE(tFor.empty());
 }
 
-TEST(PlatoTestXMLGenerator, AppendTopologySharedDataForNondeterministicUsecase)
-{
-    pugi::xml_document tDocument;
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("plato_analyze");
-    XMLGen::InputData tInputData;
-    tInputData.append(tService);
-
-    ASSERT_NO_THROW(XMLGen::append_multiperformer_topology_shared_data(tInputData, tDocument));
-    ASSERT_FALSE(tDocument.empty());
-    tDocument.save_file("dummy.xml", "    >     ");
-
-    // TEST RESULTS AGAINST GOLD VALUES
-    auto tPerformer = tDocument.child("Performer");
-    std::vector<std::string> tGoldKeys = {"PerformerID", "For"};
-    std::vector<std::string> tGoldValues = {"1", ""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tPerformer);
-
-    tGoldKeys = {"var", "in"};
-    tGoldValues = {"PerformerIndex", "Performers"};
-    auto tForNode = tPerformer.child("For");
-    PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValues, tForNode);
-
-    tGoldKeys = {"Name", "Code"};
-    tGoldValues = {"plato analyze_{PerformerIndex}", "plato_analyze"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tForNode);
-}
-
 TEST(PlatoTestXMLGenerator, AppendFilterControlOperation)
 {
     pugi::xml_document tDocument;
@@ -1178,7 +1148,7 @@ TEST(PlatoTestXMLGenerator, AppendFilterControlOperation)
     
     XMLGen::append_filter_control_operation(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
-    //tDocument.save_file("dummy.xml", "    >     ");
+
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Output"};
@@ -1639,7 +1609,6 @@ TEST(PlatoTestXMLGenerator, AppendConstraintValueStage)
     XMLGen::append_constraint_value_stage(tInputData, tDocument);
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("dummy.xml", "  ");
     // TEST RESULTS AGAINST GOLD VALUES
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -2025,11 +1994,17 @@ TEST(PlatoTestXMLGenerator, AppendSampleObjectiveValueOperation)
 
 TEST(PlatoTestXMLGenerator, AppendEvaluateNondeterministicCriterionValueOperation)
 {
-    // CALL FUNCTION
     XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tXMLMetaData.append(tService);
+
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("objective_number_standard_deviations", "1");
     tXMLMetaData.set(tOptimizationParameters);
+
     pugi::xml_document tDocument;
     auto tStage = tDocument.append_child("Stage");
     XMLGen::append_evaluate_nondeterministic_objective_value_operation("Objective Value", tXMLMetaData, tStage);
@@ -2042,7 +2017,7 @@ TEST(PlatoTestXMLGenerator, AppendEvaluateNondeterministicCriterionValueOperatio
     auto tOperation = tStage.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "For", "Output"};
-    tGoldValues = {"Compute Non-Deterministic Objective Value", "platomain", "", ""};
+    tGoldValues = {"Compute Non-Deterministic Objective Value", "platomain_1", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tFor = tOperation.child("For");
@@ -2153,6 +2128,9 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageForNondeterministicUsecase)
 
     // Pose Service	
     XMLGen::Service tService;
+    tService.id("0");
+    tService.code("platomain");
+    tXMLMetaData.append(tService);
     tService.id("1");
     tService.code("plato_analyze");
     tXMLMetaData.append(tService);
@@ -2205,7 +2183,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageForNondeterministicUsecase)
     auto tStageOperation = tStage.child("Operation");
     ASSERT_FALSE(tStageOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "Input", "Output"};
-    tGoldValues = {"Filter Control", "platomain", "", ""};
+    tGoldValues = {"Filter Control", "platomain_0", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tStageOperation);
 
     auto tFilterInput = tStageOperation.child("Input");
@@ -2298,7 +2276,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStageForNondeterministicUsecase)
     tStageOperation = tStageOperation.next_sibling("Operation");
     ASSERT_FALSE(tStageOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "For", "Output"};
-    tGoldValues = {"Compute Non-Deterministic Objective Value", "platomain", "", ""};
+    tGoldValues = {"Compute Non-Deterministic Objective Value", "platomain_0", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tStageOperation);
 
     tFor = tStageOperation.child("For");
@@ -2499,11 +2477,17 @@ TEST(PlatoTestXMLGenerator, AppendSampleObjectiveGradientOperation)
 
 TEST(PlatoTestXMLGenerator, AppendEvaluateNondeterministicCriterionGradientOperation)
 {
-    // CALL FUNCTION
     XMLGen::InputData tXMLMetaData;
+
+    XMLGen::Service tService;
+    tService.id("0");
+    tService.code("platomain");
+    tXMLMetaData.append(tService);
+
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("objective_number_standard_deviations", "2");
     tXMLMetaData.set(tOptimizationParameters);
+
     pugi::xml_document tDocument;
     auto tStage = tDocument.append_child("Stage");
     XMLGen::append_evaluate_nondeterministic_objective_gradient_operation("Objective Gradient ID-0", tXMLMetaData, tStage);
@@ -2516,7 +2500,7 @@ TEST(PlatoTestXMLGenerator, AppendEvaluateNondeterministicCriterionGradientOpera
     auto tOperation = tStage.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     tGoldKeys = {"Name", "PerformerName", "For", "Output"};
-    tGoldValues = {"Compute Non-Deterministic Objective Gradient", "platomain", "", ""};
+    tGoldValues = {"Compute Non-Deterministic Objective Gradient", "platomain_0", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tFor = tOperation.child("For");
@@ -2666,8 +2650,8 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageForNondeterministicUseca
     // ****** 1) TEST RESULTS AGAINST STAGE GOLD VALUES ******
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
-    std::vector<std::string> tGoldKeys = {"Name", "Type", "Input", "Operation", "For", "For", "Operation", "Output"};
-    std::vector<std::string> tGoldValues = {"Compute Objective Gradient", "maximize stiffness", "", "", "", "", "", ""};
+    std::vector<std::string> tGoldKeys = {"Name", "Input", "Operation", "For", "Operation", "Operation", "Output"};
+    std::vector<std::string> tGoldValues = {"Compute Objective Gradient", "", "", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tStage);
 
     auto tStageInput= tStage.child("Input");
@@ -3182,8 +3166,8 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationObjectiveOptions)
     tXMLMetaData.objective = tObjective;
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     XMLGen::append_grad_based_optimizer_objective_options(tXMLMetaData, tOptimizerNode);
-    //tDocument.save_file("dummy.xml", "    >     ");
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
+
+    // TEST RESULTS AGAINST GOLD VALUES
     std::vector<std::string> tGoldKeys = {"Objective"};
     std::vector<std::string> tGoldValues = {""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
@@ -3263,12 +3247,11 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     tOptimizationParameters.append("discretization","density");
     tXMLMetaData.set(tOptimizationParameters);
 
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
+    // TEST RESULTS AGAINST GOLD VALUES
     // CASE 1: ABSOLUTE TARGET VALUE IS DEFINED
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     tXMLMetaData.constraints[0].absoluteTarget("1.0");
     XMLGen::append_grad_based_optimizer_constraint_options(tXMLMetaData, tOptimizerNode);
-    //tDocument.save_file("dummy.xml", "    >     ");
 
     std::vector<std::string> tGoldKeys = {"Constraint"};
     std::vector<std::string> tGoldValues = {""};

@@ -269,7 +269,6 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage_shape_multi_performer)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
-    //tDocument.save_file("dummy.xml");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -429,7 +428,6 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveValueStage)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_value_stage(tMetaData, tDocument));
-    //tDocument.save_file("dummy.xml");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -944,7 +942,6 @@ TEST(PlatoTestXMLGenerator, AppendSharedData)
 
     pugi::xml_document tDocument;
     XMLGen::append_shared_data(tMetaData, tDocument);
-    tDocument.save_file("test.xml", "  ");
 
     // TEST
     auto tSharedData = tDocument.child("SharedData");
@@ -1257,7 +1254,6 @@ TEST(PlatoTestXMLGenerator, AppendQoISharedData)
 
     pugi::xml_document tDocument;
     XMLGen::append_qoi_shared_data(tMetaData, tDocument);
-    //tDocument.save_file("dummy.xml","  ");
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1592,6 +1588,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataWithHelmholtz)
     tMetaData.append(tService);
     tService.id("helmholtz");
     tService.code("plato_analyze");
+    tMetaData.append(tService);
     tMetaData.mPerformerServices.push_back(tService);
 
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -1602,7 +1599,6 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataWithHelmholtz)
     pugi::xml_document tDocument;
 
     ASSERT_NO_THROW(XMLGen::append_topology_shared_data(tMetaData, tDocument));
-    tDocument.save_file("test.xml","  ");
 
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_FALSE(tSharedData.empty());
@@ -1626,6 +1622,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataWithHelmholtzAndProjection)
     tMetaData.append(tService);
     tService.id("helmholtz");
     tService.code("plato_analyze");
+    tMetaData.append(tService);
     tMetaData.mPerformerServices.push_back(tService);
 
     XMLGen::OptimizationParameters tOptimizationParameters;
@@ -2004,7 +2001,6 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_constraint_gradient_stage(tMetaData, tDocument));
-    //tDocument.save_file("dummy.xml", "    >     ");
     
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -2274,7 +2270,6 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_constraint_gradient_stage(tMetaData, tDocument));
-    //tDocument.save_file("dummy.xml", "    >     ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -2921,7 +2916,6 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
-    tDocument.save_file("dummy.xml", "    >     ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -2951,11 +2945,9 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
 
     // LOAD FROM HDF5
     tOperation  = tOperation.next_sibling("Operation");
-    tKeys = {"Name", "PerformerName", "Input", "Output"};
-    tValues = {"Load Objective GradientX From HDF5", "xtk_3", "", ""};
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"Load Objective GradientX From HDF5", "xtk_3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    tOpInputs = tOperation.child("Output");
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Criterion Gradient - criterion_3_service_2_scenario_14", "Criterion Gradient - criterion_3_service_2_scenario_14"}, tOpInputs);
 
     // XTK COMPUTE GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
@@ -2963,7 +2955,6 @@ TEST(PlatoTestXMLGenerator, LSTOAppendObjectiveGradientStage)
     tValues = {"Compute Objective Gradient XTK", "xtk_3", ""};
     tOpOutputs = tOperation.child("Output");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Criterion Gradient - criterion_3_service_2_scenario_14", "Criterion Gradient - criterion_3_service_2_scenario_14"}, tOpOutputs);
-
 
     // FILTER GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
