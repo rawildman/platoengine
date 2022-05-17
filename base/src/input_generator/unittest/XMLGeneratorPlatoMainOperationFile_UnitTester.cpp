@@ -30,8 +30,8 @@ TEST(PlatoTestXMLGenerator, AppendEnforceBoundsToPlatoMainOperationsFile)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Name", "Function", "Input", "Input", "Output"};
-    std::vector<std::string> tValues = {"EnforceBounds", "EnforceBounds", "", "", ""};
+    std::vector<std::string> tKeys = {"Name", "Function", "Input", "Input", "Input", "Output"};
+    std::vector<std::string> tValues = {"EnforceBounds", "EnforceBounds", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     tKeys = {"ArgumentName"};
@@ -397,15 +397,15 @@ TEST(PlatoTestXMLGenerator, AppendSetUpperBoundsToPlatoMainOperation)
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::append_set_upper_bounds_to_plato_main_operation(tXMLMetaData, tDocument);
     ASSERT_FALSE(tDocument.empty());
-    //tDocument.save_file("dummy.txt");
+    //tDocument.save_file("dummy.xml");
 
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Function", "Name", "UseCase", "Discretization", "Input", "Output",
-        "FixedBlocks", "FixedBlocks", "FixedSidesets", "FixedSidesets"};
+        "FixedBlocks", "FixedBlocks", "FixedSidesets"};
     std::vector<std::string> tValues = {"SetUpperBounds", "Compute Upper Bounds", "solid", "density", "", "",
-        "", "", "", ""};
+        "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tInput = tOperation.child("Input");
@@ -1491,6 +1491,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticCriterionValueOperation)
     XMLGen::InputData tXMLMetaData;
     XMLGen::append_stochastic_criterion_value_operation(tDocument);
     ASSERT_FALSE(tDocument.empty());
+    //tDocument.save_file("dummy.xml","  ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tCriterionValue = tDocument.child("CriterionValue");
@@ -1506,7 +1507,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticCriterionValueOperation)
     auto tInnerFor = tOuterFor.child("For");
     ASSERT_FALSE(tInnerFor.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"PerformerSampleIndex", "PerformerSamples"}, tInnerFor);
-    auto tInnerForInput = tInnerFor.append_child("Input");
+    auto tInnerForInput = tInnerFor.child("Input");
     ASSERT_FALSE(tInnerForInput.empty());
     tKeys = {"ArgumentName", "Probability"};
     tValues ={"Objective Value {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}",
@@ -1947,12 +1948,13 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsToPlatoMainOperation)
     XMLGen::InputData tXMLMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("filter_type", "kernel_then_tanh");
+    tOptimizationParameters.append("filter_radius_scale", "2.0");
     tOptimizationParameters.filterInEngine(true);
     tOptimizationParameters.append("optimization_type", "topology");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::append_filter_options_to_plato_main_operation(tXMLMetaData, tDocument1);
     ASSERT_FALSE(tDocument1.empty());
-
+    //tDocument1.save_file("dummy.xml", "  ");
     // CASE 1: USER DEFINED FILTER
     auto tFilterNode = tDocument1.child("Filter");
     ASSERT_STREQ("Filter", tFilterNode.name());
@@ -1969,7 +1971,7 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsToPlatoMainOperation)
     PlatoTestXMLGenerator::test_children({"Name", "Scale"}, {"Kernel", "2.0"}, tFilterNode);
 }
 
-TEST(PlatoTestXMLGenerator, AppendFilterOptionsToOperation)
+TEST(PlatoTestXMLGenerator, AppendFilterOptionsToOperationOneParameter)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tXMLMetaData;
@@ -1983,7 +1985,14 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsToOperation)
 
     // CASE 1: JUST ONE PARAMETER
     PlatoTestXMLGenerator::test_children({"Scale"}, {"2.5"}, tFilterNode);
+}
 
+TEST(PlatoTestXMLGenerator, AppendFilterOptionsToOperationAllParameters)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    
     // CASE 2: ALL PARAMETERS
     tOptimizationParameters.append("filter_radius_scale", "2.5");
     tOptimizationParameters.append("filter_radius_absolute", "1");
@@ -1994,14 +2003,32 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsToOperation)
     tOptimizationParameters.append("filter_heaviside_min", "0.5");
     tOptimizationParameters.append("filter_heaviside_update", "1");
     tOptimizationParameters.append("filter_heaviside_max", "2");
+    tOptimizationParameters.append("filter_type","kernel_then_heaviside");
+
     tXMLMetaData.set(tOptimizationParameters);
-    tFilterNode = tDocument.append_child("Filter");
+    auto tFilterNode = tDocument.append_child("Filter");
     XMLGen::append_filter_options_to_operation(tXMLMetaData, tFilterNode);
+    //tDocument.save_file("dummy.xml", "  ");
     ASSERT_FALSE(tFilterNode.empty());
     ASSERT_STREQ("Filter", tFilterNode.name());
-    std::vector<std::string> tKeys = {"Scale", "Absolute", "StartIteration", "UpdateInterval",
-        "UseAdditiveContinuation", "Power", "HeavisideMin", "HeavisideUpdate", "HeavisideMax"};
-    std::vector<std::string> tValues = {"2.5", "1", "50", "2", "true", "3", "0.5", "1", "2"};
+    std::vector<std::string> tKeys = {"Scale", 
+                                      "Absolute", 
+                                      "Power",
+                                      "StartIteration", 
+                                      "UpdateInterval",
+                                      "UseAdditiveContinuation", 
+                                      "HeavisideMin", 
+                                      "HeavisideUpdate", 
+                                      "HeavisideMax"};
+    std::vector<std::string> tValues = {"2.5", 
+                                        "1",
+                                        "3",  
+                                        "50", 
+                                        "2", 
+                                        "true", 
+                                        "0.5", 
+                                        "1", 
+                                        "2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tFilterNode);
 }
 

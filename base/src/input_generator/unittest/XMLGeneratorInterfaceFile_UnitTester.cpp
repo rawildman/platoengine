@@ -2802,10 +2802,10 @@ TEST(PlatoTestXMLGenerator, TOLSUpdateProblem)
     tValues = {"Field", "Control"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     
-    auto tOutput = tOperation.next_sibling("Ouput");
+    auto tOutput = tOperation.child("Ouput");
     tKeys =   {"ArgumentName", "SharedDataName"};
     tValues = {"Filtered Field", "Topology"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);//<<<<<<<<<<<<<<<<<<<<<<why
 
     tOperation = tOperation.next_sibling("Operation");
     tKeys =   {"Name","PerformerName","Input"};
