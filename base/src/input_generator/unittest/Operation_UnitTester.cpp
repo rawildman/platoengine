@@ -819,7 +819,7 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceCubitSubBlockOperation)
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
     tKeys = {"ArgumentName", "SharedDataName"};
-    tValues = {"Parameters", "design_parameters_2"};
+    tValues = {"design_parameters_2", "design_parameters_2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
