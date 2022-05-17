@@ -1547,7 +1547,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticCriterionGradientOperation)
     auto tInnerFor = tOuterFor.child("For");
     ASSERT_FALSE(tInnerFor.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"PerformerSampleIndex", "PerformerSamples"}, tInnerFor);
-    auto tInnerForInput = tInnerFor.append_child("Input");
+    auto tInnerForInput = tInnerFor.child("Input");
     ASSERT_FALSE(tInnerForInput.empty());
     tKeys = {"ArgumentName", "Probability"};
     tValues ={"Objective Gradient {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}",
@@ -1592,7 +1592,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticObjectiveGradientToPlatoMainOperatio
     auto tInnerFor = tOuterFor.child("For");
     ASSERT_FALSE(tInnerFor.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"PerformerSampleIndex", "PerformerSamples"}, tInnerFor);
-    auto tInnerForInput = tInnerFor.append_child("Input");
+    auto tInnerForInput = tInnerFor.child("Input");
     ASSERT_FALSE(tInnerForInput.empty());
     tKeys = {"ArgumentName", "Probability"};
     tValues ={"Objective Value {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}",
@@ -1656,7 +1656,7 @@ TEST(PlatoTestXMLGenerator, AppendStochasticObjectiveValueToPlatoMainOperation)
     auto tInnerFor = tOuterFor.child("For");
     ASSERT_FALSE(tInnerFor.empty());
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"PerformerSampleIndex", "PerformerSamples"}, tInnerFor);
-    auto tInnerForInput = tInnerFor.append_child("Input");
+    auto tInnerForInput = tInnerFor.child("Input");
     ASSERT_FALSE(tInnerForInput.empty());
     tKeys = {"ArgumentName", "Probability"};
     tValues ={"Objective Value {PerformerIndex*NumSamplesPerPerformer+PerformerSampleIndex}",

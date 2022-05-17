@@ -1058,6 +1058,9 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataForNondeterministicUseCase)
     tService.code("plato_analyze");
     XMLGen::InputData tInputData;
     tInputData.append(tService);
+    tService.id("0");
+    tService.code("platomain");
+    tInputData.append(tService);
 
     ASSERT_NO_THROW(XMLGen::append_multiperformer_topology_shared_data(tInputData, tDocument));
     ASSERT_FALSE(tDocument.empty());
@@ -1066,7 +1069,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataForNondeterministicUseCase)
     auto tSharedData = tDocument.child("SharedData");
     ASSERT_STREQ("SharedData", tSharedData.name());
     std::vector<std::string> tGoldKeys = {"Name", "Type", "Layout", "OwnerName", "UserName", "For"};
-    std::vector<std::string> tGoldValues = {"Topology", "Scalar", "Nodal Field", "platomain", "platomain", ""};
+    std::vector<std::string> tGoldValues = {"Topology", "Scalar", "Nodal Field", "platomain_0", "platomain_0", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tSharedData);
 
     tGoldKeys = {"var", "in"};
@@ -1146,6 +1149,7 @@ TEST(PlatoTestXMLGenerator, AppendTopologySharedDataForNondeterministicUsecase)
 
     ASSERT_NO_THROW(XMLGen::append_multiperformer_topology_shared_data(tInputData, tDocument));
     ASSERT_FALSE(tDocument.empty());
+    tDocument.save_file("dummy.xml", "    >     ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tPerformer = tDocument.child("Performer");
