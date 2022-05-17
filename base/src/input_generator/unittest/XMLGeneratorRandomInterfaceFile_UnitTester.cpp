@@ -196,6 +196,7 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainOutputStageDeterministic)
     pugi::xml_document tDocument;
     XMLGen::append_plato_main_output_stage(tXMLMetaData, tDocument);
 
+    //tDocument.save_file("dummy.xml", "    >     ");
     // TEST RESULTS
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -251,7 +252,7 @@ TEST(PlatoTestXMLGenerator, AppendPlatoMainOutputStageDeterministic)
     ASSERT_FALSE(tInput.empty());
     ASSERT_STREQ("Input", tInput.name());
     tGoldKeys = {"ArgumentName", "SharedDataName"};
-    tGoldValues = {"vonmises", "vonmises_plato_analyze_2"};
+    tGoldValues = {"vonmises_plato_analyze_2", "vonmises_plato_analyze_2"};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tInput);
     tInput = tInput.next_sibling("Input");
     ASSERT_TRUE(tInput.empty());
@@ -1245,7 +1246,7 @@ TEST(PlatoTestXMLGenerator, AppendFilterCriterionGradientOperation)
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     std::vector<std::string> tGoldKeys = {"Name", "PerformerName", "Input", "Input", "Output"};
-    std::vector<std::string> tGoldValues = {"Filter Gradient", "platomain", "", "", ""};
+    std::vector<std::string> tGoldValues = {"Filter Gradient", "", "", "", ""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOperation);
 
     auto tOutput = tOperation.child("Output");

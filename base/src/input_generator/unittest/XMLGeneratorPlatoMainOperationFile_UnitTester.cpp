@@ -1077,8 +1077,8 @@ TEST(PlatoTestXMLGenerator, AppendInitializeLevelsetOperation_SwissCheeseKey)
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet", "CreateSpheres"};
-    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", "", ""};
+    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet"};
+    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tMethod = tOperation.child("SwissCheeseLevelSet");
@@ -1106,8 +1106,8 @@ TEST(PlatoTestXMLGenerator, AppendInitializeLevelsetSwissCheeseOperation_NoSpher
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet", "CreateSpheres"};
-    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", "", ""};
+    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet"};
+    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tMethod = tOperation.child("SwissCheeseLevelSet");
@@ -1131,8 +1131,8 @@ TEST(PlatoTestXMLGenerator, AppendInitializeLevelsetSwissCheeseOperation_NoSpher
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet", "CreateSpheres"};
-    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", "", ""};
+    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet"};
+    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tMethod = tOperation.child("SwissCheeseLevelSet");
@@ -1154,12 +1154,13 @@ TEST(PlatoTestXMLGenerator, AppendInitializeLevelsetSwissCheeseOperation_NoNodeS
     tXMLMetaData.set(tOptimizationParameters);
     ASSERT_NO_THROW(XMLGen::append_initialize_levelset_swiss_cheese_operation(tXMLMetaData, tDocument));
     ASSERT_FALSE(tDocument.empty());
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet", "CreateSpheres"};
-    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", "", ""};
+    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet"};
+    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tMethod = tOperation.child("SwissCheeseLevelSet");
@@ -1181,12 +1182,12 @@ TEST(PlatoTestXMLGenerator, AppendInitializeLevelsetSwissCheeseOperation)
     tXMLMetaData.set(tOptimizationParameters);
     ASSERT_NO_THROW(XMLGen::append_initialize_levelset_swiss_cheese_operation(tXMLMetaData, tDocument));
     ASSERT_FALSE(tDocument.empty());
-
+    //tDocument.save_file("dummy.xml", "    >     ");
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet", "CreateSpheres"};
-    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", "", ""};
+    std::vector<std::string> tKeys = {"Function", "Name", "Method", "SwissCheeseLevelSet"};
+    std::vector<std::string> tValues = {"InitializeField", "Initialize Field", "SwissCheeseLevelSet", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     auto tMethod = tOperation.child("SwissCheeseLevelSet");
@@ -2089,10 +2090,13 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsWithProjectionToPlatoMainOperatio
     tOptimizationParameters.append("filter_type", "kernel");
     tOptimizationParameters.append("projection_type", "tanh");
     tOptimizationParameters.filterInEngine(true);
+    tOptimizationParameters.append("filter_radius_scale","2.0");
     tOptimizationParameters.append("optimization_type", "topology");
     tXMLMetaData.set(tOptimizationParameters);
     XMLGen::append_filter_options_to_plato_main_operation(tXMLMetaData, tDocument1);
+    
     ASSERT_FALSE(tDocument1.empty());
+    //tDocument1.save_file("dummy.xml", "    >     ");
     auto tFilterNode = tDocument1.child("Filter");
     ASSERT_STREQ("Filter", tFilterNode.name());
     PlatoTestXMLGenerator::test_children({"Name", "Scale"}, {"KernelThenTANH", "2.0"}, tFilterNode);
@@ -2103,8 +2107,10 @@ TEST(PlatoTestXMLGenerator, AppendFilterOptionsWithProjectionToPlatoMainOperatio
     tOptimizationParameters2.append("filter_type", "pde_filter");
     tOptimizationParameters2.filterInEngine(true);
     tOptimizationParameters2.append("optimization_type", "topology");
+    tOptimizationParameters.append("filter_radius_scale","2.0");
     tXMLMetaData.set(tOptimizationParameters2);
     XMLGen::append_filter_options_to_plato_main_operation(tXMLMetaData, tDocument2);
+    tDocument2.save_file("dummy.xml", "    >     ");
     ASSERT_FALSE(tDocument2.empty());
     tFilterNode = tDocument2.child("Filter");
     ASSERT_STREQ("Filter", tFilterNode.name());

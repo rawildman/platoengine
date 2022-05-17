@@ -2004,8 +2004,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_constraint_gradient_stage(tMetaData, tDocument));
-
-    //tDocument.save_file("testdoc.xml","  ");
+    //tDocument.save_file("dummy.xml", "    >     ");
+    
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
     ASSERT_FALSE(tStage.empty());
@@ -2028,7 +2028,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     // CONSTRAINT GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", ""};
+    tKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
+    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Topology"}, tOpInputs);
@@ -2039,8 +2040,9 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)
 
     // FILTER GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tKeys = {"Name", "PerformerName", "Input", "Input", "Output"};
-    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", "", ""};
+    tKeys = {"Name", "PerformerName", "Input",  "Output"};
+    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", ""};
+   
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Criterion Gradient - criterion_3_service_1_scenario_"}, tOpInputs);
@@ -2272,6 +2274,7 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_constraint_gradient_stage(tMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -2304,7 +2307,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     // CONSTRAINT GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", ""};
+    tKeys = {"Name", "PerformerName", "Input", "Output", "Output"};
+    tValues = {"Compute Constraint Gradient 18", "platomain_1", "", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Topology"}, tOpInputs);
@@ -2327,8 +2331,8 @@ TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtzAndProject
 
     // FILTER GRADIENT OPERATION
     tOperation = tOperation.next_sibling("Operation");
-    tKeys = {"Name", "PerformerName", "Input", "Input", "Output"};
-    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", "", ""};
+    tKeys = {"Name", "PerformerName", "Input", "Output"};
+    tValues = {"Filter Gradient", "plato_analyze_helmholtz", "", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Topology", "Projected Constraint Gradient 18"}, tOpInputs);
