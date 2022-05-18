@@ -118,38 +118,6 @@ inline void test_children
  * \param [in] aValues     children values
  * \param [in] aParentNode pugi::xml_node
 **********************************************************************************/
-inline void test_attributes_old
-(const std::vector<std::string>& aKeys,
- const std::vector<std::string>& aValues,
- const pugi::xml_node& aParentNode)
-{
-    ASSERT_TRUE(aKeys.size() == aValues.size());
-    for(auto& tAttribute : aParentNode.attributes())
-    {
-        auto tItr = std::find(aKeys.begin(), aKeys.end(), tAttribute.name());
-        if(tItr == aKeys.end())
-        {
-            std::cout << "Did not find attribute name: Attribute Name = " << tAttribute.name() << "\n";
-            std::cout << "Gold attributes keys are:\n";
-            PlatoTestXMLGenerator::print_elements(aKeys);
-            ASSERT_TRUE(tItr != aKeys.end());
-        }
-        ASSERT_STREQ(tItr->c_str(), tAttribute.name());
-
-        tItr = std::find(aValues.begin(), aValues.end(), tAttribute.value());
-        if(tItr == aValues.end())
-        {
-            std::cout << "Did not find attribute value: Attribute Value = " << tAttribute.value() << "\n";
-            std::cout << "Gold attributes values are:\n";
-            PlatoTestXMLGenerator::print_elements(aValues);
-            ASSERT_TRUE(tItr != aValues.end());
-        }
-        ASSERT_STREQ(tItr->c_str(), tAttribute.value());
-    }
-}
-// function test_attributes
-
-
 inline void test_attributes
 (const std::vector<std::string>& aKeys,
  const std::vector<std::string>& aValues,
