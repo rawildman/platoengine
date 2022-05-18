@@ -1559,7 +1559,7 @@ TEST(OperationTest, WriteDefinitionComputeCriterionOperationGradient)
     ASSERT_NO_THROW(tObjective.write_definition(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("testint.xml","  ");
+    //tDocument.save_file("testint.xml","  ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
@@ -1757,7 +1757,7 @@ TEST(OperationTest, WriteDefinitionComputeVolumeSIMPOperation)
     ASSERT_NO_THROW(tSIMP.write_definition(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("test.xml","  ");
+    //tDocument.save_file("test.xml","  ");
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -1831,7 +1831,7 @@ TEST(OperationTest, WriteInterfaceComputeVolumeSIMPOperation)
     ASSERT_NO_THROW(tSIMP.write_interface(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("test.xml","  ");
+    //tDocument.save_file("test.xml","  ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
@@ -1897,7 +1897,7 @@ TEST(OperationTest, WriteDefinitionWriteOutputOperation)
     ASSERT_NO_THROW(tWriteOutput.write_definition(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("test.xml","  ");
+    //tDocument.save_file("test.xml","  ");
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -1958,7 +1958,7 @@ TEST(OperationTest, WriteInterfaceWriteOutputOperation)
     ASSERT_NO_THROW(tWriteOutput.write_interface(tDocument,""));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("test.xml","  ");
+    //tDocument.save_file("test.xml","  ");
 
     // TEST RESULTS AGAINST GOLD VALUES
     auto tOperation = tDocument.child("Operation");

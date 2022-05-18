@@ -776,7 +776,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainInput)
     ASSERT_NO_THROW(tGemmaProblem.write_plato_main_input(tDocument));
     ASSERT_FALSE(tDocument.empty());
 
-    tDocument.save_file("main.xml", "  ");
+    //tDocument.save_file("main.xml", "  ");
 
     auto tOutput = tDocument.child("output");
     ASSERT_FALSE(tOutput.empty());

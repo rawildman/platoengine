@@ -2535,10 +2535,9 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_Mat
     tMaterial.code("sierra");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
     auto tParamList = tDocument.child("ParameterList");
-    std::vector<std::string> tKeys = {"Name"};
-    std::vector<std::string> tValues = {"Material Models"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tParamList);
     auto tMaterials = tParamList.child("ParameterList");
     ASSERT_TRUE(tMaterials.empty());
 }
