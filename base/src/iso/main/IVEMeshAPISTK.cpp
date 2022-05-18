@@ -61,7 +61,9 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
+#ifdef BUILD_IN_SIERRA
 #include <stk_mesh/base/MeshBuilder.hpp>
+#endif
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 
 
@@ -138,8 +140,13 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm,
   initialize();
 
   mComm = comm;
+#ifdef BUILD_IN_SIERRA
   mMetaData = std::shared_ptr<stk::mesh::MetaData>(meta_data,[](auto ptrWeWontDelete){});
   mBulkData = std::shared_ptr<stk::mesh::BulkData>(bulk_data,[](auto ptrWeWontDelete){});
+#else
+  mMetaData = meta_data;
+  mBulkData = bulk_data;
+#endif
   mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
                             (stk::topology::NODE_RANK, "coordinates");
   if(!mCoordsField)
@@ -174,7 +181,11 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm) : IVEMeshAPI()
 {
   initialize();
   mComm = comm;
+#ifdef BUILD_IN_SIERRA
   mMetaData = stk::mesh::MeshBuilder().set_spatial_dimension(3).create_meta_data();
+#else
+  mMetaData = new stk::mesh::MetaData(3);
+#endif
   mLocallyOwnedMeta = true;
   mCoordsField = (stk::mesh::Field<double, stk::mesh::Cartesian>*)(&(mMetaData->
                 declare_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
@@ -211,6 +222,12 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm) : IVEMeshAPI()
 
 IVEMeshAPISTK::~IVEMeshAPISTK()
 {
+#ifndef BUILD_IN_SIERRA
+  if ( mLocallyOwnedBulk && mBulkData )
+    delete mBulkData;
+  if ( mLocallyOwnedMeta && mMetaData )
+    delete mMetaData;
+#endif
   if(mIoBroker)
     delete mIoBroker;
 }
@@ -1280,10 +1297,18 @@ bool IVEMeshAPISTK::prepare_as_source()
 {
   if(!mMetaData)
   {
+#ifdef BUILD_IN_SIERRA
     mMetaData = stk::mesh::MeshBuilder().create_meta_data();
+#else
+    mMetaData = new stk::mesh::MetaData;
+#endif
     mLocallyOwnedMeta = true;
   }
+#ifdef BUILD_IN_SIERRA
   mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
+#else
+  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+#endif
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);
@@ -1294,7 +1319,11 @@ bool IVEMeshAPISTK::prepare_as_destination()
 {
   prepare_to_create_tris();
   mMetaData->commit();
+#ifdef BUILD_IN_SIERRA
   mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
+#else
+  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+#endif
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);

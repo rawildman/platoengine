@@ -53,7 +53,9 @@
 #include <stk_mesh/base/Field.hpp>
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/CoordinateSystems.hpp>
+#ifdef BUILD_IN_SIERRA
 #include <stk_mesh/base/MeshBuilder.hpp>
+#endif
 #endif
 
 #include "lightmp.hpp"
@@ -393,8 +395,13 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
 {
 #ifdef STK_ENABLED
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
+#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
+#else
+    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
+    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
+#endif
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -544,6 +551,10 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
         aValues.push_back(tVal);
     }
 
+#ifndef BUILD_IN_SIERRA
+    delete tBulkData;
+    delete tMetaData;
+#endif
     delete tBroker;
 #else
     throw Plato::LogicException("Functionality not available.  Recompile with STK enabled.");
@@ -555,8 +566,13 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
 /******************************************************************************/
 {
 #ifdef STK_ENABLED
+#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
+#else
+    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
+    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
+#endif
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
     tBroker->set_bulk_data(*tBulkData);
 
@@ -651,6 +667,10 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
         }
     }
 
+#ifndef BUILD_IN_SIERRA
+    delete tBulkData;
+    delete tMetaData;
+#endif
     delete tBroker;
 #else
     throw Plato::LogicException("Functionality not available.  Recompile with STK enabled.");
@@ -663,8 +683,13 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
     bool IsInputFileSpread = true;
 
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
+#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
+#else
+    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
+    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
+#endif
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -703,6 +728,10 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
         aValues.push_back(*tValues);
     }
 
+#ifndef BUILD_IN_SIERRA
+    delete tBulkData;
+    delete tMetaData;
+#endif
     delete tBroker;
 
 #else
