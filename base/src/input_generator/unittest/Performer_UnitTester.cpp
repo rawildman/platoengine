@@ -1,5 +1,5 @@
  /*
- * XMLGeneratorPlatoGemma_UnitTester.cpp
+ * Performer_UnitTester.cpp
  *
  *  Created on: April 12, 2022
  */
@@ -7,14 +7,14 @@
 
 #include "pugixml.hpp"
 #include "XMLGenerator_UnitTester_Tools.hpp"
-#include "XMLGeneratorPerformer.hpp"
+#include "Performer.hpp"
 
 namespace PlatoTestXMLGenerator
 {
 
-TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyNoOffset)
+TEST(PerformerTest, WritePerformerNoConcurrencyNoOffset)
 {
-    XMLGen::XMLGeneratorPerformer tPerformer("platomain_1", "platomain");
+    director::Performer tPerformer("platomain_1", "platomain");
 
     ASSERT_EQ(1, tPerformer.numberRanks());
     ASSERT_EQ("0" , tPerformer.ID(""));
@@ -46,12 +46,12 @@ TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyNoOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyWithOffset)
+TEST(PerformerTest, WritePerformerNoConcurrencyWithOffset)
 {
     int tNumRanks = 1;
     int tOffset = 13;
     int tConcurrentEvaluations = 0;
-    XMLGen::XMLGeneratorPerformer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(1, tPerformer.numberRanks());
     ASSERT_EQ("13" , tPerformer.ID(""));
@@ -83,12 +83,12 @@ TEST(PlatoTestXMLGenerator, WritePerformerNoConcurrencyWithOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyNoOffset)
+TEST(PerformerTest, WritePerformerWithConcurrencyNoOffset)
 {
     int tNumRanks = 1;
     int tOffset = 0;
     int tConcurrentEvaluations = 2;
-    XMLGen::XMLGeneratorPerformer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(tNumRanks, tPerformer.numberRanks());
     ASSERT_EQ("{E+0}" , tPerformer.ID(""));
@@ -119,12 +119,12 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyNoOffset)
     ASSERT_TRUE(tPerformerNode.empty());
 }
 
-TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyAndOffset)
+TEST(PerformerTest, WritePerformerWithConcurrencyAndOffset)
 {
     int tNumRanks = 1;
     int tOffset = 1;
     int tConcurrentEvaluations = 3;
-    XMLGen::XMLGeneratorPerformer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(tNumRanks , tPerformer.numberRanks());
     ASSERT_EQ("{E+1}" , tPerformer.ID(""));
@@ -156,26 +156,26 @@ TEST(PlatoTestXMLGenerator, WritePerformerWithConcurrencyAndOffset)
 }
 
 
-TEST(PlatoTestXMLGenerator, PerformerMpiRunLine)
+TEST(PerformerTest, PerformerMpiRunLine)
 {
     int tNumRanks = 16;
     int tOffset = 1;
     int tConcurrentEvaluations = 3;
-    XMLGen::XMLGeneratorPerformer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(": -np 16 -x PLATO_PERFORMER_ID=2 \\\n" , tPerformer.return_mpirun("1"));
 
     tNumRanks = 4;
     tOffset = 3;
     tConcurrentEvaluations = 0;
-    XMLGen::XMLGeneratorPerformer tPerformer2("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer2("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(": -np 4 -x PLATO_PERFORMER_ID=3 \\\n" , tPerformer2.return_mpirun(""));
 
     tNumRanks = 1;
     tOffset = 3;
     tConcurrentEvaluations = 3;
-    XMLGen::XMLGeneratorPerformer tPerformer3("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
+    director::Performer tPerformer3("name", "code", tOffset, tNumRanks, tConcurrentEvaluations);
 
     ASSERT_EQ(": -np 1 -x PLATO_PERFORMER_ID=5 \\\n" , tPerformer3.return_mpirun("2"));
 

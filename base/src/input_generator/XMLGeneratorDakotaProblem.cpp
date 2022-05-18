@@ -10,8 +10,8 @@
 #include "XMLGeneratorProblemUtilities.hpp"
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
-#include "XMLGeneratorOperation.hpp"
-#include "XMLGeneratorGemmaProblem.hpp"
+#include "Operation.hpp"
+#include "GemmaProblem.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
 #include "XMLGeneratorPlatoESPInputFileUtilities.hpp"
@@ -112,7 +112,7 @@ void plato_gemma_problem
  const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
 {
 
-    XMLGen::XMLGeneratorGemmaProblem tGemmaProblem(aMetaData);
+    director::GemmaProblem tGemmaProblem(aMetaData);
 
     tGemmaProblem.create_evaluation_subdirectories_and_gemma_input(aMetaData);
     

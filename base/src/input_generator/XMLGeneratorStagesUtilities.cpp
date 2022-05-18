@@ -971,12 +971,10 @@ void append_objective_gradient_stage_for_topology_levelset_problem
     tOperationNode = tStageNode.append_child("Operation");
     XMLGen::append_children({"Name", "PerformerName"}, {"Compute Objective Gradient XTK", tFirstXTKMainPerformer}, tOperationNode);
 
-
     auto tOutputNode = tOperationNode.append_child("Output");
     auto tOutputDataName = XMLGen::get_filter_objective_criterion_gradient_input_shared_data_name(aMetaData);
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, 
     {tOutputDataName, tOutputDataName}, tOutputNode);
-
 
     if(aMetaData.optimization_parameters().filterInEngine())
     {

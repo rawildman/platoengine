@@ -2229,6 +2229,7 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_OneBlockOn
     tXMLMetaData.materials.push_back(tMaterial);
 
     ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tSpatialModelList = tDocument.child("ParameterList");
     ASSERT_FALSE(tSpatialModelList.empty());
@@ -2245,10 +2246,10 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_OneBlockOn
     ASSERT_STREQ("ParameterList", tSpatialModelParams.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams);
 
-    auto tElementBlock = tSpatialModelParams.child("Element Block");
+    auto tElementBlock = tSpatialModelParams.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
 
-    auto tMaterialModel = tSpatialModelParams.child("Material Model");
+    auto tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
 }
 
@@ -2259,7 +2260,7 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_OneBlockTw
     XMLGen::Block tBlock;
     tBlock.block_id = "1";
     tBlock.element_type = "tet4";
-    tBlock.material_id = "1";
+    tBlock.material_id = "2";
     tBlock.name = "block_1";
     tXMLMetaData.blocks.push_back(tBlock);
 
@@ -2283,6 +2284,7 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_OneBlockTw
     tXMLMetaData.materials.push_back(tMaterial2);
 
     ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tSpatialModelList = tDocument.child("ParameterList");
     ASSERT_FALSE(tSpatialModelList.empty());
@@ -2299,11 +2301,11 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_OneBlockTw
     ASSERT_STREQ("ParameterList", tSpatialModelParams.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams);
 
-    auto tElementBlock = tSpatialModelParams.child("Element Block");
+    auto tElementBlock = tSpatialModelParams.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
 
-    auto tMaterialModel = tSpatialModelParams.child("Material Model");
-    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
+    auto tMaterialModel = tElementBlock.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 }
 
 TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksOneMaterial)
@@ -2336,6 +2338,7 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     tXMLMetaData.materials.push_back(tMaterial);
 
     ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tSpatialModelList = tDocument.child("ParameterList");
     ASSERT_FALSE(tSpatialModelList.empty());
@@ -2352,10 +2355,10 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     ASSERT_STREQ("ParameterList", tSpatialModelParams1.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams1);
 
-    auto tElementBlock = tSpatialModelParams1.child("Element Block");
+    auto tElementBlock = tSpatialModelParams1.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
 
-    auto tMaterialModel = tSpatialModelParams1.child("Material Model");
+    auto tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
 
     auto tSpatialModelParams2 = tSpatialModelParams1.next_sibling();
@@ -2363,10 +2366,10 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     ASSERT_STREQ("ParameterList", tSpatialModelParams2.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 2"}, tSpatialModelParams2);
 
-    tElementBlock = tSpatialModelParams2.child("Element Block");
+    tElementBlock = tSpatialModelParams2.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_2"}, tElementBlock);
 
-    tMaterialModel = tSpatialModelParams2.child("Material Model");
+    tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
 }
 
@@ -2378,13 +2381,13 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksT
     XMLGen::Block tBlock1;
     tBlock1.block_id = "1";
     tBlock1.element_type = "tet4";
-    tBlock1.material_id = "1";
+    tBlock1.material_id = "2";
     tBlock1.name = "block_1";
 
     XMLGen::Block tBlock2;
     tBlock2.block_id = "2";
     tBlock2.element_type = "tet4";
-    tBlock2.material_id = "2";
+    tBlock2.material_id = "1";
     tBlock2.name = "block_2";
 
     tXMLMetaData.blocks.push_back(tBlock1);
@@ -2426,22 +2429,22 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksT
     ASSERT_STREQ("ParameterList", tSpatialModelParams1.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams1);
 
-    auto tElementBlock = tSpatialModelParams1.child("Element Block");
+    auto tElementBlock = tSpatialModelParams1.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
 
-    auto tMaterialModel = tSpatialModelParams1.child("Material Model");
-    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
+    auto tMaterialModel = tElementBlock.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 
     auto tSpatialModelParams2 = tSpatialModelParams1.next_sibling();
     ASSERT_FALSE(tSpatialModelParams2.empty());
     ASSERT_STREQ("ParameterList", tSpatialModelParams2.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 2"}, tSpatialModelParams2);
 
-    tElementBlock = tSpatialModelParams2.child("Element Block");
+    tElementBlock = tSpatialModelParams2.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_2"}, tElementBlock);
 
-    tMaterialModel = tSpatialModelParams2.child("Material Model");
-    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
+    tMaterialModel = tElementBlock.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
 }
 
 TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksOneFixed)
@@ -2490,6 +2493,7 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     tXMLMetaData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::append_spatial_model_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tSpatialModelList = tDocument.child("ParameterList");
     ASSERT_FALSE(tSpatialModelList.empty());
@@ -2506,10 +2510,10 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     ASSERT_STREQ("ParameterList", tSpatialModelParams1.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 1"}, tSpatialModelParams1);
 
-    auto tElementBlock = tSpatialModelParams1.child("Element Block");
+    auto tElementBlock = tSpatialModelParams1.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_1"}, tElementBlock);
 
-    auto tMaterialModel = tSpatialModelParams1.child("Material Model");
+    auto tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "adamantium"}, tMaterialModel);
 
     auto tSpatialModelParams2 = tSpatialModelParams1.next_sibling();
@@ -2517,14 +2521,14 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     ASSERT_STREQ("ParameterList", tSpatialModelParams2.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Block 2"}, tSpatialModelParams2);
 
-    tElementBlock = tSpatialModelParams2.child("Element Block");
+    tElementBlock = tSpatialModelParams2.child("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Element Block", "string", "block_2"}, tElementBlock);
 
-    tMaterialModel = tSpatialModelParams2.child("Material Model");
+    tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 
-    auto tFixedControl = tSpatialModelParams2.child("Fixed Control");
-    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tMaterialModel);
+    auto tFixedControl = tMaterialModel.next_sibling("Parameter");
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tFixedControl);
 }
 
 TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_MaterialIsNotFromAnalyzePerformer)
@@ -2535,10 +2539,9 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_Mat
     tMaterial.code("sierra");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
     auto tParamList = tDocument.child("ParameterList");
-    std::vector<std::string> tKeys = {"Name"};
-    std::vector<std::string> tValues = {"Material Models"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tParamList);
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tParamList);
     auto tMaterials = tParamList.child("ParameterList");
     ASSERT_TRUE(tMaterials.empty());
 }
@@ -2577,6 +2580,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     tMaterial.property("poissons_ratio", "0.3");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
@@ -2663,7 +2667,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     tMaterial.property("specific_heat", "20");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
-
+    
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
     ASSERT_STREQ("ParameterList", tMaterialModelsList.name());
@@ -2708,7 +2712,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Orthotrop
     tMaterial.property("shear_modulus_yz", "1.25");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
-
+    //tDocument.save_file("dummy.xml", "    >     ");
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
     ASSERT_STREQ("ParameterList", tMaterialModelsList.name());
@@ -3102,6 +3106,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     tMaterial.property("thermal_expansivity", "0.25");
     tXMLMetaData.materials.push_back(tMaterial);
     ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+    //tDocument.save_file("dummy.xml", "    >     ");
 
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
@@ -3234,7 +3239,7 @@ TEST(PlatoTestXMLGenerator, AppendPressureScalingToPlatoAnalyzeMaterialModels_Pl
 
     pugi::xml_document tDocument;
     XMLGen::append_material_model_to_plato_problem(tXMLMetaData.materials, tXMLMetaData, tDocument);
- 
+    //tDocument.save_file("dummy.xml", "    >     ");
     // TEST STARTS
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
@@ -3254,8 +3259,12 @@ TEST(PlatoTestXMLGenerator, AppendPressureScalingToPlatoAnalyzeMaterialModels_Pl
     PlatoTestXMLGenerator::test_attributes({"name"}, {"carbonadium"}, tMaterialModelParamList);
     auto tMyMaterialModel1 = tMaterialModelParamList.child("ParameterList");
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Isotropic Linear Elastic"}, tMyMaterialModel1);
-    auto tMyMaterialModel2 = tMyMaterialModel1.next_sibling("J2 Plasticity");
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"J2 Plasticity"}, tMyMaterialModel2);
+    auto tMyMaterialModel2 = tMyMaterialModel1.next_sibling("ParameterList");
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Plasticity Model"}, tMyMaterialModel2);
+
+    auto tMyJ2Model = tMyMaterialModel2.child("ParameterList");
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"J2 Plasticity"}, tMyJ2Model);
+
 
     tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValuesVector =
@@ -3322,7 +3331,7 @@ TEST(PlatoTestXMLGenerator, AppendPressureAndTemperatureScalingToPlatoAnalyzeMat
 
     pugi::xml_document tDocument;
     XMLGen::append_material_model_to_plato_problem(tXMLMetaData.materials, tXMLMetaData, tDocument);
- 
+    //tDocument.save_file("dummy.xml", "    >     ");
     // TEST STARTS
     auto tMaterialModelsList = tDocument.child("ParameterList");
     ASSERT_FALSE(tMaterialModelsList.empty());
@@ -3348,8 +3357,12 @@ TEST(PlatoTestXMLGenerator, AppendPressureAndTemperatureScalingToPlatoAnalyzeMat
     PlatoTestXMLGenerator::test_attributes({"name"}, {"carbonadium"}, tMaterialModelParamList);
     auto tMyMaterialModel1 = tMaterialModelParamList.child("ParameterList");
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Isotropic Linear Thermoelastic"}, tMyMaterialModel1);
-    auto tMyMaterialModel2 = tMyMaterialModel1.next_sibling("J2 Plasticity");
-    PlatoTestXMLGenerator::test_attributes({"name"}, {"J2 Plasticity"}, tMyMaterialModel2);
+
+    auto tMyMaterialModel2 = tMyMaterialModel1.next_sibling("ParameterList");
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Plasticity Model"}, tMyMaterialModel2);
+
+    auto tMyJ2Model = tMyMaterialModel2.child("ParameterList");
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"J2 Plasticity"}, tMyJ2Model);
 
     tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValuesVector =

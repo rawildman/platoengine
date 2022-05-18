@@ -1,38 +1,38 @@
 /*
- * XMLGeneratorSharedData.cpp
+ * SharedData.cpp
  *
  *  Created on: April 14, 2022
  */
 
-#include "XMLGeneratorSharedData.hpp"
+#include "SharedData.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
-
-namespace XMLGen
+using namespace XMLGen;
+namespace director
 {
-    XMLGeneratorSharedData::XMLGeneratorSharedData
+    SharedData::SharedData
     (const std::string& aName,
-     std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
-     const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
+     std::shared_ptr<Performer> aOwnerPerformer,
+     const std::vector<std::shared_ptr<Performer>>& aUserPerformers,
      int aConcurrentEvaluations) :
-     XMLGeneratorFileObject(aName,aConcurrentEvaluations)
+     FileObject(aName,aConcurrentEvaluations)
     {
         mOwnerPerformer = aOwnerPerformer;
         mUserPerformers = aUserPerformers;
     }
     
-    XMLGeneratorSharedDataGlobal::XMLGeneratorSharedDataGlobal
+    SharedDataGlobal::SharedDataGlobal
     (const std::string& aName,
      const std::string& aSize,
-     std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
-     const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
+     std::shared_ptr<Performer> aOwnerPerformer,
+     const std::vector<std::shared_ptr<Performer>>& aUserPerformers,
      int aConcurrentEvaluations) :
-     XMLGeneratorSharedData(aName, aOwnerPerformer, aUserPerformers, aConcurrentEvaluations),
+     SharedData(aName, aOwnerPerformer, aUserPerformers, aConcurrentEvaluations),
      mSize(aSize)
     {
     }
 
-    void XMLGeneratorSharedDataGlobal::write_interface
+    void SharedDataGlobal::write_interface
     (pugi::xml_node& aNode,
      std::string aEvaluationString)
     {
@@ -46,16 +46,16 @@ namespace XMLGen
             addChild(tSharedDataNode, "UserName", mUserPerformers[iUserPerformer]->name(aEvaluationString));
     }
 
-    XMLGeneratorSharedDataNodalField::XMLGeneratorSharedDataNodalField
+    SharedDataNodalField::SharedDataNodalField
     (const std::string& aName,
-     std::shared_ptr<XMLGeneratorPerformer> aOwnerPerformer,
-     const std::vector<std::shared_ptr<XMLGeneratorPerformer>>& aUserPerformers,
+     std::shared_ptr<Performer> aOwnerPerformer,
+     const std::vector<std::shared_ptr<Performer>>& aUserPerformers,
      int aConcurrentEvaluations) :
-     XMLGeneratorSharedData(aName, aOwnerPerformer, aUserPerformers, aConcurrentEvaluations)
+     SharedData(aName, aOwnerPerformer, aUserPerformers, aConcurrentEvaluations)
     {
     }
 
-    void XMLGeneratorSharedDataNodalField::write_interface
+    void SharedDataNodalField::write_interface
     (pugi::xml_node& aNode,
      std::string aEvaluationString)
     {

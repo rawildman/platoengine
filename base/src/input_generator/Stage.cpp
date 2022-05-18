@@ -1,28 +1,30 @@
 /*
- * XMLGeneratorStage.cpp
+ * Stage.cpp
  *
  *  Created on: April 14, 2022
  */
 
-#include "XMLGeneratorStage.hpp"
+#include "Stage.hpp"
 #include "XMLGeneratorUtilities.hpp"
 
-namespace XMLGen
+using namespace XMLGen;
+
+namespace director
 {
     
-XMLGeneratorStage::XMLGeneratorStage
+Stage::Stage
 (const std::string& aName,
- const std::vector<std::shared_ptr<XMLGeneratorOperation>>& aOperations,
- std::shared_ptr<XMLGeneratorSharedData> aInputSharedData,
- std::shared_ptr<XMLGeneratorSharedData> aOutputSharedData) :
- XMLGeneratorFileObject(aName),
+ const std::vector<std::shared_ptr<Operation>>& aOperations,
+ std::shared_ptr<SharedData> aInputSharedData,
+ std::shared_ptr<SharedData> aOutputSharedData) :
+ FileObject(aName),
  mInputSharedData(aInputSharedData),
  mOutputSharedData(aOutputSharedData),
  mOperations(aOperations)
 {
 }
 
-void XMLGeneratorStage::write
+void Stage::write
 (pugi::xml_document& aDocument)
 {
     auto tStageNode = aDocument.append_child("Stage");
@@ -40,7 +42,7 @@ void XMLGeneratorStage::write
     this->appendOutput(tStageNode);
 }
 
-void XMLGeneratorStage::appendInput
+void Stage::appendInput
 (pugi::xml_node& aNode,
  const std::string& aTag)
 {
@@ -55,7 +57,7 @@ void XMLGeneratorStage::appendInput
     }
 }
 
-void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
+void Stage::appendOutput(pugi::xml_node& aNode)
 {
     if(mOutputSharedData)
     {
@@ -65,7 +67,23 @@ void XMLGeneratorStage::appendOutput(pugi::xml_node& aNode)
     }
 }
 
-void XMLGeneratorStage::write_dakota
+std::string Stage::inputSharedDataName()
+{
+    if(mInputSharedData)
+        return mInputSharedData->name();
+    else 
+        return "";
+}
+
+std::string Stage::outputSharedDataName()
+{
+    if(mOutputSharedData)
+        return mOutputSharedData->name();
+    else 
+        return "";
+}
+
+void Stage::write_dakota
 (pugi::xml_node& aDocument,
  const std::string& aStageTag)
 {

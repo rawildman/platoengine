@@ -1,5 +1,5 @@
 /*
- * XMLGeneratorFileObject.hpp
+ * FileObject.hpp
  *
  *  Created on: April 20, 2022
  */
@@ -12,10 +12,10 @@
 
 #include "pugixml.hpp"
 
-namespace XMLGen
+namespace director
 {
 
-class XMLGeneratorFileObject
+class FileObject
 {
 private:
     std::string mName;
@@ -24,7 +24,7 @@ private:
     std::regex mTagExpression;
 
 public:
-    XMLGeneratorFileObject(const std::string& aName,
+    FileObject(const std::string& aName,
                            int aConcurrentEvaluations = 0);
     
     int evaluations(){return mConcurrentEvaluations;}

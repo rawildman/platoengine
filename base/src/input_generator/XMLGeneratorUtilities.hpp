@@ -67,6 +67,10 @@ bool addChild(pugi::xml_node parent_node,
           const std::string &name, 
           const std::string &value);
 
+bool addChildCheckEmpty(pugi::xml_node parent_node, 
+          const std::string &name, 
+          const std::string &value);
+
 pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
                                                const std::string &aName,
                                                const std::string &aType,
