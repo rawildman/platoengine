@@ -10,26 +10,11 @@
 #include "XMLGenerator_UnitTester_Tools.hpp"
 #include "XMLGeneratorUtilities.hpp"
 
-/*
-#define FAIL_TO_PASS(statement)\
-do {\
-  ::testing::TestPartResultArray gtest_failures; \
-  ::testing::ScopedFakeTestPartResultReporter gtest_reporter( \
-    ::testing::ScopedFakeTestPartResultReporter::  \
-    INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);  \
-  if (::testing::internal::AlwaysTrue()) {                        \
-        statement;                                                    \
-       }   \
-  std::cout<<gtest_failures.size()<<std::endl; \
-  ASSERT_EQ(gtest_failures.size(),1); \
-} while (::testing::internal::AlwaysFalse());\
-*/
-
 namespace PlatoTestXMLGenerator
 {
     using namespace XMLGen;
 
-TEST(PlatoTestXMLGenerator, TestChildrenABXY)
+TEST(UnitTesterUtilities, TestChildrenABXY)
 {
     pugi::xml_document tDocument;
     auto tOperationNode = tDocument.append_child("Operation");
@@ -46,7 +31,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenABXY)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenAAXY)
+TEST(UnitTesterUtilities, TestChildrenAAXY)
 {
     pugi::xml_document tDocument;
     auto tOperationNode = tDocument.append_child("Operation");
@@ -63,7 +48,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenAAXY)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenABXX)
+TEST(UnitTesterUtilities, TestChildrenABXX)
 {
     pugi::xml_document tDocument;
     auto tOperationNode = tDocument.append_child("Operation");
@@ -81,7 +66,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenABXX)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenABAXYZ)
+TEST(UnitTesterUtilities, TestChildrenABAXYZ)
 {
     pugi::xml_document tDocument;
     auto tOperationNode = tDocument.append_child("Operation");
@@ -100,7 +85,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenABAXYZ)
     PlatoTestXMLGenerator::test_children(tKeys,tValues, tOperationNode);
 }
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABXX)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassABXX)
 {
     //Keys are flipped from gold
     pugi::xml_document tDocument;
@@ -129,7 +114,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABXX)
     ASSERT_GT(fails,0);
 }
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassAAXY)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassAAXY)
 {
     //Values are flipped from gold
     pugi::xml_document tDocument;
@@ -158,7 +143,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassAAXY)
     ASSERT_GT(fails,0);
 }
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABAXYY)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassABAXYY)
 {
     //Duplicate parent, different children
     pugi::xml_document tDocument;
@@ -191,7 +176,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABAXYY)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABCXYX)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassABCXYX)
 {
     //Unique parents, 1 duplicate child
     pugi::xml_document tDocument;
@@ -224,7 +209,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassABCXYX)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassTooManyKeyValues)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassTooManyKeyValues)
 {
     //Unique parents, 1 duplicate child
     pugi::xml_document tDocument;
@@ -257,7 +242,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassTooManyKeyValues)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassTooFewKeyValues)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassTooFewKeyValues)
 {
     //Unique parents, 1 duplicate child
     pugi::xml_document tDocument;
@@ -285,7 +270,7 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassTooFewKeyValues)
 }
 
 
-TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassEmptyNode)
+TEST(UnitTesterUtilities, TestChildrenExpectFailToPassEmptyNode)
 {
     
     pugi::xml_document tDocument;
@@ -309,6 +294,305 @@ TEST(PlatoTestXMLGenerator, TestChildrenExpectFailToPassEmptyNode)
 
     ASSERT_GT(fails,0);
 }
+/// test attributes
+TEST(UnitTesterUtilities, TestAttributesABXY)
+{
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("var") = "E";
+    tForNode.append_attribute("in") = "list";
+
+    std::vector<std::string> tKeys = {
+        "var", 
+        "in"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "list"};
+    PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+}
+
+TEST(UnitTesterUtilities, TestAttributesAAXY)
+{
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("var") = "E";
+    tForNode.append_attribute("var") = "list";
+
+    std::vector<std::string> tKeys = {
+        "var", 
+        "var"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "list"};
+    PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+}
+
+TEST(UnitTesterUtilities, TestAttributesABXX)
+{
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("var") = "E";
+    tForNode.append_attribute("in") = "E";
+
+    std::vector<std::string> tKeys = {
+        "var", 
+        "in"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "E"};
+    PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+}
+
+TEST(UnitTesterUtilities, TestAttributesAAXX)
+{
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("in") = "E";
+    tForNode.append_attribute("in") = "E";
+
+    std::vector<std::string> tKeys = {
+        "in", 
+        "in"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "E"};
+    PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+}
+
+TEST(UnitTesterUtilities, TestAttributesABAXYZ)
+{
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("param") = "E";
+    tForNode.append_attribute("in") = "list";
+    tForNode.append_attribute("param") = "step";
+
+    std::vector<std::string> tKeys = {
+        "param", 
+        "in",
+        "param"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "list",
+        "step"};
+    PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassABXY)
+{
+    //Flipped order of children
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("var") = "list";
+    tForNode.append_attribute("in") = "E";
+
+    std::vector<std::string> tKeys = {
+        "var", 
+        "in"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "list"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassAAXY)
+{
+    //Flipped order of values repeated keys
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("in") = "list";
+    tForNode.append_attribute("in") = "E";
+
+    std::vector<std::string> tKeys = {
+        "in", 
+        "in"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "list"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassABXX)
+{
+    //Flipped order of keys repeated values 
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("param") = "E";
+    tForNode.append_attribute("in") = "E";
+
+    std::vector<std::string> tKeys = {
+        "in", 
+        "param"};
+    std::vector<std::string> tValues = {
+        "E", 
+        "E"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassABAXYZ)
+{
+    //Repeated key, one bad value
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("param") = "X";
+    tForNode.append_attribute("in") = "Y";
+    tForNode.append_attribute("param") = "X";
+
+    std::vector<std::string> tKeys = {
+        "param",
+        "in", 
+        "param"};
+    std::vector<std::string> tValues = {
+        "X", 
+        "Y",
+        "Z"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassNoAttributes)
+{
+    //Repeated key, one bad value
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    
+    std::vector<std::string> tKeys = {
+        "param",
+        "in"};
+    std::vector<std::string> tValues = {
+        "X", 
+        "Y"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassTooManyAttributes)
+{
+    //Repeated key, one bad value
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("param") = "X";
+    tForNode.append_attribute("in") = "Y";
+    tForNode.append_attribute("param") = "X";
+
+    std::vector<std::string> tKeys = {
+        "param",
+        "in"};
+    std::vector<std::string> tValues = {
+        "X", 
+        "Y"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
+TEST(UnitTesterUtilities, TestAttributesExpectFailToPassTooManyGoldPairs)
+{
+    //Repeated key, one bad value
+    pugi::xml_document tDocument;
+    auto tForNode = tDocument.append_child("For");
+    tForNode.append_attribute("param") = "X";
+    tForNode.append_attribute("in") = "Y";
+
+    std::vector<std::string> tKeys = {
+        "param",
+        "in", 
+        "param"};
+    std::vector<std::string> tValues = {
+        "X", 
+        "Y",
+        "Z"};
+
+    unsigned int fails=0;
+    do {
+        ::testing::TestPartResultArray gtest_failures;
+        ::testing::ScopedFakeTestPartResultReporter gtest_reporter(
+        ::testing::ScopedFakeTestPartResultReporter::
+        INTERCEPT_ONLY_CURRENT_THREAD, &gtest_failures);
+        PlatoTestXMLGenerator::test_attributes(tKeys,tValues, tForNode);
+        fails += gtest_failures.size();
+        std::cout<<gtest_failures.size()<<std::endl;
+    } while (::testing::internal::AlwaysFalse());
+
+    ASSERT_GT(fails,0);
+
+}
+
 
 }
   
