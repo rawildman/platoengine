@@ -39,13 +39,6 @@ void append_material_property
     auto tAnalyzeMatPropertyTag = tValidKeys.tag(tMaterialModelTag, aMaterialPropertyTag);
     std::vector<std::string> tKeys = {"name", "type", "value"};
     auto tMaterialPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aMaterial.property(aMaterialPropertyTag));
-/*
-    if(tMaterialPropertyValue == "IGNORE")
-    {
-        std::string tContextString = "Material ID: " + aMaterial.id() + ", Material Model: " + tMaterialModelTag + "\n";
-        PRINTIGNOREINFO(aMaterialPropertyTag, tContextString);
-    }
-*/
     std::vector<std::string> tValues = {tAnalyzeMatPropertyTag, tValueType, tMaterialPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, aParentNode);
 }
@@ -101,6 +94,13 @@ void append_isotropic_linear_elastic_material_to_plato_problem
     XMLGen::append_attributes({"name"}, {"Isotropic Linear Elastic"}, tIsotropicLinearElasticModel);
     XMLGen::Private::append_material_property("poissons_ratio", aMaterial, tIsotropicLinearElasticModel);
     XMLGen::Private::append_material_property("youngs_modulus", aMaterial, tIsotropicLinearElasticModel);
+    if(aMaterial.property("mass_density").empty() == false)
+    {
+        std::vector<std::string> tKeys = {"name", "type", "value"};
+        std::vector<std::string> tValues = {"Density", "double", aMaterial.property("mass_density")};
+        XMLGen::append_parameter_plus_attributes(tKeys, tValues, tElasticModel);
+        XMLGen::Private::append_material_property("mass_density", aMaterial, tIsotropicLinearElasticModel);
+    }
 }
 // function append_isotropic_linear_elastic_material_to_plato_problem
 

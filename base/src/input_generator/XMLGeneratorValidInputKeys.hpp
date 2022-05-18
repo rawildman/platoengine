@@ -1084,6 +1084,7 @@ private:
             {
                 { "youngs_modulus", {"Youngs Modulus", "double"} },
                 { "poissons_ratio", {"Poissons Ratio", "double"} },
+                { "mass_density", {"Mass Density", "double"} }, 
                 { "hardening_modulus_isotropic", { "Hardening Modulus Isotropic", "double" } },
                 { "hardening_modulus_kinematic", { "Hardening Modulus Kinematic", "double" } },
                 { "initial_yield_stress", {"Initial Yield Stress", "double"} },

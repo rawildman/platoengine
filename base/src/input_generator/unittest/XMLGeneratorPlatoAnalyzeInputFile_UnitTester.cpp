@@ -2607,6 +2607,53 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
     }
 }
 
+TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_IsotropicLinearElasticMatModelWithDensity)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::Material tMaterial;
+    tMaterial.code("plato_analyze");
+    tMaterial.name("unobtainium");
+    tMaterial.materialModel("isotropic_linear_elastic");
+    tMaterial.property("youngs_modulus", "1e9");
+    tMaterial.property("poissons_ratio", "0.3");
+    tMaterial.property("mass_density", "1000.0");
+    tXMLMetaData.materials.push_back(tMaterial);
+    ASSERT_NO_THROW(XMLGen::append_material_models_to_plato_analyze_input_deck(tXMLMetaData, tDocument));
+
+    auto tMaterialModelsList = tDocument.child("ParameterList");
+    ASSERT_FALSE(tMaterialModelsList.empty());
+    ASSERT_STREQ("ParameterList", tMaterialModelsList.name());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Material Models"}, tMaterialModelsList);
+
+    auto tFirstMaterial = tMaterialModelsList.child("ParameterList");
+    ASSERT_FALSE(tFirstMaterial.empty());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"unobtainium"}, tFirstMaterial);
+
+    auto tMyDensity = tFirstMaterial.child("Parameter");
+    ASSERT_FALSE(tMyDensity.empty());
+    ASSERT_STREQ("Parameter", tMyDensity.name());
+    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Density", "double", "1000.0"}, tMyDensity);
+
+    auto tMyMaterialModel = tFirstMaterial.child("ParameterList");
+    ASSERT_FALSE(tMyMaterialModel.empty());
+    PlatoTestXMLGenerator::test_attributes({"name"}, {"Isotropic Linear Elastic"}, tMyMaterialModel);
+
+    std::vector<std::string> tGoldKeys = {"name", "type", "value"};
+    std::vector<std::vector<std::string>> tGoldValues =
+        { {"Poissons Ratio", "double", "0.3"}, {"Youngs Modulus", "double", "1e9"}, {"Mass Density", "double", "1000.0"}};
+    auto tGoldValuesItr = tGoldValues.begin();
+    auto tParameter = tMyMaterialModel.child("Parameter");
+    while(!tParameter.empty())
+    {
+        ASSERT_FALSE(tParameter.empty());
+        ASSERT_STREQ("Parameter", tParameter.name());
+        PlatoTestXMLGenerator::test_attributes(tGoldKeys, tGoldValuesItr.operator*(), tParameter);
+        tParameter = tParameter.next_sibling();
+        std::advance(tGoldValuesItr, 1);
+    }
+}
+
 TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_IsotropicLinearThermalMatModel)
 {
     pugi::xml_document tDocument;
@@ -3068,7 +3115,7 @@ TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Isotropic
 
     auto tMaterialNode = tMaterialModelsList.child("ParameterList");
     PlatoTestXMLGenerator::test_attributes({"name"}, {"bavarium"}, tMaterialNode);
-    auto tMyMaterialModel = tMaterialNode.child("ParameterList");///<<<<
+    auto tMyMaterialModel = tMaterialNode.child("ParameterList");
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Isotropic Linear Electroelastic"}, tMyMaterialModel);
 
     std::vector<std::string> tGoldKeys = {"name", "type", "value"};
@@ -3210,7 +3257,6 @@ TEST(PlatoTestXMLGenerator, AppendPressureScalingToPlatoAnalyzeMaterialModels_Pl
     ASSERT_FALSE(tMaterialModelParamList.empty());
     ASSERT_STREQ("ParameterList", tMaterialModelParamList.name());
     PlatoTestXMLGenerator::test_attributes({"name"}, {"carbonadium"}, tMaterialModelParamList);
-    
     auto tMyMaterialModel1 = tMaterialModelParamList.child("ParameterList");
     PlatoTestXMLGenerator::test_attributes({"name"}, {"Isotropic Linear Elastic"}, tMyMaterialModel1);
     auto tMyMaterialModel2 = tMyMaterialModel1.next_sibling("ParameterList");
@@ -3320,10 +3366,8 @@ TEST(PlatoTestXMLGenerator, AppendPressureAndTemperatureScalingToPlatoAnalyzeMat
 
     tGoldKeys = {"name", "type", "value"};
     std::vector<std::vector<std::string>> tGoldValuesVector =
-        { {"Poissons Ratio", "double", "0.3"}, 
-          {"Youngs Modulus", "double", "2.7"},
-          {"Thermal Expansivity", "double", "2.2"},
-          {"Thermal Conductivity", "double", "2.1"}, 
+        { {"Poissons Ratio", "double", "0.3"}, {"Youngs Modulus", "double", "2.7"},
+          {"Thermal Expansivity", "double", "2.2"}, {"Thermal Conductivity", "double", "2.1"},
           {"Reference Temperature", "double", "2.3"} };
     auto tGoldValuesItr = tGoldValuesVector.begin();
     tParameter = tMyMaterialModel1.child("Parameter");
