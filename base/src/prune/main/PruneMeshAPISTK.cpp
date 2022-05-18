@@ -12,6 +12,7 @@
 
 #include "PruneMeshAPISTK.hpp"
 #include <stk_mesh/base/MetaData.hpp>
+#include <stk_mesh/base/MeshBuilder.hpp>
 #include <stk_mesh/base/Field.hpp>
 #include <stk_mesh/base/CoordinateSystems.hpp>
 #include <stk_util/parallel/ParallelReduce.hpp>
@@ -71,8 +72,8 @@ struct less_than_dup_node
 
 void PruneMeshAPISTK::initialize()
 {
-  mMetaData = NULL;
-  mBulkData = NULL;
+  mMetaData.reset();
+  mBulkData.reset();
   mIoBroker = NULL;
   mLocallyOwnedBulk = false;
   mLocallyOwnedMeta = false;
@@ -85,8 +86,8 @@ void PruneMeshAPISTK::initialize()
 }
 
 PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm,
-                             stk::mesh::BulkData* bulk_data,
-                             stk::mesh::MetaData* meta_data,
+                             std::shared_ptr<stk::mesh::BulkData> bulk_data,
+                             std::shared_ptr<stk::mesh::MetaData> meta_data,
                              std::string fieldname) : PruneMeshAPI()
 {
   initialize();
@@ -173,10 +174,6 @@ PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm) : PruneMeshAPI()
 
 PruneMeshAPISTK::~PruneMeshAPISTK()
 {
-  if ( mLocallyOwnedBulk && mBulkData )
-    delete mBulkData;
-  if ( mLocallyOwnedMeta && mMetaData )
-    delete mMetaData;
   if(mIoBroker)
     delete mIoBroker;
 }
@@ -1132,9 +1129,9 @@ void PruneMeshAPISTK::get_attached_elements(const std::set<PruneHandle> &nodes,
 
 bool PruneMeshAPISTK::prepare_as_source()
 {
-  mMetaData = new stk::mesh::MetaData;
+  mBulkData = stk::mesh::MeshBuilder(*mComm).create();
+  mMetaData = mBulkData->mesh_meta_data_ptr();
   mLocallyOwnedMeta = true;
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);

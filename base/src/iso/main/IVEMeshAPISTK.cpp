@@ -61,6 +61,7 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
+#include <stk_mesh/base/MeshBuilder.hpp>
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 
 
@@ -137,8 +138,8 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm,
   initialize();
 
   mComm = comm;
-  mMetaData = meta_data;
-  mBulkData = bulk_data;
+  mMetaData = std::shared_ptr<stk::mesh::MetaData>(meta_data,[](auto ptrWeWontDelete){});
+  mBulkData = std::shared_ptr<stk::mesh::BulkData>(bulk_data,[](auto ptrWeWontDelete){});
   mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
                             (stk::topology::NODE_RANK, "coordinates");
   if(!mCoordsField)
@@ -173,7 +174,7 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm) : IVEMeshAPI()
 {
   initialize();
   mComm = comm;
-  mMetaData = new stk::mesh::MetaData(3);
+  mMetaData = stk::mesh::MeshBuilder().set_spatial_dimension(3).create_meta_data();
   mLocallyOwnedMeta = true;
   mCoordsField = (stk::mesh::Field<double, stk::mesh::Cartesian>*)(&(mMetaData->
                 declare_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
@@ -210,10 +211,6 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm) : IVEMeshAPI()
 
 IVEMeshAPISTK::~IVEMeshAPISTK()
 {
-  if ( mLocallyOwnedBulk && mBulkData )
-    delete mBulkData;
-  if ( mLocallyOwnedMeta && mMetaData )
-    delete mMetaData;
   if(mIoBroker)
     delete mIoBroker;
 }
@@ -1283,10 +1280,10 @@ bool IVEMeshAPISTK::prepare_as_source()
 {
   if(!mMetaData)
   {
-    mMetaData = new stk::mesh::MetaData;
+    mMetaData = stk::mesh::MeshBuilder().create_meta_data();
     mLocallyOwnedMeta = true;
   }
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+  mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);
@@ -1297,7 +1294,7 @@ bool IVEMeshAPISTK::prepare_as_destination()
 {
   prepare_to_create_tris();
   mMetaData->commit();
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+  mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);
