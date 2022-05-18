@@ -88,7 +88,7 @@ void GemmaProblem::write_plato_main_operations(pugi::xml_document& aDocument)
 {
     for( unsigned int tLoopInd = 0; tLoopInd < mOperations.size(); ++tLoopInd )
     {
-        for(unsigned int iEvaluations = 0; iEvaluations < mOperations[tLoopInd]->evaluations(); ++iEvaluations)
+        for(int iEvaluations = 0; iEvaluations < mOperations[tLoopInd]->evaluations(); ++iEvaluations)
         mOperations[tLoopInd]->write_definition(aDocument,std::to_string(iEvaluations));
     }
 }

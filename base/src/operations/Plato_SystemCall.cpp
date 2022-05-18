@@ -135,7 +135,7 @@ std::string SystemCall::getLayout(const Plato::InputData& aInputNode)
         std::string tLayoutsMsg;
         for(auto tMyLayout : tSupportedLayout)
         {
-            auto tDelimiter = (&tMyLayout - &tSupportedLayout[0] >= tSupportedLayout.size()) ? "." : ", ";
+            auto tDelimiter = (&tMyLayout - &tSupportedLayout[0] >= (int)(tSupportedLayout.size())) ? "." : ", ";
             tLayoutsMsg += tMyLayout + tDelimiter;
             
         }
