@@ -295,7 +295,7 @@ void OperationCubitTet10Conversion::writeTet10ConversionFile
     tOutFile<<"export mesh \""<<aExodusFileName<<"\" overwrite\n";
     tOutFile.close();
 
-    for( unsigned int iEvaluation = 0 ; iEvaluation < evaluations(); ++iEvaluation)
+    for( int iEvaluation = 0 ; iEvaluation < evaluations(); ++iEvaluation)
     {  
         auto tCommand = std::string("mkdir -p ") + "evaluations_" + std::to_string(iEvaluation);
         Plato::system(tCommand.c_str());
@@ -371,7 +371,7 @@ void OperationCubitSubBlock::writeSubBlockFile
     tOutFile<<"export mesh \""<<aExodusFileName<<"\" overwrite\n";
     tOutFile.close();
 
-    for( unsigned int iEvaluation = 0 ; iEvaluation < evaluations(); ++iEvaluation)
+    for( int iEvaluation = 0 ; iEvaluation < evaluations(); ++iEvaluation)
     {  
         auto tCommand = std::string("mkdir -p ") + "evaluations_" + std::to_string(iEvaluation);
         Plato::system(tCommand.c_str());

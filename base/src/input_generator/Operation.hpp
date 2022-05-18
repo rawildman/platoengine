@@ -74,8 +74,8 @@ class OperationGemmaMPISystemCall : public Operation
 {
 private:
     std::string mCommand; 
-    std::string mNumRanks;
     std::string mArgument;
+    std::string mNumRanks;
     std::string mPath;
     
 public:

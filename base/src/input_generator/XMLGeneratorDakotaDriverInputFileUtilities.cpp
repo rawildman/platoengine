@@ -100,14 +100,14 @@ void append_multidim_parameter_study_method_block
     fprintf(fp, "\n method\n");
     fprintf(fp, "   multidim_parameter_study\n");
 
-    auto tNumParameters = XMLGen::get_number_of_shape_parameters(aMetaData);
+    size_t tNumParameters = XMLGen::get_number_of_shape_parameters(aMetaData);
 
     fprintf(fp, "       partitions =");
 
     if(tPartitions.size()==1)
     while(tPartitions.size() < tNumParameters)
         tPartitions.push_back(tPartitions[0]);
-    for (int iParameter = 0; iParameter < tNumParameters; iParameter++)
+    for (size_t iParameter = 0; iParameter < tNumParameters; iParameter++)
         fprintf(fp, " %s ", tPartitions[iParameter].c_str());
     fprintf(fp, "\n");
 }
