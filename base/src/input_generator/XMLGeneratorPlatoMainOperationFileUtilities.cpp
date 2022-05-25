@@ -1446,17 +1446,13 @@ void append_initialize_data_for_shape_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    pugi::xml_node tmp_node = aDocument.append_child("Operation");
-    addChild(tmp_node, "Function", "InitializeValues");
-    addChild(tmp_node, "Name", "Initialize Values");
-    pugi::xml_node tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Values");
-    tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Lower Bounds");
-    tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Upper Bounds");
-    addChild(tmp_node, "Method", "ReadFromCSMFile");
-    addChild(tmp_node, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
+    pugi::xml_node tOperation = aDocument.append_child("Operation");
+    addChild(tOperation, "Function", "InitializeValues");
+    addChild(tOperation, "Name", "Initialize Values");
+    pugi::xml_node tOutput = tOperation.append_child("Output");
+    addChild(tOutput, "ArgumentName", "Values");
+    addChild(tOperation, "Method", "ReadFromCSMFile");
+    addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
 }
 // function append_initialize_data_for_topology_problem
 /******************************************************************************/
@@ -1700,6 +1696,16 @@ void append_set_lower_bounds_to_plato_main_operation
         XMLGen::append_fixed_sidesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_nodesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
     }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE )
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        addChild(tOperation, "Function", "InitializeValues");
+        addChild(tOperation, "Name", "Compute Lower Bounds");
+        pugi::xml_node tOutput = tOperation.append_child("Output");
+        addChild(tOutput, "ArgumentName", "Lower Bounds");
+        addChild(tOperation, "Method", "ReadFromCSMFile");
+        addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
+    }
 }
 // function append_set_lower_bounds_to_plato_main_operation
 /******************************************************************************/
@@ -1816,6 +1822,16 @@ void append_set_upper_bounds_to_plato_main_operation
         XMLGen::append_fixed_blocks_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_sidesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_nodesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE )
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        addChild(tOperation, "Function", "InitializeValues");
+        addChild(tOperation, "Name", "Compute Upper Bounds");
+        pugi::xml_node tOutput = tOperation.append_child("Output");
+        addChild(tOutput, "ArgumentName", "Upper Bounds");
+        addChild(tOperation, "Method", "ReadFromCSMFile");
+        addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
     }
 }
 // function append_set_upper_bounds_to_plato_main_operation

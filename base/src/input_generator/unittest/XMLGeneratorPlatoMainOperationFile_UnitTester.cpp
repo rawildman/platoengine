@@ -2332,5 +2332,89 @@ TEST(PlatoTestXMLGenerator, WriteCubitJournalFileSubBlockFromBoundingBox)
     Plato::system("rm -rf subBlock.jou");
 }
 
+TEST(PlatoTestXMLGenerator, AppendInitializeValuesToPlatoMainOperationForShapeOptimization_Values)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("csm_file", "tester.csm");
+    tXMLMetaData.set(tOptimizationParameters);
+    XMLGen::append_initialize_field_to_plato_main_operation(tXMLMetaData, tDocument);
+    ASSERT_FALSE(tDocument.empty());
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Output", "Method", "CSMFileName"};
+    std::vector<std::string> tValues = {"InitializeValues", "Initialize Values", "", "ReadFromCSMFile", "tester.csm"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Values"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendInitializeValuesToPlatoMainOperationForShapeOptimization_LowerBounds)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("csm_file", "tester.csm");
+    tXMLMetaData.set(tOptimizationParameters);
+    XMLGen::append_set_lower_bounds_to_plato_main_operation(tXMLMetaData, tDocument);
+    ASSERT_FALSE(tDocument.empty());
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Output", "Method", "CSMFileName"};
+    std::vector<std::string> tValues = {"InitializeValues", "Compute Lower Bounds", "", "ReadFromCSMFile", "tester.csm"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Lower Bounds"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendInitializeValuesToPlatoMainOperationForShapeOptimization_UpperBounds)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("csm_file", "tester.csm");
+    tXMLMetaData.set(tOptimizationParameters);
+    XMLGen::append_set_upper_bounds_to_plato_main_operation(tXMLMetaData, tDocument);
+    ASSERT_FALSE(tDocument.empty());
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Output", "Method", "CSMFileName"};
+    std::vector<std::string> tValues = {"InitializeValues", "Compute Upper Bounds", "", "ReadFromCSMFile", "tester.csm"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Upper Bounds"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 }
 // namespace PlatoTestXMLGenerator

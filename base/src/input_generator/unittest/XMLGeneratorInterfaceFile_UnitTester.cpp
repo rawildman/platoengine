@@ -3030,5 +3030,162 @@ TEST(PlatoTestXMLGenerator, AppendDefaultQOIToOutputOperation)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
 }
 
+TEST(PlatoTestXMLGenerator, AppendInitialGuessStageForShapeOptimization)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_initial_guess_stage(tMetaData, tDocument));
+
+    // STAGE NAME
+    auto tStage = tDocument.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    auto tName = tStage.child("Name");
+    ASSERT_STREQ("Initialize Design Parameters", tName.child_value());
+
+    // INITIALIZE DESIGN PARAMETERS OPERATION
+    auto tOperation = tStage.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    std::vector<std::string> tKeys = {"Name", "PerformerName", "Output"};
+    std::vector<std::string> tValues = {"Initialize Values", "platomain_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Values", "Design Parameters"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    // INITIALIZE GEOMETRY
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    tKeys = {"Name", "PerformerName"};
+    tValues = {"Initialize Geometry", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    // STAGE OUTPUT
+    tOutput = tStage.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, { "Design Parameters"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendLowerBoundStageForShapeOptimization)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_lower_bound_stage(tMetaData, tDocument));
+
+    // STAGE NAME
+    auto tStage = tDocument.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    auto tName = tStage.child("Name");
+    ASSERT_STREQ("Set Lower Bounds", tName.child_value());
+
+    // INITIALIZE DESIGN PARAMETERS OPERATION
+    auto tOperation = tStage.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    std::vector<std::string> tKeys = {"Name", "PerformerName", "Output"};
+    std::vector<std::string> tValues = {"Compute Lower Bounds", "platomain_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Lower Bounds", "Lower Bound Vector"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    // STAGE OUTPUT
+    tOutput = tStage.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, { "Lower Bound Vector"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+}
+
+TEST(PlatoTestXMLGenerator, AppendUpperBoundStageForShapeOptimization)
+{
+    XMLGen::InputData tMetaData;
+
+    // Create a service
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+
+    // Create optimization parameters
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_upper_bound_stage(tMetaData, tDocument));
+
+    // STAGE NAME
+    auto tStage = tDocument.child("Stage");
+    ASSERT_FALSE(tStage.empty());
+    ASSERT_STREQ("Stage", tStage.name());
+    auto tName = tStage.child("Name");
+    ASSERT_STREQ("Set Upper Bounds", tName.child_value());
+
+    // INITIALIZE DESIGN PARAMETERS OPERATION
+    auto tOperation = tStage.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    std::vector<std::string> tKeys = {"Name", "PerformerName", "Output"};
+    std::vector<std::string> tValues = {"Compute Upper Bounds", "platomain_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Upper Bounds", "Upper Bound Vector"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+
+    // STAGE OUTPUT
+    tOutput = tStage.child("Output");
+    ASSERT_FALSE(tOutput.empty());
+    PlatoTestXMLGenerator::test_children({"SharedDataName"}, { "Upper Bound Vector"}, tOutput);
+
+    tOutput = tOutput.next_sibling("Output");
+    ASSERT_TRUE(tOutput.empty());
+}
+
 }
 // namespace PlatoTestXMLGenerator
