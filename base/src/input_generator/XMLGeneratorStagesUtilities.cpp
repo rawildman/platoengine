@@ -125,6 +125,13 @@ void append_lower_bound_stage
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"SharedDataName","ArgumentName"}, {"Lower Bound Vector", "Lower Bound Vector"}, tOutput);
     }
+    else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        auto tOperationNode = tStageNode.append_child("Operation");
+        XMLGen::append_children({"Name", "PerformerName"},{"Compute Lower Bounds", aMetaData.getFirstPlatoMainPerformer()}, tOperationNode);
+        auto tOutputNode = tOperationNode.append_child("Output");
+        XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Lower Bounds", "Lower Bound Vector"}, tOutputNode);
+    }
     auto tOutputNode = tStageNode.append_child("Output");
     XMLGen::append_children({"SharedDataName"}, {"Lower Bound Vector"}, tOutputNode);
 }
@@ -151,6 +158,13 @@ void append_upper_bound_stage
 
         auto tOutput = tOperation.append_child("Output");
         XMLGen::append_children({"SharedDataName","ArgumentName"}, {"Upper Bound Vector", "Upper Bound Vector"}, tOutput);
+    }
+    else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        auto tOperationNode = tStageNode.append_child("Operation");
+        XMLGen::append_children({"Name", "PerformerName"},{"Compute Upper Bounds", aMetaData.getFirstPlatoMainPerformer()}, tOperationNode);
+        auto tOutputNode = tOperationNode.append_child("Output");
+        XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Upper Bounds", "Upper Bound Vector"}, tOutputNode);
     }
     auto tOutputNode = tStageNode.append_child("Output");
     XMLGen::append_children({"SharedDataName"}, {"Upper Bound Vector"}, tOutputNode);

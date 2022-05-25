@@ -132,10 +132,6 @@ void append_initial_values_operation
     XMLGen::append_children({"Name", "PerformerName"},{"Initialize Values", tFirstPlatoMainPerformer}, tOperationNode);
     auto tOutputNode = tOperationNode.append_child("Output");
     XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Values", "Design Parameters"}, tOutputNode);
-    tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Lower Bounds", "Lower Bound Vector"}, tOutputNode);
-    tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"},{"Upper Bounds", "Upper Bound Vector"}, tOutputNode);
 }
 // function append_initial_values_operation
 /******************************************************************************/
