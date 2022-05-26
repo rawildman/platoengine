@@ -538,7 +538,7 @@ TEST(PlatoTestXMLGenerator, ConstraintGradientOperation_PlatoAnalyze)
 
 TEST(PlatoTestXMLGenerator, SetKeyValue)
 {
-    std::unordered_map<std::string, std::string> tKeyToValueMap =
+    std::map<std::string, std::string> tKeyToValueMap =
         { {"ValueName", "Constraint Value"}, {"ValueStageName", "Compute Constraint Value"},
           {"GradientName", "Constraint Gradient"}, {"GradientStageName", "Compute Constraint Gradient"},
           {"ReferenceValueName", "Design Volume"}, {"NormalizedTargetValue", ""}, {"AbsoluteTargetValue", ""} };
@@ -577,7 +577,7 @@ TEST(PlatoTestXMLGenerator, SetValueKeywordToIgnoreIfEmpty)
 
 TEST(PlatoTestXMLGenerator, TransformKeyTokens)
 {
-    std::unordered_map<std::string, std::string> tKeyToValueMap =
+    std::map<std::string, std::string> tKeyToValueMap =
         { {"ValueName", "Constraint Value"}, {"ValueStageName", "Compute Constraint Value"},
           {"GradientName", "Constraint Gradient"}, {"GradientStageName", "Compute Constraint Gradient"},
           {"ReferenceValueName", "Design Volume"}, {"NormalizedTargetValue", "1"}, {"AbsoluteTargetValue", "10"} };
@@ -596,7 +596,7 @@ TEST(PlatoTestXMLGenerator, TransformKeyTokens)
 
 TEST(PlatoTestXMLGenerator, TransformValueTokens)
 {
-    std::unordered_map<std::string, std::string> tKeyToValueMap =
+    std::map<std::string, std::string> tKeyToValueMap =
         { {"ValueName", "Constraint Value"}, {"ValueStageName", "Compute Constraint Value"},
           {"GradientName", "Constraint Gradient"}, {"GradientStageName", "Compute Constraint Gradient"},
           {"ReferenceValueName", "Design Volume"}, {"NormalizedTargetValue", "1"}, {"AbsoluteTargetValue", "10"} };
@@ -3166,21 +3166,21 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationObjectiveOptions)
     tXMLMetaData.objective = tObjective;
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     XMLGen::append_grad_based_optimizer_objective_options(tXMLMetaData, tOptimizerNode);
-
+    
     // TEST RESULTS AGAINST GOLD VALUES
     std::vector<std::string> tGoldKeys = {"Objective"};
     std::vector<std::string> tGoldValues = {""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
     auto tObjectiveNode = tOptimizerNode.child("Objective");
-    tGoldKeys = {"GradientStageName",
-                 "ValueStageName",
-                 "GradientName",
-                 "ValueName"
+    tGoldKeys = {"GradientName",
+                 "GradientStageName",
+                 "ValueName",
+                 "ValueStageName"
                  };
-    tGoldValues = {"Compute Objective Gradient",
-                   "Compute Objective Value", 
-                   "Objective Gradient",
-                   "Objective Value"
+    tGoldValues = {"Objective Gradient",
+                   "Compute Objective Gradient",
+                   "Objective Value",
+                   "Compute Objective Value"
                    };
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tObjectiveNode);
 }
@@ -3252,26 +3252,26 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationConstraintOptions)
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     tXMLMetaData.constraints[0].absoluteTarget("1.0");
     XMLGen::append_grad_based_optimizer_constraint_options(tXMLMetaData, tOptimizerNode);
-
+    
     std::vector<std::string> tGoldKeys = {"Constraint"};
     std::vector<std::string> tGoldValues = {""};
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
     auto tConstraintNode = tOptimizerNode.child("Constraint");
-    tGoldKeys = {"ReferenceValue",
-                 "ValueName", 
-                 "GradientStageName",
-                 "ReferenceValueName", 
-                 "AbsoluteTargetValue",
-                 "ValueStageName",
+    tGoldKeys = {"AbsoluteTargetValue",
                  "GradientName",
+                 "GradientStageName",
+                 "ReferenceValue",
+                 "ReferenceValueName", 
+                 "ValueName", 
+                 "ValueStageName"
                  };
-    tGoldValues = {"1.000000",
-                   "Constraint Value 1", 
-                   "Compute Constraint Gradient 1", 
-                   "Design Volume",
-                   "1.0", 
-                   "Compute Constraint Value 1", 
+    tGoldValues = {"1.0",
                    "Constraint Gradient 1", 
+                   "Compute Constraint Gradient 1", 
+                   "1.000000",
+                   "Design Volume",
+                   "Constraint Value 1", 
+                   "Compute Constraint Value 1"
                    };
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConstraintNode);
 }

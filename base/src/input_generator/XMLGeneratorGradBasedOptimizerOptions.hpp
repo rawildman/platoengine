@@ -215,7 +215,7 @@ void append_bound_constraints_options_topology_optimization
 void generate_target_value_entries
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Constraint &aConstraint,
- std::unordered_map<std::string, std::string> &aKeyToValueMap);
+ std::map<std::string, std::string> &aKeyToValueMap);
 
 }
 //  namespace XMLGen

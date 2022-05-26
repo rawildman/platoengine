@@ -393,7 +393,7 @@ std::stringstream read_data_from_file(const std::string &aFilename)
 /******************************************************************************/
 void set_key_value(const std::string &aKey,
                    const std::string &aValue,
-                   std::unordered_map<std::string, std::string> &aKeyToValueMap)
+                   std::map<std::string, std::string> &aKeyToValueMap)
 {
     auto tItr = aKeyToValueMap.find(aKey);
     if (tItr == aKeyToValueMap.end())
@@ -441,7 +441,7 @@ void set_value_keyword_to_ignore_if_empty(std::vector<std::string> &aValues)
 /******************************************************************************/
 
 /******************************************************************************/
-std::vector<std::string> transform_key_tokens(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
+std::vector<std::string> transform_key_tokens(const std::map<std::string, std::string> &aKeyToValueMap)
 {
     std::vector<std::string> tKeys;
     for (auto &tPair : aKeyToValueMap)
@@ -454,7 +454,7 @@ std::vector<std::string> transform_key_tokens(const std::unordered_map<std::stri
 /******************************************************************************/
 
 /******************************************************************************/
-std::vector<std::string> transform_value_tokens(const std::unordered_map<std::string, std::string> &aKeyToValueMap)
+std::vector<std::string> transform_value_tokens(const std::map<std::string, std::string> &aKeyToValueMap)
 {
     std::vector<std::string> tValues;
     for (auto &tPair : aKeyToValueMap)

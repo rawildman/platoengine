@@ -642,7 +642,7 @@ void append_grad_based_optimizer_objective_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
 {
-    std::unordered_map<std::string, std::string> tKeyToValueMap =
+    std::map<std::string, std::string> tKeyToValueMap =
         { {"ValueName", ""}, {"ValueStageName", ""}, {"GradientName", ""}, {"GradientStageName", ""} };
 
     std::string tValueNameString = "Objective Value";
@@ -667,7 +667,7 @@ void append_grad_based_optimizer_constraint_options
 {
     for (auto &tConstraint : aMetaData.constraints)
     {
-        std::unordered_map<std::string, std::string> tKeyToValueMap;
+        std::map<std::string, std::string> tKeyToValueMap;
         if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY  && aMetaData.optimization_parameters().discretization() == "density")
         {
             tKeyToValueMap =
@@ -706,7 +706,7 @@ void append_grad_based_optimizer_constraint_options
 void generate_target_value_entries
 (const XMLGen::InputData& aXMLMetaData,
  const XMLGen::Constraint &aConstraint,
- std::unordered_map<std::string, std::string> &aKeyToValueMap)
+ std::map<std::string, std::string> &aKeyToValueMap)
 {
     auto tCriterion = aXMLMetaData.criterion(aConstraint.criterion());
     std::string tCriterionType = tCriterion.type();
