@@ -2366,14 +2366,14 @@ TEST(PlatoTestXMLGenerator, AppendConstraintOptions)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_constraint_options(tMetaData, tDocument));
-  
+    
     auto tConstraintNode = tDocument.child("Constraint");
     ASSERT_FALSE(tConstraintNode.empty());
 
-    std::vector<std::string> tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
-                   "GradientStageName", "ValueName"};
-    std::vector<std::string> tValues = {"0.008000", "Constraint Gradient 1", "Compute Constraint Value 1",
-                   ".008", "Compute Constraint Gradient 1", "Constraint Value 1"};
+    std::vector<std::string> tKeys = {"AbsoluteTargetValue", "GradientName", "GradientStageName", "ReferenceValue",
+                   "ValueName" , "ValueStageName"};
+    std::vector<std::string> tValues = {".008", "Constraint Gradient 1", "Compute Constraint Gradient 1", "0.008000",
+                   "Constraint Value 1", "Compute Constraint Value 1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
 }
 
@@ -2422,23 +2422,23 @@ TEST(PlatoTestXMLGenerator, AppendMultipleConstraints)
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_constraint_options(tMetaData, tDocument));
-  
+    
     auto tConstraintNode = tDocument.child("Constraint");
     ASSERT_FALSE(tConstraintNode.empty());
 
-    std::vector<std::string> tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
-                   "GradientStageName", "ValueName"};
-    std::vector<std::string> tValues = {"0.400000", "Constraint Gradient 1", "Compute Constraint Value 1",
-                   ".4", "Compute Constraint Gradient 1", "Constraint Value 1"};
+    std::vector<std::string> tKeys = {"AbsoluteTargetValue", "GradientName", "GradientStageName", "ReferenceValue",
+                    "ValueName", "ValueStageName"};
+    std::vector<std::string> tValues = {".4", "Constraint Gradient 1", "Compute Constraint Gradient 1", "0.400000",
+                    "Constraint Value 1", "Compute Constraint Value 1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
 
     tConstraintNode = tConstraintNode.next_sibling("Constraint");
     ASSERT_FALSE(tConstraintNode.empty());
 
-    tKeys = {"ReferenceValue", "GradientName", "ValueStageName", "AbsoluteTargetValue",
-                   "GradientStageName", "ValueName"};
-    tValues = {"0.100000", "Constraint Gradient 2", "Compute Constraint Value 2",
-                   ".1", "Compute Constraint Gradient 2", "Constraint Value 2"};
+    tKeys = {"AbsoluteTargetValue", "GradientName", "GradientStageName", "ReferenceValue",
+                    "ValueName", "ValueStageName"};
+    tValues = {".1", "Constraint Gradient 2", "Compute Constraint Gradient 2", "0.100000",
+                    "Constraint Value 2", "Compute Constraint Value 2"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tConstraintNode);
 }
 

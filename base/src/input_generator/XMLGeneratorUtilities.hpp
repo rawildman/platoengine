@@ -200,7 +200,7 @@ std::stringstream read_data_from_file(const std::string& aFilename);
 void set_key_value
 (const std::string& aKey,
  const std::string& aValue,
- std::unordered_map<std::string, std::string>& aKeyToValueMap);
+ std::map<std::string, std::string>& aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn set_value_keyword_to_ignore_if_empty
@@ -224,7 +224,7 @@ void set_value_keyword_to_ignore_if_empty(std::vector<std::string>& aValues);
  * \return list of key keywords
 **********************************************************************************/
 std::vector<std::string> transform_key_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+(const std::map<std::string, std::string> &aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn transform_value_tokens
@@ -233,7 +233,7 @@ std::vector<std::string> transform_key_tokens
  * \return list of value keywords
 **********************************************************************************/
 std::vector<std::string> transform_value_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+(const std::map<std::string, std::string> &aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn assert_is_positive_integer
