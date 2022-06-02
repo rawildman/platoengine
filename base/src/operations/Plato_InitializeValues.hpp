@@ -82,22 +82,11 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
-    /******************************************************************************//**
-     * @brief Read initialization values from CSM file.
-    **********************************************************************************/
-    void getValuesFromCSMFile();
-
-    /******************************************************************************//**
-     * @brief Read initialization values from input stream.
-    **********************************************************************************/
-    void getValuesFromStream(std::istream &aStream);
-
     double getValue(int aIndex){return mValues[aIndex];}
     double getValueUpperBound(int aIndex){return mUpperBounds[aIndex];}
     double getValueLowerBound(int aIndex){return mLowerBounds[aIndex];}
 
 private:
-
 
     std::string mValuesName; /*!< initial value argument name */
     std::string mUpperBoundsName; /*!< initial value argument name */

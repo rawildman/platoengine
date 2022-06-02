@@ -136,16 +136,27 @@ void append_dakota_driver_variables_block
  FILE*        & fp);
 
 /******************************************************************************//**
- * \fn parse_csm_file_for_design_variable_data
- * \brief read in and parse csm file for design variable data.
- * \param [in]  aInputFile Input csm file
- * \param [in/out] aStrings vector of variable block strings
- * \param [in/out] aCounter counter for number of variables
+ * \fn get_variable_strings_from_csm_file
+ * \brief get variables strings for dakota input deck from csm file
+ * \param [in]  aVariableStrings vector containing strings for variables 
+ * \param [in]  aCsmFileName Name of csm file
+ * \param [out] number of variables
 **********************************************************************************/
-void parse_csm_file_for_design_variable_data
-(std::istream             & aInputFile,
- std::vector<std::string> & aStrings,
- int                      & aCounter);
+size_t get_variable_strings_from_csm_file
+(std::vector<std::string>& aVariablesStrings,
+ const std::string& aCsmFileName,
+ const XMLGen::InputData& aMetaData);
+
+/******************************************************************************//**
+ * \fn get_variable_strings_from_optimization_parameters
+ * \brief get variables strings for dakota input deck from csm file
+ * \param [in]  aVariableStrings vector containing strings for variables 
+ * \param [in]  aMetaData Plato problem input metadata
+ * \param [out] number of variables
+**********************************************************************************/
+size_t get_variable_strings_from_optimization_parameters
+(std::vector<std::string>& aVariablesStrings,
+ const XMLGen::InputData& aMetaData);
 
 /******************************************************************************//**
  * \fn append_dakota_driver_interface_block

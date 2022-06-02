@@ -7,6 +7,7 @@
 #include "XMLGeneratorDakotaDriverInputFileUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "Plato_ParseCSMUtilities.hpp"
 
 namespace XMLGen
 {
@@ -231,40 +232,14 @@ void append_dakota_driver_variables_block
         "       upper_bounds",
         "       initial_point"};
     
+    std::vector<std::string> tDescriptors;
     auto tCsmFileName = aMetaData.optimization_parameters().csm_file();
-    auto tDescriptors = aMetaData.optimization_parameters().descriptors();
-    int tNumParameters = 0;
-    
+
+    size_t tNumParameters = 0;
     if(tCsmFileName != "")
-    {
-        std::ifstream tCsmFile;
-        tCsmFile.open(tCsmFileName.c_str()); // open a file
-        
-        XMLGen::parse_csm_file_for_design_variable_data(tCsmFile,tVariablesStrings,tNumParameters);
-        tCsmFile.close();
-
-        if (tNumParameters != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
-            THROWERR("Number of design variables specified in input deck does not match number in csm file.")
-    }
-    else if(tDescriptors.size()!=0)
-    {
-        tVariablesStrings = {
-        "       descriptors",
-        "       lower_bounds",
-        "       upper_bounds"};
-        tNumParameters = tDescriptors.size();
-        for(auto iDescriptor : tDescriptors )
-        tVariablesStrings[0] += "  '" + iDescriptor + "'  ";
-        
-        auto tLowerBounds = aMetaData.optimization_parameters().lower_bounds();
-        for(auto iLowerBounds : tLowerBounds )
-        tVariablesStrings[1] += "  " + iLowerBounds + "  ";
-        
-        auto tUpperBounds = aMetaData.optimization_parameters().upper_bounds();
-        for(auto iUpperBounds : tUpperBounds )
-        tVariablesStrings[2] += "  " + iUpperBounds + "  ";
-
-    }
+        tNumParameters = XMLGen::get_variable_strings_from_csm_file(tVariablesStrings, tCsmFileName, aMetaData);
+    else if(aMetaData.optimization_parameters().descriptors().size() != 0)
+        tNumParameters = XMLGen::get_variable_strings_from_optimization_parameters(tVariablesStrings, aMetaData);
 
     fprintf(fp, "\n variables\n");
     fprintf(fp, "   continuous_design = %d\n", tNumParameters);
@@ -276,31 +251,57 @@ void append_dakota_driver_variables_block
 }
 
 /******************************************************************************/
-void parse_csm_file_for_design_variable_data
-(std::istream& aInputFile,
- std::vector<std::string>& aStrings,
- int& aCounter)
- {
-    constexpr int MAX_CHARS_PER_LINE = 10000;
-    std::vector<char> tBuffer(MAX_CHARS_PER_LINE);
-    while (!aInputFile.eof())
-    {
-        std::vector<std::string> tTokens;
-        aInputFile.getline(tBuffer.data(), MAX_CHARS_PER_LINE);
-        XMLGen::parse_tokens(tBuffer.data(), tTokens);
-        XMLGen::to_lower(tTokens);
+size_t get_variable_strings_from_csm_file
+(std::vector<std::string>& aVariablesStrings,
+ const std::string& aCsmFileName,
+ const XMLGen::InputData& aMetaData)
+{
+    std::vector<double> tInitialValues, tLowerBounds, tUpperBounds;
+    std::vector<std::string> tDescriptors;
+    
+    Plato::ParseCSM::getValuesFromCSMFile(aCsmFileName, tInitialValues, tLowerBounds, tUpperBounds);
+    Plato::ParseCSM::getDescriptorsFromCSMFile(aCsmFileName, tDescriptors);
 
-        int tIndex = -1;
-        if (XMLGen::parse_target_keyword_index(tTokens,"despmtr",tIndex))
-        {
-            aStrings[0] += std::string(" '") + tTokens[tIndex+1] + std::string("'"); 
-            aStrings[1] += std::string(" ") + tTokens[tIndex+4]; 
-            aStrings[2] += std::string(" ") + tTokens[tIndex+6]; 
-            aStrings[3] += std::string(" ") + tTokens[tIndex+8]; 
-            aCounter++;
-        }
-    }
- }
+    for(auto iDescriptor : tDescriptors)
+        aVariablesStrings[0] += "  '" + iDescriptor + "'  ";
+    
+    for(auto iLowerBounds : tLowerBounds)
+        aVariablesStrings[1] += "  " + std::to_string(iLowerBounds) + "  ";
+    
+    for(auto iUpperBounds : tUpperBounds)
+        aVariablesStrings[2] += "  " + std::to_string(iUpperBounds) + "  ";
+
+    for(auto iInitialValue : tInitialValues)
+        aVariablesStrings[3] += "  " + std::to_string(iInitialValue) + "  ";
+
+    if (tDescriptors.size() != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
+        THROWERR("Number of design variables specified in input deck does not match number of descriptors.")
+
+    return tDescriptors.size();
+}
+
+/******************************************************************************/
+size_t get_variable_strings_from_optimization_parameters
+(std::vector<std::string>& aVariablesStrings,
+ const XMLGen::InputData& aMetaData)
+{
+    auto tDescriptors = aMetaData.optimization_parameters().descriptors();
+    auto tLowerBounds = aMetaData.optimization_parameters().lower_bounds();
+    auto tUpperBounds = aMetaData.optimization_parameters().upper_bounds();
+
+    for(auto iDescriptor : tDescriptors )
+        aVariablesStrings[0] += "  '" + iDescriptor + "'  ";
+    
+    for(auto iLowerBounds : tLowerBounds )
+        aVariablesStrings[1] += "  " + iLowerBounds + "  ";
+    
+    for(auto iUpperBounds : tUpperBounds )
+        aVariablesStrings[2] += "  " + iUpperBounds + "  ";
+
+    aVariablesStrings.pop_back();
+
+    return tDescriptors.size();
+}
 
 /******************************************************************************/
 void append_dakota_driver_interface_block

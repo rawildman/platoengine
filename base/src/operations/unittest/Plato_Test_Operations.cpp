@@ -39,22 +39,15 @@
 // *************************************************************************
 //@HEADER
 */
-
-#include <gtest/gtest.h>
-
-#include <fstream>
-
-//#include <aprepro.h>
-
 #include "Plato_Utils.hpp"
 #include "Plato_InputData.hpp"
 #include "Plato_EnforceBounds.hpp"
-#include "Plato_InitializeValues.hpp"
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
-
 #include "Plato_UnitTestUtils.hpp"
+
+#include <gtest/gtest.h>
 
 namespace PlatoTestOperations
 {
@@ -461,104 +454,6 @@ TEST(LocalOperation, HarvestDataFromFile)
     EXPECT_NEAR(39.00415657, tResult, tTol);
     auto tTrash = std::system("rm -f matched_power_balance.dat");
     Plato::Utils::ignore_unused(tTrash);
-
-/*
-    SEAMS::Aprepro tFileObject;
-    bool tResult = tFileObject.parse_file("matched_power_balance.dat");
-    if ( tResult ) 
-    {
-        std::cout << "PARSING RESULTS: \n" << tFileObject.parsing_results().str();
-    }
-
-    SEAMS::Aprepro tDumpFuncObject;
-    tResult = tDumpFuncObject.parse_string("{DUMP_FUNC()}");
-    if ( tResult ) 
-    {
-        std::cout << tDumpFuncObject.parsing_results().str() << "\n";
-    }
-    
-    SEAMS::Aprepro tFuncObject;
-    std::string tfodge("{abs(-2)*exp(8)}");
-    tResult = tFuncObject.parse_string(tfodge);
-    if ( tResult ) 
-    {
-        std::cout << "PARSING RESULTS: " << tFuncObject.parsing_results().str() << "\n";
-        std::cout << std::stod(tFuncObject.parsing_results().str()) << "\n";
-    }
-
-    SEAMS::Aprepro tArrayObject;
-    std::string tArray = std::string("{a = sqrt(4)}\n{a*a}\n{array_a = make_array(1,3,1)}") + 
-        "\n{print_array(array_a)}\n{array_b = make_array(1,3,3)}\n{sol=array_a+array_b}" +
-        "\n{print_array(sol)}";
-    tResult = tArrayObject.parse_string(tArray);
-    if ( tResult ) 
-    {
-        std::cout << "PARSING RESULTS: " << tArrayObject.parsing_results().str() << "\n";
-    }
-    */
-}
-
-TEST(InitializeValues, getValuesFromCSMFile)
-{
-    Plato::InputData tNode;
-    Plato::InitializeValues tIntializeValuesOperation(NULL, tNode);
-
-    std::istringstream tStringStream;
-    std::string tStringInput;
-
-    tStringInput =
-            "# Constant, Design, and Output Parameters:\n"
-            "despmtr   Px       2.00000 lbound 1.5  ubound 2.5\n"
-            "despmtr   Py       2.00000 lbound 1.5  ubound 2.5\n"
-            "despmtr   Pz       2.00000 lbound 1.5  ubound 2.5\n"
-            "despmtr   Lx       5.00000 lbound 3.0  ubound 10.0\n"
-            "despmtr   Rx       8.00000 lbound 3.0  ubound 10.0\n"
-            "despmtr   Rcap     1.00000 lbound 1.5  ubound 2.5\n"
-            "despmtr   Boffset  0.25000 lbound 0.05 ubound 0.49\n"
-            "despmtr   Rp       0.70000 lbound 0.5  ubound 0.9\n"
-            "#despmtr   Rp       0.70000 lbound 0.5  ubound 0.9*Px\n"
-            "despmtr   Rpo      0.50000 lbound 0.1  ubound 0.9\n"
-            "#despmtr   Rpo      0.50000 lbound 0.1  ubound 0.9*Rp\n"
-            "despmtr   Rlo      0.30000 lbound 0.1  ubound 0.9\n"
-            "#despmtr   Rlo      0.30000 lbound 0.1  ubound 0.9*Px/4.0\n"
-            "despmtr   Po       0.20000 lbound 0.1  ubound 0.5\n";
-    tStringStream.str(tStringInput);
-    tIntializeValuesOperation.getValuesFromStream(tStringStream);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(0), 2.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(1), 2.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(2), 2.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(3), 5.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(4), 8.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(5), 1.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(6), .25);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(7), .7);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(8), .5);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(9), .3);
-    EXPECT_EQ(tIntializeValuesOperation.getValue(10), .2);
-
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(0), 2.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(1), 2.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(2), 2.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(3), 10.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(4), 10.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(5), 2.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(6), .49);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(7), .9);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(8), .9);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(9), .9);
-    EXPECT_EQ(tIntializeValuesOperation.getValueUpperBound(10), .5);
-
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(0), 1.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(1), 1.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(2), 1.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(3), 3.);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(4), 3.0);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(5), 1.5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(6), .05);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(7), .5);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(8), .1);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(9), .1);
-    EXPECT_EQ(tIntializeValuesOperation.getValueLowerBound(10), .1);
 }
 
 TEST(EnforceBounds, applyBounds)
@@ -584,6 +479,5 @@ TEST(EnforceBounds, applyBounds)
     EXPECT_EQ(tDataToBound[8], 0);
     EXPECT_EQ(tDataToBound[9], 0);
 }
-
 
 } // end PlatoTestOperations namespace
