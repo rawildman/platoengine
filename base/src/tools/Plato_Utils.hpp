@@ -40,6 +40,7 @@
 //@HEADER
 */
 #include <vector>
+#include <string>
 #include <unistd.h>
 
 namespace Plato

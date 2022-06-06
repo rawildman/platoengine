@@ -14,6 +14,7 @@ set(${LIB_NAME}_SOURCES Plato_Parser.cpp
                         Plato_TimersTree.cpp
                         Plato_Vector3DVariations.cpp
                         Plato_AppErrorChecks.cpp
+                        Plato_ParseCSMUtilities.cpp
                         )
 set(${LIB_NAME}_HEADERS Plato_Parser.hpp
                         Plato_Macros.hpp
@@ -28,6 +29,7 @@ set(${LIB_NAME}_HEADERS Plato_Parser.hpp
                         Plato_TimersTree.hpp
                         Plato_AppErrorChecks.hpp
                         Plato_Vector3DVariations.hpp
+                        Plato_ParseCSMUtilities.hpp
                         )
 
 set(LIB_NAME Exceptions)

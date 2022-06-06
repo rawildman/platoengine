@@ -4262,39 +4262,6 @@ TEST(PlatoTestXMLGenerator, AppendModelsToDakotaDriverInputFile_SBGO_OutputSurro
     Plato::system("rm -rf appendModels.txt");
 }
 
-TEST(PlatoTestXMLGenerator, ParseCsmFileForDakotaDriverInputFile)
-{
-    // Create test csm file
-    std::istringstream tIss;
-    std::string tStringInput =
-        "# Constant, Design, and Output Parameters:\n"
-        "despmtr Py 2.0 lbound 2.0 ubound 3.0 initial 2.0\n"
-        "despmtr Px 2.0 lbound 1.6 ubound 2.4 initial 2.0\n"
-        "conpmtr Boffset 0.25 # lbound 0.05 ubound 0.38 initial 0.25\n"
-        "conpmtr Lx 6.5 # lbound 5.0 ubound 8.0 initial 6.5\n";
-
-    // Parse test csm file
-    tIss.str(tStringInput);
-    tIss.clear();
-    tIss.seekg(0);
-
-    std::vector<std::string> tVariablesStrings = {"","","",""};
-    int tCounter = 0;
-    ASSERT_NO_THROW(XMLGen::parse_csm_file_for_design_variable_data(tIss,tVariablesStrings,tCounter));
-
-    ASSERT_EQ(tCounter,2);
-
-    std::vector<std::string> tGoldStrings = {" 'py' 'px'",
-                                             " 2.0 1.6",   
-                                             " 3.0 2.4",     
-                                             " 2.0 2.0"};
-
-    for(int iString = 0; iString < tGoldStrings.size(); iString++)
-    {
-        ASSERT_STREQ(tVariablesStrings[iString].c_str(), tGoldStrings[iString].c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile_ErrorNumberDesignVariablesDontMatchCsm)
 {
     // Create test csm file
@@ -4350,10 +4317,10 @@ TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile)
     auto tReadData = XMLGen::read_data_from_file("appendParameters.txt");
     auto tGold = std::string("variables") + 
         std::string("continuous_design=2") + 
-        std::string("descriptors'py''px'") +
-        std::string("lower_bounds2.01.6") +
-        std::string("upper_bounds3.02.4") +
-        std::string("initial_point2.02.0");
+        std::string("descriptors'Py''Px'") +
+        std::string("lower_bounds2.0000001.600000") +
+        std::string("upper_bounds3.0000002.400000") +
+        std::string("initial_point2.0000002.000000");
 
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
@@ -4389,9 +4356,7 @@ TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFileFromDescripto
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
     Plato::system("rm -rf appendParameters.txt");
-    
 }
-
 
 TEST(PlatoTestXMLGenerator, AppendInterfaceToDakotaDriverInputFile_MDPS)
 {
