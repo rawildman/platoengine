@@ -1085,6 +1085,24 @@ TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_ErrorEmpt
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_ErrorShapeOptimization)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tInputData;
+
+    XMLGen::Service tService;
+    tService.updateProblem("true");
+    tInputData.append(tService);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tInputData.set(tOptimizationParameters);
+
+    ASSERT_THROW(XMLGen::append_update_problem_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_DoNotWriteUpdateProblemOperation)
 {
     pugi::xml_document tDocument;

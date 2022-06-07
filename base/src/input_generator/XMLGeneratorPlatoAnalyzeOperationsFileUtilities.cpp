@@ -485,10 +485,6 @@ namespace XMLGen
     void append_update_problem_to_plato_analyze_operation(const XMLGen::InputData &aMetaData,
                                                           pugi::xml_document &aDocument)
     {
-        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
-        {
-            return;
-        }
         if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY && aMetaData.optimization_parameters().discretization() == "levelset")
         {
             auto tOperation = aDocument.append_child("Operation");
@@ -506,6 +502,11 @@ namespace XMLGen
         if (!tNeedUpdate)
         {
             return;
+        }
+
+        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+        {
+            THROWERR("Append Update Problem to Plato Analyze Operation: Operation is not supported for shape optimization.")
         }
 
         if (aMetaData.optimization_parameters().problem_update_frequency().empty())
