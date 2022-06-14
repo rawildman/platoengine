@@ -242,7 +242,7 @@ void append_dakota_driver_variables_block
         tNumParameters = XMLGen::get_variable_strings_from_optimization_parameters(tVariablesStrings, aMetaData);
 
     fprintf(fp, "\n variables\n");
-    fprintf(fp, "   continuous_design = %d\n", tNumParameters);
+    fprintf(fp, "   continuous_design = %lu\n", tNumParameters);
     for (auto& tString : tVariablesStrings)
     {
         tString += "\n";
