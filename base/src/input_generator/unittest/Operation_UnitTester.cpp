@@ -82,7 +82,7 @@ TEST(OperationTest, WriteDefinitionWaitOperationWithConcurrency)
         "OnChange"};
     std::vector<std::string> tValues = {"SystemCall", 
         "wait_0", 
-        "while lsof -u $USER | grep ./file; do sleep 1; done", 
+        "while lsof -u `id -u -n` | grep ./file; do sleep 1; done", 
         "evaluations_0",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
@@ -110,7 +110,7 @@ TEST(OperationTest, WriteDefinitionWaitOperationNoConcurrency)
         "OnChange"};
     std::vector<std::string> tValues = {"SystemCall", 
         "wait", 
-        "while lsof -u $USER | grep ./file; do sleep 1; done", 
+        "while lsof -u `id -u -n` | grep ./file; do sleep 1; done", 
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
@@ -138,7 +138,7 @@ TEST(OperationTest, WriteDefinitionWaitOperationWithTag)
         "OnChange"};
     std::vector<std::string> tValues = {"SystemCall", 
         "wait_{E}", 
-        "while lsof -u $USER | grep ./file; do sleep 1; done", 
+        "while lsof -u `id -u -n` | grep ./file; do sleep 1; done", 
         "evaluations_{E}",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
