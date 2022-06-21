@@ -2243,7 +2243,7 @@ TEST(PlatoTestXMLGenerator, AppendWaitForFileToPlatoMainOperation)
     std::vector<std::string> tKeys = {"Function", "Name", 
         "Command", "OnChange"};
     std::vector<std::string> tValues = {"SystemCall", "wait", 
-        "while lsof -u $USER | grep folder/file; do sleep 1; done; ", "false"};
+        "while lsof -u `id -u -n` | grep folder/file; do sleep 1; done; ", "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
   
 }

@@ -260,7 +260,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "OnChange"};
     tValues = {"SystemCall", 
         "wait_0", 
-        "while lsof -u $USER | grep ./matched_power_balance.dat; do sleep 1; done", 
+        "while lsof -u `id -u -n` | grep ./matched_power_balance.dat; do sleep 1; done", 
         "evaluations_0",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
@@ -269,7 +269,7 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
     ASSERT_FALSE(tOperation.empty());
     tValues = {"SystemCall", 
         "wait_1", 
-        "while lsof -u $USER | grep ./matched_power_balance.dat; do sleep 1; done", 
+        "while lsof -u `id -u -n` | grep ./matched_power_balance.dat; do sleep 1; done", 
         "evaluations_1",
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);

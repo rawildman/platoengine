@@ -1072,7 +1072,7 @@ void append_mesh_rename_operation_to_plato_main_operation
         const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
 
         std::stringstream moveCmd;
-        moveCmd << "while lsof -u $USER | grep " << joinedMeshFile << "; do sleep 1; done; ";
+        moveCmd << "while lsof -u `id -u -n` | grep " << joinedMeshFile << "; do sleep 1; done; ";
         moveCmd << "/bin/cp " << joinedMeshFile << " " << exodusFile;
 
         pugi::xml_node operationNode = aDocument.append_child("Operation");
@@ -1150,7 +1150,7 @@ void append_wait_for_file_close_operation_commands
    
     addChild(tNode, "Function", "SystemCall");
     addChild(tNode, "Name", aName);
-    std::string tCommand = "while lsof -u $USER | grep " + aFolder + "/" + aFile + "; do sleep 1; done; ";
+    std::string tCommand = "while lsof -u `id -u -n` | grep " + aFolder + "/" + aFile + "; do sleep 1; done; ";
     addChild(tNode, "Command", tCommand);
     addChild(tNode, "OnChange", "false");
  }

@@ -58,7 +58,7 @@ OperationWait::OperationWait
  int aConcurrentEvaluations) :
  Operation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
 {
-    mCommand = std::string("while lsof -u $USER | grep ./") + aFile + "; do sleep 1; done";
+    mCommand = std::string("while lsof -u `id -u -n` | grep ./") + aFile + "; do sleep 1; done";
     mOnChange = false;    
 }
 
