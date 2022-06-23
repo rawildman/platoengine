@@ -82,6 +82,8 @@ void ParseCriteria::allocate()
     this->insertTag("scmm_mass_weight", "1.0");
 
     this->insertTag("stress_p_norm_exponent", "6.0");
+    this->insertTag("stress_p_norm_measure");
+    this->insertTag("stress_p_norm_volume_scaling");
     this->insertTag("mechanical_weighting_factor", "1.0");
     this->insertTag("thermal_weighting_factor", "1.0");
     this->insertTag("local_measure", "vonmises");
@@ -323,6 +325,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionWeights(aMetadata);
     this->setMassProperties(aMetadata);
     this->checkVolumePenaltyExponent(aMetadata);
+    this->setStressPNormOptions(aMetadata);
     this->setDisplacementDirection(aMetadata);
     this->setTargetSolutionVector(aMetadata);
     setModesToExclude(aMetadata);
@@ -396,6 +399,43 @@ void ParseCriteria::checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion)
         if (tItr->second.first.second.empty())
         {
             aCriterion.materialPenaltyExponent("1.0");
+        }
+    }
+}
+
+void ParseCriteria::setStressPNormOptions(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "stress_p-norm")
+    {
+        auto tMeasureItr = mTags.find("stress_p_norm_measure");
+        std::string tMeasure = tMeasureItr->second.first.second;
+        bool pNormMeasureSpecified = (tMeasureItr != mTags.end() && !tMeasure.empty());
+
+        auto tScalingItr = mTags.find("stress_p_norm_volume_scaling");
+        std::string tVolumeScaling = tScalingItr->second.first.second;
+        bool pNormVolumeScalingSpecified = (tScalingItr != mTags.end() && !tVolumeScaling.empty());
+
+        if (!pNormMeasureSpecified && pNormVolumeScalingSpecified)
+            THROWERR(std::string("Stress p-norm volume scaling requires stress p-norm measure to be specified. Use keyword stress_p_norm_measure to do so."))
+
+        if (pNormMeasureSpecified)
+        {
+            XMLGen::ValidPNormMeasureKeys tValidPNormMeasureKeys;
+            auto tValidMeasure = tValidPNormMeasureKeys.value(tMeasure);
+            if (!tValidMeasure.empty())
+                aMetadata.pnormMeasure(tValidMeasure);
+            else
+                THROWERR(std::string("Stress p-norm measure: '") + tMeasure + std::string("' is not supported. Currently supported are: 'vonmises'"))
+        }
+
+        if (pNormVolumeScalingSpecified)
+        {
+            XMLGen::ValidBoolKeys tValidBoolKeys;
+            auto tValidBool = tValidBoolKeys.value(tVolumeScaling);
+            if (!tValidBool.empty())
+                aMetadata.pnormVolumeScaling(tValidBool);
+            else
+                THROWERR(std::string("Stress p-norm volume scaling: '") + tVolumeScaling + std::string("' is not a bool. Must specify 'true' or 'false'."))
         }
     }
 }

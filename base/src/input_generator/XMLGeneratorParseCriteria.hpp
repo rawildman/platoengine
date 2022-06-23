@@ -124,6 +124,13 @@ private:
     void setTargetSolutionVector(XMLGen::Criterion &aMetadata);
 
     /******************************************************************************//**
+     * \fn setStressPNormOptions
+     * \brief Set correct options for stress p-norm
+     * \param [in] aCriterion criterion metadata
+    **********************************************************************************/
+    void setStressPNormOptions(XMLGen::Criterion& aCriterion);
+
+    /******************************************************************************//**
      * \fn insertTag
      * \brief Insert a tag, possibly with a default value
      * \param [in] aCriterion criterion metadata

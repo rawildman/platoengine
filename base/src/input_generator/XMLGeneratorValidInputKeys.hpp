@@ -69,6 +69,8 @@ struct ValidCriterionParameterKeys
         "normalize", 
         "normalization_value",
         "stress_p_norm_exponent",
+        "stress_p_norm_measure",
+        "stress_p_norm_volume_scaling",
         "mechanical_weighting_factor",
         "thermal_weighting_factor",
         "material_penalty_model", 
@@ -264,6 +266,39 @@ public:
     { return mKeys; }
 };
 // struct ValidCriterionTypeKeys
+
+struct ValidPNormMeasureKeys
+{
+private:
+    /*!<
+     * \brief Valid p-norm measures.
+     **/
+    std::vector<std::string> mKeys = {"vonmises"};
+
+public:
+    /******************************************************************************//**
+     * \fn value
+     * \brief Return supported p-norm measure keyword.
+     * \param [in] aKey input file keyword
+     * \return supported criterion keyword. If key is not supported, return an empty string.
+    **********************************************************************************/
+    std::string value(const std::string& aKey) const
+    {
+        return (XMLGen::return_supported_value(aKey, mKeys));
+    }
+};
+// struct ValidPNormMeasureKeys
+
+struct ValidPNormMeasureKeyMap
+{
+    /*!<
+     * valid p-norm measure key map \n
+     * \brief map from p-norm measure keyword to identification keyword for Plato Analyze input deck, i.e. map<measure_key, identification_key>.
+     *
+     **/
+    std::unordered_map<std::string, std::string> mKeys = { { "vonmises", "Von Mises" } };
+};
+// ValidPNormMeasureKeyMap
 
 struct ValidRandomCategoryKeys
 {

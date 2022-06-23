@@ -555,6 +555,123 @@ TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNorm)
     ASSERT_STREQ("3", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
 }
 
+TEST(PlatoTestXMLGenerator, ParseCriteria_ErrorInvalidStressPNormMeasure)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 20\n"
+        "stress_p_norm_measure potato\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNormMeasure)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 20\n"
+        "stress_p_norm_measure vonmises\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("stress_p-norm", tCriterionMetaData[0].type().c_str());
+
+    ASSERT_STREQ("20", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
+    ASSERT_STREQ("vonmises", tCriterionMetaData[0].value("stress_p_norm_measure").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_ErrorStressPNormVolumeScalingNoMeasure)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 20\n"
+        "stress_p_norm_volume_scaling false\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_ErrorStressPNormVolumeScalingNotBool)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 20\n"
+        "stress_p_norm_measure vonmises\n"
+        "stress_p_norm_volume_scaling not_a_bool\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_THROW(tCriteriaParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNormVolumeScaling)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 2\n"
+        "stress_p_norm_measure vonmises\n"
+        "stress_p_norm_volume_scaling false\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("stress_p-norm", tCriterionMetaData[0].type().c_str());
+
+    ASSERT_STREQ("2", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
+    ASSERT_STREQ("vonmises", tCriterionMetaData[0].value("stress_p_norm_measure").c_str());
+    ASSERT_STREQ("false", tCriterionMetaData[0].value("stress_p_norm_volume_scaling").c_str());
+}
+
+TEST(PlatoTestXMLGenerator, ParseCriteria_StressPNormMeasureAndVolumeScalingDefaultToEmptyString)
+{
+    std::string tStringInput =
+        "begin criterion 1\n"
+        "type stress_p-norm\n"
+        "stress_p_norm_exponent 7\n"
+        "end criterion\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseCriteria tCriteriaParser;
+    ASSERT_NO_THROW(tCriteriaParser.parse(tInputSS));
+
+    auto tCriterionMetaData = tCriteriaParser.data();
+    ASSERT_EQ(1u, tCriterionMetaData.size());
+    ASSERT_STREQ("1", tCriterionMetaData[0].id().c_str());
+    ASSERT_STREQ("stress_p-norm", tCriterionMetaData[0].type().c_str());
+
+    ASSERT_STREQ("7", tCriterionMetaData[0].value("stress_p_norm_exponent").c_str());
+    ASSERT_STREQ("", tCriterionMetaData[0].value("stress_p_norm_measure").c_str());
+    ASSERT_STREQ("", tCriterionMetaData[0].value("stress_p_norm_volume_scaling").c_str());
+}
+
 TEST(PlatoTestXMLGenerator, ParseCriteria_MassProperties)
 {
     std::string tStringInput =

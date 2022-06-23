@@ -206,6 +206,46 @@ public:
     }
 
     /******************************************************************************//**
+     * \fn pnormMeasure
+     * \brief Set string value for keyword 'stress_p_norm_measure'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void pnormMeasure(const std::string& aInput)
+    {
+        this->append("stress_p_norm_measure", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn pnormMeasure
+     * \brief Return string value for keyword 'stress_p_norm_measure'.
+     * \return value
+     **********************************************************************************/
+    std::string pnormMeasure() const
+    {
+        return (this->value("stress_p_norm_measure"));
+    }
+
+    /******************************************************************************//**
+     * \fn pnormVolumeScaling
+     * \brief Set string value for keyword 'stress_p_norm_volume_scaling'.
+     * \param [in] aInput string value
+     **********************************************************************************/
+    void pnormVolumeScaling(const std::string& aInput)
+    {
+        this->append("stress_p_norm_volume_scaling", aInput);
+    }
+
+    /******************************************************************************//**
+     * \fn pnormVolumeScaling
+     * \brief Return string value for keyword 'stress_p_norm_volume_scaling'.
+     * \return value
+     **********************************************************************************/
+    std::string pnormVolumeScaling() const
+    {
+        return (this->value("stress_p_norm_volume_scaling"));
+    }
+
+    /******************************************************************************//**
      * \fn mechanical_weighting_factor
      * \brief Set string value for keyword 'mechanical_weighting_factor'.
      * \param [in] aInput string value
