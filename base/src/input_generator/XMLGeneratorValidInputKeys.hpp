@@ -120,7 +120,7 @@ struct ValidCriterionParameterKeys
         "volume_penalty_divisor",
         "volume_penalty_bias",
         "surface_area_sideset_id",
-        // SD modal objectives
+        // Sierra/SD modal objectives
         "num_modes_compute",
         "modes_to_exclude",
         "eigen_solver_shift",
@@ -129,6 +129,9 @@ struct ValidCriterionParameterKeys
         "shape_sideset",
         "ref_data_file",
         "match_nodesets",
+        // Sierra/TF keywords
+        "search_nodesets",
+        "temperature_field_name",
         // mass properties
         "mass",
         "cgx", 
@@ -238,6 +241,7 @@ private:
         "fluid_thermal_compliance",
         "maximize_fluid_thermal_flux",
         "modal_matching",
+        "temperature_matching",
         "modal_projection_error",
         "mass_properties",
         "displacement",
@@ -742,7 +746,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk", "gemma"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_tf", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk", "gemma"};
 };
 // struct ValidCodeKeys
 

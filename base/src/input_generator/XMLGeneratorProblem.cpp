@@ -21,11 +21,13 @@
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
 #include "XMLGeneratorPlatoESPInputFileUtilities.hpp"
 #include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
+#include "XMLGeneratorSierraTFInputDeckUtilities.hpp"
 #include "XMLGeneratorPlatoMainInputFileUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include "XMLGeneratorPlatoESPOperationsFileUtilities.hpp"
 #include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
+#include "XMLGeneratorSierraTFOperationsFileUtilities.hpp"
 #include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
 
@@ -55,6 +57,10 @@ void write_performer_operation_xml_file_gradient_based_problem
         {
             XMLGen::write_sierra_sd_operation_xml_file(aMetaData);
         }
+        else if(aMetaData.services()[0].code() == "sierra_tf")
+        {
+            XMLGenSierraTF::write_sierra_tf_operation_xml_file(aMetaData);
+        }
     }
 }
 // function write_performer_operation_xml_file_gradient_based_problem
@@ -78,6 +84,10 @@ void write_performer_input_deck_file_gradient_based_problem
         else if(aMetaData.services()[0].code() == "sierra_sd")
         {
             XMLGen::write_sierra_sd_input_deck(aMetaData);
+        }
+        else if(aMetaData.services()[0].code() == "sierra_tf")
+        {
+            XMLGen::write_sierra_tf_inverse_input_file(aMetaData);
         }
     }
 }
@@ -121,3 +131,4 @@ void write_dakota_problem
 
 }
 // namespace XMLGen
+

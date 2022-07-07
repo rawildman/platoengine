@@ -395,6 +395,7 @@ public:
     std::string raleigh_damping_beta() const {return this->getValue("raleigh_damping_beta"); }
     std::string complex_error_measure() const {return this->getValue("complex_error_measure"); }
     std::string convert_to_tet10() const {return this->getValue("convert_to_tet10"); }
+    std::string existing_input_deck() const {return this->getValue("existing_input_deck"); }
 
 };
 // struct Scenario
