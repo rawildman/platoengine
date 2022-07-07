@@ -172,6 +172,10 @@ void append_physics_performer_mpirun_commands_gradient_based_problem
         {
             append_sierra_sd_mpirun_line(aInputData, tService, aNextPerformerID, aFile);
         }
+        else if(tService.code() == "sierra_tf")
+        {
+            append_sierra_tf_mpirun_line(aInputData, tService, aNextPerformerID, aFile);
+        }
         else if(tService.code() == "plato_esp")
         {
             append_esp_mpirun_line(aInputData, tService, aNextPerformerID, aFile);
@@ -238,6 +242,36 @@ void append_sierra_sd_mpirun_line
     fprintf(aFile, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", tEnvString.c_str(), tSeparationString.c_str());
     fprintf(aFile, "%s PLATO_APP_FILE%ssierra_sd_%s_operations.xml \\\n", tEnvString.c_str(), tSeparationString.c_str(), aService.id().c_str());
     XMLGen::append_sierra_sd_code_path(aInputData, aFile, aService.id(), aEvaluation);
+}
+
+void append_sierra_tf_mpirun_line
+(const XMLGen::InputData& aInputData,
+ const XMLGen::Service& aService,
+ int &aNextPerformerID,
+ FILE*& aFile)
+{
+    std::string tEnvString, tSeparationString, tLaunchString, tNumProcsString;
+    XMLGen::determine_mpi_env_and_separation_strings(tEnvString, tSeparationString);
+    XMLGen::determine_mpi_launch_strings(aInputData, tLaunchString, tNumProcsString);
+
+    std::vector<std::string> tDeviceIDs = aService.deviceIDs();
+    std::string tDeviceID = "";
+    if(tDeviceIDs.size() != 0)
+    {
+        tDeviceID = tDeviceIDs[0];
+    }
+
+    fprintf(aFile,
+        ": %s %s %s PLATO_PERFORMER_ID%s%d \\\n",
+        tNumProcsString.c_str(),
+        aService.numberProcessors().c_str(),
+        tEnvString.c_str(),
+        tSeparationString.c_str(),
+        aNextPerformerID);
+
+    fprintf(aFile, "%s PLATO_INTERFACE_FILE%sinterface.xml \\\n", tEnvString.c_str(), tSeparationString.c_str());
+    fprintf(aFile, "%s PLATO_APP_FILE%ssierra_tf_%s_operations.xml \\\n", tEnvString.c_str(), tSeparationString.c_str(), aService.id().c_str());
+    XMLGen::append_sierra_tf_code_path(aInputData, aFile, aService.id());
 }
 
 void append_esp_mpirun_line(const XMLGen::InputData& aInputData, const XMLGen::Service& aService, int &aNextPerformerID, FILE*& aFile)

@@ -1048,7 +1048,7 @@ TEST(PlatoTestXMLGenerator, ParseScenario_ErrorNoDimensions)
     ASSERT_THROW(tScenarioParser.parse(tInputSS), std::runtime_error);
 }
 
-TEST(PlatoTestXMLGenerator, ParseScenario_ErrorNoLoads)
+TEST(PlatoTestXMLGenerator, ParseScenario_NoLoads)
 {
     std::string tStringInput =
         "begin scenario\n"
@@ -1076,6 +1076,54 @@ TEST(PlatoTestXMLGenerator, ParseScenario_ErrorNoBoundaryConditions)
 
     XMLGen::ParseScenario tScenarioParser;
     ASSERT_THROW(tScenarioParser.parse(tInputSS), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, ParseScenario_ExistingInputDeckNoBoundaryConditions)
+{
+    std::string tStringInput =
+        "begin scenario\n"
+        "   physics steady_state_mechanics\n"
+        "   dimensions 3\n"
+        "   loads 1\n"
+        "   existing_input_deck my_deck.i\n"
+        "end scenario\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseScenario tScenarioParser;
+    ASSERT_NO_THROW(tScenarioParser.parse(tInputSS));
+}
+
+TEST(PlatoTestXMLGenerator, ParseScenario_ExistingInputDeckNoLoads)
+{
+    std::string tStringInput =
+        "begin scenario\n"
+        "   physics steady_state_mechanics\n"
+        "   dimensions 3\n"
+        "   boundary_conditions 1\n"
+        "   existing_input_deck my_deck.i\n"
+        "end scenario\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseScenario tScenarioParser;
+    ASSERT_NO_THROW(tScenarioParser.parse(tInputSS));
+}
+
+TEST(PlatoTestXMLGenerator, ParseScenario_ExistingInputDeckNoDimensions)
+{
+    std::string tStringInput =
+        "begin scenario\n"
+        "   physics steady_state_mechanics\n"
+        "   existing_input_deck my_deck.i\n"
+        "   loads 1\n"
+        "   boundary_conditions 1\n"
+        "end scenario\n";
+    std::istringstream tInputSS;
+    tInputSS.str(tStringInput);
+
+    XMLGen::ParseScenario tScenarioParser;
+    ASSERT_NO_THROW(tScenarioParser.parse(tInputSS));
 }
 
 TEST(PlatoTestXMLGenerator, ParseScenario_ErrorInvalidScenarioBlockID)

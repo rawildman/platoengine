@@ -19,12 +19,16 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorPlatoAnalyzeInputFile_UnitTester.cpp
                                       XMLGeneratorPlatoAnalyzeOperationsFile_UnitTester.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
+                                      XMLGeneratorSierraTFOperationsFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
+                                      XMLGeneratorStageOperationsUtilities_UnitTester.cpp
+                                      XMLGeneratorUtilities_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
                                       FileObject_UnitTester.cpp
                                       Performer_UnitTester.cpp
                                       SharedData_UnitTester.cpp
                                       Stage_UnitTester.cpp
+                                      Criterion_UnitTester.cpp
                                       Operation_UnitTester.cpp
                                       OptimizationAlgorithm_UnitTester.cpp
                                       ../XMLGenerator.cpp
@@ -70,6 +74,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorMaterialFunctionInterface.cpp
                                       ../XMLGeneratorPlatoESPInputFileUtilities.cpp
                                       ../XMLGeneratorSierraSDInputDeckUtilities.cpp
+                                      ../XMLGeneratorSierraTFInputDeckUtilities.cpp
                                       ../XMLGeneratorPlatoMainInputFileUtilities.cpp
                                       ../XMLGeneratorParseOptimizationParameters.cpp
                                       ../XMLGeneratorAnalyzeLoadFunctionInterface.cpp
@@ -81,6 +86,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorPlatoMainOperationFileUtilities.cpp
                                       ../XMLGeneratorParseEssentialBoundaryCondition.cpp
                                       ../XMLGeneratorSierraSDOperationsFileUtilities.cpp
+                                      ../XMLGeneratorSierraTFOperationsFileUtilities.cpp
                                       ../XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                                       ../XMLGeneratorParseMethodInputOptionsUtilities.cpp
                                       ../XMLGeneratorPostOptimizationRunFileUtilities.cpp

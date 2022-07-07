@@ -571,7 +571,8 @@ int count_number_of_reinitializations_needed
     {
         std::string tServiceID = aObjective.serviceIDs[i];
         XMLGen::Service tService = aMetaData.service(tServiceID); 
-        if (tService.performer().find("sierra_sd") == std::string::npos) 
+        if (tService.performer().find("sierra_sd") == std::string::npos &&
+            tService.performer().find("sierra_tf") == std::string::npos) 
         {
             tReturn++;
         }

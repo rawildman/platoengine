@@ -33,6 +33,7 @@ private:
     std::vector<std::string> mTargetSolutionVector;
     std::vector<std::string> mModesToExclude;
     std::vector<std::string> mMatchNodesetIDs;
+    std::vector<std::string> mSearchNodesetIDs;
     std::map<std::string, std::pair<double,double>> mMassProperties;
 
     std::string mReport;
@@ -578,11 +579,25 @@ public:
     std::vector<std::string> matchNodesetIDs() const {return mMatchNodesetIDs;};
 
     /******************************************************************************//**
+     * \fn searchNodesetIDs
+     * \brief Return nodeset ids for searching when finding match nodesets at each iteration
+     * \return mSearchNodesetIDs
+    **********************************************************************************/
+    std::vector<std::string> searchNodesetIDs() const {return mSearchNodesetIDs;};
+
+    /******************************************************************************//**
      * \fn setMatchNodesetIDs
      * \brief Set nodeset ids for matching frfs or eigen
      * \param [in] input nodeset IDs 
     **********************************************************************************/
     void setMatchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mMatchNodesetIDs = aNodesetIDs;};
+
+    /******************************************************************************//**
+     * \fn setSearchNodesetIDs
+     * \brief Set nodeset ids for searching when finding match nodesets at each iteration
+     * \param [in] input nodeset IDs 
+    **********************************************************************************/
+    void setSearchNodesetIDs(std::vector<std::string>& aNodesetIDs) {mSearchNodesetIDs = aNodesetIDs;};
 
     void setMassProperty(std::string property, double goldValue, double weight) {
         mMassProperties[property] = std::make_pair(goldValue, weight);
@@ -626,6 +641,9 @@ public:
     std::string eigen_solver_shift() const { return this->value("eigen_solver_shift"); }
     std::string camp_solver_tol() const { return this->value("camp_solver_tol"); }
     std::string camp_max_iter() const { return this->value("camp_max_iter"); }
+
+    // Sierra/TF objectives
+    std::string temperature_field_name() const { return this->value("temperature_field_name"); }
 
     std::string target() const { return this->value("target"); }
     std::string target_magnitude() const { return this->value("target_magnitude"); }
