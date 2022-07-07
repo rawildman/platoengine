@@ -365,7 +365,7 @@ endfunction( Plato_add_simple_test )
 ## )
 ###############################################################################
 
-function( Plato_add_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_TOLERANCE )
+function( Plato_add_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE )
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source "${RUN_COMMAND}")
 
@@ -376,8 +376,8 @@ function( Plato_add_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_T
               -DOUT_FILE=${OUT_FILE} 
               -DGOLD_FILE=${GOLD_FILE} 
               -DNUMDIFF_COMMAND=${NUMDIFF_COMMAND}
+              -DNUMDIFF_ABSOLUTE=${NUMDIFF_ABSOLUTE}
               -DNUMDIFF_TOLERANCE=${NUMDIFF_TOLERANCE}
-	      -DNUMDIFF_ABSOLUTE=${ARGN0}
               -P ${CMAKE_SOURCE_DIR}/base/config/runnumdifftest.cmake )
 
 endfunction( Plato_add_numdiff_test )
@@ -399,8 +399,8 @@ function( Plato_add_xmlgen_numdiff_test TEST_NAME XMLGEN_COMMAND NUMDIFF_COMMAND
            -DOUT_FILE=${OUT_FILE} 
            -DGOLD_FILE=${GOLD_FILE} 
            -DNUMDIFF_COMMAND=${NUMDIFF_COMMAND}
+           -DNUMDIFF_ABSOLUTE=${NUMDIFF_ABSOLUTE}
            -DNUMDIFF_TOLERANCE=${NUMDIFF_TOLERANCE}
-	   -DNUMDIFF_ABSOLUTE=${ARGN0}
            -P ${CMAKE_SOURCE_DIR}/base/config/runxmlgennumdifftest.cmake)
 
 endfunction( Plato_add_xmlgen_numdiff_test )
