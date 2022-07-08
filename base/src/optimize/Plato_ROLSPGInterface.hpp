@@ -244,57 +244,6 @@ private:
         aDataMng.setControlLowerBounds(tCONTROL_VECTOR_INDEX, *tLowerBoundVector);
     }
     /******************************************************************************/
-    void output(const std::stringbuf & aBuffer)
-    /******************************************************************************/
-    {
-        int tMyRank = -1;
-        MPI_Comm_rank(mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
-        {
-            const bool tOutputDiagnosticsToFile = mInputData.getOutputDiagnosticsToFile();
-            if(tOutputDiagnosticsToFile == false)
-            {
-                std::cout << aBuffer.str().c_str() << std::flush;
-            }
-            else
-            {
-                std::ofstream tOutputFile;
-                tOutputFile.open("ROL_output.txt");
-                tOutputFile << aBuffer.str().c_str();
-                tOutputFile.close();
-            }
-        }
-    }
-
-    /******************************************************************************/
-    void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    /******************************************************************************/
-    {
-        int tMyRank = -1;
-        MPI_Comm_rank(mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
-        {
-            const bool tOutputControlToFile = mInputData.getOutputControlToFile();
-            if(tOutputControlToFile == true)
-            {
-                std::ofstream tOutputFile;
-                tOutputFile.open("ROL_control_output.txt");
-                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem->getPrimalOptimizationVector();
-                Plato::DistributedVectorROL<ScalarType> & tSolution =
-                        dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(tSolutionPtr.operator*());
-                std::vector<ScalarType> & tData = tSolution.vector();
-                for(OrdinalType tIndex = 0; tIndex < tData.size(); tIndex++)
-                {
-                    tOutputFile << tData[tIndex] << "\n";
-                }
-                tOutputFile.close();
-            }
-        }
-    }
-
-    /******************************************************************************/
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
@@ -320,53 +269,6 @@ private:
         // ********* Print Diagnostics and Control ********* //
         this->output(tBuffer);
         this->printControl(aOptimizationProblem);
-    }
-
-    /******************************************************************************/
-    void setBounds(const std::vector<ScalarType> & aInputs, Plato::DistributedVectorROL<ScalarType> & aBounds)
-    /******************************************************************************/
-    {
-        assert(aInputs.empty() == false);
-        if(aInputs.size() == static_cast<size_t>(1))
-        {
-            const ScalarType tValue = aInputs[0];
-            aBounds.fill(tValue);
-        }
-        else
-        {
-            assert(aInputs.size() == static_cast<size_t>(aBounds.dimension()));
-            aBounds.setVector(aInputs);
-        }
-    }
-
-    /******************************************************************************/
-    void setInitialGuess(const std::string & aMyName, Plato::DistributedVectorROL<ScalarType> & aControl)
-    /******************************************************************************/
-    {
-        std::string tInitializationStageName = mInputData.getInitializationStageName();
-        if(tInitializationStageName.empty() == false)
-        {
-            // Use user-defined stage to compute initial guess
-            Teuchos::ParameterList tPlatoInitializationStageParameterList;
-            tPlatoInitializationStageParameterList.set(aMyName, aControl.vector().data());
-            mInterface->compute(tInitializationStageName, tPlatoInitializationStageParameterList);
-        }
-        else
-        {
-            // Use user-defined values to compute initial guess. Hence, a stage was not defined by the user.
-            std::vector<ScalarType> tInitialGuess = mInputData.getInitialGuess();
-            assert(tInitialGuess.empty() == false);
-            if(tInitialGuess.size() == static_cast<size_t>(1))
-            {
-                const ScalarType tValue = tInitialGuess[0];
-                aControl.fill(tValue);
-            }
-            else
-            {
-                assert(tInitialGuess.size() == static_cast<size_t>(aControl.dimension()));
-                aControl.setVector(tInitialGuess);
-            }
-        }
     }
 
 private:
