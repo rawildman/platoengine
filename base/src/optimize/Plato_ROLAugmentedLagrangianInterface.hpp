@@ -169,8 +169,6 @@ private:
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
-        std::stringbuf tBuffer;
-        std::ostream tOutputStream(&tBuffer);
         std::string tFileName = this->mInputData.getInputFileName();
         Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
         Teuchos::updateParametersFromXmlFile(tFileName, tParameterList.ptr());
@@ -183,12 +181,9 @@ private:
         {
             /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
             ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            tOptimizer.solve(tOutputStream);
-            //tOptimizer.solve(std::cout);
+            tOptimizer.solve(this->mOutputStream);
         }
 
-        // ********* Print Diagnostics and Control ********* //
-        this->output(tBuffer);
         this->printControl(aOptimizationProblem);
     }
 

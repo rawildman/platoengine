@@ -96,7 +96,10 @@ class OptimizerInterface : public DriverInterface<ScalarType, OrdinalType>
 {
 public:
     OptimizerInterface(Plato::Interface* aInterface, const MPI_Comm & aComm):
-        mComm(aComm), mInterface(aInterface), mInputData(Plato::OptimizerEngineStageData()) { }
+        mComm(aComm), mInterface(aInterface),
+        mInputData(Plato::OptimizerEngineStageData()),
+        mOutputBuffer(getOutputBuffer()),
+        mOutputStream(mOutputBuffer) { }
 
     virtual ~OptimizerInterface() = default;
 
@@ -215,30 +218,7 @@ protected:
     Plato::Interface* mInterface;
     Plato::OptimizerEngineStageData mInputData;
     Plato::StageInputDataMng mStageDataMng;
-    
-    /******************************************************************************/
-    void output(const std::stringbuf & aBuffer)
-    /******************************************************************************/
-    {
-        int tMyRank = -1;
-        MPI_Comm_rank(mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
-        {
-            const bool tOutputDiagnosticsToFile = mInputData.getOutputDiagnosticsToFile();
-            if(tOutputDiagnosticsToFile == false)
-            {
-                std::cout << aBuffer.str().c_str() << std::flush;
-            }
-            else
-            {
-                std::ofstream tOutputFile;
-                tOutputFile.open("ROL_output.txt");
-                tOutputFile << aBuffer.str().c_str();
-                tOutputFile.close();
-            }
-        }
-    }
+    std::ostream mOutputStream;
 
     /******************************************************************************/
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
@@ -312,6 +292,23 @@ protected:
                 aControl.setVector(tInitialGuess);
             }
         }
+    }
+
+private:
+    std::ofstream mOutputFile;
+    std::streambuf *mOutputBuffer;
+    std::streambuf *getOutputBuffer() {
+        int tMyRank = -1;
+        MPI_Comm_rank(mComm, &tMyRank);
+        assert(tMyRank >= static_cast<int>(0));
+        if(tMyRank == static_cast<int>(0))
+        {
+            if (mInputData.getOutputDiagnosticsToFile()) {
+                mOutputFile.open("ROL_output.txt", std::ofstream::out);
+                return mOutputFile.rdbuf();
+            }
+        }
+        return std::cout.rdbuf();
     }
 };
 // class OptimizerInterface
