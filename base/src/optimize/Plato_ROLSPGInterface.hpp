@@ -81,18 +81,9 @@ class ROLSPGInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType
 public:
     /******************************************************************************/
     ROLSPGInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
-            mComm(aComm),
-            mInterface(aInterface),
-            mInputData(Plato::OptimizerEngineStageData())
-    /******************************************************************************/
-    {
-    }
+        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm) { }
 
-    /******************************************************************************/
-    virtual ~ROLSPGInterface()
-    /******************************************************************************/
-    {
-    }
+    virtual ~ROLSPGInterface() = default;
 
     /******************************************************************************/
     Plato::optimizer::algorithm_t algorithm() const
@@ -377,11 +368,6 @@ private:
             }
         }
     }
-
-public:
-    MPI_Comm mComm;
-    Plato::Interface* mInterface;
-    Plato::OptimizerEngineStageData mInputData;
 
 private:
     ROLSPGInterface(const Plato::ROLSPGInterface<ScalarType> & aRhs);

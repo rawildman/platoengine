@@ -72,23 +72,17 @@ public:
      * @param [in] aComm local MPI communicator
     **********************************************************************************/
     explicit ParticleSwarmEngineALPSO(Plato::Interface* aInterface, const MPI_Comm & aComm) :
-            mObjFuncStageName(),
-            mConstraintStageNames(),
-            mConstraintTargetValues(),
-            mConstraintReferenceValues(),
-            mComm(aComm),
-            mInterface(aInterface),
-            mObjFuncStageDataMng(),
-            mConstraintStageDataMng()
+        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm),
+        mObjFuncStageName(),
+        mConstraintStageNames(),
+        mConstraintTargetValues(),
+        mConstraintReferenceValues(),
+        mObjFuncStageDataMng(),
+        mConstraintStageDataMng()
     {
     }
 
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~ParticleSwarmEngineALPSO()
-    {
-    }
+    virtual ~ParticleSwarmEngineALPSO() = default;
 
     /******************************************************************************//**
      * @brief Return optimization algorithm type
