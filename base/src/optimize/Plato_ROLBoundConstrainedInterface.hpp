@@ -64,6 +64,8 @@
 
 #include "Plato_Parser.hpp"
 #include "Plato_Interface.hpp"
+#include "Plato_OptimizerInterface.hpp"
+#include "Plato_ROLInterface.hpp"
 #include "Plato_SerialVectorROL.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 #include "Plato_OptimizerInterface.hpp"
@@ -76,12 +78,12 @@ namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class ROLBoundConstrainedInterface : public Plato::OptimizerInterface<ScalarType, OrdinalType>
+class ROLBoundConstrainedInterface : public Plato::ROLInterface<ScalarType, OrdinalType>
 {
 public:
     /******************************************************************************/
     ROLBoundConstrainedInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
-        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm) { }
+        Plato::ROLInterface<ScalarType, OrdinalType>::ROLInterface(aInterface, aComm) { }
 
     virtual ~ROLBoundConstrainedInterface() = default;
 

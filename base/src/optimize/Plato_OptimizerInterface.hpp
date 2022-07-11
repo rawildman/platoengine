@@ -52,13 +52,6 @@
 #include "Plato_DriverInterface.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 
-#include "ROL_Bounds.hpp"
-#include "ROL_Solver.hpp"
-
-#include "Plato_ReducedObjectiveROL.hpp"
-#include "Plato_ReducedConstraintROL.hpp"
-#include "Plato_DistributedVectorROL.hpp"
-
 #include <mpi.h>
 
 namespace Plato
@@ -97,9 +90,7 @@ class OptimizerInterface : public DriverInterface<ScalarType, OrdinalType>
 public:
     OptimizerInterface(Plato::Interface* aInterface, const MPI_Comm & aComm):
         mComm(aComm), mInterface(aInterface),
-        mInputData(Plato::OptimizerEngineStageData()),
-        mOutputBuffer(getOutputBuffer()),
-        mOutputStream(mOutputBuffer) { }
+        mInputData(Plato::OptimizerEngineStageData()) { }
 
     virtual ~OptimizerInterface() = default;
 
@@ -218,98 +209,6 @@ protected:
     Plato::Interface* mInterface;
     Plato::OptimizerEngineStageData mInputData;
     Plato::StageInputDataMng mStageDataMng;
-    std::ostream mOutputStream;
-
-    /******************************************************************************/
-    void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    /******************************************************************************/
-    {
-        int tMyRank = -1;
-        MPI_Comm_rank(mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
-        {
-            const bool tOutputControlToFile = mInputData.getOutputControlToFile();
-            if(tOutputControlToFile == true)
-            {
-                std::ofstream tOutputFile;
-                tOutputFile.open("ROL_control_output.txt");
-                ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = aOptimizationProblem->getPrimalOptimizationVector();
-                Plato::DistributedVectorROL<ScalarType> & tSolution =
-                        dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(tSolutionPtr.operator*());
-                std::vector<ScalarType> & tData = tSolution.vector();
-                for(OrdinalType tIndex = 0; tIndex < tData.size(); tIndex++)
-                {
-                    tOutputFile << tData[tIndex] << "\n";
-                }
-                tOutputFile.close();
-            }
-        }
-    }
-
-    /******************************************************************************/
-    void setBounds(const std::vector<ScalarType> & aInputs, Plato::DistributedVectorROL<ScalarType> & aBounds)
-    /******************************************************************************/
-    {
-        assert(aInputs.empty() == false);
-        if(aInputs.size() == static_cast<size_t>(1))
-        {
-            const ScalarType tValue = aInputs[0];
-            aBounds.fill(tValue);
-        }
-        else
-        {
-            assert(aInputs.size() == static_cast<size_t>(aBounds.dimension()));
-            aBounds.setVector(aInputs);
-        }
-    }
-
-    /******************************************************************************/
-    void setInitialGuess(const std::string & aMyName, Plato::DistributedVectorROL<ScalarType> & aControl)
-    /******************************************************************************/
-    {
-        std::string tInitializationStageName = mInputData.getInitializationStageName();
-        if(tInitializationStageName.empty() == false)
-        {
-            // Use user-defined stage to compute initial guess
-            Teuchos::ParameterList tPlatoInitializationStageParameterList;
-            tPlatoInitializationStageParameterList.set(aMyName, aControl.vector().data());
-            mInterface->compute(tInitializationStageName, tPlatoInitializationStageParameterList);
-        }
-        else
-        {
-            // Use user-defined values to compute initial guess. Hence, a stage was not defined by the user.
-            std::vector<ScalarType> tInitialGuess = mInputData.getInitialGuess();
-            assert(tInitialGuess.empty() == false);
-            if(tInitialGuess.size() == static_cast<size_t>(1))
-            {
-                const ScalarType tValue = tInitialGuess[0];
-                aControl.fill(tValue);
-            }
-            else
-            {
-                assert(tInitialGuess.size() == static_cast<size_t>(aControl.dimension()));
-                aControl.setVector(tInitialGuess);
-            }
-        }
-    }
-
-private:
-    std::ofstream mOutputFile;
-    std::streambuf *mOutputBuffer;
-    std::streambuf *getOutputBuffer() {
-        int tMyRank = -1;
-        MPI_Comm_rank(mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
-        {
-            if (mInputData.getOutputDiagnosticsToFile()) {
-                mOutputFile.open("ROL_output.txt", std::ofstream::out);
-                return mOutputFile.rdbuf();
-            }
-        }
-        return std::cout.rdbuf();
-    }
 };
 // class OptimizerInterface
 
