@@ -93,9 +93,9 @@ public:
     void initialize()
     /******************************************************************************/
     {
-        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(this->mInterface);
 
-        Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
+        Plato::Parse::parseOptimizerStages(tOptimizerNode, this->mInputData);
     }
 
     /******************************************************************************/
@@ -125,7 +125,7 @@ public:
 
         // ********* ALLOCATE OBJECTIVE FUNCTION ********* //
         std::shared_ptr<Plato::EngineObjective<ScalarType, OrdinalType>> tObjective =
-          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, mInputData, mInterface, this);
+          std::make_shared<Plato::EngineObjective<ScalarType, OrdinalType>>(*tDataFactory, this->mInputData, this->mInterface, this);
         std::shared_ptr<Plato::CriterionList<ScalarType, OrdinalType>> tCriterionList =
                 std::make_shared<Plato::CriterionList<ScalarType, OrdinalType>>();
         tCriterionList->add(tObjective);
@@ -148,7 +148,7 @@ public:
     void finalize()
     /******************************************************************************/
     {
-        mInterface->finalize(mInputData.getFinalizationStageName());
+        this->mInterface->finalize(this->mInputData.getFinalizationStageName());
     }
 
 private:
@@ -158,12 +158,12 @@ private:
      **********************************************************************************/
     void setHessianMethod(Plato::ReducedSpaceTrustRegionStageMng<ScalarType, OrdinalType> & aStageMng)
     {
-        if(mInputData.getHessianType() == "lbfgs")
+        if(this->mInputData.getHessianType() == "lbfgs")
         {
             aStageMng.setHaveHessian(true);
-            aStageMng.setHessianLBFGS(mInputData.getLimitedMemoryStorage());
+            aStageMng.setHessianLBFGS(this->mInputData.getLimitedMemoryStorage());
         }
-        else if(mInputData.getHessianType() == "analytical")
+        else if(this->mInputData.getHessianType() == "analytical")
         {
             aStageMng.setHaveHessian(true);
         }
@@ -179,24 +179,24 @@ private:
     {
         aAlgorithm.enableDiagnostics();
 
-        OrdinalType tMaxNumIterations = mInputData.getMaxNumIterations();
-        OrdinalType tMaxTrustRegionIterations = mInputData.getKSMaxTrustRegionIterations();
-        ScalarType tContractionScaleFactor = mInputData.getKSTrustRegionContractionFactor();
-        ScalarType tExpansionScaleFactor = mInputData.getKSTrustRegionExpansionFactor();
-        ScalarType tOuterGradientTolerance = mInputData.getKSOuterGradientTolerance();
-        ScalarType tOuterStationarityTolerance = mInputData.getKSOuterStationarityTolerance();
-        ScalarType tOuterObjectiveStagnationTolerance = mInputData.getKSOuterStagnationTolerance();
-        ScalarType tOuterControlStagnationTolerance = mInputData.getKSOuterControlStagnationTolerance();
-        ScalarType tOuterActualReductionTolerance = mInputData.getKSOuterActualReductionTolerance();
-        ScalarType tInitialRadiusScale = mInputData.getKSInitialRadiusScale();
-        ScalarType tMaxRadiusScale = mInputData.getKSMaxRadiusScale();
-        OrdinalType tProblemUpdateFrequency = mInputData.getProblemUpdateFrequency();
-        bool tDisablePostSmoothing = mInputData.getDisablePostSmoothing();
-        ScalarType tTrustRegionRatioLow = mInputData.getKSTrustRegionRatioLow();
-        ScalarType tTrustRegionRatioMid = mInputData.getKSTrustRegionRatioMid();
-        ScalarType tTrustRegionRatioUpper = mInputData.getKSTrustRegionRatioUpper();
-        ScalarType tMinTrustRegionRadius = mInputData.getMinTrustRegionRadius();
-        ScalarType tMaxTrustRegionRadius = mInputData.getMaxTrustRegionRadius();
+        OrdinalType tMaxNumIterations = this->mInputData.getMaxNumIterations();
+        OrdinalType tMaxTrustRegionIterations = this->mInputData.getKSMaxTrustRegionIterations();
+        ScalarType tContractionScaleFactor = this->mInputData.getKSTrustRegionContractionFactor();
+        ScalarType tExpansionScaleFactor = this->mInputData.getKSTrustRegionExpansionFactor();
+        ScalarType tOuterGradientTolerance = this->mInputData.getKSOuterGradientTolerance();
+        ScalarType tOuterStationarityTolerance = this->mInputData.getKSOuterStationarityTolerance();
+        ScalarType tOuterObjectiveStagnationTolerance = this->mInputData.getKSOuterStagnationTolerance();
+        ScalarType tOuterControlStagnationTolerance = this->mInputData.getKSOuterControlStagnationTolerance();
+        ScalarType tOuterActualReductionTolerance = this->mInputData.getKSOuterActualReductionTolerance();
+        ScalarType tInitialRadiusScale = this->mInputData.getKSInitialRadiusScale();
+        ScalarType tMaxRadiusScale = this->mInputData.getKSMaxRadiusScale();
+        OrdinalType tProblemUpdateFrequency = this->mInputData.getProblemUpdateFrequency();
+        bool tDisablePostSmoothing = this->mInputData.getDisablePostSmoothing();
+        ScalarType tTrustRegionRatioLow = this->mInputData.getKSTrustRegionRatioLow();
+        ScalarType tTrustRegionRatioMid = this->mInputData.getKSTrustRegionRatioMid();
+        ScalarType tTrustRegionRatioUpper = this->mInputData.getKSTrustRegionRatioUpper();
+        ScalarType tMinTrustRegionRadius = this->mInputData.getMinTrustRegionRadius();
+        ScalarType tMaxTrustRegionRadius = this->mInputData.getMaxTrustRegionRadius();
 
         aAlgorithm.setMaxNumIterations(tMaxNumIterations);
         aAlgorithm.setTrustRegionContraction(tContractionScaleFactor);
@@ -232,10 +232,10 @@ private:
 
         // ********* SET UPPER BOUNDS *********
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
         std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tUpperBoundVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
 
         ScalarType tUpperBoundValue = std::numeric_limits<ScalarType>::max();
         tUpperBoundVector->fill(tUpperBoundValue);
@@ -245,7 +245,7 @@ private:
         {
             // ********* GET UPPER BOUNDS INFORMATION *********
             std::vector<ScalarType> tInputBoundsData(tNumControls);
-            Plato::getUpperBoundsInputData(mInputData, mInterface, tInputBoundsData);
+            Plato::getUpperBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
             Plato::copy(tInputBoundsData, *tUpperBoundVector);
         } // ELSE, PROBLEM IS UNCONSTRAINED
 
@@ -260,10 +260,10 @@ private:
     {
         // ********* SET LOWER BOUNDS *********
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
         std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tLowerBoundVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
 
         ScalarType tLowerBoundValue = static_cast<ScalarType>(-1) * std::numeric_limits<ScalarType>::max();
         tLowerBoundVector->fill(tLowerBoundValue);
@@ -273,7 +273,7 @@ private:
         {
             // ********* GET LOWER BOUNDS INFORMATION *********
             std::vector<ScalarType> tInputBoundsData(tNumControls);
-            Plato::getLowerBoundsInputData(mInputData, mInterface, tInputBoundsData);
+            Plato::getLowerBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
             Plato::copy(tInputBoundsData, *tLowerBoundVector);
         } // ELSE, PROBLEM IS UNCONSTRAINED
 
@@ -287,14 +287,14 @@ private:
     {
         // ********* Allocate Plato::Vector of controls *********
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
         std::vector<ScalarType> tInputIntitalGuessData(tNumControls);
         std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
 
         // ********* Set initial guess for each control vector *********
-        Plato::getInitialGuessInputData(tControlName, mInputData, mInterface, tInputIntitalGuessData);
+        Plato::getInitialGuessInputData(tControlName, this->mInputData, this->mInterface, tInputIntitalGuessData);
         Plato::copy(tInputIntitalGuessData, *tVector);
         aDataMng.setInitialGuess(tCONTROL_VECTOR_INDEX, *tVector);
     }
@@ -305,31 +305,28 @@ private:
     /******************************************************************************/
     {
         // ********* Allocate control vectors baseline data structures *********
-        const OrdinalType tNumVectors = mInputData.getNumControlVectors();
+        const OrdinalType tNumVectors = this->mInputData.getNumControlVectors();
         assert(tNumVectors > static_cast<OrdinalType>(0));
         Plato::StandardMultiVector<ScalarType, OrdinalType> tMultiVector;
         for(OrdinalType tIndex = 0; tIndex < tNumVectors; tIndex++)
         {
-            std::string tControlName = mInputData.getControlName(tIndex);
-            const OrdinalType tNumControls = mInterface->size(tControlName);
+            std::string tControlName = this->mInputData.getControlName(tIndex);
+            const OrdinalType tNumControls = this->mInterface->size(tControlName);
             std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                    aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                    aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
             tMultiVector.add(tVector);
         }
         aDataFactory.allocateControl(tMultiVector);
         std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>> tReductionOperations =
-                aAlgebraFactory.createReduction(mComm, mInterface);
+                aAlgebraFactory.createReduction(this->mComm, this->mInterface);
         aDataFactory.allocateControlReductionOperations(*tReductionOperations);
 
-        Plato::CommWrapper tCommWrapper(mComm);
+        Plato::CommWrapper tCommWrapper(this->mComm);
         aDataFactory.setCommWrapper(tCommWrapper);
     }
 
 private:
-    MPI_Comm mComm;
-    Plato::Interface* mInterface;
     Plato::optimizer::algorithm_t mType;
-    Plato::OptimizerEngineStageData mInputData;
 
 private:
     KelleySachsBoundConstrainedInterface(const Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>&);
