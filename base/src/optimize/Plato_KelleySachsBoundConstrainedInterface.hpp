@@ -77,19 +77,10 @@ public:
     explicit KelleySachsBoundConstrainedInterface(Plato::Interface* aInterface,
                                                   const MPI_Comm & aComm,
                                                   const Plato::optimizer::algorithm_t & aType) :
-            mComm(aComm),
-            mInterface(aInterface),
-            mType(aType),
-            mInputData(Plato::OptimizerEngineStageData())
-    /******************************************************************************/
-    {
-    }
+        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm),
+        mType(aType) { }
 
-    /******************************************************************************/
-    virtual ~KelleySachsBoundConstrainedInterface()
-    /******************************************************************************/
-    {
-    }
+    virtual ~KelleySachsBoundConstrainedInterface() = default;
 
     /******************************************************************************/
     Plato::optimizer::algorithm_t algorithm() const
