@@ -90,20 +90,6 @@ public:
     }
 
     /******************************************************************************/
-    void initialize()
-    /******************************************************************************/
-    {
-        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData,
-                                                   this->mOptimizerIndex);
-
-        // NOTE: Plato::initialize calls Plato::Parse::parseOptimizerStages
-        // As such, the code below seems to be redunant.
-        auto tOptimizerNode = this->getOptimizerNode(this->mInterface);
-
-        Plato::Parse::parseOptimizerStages(tOptimizerNode, this->mInputData);
-    }
-
-    /******************************************************************************/
     void run()
     /******************************************************************************/
     {
