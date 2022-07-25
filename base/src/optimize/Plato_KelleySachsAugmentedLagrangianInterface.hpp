@@ -94,15 +94,6 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Read input arguments from input file
-    **********************************************************************************/
-    void initialize()
-    {
-        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData,
-                                                   this->mOptimizerIndex);
-    }
-
-    /******************************************************************************//**
      * @brief Solve optimization problem with Kelley-Sachs augmented Lagrangian (KSAL) algorithm
     **********************************************************************************/
     void run()

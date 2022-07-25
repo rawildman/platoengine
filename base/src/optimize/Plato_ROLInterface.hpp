@@ -61,15 +61,17 @@ class ROLInterface : public OptimizerInterface<ScalarType,OrdinalType>
 {
 public:
     ROLInterface(Plato::Interface* aInterface, const MPI_Comm & aComm):
-        OptimizerInterface<ScalarType,OrdinalType>(aInterface,aComm),
-        mOutputBuffer(getOutputBuffer()),
-        mOutputStream(mOutputBuffer) { }
+        OptimizerInterface<ScalarType,OrdinalType>(aInterface,aComm) { }
 
     virtual ~ROLInterface() = default;
 
+    void initialize() final override {
+        OptimizerInterface<ScalarType,OrdinalType>::initialize();
+        mOutputBuffer = getOutputBuffer();
+    }
+
 private:
     std::ofstream mOutputFile;
-    std::streambuf *mOutputBuffer;
     std::streambuf *getOutputBuffer() {
         int tMyRank = -1;
         MPI_Comm_rank(this->mComm, &tMyRank);
@@ -86,7 +88,7 @@ private:
 
 protected:
 
-    std::ostream mOutputStream;
+    std::streambuf *mOutputBuffer;
 
     /******************************************************************************/
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)

@@ -180,6 +180,11 @@ public:
     **********************************************************************************/
     bool lastOptimizer() const { return mLastOptimizer; }
 
+    void initialize() override
+    {
+        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData, this->mOptimizerIndex);
+    }
+
 protected:
     /******************************************************************************//**
      * @brief String containing the optimizer name - Optional

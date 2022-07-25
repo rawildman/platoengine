@@ -95,15 +95,6 @@ public:
     }
 
     /******************************************************************************//**
-     * \brief Read Engine stage inputs
-    **********************************************************************************/
-    void initialize()
-    {
-        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData,
-                                                   this->mOptimizerIndex);
-    }
-
-    /******************************************************************************//**
      * \brief Solve optimization problem using the MMA optimization algorithm
     **********************************************************************************/
     void run()

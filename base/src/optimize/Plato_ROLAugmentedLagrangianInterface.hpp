@@ -94,14 +94,6 @@ public:
     }
 
     /******************************************************************************/
-    void initialize()
-    /******************************************************************************/
-    {
-        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData,
-                                                   this->mOptimizerIndex);
-    }
-
-    /******************************************************************************/
     void run()
     /******************************************************************************/
     {
@@ -182,7 +174,8 @@ private:
         {
             /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
             ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            tOptimizer.solve(this->mOutputStream);
+            std::ostream outputStream(this->mOutputBuffer);
+            tOptimizer.solve(outputStream);
         }
 
         this->printControl(aOptimizationProblem);

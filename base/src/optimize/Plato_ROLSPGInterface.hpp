@@ -262,7 +262,7 @@ private:
         {
             /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
             ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            tOptimizer.solve(this->mOutputStream);
+            tOptimizer.solve(std::ostream(this->mOutputBuffer));
         }
 
         this->printControl(aOptimizationProblem);
