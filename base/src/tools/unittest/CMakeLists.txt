@@ -20,6 +20,7 @@ set(PlatoTools_UnitTester_LIBS GTest::GTest PlatoParser PlatoExceptions ${Trilin
 add_executable(PlatoTools_UnitTester ${PlatoTools_UnitTester_SRCS})
 target_link_libraries(PlatoTools_UnitTester ${PlatoTools_UnitTester_LIBS})
 add_test(NAME PlatoTools_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/tools/unittest/PlatoTools_UnitTester)
+set_property(TEST PlatoTools_UnitTester PROPERTY LABELS "small")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoTools_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
