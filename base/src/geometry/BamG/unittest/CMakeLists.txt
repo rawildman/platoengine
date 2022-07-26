@@ -14,6 +14,7 @@ set(BamG_UnitTester_LIBS BamGlib GTest::GTest ${Trilinos_LIBRARIES} ${Trilinos_T
 add_executable(BamG_UnitTester ${BamG_UnitTester_SRCS})
 target_link_libraries(BamG_UnitTester ${BamG_UnitTester_LIBS})
 add_test(NAME BamG_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/geometry/BamG/unittest/BamG_UnitTester)
+set_property(TEST BamG_UnitTester PROPERTY LABELS "small")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS BamG_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
