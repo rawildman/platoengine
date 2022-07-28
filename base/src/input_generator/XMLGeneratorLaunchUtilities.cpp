@@ -412,6 +412,37 @@ namespace XMLGen
     }
   }
 
+  void append_sierra_tf_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID)
+  {
+    std::string tInputDeckName;
+    XMLGen::Objective tObjective = aInputData.objective;
+    for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
+    {
+        std::string tCriterionID = tObjective.criteriaIDs[i];
+        std::string tServiceID = tObjective.serviceIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
+        if(tServiceID == aServiceID)
+        {
+            XMLGen::Scenario tScenario = aInputData.scenario(tScenarioID);
+            tInputDeckName = tScenario.existing_input_deck();
+            break;
+        }
+    }
+    if(tInputDeckName == "")
+    {
+        THROWERR("Error: No existing input deck name found for scenario. You must use an existing input deck when running with sierra_tf.\n")
+    }
+    if(aInputData.service(aServiceID).path().length() != 0)
+    {
+        fprintf(aFile, "%s -i ", aInputData.service(aServiceID).path().c_str());
+    }
+    else
+    {
+        fprintf(aFile, "plato_tf_main -i ");
+    }
+    fprintf(aFile, "%s -opt inverseInput.xml \\\n", tInputDeckName.c_str());
+  }
+
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
   {
     std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesPath;

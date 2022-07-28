@@ -50,8 +50,10 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorPlatoAnalyzeInputFileUtilities.cpp
                       XMLGeneratorPlatoMainOperationFileUtilities.cpp
                       XMLGeneratorPlatoAnalyzeOperationsFileUtilities.cpp
+                      XMLGeneratorSierraTFOperationsFileUtilities.cpp
                       XMLGeneratorSierraSDOperationsFileUtilities.cpp
                       XMLGeneratorSierraSDInputDeckUtilities.cpp
+                      XMLGeneratorSierraTFInputDeckUtilities.cpp
                       XMLGeneratorLaunchUtilities.cpp
                       XMLGeneratorAnalyzeLoadFunctionInterface.cpp
                       XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
@@ -118,8 +120,10 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp
                       XMLGeneratorPlatoMainOperationFileUtilities.hpp
                       XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp
+                      XMLGeneratorSierraTFOperationsFileUtilities.hpp
                       XMLGeneratorSierraSDOperationsFileUtilities.hpp
                       XMLGeneratorSierraSDInputDeckUtilities.hpp
+                      XMLGeneratorSierraTFInputDeckUtilities.hpp
                       XMLGeneratorLaunchUtilities.hpp
                       # XMLGeneratorAnalyzeCriterionUtilities.hpp
                       XMLGeneratorAnalyzeLoadFunctionInterface.hpp

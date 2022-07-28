@@ -25,6 +25,7 @@ set(PlatoGeometryCogent_UnitTester_LIBS ${GTEST_BOTH_LIBRARIES} PlatoGeometryCog
 add_executable(PlatoGeometryCogent_UnitTester ${PlatoGeometryCogent_UnitTester_SRCS})
 target_link_libraries(PlatoGeometryCogent_UnitTester ${PlatoGeometryCogent_UnitTester_LIBS})
 add_test(NAME PlatoGeometryCogent_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/geometry/Cogent/unittest/PlatoGeometryCogent_UnitTester)
+set_property(TEST PlatoGeometryCogent_UnitTester PROPERTY LABELS "small")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoGeometryCogent_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

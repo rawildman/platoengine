@@ -52,6 +52,8 @@
 #include "Plato_DriverInterface.hpp"
 #include "Plato_OptimizerUtilities.hpp"
 
+#include <mpi.h>
+
 namespace Plato
 {
 
@@ -86,9 +88,11 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class OptimizerInterface : public DriverInterface<ScalarType, OrdinalType>
 {
 public:
-    virtual ~OptimizerInterface()
-    {
-    }
+    OptimizerInterface(Plato::Interface* aInterface, const MPI_Comm & aComm):
+        mComm(aComm), mInterface(aInterface),
+        mInputData(Plato::OptimizerEngineStageData()) { }
+
+    virtual ~OptimizerInterface() = default;
 
     /******************************************************************************//**
      * @brief Return true if the last driver
@@ -176,6 +180,11 @@ public:
     **********************************************************************************/
     bool lastOptimizer() const { return mLastOptimizer; }
 
+    void initialize() override
+    {
+        Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData, this->mOptimizerIndex);
+    }
+
 protected:
     /******************************************************************************//**
      * @brief String containing the optimizer name - Optional
@@ -200,6 +209,11 @@ protected:
      * @brief Boolean indicating an inner optimizer loop is present
     **********************************************************************************/
     bool mHasInnerLoop{false};
+
+    MPI_Comm mComm;
+    Plato::Interface* mInterface;
+    Plato::OptimizerEngineStageData mInputData;
+    Plato::StageInputDataMng mStageDataMng;
 };
 // class OptimizerInterface
 

@@ -155,7 +155,7 @@ add_executable(PlatoMainUnitTester ${PlatoMainUnitTester_SRCS})
 target_link_libraries(PlatoMainUnitTester PlatoApp ${PLATOMAINUNITTESTER_LIBS})
 set(PLATOMAINUNITTESTER_BINARY ${CMAKE_BINARY_DIR}/apps/unittest/PlatoMainUnitTester PARENT_SCOPE)
 add_test(NAME PlatoMainUnitTester COMMAND ${CMAKE_BINARY_DIR}/apps/services/unittest/PlatoMainUnitTester)
-
+set_property(TEST PlatoMainUnitTester PROPERTY LABELS "large")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoMainUnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

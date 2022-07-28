@@ -22,7 +22,7 @@ add_executable(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_SRCS})
 #target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
 target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} ${Trilinos_LIBRARIES})
 add_test(NAME PlatoSu2ToExodus_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/Su2ToExodus/unittest/PlatoSu2ToExodus_UnitTester)
-
+set_property(TEST PlatoSu2ToExodus_UnitTester PROPERTY LABELS "small")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoSu2ToExodus_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

@@ -149,6 +149,10 @@ void ParseCriteria::allocate()
     this->insertTag("ref_data_file");
     this->insertTag("match_nodesets");
 
+    // Sierra/TF objectives
+    this->insertTag("search_nodesets");
+    this->insertTag("temperature_field_name");
+
     // system call criterion
     this->insertTag("data_file");
     this->insertTag("data_group");
@@ -165,6 +169,20 @@ void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
         strcpy(tValuesBuffer, tValues.c_str());
         XMLGen::parse_tokens(tValuesBuffer, tModes);
         aMetadata.modesToExclude(tModes);
+    }
+}
+
+void ParseCriteria::setSearchNodesetIDs(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("search_nodesets");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tNodesetIDs;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tNodesetIDs);
+        aMetadata.setSearchNodesetIDs(tNodesetIDs);
     }
 }
 
@@ -330,6 +348,7 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setTargetSolutionVector(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
+    setSearchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
     this->errorCheckDisplacementCriterion(aMetadata);
 }

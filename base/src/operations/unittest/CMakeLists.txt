@@ -25,7 +25,7 @@ set(Plato_Operations_UnitTester_LIBS GTest::GTest
 add_executable(Plato_Operations_UnitTester ${Plato_Operations_UnitTester_SRCS})
 target_link_libraries(Plato_Operations_UnitTester ${Plato_Operations_UnitTester_LIBS} ${Plato_Operations_UnitTester_LIBS})
 add_test(NAME Plato_Operations_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/operations/unittest/Plato_Operations_UnitTester)
-
+set_property(TEST Plato_Operations_UnitTester PROPERTY LABELS "small")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS Plato_Operations_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

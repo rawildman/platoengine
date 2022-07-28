@@ -20,6 +20,10 @@ std::string get_objective_value_operation_name(XMLGen::Service &aService)
     {
         return "Compute Objective";
     }
+    else if(aService.code() == "sierra_tf")
+    {
+        return "Compute Criterion";
+    }
     else
     {
         return "Compute Objective Value";
@@ -36,6 +40,10 @@ std::string get_objective_value_operation_output_name(XMLGen::Service &aService)
     {
         return "Internal Energy";
     }
+    else if(aService.code() == "sierra_tf")
+    {
+        return "Criterion";
+    }
     else
     {
         return "Objective Value";
@@ -51,6 +59,10 @@ std::string get_objective_gradient_operation_name(XMLGen::Service &aService)
     if(aService.code() == "sierra_sd")
     {
         return "Compute Gradient";
+    }
+    else if(aService.code() == "sierra_tf")
+    {
+        return "Compute Criterion Gradient";
     }
     else
     {
@@ -664,7 +676,9 @@ void append_reinitialize_on_change_operation
 (const std::string &aPerformer, 
  pugi::xml_node& aParentNode)
 {
-    if (aPerformer.find("sierra_sd") != std::string::npos) {
+    if (aPerformer.find("sierra_sd") != std::string::npos ||
+        aPerformer.find("sierra_tf") != std::string::npos) 
+    {
         return;
     }
     auto tOperationNode = aParentNode.append_child("Operation");
@@ -901,6 +915,10 @@ void append_compute_objective_sensitivity_operation
     {
         XMLGen::append_children({"Name", "PerformerName"}, {"Compute Objective Gradient wrt CAD Parameters", aPerformer}, tOperationNode);
     }
+    else if(aPerformer.find("sierra_tf") != std::string::npos) 
+    {
+        XMLGen::append_children({"Name", "PerformerName"}, {"Compute Criterion Gradient wrt CAD Parameters", aPerformer}, tOperationNode);
+    }
     else {
         XMLGen::append_children({"Name", "PerformerName"}, {"Compute Objective Sensitivity", aPerformer}, tOperationNode);
     }
@@ -912,6 +930,10 @@ void append_compute_objective_sensitivity_operation
     if(aPerformer.find("sierra_sd") != std::string::npos) 
     {
         XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Internal Energy Gradient", aSharedDataName}, tOutputNode);
+    }
+    else if(aPerformer.find("sierra_tf") != std::string::npos) 
+    {
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Criterion Gradient wrt CAD Parameters", aSharedDataName}, tOutputNode);
     }
     else
     {

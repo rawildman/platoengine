@@ -62,9 +62,16 @@ private:
     void setModesToExclude(XMLGen::Criterion& aMetadata);
 
     /******************************************************************************//**
+     * \fn setSearchNodesetIDs
+     * \brief Set nodeset ids to be used when searching for nodesets in new iteration mesh
+     * \param [in] aMetadata Criterion metadata
+    **********************************************************************************/
+    void setSearchNodesetIDs(XMLGen::Criterion &aMetadata);
+
+    /******************************************************************************//**
      * \fn setMatchNodesetIDs
      * \brief Set nodeset ids to be used when matching frf or modal data
-     * \param [in] aScenario Scenario metadata
+     * \param [in] aMetadata Criterion metadata
     **********************************************************************************/
     void setMatchNodesetIDs(XMLGen::Criterion &aMetadata);
 
