@@ -387,7 +387,7 @@ endfunction( Plato_add_numdiff_test )
 ## )
 ###############################################################################
 
-function( Plato_add_xmlgen_numdiff_test TEST_NAME XMLGEN_COMMAND NUMDIFF_COMMAND NUMDIFF_TOLERANCE )
+function( Plato_add_xmlgen_numdiff_test TEST_NAME XMLGEN_COMMAND NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE )
 
   set( RUN_COMMAND "source ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source" )
 
