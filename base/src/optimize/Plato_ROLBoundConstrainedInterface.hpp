@@ -154,12 +154,12 @@ private:
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
-        std::string tFileName = this->mInputData.getInputFileName();
-        Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
-        Teuchos::updateParametersFromXmlFile(tFileName, tParameterList.ptr());
+        auto tParameterList = this->updateParameterListFromRolInputsFile();
+       
         if(this->mInputData.getCheckGradient() == true)
         {
             /**************************** CHECK DERIVATIVES ****************************/
+            
             this->checkGradient(aOptimizationProblem);
         }
         else

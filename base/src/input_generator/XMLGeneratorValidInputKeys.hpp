@@ -1678,6 +1678,8 @@ struct ValidOptimizationParameterKeys
      "moga_max_function_evaluations",
      "sbgo_surrogate_output_name",
      "num_sampling_method_samples",
+     "rol_gradient_check_perturbation_scale",
+     "rol_gradient_check_steps",
     };
 };
 

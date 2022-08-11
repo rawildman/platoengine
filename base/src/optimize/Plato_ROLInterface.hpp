@@ -65,7 +65,8 @@ public:
 
     virtual ~ROLInterface() = default;
 
-    void initialize() final override {
+    void initialize() final override 
+    {
         OptimizerInterface<ScalarType,OrdinalType>::initialize();
         mOutputBuffer = getOutputBuffer();
     }
@@ -73,7 +74,8 @@ public:
     
 private:
     std::ofstream mOutputFile;
-    std::streambuf *getOutputBuffer() {
+    std::streambuf *getOutputBuffer() 
+    {
         int tMyRank = -1;
         MPI_Comm_rank(this->mComm, &tMyRank);
         assert(tMyRank >= static_cast<int>(0));
@@ -90,7 +92,6 @@ private:
 protected:
 
     std::streambuf *mOutputBuffer;
-    
 
     /******************************************************************************/
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
@@ -166,16 +167,26 @@ protected:
         }
     }
 
+    Teuchos::RCP<Teuchos::ParameterList> updateParameterListFromRolInputsFile()
+    {
+        std::string tFileName = this->mInputData.getInputFileName();
+        Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
+        Teuchos::updateParametersFromXmlFile(tFileName, tParameterList.ptr());
+        return tParameterList;
+    }
+    
     void checkGradient(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     {
         auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
         auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
-
+        std::ofstream tOutputFile;
+        tOutputFile.open("ROL_gradient_check_output.txt");
         auto tObjective = aOptimizationProblem->getObjective();
         auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
         auto tPerturbation = tControl->clone();
         tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);      
-		tObjective->checkGradient(*tControl, *tPerturbation,true,std::cout,tCheckGradientSteps);
+		tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
+        tOutputFile.close();
     }
 };
 
