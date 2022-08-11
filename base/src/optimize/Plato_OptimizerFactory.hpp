@@ -249,12 +249,14 @@ public:
        {
          try {
            tOptimizer = new Plato::ROLAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL BoundConstrained" )
        {
          try {
            tOptimizer = new Plato::ROLBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL LinearConstraint" )

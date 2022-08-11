@@ -182,6 +182,11 @@ public:
     double getOCGradientTolerance() const;
     void setOCGradientTolerance(const double & aInput);
 
+    double getROLPerturbationScale() const;
+    void setROLPerturbationScale(const double & aInput);
+    int getROLCheckGradientSteps() const;
+    void setROLCheckGradientSteps(const int & aInput);
+
     /******************************************************************************//**
      * @brief Return limited memory storage capacity for LBFG Hessian method
      * @return limited memory storage capacity
@@ -513,6 +518,7 @@ private:
     int mKSMaxTrustRegionIterations;
     int mDerivativeCheckerFinalSuperscript;
     int mDerivativeCheckerInitialSuperscript;
+    int mROLCheckGradientSteps;
 
     double mInitialMovingAsymptoteScaleFactor;
     double mGCMMAInnerKKTTolerance;
@@ -541,6 +547,8 @@ private:
     double mOCControlStagnationTolerance;
     double mOCObjectiveStagnationTolerance;
     double mOCGradientTolerance;
+    double mROLPerturbationScale;
+
 
     std::string mAlgebra;
     std::string mStateName;

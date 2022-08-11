@@ -168,7 +168,7 @@ private:
         if(this->mInputData.getCheckGradient() == true)
         {
             /**************************** CHECK DERIVATIVES ****************************/
-            aOptimizationProblem->check(true, std::cout);
+            this->checkGradient(aOptimizationProblem);
         }
         else
         {

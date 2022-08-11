@@ -61,7 +61,7 @@ class ROLInterface : public OptimizerInterface<ScalarType,OrdinalType>
 {
 public:
     ROLInterface(Plato::Interface* aInterface, const MPI_Comm & aComm):
-        OptimizerInterface<ScalarType,OrdinalType>(aInterface,aComm) { }
+        OptimizerInterface<ScalarType,OrdinalType>(aInterface,aComm){ }
 
     virtual ~ROLInterface() = default;
 
@@ -70,6 +70,7 @@ public:
         mOutputBuffer = getOutputBuffer();
     }
 
+    
 private:
     std::ofstream mOutputFile;
     std::streambuf *getOutputBuffer() {
@@ -89,6 +90,7 @@ private:
 protected:
 
     std::streambuf *mOutputBuffer;
+    
 
     /******************************************************************************/
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
@@ -162,6 +164,18 @@ protected:
                 aControl.setVector(tInitialGuess);
             }
         }
+    }
+
+    void checkGradient(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
+    {
+        auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
+        auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
+
+        auto tObjective = aOptimizationProblem->getObjective();
+        auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
+        auto tPerturbation = tControl->clone();
+        tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);      
+		tObjective->checkGradient(*tControl, *tPerturbation,true,std::cout,tCheckGradientSteps);
     }
 };
 
