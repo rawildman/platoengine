@@ -104,7 +104,6 @@ public:
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
         std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
         const OrdinalType tNumControls = this->mInterface->size(tControlName);
-        
         auto tControlBoundsMng = this->setControlBounds(tNumControls);
         
         /******************************** SET CONTROL INITIAL GUESS *********************************/
