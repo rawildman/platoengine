@@ -357,6 +357,28 @@ function( Plato_add_simple_test RUN_COMMAND TEST_NAME NUM_PROCS IO_COMM_INDEX )
 
 endfunction( Plato_add_simple_test )
 
+
+###############################################################################
+## Plato_add_custom_command_test( 
+## )
+###############################################################################
+
+function( Plato_add_custom_command_test RUN_COMMAND TEST_NAME NUM_PROCS IO_COMM_INDEX CUSTOM_COMMAND )
+
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source "${RUN_COMMAND}")
+
+    add_test(NAME ${TEST_NAME}
+           COMMAND ${CMAKE_COMMAND} 
+           -DTEST_COMMAND=${RUN_COMMAND}
+           -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR} 
+           -DOUT_FILE=${OUT_FILE} 
+           -DGOLD_FILE=${GOLD_FILE} 
+           -DCUSTOM_COMMAND=${CUSTOM_COMMAND}
+           -P ${CMAKE_SOURCE_DIR}/base/config/runcustomcommandtest.cmake )
+
+endfunction( Plato_add_custom_command_test )
+
+
 ###############################################################################
 ## Plato_add_numdiff_test( 
 ##    TEST_NAME      == test name
