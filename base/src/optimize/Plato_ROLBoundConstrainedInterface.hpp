@@ -100,31 +100,10 @@ public:
     {
         this->initialize();
 
-        /************************************ SET CONTROL BOUNDS ************************************/
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
         std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
         const OrdinalType tNumControls = this->mInterface->size(tControlName);
-        std::vector<ScalarType> tInputBoundsData(tNumControls);
-
-        // ********* GET LOWER BOUNDS INFORMATION *********
-        Plato::getLowerBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
-
-        // ********* SET LOWER BOUNDS FOR OPTIMIZER *********
-        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlLowerBounds =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, tNumControls));
-        this->setBounds(tInputBoundsData, tControlLowerBounds.operator*());
-
-        // ********* GET UPPER BOUNDS INFORMATION *********
-        Plato::getUpperBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
-
-        // ********* SET UPPER BOUNDS FOR OPTIMIZER *********
-        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlUpperBounds =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, tNumControls));
-        this->setBounds(tInputBoundsData, tControlUpperBounds.operator*());
-
-        // ********* CREATE BOUND CONSTRAINT FOR OPTIMIZER *********
-        Teuchos::RCP<ROL::BoundConstraint<ScalarType>> tControlBoundsMng =
-                Teuchos::rcp(new ROL::Bounds<ScalarType>(tControlLowerBounds, tControlUpperBounds));
+        auto tControlBoundsMng = this->setControlBounds(tNumControls);
 
         /******************************** SET CONTROL INITIAL GUESS *********************************/
         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControls =

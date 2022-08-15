@@ -189,6 +189,32 @@ protected:
         tOutputFile.close();
     }
 
+    Teuchos::RCP<ROL::BoundConstraint<ScalarType>> setControlBounds(const OrdinalType& aNumControls)
+    {
+        std::vector<ScalarType> tInputBoundsData(aNumControls);
+
+        // ********* GET LOWER BOUNDS INFORMATION *********
+        Plato::getLowerBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
+
+        // ********* SET LOWER BOUNDS FOR OPTIMIZER *********
+        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlLowerBounds =
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, aNumControls));
+        this->setBounds(tInputBoundsData, tControlLowerBounds.operator*());
+
+        // ********* GET UPPER BOUNDS INFORMATION *********
+        Plato::getUpperBoundsInputData(this->mInputData, this->mInterface, tInputBoundsData);
+
+        // ********* SET UPPER BOUNDS FOR OPTIMIZER *********
+        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControlUpperBounds =
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, aNumControls));
+        this->setBounds(tInputBoundsData, tControlUpperBounds.operator*());
+
+        // ********* CREATE BOUND CONSTRAINT FOR OPTIMIZER *********
+        Teuchos::RCP<ROL::BoundConstraint<ScalarType>> tControlBoundsMng =
+                Teuchos::rcp(new ROL::Bounds<ScalarType>(tControlLowerBounds, tControlUpperBounds));
+        return tControlBoundsMng;
+    }
+
     /******************************************************************************//**
      * @brief All optimizing is done so do any optional final
      * stages. Called only once from the interface.
