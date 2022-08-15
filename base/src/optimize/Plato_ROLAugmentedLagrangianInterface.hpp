@@ -147,16 +147,6 @@ public:
         this->solve(tOptimizationProblem);
     }
 
-    /******************************************************************************//**
-     * @brief All optimizing is done so do any optional final
-     * stages. Called only once from the interface.
-    **********************************************************************************/
-    void finalize()
-    /******************************************************************************/
-    {
-        this->mInterface->finalize();
-    }
-
 private:
     /******************************************************************************/
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)

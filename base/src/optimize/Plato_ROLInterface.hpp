@@ -188,6 +188,15 @@ protected:
 		tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
         tOutputFile.close();
     }
+
+    /******************************************************************************//**
+     * @brief All optimizing is done so do any optional final
+     * stages. Called only once from the interface.
+    **********************************************************************************/
+    void finalize()
+    {
+        this->mInterface->finalize();
+    }
 };
 
 } // namespace Plato

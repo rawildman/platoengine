@@ -150,11 +150,6 @@ public:
         this->finalize();
     }
 
-    void finalize()
-    {
-        this->mInterface->finalize();
-    }
-
 private:
     /******************************************************************************/
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
