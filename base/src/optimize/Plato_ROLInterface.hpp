@@ -124,7 +124,7 @@ public:
         if(this->mInputData.getCheckGradient() == true)
         {
             std::cout<<"Checking gradient..."<<std::endl;
-            this->checkGradient(aOptimizationProblem);
+            this->checkGradient(tOptimizationProblem);
         }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
             this->solveLinearConstraint(tOptimizationProblem);
