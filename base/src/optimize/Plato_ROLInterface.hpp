@@ -101,7 +101,6 @@ public:
             ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
         
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
-        
         /****************************** SET DUAL VECTOR AL AND LC*******************************/
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN || mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
         {
@@ -111,20 +110,31 @@ public:
             if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
             {
                 tOptimizationProblem->addLinearConstraint("Constraint", tInequality, tDual);
-                this->solveLinearConstraint(tOptimizationProblem);
+                auto tParameterList = this->updateParameterListFromRolInputsFile();
+                tOptimizationProblem->setProjectionAlgorithm(*tParameterList);
             }
             if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN )
-            {
-                tOptimizationProblem->addConstraint("Constraint", tInequality, tDual);
-                tOptimizationProblem->finalize(true, true, std::cout);
-                this->solveAugmentedLagrangian(tOptimizationProblem);
-            }
+                tOptimizationProblem->addConstraint("Constraint", tInequality, tDual);  
         }
-        if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
+
+        bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        bool tPrintToStream = true;
+        tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
+
+        if(this->mInputData.getCheckGradient() == true)
         {
-            tOptimizationProblem->finalize(true, true, std::cout);
-            this->solveBoundConstrained(tOptimizationProblem);
+            std::cout<<"Checking gradient..."<<std::endl;
+            this->checkGradient(aOptimizationProblem);
         }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
+            this->solveLinearConstraint(tOptimizationProblem);
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN )
+            this->solveAugmentedLagrangian(tOptimizationProblem);       
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
+            this->solveBoundConstrained(tOptimizationProblem);
+        else
+            std::cout<<"Unknown ROL Solve Step."<<std::endl;
+
         
         this->finalize();
     }
@@ -153,25 +163,10 @@ private:
     void solveLinearConstraint(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
-        std::cout<<"Solving in the interface"<<std::endl;
-        auto tParameterList = this->updateParameterListFromRolInputsFile();
-        aOptimizationProblem->setProjectionAlgorithm(*tParameterList);
-        aOptimizationProblem->finalize(false, true, std::cout);
-        std::cout<<"Value of getCheckgradient "<<this->mInputData.getCheckGradient()<<std::endl;
-        if(this->mInputData.getCheckGradient() == true)
-        {
-            std::cout<<"Checking gradient..."<<std::endl;
-            /**************************** CHECK DERIVATIVES ****************************/
-            this->checkGradient(aOptimizationProblem);
-        }
-        else
-        {
-            /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
-            ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            std::ostream outputStream(this->mOutputBuffer);
-            tOptimizer.solve(outputStream);
-        }
-
+        auto tParameterList = this->updateParameterListFromRolInputsFile();   
+        ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
+        std::ostream outputStream(this->mOutputBuffer);
+        tOptimizer.solve(outputStream);
         this->printControl(aOptimizationProblem);
     }
 
@@ -180,38 +175,26 @@ private:
     /******************************************************************************/
     {
         auto tParameterList = this->updateParameterListFromRolInputsFile();
-       
-        if(this->mInputData.getCheckGradient() == true)
+        int tNumSolves=1;
+        if(this->mInputData.getResetAlgorithmOnUpdate())
         {
-            /**************************** CHECK DERIVATIVES ****************************/
-            
-            this->checkGradient(aOptimizationProblem);
+            tNumSolves = this->mInputData.getMaxNumIterations()/this->mInputData.getProblemUpdateFrequency();
         }
-        else
+        double tCurDelta;
+        for(int i=0; i<tNumSolves; ++i)
         {
-            /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
-            int tNumSolves=1;
-            if(this->mInputData.getResetAlgorithmOnUpdate())
+            if(i>0)
             {
-                tNumSolves = this->mInputData.getMaxNumIterations()/this->mInputData.getProblemUpdateFrequency();
+                tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
             }
-            double tCurDelta;
-            for(int i=0; i<tNumSolves; ++i)
-            {
-                if(i>0)
-                {
-                    tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
-                }
-                ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-                std::ostream outputStream(this->mOutputBuffer);
-                tOptimizer.solve(outputStream);
-                ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
-                       ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
-                tCurDelta = tAlgorithmState->searchSize;
-                std::cout << "Delta: " << tCurDelta << std::endl;
-            }
+            ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
+            std::ostream outputStream(this->mOutputBuffer);
+            tOptimizer.solve(outputStream);
+            ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
+                    ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
+            tCurDelta = tAlgorithmState->searchSize;
+            std::cout << "Delta: " << tCurDelta << std::endl;
         }
-
         this->printControl(aOptimizationProblem);
     }
     
@@ -220,19 +203,9 @@ private:
     /******************************************************************************/
     {
         auto tParameterList = this->updateParameterListFromRolInputsFile();
-        if(this->mInputData.getCheckGradient() == true)
-        {
-            /**************************** CHECK DERIVATIVES ****************************/
-            this->checkGradient(aOptimizationProblem);
-        }
-        else
-        {
-            /************************ SOLVE OPTIMIZATION PROBLEM ***********************/
-            ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            std::ostream outputStream(this->mOutputBuffer);
-            tOptimizer.solve(outputStream);
-        }
-
+        ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
+        std::ostream outputStream(this->mOutputBuffer);
+        tOptimizer.solve(outputStream);
         this->printControl(aOptimizationProblem);
     }
 
