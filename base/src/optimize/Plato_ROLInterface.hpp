@@ -83,7 +83,7 @@ public:
     /******************************************************************************/
     {
         this->initialize();
-
+        std::cout<<"RUN in the interface"<<std::endl;
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
         std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
         const OrdinalType tNumControls = this->mInterface->size(tControlName);
@@ -153,11 +153,14 @@ private:
     void solveLinearConstraint(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     /******************************************************************************/
     {
+        std::cout<<"Solving in the interface"<<std::endl;
         auto tParameterList = this->updateParameterListFromRolInputsFile();
         aOptimizationProblem->setProjectionAlgorithm(*tParameterList);
         aOptimizationProblem->finalize(false, true, std::cout);
+        std::cout<<"Value of getCheckgradient "<<this->mInputData.getCheckGradient()<<std::endl;
         if(this->mInputData.getCheckGradient() == true)
         {
+            std::cout<<"Checking gradient..."<<std::endl;
             /**************************** CHECK DERIVATIVES ****************************/
             this->checkGradient(aOptimizationProblem);
         }

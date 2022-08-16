@@ -198,7 +198,11 @@ void append_trust_region_kelley_sachs_options
                                         aMetaData.optimization_parameters().ks_trust_region_ratio_mid(), 
                                         aMetaData.optimization_parameters().ks_trust_region_ratio_high()};
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.append_child("Options");
+    auto tOptionsNode = aParentNode.child("Options");
+    if(tOptionsNode.empty())
+    {
+        tOptionsNode = aParentNode.append_child("Options");
+    }
     XMLGen::append_children(tKeys, tValues, tOptionsNode);
     auto tConvergenceNode = aParentNode.append_child("Convergence");
     XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);

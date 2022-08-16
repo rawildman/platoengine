@@ -63,9 +63,7 @@
 #include "Plato_GloballyConvergentMethodMovingAsymptotesInterface.hpp"
 
 #ifdef ENABLE_ROL
-#include "Plato_ROLAugmentedLagrangianInterface.hpp"
-#include "Plato_ROLBoundConstrainedInterface.hpp"
-#include "Plato_ROLLinearConstraintInterface.hpp"
+#include "Plato_ROLInterface.hpp"
 #endif
 
 namespace Plato
