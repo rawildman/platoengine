@@ -71,6 +71,7 @@ InitializeValues::InitializeValues(PlatoApp* aPlatoAppp, Plato::InputData& aNode
     }
     else if(mStringMethod == "ReadFromCSMFile")
     {
+        std::cout<<"mValueName "<<mValuesName<<std::endl;
         mCSMFileName = Plato::Get::String(aNode, "CSMFileName");
         Plato::ParseCSM::getValuesFromCSMFile(mCSMFileName, mValues, mLowerBounds, mUpperBounds);
     }

@@ -83,7 +83,6 @@ public:
     /******************************************************************************/
     {
         this->initialize();
-        std::cout<<"RUN in the interface"<<std::endl;
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
         std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
         const OrdinalType tNumControls = this->mInterface->size(tControlName);
@@ -93,12 +92,9 @@ public:
         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControls =
                 Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, tNumControls));
         this->setInitialGuess(tControlName, tControls.operator*());
-        std::cout<<"tControl size "<<(tControls.operator*()).vector().size()<<std::endl;
-        for(auto c : (tControls.operator*()).vector())
-                std::cout<<c<<std::endl;
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
-        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem;
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
         
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
             createOptimizationProblemBoundConstrained(tOptimizationProblem,tObjective,tControls,tControlBoundsMng);
@@ -111,7 +107,7 @@ public:
 
         bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
         bool tPrintToStream = true;
-        std::cout<<"Before finalize."<<std::endl;
+        
         tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
 
         if(this->mInputData.getCheckGradient() == true)
@@ -156,8 +152,6 @@ private:
          Teuchos::RCP<ROL::BoundConstraint<ScalarType>>& aControlBoundsMng
          )
     {
-        aOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(aObjective, aControls);
-        std::cout<<"Before adding bound constraints BC."<<std::endl;
         aOptimizationProblem->addBoundConstraint(aControlBoundsMng);
     }
 
@@ -168,14 +162,13 @@ private:
          Teuchos::RCP<ROL::BoundConstraint<ScalarType>>& aControlBoundsMng
          )
     {
-        Teuchos::RCP<ROL::Constraint<ScalarType>> tInequality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface));
+        Teuchos::RCP<ROL::Constraint<ScalarType>> tEquality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface));
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
-        std::cout<<"Before pointer to aOP LC."<<std::endl;
-        aOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(aObjective, aControls);//, tDual);
-        std::cout<<"Before adding bound constraints LC."<<std::endl;
+        
         aOptimizationProblem->addBoundConstraint(aControlBoundsMng);
-        aOptimizationProblem->addLinearConstraint("Constraint", tInequality, tDual);//, aControlBoundsMng);
+        aOptimizationProblem->addLinearConstraint("Equality Linear Constraint", tEquality, tDual);//, aControlBoundsMng);
+        
         auto tParameterList = this->updateParameterListFromRolInputsFile();
         aOptimizationProblem->setProjectionAlgorithm(*tParameterList);    
     }
@@ -190,10 +183,9 @@ private:
         Teuchos::RCP<ROL::Constraint<ScalarType>> tInequality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface));
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
-        aOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(aObjective, aControls);//, tDual);
-        std::cout<<"Before adding bound constraints AL."<<std::endl;
+        
         aOptimizationProblem->addBoundConstraint(aControlBoundsMng);
-        aOptimizationProblem->addConstraint("Constraint", tInequality, tDual);//, aControlBoundsMng);  
+        aOptimizationProblem->addConstraint("Equality Constraint", tInequality, tDual);//, aControlBoundsMng);  
     }    
 
     /******************************************************************************/
@@ -293,18 +285,13 @@ protected:
         std::string tInitializationStageName = this->mInputData.getInitializationStageName();
         if(tInitializationStageName.empty() == false)
         {
-            std::cout<<"TOP IF"<<std::endl;
             // Use user-defined stage to compute initial guess
             Teuchos::ParameterList tPlatoInitializationStageParameterList;
             tPlatoInitializationStageParameterList.set(aMyName, aControl.vector().data());
             this->mInterface->compute(tInitializationStageName, tPlatoInitializationStageParameterList);
-            std::cout<<"aControl size "<<aControl.vector().size()<<std::endl;
-            for(auto c : aControl.vector())
-                std::cout<<c<<std::endl;
         }
         else
         {
-            std::cout<<"BOTTOM IF"<<std::endl;
             // Use user-defined values to compute initial guess. Hence, a stage was not defined by the user.
             std::vector<ScalarType> tInitialGuess = this->mInputData.getInitialGuess();
             assert(tInitialGuess.empty() == false);

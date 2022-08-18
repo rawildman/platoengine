@@ -50,6 +50,7 @@
 
 #include <cstring>
 #include <string>
+#include <iostream>
 
 namespace Plato
 {
@@ -118,6 +119,9 @@ void getValuesFromStream
     if (!tFileHasDespmtr)
         THROWERR(std::string("CSM file does not contain design parameters. Designate design parameters with despmtr keyword."))
 
+    std::cout<<"Size of initial values: "<<aInitialValues.size()<<std::endl;
+    for(auto iv : aInitialValues)
+        std::cout<<"Initial value found: "<<iv<<std::endl;
     checkParameterValues(aInitialValues, aLowerBounds, aUpperBounds);
 }
 
