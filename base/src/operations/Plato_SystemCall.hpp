@@ -79,6 +79,11 @@ public:
     SystemCall(const Plato::InputData & aNode);
 
     /******************************************************************************//**
+     * \brief Destructor 
+    **********************************************************************************/
+    virtual ~SystemCall() = default;
+
+    /******************************************************************************//**
      * \brief perform local operation to call a shell script.
     **********************************************************************************/
     void operator()(const Plato::SystemCallMetadata& aMetaData);
