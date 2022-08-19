@@ -28,6 +28,7 @@ public:
                            std::shared_ptr<Performer> aOwnerPerformer,
                            const std::vector<std::shared_ptr<Performer>>& aUserPerformers,
                            int aConcurrentEvaluations = 0);
+    virtual ~SharedData() = default;
     virtual void write_interface(pugi::xml_node& aNode,
                                  std::string aEvaluationString = "") = 0;
     

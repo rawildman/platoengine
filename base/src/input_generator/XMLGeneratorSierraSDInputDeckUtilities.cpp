@@ -24,8 +24,16 @@ bool isModalCriterion(const XMLGen::Criterion &aCriterion) {
            aCriterion.type() == "modal_projection_error";
 }
 
-bool isInverseMethodCase(const XMLGen::Criterion &aCriterion) {
-    return aCriterion.type() == "frf_mismatch" || isModalCriterion(aCriterion);
+bool isFrfMismatch(const XMLGen::Criterion& aCriterion){
+    return aCriterion.type() == "frf_mismatch";
+}
+
+bool hasNodalDesignVariables(const XMLGen::Criterion &aCriterion ) {
+    return isFrfMismatch(aCriterion) || isModalCriterion(aCriterion);
+}
+
+bool hasDensityDesignVariables(const XMLGen::Criterion &aCriterion) {
+    return !hasNodalDesignVariables(aCriterion);
 }
 
 /**************************************************************************/
@@ -294,7 +302,7 @@ void append_inverse_problem_blocks
  const XMLGen::Scenario &aScenario,
  std::ostream &outfile)
 {
-    if(aCriterion.type() == "frf_mismatch")
+    if(isFrfMismatch(aCriterion))
     {
         writeFRFInverseBlocks(aMetaData, aCriterion, aScenario, outfile);
     }
@@ -347,7 +355,7 @@ void append_outputs_block
  std::ostream &outfile)
 {
     outfile << "OUTPUTS" << std::endl;
-    if(!isInverseMethodCase(aCriterion))
+    if(hasDensityDesignVariables(aCriterion))
     {
         outfile << "  topology" << std::endl;
     }
@@ -366,7 +374,7 @@ void append_echo_block
  std::ostream &outfile)
 {
     outfile << "ECHO" << std::endl;
-    if(!isInverseMethodCase(aCriterion))
+    if(hasDensityDesignVariables(aCriterion))
     {
         outfile << "  topology" << std::endl;
     }
@@ -382,7 +390,7 @@ void append_penalty_terms_to_material_block(const XMLGen::InputData &aMetaData,
         if (aScenario.materialPenaltyExponent().length() > 0)
             outfile << "  penalty_coefficient = " << aScenario.materialPenaltyExponent() << std::endl;
     }
-    if (aCriterion.type() == "frf_mismatch") {
+    if (isFrfMismatch(aCriterion)) {
         outfile << "  minimum_stiffness_penalty_value=1e-3" << std::endl;
     }
 }
@@ -453,7 +461,7 @@ void append_block_blocks
         }
         else if(tBlock.element_type == "tet10" || aScenario.convert_to_tet10().length()>0)
         {
-            if (isInverseMethodCase(aCriterion)) {
+            if (hasNodalDesignVariables(aCriterion)) {
                 outfile << "  cutet10" << std::endl;
             }
             else {
@@ -468,7 +476,7 @@ void append_block_blocks
         {
             outfile << "  rbe3" << std::endl;
         }
-        if(aCriterion.type() == "frf_mismatch")
+        if(isFrfMismatch(aCriterion))
         {
             outfile << "  inverse_material_type homogeneous" << std::endl;
         }
@@ -633,11 +641,8 @@ void append_stress_parameters
 }
 
 void writeInverseMethodObjective(const std::string &tDiscretization, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
-    if (aCriterion.type() == "frf_mismatch") {
-        if(tDiscretization == "density")
-            outfile << "  inverse_method_objective = directfrf-plato-density-method" << std::endl;
-        else if(tDiscretization == "levelset")
-            outfile << "  inverse_method_objective = directfrf-plato-levelset-method" << std::endl;
+    if (isFrfMismatch(aCriterion)) {
+        outfile << "  inverse_method_objective = directfrf-inverse" << std::endl;
     }
     else if (isModalCriterion(aCriterion)) {
         outfile << "  inverse_method_objective = eigen-inverse" << std::endl;
@@ -682,7 +687,7 @@ void append_case_gradient_based_problem
     {
         outfile << "  case = volume_average_von_mises" << std::endl;
     }
-    else if(isInverseMethodCase(aCriterion))
+    else if(hasNodalDesignVariables(aCriterion))
     {
         outfile << "  case = inverse_methods" << std::endl;
 
@@ -707,7 +712,7 @@ void append_case_gradient_based_problem
             outfile << std::endl;
         }
 
-        if (aCriterion.type() == "frf_mismatch") {
+        if (isFrfMismatch(aCriterion)) {
             if (aScenario.complex_error_measure().length() > 0)
                 outfile << "  complex_error_measure " << aScenario.complex_error_measure() << std::endl;
         }
@@ -789,7 +794,7 @@ void append_topology_optimization_block
     outfile << "  algorithm = plato_engine" << std::endl;
     append_case(aMetaData, aCriterion, aScenario, outfile);
     append_stress_parameters(aMetaData, aCriterion, aScenario, outfile);
-    if(aCriterion.type() == "frf_mismatch")
+    if(isFrfMismatch(aCriterion))
     {
         if(aMetaData.constraints.size() > 0)
         {
@@ -797,13 +802,10 @@ void append_topology_optimization_block
             auto &tConstraintCriterion = aMetaData.criterion(tConstraintCriterionID);
             if(tConstraintCriterion.type() == "surface_area")
             {
-                outfile << "  surface_area_constraint_value = " << aMetaData.constraints[0].absoluteTarget() << std::endl;
-    
-                outfile << "  surface_area_ssid = " << tConstraintCriterion.surface_area_sideset_id() << std::endl;
-    
+                std::cout << "Warning: Use of a surface_area constraint has been removed from SD. "
+                    "This constraint will have no effect." << std::endl;
             }
         }
-
     }
     else
     {
@@ -872,7 +874,7 @@ void append_loads_block
         {
             append_load(tLoad, outfile);
         }
-        if(aCriterion.type() == "frf_mismatch")
+        if(isFrfMismatch(aCriterion))
         {
             outfile << "  function=1" << std::endl;
         }
