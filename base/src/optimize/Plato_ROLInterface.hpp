@@ -301,7 +301,7 @@ protected:
         auto tObjective = aOptimizationProblem->getObjective();
         auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
         auto tPerturbation = tControl->clone();
-        tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);      
+        tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);
 	tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
         tOutputFile.close();
     }
