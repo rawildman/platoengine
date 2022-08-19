@@ -498,6 +498,10 @@ public:
     std::string amgx_max_iterations() const {return value("amgx_max_iterations");}
     std::string amgx_print_solver_stats() const {return value("amgx_print_solver_stats");}
     std::string amgx_solver_type() const {return value("amgx_solver_type");}
+
+    std::string rol_gradient_check_perturbation_scale() const {return value("rol_gradient_check_perturbation_scale");}
+    std::string rol_gradient_check_steps() const {return value("rol_gradient_check_steps");}
+
 };
 // struct OptimizationParameters
 

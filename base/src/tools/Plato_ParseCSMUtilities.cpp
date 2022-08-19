@@ -50,6 +50,7 @@
 
 #include <cstring>
 #include <string>
+#include <iostream>
 
 namespace Plato
 {
