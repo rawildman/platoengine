@@ -356,11 +356,13 @@ void append_subblock_creation_operation_to_plato_main_operation
  * \param [in/out] aDocument  pugi::xml_document
  * \param [in]     aName Name of operation
  * \param [in]     aCommand System call command of operation
+ * \param [in]     aNumParameters Number of shape parameters
 **********************************************************************************/
 void append_cubit_systemcall_operation_commands
 (pugi::xml_document& aDocument,
 const std::string &aName,
-const std::string &aCommand);
+const std::string &aCommand,
+const std::string &aNumParameters);
 
 /******************************************************************************//**
  * \fn append_mesh_join_operation_to_plato_main_operation
@@ -407,6 +409,20 @@ void append_update_geometry_on_change_operation_commands
  const std::string& aName,
  const std::string& aCommand,
  const std::string& aTag);
+
+/******************************************************************************//**
+ * \fn append_wait_for_file_close_operation_commands
+ * \brief Append commands for waiting for a file to be closed before proceding
+ * \param [in/out] pugi::xml_document
+ * \param [in]     aName operation name
+ * \param [in]     aFolder the folder to look at
+ * \param [in]     aFile the file to look at
+**********************************************************************************/
+void append_wait_for_file_close_operation_commands
+(pugi::xml_document& aDocument,
+ const std::string& aName,
+ const std::string& aFolder,
+ const std::string& aFile);
 
 /******************************************************************************//**
  * \fn append_reinitialize_operation_to_plato_main_operation

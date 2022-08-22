@@ -63,6 +63,16 @@ void Service::append(const std::string& aTag, const std::string& aValue)
     mMetaData[aTag] = aValue;
 }
 
+void Service::type(const std::string& aInput)
+{
+    mMetaData["type"] = aInput;
+}
+
+std::string Service::type() const
+{
+    return (this->getValue("type"));
+}
+
 void Service::id(const std::string& aInput)
 {
     mMetaData["id"] = aInput;

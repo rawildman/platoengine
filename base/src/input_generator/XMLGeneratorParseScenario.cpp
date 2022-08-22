@@ -42,7 +42,7 @@ void ParseScenario::setLoadIDs(XMLGen::Scenario &aMetadata)
         XMLGen::parse_tokens(tValuesBuffer, tLoadIDs);
         aMetadata.setLoadIDs(tLoadIDs);
     }
-    else
+    else if (aMetadata.existing_input_deck() == "")
     {
         REPORT("Parse Scenario: loads are not defined.");
     }
@@ -61,7 +61,8 @@ void ParseScenario::setBCIDs(XMLGen::Scenario &aMetadata)
         XMLGen::parse_tokens(tValuesBuffer, tBCIDs);
         aMetadata.setBCIDs(tBCIDs);
     }
-    else if (aMetadata.physics() != "modal_response")
+    else if (aMetadata.physics() != "modal_response" && aMetadata.physics() != "electromagnetics" &&
+             aMetadata.existing_input_deck() == "")
     {
         THROWERR("Parse Scenario: boundary_conditions are not defined");
     }
@@ -132,22 +133,25 @@ void ParseScenario::allocate()
     mTags.insert({ "frequency_min", { { {"frequency_min"}, ""}, "" } });
     mTags.insert({ "frequency_max", { { {"frequency_max"}, ""}, "" } });
     mTags.insert({ "frequency_step", { { {"frequency_step"}, ""}, "" } });
+    mTags.insert({ "cavity_radius", { { {"cavity_radius"}, ""}, "" } });
+    mTags.insert({ "cavity_height", { { {"cavity_height"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_alpha", { { {"raleigh_damping_alpha"}, ""}, "" } });
     mTags.insert({ "raleigh_damping_beta", { { {"raleigh_damping_beta"}, ""}, "" } });
     mTags.insert({ "complex_error_measure", { { {"complex_error_measure"}, ""}, "" } });
     mTags.insert({ "convert_to_tet10", { { {"convert_to_tet10"}, ""}, "" } });
+    mTags.insert({ "existing_input_deck", { { {"existing_input_deck"}, ""}, "" } });
 }
 
 void ParseScenario::checkSpatialDimensions(XMLGen::Scenario& aScenario)
 {
     auto tDim = aScenario.value("dimensions");
-    if (tDim.empty())
+    if (tDim.empty() && aScenario.existing_input_deck() == "")
     {
         THROWERR("Parse Scenario: 'dimensions' keyword is empty.")
     }
     XMLGen::ValidSpatialDimsKeys tValidKeys;
     auto tItr = std::find(tValidKeys.mKeys.begin(), tValidKeys.mKeys.end(), tDim);
-    if (tItr == tValidKeys.mKeys.end())
+    if (tItr == tValidKeys.mKeys.end() && aScenario.existing_input_deck() == "")
     {
         THROWERR("Parse Scenario: Problems with " + tDim + "-D spatial dimensions are not supported.")
     }
@@ -156,7 +160,7 @@ void ParseScenario::checkSpatialDimensions(XMLGen::Scenario& aScenario)
 void ParseScenario::checkIDs(XMLGen::Scenario& aScenario)
 {
     auto tLoadIDs = aScenario.loadIDs();
-    if (tLoadIDs.empty())
+    if (tLoadIDs.empty() && aScenario.existing_input_deck() == "")
     {
         REPORT("Parse Scenario: No load IDs are defined.\n")
     }

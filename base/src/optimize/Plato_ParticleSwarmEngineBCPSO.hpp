@@ -72,19 +72,12 @@ public:
      * @param [in] aComm local MPI communicator
     **********************************************************************************/
     explicit ParticleSwarmEngineBCPSO(Plato::Interface* aInterface, const MPI_Comm & aComm) :
-            mObjFuncStageName(),
-            mComm(aComm),
-            mInterface(aInterface),
-            mStageDataMng()
+        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm),
+        mObjFuncStageName()
     {
     }
 
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~ParticleSwarmEngineBCPSO()
-    {
-    }
+    virtual ~ParticleSwarmEngineBCPSO() = default;
 
     /******************************************************************************//**
      * @brief Return optimization algorithm type
@@ -96,19 +89,12 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Read input options from XML file
-    **********************************************************************************/
-    void initialize()
-    {
-    }
-
-    /******************************************************************************//**
      * @brief All optimizing is done so do any optional final
      * stages. Called only once from the interface.
     **********************************************************************************/
     void finalize()
     {
-        mInterface->finalize();
+        this->mInterface->finalize();
     }
 
     /******************************************************************************//**
@@ -145,14 +131,14 @@ private:
     **********************************************************************************/
     void parseObjFuncStageOptions()
     {
-        auto tInputData = mInterface->getInputData();
-        auto tStages = tInputData.getByName<Plato::InputData>("Stage");
+        auto tInputData = this->mInterface->getInputData();
+        auto tStages = tInputData.template getByName<Plato::InputData>("Stage");
         for(auto tStageNode = tStages.begin(); tStageNode != tStages.end(); ++tStageNode)
         {
-            std::string tStageName = tStageNode->get<std::string>("Name");
+            std::string tStageName = tStageNode->template get<std::string>("Name");
             if(tStageName == mObjFuncStageName)
             {
-                Plato::Parse::parseStageData(*tStageNode, mStageDataMng);
+                Plato::Parse::parseStageData(*tStageNode, this->mStageDataMng);
             }
         }
     }
@@ -163,7 +149,7 @@ private:
     **********************************************************************************/
     void parseOptimizerOptions(Plato::InputDataBCPSO<ScalarType, OrdinalType> & aInput)
     {
-        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(this->mInterface);
 
         Plato::ParticleSwarmParser<ScalarType, OrdinalType> tParserPSO;
         mObjFuncStageName = tParserPSO.getObjectiveStageName(tOptimizerNode);
@@ -182,8 +168,8 @@ private:
         const OrdinalType tNumControls = aInputs.mParticlesLowerBounds->size();
         std::shared_ptr<Plato::GradFreeEngineCriterion<ScalarType, OrdinalType>> tObjective =
                 std::make_shared<Plato::GradFreeEngineCriterion<ScalarType, OrdinalType>>(
-                        tNumControls, tNumParticles, mStageDataMng);
-        tObjective->setInterface(mInterface);
+                        tNumControls, tNumParticles, this->mStageDataMng);
+        tObjective->setInterface(this->mInterface);
         aObjective = tObjective;
     }
 
@@ -196,7 +182,7 @@ private:
                            Plato::InputDataBCPSO<ScalarType, OrdinalType> & aOutput)
     {
         this->allocateParticlesSet(aFactory, aOutput);
-        aOutput.mControlReductions = aFactory.createReduction(mComm, mInterface);
+        aOutput.mControlReductions = aFactory.createReduction(this->mComm, this->mInterface);
         aOutput.mCriteriaEvals = std::make_shared<Plato::StandardVector<ScalarType, OrdinalType>>(aOutput.mNumParticles);
     }
 
@@ -212,10 +198,10 @@ private:
 
         for(OrdinalType tVectorIndex = 0; tVectorIndex < aInputs.mNumParticles; tVectorIndex++)
         {
-            const std::string & tMySharedDataName = mStageDataMng.getInput(mObjFuncStageName, tVectorIndex);
-            const OrdinalType tNumControls = mInterface->size(tMySharedDataName);
+            const std::string & tMySharedDataName = this->mStageDataMng.getInput(mObjFuncStageName, tVectorIndex);
+            const OrdinalType tNumControls = this->mInterface->size(tMySharedDataName);
             std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                    aFactory.createVector(mComm, tNumControls, mInterface);
+                    aFactory.createVector(this->mComm, tNumControls, this->mInterface);
             tParticlesSet.add(tVector);
         }
 
@@ -233,26 +219,22 @@ private:
         const OrdinalType tPARTICLE_INDEX = 0;
         const OrdinalType tNumControls = (*aOutput.mParticles)[tPARTICLE_INDEX].size();
 
-        auto tOptimizerNode = this->getOptimizerNode(mInterface);
+        auto tOptimizerNode = this->getOptimizerNode(this->mInterface);
         auto tBoundsNode = tOptimizerNode.template get<Plato::InputData>("BoundConstraint");
 
         std::vector<ScalarType> tLowerBounds = Plato::Get::Doubles(tBoundsNode, "Lower");
-        aOutput.mParticlesLowerBounds = aFactory.createVector(mComm, tNumControls, mInterface);
+        aOutput.mParticlesLowerBounds = aFactory.createVector(this->mComm, tNumControls, this->mInterface);
         assert(tNumControls == tLowerBounds.size());
         Plato::copy(tLowerBounds, *aOutput.mParticlesLowerBounds);
 
         std::vector<ScalarType> tUpperBounds = Plato::Get::Doubles(tBoundsNode, "Upper");
-        aOutput.mParticlesUpperBounds = aFactory.createVector(mComm, tNumControls, mInterface);
+        aOutput.mParticlesUpperBounds = aFactory.createVector(this->mComm, tNumControls, this->mInterface);
         assert(tNumControls == tUpperBounds.size());
         Plato::copy(tUpperBounds, *aOutput.mParticlesUpperBounds);
     }
 
 private:
     std::string mObjFuncStageName; /*!< objective function stage name */
-
-    MPI_Comm mComm; /*!< MPI communicator */
-    Plato::Interface* mInterface; /*!< PLATO Engine interface */
-    Plato::StageInputDataMng mStageDataMng; /*!< objective function stage data manager */
 
 private:
     ParticleSwarmEngineBCPSO(const Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>&);

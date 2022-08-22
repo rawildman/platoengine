@@ -28,15 +28,23 @@ static void build_fixture
   stkMeshIoBroker.add_mesh_database(generatedMeshSpecification, stk::io::READ_MESH);
   stkMeshIoBroker.create_input_mesh();
 
+#ifdef BUILD_IN_SIERRA
+  mesh_api.set_meta_data_ptr(stkMeshIoBroker.meta_data_ptr());
+#else
   stk::mesh::MetaData &meta = stkMeshIoBroker.meta_data();
   mesh_api.set_meta_data_ptr(&meta);
+#endif
 
   mesh_api.prepare_to_create_tris();
 
   stkMeshIoBroker.populate_bulk_data();
 
+#ifdef BUILD_IN_SIERRA
+  mesh_api.set_bulk_data_ptr(stkMeshIoBroker.bulk_data_ptr());
+#else
   stk::mesh::BulkData &bulk = stkMeshIoBroker.bulk_data();
   mesh_api.set_bulk_data_ptr(&bulk);
+#endif
 }
 
 TEST(MSMeshSTK, test_global_iterators)

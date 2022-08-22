@@ -77,29 +77,15 @@ class DiagnosticsInterface : public Plato::OptimizerInterface<ScalarType, Ordina
 {
 public:
     explicit DiagnosticsInterface(Plato::Interface* aInterface, const MPI_Comm & aComm) :
-            mComm(aComm),
-            mInterface(aInterface),
-            mInputData(Plato::OptimizerEngineStageData())
-    {
-    }
-    virtual ~DiagnosticsInterface()
-    {
-    }
+        Plato::OptimizerInterface<ScalarType, OrdinalType>::OptimizerInterface(aInterface, aComm) { }
+
+    virtual ~DiagnosticsInterface() = default;
 
     /******************************************************************************/
     Plato::optimizer::algorithm_t algorithm() const
     /******************************************************************************/
     {
         return (Plato::optimizer::algorithm_t::DERIVATIVE_CHECKER);
-    }
-
-    /******************************************************************************/
-    void initialize()
-    /******************************************************************************/
-    {
-        auto tOptimizerNode = this->getOptimizerNode(mInterface);
-
-        Plato::Parse::parseOptimizerStages(tOptimizerNode, mInputData);
     }
 
     /******************************************************************************/
@@ -127,7 +113,7 @@ public:
         Plato::copy(tUpperBoundsData, (*tUpperBounds)[tCONTROL_VECTOR_INDEX]);
 
         // ********* SET INITIAL GUESS AND DIAGNOSTICS OPTIONS ********* //
-        bool tDidUserDefinedInitialGuess = mInputData.getUserInitialGuess();
+        bool tDidUserDefinedInitialGuess = this->mInputData.getUserInitialGuess();
         std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>> tInitialGuess = tDataFactory.control().create();
         if(tDidUserDefinedInitialGuess == true)
         {
@@ -136,9 +122,9 @@ public:
 
         // ********* ALLOCATE DIAGNOSTICS TOOL ********* //
         Plato::Diagnostics<ScalarType, OrdinalType> tDiagnostics;
-        int tFinalSuperscript = mInputData.getDerivativeCheckerFinalSuperscript();
+        int tFinalSuperscript = this->mInputData.getDerivativeCheckerFinalSuperscript();
         tDiagnostics.setFinalSuperscript(tFinalSuperscript);
-        int tInitialSuperscript = mInputData.getDerivativeCheckerInitialSuperscript();
+        int tInitialSuperscript = this->mInputData.getDerivativeCheckerInitialSuperscript();
         tDiagnostics.setInitialSuperscript(tInitialSuperscript);
 
         // ********* ENFORCE BOUNDS ********* //
@@ -160,7 +146,7 @@ public:
     void finalize()
     /******************************************************************************/
     {
-        mInterface->finalize();
+        this->mInterface->finalize();
     }
 
 private:
@@ -170,12 +156,12 @@ private:
         // diagnostics does not currently need the control bounds, but if they are
         // not constructed here, then they are not used in other parts of the code.
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
         aLowerBoundsData.resize(tNumControls);
         aUpperBoundsData.resize(tNumControls);
-        Plato::getLowerBoundsInputData(mInputData, mInterface, aLowerBoundsData);
-        Plato::getUpperBoundsInputData(mInputData, mInterface, aUpperBoundsData);
+        Plato::getLowerBoundsInputData(this->mInputData, this->mInterface, aLowerBoundsData);
+        Plato::getUpperBoundsInputData(this->mInputData, this->mInterface, aUpperBoundsData);
     }
 
     /******************************************************************************/
@@ -185,14 +171,14 @@ private:
     {
         // ********* Allocate Plato::Vector of controls *********
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        std::string tControlName = mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = mInterface->size(tControlName);
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
         std::vector<ScalarType> tInputIntitalGuessData(tNumControls);
         std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
 
         // ********* Set initial guess for each control vector *********
-        Plato::getInitialGuessInputData(tControlName, mInputData, mInterface, tInputIntitalGuessData);
+        Plato::getInitialGuessInputData(tControlName, this->mInputData, this->mInterface, tInputIntitalGuessData);
         Plato::copy(tInputIntitalGuessData, *tVector);
         aMultiVector[tCONTROL_VECTOR_INDEX].update(1., *tVector, 0.);
     }
@@ -204,29 +190,29 @@ private:
     {
         // ********* Allocate and Check Constraints ********* //
         std::ostringstream tOutputMsg;
-        const OrdinalType tNumConstraints = mInputData.getNumConstraints();
-        bool tDidUserDefinedInitialGuess = mInputData.getUserInitialGuess();
+        const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
+        bool tDidUserDefinedInitialGuess = this->mInputData.getUserInitialGuess();
         if(tNumConstraints > static_cast<OrdinalType>(0))
         {
             this->parseConstraintReferenceValues();
             for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
             {
-                std::string tMyName = mInputData.getConstraintValueName(tIndex);
-                Plato::EngineConstraint<ScalarType, OrdinalType> tConstraint(tIndex, aDataFactory, mInputData, mInterface);
+                std::string tMyName = this->mInputData.getConstraintValueName(tIndex);
+                Plato::EngineConstraint<ScalarType, OrdinalType> tConstraint(tIndex, aDataFactory, this->mInputData, this->mInterface);
 
-                if(mInputData.getCheckGradient() == true)
+                if(this->mInputData.getCheckGradient() == true)
                 {
                     tOutputMsg << "\n\n********** CHECK CONSTRAINT: " << tMyName.c_str() << " GRADIENT **********\n\n";
                     aDiagnostics.checkCriterionGradient(tConstraint, aInitialGuess, tOutputMsg, tDidUserDefinedInitialGuess);
                 }
 
-                if(mInputData.getCheckHessian() == true)
+                if(this->mInputData.getCheckHessian() == true)
                 {
                     tOutputMsg << "\n\n********** CHECK CONSTRAINT: " << tMyName.c_str() << " HESSIAN **********\n\n";
                     aDiagnostics.checkCriterionHessian(tConstraint, aInitialGuess, tOutputMsg, tDidUserDefinedInitialGuess);
                 }
 
-                if(mInputData.getCheckGradient() == false && mInputData.getCheckHessian() == false)
+                if(this->mInputData.getCheckGradient() == false && this->mInputData.getCheckHessian() == false)
                 {
                     tOutputMsg << "\n\n********** NO DERIVATIVE CHECK REQUESTED FOR CONSTRAINT: " << tMyName.c_str() << " **********\n\n";
                 }
@@ -248,24 +234,24 @@ private:
     /******************************************************************************/
     {
         // ********* Check Objective Function ********* //
-      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, mInputData, mInterface, this);
+      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, this->mInputData, this->mInterface, this);
 
         std::ostringstream tOutputMsg;
-        std::string tMyName = mInputData.getObjectiveValueOutputName();
-        bool tDidUserDefinedInitialGuess = mInputData.getUserInitialGuess();
-        if(mInputData.getCheckGradient() == true)
+        std::string tMyName = this->mInputData.getObjectiveValueOutputName();
+        bool tDidUserDefinedInitialGuess = this->mInputData.getUserInitialGuess();
+        if(this->mInputData.getCheckGradient() == true)
         {
             tOutputMsg << "\n\n********** CHECK OBJECTIVE FUNCTION: " << tMyName.c_str() << " GRADIENT **********\n\n";
             aDiagnostics.checkCriterionGradient(tObjective, aInitialGuess, tOutputMsg, tDidUserDefinedInitialGuess);
         }
 
-        if(mInputData.getCheckHessian() == true)
+        if(this->mInputData.getCheckHessian() == true)
         {
             tOutputMsg << "\n\n********** CHECK OBJECTIVE FUNCTION: " << tMyName.c_str() << " HESSIAN **********\n\n";
             aDiagnostics.checkCriterionHessian(tObjective, aInitialGuess, tOutputMsg, tDidUserDefinedInitialGuess);
         }
 
-        if(mInputData.getCheckGradient() == false && mInputData.getCheckHessian() == false)
+        if(this->mInputData.getCheckGradient() == false && this->mInputData.getCheckHessian() == false)
         {
             tOutputMsg << "\n\n********** NO DERIVATIVE CHECK REQUESTED FOR OBJECTIVE: " << tMyName.c_str() << " **********\n\n";
         }
@@ -282,18 +268,18 @@ private:
     void parseConstraintReferenceValues()
     /******************************************************************************/
     {
-        const OrdinalType tNumConstraints = mInputData.getNumConstraints();
+        const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
         {
-            std::string tReferenceValueName = mInputData.getConstraintReferenceValueName(tIndex);
+            std::string tReferenceValueName = this->mInputData.getConstraintReferenceValueName(tIndex);
             if(tReferenceValueName.empty() == false)
             {
                 ScalarType tReferenceValue = 0;
                 Teuchos::ParameterList tArguments;
                 tArguments.set(tReferenceValueName, &tReferenceValue);
-                mInterface->compute(tReferenceValueName, tArguments);
-                std::string tConstraintValueName = mInputData.getConstraintValueName(tIndex);
-                mInputData.addConstraintReferenceValue(tConstraintValueName, tReferenceValue);
+                this->mInterface->compute(tReferenceValueName, tArguments);
+                std::string tConstraintValueName = this->mInputData.getConstraintValueName(tIndex);
+                this->mInputData.addConstraintReferenceValue(tConstraintValueName, tReferenceValue);
             }
         }
     }
@@ -303,30 +289,25 @@ private:
     /******************************************************************************/
     {
         // ********* Allocate control vectors baseline data structures *********
-        const OrdinalType tNumVectors = mInputData.getNumControlVectors();
+        const OrdinalType tNumVectors = this->mInputData.getNumControlVectors();
         assert(tNumVectors > static_cast<OrdinalType>(0));
         Plato::StandardMultiVector<ScalarType, OrdinalType> tMultiVector;
         for(OrdinalType tIndex = 0; tIndex < tNumVectors; tIndex++)
         {
-            std::string tControlName = mInputData.getControlName(tIndex);
-            const OrdinalType tNumControls = mInterface->size(tControlName);
+            std::string tControlName = this->mInputData.getControlName(tIndex);
+            const OrdinalType tNumControls = this->mInterface->size(tControlName);
             std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> tVector =
-                    aAlgebraFactory.createVector(mComm, tNumControls, mInterface);
+                    aAlgebraFactory.createVector(this->mComm, tNumControls, this->mInterface);
             tMultiVector.add(tVector);
         }
         aDataFactory.allocateControl(tMultiVector);
         std::shared_ptr<Plato::ReductionOperations<ScalarType, OrdinalType>> tReductionOperations =
-                aAlgebraFactory.createReduction(mComm, mInterface);
+                aAlgebraFactory.createReduction(this->mComm, this->mInterface);
         aDataFactory.allocateControlReductionOperations(*tReductionOperations);
 
-        Plato::CommWrapper tCommWrapper(mComm);
+        Plato::CommWrapper tCommWrapper(this->mComm);
         aDataFactory.setCommWrapper(tCommWrapper);
     }
-
-private:
-    MPI_Comm mComm;
-    Plato::Interface* mInterface;
-    Plato::OptimizerEngineStageData mInputData;
 
 private:
     DiagnosticsInterface(const Plato::DiagnosticsInterface<ScalarType, OrdinalType> & aRhs);

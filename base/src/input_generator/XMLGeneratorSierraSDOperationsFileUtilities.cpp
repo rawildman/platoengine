@@ -12,7 +12,6 @@
 
 namespace XMLGen
 {
-
 /**************************************************************************/
 void append_cache_state_operation
 (const XMLGen::InputData& aMetaData,
@@ -165,40 +164,6 @@ void append_internal_energy_hessian_operation
     }
 }
 /**************************************************************************/
-void append_surface_area_operation
-(const XMLGen::InputData& aMetaData,
- const XMLGen::Scenario& aScenario,
- pugi::xml_document& aDocument)
-{
-    auto tDiscretization = aMetaData.optimization_parameters().discretization();
-    if(tDiscretization == "levelset")
-    {
-        auto tOperationNode = aDocument.append_child("Operation");
-        append_children({"Function", "Name"}, {"Compute Surface Area", "Compute Surface Area"}, tOperationNode);
-        auto tTopologyNode = tOperationNode.append_child("Topology");
-        append_children({"Name"}, {"Topology"}, tTopologyNode);
-        auto tOutputNode = tOperationNode.append_child("OutputValue");
-        append_children({"Name"}, {"SurfaceArea"}, tOutputNode);
-    }
-}
-/**************************************************************************/
-void append_surface_area_gradient_operation
-(const XMLGen::InputData& aMetaData,
- const XMLGen::Scenario& aScenario,
- pugi::xml_document& aDocument)
-{
-    auto tDiscretization = aMetaData.optimization_parameters().discretization();
-    if(tDiscretization == "levelset")
-    {
-        auto tOperationNode = aDocument.append_child("Operation");
-        append_children({"Function", "Name"}, {"Compute Surface Area Gradient", "Compute Surface Area Gradient"}, tOperationNode);
-        auto tTopologyNode = tOperationNode.append_child("Topology");
-        append_children({"Name"}, {"Topology"}, tTopologyNode);
-        auto tOutputNode = tOperationNode.append_child("OutputValue");
-        append_children({"Name"}, {"SurfaceAreaGradient"}, tOutputNode);
-    }
-}
-/**************************************************************************/
 void append_reinitialize_operation
 (const XMLGen::InputData& aMetaData,
  pugi::xml_document& aDocument)
@@ -287,8 +252,6 @@ void add_operations_gradient_based_problem
         append_compute_objective_gradient_operation_for_shape_problem(aScenario, aDocument);
     }
     append_internal_energy_hessian_operation(aMetaData, aScenario, aDocument);
-    append_surface_area_operation(aMetaData, aScenario, aDocument);
-    append_surface_area_gradient_operation(aMetaData, aScenario, aDocument);
 }
 /**************************************************************************/
 void add_operations_dakota_problem

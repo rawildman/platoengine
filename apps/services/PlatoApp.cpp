@@ -256,8 +256,12 @@ void PlatoApp::initialize( bool initializeTimers )
         }
     }
 
-    if( mInputTree != nullptr )
+    if( mInputTree != nullptr ) {
+        if (mLightMp != nullptr) {
+            delete mLightMp;
+        }
         mLightMp = new LightMP(mInputTree);
+    }
 
     // Define system graph and mesh services (e.g. output) for
     // problems with shared data fields (mesh-based fields)
@@ -313,6 +317,14 @@ void PlatoApp::initialize( bool initializeTimers )
                 continue;
             }
 
+            tFunctions.push_back("HarvestDataFromFile");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::HarvestDataFromFile(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("ReciprocateObjectiveValue");
             if(tStrFunction == tFunctions.back())
             {
@@ -356,7 +368,7 @@ void PlatoApp::initialize( bool initializeTimers )
             tFunctions.push_back("SystemCall");
             if(tStrFunction == tFunctions.back())
             {
-                mOperationMap[tStrName] = new Plato::SystemCall(this, tNode);
+                mOperationMap[tStrName] = new Plato::SystemCallOperation(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
             }
@@ -364,7 +376,7 @@ void PlatoApp::initialize( bool initializeTimers )
             tFunctions.push_back("SystemCallMPI");
             if(tStrFunction == tFunctions.back())
             {
-                mOperationMap[tStrName] = new Plato::SystemCallMPI(this, tNode);
+                mOperationMap[tStrName] = new Plato::SystemCallMPIOperation(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
             }

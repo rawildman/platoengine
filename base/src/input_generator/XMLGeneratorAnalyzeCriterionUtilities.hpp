@@ -275,7 +275,6 @@ pugi::xml_node append_pnorm_criterion
  pugi::xml_node& aParentNode)
 {
     auto tCriterion = XMLGen::Private::append_scalar_function_criterion(aCriterion, aParentNode);
- //   auto tCriterion = aParentNode.child("ParameterList");
     if(tCriterion.empty())
     {
         THROWERR("Append P-Norm Criterion: Criterion parameter list is empty. Most likely, "
@@ -284,6 +283,25 @@ pugi::xml_node append_pnorm_criterion
     std::vector<std::string> tKeys = {"name", "type", "value"};
     std::vector<std::string> tValues = {"Exponent", "double", aCriterion.pnormExponent()};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCriterion);
+
+    if (!aCriterion.pnormMeasure().empty())
+    {
+        XMLGen::ValidPNormMeasureKeyMap tValidKeyMap;
+        auto tItr = tValidKeyMap.mKeys.find(aCriterion.pnormMeasure());
+        if (tItr != tValidKeyMap.mKeys.end())
+        {
+            auto tNormalizeNode = tCriterion.append_child("ParameterList");
+            XMLGen::append_attributes({"name"}, {"Normalize"}, tNormalizeNode);
+            tValues = {"Type", "string", tItr->second};
+            XMLGen::append_parameter_plus_attributes(tKeys, tValues, tNormalizeNode);
+            if (!aCriterion.pnormVolumeScaling().empty())
+            {
+                tValues = {"Volume Scaling", "bool", aCriterion.pnormVolumeScaling()};
+                XMLGen::append_parameter_plus_attributes(tKeys, tValues, tNormalizeNode);
+            }
+        }
+    }
+
     return tCriterion;
 }
 

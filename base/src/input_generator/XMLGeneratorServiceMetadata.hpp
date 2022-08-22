@@ -72,6 +72,20 @@ public:
     void append(const std::string& aTag, const std::string& aValue);
 
     /******************************************************************************//**
+     * \fn type
+     * \brief Set 'type' keyword. Supported options: 'web_app', 'plato_app', and 'system_call'.
+     * \param [in] aInput string value
+    **********************************************************************************/
+    void type(const std::string& aInput);
+
+    /******************************************************************************//**
+     * \fn type
+     * \brief Return value for 'type' keyword.
+     * \return string
+    **********************************************************************************/
+    std::string type() const;
+
+    /******************************************************************************//**
      * \fn id
      * \brief Set string value for keyword 'id'.
      * \param [in] aInput string value

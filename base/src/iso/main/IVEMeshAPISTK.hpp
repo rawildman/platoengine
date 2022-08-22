@@ -238,8 +238,13 @@ class IVEMeshAPISTK : public IVEMeshAPI
 {
   
 private:
+#ifdef BUILD_IN_SIERRA
+  std::shared_ptr<stk::mesh::BulkData> mBulkData;
+  std::shared_ptr<stk::mesh::MetaData> mMetaData;
+#else
   stk::mesh::BulkData *mBulkData;
   stk::mesh::MetaData *mMetaData;
+#endif
   stk::io::StkMeshIoBroker *mIoBroker;
   stk::mesh::Part *mFixedTriPart;
   stk::mesh::Part *mOptimizedTriPart;
@@ -317,16 +322,26 @@ public:
   void prepare_to_create_tris();
   void get_output_fields(std::string &outputFieldsString);
   void prepare_field_data(std::string &outputFieldsString, IVEMeshAPISTK *outAPI);
+#ifdef BUILD_IN_SIERRA
+  stk::mesh::MetaData* meta_data() { return mMetaData.get(); }
+  stk::mesh::BulkData* bulk_data() { return mBulkData.get(); }
+#else
   stk::mesh::MetaData* meta_data() { return mMetaData; }
   stk::mesh::BulkData* bulk_data() { return mBulkData; }
+#endif
   bool read_exodus_mesh(std::string &meshfile, std::string &fieldname, 
                         std::string &outputFieldsString,
                         int input_file_is_spread, int time_step);
   void write_exodus_mesh(std::string &meshfile, int output_method, int iso_only);
   void set_comm(stk::ParallelMachine* comm) { mComm = comm; }
   stk::ParallelMachine* get_comm() { return mComm; }
+#ifdef BUILD_IN_SIERRA
+  void set_bulk_data_ptr(std::shared_ptr<stk::mesh::BulkData> bp) { mBulkData = bp; }
+  void set_meta_data_ptr(std::shared_ptr<stk::mesh::MetaData> mp) { mMetaData = mp; }
+#else
   void set_bulk_data_ptr(stk::mesh::BulkData *bp) { mBulkData = bp; }
   void set_meta_data_ptr(stk::mesh::MetaData *mp) { mMetaData = mp; }
+#endif
   IVEHandle get_handle(const stk::mesh::Entity &entity) const;
   stk::mesh::Entity get_stk_entity(const IVEHandle &handle) const;
   int time_step() { return mTimeStep; };

@@ -233,6 +233,7 @@ endif()
 if( STK_ENABLED )
   add_subdirectory(base/src/support_structure)
   add_subdirectory(base/src/support_structure/main)
+  add_subdirectory(base/src/DecomposeMesh)
 endif()
 
 if( PLATOMAIN )

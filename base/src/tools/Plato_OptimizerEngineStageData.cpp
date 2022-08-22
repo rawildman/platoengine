@@ -135,7 +135,9 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mUpdateProblemStageNames(),
         mConstraintGradientNames(),
         mConstraintHessianNames(),
-        mConstraintReferenceValueNames()
+        mConstraintReferenceValueNames(),
+        mROLCheckGradientSteps(12),
+        mROLPerturbationScale(1)
 /******************************************************************************/
 {
 }
@@ -612,6 +614,23 @@ double OptimizerEngineStageData::getOCGradientTolerance() const
 void OptimizerEngineStageData::setOCGradientTolerance(const double & aInput)
 {
     mOCGradientTolerance = aInput;
+}
+
+double OptimizerEngineStageData::getROLPerturbationScale() const
+{
+    return mROLPerturbationScale;
+}
+void OptimizerEngineStageData::setROLPerturbationScale(const double & aInput)
+{
+    mROLPerturbationScale = aInput;
+}
+int OptimizerEngineStageData::getROLCheckGradientSteps() const
+{
+    return mROLCheckGradientSteps;
+}
+void OptimizerEngineStageData::setROLCheckGradientSteps(const int & aInput)
+{
+    mROLCheckGradientSteps = aInput;
 }
 
 /******************************************************************************/

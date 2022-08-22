@@ -63,9 +63,7 @@
 #include "Plato_GloballyConvergentMethodMovingAsymptotesInterface.hpp"
 
 #ifdef ENABLE_ROL
-#include "Plato_ROLAugmentedLagrangianInterface.hpp"
-#include "Plato_ROLBoundConstrainedInterface.hpp"
-#include "Plato_ROLLinearConstraintInterface.hpp"
+#include "Plato_ROLInterface.hpp"
 #endif
 
 namespace Plato
@@ -248,19 +246,24 @@ public:
        else if( tOptPackage == "ROL AugmentedLagrangian" )
        {
          try {
-           tOptimizer = new Plato::ROLAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+          Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL BoundConstrained" )
        {
          try {
-           tOptimizer = new Plato::ROLBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL LinearConstraint" )
        {
          try {
-           tOptimizer = new Plato::ROLLinearConstraintInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
          } catch(...){aInterface->Catch();}
        }
 #endif

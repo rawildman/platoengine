@@ -34,6 +34,7 @@ namespace XMLGen
   void append_engine_mpirun_lines(const XMLGen::InputData& aInputData, FILE*& fp);
   void append_plato_analyze_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const std::string& aDeviceID, const int aEvaluation = -1);
   void append_sierra_sd_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const int aEvaluation = -1);
+  void append_sierra_tf_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID);
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp);
   void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp);
   

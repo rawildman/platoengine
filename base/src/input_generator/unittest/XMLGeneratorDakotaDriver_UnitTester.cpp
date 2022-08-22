@@ -8,17 +8,37 @@
 
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
+#include "XMLGeneratorProblem.hpp"
+#include "XMLGeneratorUtilities.hpp"
+#include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParseMetadata.hpp"
-#include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
-#include "XMLGeneratorUtilities.hpp"
-#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorDakotaProblem.hpp"
+#include "XMLGeneratorProblemUtilities.hpp"
 #include "XMLGeneratorDefinesFileUtilities.hpp"
 #include "XMLGeneratorLaunchScriptUtilities.hpp"
-#include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
-#include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
-#include "XMLGeneratorProblem.hpp"
+#include "XMLGeneratorDakotaInterfaceFileUtilities.hpp"
+#include "XMLGeneratorPlatoAnalyzeInputFileUtilities.hpp"
 #include "XMLGeneratorDakotaDriverInputFileUtilities.hpp"
+#include "XMLGeneratorSierraSDOperationsFileUtilities.hpp"
+#include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
+#include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
+#include "XMLGeneratorPlatoAnalyzeOperationsFileUtilities.hpp"
+
+namespace XMLGen
+{
+
+namespace dakota
+{
+
+void usecase_system_call
+(XMLGen::InputData& aMetaData)
+{
+    XMLGen::write_define_xml_file(aMetaData);
+}
+
+}
+
+}
 
 namespace PlatoTestXMLGenerator
 {
@@ -344,11 +364,12 @@ TEST(PlatoTestXMLGenerator, InsertGeneralOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_general_optimization_input_options(tTags);
-    EXPECT_EQ(9u, tTags.size());
+    EXPECT_EQ(12u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"max_iterations",""}, {"verbose", "false"}, {"output_method", "epu"},
         {"output_frequency", "5"}, {"optimization_type", "topology"}, {"optimization_algorithm", "oc"}, 
-        {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""} };
+        {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""},
+        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
@@ -418,14 +439,16 @@ TEST(PlatoTestXMLGenerator, AppendDefinesFileToInterfaceFile)
 TEST(PlatoTestXMLGenerator, AppendPerformersToInterfaceFile_SingleObjective)
 {
     XMLGen::InputData tMetaData;
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.code("platomain");
+    tServiceOne.append("type", "plato_app");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.code("plato_analyze");
+    tServiceTwo.append("type", "plato_app");
+    tMetaData.append(tServiceTwo);
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
@@ -433,7 +456,7 @@ TEST(PlatoTestXMLGenerator, AppendPerformersToInterfaceFile_SingleObjective)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_performer_data(tMetaData, tDocument));
+    XMLGen::dakota::append_performer_data(tMetaData, tDocument);
 
     auto tPerformer = tDocument.child("Performer");
     ASSERT_FALSE(tPerformer.empty());
@@ -479,14 +502,16 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjective)
     XMLGen::InputData tMetaData;
 
     // Create a service
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
 
     // Create a criterion
     XMLGen::Criterion tCriterion;
@@ -516,7 +541,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjective)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
 
     // TEST
     auto tOuterSharedData = tDocument.child("For");
@@ -551,14 +576,16 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_MultiObjective)
     XMLGen::InputData tMetaData;
 
     // Create a service
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("plato_analyze");
+    tMetaData.append(tServiceTwo);
 
     // Create criteria
     XMLGen::Criterion tCriterion;
@@ -596,7 +623,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_MultiObjective)
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
 
     // TEST
     auto tOuterSharedData = tDocument.child("For");
@@ -641,17 +668,21 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     XMLGen::InputData tMetaData;
 
     // Create services
-    XMLGen::Service tService;
-    tService.id("1");
-    tService.code("platomain");
-    tMetaData.append(tService);
-    tService.id("2");
-    tService.code("sierra_sd");
-    tMetaData.append(tService);
-    tService.id("5");
-    tService.code("plato_analyze");
-    tMetaData.append(tService);
-    tMetaData.mPerformerServices.push_back(tService);
+    XMLGen::Service tServiceOne;
+    tServiceOne.id("1");
+    tServiceOne.type("plato_app");
+    tServiceOne.code("platomain");
+    tMetaData.append(tServiceOne);
+    XMLGen::Service tServiceTwo;
+    tServiceTwo.id("2");
+    tServiceTwo.type("plato_app");
+    tServiceTwo.code("sierra_sd");
+    tMetaData.append(tServiceTwo);
+    XMLGen::Service tServiceThree;
+    tServiceThree.id("5");
+    tServiceThree.type("plato_app");
+    tServiceThree.code("plato_analyze");
+    tMetaData.append(tServiceThree);
 
     // Create criteria
     XMLGen::Criterion tCriterion;
@@ -695,7 +726,7 @@ TEST(PlatoTestXMLGenerator, AppendSharedDataToInterfaceFile_SingleObjectiveSingl
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_shared_data(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_shared_data(tMetaData, tDocument));
 
     // TEST
     auto tOuterSharedData = tDocument.child("For");
@@ -779,7 +810,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_initialize_stage(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_initialize_stage(tMetaData, tDocument));
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -806,7 +837,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({"SharedDataName","ArgumentName"}, { "design_parameters_{I}", "Parameters"}, tOpInputs);
 
     // CREATE SUBBLOCK OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -821,7 +852,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // CONVERT TO TET10 OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -836,7 +867,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // DECOMP OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -846,9 +877,12 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     tOperation = tForNode.child("Operation");
     ASSERT_FALSE(tOperation.empty());
-    tKeys = {"Name", "PerformerName"};
-    tValues = {"decomp_mesh_sierra_sd_21_{I}", "plato_services_{I}"};
+    tKeys = {"Name", "PerformerName", "Input"};
+    tValues = {"decomp_mesh_sierra_sd_21_{I}", "plato_services_{I}", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tOpInputs = tOperation.child("Input");
+    ASSERT_FALSE(tOpInputs.empty());
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // REINITIALIZE ON CHANGE OPERATION 
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -863,7 +897,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -872,7 +906,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_SinglePhy
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -898,7 +932,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     tMetaData.append(tService);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_initialize_stage(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_initialize_stage(tMetaData, tDocument));
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -925,7 +959,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName" ,"ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     // REINITIALIZE ON CHANGE OPERATION
     tOuterOperation = tOuterOperation.next_sibling("Operation");
@@ -940,7 +974,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -949,7 +983,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "design_parameters_{I}", "Parameters"}, tOpInputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -958,7 +992,7 @@ TEST(PlatoTestXMLGenerator, AppendInitializeMeshesStageToInterfaceFile_MultiPhys
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpInputs = tOperation.child("Input");
     ASSERT_FALSE(tOpInputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"Parameters", "design_parameters_{I}"}, tOpInputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName", "ArgumentName"}, { "design_parameters_{I}","Parameters"}, tOpInputs);
 
     tOperation = tForNode.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1002,7 +1036,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_criterion_value_stages(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_criterion_value_stages(tMetaData, tDocument));
 
     // COMPUTE CRITERION 0 VALUE STAGE
     auto tStage = tDocument.child("Stage");
@@ -1022,7 +1056,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1087,7 +1121,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_MultiObje
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_criterion_value_stages(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_criterion_value_stages(tMetaData, tDocument));
 
     // COMPUTE CRITERION 0 VALUE STAGE
     auto tStage = tDocument.child("Stage");
@@ -1107,7 +1141,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_MultiObje
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1143,7 +1177,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_MultiObje
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_7_service_1_scenario_14 value", "criterion_7_service_1_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_7_service_1_scenario_14_{I}","criterion_7_service_1_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1217,7 +1251,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     tMetaData.constraints.push_back(tConstraint);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_criterion_value_stages(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_criterion_value_stages(tMetaData, tDocument));
 
     // COMPUTE CRITERION 0 VALUE STAGE
     auto tStage = tDocument.child("Stage");
@@ -1237,7 +1271,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_3_service_2_scenario_14 value", "criterion_3_service_2_scenario_14_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_3_service_2_scenario_14_{I}","criterion_3_service_2_scenario_14 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1273,7 +1307,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriteriaStagesToInterfaceFile_SingleObj
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tOpOutputs = tOperation.child("Output");
     ASSERT_FALSE(tOpOutputs.empty());
-    PlatoTestXMLGenerator::test_children({"ArgumentName", "SharedDataName"}, {"criterion_7_service_5_scenario_3 value", "criterion_7_service_5_scenario_3_{I}"}, tOpOutputs);
+    PlatoTestXMLGenerator::test_children({ "SharedDataName","ArgumentName"}, { "criterion_7_service_5_scenario_3_{I}","criterion_7_service_5_scenario_3 value"}, tOpOutputs);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -1330,7 +1364,7 @@ TEST(PlatoTestXMLGenerator, AppendDakotaDriverOptionsToInterfaceFile_SingleObjec
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_driver_options(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_driver_options(tMetaData, tDocument));
 
     // INITIALIZE MESHES STAGE
     auto tDriver = tDocument.child("DakotaDriver");
@@ -1424,7 +1458,7 @@ TEST(PlatoTestXMLGenerator, AppendDakotaDriverOptionsToInterfaceFile_MultiObject
     tMetaData.objective = tObjective;
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_driver_options(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_driver_options(tMetaData, tDocument));
 
     // INITIALIZE MESHES STAGE
     auto tDriver = tDocument.child("DakotaDriver");
@@ -1548,7 +1582,7 @@ TEST(PlatoTestXMLGenerator, AppendDakotaDriverOptionsToInterfaceFile_SingleObjec
     tMetaData.constraints.push_back(tConstraint);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_dakota_driver_options(tMetaData, tDocument));
+    ASSERT_NO_THROW(XMLGen::dakota::append_driver_options(tMetaData, tDocument));
 
     // INITIALIZE MESHES STAGE
     auto tDriver = tDocument.child("DakotaDriver");
@@ -1630,6 +1664,7 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "3");
     tXMLMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1653,8 +1688,8 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1673,8 +1708,8 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "3"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1688,6 +1723,7 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "7");
     tXMLMetaData.set(tOptimizationParameters);
 
     // Create services
@@ -1736,8 +1772,8 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1752,8 +1788,8 @@ TEST(PlatoTestXMLGenerator, AppendConvertToTet10ToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1768,6 +1804,7 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "7");
     tXMLMetaData.set(tOptimizationParameters);
 
     // Create services
@@ -1824,8 +1861,8 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -1840,8 +1877,8 @@ TEST(PlatoTestXMLGenerator, AppendCreateSubBlockToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
     ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName"};
-    tValues = {"Parameters"};
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "7"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
@@ -2056,6 +2093,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Mult
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "41");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2066,16 +2104,26 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Mult
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo"};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "41"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo"};
+    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "41"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -2133,6 +2181,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Sing
     tOptimizationParameters.optimizationType(XMLGen::OT_DAKOTA);
     tOptimizationParameters.append("concurrent_evaluations", "2");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "14");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2143,16 +2192,26 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Sing
     auto tOperation = tDocument.child("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo"};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
     ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo"};
+    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
+    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo", "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "14"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
 
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_TRUE(tOperation.empty());
@@ -3502,11 +3561,12 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaListToPlatoAnalyzeInputFileForDakotaDr
 TEST(PlatoTestXMLGenerator, CheckThatDirectoryExists)
 {
     std::string tDirectoryName = "evaluations_0";
-    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
-    Plato::system("mkdir evaluations_0");
-    ASSERT_TRUE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
     Plato::system("rm -rf evaluations_0");
-    ASSERT_FALSE(XMLGen::Problem::subdirectory_exists(tDirectoryName));
+    ASSERT_FALSE(XMLGen::subdirectory_exists(tDirectoryName));
+    Plato::system("mkdir evaluations_0");
+    ASSERT_TRUE(XMLGen::subdirectory_exists(tDirectoryName));
+    Plato::system("rm -rf evaluations_0");
+    ASSERT_FALSE(XMLGen::subdirectory_exists(tDirectoryName));
 }
 
 TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
@@ -3587,8 +3647,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData2));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/plato_analyze_2_input_deck_0.xml");
     auto tGold = std::string("<?xmlversion=\"1.0\"?><ParameterListname=\"Problem\"><Parametername=\"Physics\"type=\"string\"value=\"PlatoDriver\"/>") + 
@@ -3714,7 +3774,7 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
     auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
@@ -3830,8 +3890,8 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDAndPlatoAnalyzeInputXmlFilesForDakotaDr
     Plato::system("rm -rf evaluations_1");
 
     ASSERT_NO_THROW(XMLGen::Problem::create_concurrent_evaluation_subdirectories(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData1));
-    ASSERT_NO_THROW(XMLGen::Problem::write_performer_input_deck_file_dakota_problem(tMetaData2));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData1));
+    ASSERT_NO_THROW(XMLGen::dakota::write_performer_input_deck_file(tMetaData2));
 
     auto tReadData = XMLGen::read_data_from_file("evaluations_0/sierra_sd_2_input_deck_0.i");
     auto tGold = std::string("SOLUTIONcase'14'topology_optimizationsolvergdswENDGDSWEND") + 
@@ -4202,39 +4262,6 @@ TEST(PlatoTestXMLGenerator, AppendModelsToDakotaDriverInputFile_SBGO_OutputSurro
     Plato::system("rm -rf appendModels.txt");
 }
 
-TEST(PlatoTestXMLGenerator, ParseCsmFileForDakotaDriverInputFile)
-{
-    // Create test csm file
-    std::istringstream tIss;
-    std::string tStringInput =
-        "# Constant, Design, and Output Parameters:\n"
-        "despmtr Py 2.0 lbound 2.0 ubound 3.0 initial 2.0\n"
-        "despmtr Px 2.0 lbound 1.6 ubound 2.4 initial 2.0\n"
-        "conpmtr Boffset 0.25 # lbound 0.05 ubound 0.38 initial 0.25\n"
-        "conpmtr Lx 6.5 # lbound 5.0 ubound 8.0 initial 6.5\n";
-
-    // Parse test csm file
-    tIss.str(tStringInput);
-    tIss.clear();
-    tIss.seekg(0);
-
-    std::vector<std::string> tVariablesStrings = {"","","",""};
-    int tCounter = 0;
-    ASSERT_NO_THROW(XMLGen::parse_csm_file_for_design_variable_data(tIss,tVariablesStrings,tCounter));
-
-    ASSERT_EQ(tCounter,2);
-
-    std::vector<std::string> tGoldStrings = {" 'py' 'px'",
-                                             " 2.0 1.6",   
-                                             " 3.0 2.4",     
-                                             " 2.0 2.0"};
-
-    for(int iString = 0; iString < tGoldStrings.size(); iString++)
-    {
-        ASSERT_STREQ(tVariablesStrings[iString].c_str(), tGoldStrings[iString].c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile_ErrorNumberDesignVariablesDontMatchCsm)
 {
     // Create test csm file
@@ -4290,15 +4317,45 @@ TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFile)
     auto tReadData = XMLGen::read_data_from_file("appendParameters.txt");
     auto tGold = std::string("variables") + 
         std::string("continuous_design=2") + 
-        std::string("descriptors'py''px'") +
-        std::string("lower_bounds2.01.6") +
-        std::string("upper_bounds3.02.4") +
-        std::string("initial_point2.02.0");
+        std::string("descriptors'Py''Px'") +
+        std::string("lower_bounds2.0000001.600000") +
+        std::string("upper_bounds3.0000002.400000") +
+        std::string("initial_point2.0000002.000000");
 
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
     Plato::system("rm -rf appendParameters.txt");
     Plato::system("rm -rf rocker.csm");
+}
+
+TEST(PlatoTestXMLGenerator, AppendParametersToDakotaDriverInputFileFromDescriptors)
+{
+    // create metadata
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("dakota_workflow", "sbgo");
+    tOptimizationParameters.append("concurrent_evaluations", "6");
+    tOptimizationParameters.descriptors({"sl" ,  "sw"});
+    tOptimizationParameters.lower_bounds({"0",  "0.1"});
+    tOptimizationParameters.upper_bounds({"1",  "1.1"});
+    tOptimizationParameters.mdps_partitions({"2",  "3"});
+    
+    tMetaData.set(tOptimizationParameters);
+
+    FILE* fp2=fopen("appendParameters.txt", "w");
+    ASSERT_NO_THROW(XMLGen::append_dakota_driver_variables_block(tMetaData, fp2));
+    fclose(fp2);
+
+    auto tReadData = XMLGen::read_data_from_file("appendParameters.txt");
+    auto tGold = std::string("variables") + 
+        std::string("continuous_design=2") + 
+        std::string("descriptors'sl''sw'") +
+        std::string("lower_bounds00.1") +
+        std::string("upper_bounds11.1");
+
+    EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
+
+    Plato::system("rm -rf appendParameters.txt");
 }
 
 TEST(PlatoTestXMLGenerator, AppendInterfaceToDakotaDriverInputFile_MDPS)
