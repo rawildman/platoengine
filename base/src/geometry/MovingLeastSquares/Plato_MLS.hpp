@@ -58,6 +58,7 @@
 #include <math.h>
 #include "Plato_Parser.hpp"
 #include "Plato_Exceptions.hpp"
+#include "Plato_KokkosTypes.hpp"
 
 #include <Kokkos_Macros.hpp>
 
@@ -70,9 +71,9 @@ template<typename ScalarType=double>
 using ScalarVector = typename Kokkos::View<ScalarType*, MemSpace>;
 
 template<typename ScalarType=double>
-using ScalarArray  = typename Kokkos::View<ScalarType**, Kokkos::LayoutRight, MemSpace>;
+using ScalarArray  = typename Kokkos::View<ScalarType**, Plato::Layout, MemSpace>;
 
-using NeighborMap = typename Kokkos::View<int**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>;
+using NeighborMap = typename Kokkos::View<int**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>;
 using NeighborMapHost = typename NeighborMap::HostMirror;
 
 template<int SpaceDim, typename ScalarType>

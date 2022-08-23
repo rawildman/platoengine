@@ -54,6 +54,7 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_MetaDataMLS.hpp"
 #include "Plato_LocalOperation.hpp"
+#include "Plato_KokkosTypes.hpp"
 
 namespace Plato
 {
@@ -108,7 +109,7 @@ public:
 
         // pull node coordinates into Kokkos::View
         //
-        Kokkos::View<ScalarType**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+        Kokkos::View<ScalarType**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
             tNodeCoords("coords", tMyLength, SpaceDim);
         auto tNodeCoordsHost = Kokkos::create_mirror_view(tNodeCoords);
         auto tMesh = mPlatoApp->getLightMP()->getMesh();
