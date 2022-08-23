@@ -274,7 +274,7 @@ size_t get_variable_strings_from_csm_file
     for(auto iInitialValue : tInitialValues)
         aVariablesStrings[3] += "  " + std::to_string(iInitialValue) + "  ";
 
-    if (tDescriptors.size() != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
+    if ((int)tDescriptors.size() != std::stoi(aMetaData.optimization_parameters().num_shape_design_variables()))
         THROWERR("Number of design variables specified in input deck does not match number of descriptors.")
 
     return tDescriptors.size();
