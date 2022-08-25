@@ -236,10 +236,11 @@ void append_rol_gradient_check_options
  pugi::xml_node& aParentNode)
 { 
     std::vector<std::string> tKeys = {"ROLGradientCheckPerturbationScale",
-                                      "ROLGradientCheckSteps"};
+                                      "ROLGradientCheckSteps",
+                                      "ROLGradientCheckSeed"};
     std::vector<std::string> tValues = {aMetaData.optimization_parameters().rol_gradient_check_perturbation_scale(),
-                                        aMetaData.optimization_parameters().rol_gradient_check_steps()};
-    
+                                        aMetaData.optimization_parameters().rol_gradient_check_steps(),
+                                        aMetaData.optimization_parameters().rol_gradient_check_random_seed()};
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
     auto tOptionsNode = aParentNode.child("Options");
     if(tOptionsNode.empty())

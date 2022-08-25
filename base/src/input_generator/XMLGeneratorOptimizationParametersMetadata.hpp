@@ -501,6 +501,7 @@ public:
 
     std::string rol_gradient_check_perturbation_scale() const {return value("rol_gradient_check_perturbation_scale");}
     std::string rol_gradient_check_steps() const {return value("rol_gradient_check_steps");}
+    std::string rol_gradient_check_random_seed() const {return value("rol_gradient_check_random_seed");}
 
 };
 // struct OptimizationParameters
