@@ -196,7 +196,7 @@ namespace PlatoTestGeometryMLS
     int m1=13, m2=17, m3=5;
     int numNodes = m1*m2*m3;
 
-    Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+    Kokkos::View<double**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
       nodeCoords("coords", numNodes, numDims);
 
     auto nodeCoordsHost = Kokkos::create_mirror_view(nodeCoords);
@@ -273,7 +273,7 @@ namespace PlatoTestGeometryMLS
     int m1=13, m2=17;
     int numNodes = m1*m2;
 
-    Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+    Kokkos::View<double**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
       nodeCoords("coords", numNodes, numDims);
 
     auto nodeCoordsHost = Kokkos::create_mirror_view(nodeCoords);
@@ -365,7 +365,7 @@ namespace PlatoTestGeometryMLS
     int m1=13, m2=17;
     int numNodes = m1*m2;
 
-    Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+    Kokkos::View<double**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
       nodeCoords("coords", numNodes, numDims);
 
     auto nodeCoordsHost = Kokkos::create_mirror_view(nodeCoords);
@@ -473,7 +473,7 @@ namespace PlatoTestGeometryMLS
     int m1=13, m2=17, m3=3;
     int numNodes = m1*m2*m3;
 
-    Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+    Kokkos::View<double**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
       nodeCoords("coords", numNodes, numDims);
 
     auto nodeCoordsHost = Kokkos::create_mirror_view(nodeCoords);
@@ -611,7 +611,7 @@ namespace PlatoTestGeometryMLS
     int m1=13, m2=17;
     int numNodes = m1*m2;
 
-    Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+    Kokkos::View<double**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
       nodeCoords("coords", numNodes, numDims);
 
     auto nodeCoordsHost = Kokkos::create_mirror_view(nodeCoords);
