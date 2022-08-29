@@ -107,7 +107,7 @@ public:
         int tMyLength = tLocalOutput.MyLength();
 
         Kokkos::View<ScalarType*, Kokkos::DefaultExecutionSpace::memory_space> tNodeValues("values", tMyLength);
-        Kokkos::View<ScalarType**, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace::memory_space>
+        Kokkos::View<ScalarType**, Plato::Layout, Kokkos::DefaultExecutionSpace::memory_space>
             tNodeCoords("coords", tMyLength, SpaceDim);
         auto tNodeCoordsHost = Kokkos::create_mirror_view(tNodeCoords);
         auto tMesh = mPlatoApp->getLightMP()->getMesh();
