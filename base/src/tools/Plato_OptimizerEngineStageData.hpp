@@ -186,6 +186,8 @@ public:
     void setROLPerturbationScale(const double & aInput);
     int getROLCheckGradientSteps() const;
     void setROLCheckGradientSteps(const int & aInput);
+    int getROLCheckGradientSeed() const;
+    void setROLCheckGradientSeed(const int & aInput);
 
     /******************************************************************************//**
      * @brief Return limited memory storage capacity for LBFG Hessian method
@@ -519,6 +521,7 @@ private:
     int mDerivativeCheckerFinalSuperscript;
     int mDerivativeCheckerInitialSuperscript;
     int mROLCheckGradientSteps;
+    int mROLCheckGradientSeed;
 
     double mInitialMovingAsymptoteScaleFactor;
     double mGCMMAInnerKKTTolerance;
