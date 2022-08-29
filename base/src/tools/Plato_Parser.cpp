@@ -1427,6 +1427,11 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             int tROLGradientCheckSteps = Plato::Get::Int(tOptionsNode, "ROLGradientCheckSteps");
             aOptimizerEngineStageData.setROLCheckGradientSteps(tROLGradientCheckSteps);
         }
+        if( tOptionsNode.size<std::string>("ROLGradientCheckSeed") )
+        {
+            int tROLGradientCheckSteps = Plato::Get::Int(tOptionsNode, "ROLGradientCheckSeed");
+            aOptimizerEngineStageData.setROLCheckGradientSeed(tROLGradientCheckSteps);
+        }
         
         if( tOptionsNode.size<std::string>("HessianType") )
         {

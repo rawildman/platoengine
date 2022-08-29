@@ -71,6 +71,8 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mKSMaxTrustRegionIterations(25),
         mDerivativeCheckerFinalSuperscript(8),
         mDerivativeCheckerInitialSuperscript(1),
+        mROLCheckGradientSteps(12),
+        mROLCheckGradientSeed(0),
         mInitialMovingAsymptoteScaleFactor(0.5),
         mGCMMAInnerKKTTolerance(5e-4),
         mCCSAOuterKKTTolerance(1e-10),
@@ -98,6 +100,7 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mOCControlStagnationTolerance(1e-2),
         mOCObjectiveStagnationTolerance(1e-5),
         mOCGradientTolerance(1e-8),
+        mROLPerturbationScale(1),
         mAlgebra(),
         mStateName(),
         mHessianType("disabled"),
@@ -135,9 +138,9 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mUpdateProblemStageNames(),
         mConstraintGradientNames(),
         mConstraintHessianNames(),
-        mConstraintReferenceValueNames(),
-        mROLCheckGradientSteps(12),
-        mROLPerturbationScale(1)
+        mConstraintReferenceValueNames()
+        
+        
 /******************************************************************************/
 {
 }
@@ -631,6 +634,14 @@ int OptimizerEngineStageData::getROLCheckGradientSteps() const
 void OptimizerEngineStageData::setROLCheckGradientSteps(const int & aInput)
 {
     mROLCheckGradientSteps = aInput;
+}
+int OptimizerEngineStageData::getROLCheckGradientSeed() const
+{
+    return mROLCheckGradientSeed;
+}
+void OptimizerEngineStageData::setROLCheckGradientSeed(const int & aInput)
+{
+    mROLCheckGradientSeed = aInput;
 }
 
 /******************************************************************************/

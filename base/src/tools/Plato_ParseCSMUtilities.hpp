@@ -49,6 +49,7 @@
 
 #include <vector>
 #include <fstream> 
+#include "XMLGeneratorParserUtilities.hpp"
 
 namespace Plato
 {

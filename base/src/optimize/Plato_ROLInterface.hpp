@@ -296,13 +296,19 @@ protected:
         std::cout<<"Checking gradient..."<<std::endl;
         auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
         auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
+        auto tCheckGradientSeed = this->mInputData.getROLCheckGradientSeed();
+        if(tCheckGradientSeed !=0)
+        {
+            std::srand((unsigned int)tCheckGradientSeed);
+            std::cout<<"Setting seed to: "<<(unsigned int)tCheckGradientSeed<<std::endl;
+        }
         std::ofstream tOutputFile;
         tOutputFile.open("ROL_gradient_check_output.txt");
         auto tObjective = aOptimizationProblem->getObjective();
         auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
         auto tPerturbation = tControl->clone();
         tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);
-	tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
+	    tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
         tOutputFile.close();
     }
 
