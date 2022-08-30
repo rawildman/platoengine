@@ -109,7 +109,10 @@ public:
         tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
 
         if(this->mInputData.getCheckGradient() == true)
-          this->checkGradient(tOptimizationProblem);
+        {
+            this->checkGradient(tOptimizationProblem);
+            this->checkConstraint(tOptimizationProblem);
+        }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
             this->solveBoundConstrained(tOptimizationProblem);
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT || mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
@@ -309,6 +312,45 @@ protected:
         auto tPerturbation = tControl->clone();
         tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);
 	    tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
+        tOutputFile.close();
+    }
+
+    void checkConstraint(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
+    {
+        //OptimizationProblemCheckData<Real> data;
+
+        std::cout<<"Checking constraint..."<<std::endl;
+        auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
+        auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
+        auto tCheckGradientSeed = this->mInputData.getROLCheckGradientSeed();
+        if(tCheckGradientSeed !=0)
+        {
+            std::srand((unsigned int)tCheckGradientSeed);
+            std::cout<<"Setting seed to: "<<(unsigned int)tCheckGradientSeed<<std::endl;
+        }
+
+
+        std::ofstream tOutputFile;
+        tOutputFile.open("ROL_constraint_check_output.txt");
+
+        aOptimizationProblem->check(true, tOutputFile);
+
+        /*auto tObjective = aOptimizationProblem->getObjective();
+        auto tx = aOptimizationProblem->getPrimalOptimizationVector();
+        tx->randomize(-tPerturbationScale, tPerturbationScale);
+        auto tu = aOptimizationProblem->getPrimalOptimizationVector();
+        tu->randomize(-tPerturbationScale, tPerturbationScale);
+        auto tv = aOptimizationProblem->getPrimalOptimizationVector();
+        tv->randomize(-tPerturbationScale, tPerturbationScale);
+        //c is a mul->dual clone
+        //and l is mul->clone
+        auto tl = aOptimizationProblem->getMultiplierVector();
+        tl->randomize(-tPerturbationScale, tPerturbationScale);
+
+        auto tc = aOptimizationProblem->getDualOptimizationVector();
+        tc->randomize(-tPerturbationScale, tPerturbationScale);
+
+        aOptimizationProblem->checkConstraint(data,*tx,*tu,*tv,*tc,*tl,tOutputFile,tCheckGradientSteps,1); */       
         tOutputFile.close();
     }
 
