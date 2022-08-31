@@ -58,7 +58,7 @@ namespace Plato
 using Scalar = double;
 using ExecSpace = Kokkos::DefaultExecutionSpace;
 using MemSpace = typename ExecSpace::memory_space;
-using Layout = typename Kokkos::LayoutRight;
+using Layout = Kokkos::LayoutRight;
 
 template <typename ScalarType>
 using ScalarVectorT = typename Kokkos::View<ScalarType*, MemSpace>;
