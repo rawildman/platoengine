@@ -344,10 +344,15 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_rol_input_options(tTags);
-    EXPECT_EQ(3u, tTags.size());
+    EXPECT_EQ(6u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"rol_subproblem_model", ""}, 
-        {"reset_algorithm_on_update","false"}, {"rol_lin_more_cauchy_initial_step_size", "3.0"} };
+                                                                 {"reset_algorithm_on_update","false"}, 
+                                                                 {"rol_lin_more_cauchy_initial_step_size", "3.0"} ,
+                                                                 {"rol_gradient_check_perturbation_scale", "1.0"} ,
+                                                                 {"rol_gradient_check_steps", "12"},
+                                                                 {"rol_gradient_check_random_seed", ""}
+                                                                 };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
