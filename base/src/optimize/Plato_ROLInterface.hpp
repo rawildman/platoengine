@@ -96,7 +96,7 @@ public:
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
         ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
-        
+                
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
             createOptimizationProblemLinearConstraint(tOptimizationProblem,tObjective,tControls,tControlBoundsMng);
@@ -332,25 +332,37 @@ protected:
 
         std::ofstream tOutputFile;
         tOutputFile.open("ROL_constraint_check_output.txt");
-
-        aOptimizationProblem->check(true, tOutputFile);
-
-        /*auto tObjective = aOptimizationProblem->getObjective();
         auto tx = aOptimizationProblem->getPrimalOptimizationVector();
-        tx->randomize(-tPerturbationScale, tPerturbationScale);
-        auto tu = aOptimizationProblem->getPrimalOptimizationVector();
-        tu->randomize(-tPerturbationScale, tPerturbationScale);
+        tx->randomize(0, tPerturbationScale);
         auto tv = aOptimizationProblem->getPrimalOptimizationVector();
-        tv->randomize(-tPerturbationScale, tPerturbationScale);
-        //c is a mul->dual clone
-        //and l is mul->clone
-        auto tl = aOptimizationProblem->getMultiplierVector();
-        tl->randomize(-tPerturbationScale, tPerturbationScale);
+        tv->randomize(0, tPerturbationScale);
+        
+        if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
+        {
+            auto tg = aOptimizationProblem->getDualOptimizationVector();
+            tg->randomize(0, tPerturbationScale);
+            auto tc = aOptimizationProblem->getResidualVector();
+            tc->randomize(-tPerturbationScale, tPerturbationScale);
+            auto tw = aOptimizationProblem->getMultiplierVector();
+            tw->randomize(-tPerturbationScale, tPerturbationScale);
+            
+            auto tConstraint = aOptimizationProblem->getConstraint();
+            tConstraint->checkApplyJacobian(*tx, *tv, *tc, true, tOutputFile);
+            tConstraint->checkAdjointConsistencyJacobian(*tw, *tv, *tx, true, tOutputFile);   
+        }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
+        {
+            aOptimizationProblem->checkLinearity(true, tOutputFile);
+        }
+        else
+        {
+            auto tb = aOptimizationProblem->getBoundConstraint();
 
-        auto tc = aOptimizationProblem->getDualOptimizationVector();
-        tc->randomize(-tPerturbationScale, tPerturbationScale);
 
-        aOptimizationProblem->checkConstraint(data,*tx,*tu,*tv,*tc,*tl,tOutputFile,tCheckGradientSteps,1); */       
+        }
+
+
+
         tOutputFile.close();
     }
 
