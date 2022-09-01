@@ -199,10 +199,10 @@ TEST(PlatoTestXMLGenerator, InsertSymmetryFilterInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_plato_symmetry_filter_input_options(tTags);
-    EXPECT_EQ(4u, tTags.size());
+    EXPECT_EQ(5u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"symmetry_plane_normal",""}, {"symmetry_plane_origin",""}, 
-        {"mesh_map_filter_radius", ""}, {"filter_before_symmetry_enforcement", ""} };
+        {"mesh_map_filter_radius", ""}, {"filter_before_symmetry_enforcement", ""}, {"mesh_map_search_tolerance", ""} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS

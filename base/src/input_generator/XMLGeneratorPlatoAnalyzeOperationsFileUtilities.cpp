@@ -396,6 +396,8 @@ namespace XMLGen
             XMLGen::append_children({"Type", "Radius"}, {"Linear", aMetaData.optimization_parameters().mesh_map_filter_radius()}, tFilter);
             auto tLinearMap = tMeshMap.append_child("LinearMap");
             XMLGen::append_children({"Type"}, {"SymmetryPlane"}, tLinearMap);
+            if (!aMetaData.optimization_parameters().mesh_map_search_tolerance().empty())
+                XMLGen::append_children({"SearchTolerance"}, {aMetaData.optimization_parameters().mesh_map_search_tolerance()}, tLinearMap);
             auto tOrigin = tLinearMap.append_child("Origin");
             XMLGen::append_children({"X", "Y", "Z"}, {aMetaData.optimization_parameters().symmetryOrigin()[0], aMetaData.optimization_parameters().symmetryOrigin()[1], aMetaData.optimization_parameters().symmetryOrigin()[2]}, tOrigin);
             auto tNormal = tLinearMap.append_child("Normal");

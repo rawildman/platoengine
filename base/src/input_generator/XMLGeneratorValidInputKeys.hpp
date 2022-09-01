@@ -1571,6 +1571,7 @@ struct ValidOptimizationParameterKeys
      "symmetry_plane_origin",
      "mesh_map_filter_radius",
      "filter_before_symmetry_enforcement",
+     "mesh_map_search_tolerance",
      "mma_asymptote_expansion",
      "mma_asymptote_contraction",
      "mma_max_sub_problem_iterations",
