@@ -52,7 +52,6 @@
 #include <mpi.h>
 
 #include "Plato_OptimizerInterface.hpp"
-#include "Plato_DiagnosticsInterface.hpp"
 #include "Plato_ParticleSwarmEngineBCPSO.hpp"
 #include "Plato_ParticleSwarmEngineALPSO.hpp"
 #include "Plato_SOParameterStudiesInterface.hpp"
@@ -230,12 +229,6 @@ public:
             tOptimizer = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
-        else if( tOptPackage == "DerivativeChecker" )
-        {
-          try {
-            tOptimizer = new Plato::DiagnosticsInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
         else if( tOptPackage == "SOParameterStudies" )
         {
           try {
@@ -282,7 +275,6 @@ public:
             << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
             << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
             << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
-            << "\t DerivativeChecker ... Derivative Checker Toolkit\n"
             << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
 #ifdef ENABLE_ROL
             << "\t ROL AugmentedLagrangian... Rapid Optimization Library Augmented Lagrangian\n"
