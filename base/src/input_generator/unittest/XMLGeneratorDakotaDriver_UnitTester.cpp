@@ -300,26 +300,6 @@ TEST(PlatoTestXMLGenerator, InsertOptimalityCriteriaInputs)
     }
 }
 
-TEST(PlatoTestXMLGenerator, InsertDerivativeCheckerInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_derivative_checker_input_options(tTags);
-    EXPECT_EQ(4u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"check_hessian","false"}, {"check_gradient","false"}, 
-        {"derivative_checker_final_superscript", "8"}, {"derivative_checker_initial_superscript", "1"} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, InsertRestartInputs)
 {
     XMLGen::MetaDataTags tTags;

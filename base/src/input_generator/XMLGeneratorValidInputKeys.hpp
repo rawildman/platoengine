@@ -1587,8 +1587,6 @@ struct ValidOptimizationParameterKeys
      "initial_guess_file_name",
      "initial_guess_field_name",
      "normalize_in_aggregator",
-     "derivative_checker_final_superscript",
-     "derivative_checker_initial_superscript",
      "output_method",
      "output_frequency",
      "initial_density_value",

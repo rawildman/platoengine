@@ -146,16 +146,6 @@ void append_rol_step_block
  * \param [in]  aMetaData  Plato problem input data
  * \param [out] aParentNode Parent to add data to
 **********************************************************************************/
-void append_derivative_checker_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
- * \fn append_derivative_checker_options
- * \brief Append derivative checker options to interface xml file.
- * \param [in]  aMetaData  Plato problem input data
- * \param [out] aParentNode Parent to add data to
-**********************************************************************************/
 void append_rol_gradient_check_flags
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode);
