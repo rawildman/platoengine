@@ -457,7 +457,65 @@ TEST(PlatoTestXMLGenerator, parseCommentTokens)
 
 }
 
+TEST(PlatoTestXMLGenerator, parseOptimizationParametersDakotaVectorEntries)
+{
+        XMLGenerator_UnitTester tester;
+        std::istringstream iss;
+        std::string stringInput;
 
+        // descriptors
+        stringInput = "begin optimization_parameters\n"
+                "descriptors lower mid upper\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getDescriptors()[0], "lower");
+        EXPECT_EQ(tester.getDescriptors()[1], "mid");
+        EXPECT_EQ(tester.getDescriptors()[2], "upper");
+
+        // lower bounds
+        stringInput = "begin optimization_parameters\n"
+                "lower_bounds 1 2 3\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getLowerBounds()[0], "1");
+        EXPECT_EQ(tester.getLowerBounds()[1], "2");
+        EXPECT_EQ(tester.getLowerBounds()[2], "3");
+
+        // upper bounds
+        stringInput = "begin optimization_parameters\n"
+                "upper_bounds 5 6 7\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getUpperBounds()[0], "5");
+        EXPECT_EQ(tester.getUpperBounds()[1], "6");
+        EXPECT_EQ(tester.getUpperBounds()[2], "7");
+
+        // lower bounds
+        stringInput = "begin optimization_parameters\n"
+                "mdps_partitions 1 2 3\n"
+                "end optimization_parameters\n";
+        iss.str(stringInput);
+        iss.clear();
+        iss.seekg (0);
+        tester.clearInputData();
+        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+        EXPECT_EQ(tester.getMDPSPartitions()[0], "1");
+        EXPECT_EQ(tester.getMDPSPartitions()[1], "2");
+        EXPECT_EQ(tester.getMDPSPartitions()[2], "3");
+
+}
 
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
 {
@@ -1318,6 +1376,105 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
     EXPECT_EQ(tester.getConcurrentEvaluations(), "3");
+} 
+
+TEST(PlatoTestXMLGenerator, parseOptimizationParameters_MeshMap)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    // mesh map not requested correctly
+    stringInput = "begin optimization_parameters\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), false);
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_origin 0 0 0\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), false);
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_normal 1 0 0\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), false);
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_normal 1 1 \n"
+            "symmetry_plane_origin 0 0 0\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), false);
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_normal 1 0 0\n"
+            "symmetry_plane_origin 0 0\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), false);
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_normal 1 0 0\n"
+            "symmetry_plane_origin 0 0 0\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), true);
+
+    // check mesh map inputs
+    stringInput = "begin optimization_parameters\n"
+            "filter_before_symmetry_enforcement false\n"
+            "symmetry_plane_normal 1 0 0\n"
+            "symmetry_plane_origin 0 0 0\n"
+            "mesh_map_filter_radius 0.15\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), true);
+    ASSERT_EQ(tester.getFilterBeforeSymmetry(), "false");
+    ASSERT_EQ(tester.getMeshMapFilterRadius(), "0.15");
+
+    stringInput = "begin optimization_parameters\n"
+            "symmetry_plane_normal 1 0 0\n"
+            "symmetry_plane_origin 0 0 0\n"
+            "mesh_map_search_tolerance 0.2\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    ASSERT_EQ(tester.getNeedsMeshMap(), true);
+    ASSERT_EQ(tester.getMeshMapSearchTolerance(), "0.2");
 }
 
 TEST(PlatoTestXMLGenerator, parseMesh)

@@ -1085,6 +1085,24 @@ TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_ErrorEmpt
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_ErrorShapeOptimization)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tInputData;
+
+    XMLGen::Service tService;
+    tService.updateProblem("true");
+    tInputData.append(tService);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tInputData.set(tOptimizationParameters);
+
+    ASSERT_THROW(XMLGen::append_update_problem_to_plato_analyze_operation(tInputData, tDocument), std::runtime_error);
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation_DoNotWriteUpdateProblemOperation)
 {
     pugi::xml_document tDocument;
@@ -1112,6 +1130,60 @@ TEST(PlatoTestXMLGenerator, AppendUpdateProblemToPlatoAnalyzeOperation)
     ASSERT_FALSE(tOperation.empty());
 
     PlatoTestXMLGenerator::test_children({"Function", "Name"}, {"UpdateProblem", "Update Problem"}, tOperation);
+}
+
+TEST(PlatoTestXMLGenerator, AppendMeshMapToPlatoAnalyzeOperation)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tInputData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    std::vector<std::string> tNormalVec = {"1", "0", "0"};
+    std::vector<std::string> tOriginVec = {"5", "1", "8"};
+    tOptimizationParameters.symmetryNormal(tNormalVec);
+    tOptimizationParameters.symmetryOrigin(tOriginVec);
+    tOptimizationParameters.append("mesh_map_filter_radius", "0.32");
+    tOptimizationParameters.append("filter_before_symmetry_enforcement", "true");
+    tOptimizationParameters.append("mesh_map_search_tolerance", "0.2");
+    tInputData.set(tOptimizationParameters);
+    ASSERT_NO_THROW(XMLGen::append_mesh_map_data(tInputData, tDocument));
+
+    tDocument.save_file("test_ryan.xml", "  ");
+
+    auto tMeshMap = tDocument.child("MeshMap");
+    ASSERT_FALSE(tMeshMap.empty());
+
+    PlatoTestXMLGenerator::test_children({"FilterFirst", "Filter", "LinearMap", }, {"true", "", ""}, tMeshMap);
+
+    auto tFilter = tMeshMap.child("Filter");
+    ASSERT_FALSE(tFilter.empty());
+    PlatoTestXMLGenerator::test_children({"Type", "Radius"}, {"Linear", "0.32"}, tFilter);
+    tFilter = tFilter.next_sibling("Filter");
+    ASSERT_TRUE(tFilter.empty());
+
+    auto tLinearMap = tMeshMap.child("LinearMap");
+    ASSERT_FALSE(tLinearMap.empty());
+    PlatoTestXMLGenerator::test_children({"Type", "SearchTolerance", "Origin", "Normal"}, {"SymmetryPlane", "0.2", "", ""}, tLinearMap);
+
+    auto tNormal = tLinearMap.child("Normal");
+    ASSERT_FALSE(tNormal.empty());
+    PlatoTestXMLGenerator::test_children({"X", "Y", "Z"}, {"1", "0", "0"}, tNormal);
+    tNormal = tNormal.next_sibling("Normal");
+    ASSERT_TRUE(tNormal.empty());
+
+    auto tOrigin = tLinearMap.child("Origin");
+    ASSERT_FALSE(tOrigin.empty());
+    PlatoTestXMLGenerator::test_children({"X", "Y", "Z"}, {"5", "1", "8"}, tOrigin);
+    tOrigin = tOrigin.next_sibling("Origin");
+    ASSERT_TRUE(tOrigin.empty());
+
+    tLinearMap = tLinearMap.next_sibling("LinearMap");
+    ASSERT_TRUE(tLinearMap.empty());
+
+    tMeshMap = tMeshMap.next_sibling("MeshMap");
+    ASSERT_TRUE(tMeshMap.empty());
+
+    auto tOperation = tMeshMap.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
 }
 
 TEST(PlatoTestXMLGenerator, AppendComputeObjectiveValueToPlatoAnalyzeOperation)
@@ -1711,7 +1783,6 @@ TEST(PlatoTestXMLGenerator, AppendComputeRandomConstraintGradientToPlatoAnalyzeO
     tValues = {"youngs_modulus_block_id_2", "[Plato Problem]:[Material Models]:[material_2]:[Isotropic Linear Thermoelastic]:Youngs Modulus", "0.0"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tParameter);
 }
-
 
 TEST(PlatoTestXMLGenerator, AppendComputeRandomObjectiveValueToPlatoAnalyzeOperation)
 {

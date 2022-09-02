@@ -51,10 +51,10 @@
 #include "Plato_InputData.hpp"
 #include "Plato_InitializeValues.hpp"
 
+#include "Plato_ParseCSMUtilities.hpp"
+
 namespace Plato
 {
-
-const int MAX_CHARS_PER_LINE = 10000;
 
 InitializeValues::InitializeValues(PlatoApp* aPlatoAppp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoAppp),
@@ -73,7 +73,7 @@ InitializeValues::InitializeValues(PlatoApp* aPlatoAppp, Plato::InputData& aNode
     else if(mStringMethod == "ReadFromCSMFile")
     {
         mCSMFileName = Plato::Get::String(aNode, "CSMFileName");
-        getValuesFromCSMFile();
+        Plato::ParseCSM::getValuesFromCSMFile(mCSMFileName, mValues, mLowerBounds, mUpperBounds);
     }
 }
 
@@ -108,65 +108,6 @@ void InitializeValues::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
     }
 }
 
-void InitializeValues::getValuesFromCSMFile()
-{
-    std::ifstream tInputStream;
-    tInputStream.open(mCSMFileName.c_str());
-    if(tInputStream.good())
-    {
-        getValuesFromStream(tInputStream);
-        tInputStream.close();
-    }
-}
-
-void InitializeValues::getValuesFromStream(std::istream &aStream)
-{
-    mValues.clear();
-    mLowerBounds.clear();
-    mUpperBounds.clear();
-
-    char tBuffer[MAX_CHARS_PER_LINE];
-
-    // read each line of the file (could optimize this to not read the whole file)
-    while(!aStream.eof())
-    {
-        // read an entire line into memory
-        aStream.getline(tBuffer, MAX_CHARS_PER_LINE);
-
-        char *tCharPointer = std::strtok(tBuffer, " ");
-
-        // skip comments
-        if(tCharPointer && tCharPointer[0] == '#')
-            continue;
-
-        if(tCharPointer && std::strcmp(tCharPointer, "despmtr") == 0)
-        {
-            // Get the variable name
-            tCharPointer = std::strtok(0, " ");
-            if(!tCharPointer)
-                break;
-            // Get the variable value
-            tCharPointer = std::strtok(0, " ");
-            if(!tCharPointer)
-                break;
-            mValues.push_back(std::atof(tCharPointer));
-            // Get the lower bound keyword
-            tCharPointer = std::strtok(0, " ");
-            // Get the lower bound value
-            tCharPointer = std::strtok(0, " ");
-            if(!tCharPointer)
-                break;
-            mLowerBounds.push_back(std::atof(tCharPointer));
-            // Get the upper bound keyword
-            tCharPointer = std::strtok(0, " ");
-            // Get the upper bound value
-            tCharPointer = std::strtok(0, " ");
-            if(!tCharPointer)
-                break;
-            mUpperBounds.push_back(std::atof(tCharPointer));
-        }
-    }
-}
 
 }
 // namespace Plato

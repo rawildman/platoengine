@@ -16,8 +16,14 @@ if(HAD_ERROR)
   message(FATAL_ERROR "run failed")
 endif()
 
+if(NUMDIFF_ABSOLUTE)
+	set(NUMDIFF_FLAG -a)
+else()
+	set(NUMDIFF_FLAG -r)
+endif()
+
 # 2. Run numdiff command
-SET(DIFF_TEST "${NUMDIFF_COMMAND} -r ${NUMDIFF_RELATIVE_TOLERANCE} ${OUT_FILE} ${DATA_DIR}/${GOLD_FILE}")
+SET(DIFF_TEST "${NUMDIFF_COMMAND} ${NUMDIFF_FLAG} ${NUMDIFF_TOLERANCE} ${OUT_FILE} ${DATA_DIR}/${GOLD_FILE}")
 
 message("Running unix-diff command:")
 message("${DIFF_TEST}")

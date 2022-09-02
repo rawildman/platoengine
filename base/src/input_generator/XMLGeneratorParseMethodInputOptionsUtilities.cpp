@@ -32,6 +32,9 @@ void insert_shape_optimization_input_options(XMLGen::MetaDataTags &aTags)
 void insert_general_optimization_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "verbose", { { {"verbose"}, ""}, "false" } });
+    aTags.insert({ "descriptors", { { {"descriptors"}, ""}, "" } });
+    aTags.insert({ "lower_bounds", { { {"lower_bounds"}, ""}, "" } });
+    aTags.insert({ "upper_bounds", { { {"upper_bounds"}, ""}, "" } });
     aTags.insert({ "output_method", { { {"output_method"}, ""}, "epu" } });
     aTags.insert({ "max_iterations", { { {"max_iterations"}, ""}, "" } });
     aTags.insert({ "output_frequency", { { {"output_frequency"}, ""}, "5" } });
@@ -54,6 +57,9 @@ void insert_rol_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "rol_subproblem_model", { { {"rol_subproblem_model"}, ""}, "" } });
     aTags.insert({ "reset_algorithm_on_update", { { {"reset_algorithm_on_update"}, ""}, "false" } });
     aTags.insert({ "rol_lin_more_cauchy_initial_step_size", { { {"rol_lin_more_cauchy_initial_step_size"}, ""}, "3.0" } });
+    aTags.insert({ "rol_gradient_check_perturbation_scale", { { {"rol_gradient_check_perturbation_scale"}, ""}, "1.0" } });
+    aTags.insert({ "rol_gradient_check_steps", { { {"rol_gradient_check_steps"}, ""}, "12" } });
+    aTags.insert({ "rol_gradient_check_random_seed", { { {"rol_gradient_check_random_seed"}, ""}, "" } });
 }
 // function insert_rol_input_options
 /******************************************************************************/
@@ -137,6 +143,7 @@ void insert_fixed_blocks_input_options(XMLGen::MetaDataTags &aTags)
 void insert_prune_and_refine_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "prune_mesh", { { {"prune_mesh"}, ""}, "" } });
+    aTags.insert({ "prune_threshold", { { {"prune_threshold"}, ""}, "" } });
     aTags.insert({ "number_refines", { { {"number_refines"}, ""}, "" } });
     aTags.insert({ "number_buffer_layers", { { {"number_buffer_layers"}, ""}, "" } });
     aTags.insert({ "prune_and_refine_path", { { {"prune_and_refine_path"}, ""}, "" } });
@@ -173,6 +180,7 @@ void insert_dakota_moga_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "moga_niching_distance", { { {"moga_niching_distance"}, ""}, "0.2" } });
     aTags.insert({ "num_sampling_method_samples", { { {"num_sampling_method_samples"}, ""}, "15" } }); 
     aTags.insert({ "moga_max_function_evaluations", { { {"moga_max_function_evaluations"}, ""}, "20000" } });
+    aTags.insert({ "sbgo_surrogate_output_name", { { {"sbgo_surrogate_output_name"}, ""}, "" } });
 }
 // function insert_dakota_moga_input_options
 /******************************************************************************/
@@ -207,6 +215,7 @@ void insert_plato_symmetry_filter_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "symmetry_plane_normal", { { {"symmetry_plane_normal"}, ""}, "" } });
     aTags.insert({ "symmetry_plane_origin", { { {"symmetry_plane_origin"}, ""}, "" } });
     aTags.insert({ "mesh_map_filter_radius", { { {"mesh_map_filter_radius"}, ""}, "" } });
+    aTags.insert({ "mesh_map_search_tolerance", { { {"mesh_map_search_tolerance"}, ""}, "" } });
     aTags.insert({ "filter_before_symmetry_enforcement", { { {"filter_before_symmetry_enforcement"}, ""}, "" } });
 }
 // function insert_plato_symmetry_filter_input_options

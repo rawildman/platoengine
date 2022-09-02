@@ -396,6 +396,8 @@ namespace XMLGen
             XMLGen::append_children({"Type", "Radius"}, {"Linear", aMetaData.optimization_parameters().mesh_map_filter_radius()}, tFilter);
             auto tLinearMap = tMeshMap.append_child("LinearMap");
             XMLGen::append_children({"Type"}, {"SymmetryPlane"}, tLinearMap);
+            if (!aMetaData.optimization_parameters().mesh_map_search_tolerance().empty())
+                XMLGen::append_children({"SearchTolerance"}, {aMetaData.optimization_parameters().mesh_map_search_tolerance()}, tLinearMap);
             auto tOrigin = tLinearMap.append_child("Origin");
             XMLGen::append_children({"X", "Y", "Z"}, {aMetaData.optimization_parameters().symmetryOrigin()[0], aMetaData.optimization_parameters().symmetryOrigin()[1], aMetaData.optimization_parameters().symmetryOrigin()[2]}, tOrigin);
             auto tNormal = tLinearMap.append_child("Normal");
@@ -485,10 +487,6 @@ namespace XMLGen
     void append_update_problem_to_plato_analyze_operation(const XMLGen::InputData &aMetaData,
                                                           pugi::xml_document &aDocument)
     {
-        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
-        {
-            return;
-        }
         if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY && aMetaData.optimization_parameters().discretization() == "levelset")
         {
             auto tOperation = aDocument.append_child("Operation");
@@ -506,6 +504,11 @@ namespace XMLGen
         if (!tNeedUpdate)
         {
             return;
+        }
+
+        if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+        {
+            THROWERR("Append Update Problem to Plato Analyze Operation: Operation is not supported for shape optimization.")
         }
 
         if (aMetaData.optimization_parameters().problem_update_frequency().empty())

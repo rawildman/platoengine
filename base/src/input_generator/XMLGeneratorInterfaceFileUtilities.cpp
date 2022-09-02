@@ -45,7 +45,6 @@ void append_performer_data
  pugi::xml_node& aParentNode)
 {
     XMLGen::append_plato_main_performer(aMetaData, aParentNode);
-
     // note: multiperformer use case currently only works with Plato Analyze, and is only used currently with the robust optimization workflow
     if(XMLGen::is_robust_optimization_problem(aMetaData))
     {
@@ -152,6 +151,57 @@ void append_method_options
 }
 // function append_method_options
 /******************************************************************************/
+
+/******************************************************************************/
+int append_platoservice
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int aBasePerformerID)
+{
+    auto tCummulativeID = aBasePerformerID;
+    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+    {
+        tCummulativeID++;
+        auto tPerformerNode = aDocument.append_child("Performer");
+        std::string tPerformerName = std::string("plato_services_") + std::to_string(iEvaluation);
+        std::vector<std::string> tValues = { tPerformerName, std::string("plato_services"), std::to_string(tCummulativeID) };
+        XMLGen::append_children( tKeywords, tValues, tPerformerNode);
+    }
+    return tCummulativeID;
+}
+// function append_method_options
+/******************************************************************************/
+
+/******************************************************************************/
+int append_physics_performer
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument,
+ int aBasePerformerID)
+{
+    auto tCummulativeID = aBasePerformerID;
+    std::vector<std::string> tKeywords = { "Name", "Code", "PerformerID" };
+    auto tEvaluations = std::stoi(aMetaData.optimization_parameters().concurrent_evaluations());
+    for(auto& tService : aMetaData.services())
+    {
+        if(tService.value("type") == "plato_app" && tService.code() != "platomain")
+        {
+            for (int iEvaluation = 0; iEvaluation < tEvaluations; iEvaluation++)
+            {
+                tCummulativeID++;
+                auto tPerformerNode = aDocument.append_child("Performer");
+                std::string tPerformerName = tService.performer() + std::string("_") + std::to_string(iEvaluation);
+                std::vector<std::string> tValues = { tPerformerName, tService.code(), std::to_string(tCummulativeID) };
+                XMLGen::append_children( tKeywords, tValues, tPerformerNode);
+            }
+        }
+    }
+    return tCummulativeID;
+}
+// function append_physics_performer
+/******************************************************************************/
+
 
 }
 // namespace XMLGen

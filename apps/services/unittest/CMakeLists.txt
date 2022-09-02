@@ -93,8 +93,7 @@ SET(PlatoMainUnitTester_HDRS Plato_StructuralTopologyOptimizationProxyGoldResult
 							 Plato_StkMeshUtils.hpp
 							 )
 
-set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/tpls/gtest/include
-                       ${CMAKE_SOURCE_DIR}/apps/services
+set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/apps/services
                        ${CMAKE_SOURCE_DIR}/apps/services/proxy
                        ${CMAKE_SOURCE_DIR}/apps/services/unittest
                        ${CMAKE_SOURCE_DIR}/base/src/analyze
@@ -145,7 +144,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
 # actual target:
 set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_ADDITIONAL_LIBS} ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} 
-                             ${NLOPT_LIBRARY} ${GTEST_BOTH_LIBRARIES} ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
+                             ${NLOPT_LIBRARY} GTest::GTest ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
                              ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
 
 if( DAKOTADRIVER )
@@ -156,7 +155,7 @@ add_executable(PlatoMainUnitTester ${PlatoMainUnitTester_SRCS})
 target_link_libraries(PlatoMainUnitTester PlatoApp ${PLATOMAINUNITTESTER_LIBS})
 set(PLATOMAINUNITTESTER_BINARY ${CMAKE_BINARY_DIR}/apps/unittest/PlatoMainUnitTester PARENT_SCOPE)
 add_test(NAME PlatoMainUnitTester COMMAND ${CMAKE_BINARY_DIR}/apps/services/unittest/PlatoMainUnitTester)
-
+set_property(TEST PlatoMainUnitTester PROPERTY LABELS "large")
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PlatoMainUnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

@@ -1,5 +1,5 @@
 ############ Project setup ##################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0)
 #############################################################################
 
 include( ${CMAKE_SOURCE_DIR}/base/config/tools.cmake )
@@ -110,13 +110,7 @@ endif()
 ############################## gtest Setup ####################################
 ###############################################################################
 if( UNIT_TESTING )
-  if(DEFINED GTEST_HOME)
-    set(CMAKE_PREFIX_PATH ${GTEST_HOME} ${CMAKE_PREFIX_PATH})
-  endif()
   find_package(GTest REQUIRED)
-  message( "-- Google Test Include Dir:  ${GTEST_INCLUDE_DIRS}" )
-  message( "-- Google Test Src Dir:  ${gtest_SOURCE_DIR}" )
-  include_directories( ${GTEST_INCLUDE_DIRS} )
 endif()
 
 if( ESP_ENABLED )
@@ -217,7 +211,6 @@ add_subdirectory(base/src/input_generator)
 add_subdirectory(base/src/operations)
 add_subdirectory(base/src/Su2ToExodus)
 add_subdirectory(base/src/MarkFaces)
-add_subdirectory(base/src/geometry/BamG)
 
 if( ENABLE_ISO )
   add_subdirectory(base/src/iso)
@@ -240,6 +233,7 @@ endif()
 if( STK_ENABLED )
   add_subdirectory(base/src/support_structure)
   add_subdirectory(base/src/support_structure/main)
+  add_subdirectory(base/src/DecomposeMesh)
 endif()
 
 if( PLATOMAIN )

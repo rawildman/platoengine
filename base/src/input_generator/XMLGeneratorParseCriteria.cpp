@@ -70,82 +70,93 @@ void ParseCriteria::allocate()
     mTags.clear();
 
     // core properties
-    insertTag("type");
-    insertTag("normalize", "false");
-    insertTag("normalization_value", "1.0");
-    insertTag("stress_limit");
-    insertTag("scmm_initial_penalty");
-    insertTag("scmm_penalty_expansion_multiplier");
-    insertTag("scmm_constraint_exponent");
-    insertTag("scmm_penalty_upper_bound");
-    insertTag("scmm_stress_weight", "1.0");
-    insertTag("scmm_mass_weight", "1.0");
+    this->insertTag("type");
+    this->insertTag("normalize", "false");
+    this->insertTag("normalization_value", "1.0");
+    this->insertTag("stress_limit");
+    this->insertTag("scmm_initial_penalty");
+    this->insertTag("scmm_penalty_expansion_multiplier");
+    this->insertTag("scmm_constraint_exponent");
+    this->insertTag("scmm_penalty_upper_bound");
+    this->insertTag("scmm_stress_weight", "1.0");
+    this->insertTag("scmm_mass_weight", "1.0");
 
-    insertTag("stress_p_norm_exponent", "6.0");
-    insertTag("mechanical_weighting_factor", "1.0");
-    insertTag("thermal_weighting_factor", "1.0");
-    insertTag("local_measure", "vonmises");
-    insertTag("spatial_weighting_function", "1.0"); // function of x, y, and z
-    insertTag("material_penalty_model", "simp");
-    insertTag("material_penalty_exponent", "3.0");
-    insertTag("minimum_ersatz_material_value");
-    insertTag("criterion_ids");
-    insertTag("criterion_weights");
-    insertTag("location_name");
-    insertTag("location_type");
-    insertTag("conductivity_ratios");
-    insertTag("displacement_direction");
-    insertTag("measure_magnitude", "false");
-    insertTag("target", "0.0");
-    insertTag("target_solution_vector");
-    insertTag("target_magnitude");
-    insertTag("target_solution");
+    this->insertTag("stress_p_norm_exponent", "6.0");
+    this->insertTag("stress_p_norm_measure");
+    this->insertTag("stress_p_norm_volume_scaling");
+    this->insertTag("mechanical_weighting_factor", "1.0");
+    this->insertTag("thermal_weighting_factor", "1.0");
+    this->insertTag("local_measure", "vonmises");
+    this->insertTag("spatial_weighting_function", "1.0"); // function of x, y, and z
+    this->insertTag("material_penalty_model", "simp");
+    this->insertTag("material_penalty_exponent", "3.0");
+    this->insertTag("minimum_ersatz_material_value");
+    this->insertTag("criterion_ids");
+    this->insertTag("criterion_weights");
+    this->insertTag("location_name");
+    this->insertTag("location_type");
+    this->insertTag("conductivity_ratios");
+    this->insertTag("displacement_direction");
+    this->insertTag("measure_magnitude", "false");
+    this->insertTag("target", "0.0");
+    this->insertTag("target_solution_vector");
+    this->insertTag("target_magnitude");
+    this->insertTag("target_solution");
 
-    insertTag("block");
+    this->insertTag("block");
 
-    insertTag("mass");
-    insertTag("cgx");
-    insertTag("cgy");
-    insertTag("cgz");
-    insertTag("ixx");
-    insertTag("iyy");
-    insertTag("izz");
-    insertTag("iyz");
-    insertTag("ixz");
-    insertTag("ixy");
+    this->insertTag("mass");
+    this->insertTag("cgx");
+    this->insertTag("cgy");
+    this->insertTag("cgz");
+    this->insertTag("ixx");
+    this->insertTag("iyy");
+    this->insertTag("izz");
+    this->insertTag("iyz");
+    this->insertTag("ixz");
+    this->insertTag("ixy");
 
     /* These are all related to stress-constrained mass minimization problems with Sierra/SD */
-    insertTag("volume_misfit_target");
-    insertTag("relative_stress_limit");
-    insertTag("relaxed_stress_ramp_factor");
-    insertTag("limit_power_min");
-    insertTag("limit_power_max");
-    insertTag("limit_power_feasible_bias");
-    insertTag("limit_power_feasible_slope");
-    insertTag("limit_power_infeasible_bias");
-    insertTag("limit_power_infeasible_slope");
-    insertTag("limit_reset_subfrequency");
-    insertTag("limit_reset_count");
-    insertTag("inequality_allowable_feasibility_upper");
-    insertTag("inequality_feasibility_scale");
-    insertTag("inequality_infeasibility_scale");
-    insertTag("stress_inequality_power");
-    insertTag("stress_favor_final");
-    insertTag("stress_favor_updates");
-    insertTag("volume_penalty_power");
-    insertTag("volume_penalty_divisor");
-    insertTag("volume_penalty_bias");
-    insertTag("surface_area_sideset_id");
+    this->insertTag("volume_misfit_target");
+    this->insertTag("relative_stress_limit");
+    this->insertTag("relaxed_stress_ramp_factor");
+    this->insertTag("limit_power_min");
+    this->insertTag("limit_power_max");
+    this->insertTag("limit_power_feasible_bias");
+    this->insertTag("limit_power_feasible_slope");
+    this->insertTag("limit_power_infeasible_bias");
+    this->insertTag("limit_power_infeasible_slope");
+    this->insertTag("limit_reset_subfrequency");
+    this->insertTag("limit_reset_count");
+    this->insertTag("inequality_allowable_feasibility_upper");
+    this->insertTag("inequality_feasibility_scale");
+    this->insertTag("inequality_infeasibility_scale");
+    this->insertTag("stress_inequality_power");
+    this->insertTag("stress_favor_final");
+    this->insertTag("stress_favor_updates");
+    this->insertTag("volume_penalty_power");
+    this->insertTag("volume_penalty_divisor");
+    this->insertTag("volume_penalty_bias");
+    this->insertTag("surface_area_sideset_id");
 
     // Sierra/SD modal objectives
-    insertTag("num_modes_compute", "30");
-    insertTag("modes_to_exclude");
-    insertTag("eigen_solver_shift", "-1e6");
-    insertTag("camp_solver_tol", "1e-6");
-    insertTag("camp_max_iter", "1000");
-    insertTag("shape_sideset");
-    insertTag("ref_data_file");
-    insertTag("match_nodesets");
+    this->insertTag("num_modes_compute", "30");
+    this->insertTag("modes_to_exclude");
+    this->insertTag("eigen_solver_shift", "-1e6");
+    this->insertTag("camp_solver_tol", "1e-6");
+    this->insertTag("camp_max_iter", "1000");
+    this->insertTag("shape_sideset");
+    this->insertTag("ref_data_file");
+    this->insertTag("match_nodesets");
+
+    // Sierra/TF objectives
+    this->insertTag("search_nodesets");
+    this->insertTag("temperature_field_name");
+
+    // system call criterion
+    this->insertTag("data_file");
+    this->insertTag("data_group");
+    this->insertTag("data_extraction_operation");
 }
 
 void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
@@ -158,6 +169,20 @@ void ParseCriteria::setModesToExclude(XMLGen::Criterion &aMetadata)
         strcpy(tValuesBuffer, tValues.c_str());
         XMLGen::parse_tokens(tValuesBuffer, tModes);
         aMetadata.modesToExclude(tModes);
+    }
+}
+
+void ParseCriteria::setSearchNodesetIDs(XMLGen::Criterion &aMetadata)
+{
+    auto tItr = mTags.find("search_nodesets");
+    std::string tValues = tItr->second.first.second;
+    if (tItr != mTags.end() && !tValues.empty())
+    {
+        std::vector<std::string> tNodesetIDs;
+        char tValuesBuffer[10000];
+        strcpy(tValuesBuffer, tValues.c_str());
+        XMLGen::parse_tokens(tValuesBuffer, tNodesetIDs);
+        aMetadata.setSearchNodesetIDs(tNodesetIDs);
     }
 }
 
@@ -318,10 +343,12 @@ void ParseCriteria::setMetadata(XMLGen::Criterion& aMetadata)
     this->setCriterionWeights(aMetadata);
     this->setMassProperties(aMetadata);
     this->checkVolumePenaltyExponent(aMetadata);
+    this->setStressPNormOptions(aMetadata);
     this->setDisplacementDirection(aMetadata);
     this->setTargetSolutionVector(aMetadata);
     setModesToExclude(aMetadata);
     setMatchNodesetIDs(aMetadata);
+    setSearchNodesetIDs(aMetadata);
     this->setTags(aMetadata);
     this->errorCheckDisplacementCriterion(aMetadata);
 }
@@ -391,6 +418,43 @@ void ParseCriteria::checkVolumePenaltyExponent(XMLGen::Criterion& aCriterion)
         if (tItr->second.first.second.empty())
         {
             aCriterion.materialPenaltyExponent("1.0");
+        }
+    }
+}
+
+void ParseCriteria::setStressPNormOptions(XMLGen::Criterion &aMetadata)
+{
+    if(aMetadata.type() == "stress_p-norm")
+    {
+        auto tMeasureItr = mTags.find("stress_p_norm_measure");
+        std::string tMeasure = tMeasureItr->second.first.second;
+        bool pNormMeasureSpecified = (tMeasureItr != mTags.end() && !tMeasure.empty());
+
+        auto tScalingItr = mTags.find("stress_p_norm_volume_scaling");
+        std::string tVolumeScaling = tScalingItr->second.first.second;
+        bool pNormVolumeScalingSpecified = (tScalingItr != mTags.end() && !tVolumeScaling.empty());
+
+        if (!pNormMeasureSpecified && pNormVolumeScalingSpecified)
+            THROWERR(std::string("Stress p-norm volume scaling requires stress p-norm measure to be specified. Use keyword stress_p_norm_measure to do so."))
+
+        if (pNormMeasureSpecified)
+        {
+            XMLGen::ValidPNormMeasureKeys tValidPNormMeasureKeys;
+            auto tValidMeasure = tValidPNormMeasureKeys.value(tMeasure);
+            if (!tValidMeasure.empty())
+                aMetadata.pnormMeasure(tValidMeasure);
+            else
+                THROWERR(std::string("Stress p-norm measure: '") + tMeasure + std::string("' is not supported. Currently supported are: 'vonmises'"))
+        }
+
+        if (pNormVolumeScalingSpecified)
+        {
+            XMLGen::ValidBoolKeys tValidBoolKeys;
+            auto tValidBool = tValidBoolKeys.value(tVolumeScaling);
+            if (!tValidBool.empty())
+                aMetadata.pnormVolumeScaling(tValidBool);
+            else
+                THROWERR(std::string("Stress p-norm volume scaling: '") + tVolumeScaling + std::string("' is not a bool. Must specify 'true' or 'false'."))
         }
     }
 }

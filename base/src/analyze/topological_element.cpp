@@ -633,6 +633,69 @@ Hex20::registerData()
 
 }
 
+void Hex27::init()
+{
+  myType = "HEX27";
+  myData = NULL;
+  myNnpe = 27;
+  myNnps = 9;
+  myDim = 3;
+  NODECONNECT = UNSET_VAR_INDEX;
+  GLOBALID    = UNSET_VAR_INDEX;
+  blockTopology = Teuchos::rcp(new shards::CellTopology(shards::getCellTopologyData<shards::Hexahedron<27> >() ) );
+  blockBasis = new Intrepid::Basis_HGRAD_HEX_C2_FEM<double, Intrepid::FieldContainer<double> >() ;
+}
+
+Hex27::~Hex27()
+{
+}
+
+void Hex27::CurrentCoordinates(int* node_gid_list, 
+                              Real** X,
+                              Real* curcoor)
+{
+  Real*& x = X[0];
+  Real*& y = X[1];
+  Real*& z = X[2];
+
+  for(int i=0;i<myNnpe;i++){
+    curcoor[i]   = x[node_gid_list[i]];
+    curcoor[i+27]= y[node_gid_list[i]];
+    curcoor[i+54]= z[node_gid_list[i]];
+  }
+}
+
+
+void
+Hex27::registerData()
+{
+  int number = myNel*myNnpe;
+
+  NODECONNECT = myData->registerVariable( IntType,
+					  strint("CONNH27", groupID),
+					  UNSET,
+					  number );
+
+  GLOBALID    = myData->registerVariable( IntType,
+					  strint("H27GID", groupID),
+					  ELEM,
+					  myNel );
+  
+  number = myNel*myNattr;
+  if(myNattr){
+    ATTRIBUTES = myData->registerVariable( RealType, 
+                                          strint("H27ATR", groupID),
+                                          UNSET,
+                                          number );
+    myData->getVariable(ATTRIBUTES, attributes);
+  }
+  
+  myData->getVariable(NODECONNECT, nodeConnect);
+  myData->getVariable(GLOBALID, globalID);
+
+}
+
+
 
 
 void Tet4::init()

@@ -110,6 +110,13 @@ private:
     void setMaterialBoxExtents(XMLGen::OptimizationParameters &aMetadata);
 
     /******************************************************************************//**
+     * \fn setDakotaDescriptorsAndBounds
+     * \brief Set descriptors, lower and upper bounds and mdps_partitions for dakota
+     * \param [in/out] aInputFile parsed input metadata
+    **********************************************************************************/
+    void setDakotaDescriptorsAndBounds(XMLGen::OptimizationParameters& aMetadata);
+
+    /******************************************************************************//**
      * \fn checkHeavisideFilterParams
      * \brief Check for valid heaviside filter params
      * \param [in] aMetadata optimization parameters metadata

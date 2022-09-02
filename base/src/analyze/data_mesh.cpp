@@ -78,6 +78,9 @@ DataMesh::~DataMesh()
   _print_entering_location(__AXSIS_FUNCTION_NAMER__);
 #endif //VERBOSE_DEBUG_LOCATION
 
+  delete [] nodeGlobalIds;
+  delete [] elemGlobalIds;
+  delete [] nodeOwnership;
   delete [] numDofsOnNodes;
   delete [] startingDofPlid;
 
@@ -743,10 +746,10 @@ int StrMesh::getNumElemInBlk(int block)
 
 
 //*********************************************************************
-const char* StrMesh::getElemTypeInBlk(int blk)
+std::string StrMesh::getElemTypeInBlk(int blk)
 //*********************************************************************
 {
-  return NULL;
+  return std::string("");
 }
 
 //*********************************************************************
@@ -928,7 +931,7 @@ UnsMesh::getElemToNodeConnInBlk(int blk)
   return pnc;
 }
 
-const char*
+std::string
 UnsMesh::getElemTypeInBlk(int blk)
 {
   assert((size_t)blk < myElemBlk.size());

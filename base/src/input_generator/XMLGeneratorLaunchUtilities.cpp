@@ -217,6 +217,8 @@ namespace XMLGen
       THROWERR("No output mesh name provided");
 
     std::string tPruneString = XMLGen::Internal::get_prune_string(aInputData);
+    std::string tPruneThresholdString = XMLGen::Internal::get_prune_threshold_string(aInputData);
+    
     std::string tNumRefinesString = Plato::to_string(XMLGen::Internal::get_number_of_refines(aInputData));
     std::string tNumBufferLayersString = XMLGen::Internal::get_num_buffer_layers(aInputData);
     int tNumberPruneAndRefineProcs = XMLGen::Internal::get_number_of_prune_and_refine_procs(aInputData);
@@ -225,18 +227,20 @@ namespace XMLGen
 
     std::string tCommand;
     if(aInputData.m_UseLaunch)
-        tCommand = "launch -n " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
+      tCommand = "launch -n " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
     else
-        tCommand = "mpiexec -np " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
+      tCommand = "mpiexec -np " + tNumberPruneAndRefineProcsString + " " + tPruneAndRefineExe;
     if(aInputData.optimization_parameters().initial_guess_file_name() != "")
-        tCommand += (" --mesh_with_variable=" + aInputData.optimization_parameters().initial_guess_file_name());
+      tCommand += (" --mesh_with_variable=" + aInputData.optimization_parameters().initial_guess_file_name());
     tCommand += (" --mesh_to_be_pruned=" + aInputData.mesh.name);
     tCommand += (" --result_mesh=" + aInputData.mesh.run_name);
     if(aInputData.optimization_parameters().initial_guess_field_name() != "")
-        tCommand += (" --field_name=" + aInputData.optimization_parameters().initial_guess_field_name());
+      tCommand += (" --field_name=" + aInputData.optimization_parameters().initial_guess_field_name());
     tCommand += (" --number_of_refines=" + tNumRefinesString);
     tCommand += (" --number_of_buffer_layers=" + tNumBufferLayersString);
     tCommand += (" --prune_mesh=" + tPruneString);
+    if(tPruneThresholdString != "" && tPruneThresholdString != "0.5" && tPruneString == "1")
+      tCommand += (" --prune_threshold=" + tPruneThresholdString);
 
     fprintf(fp, "%s\n", tCommand.c_str());
   }
@@ -408,6 +412,37 @@ namespace XMLGen
     }
   }
 
+  void append_sierra_tf_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID)
+  {
+    std::string tInputDeckName;
+    XMLGen::Objective tObjective = aInputData.objective;
+    for (size_t i=0; i<tObjective.criteriaIDs.size(); ++i)
+    {
+        std::string tCriterionID = tObjective.criteriaIDs[i];
+        std::string tServiceID = tObjective.serviceIDs[i];
+        std::string tScenarioID = tObjective.scenarioIDs[i];
+        if(tServiceID == aServiceID)
+        {
+            XMLGen::Scenario tScenario = aInputData.scenario(tScenarioID);
+            tInputDeckName = tScenario.existing_input_deck();
+            break;
+        }
+    }
+    if(tInputDeckName == "")
+    {
+        THROWERR("Error: No existing input deck name found for scenario. You must use an existing input deck when running with sierra_tf.\n")
+    }
+    if(aInputData.service(aServiceID).path().length() != 0)
+    {
+        fprintf(aFile, "%s -i ", aInputData.service(aServiceID).path().c_str());
+    }
+    else
+    {
+        fprintf(aFile, "plato_tf_main -i ");
+    }
+    fprintf(aFile, "%s -opt inverseInput.xml \\\n", tInputDeckName.c_str());
+  }
+
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp)
   {
     std::string envString, separationString, tLaunchString, tNumProcsString, tPlatoServicesPath;
@@ -561,7 +596,16 @@ namespace XMLGen
         tPruneString = "1";
       return tPruneString;
     }
-
+    std::string get_prune_threshold_string(const XMLGen::InputData& aInputData)
+    {
+      std::string tPruneThresholdString = "0.5";
+      if(aInputData.optimization_parameters().prune_threshold() != "")
+        tPruneThresholdString = aInputData.optimization_parameters().prune_threshold();
+      if(tPruneThresholdString != "0.5")
+        XMLGen::assert_is_positive_double(tPruneThresholdString);
+      return tPruneThresholdString;
+    }
+    
     std::string get_extension_string(const std::string& tNumberPruneAndRefineProcsString)
     {
       std::string tExtensionString = "." + tNumberPruneAndRefineProcsString + ".";

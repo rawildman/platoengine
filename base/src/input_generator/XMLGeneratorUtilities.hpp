@@ -67,6 +67,10 @@ bool addChild(pugi::xml_node parent_node,
           const std::string &name, 
           const std::string &value);
 
+bool addChildCheckEmpty(pugi::xml_node parent_node, 
+          const std::string &name, 
+          const std::string &value);
+
 pugi::xml_node createSingleUserNodalSharedData(pugi::xml_document &aDoc,
                                                const std::string &aName,
                                                const std::string &aType,
@@ -196,7 +200,7 @@ std::stringstream read_data_from_file(const std::string& aFilename);
 void set_key_value
 (const std::string& aKey,
  const std::string& aValue,
- std::unordered_map<std::string, std::string>& aKeyToValueMap);
+ std::map<std::string, std::string>& aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn set_value_keyword_to_ignore_if_empty
@@ -220,7 +224,7 @@ void set_value_keyword_to_ignore_if_empty(std::vector<std::string>& aValues);
  * \return list of key keywords
 **********************************************************************************/
 std::vector<std::string> transform_key_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+(const std::map<std::string, std::string> &aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn transform_value_tokens
@@ -229,7 +233,7 @@ std::vector<std::string> transform_key_tokens
  * \return list of value keywords
 **********************************************************************************/
 std::vector<std::string> transform_value_tokens
-(const std::unordered_map<std::string, std::string> &aKeyToValueMap);
+(const std::map<std::string, std::string> &aKeyToValueMap);
 
 /******************************************************************************//**
  * \fn assert_is_positive_integer
@@ -237,6 +241,14 @@ std::vector<std::string> transform_value_tokens
  * \param [in] aString input string
 **********************************************************************************/
 void assert_is_positive_integer(const std::string& aString);
+
+/******************************************************************************//**
+ * \fn assert_is_positive_double
+ * \brief Assert if input string is a positive double.
+ * \param [in] aString input string
+**********************************************************************************/
+void assert_is_positive_double(const std::string& aString);
+
 
 /******************************************************************************//**
  * \fn is_shape_optimization_problem
@@ -304,20 +316,6 @@ int count_number_of_reinitializations_needed
  const XMLGen::Objective& aObjective);
 
 /******************************************************************************//**
- * \fn need_update_problem_stage
- * \brief Return whether any service has the update problem feature enabled.
- * \param [in] aMetaData  Plato problem input data
-**********************************************************************************/
-bool need_update_problem_stage(const XMLGen::InputData& aMetaData);
-
-/******************************************************************************//**
- * \fn num_cache_states
- * \brief Return the number of services with the cache state feature enabled.
- * \param [in] aServices List of services to check
-**********************************************************************************/
-int num_cache_states(const std::vector<XMLGen::Service> &aServices);
-
-/******************************************************************************//**
  * \fn append_concurrent_tag_to_file
  * \brief Append concurrent evaluations tag for dakota problems
  * \param [in]     aFileString operation name
@@ -328,22 +326,41 @@ std::string append_concurrent_tag_to_file_string
  const std::string& aTag);
 
 /******************************************************************************//**
- * \fn get_unique_decomp_service
- * \brief Get service ID for unique application of decomp 
- * \param [in] aMetaData Input metadata
+ * \fn move_file_to_subdirectories
+ * \brief Move file to subdirectories
+ * \param [in] aFileName file to move into subdirectories
+ * \param [in] aSubDirs  sequence container with subdirectory names
 **********************************************************************************/
-std::string get_unique_decomp_service
-(const XMLGen::InputData& aXMLMetaData);
+void move_file_to_subdirectories
+(const std::string& aFileName,
+ const std::vector<std::string>& aSubDirs);
 
 /******************************************************************************//**
- * \fn service_needs_decomp
- * \brief Determine if service needs decomp
- * \param [in] aService service to check
- * \param [in] hasBeenDecompedForThisNumberOfProcessors map to check if decomped
+ * \fn move_file_to_subdirectory
+ * \brief Move file to subdirectory
+ * \param [in] aFileName   file to move into subdirectory
+ * \param [in] aSubDirName subdirectory name
 **********************************************************************************/
-bool service_needs_decomp
-(const XMLGen::Service& aService,
- std::map<std::string,int>& hasBeenDecompedForThisNumberOfProcessors);
+void move_file_to_subdirectory
+(const std::string& aFileName,
+ const std::string& aSubDirName);
+
+/******************************************************************************//**
+ * \fn subdirectory_exists
+ * \brief check if performer subdirectory exists
+ * \param [in] aDirectoryName input name of directory
+**********************************************************************************/
+bool subdirectory_exists
+(const std::string& aDirectoryName);
+
+/******************************************************************************//**
+ * \fn get_number_of_shape_parameters
+ * \brief Return number of shape parameters.
+ * \param [in]  aMetaData Plato problem input metadata
+ * \return integer
+**********************************************************************************/
+ int get_number_of_shape_parameters
+ (const XMLGen::InputData& aMetaData);
 
 }
 // namespace XMLGen

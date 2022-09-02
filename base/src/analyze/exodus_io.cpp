@@ -164,6 +164,7 @@ ExodusIO::readHeader()
   int  Nel_quad8      = 0;
   int  Nel_hex8       = 0;
   int  Nel_hex20      = 0;
+  int  Nel_hex27      = 0;
   int  Nel_tet4       = 0;
   int  Nel_tet10      = 0;
   int  num_node_sets  = 0;
@@ -395,7 +396,8 @@ ExodusIO::readHeader()
 	     << "!!! \tSHELL elements not supported." << endl;
       return false;
 
-    } else if (!strncasecmp(elemtype, "TETRA10",   7)) {
+    } else if (!strncasecmp(elemtype, "TETRA10", 7) ||
+               !strncasecmp(elemtype, "TET10"  , 5)) {
       vector<vector<int>> tFaceGraph({{0,1,3,4,8,7},{1,2,3,5,9,8},{2,0,3,6,7,9},{0,2,1,6,5,4}});
       Topological::Tet10* eb = new Topological::Tet10( num_elem_in_block, num_attr );
       Nel_tet10+=num_elem_in_block;
@@ -406,7 +408,8 @@ ExodusIO::readHeader()
       eb->registerData();
       myMesh->addElemBlk(eb);
 
-    } else if (!strncasecmp(elemtype, "TET",   3)) {
+    } else if (!strncasecmp(elemtype, "TETRA", 5) ||
+               !strncasecmp(elemtype, "TET4" , 3) ) {
       vector<vector<int>> tFaceGraph({{0,1,3},{1,2,3},{2,0,3},{0,2,1}});
       Topological::Tet4* eb = new Topological::Tet4( num_elem_in_block, num_attr );
       Nel_tet4+=num_elem_in_block;
@@ -444,6 +447,24 @@ ExodusIO::readHeader()
       eb->setFaceGraph(tFaceGraph);
       eb->registerData();
       myMesh->addElemBlk(eb);
+
+    } else if (!strncasecmp(elemtype, "HEX27",   5)) {
+      vector<vector<int>> tFaceGraph({
+          {0,1,5,4, 8,13,16,12,25},
+          {1,2,6,5, 9,14,17,13,24},
+          {2,3,7,6,10,15,18,14,26},
+          {3,0,4,7,11,12,19,15,23},
+          {3,2,1,0,10, 9, 8,11,21},
+          {4,5,6,7,16,17,18,19,22}});
+      Topological::Hex27* eb = new Topological::Hex27( num_elem_in_block, num_attr );
+      Nel_hex27+=num_elem_in_block;
+      eb->setDataContainer( myData );
+      eb->setBlockId(ids[i]);
+      eb->setBlockName(names[i]);
+      eb->setFaceGraph(tFaceGraph);
+      eb->registerData();
+      myMesh->addElemBlk(eb);
+
     } else if (!strncasecmp(elemtype, "HEX",   3)) {
       vector<vector<int>> tFaceGraph({{0,1,5,4},{1,2,6,5},{2,3,7,6},{3,0,4,7},{3,2,1,0},{4,5,6,7}});
       Topological::Hex8* eb = new Topological::Hex8( num_elem_in_block, num_attr );
@@ -475,10 +496,10 @@ ExodusIO::readHeader()
 
   bool filerr = false;
   int Nel_tot = Nel_tet4 + Nel_tet10 + Nel_truss2 + Nel_tri3 + Nel_quad4 + Nel_quad8 + 
-                Nel_hex8 + Nel_hex20;
+                Nel_hex8 + Nel_hex20 +Nel_hex27;
   if (Nel_tot == 0 || Nel_tot != Nel) filerr = true;
   if ( (Nel_quad4 + Nel_quad8 + Nel_tri3 + Nel_truss2 > 0) &&
-       (Nel_hex8 + Nel_hex20 + Nel_tet4 + Nel_tet10 == 0) && (Ndim == 3) ) filerr = true;
+       (Nel_hex8 + Nel_hex20 + Nel_hex27 + Nel_tet4 + Nel_tet10 == 0) && (Ndim == 3) ) filerr = true;
   if (filerr) {
     pXcout << "\n\n\t!!!!! Error reading exodus file !!!!!" << endl;
     pXcout << "\t  Ndim       = " << Ndim << endl;;
@@ -488,6 +509,7 @@ ExodusIO::readHeader()
     pXcout << "\t  Nel_quad8  = " << Nel_quad8 << endl;
     pXcout << "\t  Nel_hex8   = " << Nel_hex8 << endl;
     pXcout << "\t  Nel_hex20  = " << Nel_hex20 << endl;
+    pXcout << "\t  Nel_hex27  = " << Nel_hex27 << endl;
     return false;
   }
 
@@ -753,6 +775,14 @@ ExodusIO::readConn()
 	loconn+=NNPE;
         ++global_element_count;
       }
+    } else if(!strncasecmp(elemtype, "HEX27", 27)) {
+      const int NNPE = 27;
+      int* loconn = connect;
+      for( int k=0; k<num_elem_in_block[i]; ++k ) {
+	eb->connectNodes(k, global_element_count, loconn);
+	loconn+=NNPE;
+        ++global_element_count;
+      }
     } else if(!strncasecmp(elemtype, "HEX", 3)) {
       const int NNPE = 8;
       int* loconn = connect;
@@ -840,13 +870,13 @@ ExodusIO::writeConn()
     Topological::Element* elblock = myMesh->getElemBlk(i);
     int  Nel     = elblock->getNumElem();
 
-    const char* type = elblock->getType();
+    auto type = elblock->getType();
     int  Nnpe    = elblock->getNnpe();
     int  tmpnn   = Nnpe*Nel;
     int* connect = elblock->getNodeConnect();
     int ebid = elblock->getBlockId();
     int Nattr = 0;
-    if( ex_put_block( myFileID, EX_ELEM_BLOCK, ebid, type, Nel, Nnpe, 0, 0, Nattr ) ) {
+    if( ex_put_block( myFileID, EX_ELEM_BLOCK, ebid, type.c_str(), Nel, Nnpe, 0, 0, Nattr ) ) {
       pXcout << "!!! Problem writing element block " << i+1 << "\n"
 	     << "!!! \tto exodus file "
 	     << myName << endl;

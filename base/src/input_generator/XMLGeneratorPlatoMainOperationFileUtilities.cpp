@@ -11,6 +11,7 @@
 #include "XMLGeneratorValidInputKeys.hpp"
 #include "XMLGeneratorServiceMetadata.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
+#include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorFixedBlockUtilities.hpp"
 #include "XMLGeneratorInterfaceFileUtilities.hpp"
@@ -961,7 +962,8 @@ void append_tet10_conversion_operation_to_plato_main_operation
         write_cubit_journal_file_tet10_conversion("toTet10.jou", exodusFile, aXMLMetaData.blocks);
         std::string tName = "ToTet10 On Change";  
         std::string tCommand =  std::string("cubit -input toTet10.jou ") + tOptions;
-        append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+        std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+        append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
     }
     else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
     {
@@ -974,7 +976,8 @@ void append_tet10_conversion_operation_to_plato_main_operation
             write_cubit_journal_file_tet10_conversion("evaluations" + tTag + "/toTet10.jou", exodusFile, aXMLMetaData.blocks);
             std::string tName = std::string("convert_to_tet10") + tTag;
             std::string tCommand = std::string("cd evaluations") + tTag + std::string("; cubit -input toTet10.jou ") + tOptions;
-            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+            std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
         }
     }
 }
@@ -999,7 +1002,8 @@ void append_subblock_creation_operation_to_plato_main_operation
             write_cubit_journal_file_subblock_from_bounding_box("evaluations" + tTag + "/subBlock.jou", exodusFile, aXMLMetaData.blocks);
             std::string tName = std::string("create_sub_block") + tTag;
             std::string tCommand = std::string("cd evaluations") + tTag + std::string("; cubit -input subBlock.jou ") + tOptions;
-            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand);
+            std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+            append_cubit_systemcall_operation_commands(aDocument,tName,tCommand,tNumParameters);
         }
     }
 }
@@ -1007,7 +1011,11 @@ void append_subblock_creation_operation_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
-void append_cubit_systemcall_operation_commands(pugi::xml_document& aDocument, const std::string &aName, const std::string &aCommand)
+void append_cubit_systemcall_operation_commands
+(pugi::xml_document& aDocument, 
+ const std::string &aName, 
+ const std::string &aCommand,
+ const std::string &aNumParameters)
 {
     pugi::xml_node operationNode = aDocument.append_child("Operation");
     addChild(operationNode, "Function", "SystemCall");
@@ -1016,7 +1024,7 @@ void append_cubit_systemcall_operation_commands(pugi::xml_document& aDocument, c
     addChild(operationNode, "OnChange", "true");
     addChild(operationNode, "AppendInput", "false");
     auto tInputNode = operationNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+    XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", aNumParameters}, tInputNode);
 }
 // function append_cubit_systemcall_operation_commands
 /******************************************************************************/
@@ -1039,13 +1047,23 @@ void append_mesh_join_operation_to_plato_main_operation
         addChild(operationNode, "Name", "JoinMesh On Change");
         addChild(operationNode, "Command", "ejoin");
         addChild(operationNode, "OnChange", "true");
+        std::string tNumRanks = "1";
+        for (const auto& iService : aXMLMetaData.services())
+        {
+          if(iService.code() == "platomain")
+          {
+            tNumRanks = iService.numberProcessors();
+          }
+        }
+        addChild(operationNode, "NumRanks", tNumRanks);
         addChild(operationNode, "Argument", "-output");
         addChild(operationNode, "Argument", joinedMeshFile);
         addChild(operationNode, "Argument", exodusFile);
         addChild(operationNode, "Argument", auxiliaryMeshFile);
         addChild(operationNode, "AppendInput", "false");
         auto tInputNode = operationNode.append_child("Input");
-        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+        std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+        XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", tNumParameters}, tInputNode);
     }
 }
 // function append_mesh_join_operation_to_plato_main_operation
@@ -1064,7 +1082,7 @@ void append_mesh_rename_operation_to_plato_main_operation
         const std::string joinedMeshFile(aXMLMetaData.mesh.joined_mesh_name);
 
         std::stringstream moveCmd;
-        moveCmd << "while lsof -u $USER | grep " << joinedMeshFile << "; do sleep 1; done; ";
+        moveCmd << "while lsof -u `id -u -n` | grep " << joinedMeshFile << "; do sleep 1; done; ";
         moveCmd << "/bin/cp " << joinedMeshFile << " " << exodusFile;
 
         pugi::xml_node operationNode = aDocument.append_child("Operation");
@@ -1074,7 +1092,8 @@ void append_mesh_rename_operation_to_plato_main_operation
         addChild(operationNode, "OnChange", "true");
         addChild(operationNode, "AppendInput", "false");
         auto tInputNode = operationNode.append_child("Input");
-        XMLGen::append_children({"ArgumentName"}, {"Parameters"}, tInputNode);
+        std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+        XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", tNumParameters}, tInputNode);
     }
 }
 // function append_mesh_rename_operation_to_plato_main_operation
@@ -1126,9 +1145,26 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");
     addChild(aInputNode, "ArgumentName", "Parameters");
+    addChild(aInputNode, "Layout", "scalar");
+    addChild(aInputNode, "Size", std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData)));
 }
 // function append_update_geometry_on_change_operation_commands
 /******************************************************************************/
+
+void append_wait_for_file_close_operation_commands
+(pugi::xml_document& aDocument,
+ const std::string& aName,
+ const std::string& aFolder,
+ const std::string& aFile)
+ {
+    pugi::xml_node tNode = aDocument.append_child("Operation");
+   
+    addChild(tNode, "Function", "SystemCall");
+    addChild(tNode, "Name", aName);
+    std::string tCommand = "while lsof -u `id -u -n` | grep " + aFolder + "/" + aFile + "; do sleep 1; done; ";
+    addChild(tNode, "Command", tCommand);
+    addChild(tNode, "OnChange", "false");
+ }
 
 /******************************************************************************/
 void append_reinitialize_operation_to_plato_main_operation
@@ -1421,17 +1457,13 @@ void append_initialize_data_for_shape_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_document& aDocument)
 {
-    pugi::xml_node tmp_node = aDocument.append_child("Operation");
-    addChild(tmp_node, "Function", "InitializeValues");
-    addChild(tmp_node, "Name", "Initialize Values");
-    pugi::xml_node tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Values");
-    tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Lower Bounds");
-    tmp_node1 = tmp_node.append_child("Output");
-    addChild(tmp_node1, "ArgumentName", "Upper Bounds");
-    addChild(tmp_node, "Method", "ReadFromCSMFile");
-    addChild(tmp_node, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
+    pugi::xml_node tOperation = aDocument.append_child("Operation");
+    addChild(tOperation, "Function", "InitializeValues");
+    addChild(tOperation, "Name", "Initialize Values");
+    pugi::xml_node tOutput = tOperation.append_child("Output");
+    addChild(tOutput, "ArgumentName", "Values");
+    addChild(tOperation, "Method", "ReadFromCSMFile");
+    addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
 }
 // function append_initialize_data_for_topology_problem
 /******************************************************************************/
@@ -1573,9 +1605,12 @@ void append_decomp_operations
     std::string tCommand = std::string("cd evaluations") + tTag + std::string("; ") + tDecompString;
 
     auto tOperation = aDocument.append_child("Operation");
-    std::vector<std::string> tKeys = {"Function", "Name", "Command"};
-    std::vector<std::string> tValues = {"SystemCall", tName, tCommand};
+    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange"};
+    std::vector<std::string> tValues = {"SystemCall", tName, tCommand, "true"};
     XMLGen::append_children(tKeys, tValues, tOperation);
+    auto tInputNode = tOperation.append_child("Input");
+    std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
+    XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", tNumParameters}, tInputNode);
 }
 // function append_decomp_operations
 /******************************************************************************/
@@ -1671,6 +1706,16 @@ void append_set_lower_bounds_to_plato_main_operation
         XMLGen::append_fixed_blocks_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_sidesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_nodesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE )
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        addChild(tOperation, "Function", "InitializeValues");
+        addChild(tOperation, "Name", "Compute Lower Bounds");
+        pugi::xml_node tOutput = tOperation.append_child("Output");
+        addChild(tOutput, "ArgumentName", "Lower Bounds");
+        addChild(tOperation, "Method", "ReadFromCSMFile");
+        addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
     }
 }
 // function append_set_lower_bounds_to_plato_main_operation
@@ -1788,6 +1833,16 @@ void append_set_upper_bounds_to_plato_main_operation
         XMLGen::append_fixed_blocks_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_sidesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
         XMLGen::append_fixed_nodesets_identification_numbers_to_operation(aXMLMetaData, tOperation);
+    }
+    else if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE )
+    {
+        auto tOperation = aDocument.append_child("Operation");
+        addChild(tOperation, "Function", "InitializeValues");
+        addChild(tOperation, "Name", "Compute Upper Bounds");
+        pugi::xml_node tOutput = tOperation.append_child("Output");
+        addChild(tOutput, "ArgumentName", "Upper Bounds");
+        addChild(tOperation, "Method", "ReadFromCSMFile");
+        addChild(tOperation, "CSMFileName", aXMLMetaData.optimization_parameters().csm_file());
     }
 }
 // function append_set_upper_bounds_to_plato_main_operation

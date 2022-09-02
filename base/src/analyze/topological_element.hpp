@@ -132,7 +132,7 @@ public:
   virtual int  getNnps() {return myNnps;}
   virtual int  getDim() {return myDim;}
   virtual int  getNumElem() {return myNel;}
-  virtual const char* getType() { return myType.c_str(); }
+  virtual string getType() { return myType; }
   virtual int  getBlockId() { return groupID; }
   virtual void setBlockId(int bid) { groupID = bid; }
   virtual string getBlockName() { return myName; }
@@ -286,6 +286,21 @@ private:
   void init();
   Hex20(const Hex20&);
   Hex20& operator=(const Hex20&);
+};
+
+class Hex27 : public Element
+{
+public:
+  Hex27( int number, int nattr=0 ): Element( number, nattr ){ init(); }
+  Hex27( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
+  virtual ~Hex27();
+  virtual void registerData();
+  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+
+private:
+  void init();
+  Hex27(const Hex27&);
+  Hex27& operator=(const Hex27&);
 };
 
 class Tet4 : public Element

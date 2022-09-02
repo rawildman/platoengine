@@ -90,7 +90,8 @@ private:
                        PruneMeshAPISTK *mesh_api,
                        std::map<stk::mesh::EntityId, int> &node_vals,
                        std::map<stk::mesh::EntityId, int> &elem_vals,
-                       std::vector<proc_node_map> &procs);
+                       std::vector<proc_node_map> &procs,
+                       double prune_threshold=0.5);
 
 public:
   void prune_mesh( const std::vector<PruneHandle> &elem_list,
@@ -98,7 +99,8 @@ public:
                        int num_buffer_layers,
                        int allow_nonmanifold_connections,
                        int remove_islands,
-                       PruneMeshAPISTK *mesh_api);
+                       PruneMeshAPISTK *mesh_api,
+                       double prune_threshold=0.5);
 };
 
 #endif

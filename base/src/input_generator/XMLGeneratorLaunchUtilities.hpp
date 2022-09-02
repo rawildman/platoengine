@@ -34,6 +34,7 @@ namespace XMLGen
   void append_engine_mpirun_lines(const XMLGen::InputData& aInputData, FILE*& fp);
   void append_plato_analyze_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const std::string& aDeviceID, const int aEvaluation = -1);
   void append_sierra_sd_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID, const int aEvaluation = -1);
+  void append_sierra_tf_code_path(const XMLGen::InputData& aInputData, FILE*& aFile, const std::string& aServiceID);
   void append_engine_services_mpirun_lines(const XMLGen::InputData& aInputData, int &aNextPerformerID, FILE*& fp);
   void append_post_optimization_run_lines(const XMLGen::InputData& aInputData, FILE*& fp);
   
@@ -45,6 +46,7 @@ namespace XMLGen
     std::string get_num_opt_processors(const XMLGen::InputData& aInputData);
     std::string get_num_buffer_layers(const XMLGen::InputData& aInputData);
     std::string get_prune_string(const XMLGen::InputData& aInputData);
+    std::string get_prune_threshold_string(const XMLGen::InputData& aInputData);
     std::string get_extension_string(const std::string& tNumberPruneAndRefineProcsString);
     std::string get_prune_and_refine_executable_path(const XMLGen::InputData& aInputData);
     size_t compute_number_of_nodes_needed(const size_t& aNumProcessorsNeeded, const size_t& aNumProcessorsPerNode);

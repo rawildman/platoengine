@@ -29,7 +29,7 @@ struct OptimizationParameters
     struct ValueData
     {
         bool mIsDefault;
-        std::string mValue;
+        std::vector<std::string> mValue;
     };
 
 // private member data
@@ -56,12 +56,22 @@ private:
 private:
     /******************************************************************************//**
      * \fn getValue
-     * \brief Return string value for property with input tag; else, throw an error if \n
-     * property is not defined in the metadata.
-     * \param [in] aTag property tag
-     * \return property string value
+     * \brief Return first value on the list of strings with key defined by 'aTag'. \n 
+     *   If key is not defined, returned and empty string.
+     * \param [in] aTag key
+     * \return first value
     **********************************************************************************/
     std::string getValue(const std::string& aTag) const;
+
+    /******************************************************************************//**
+     * \fn getValues
+     * \brief Return list of strings with key defined by 'aTag'. If key is not defined, \n
+     *   returned a list of size one. The only element in the list is defined by an \n
+     *   empty string.
+     * \param [in] aTag ket
+     * \return list
+    **********************************************************************************/
+    std::vector<std::string> getValues(const std::string& aTag) const;
 
     /******************************************************************************//**
      * \fn getBool
@@ -175,12 +185,27 @@ public:
 
     /******************************************************************************//**
      * \fn value
-     * \brief Return value for property with input tag; else, throw an error if \n
-     * property is not defined in the metadata.
+     * \brief Return first element on the list; else, throw an error if input key/tag is not defined.
      * \param [in] aTag property tag
-     * \return property string value
+     * \return value
     **********************************************************************************/
     std::string value(const std::string& aTag) const;
+
+    /******************************************************************************//**
+     * \fn value
+     * \brief Return list of values; else, throw an error if input key/tag is not defined.
+     * \param [in] aTag property tag
+     * \return list
+    **********************************************************************************/
+    std::vector<std::string> values(const std::string& aTag) const;
+
+    /******************************************************************************//**
+     * \fn find
+     * \brief Return sequence container associated with associative key.
+     * \param [in] aKey associative key
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> find(const std::string& aKey) const;
 
     /******************************************************************************//**
      * \fn tags
@@ -199,11 +224,13 @@ public:
     void append(const std::string& aTag, const std::string& aValue, const bool& aIsDefault=false);
 
     /******************************************************************************//**
-     * \fn mesh_map_filter_radius 
-     * \brief Return string value for keyword 'mesh_map_filter_radius'.
-     * \return value
+     * \fn set
+     * \brief Set metadata.
+     * \param [in] aTag   parameter tag
+     * \param [in] aList  parameter list
+     * \param [in] aIsDefault parameter specifying whether this is a default or user set value
     **********************************************************************************/
-    std::string mesh_map_filter_radius() const;
+    void set(const std::string& aTag, const std::vector<std::string>& aList, const bool& aIsDefault=false);
 
     /******************************************************************************//**
      * \fn filter_before_symmetry_enforcement 
@@ -211,6 +238,75 @@ public:
      * \return value
     **********************************************************************************/
     std::string filter_before_symmetry_enforcement() const;
+
+    /******************************************************************************//**
+     * \fn mesh_map_filter_radius 
+     * \brief Return string value for keyword 'mesh_map_filter_radius'.
+     * \return value
+    **********************************************************************************/
+    std::string mesh_map_filter_radius() const;
+
+    /******************************************************************************//**
+     * \fn mesh_map_search_tolerance 
+     * \brief Return string value for keyword 'mesh_map_search_tolerance'.
+     * \return value
+    **********************************************************************************/
+    std::string mesh_map_search_tolerance() const;
+
+    /******************************************************************************//**
+     * \fn descriptors
+     * \brief Set optimizable parameter descriptors.
+     * \param [in] aDescriptors sequence container
+    **********************************************************************************/
+    void descriptors(const std::vector<std::string> &aDescriptors);
+
+    /******************************************************************************//**
+     * \fn descriptors
+     * \brief Return optimizable parameter descriptors.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> descriptors() const { return this->find("descriptors"); }
+
+    /******************************************************************************//**
+     * \fn lower_bounds
+     * \brief Return lower bounds for optimization parameters.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> lower_bounds() const { return this->find("lower_bounds"); }
+
+    /******************************************************************************//**
+     * \fn upper_bounds
+     * \brief Return lower bounds for optimization parameters.
+     * \return sequence container. if not defined, return empty sequence container
+    **********************************************************************************/
+    std::vector<std::string> upper_bounds() const { return this->find("upper_bounds"); }
+
+    /******************************************************************************//**
+     * \fn lower_bounds
+     * \brief Sets lower bounds for optimization parameters.
+    **********************************************************************************/
+    void lower_bounds(const std::vector<std::string> &aLowerBounds);
+
+    /******************************************************************************//**
+     * \fn upper_bounds
+     * \brief Sets upper bounds for optimization parameters.
+    **********************************************************************************/
+    void upper_bounds(const std::vector<std::string> &aUpperBounds);
+
+    /******************************************************************************//**
+     * \fn mdps_bounds
+     * \brief Sets mdps for optimization parameters.
+    **********************************************************************************/
+    void mdps_partitions(const std::vector<std::string> &aMDPSPartitions);
+
+    /******************************************************************************//**
+     * \fn mdps_partitions
+     * \brief set lower bounds for optimization parameters.
+     * 
+    **********************************************************************************/
+    std::vector<std::string> mdps_partitions() const { return this->find("mdps_partitions"); }
+
+
 
     /******************************************************************************//**
      * \fn setFixedBlockIDs
@@ -305,6 +401,7 @@ public:
     std::string prune_and_refine_path() const {return value("prune_and_refine_path");}
     std::string number_buffer_layers() const {return value("number_buffer_layers");}
     std::string prune_mesh() const {return value("prune_mesh");}
+    std::string prune_threshold() const {return value("prune_threshold");}
     std::string num_shape_design_variables() const {return value("num_shape_design_variables");}
     std::string initial_guess_file_name() const {return value("initial_guess_file_name");}
     std::string initial_guess_field_name() const {return value("initial_guess_field_name");}
@@ -396,17 +493,23 @@ public:
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
     std::string dakota_workflow() const {return value("dakota_workflow");}
     std::string concurrent_evaluations() const {return value("concurrent_evaluations");}
-    std::string mdps_partitions() const {return value("mdps_partitions");}
+    
     std::string mdps_response_functions() const {return value("mdps_response_functions");}
     std::string sbgo_max_iterations() const {return value("sbgo_max_iterations");}
     std::string moga_population_size() const {return value("moga_population_size");}
     std::string moga_niching_distance() const {return value("moga_niching_distance");}
     std::string num_sampling_method_samples() const {return value("num_sampling_method_samples");}
     std::string moga_max_function_evaluations() const {return value("moga_max_function_evaluations");}
+    std::string sbgo_surrogate_output_name() const {return value("sbgo_surrogate_output_name");}
     std::string amgx_solver_tolerance() const {return value("amgx_solver_tolerance");}
     std::string amgx_max_iterations() const {return value("amgx_max_iterations");}
     std::string amgx_print_solver_stats() const {return value("amgx_print_solver_stats");}
     std::string amgx_solver_type() const {return value("amgx_solver_type");}
+
+    std::string rol_gradient_check_perturbation_scale() const {return value("rol_gradient_check_perturbation_scale");}
+    std::string rol_gradient_check_steps() const {return value("rol_gradient_check_steps");}
+    std::string rol_gradient_check_random_seed() const {return value("rol_gradient_check_random_seed");}
+
 };
 // struct OptimizationParameters
 

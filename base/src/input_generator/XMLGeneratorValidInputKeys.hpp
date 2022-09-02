@@ -69,6 +69,8 @@ struct ValidCriterionParameterKeys
         "normalize", 
         "normalization_value",
         "stress_p_norm_exponent",
+        "stress_p_norm_measure",
+        "stress_p_norm_volume_scaling",
         "mechanical_weighting_factor",
         "thermal_weighting_factor",
         "material_penalty_model", 
@@ -118,7 +120,7 @@ struct ValidCriterionParameterKeys
         "volume_penalty_divisor",
         "volume_penalty_bias",
         "surface_area_sideset_id",
-        // SD modal objectives
+        // Sierra/SD modal objectives
         "num_modes_compute",
         "modes_to_exclude",
         "eigen_solver_shift",
@@ -127,6 +129,9 @@ struct ValidCriterionParameterKeys
         "shape_sideset",
         "ref_data_file",
         "match_nodesets",
+        // Sierra/TF keywords
+        "search_nodesets",
+        "temperature_field_name",
         // mass properties
         "mass",
         "cgx", 
@@ -137,7 +142,11 @@ struct ValidCriterionParameterKeys
         "izz", 
         "ixz", 
         "iyz", 
-        "ixy"
+        "ixy",
+        // system call
+        "data_file",
+        "data_group",
+        "data_extraction_operation"
     };
 };
 
@@ -232,10 +241,12 @@ private:
         "fluid_thermal_compliance",
         "maximize_fluid_thermal_flux",
         "modal_matching",
+        "temperature_matching",
         "modal_projection_error",
         "mass_properties",
         "displacement",
-        "volume_average_von_mises"
+        "volume_average_von_mises",
+        "system_call"
     };
 
 public:
@@ -259,6 +270,39 @@ public:
     { return mKeys; }
 };
 // struct ValidCriterionTypeKeys
+
+struct ValidPNormMeasureKeys
+{
+private:
+    /*!<
+     * \brief Valid p-norm measures.
+     **/
+    std::vector<std::string> mKeys = {"vonmises"};
+
+public:
+    /******************************************************************************//**
+     * \fn value
+     * \brief Return supported p-norm measure keyword.
+     * \param [in] aKey input file keyword
+     * \return supported criterion keyword. If key is not supported, return an empty string.
+    **********************************************************************************/
+    std::string value(const std::string& aKey) const
+    {
+        return (XMLGen::return_supported_value(aKey, mKeys));
+    }
+};
+// struct ValidPNormMeasureKeys
+
+struct ValidPNormMeasureKeyMap
+{
+    /*!<
+     * valid p-norm measure key map \n
+     * \brief map from p-norm measure keyword to identification keyword for Plato Analyze input deck, i.e. map<measure_key, identification_key>.
+     *
+     **/
+    std::unordered_map<std::string, std::string> mKeys = { { "vonmises", "Von Mises" } };
+};
+// ValidPNormMeasureKeyMap
 
 struct ValidRandomCategoryKeys
 {
@@ -545,7 +589,8 @@ private:
         {"thermoplasticity", "solid"},
         {"frequency_response_function", "solid"},
         {"modal_response", "solid"},
-        {"steady_state_incompressible_fluids", "fluid"}
+        {"steady_state_incompressible_fluids", "fluid"},
+        {"electromagnetics", "electromagnetics"}
     };
 
 public:
@@ -600,7 +645,9 @@ private:
         "thermoplasticity",
         "forced_convection",
         "natural_convection",
-        "laminar_flow"};
+        "laminar_flow",
+        "electromagnetics"
+    };
 
 public:
     /******************************************************************************//**
@@ -699,7 +746,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_tf", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk", "gemma"};
 };
 // struct ValidCodeKeys
 
@@ -1076,6 +1123,7 @@ private:
             {
                 { "youngs_modulus", {"Youngs Modulus", "double"} },
                 { "poissons_ratio", {"Poissons Ratio", "double"} },
+                { "mass_density", {"Mass Density", "double"} }, 
                 { "hardening_modulus_isotropic", { "Hardening Modulus Isotropic", "double" } },
                 { "hardening_modulus_kinematic", { "Hardening Modulus Kinematic", "double" } },
                 { "initial_yield_stress", {"Initial Yield Stress", "double"} },
@@ -1138,6 +1186,12 @@ private:
                 { "darcy_number", { "Darcy Number", "double" } }, 
                 { "reynolds_number", {"Reynolds Number", "double"} },
                 { "impermeability_number", {"Impermeability Number", "double"} }
+            }
+        },
+
+        { "electromagnetics",
+            {
+                { "conductivity", { "Conductivity", "double" } }
             }
         }
     };
@@ -1502,8 +1556,11 @@ struct ValidOptimizationParameterKeys
      **/
     std::unordered_set<std::string> mKeys =
     {
-     "discretization",
      "verbose",
+     "descriptors",
+     "lower_bounds",
+     "upper_bounds",
+     "discretization",
      "enforce_bounds",
      "number_refines",
      "mma_move_limit",
@@ -1514,6 +1571,7 @@ struct ValidOptimizationParameterKeys
      "symmetry_plane_origin",
      "mesh_map_filter_radius",
      "filter_before_symmetry_enforcement",
+     "mesh_map_search_tolerance",
      "mma_asymptote_expansion",
      "mma_asymptote_contraction",
      "mma_max_sub_problem_iterations",
@@ -1554,6 +1612,7 @@ struct ValidOptimizationParameterKeys
      "prune_and_refine_path",
      "number_buffer_layers",
      "prune_mesh",
+     "prune_threshold",
      "optimization_algorithm",
      "check_gradient",
      "check_hessian",
@@ -1618,7 +1677,11 @@ struct ValidOptimizationParameterKeys
      "moga_population_size",
      "moga_niching_distance",
      "moga_max_function_evaluations",
+     "sbgo_surrogate_output_name",
      "num_sampling_method_samples",
+     "rol_gradient_check_perturbation_scale",
+     "rol_gradient_check_steps",
+     "rol_gradient_check_random_seed",
     };
 };
 
