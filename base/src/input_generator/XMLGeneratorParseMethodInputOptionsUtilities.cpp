@@ -213,6 +213,7 @@ void insert_plato_symmetry_filter_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "symmetry_plane_normal", { { {"symmetry_plane_normal"}, ""}, "" } });
     aTags.insert({ "symmetry_plane_origin", { { {"symmetry_plane_origin"}, ""}, "" } });
     aTags.insert({ "mesh_map_filter_radius", { { {"mesh_map_filter_radius"}, ""}, "" } });
+    aTags.insert({ "mesh_map_search_tolerance", { { {"mesh_map_search_tolerance"}, ""}, "" } });
     aTags.insert({ "filter_before_symmetry_enforcement", { { {"filter_before_symmetry_enforcement"}, ""}, "" } });
 }
 // function insert_plato_symmetry_filter_input_options

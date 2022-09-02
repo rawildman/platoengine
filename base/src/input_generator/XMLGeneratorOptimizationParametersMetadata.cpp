@@ -130,6 +130,11 @@ std::string OptimizationParameters::mesh_map_filter_radius() const
     return (this->getValue("mesh_map_filter_radius"));
 }
 
+std::string OptimizationParameters::mesh_map_search_tolerance() const
+{
+    return (this->getValue("mesh_map_search_tolerance"));
+}
+
 void OptimizationParameters::descriptors(const std::vector<std::string> &aDescriptors) 
 { 
     ValueData tValueData;

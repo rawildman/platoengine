@@ -233,6 +233,13 @@ public:
     void set(const std::string& aTag, const std::vector<std::string>& aList, const bool& aIsDefault=false);
 
     /******************************************************************************//**
+     * \fn filter_before_symmetry_enforcement 
+     * \brief Return string value for keyword 'filter_before_symmetry_enforcement'.
+     * \return value
+    **********************************************************************************/
+    std::string filter_before_symmetry_enforcement() const;
+
+    /******************************************************************************//**
      * \fn mesh_map_filter_radius 
      * \brief Return string value for keyword 'mesh_map_filter_radius'.
      * \return value
@@ -240,11 +247,11 @@ public:
     std::string mesh_map_filter_radius() const;
 
     /******************************************************************************//**
-     * \fn filter_before_symmetry_enforcement 
-     * \brief Return string value for keyword 'filter_before_symmetry_enforcement'.
+     * \fn mesh_map_search_tolerance 
+     * \brief Return string value for keyword 'mesh_map_search_tolerance'.
      * \return value
     **********************************************************************************/
-    std::string filter_before_symmetry_enforcement() const;
+    std::string mesh_map_search_tolerance() const;
 
     /******************************************************************************//**
      * \fn descriptors
