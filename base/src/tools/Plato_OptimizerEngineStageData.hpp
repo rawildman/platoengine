@@ -116,11 +116,6 @@ public:
     size_t getMaxNumIterations() const;
     void setMaxNumIterations(const size_t & aInput);
 
-    int getDerivativeCheckerFinalSuperscript() const;
-    void setDerivativeCheckerFinalSuperscript(const int & aInput);
-    int getDerivativeCheckerInitialSuperscript() const;
-    void setDerivativeCheckerInitialSuperscript(const int & aInput);
-
     std::vector<double> getInitialGuess() const;
     void setInitialGuess(const std::vector<double> & aInput);
     void setInitialGuess(const std::vector<std::string> & aInput);
@@ -518,8 +513,6 @@ private:
 
     int mGCMMAMaxInnerIterations;
     int mKSMaxTrustRegionIterations;
-    int mDerivativeCheckerFinalSuperscript;
-    int mDerivativeCheckerInitialSuperscript;
     int mROLCheckGradientSteps;
     int mROLCheckGradientSeed;
 

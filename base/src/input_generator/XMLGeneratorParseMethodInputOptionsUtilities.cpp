@@ -80,8 +80,6 @@ void insert_derivative_checker_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "check_hessian", { { {"check_hessian"}, ""}, "false" } });
     aTags.insert({ "check_gradient", { { {"check_gradient"}, ""}, "false" } });
-    aTags.insert({ "derivative_checker_final_superscript", { { {"derivative_checker_final_superscript"}, ""}, "8" } });
-    aTags.insert({ "derivative_checker_initial_superscript", { { {"derivative_checker_initial_superscript"}, ""}, "1" } });
 }
 // function insert_derivative_checker_input_options
 /******************************************************************************/
