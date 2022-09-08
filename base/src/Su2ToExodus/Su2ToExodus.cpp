@@ -638,7 +638,11 @@ int Su2ToExodus::getNamedIntegerField(std::istream &aStream, const char *aName)
         if(tValueName == aName)
         {
             std::string tNewString = tLine.substr(tPos+1);
-            tRet = std::atoi(tNewString.c_str());
+            size_t tPos2 = tNewString.find('_');
+            if(tPos2 != std::string::npos)
+                tRet = std::atoi(tNewString.substr(tPos2+1).c_str());
+            else
+                tRet = std::atoi(tNewString.c_str());
         }
     }
 
