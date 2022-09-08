@@ -70,6 +70,7 @@ PhysicsProxyApp::PhysicsProxyApp(const std::string & aInputMeshFile, const MPI_C
         mDesignVariables(),
         mObjectiveGradient()
 {
+  mMeshData->use_simple_fields();
 }
 
 PhysicsProxyApp::~PhysicsProxyApp()
@@ -112,6 +113,7 @@ void PhysicsProxyApp::reinitialize()
 {
     delete mMeshData;
     mMeshData = new stk::io::StkMeshIoBroker(mMyComm);
+    mMeshData->use_simple_fields();
 
     mGlobalIDsOwned.clear();
     mGlobalIDsOwnedAndShared.clear();

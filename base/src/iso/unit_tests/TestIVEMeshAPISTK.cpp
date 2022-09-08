@@ -59,6 +59,7 @@ TEST(MSMeshSTK, test_global_iterators)
   // Build a mesh for testing, 2x2x2
   //================================================
   stk::io::StkMeshIoBroker iobroker(MPI_COMM_WORLD);
+  iobroker.use_simple_fields();
   build_fixture(mesh_api, iobroker,"2x2x2");
 
 

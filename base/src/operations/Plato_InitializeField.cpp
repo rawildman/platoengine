@@ -402,6 +402,7 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
     stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
     stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
 #endif
+    tMetaData->use_simple_fields();
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -409,15 +410,14 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
     tBroker->add_mesh_database(mFileName, "exodus", stk::io::READ_MESH);
     tBroker->create_input_mesh();
 
-    stk::mesh::Field<double> &tTempField = tMetaData->declare_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK, "swiss", 1);
+    stk::mesh::Field<double> &tTempField = tMetaData->declare_field<double>(stk::topology::NODE_RANK, "swiss", 1);
 
     std::vector<double> tTempFieldVals(2541, 0);
     stk::mesh::put_field_on_mesh(tTempField, tMetaData->universal_part(), tTempFieldVals.data());
 
     tBroker->populate_bulk_data();
 
-    stk::mesh::Field<double, stk::mesh::Cartesian> *tCoordsField = tMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-    (stk::topology::NODE_RANK, "coordinates");
+    stk::mesh::Field<double> *tCoordsField = tMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
 
     std::vector<stk::mesh::Entity> tNodes;
     tBulkData->get_entities(stk::topology::NODE_RANK, tMetaData->universal_part(), tNodes);
@@ -573,6 +573,7 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
     stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
     stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
 #endif
+    tMetaData->use_simple_fields();
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
     tBroker->set_bulk_data(*tBulkData);
 
@@ -583,8 +584,7 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
 
     tBroker->populate_bulk_data();
 
-    stk::mesh::Field<double, stk::mesh::Cartesian> *tCoordsField =
-            tMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian>>(stk::topology::NODE_RANK, "coordinates");
+    stk::mesh::Field<double> *tCoordsField = tMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
 
     // Hard code 4 plane tValues (brick)
     // double tPlanes[6][3] = {{-5.25,.1875,.1875},{-5.25,.1875,.1875},{-5.25,-.1875,-.1875},{-5.25,-.1875,-.1875},{-5.25,.1875,.1875},{-.25,-.1875,-.1875}};
@@ -690,6 +690,7 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
     stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
     stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
 #endif
+    tMetaData->use_simple_fields();
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -706,7 +707,7 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
     tBroker->populate_bulk_data();
     stk::mesh::Field<double> *tIsoField;
 
-    tIsoField = tMetaData->get_field<stk::mesh::Field<double> >(stk::topology::NODE_RANK, mVariableName);
+    tIsoField = tMetaData->get_field<double>(stk::topology::NODE_RANK, mVariableName);
 
     if(mIteration == -1)
     {

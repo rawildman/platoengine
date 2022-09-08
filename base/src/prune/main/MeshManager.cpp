@@ -23,6 +23,8 @@ using namespace percept;
             mPerceptMeshOut(percept::PerceptMesh(3u))
 
         {
+            mPerceptMeshIn.use_simple_fields();
+            mPerceptMeshOut.use_simple_fields();
             mPruneFlag = 1;
             mPruneThreshold = 0.5;
             mTransferFlag = 1;
@@ -51,24 +53,24 @@ using namespace percept;
             return *mPerceptMeshOut.get_fem_meta_data();
         }
 
-        stk::mesh::Field<double,stk::mesh::Cartesian3d>* MeshManager::get_input_coordinate_field()
+        stk::mesh::Field<double>* MeshManager::get_input_coordinate_field()
         {
-            return mPerceptMeshIn.get_fem_meta_data()->get_field<stk::mesh::Field<double,stk::mesh::Cartesian3d>>(stk::topology::NODE_RANK,"coordinates");
+            return mPerceptMeshIn.get_fem_meta_data()->get_field<double>(stk::topology::NODE_RANK,"coordinates");
         }
 
-        stk::mesh::Field<double,stk::mesh::Cartesian3d>* MeshManager::get_output_coordinate_field()
+        stk::mesh::Field<double>* MeshManager::get_output_coordinate_field()
         {
-            return mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double,stk::mesh::Cartesian3d>>(stk::topology::NODE_RANK,"coordinates");
+            return mPerceptMeshOut.get_fem_meta_data()->get_field<double>(stk::topology::NODE_RANK,"coordinates");
         }
 
         stk::mesh::FieldBase* MeshManager::get_input_transfer_field()
         {
-            return mPerceptMeshIn.get_fem_meta_data()->get_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK,mTransferFieldName);
+            return mPerceptMeshIn.get_fem_meta_data()->get_field(stk::topology::NODE_RANK,mTransferFieldName);
         }
 
         stk::mesh::FieldBase* MeshManager::get_output_transfer_field()
         {
-            return mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK,mTransferFieldName);
+            return mPerceptMeshOut.get_fem_meta_data()->get_field(stk::topology::NODE_RANK,mTransferFieldName);
         }
 
 
@@ -139,7 +141,7 @@ using namespace percept;
             m_isoFields.clear();
 
 
-           stk::mesh::Field<double> *cur_field = mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double> >(
+           stk::mesh::Field<double> *cur_field = mPerceptMeshOut.get_fem_meta_data()->get_field<double>(
                                               stk::topology::NODE_RANK, mTransferFieldName);
 
             m_isoFields.push_back(cur_field);

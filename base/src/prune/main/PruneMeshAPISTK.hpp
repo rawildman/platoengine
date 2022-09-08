@@ -133,7 +133,7 @@ struct NewNodeData
   }
 
   void set_node_entity(double &x, double &y, double &z, 
-                       stk::mesh::Field<double, stk::mesh::Cartesian> *field)
+                       stk::mesh::Field<double> *field)
   {
     this->sort_id_proc_pairs();
     stk::mesh::EntityId id_for_node = this->get_id_for_node();
@@ -207,7 +207,7 @@ private:
   stk::ParallelMachine *mComm;
   bool mLocallyOwnedBulk;
   bool mLocallyOwnedMeta;
-  stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
+  stk::mesh::Field<double> *mCoordsField;
   std::vector<stk::mesh::Field<double> *> mIsoFields;
   std::vector<stk::mesh::Field<double>*> mNodalFields;
   std::vector<stk::mesh::Field<double>*> mElementFields;

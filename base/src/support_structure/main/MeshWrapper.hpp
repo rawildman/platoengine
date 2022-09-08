@@ -44,7 +44,7 @@ private:
     stk::ParallelMachine *mComm;
     bool mLocallyOwnedBulk;
     bool mLocallyOwnedMeta;
-    stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
+    stk::mesh::Field<double> *mCoordsField;
     std::vector<stk::mesh::Field<double> *> mIsoFields;
     stk::mesh::Field<double> *mSupportStructureField;
     std::vector<stk::mesh::Field<double>*> mNodalFields;
