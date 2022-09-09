@@ -64,7 +64,7 @@
 #include "Plato_EpetraSerialDenseMultiVector.hpp"
 #include "Plato_StructuralTopologyOptimization.hpp"
 
-
+#include "Plato_Diagnostics.hpp"
 #include "Plato_MethodMovingAsymptotesParser.hpp"
 #include "Plato_MethodMovingAsymptotesInterface.hpp"
 
@@ -389,7 +389,7 @@ TEST(PlatoTest, MethodMovingAsymptotes_PrintStoppingCriterion)
     ASSERT_STREQ(tDescription.c_str(), tGold.c_str());
 }
 
-TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Objective)
+TEST(PlatoTest, MethodMovingAsymptotesCriterion_Objective)
 {
     const size_t tNumControls = 5;
     std::shared_ptr<Plato::DataFactory<double>> tDataFactory = std::make_shared<Plato::DataFactory<double>>();
@@ -408,7 +408,6 @@ TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Objective)
     tAppxFunction.update(tAppxFuncCoreData);
 
     // TEST GRADIENT
-    /*
     std::ostringstream tGradDiagnosticMsg;
     Plato::Diagnostics<double> tDiagnostics;
     ASSERT_NO_THROW(tDiagnostics.checkCriterionGradient(tAppxFunction, *tAppxFuncCoreData.mCurrentControls, tGradDiagnosticMsg));
@@ -426,10 +425,10 @@ TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Objective)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tHessDiagnosticMsg.str().c_str();
-    }*/
+    }
 }
 
-TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Constraint)
+TEST(PlatoTest, MethodMovingAsymptotesCriterion_Constraint)
 {
     const size_t tNumControls = 5;
     std::shared_ptr<Plato::DataFactory<double>> tDataFactory = std::make_shared<Plato::DataFactory<double>>();
@@ -445,7 +444,7 @@ TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Constraint)
 
     Plato::MethodMovingAsymptotesCriterion<double> tAppxFunction(tDataFactory);
     tAppxFunction.update(tAppxFuncCoreData);
-/*
+
     // TEST GRADIENT
     std::ostringstream tGradDiagnosticMsg;
     Plato::Diagnostics<double> tDiagnostics;
@@ -464,7 +463,7 @@ TEST(PlatoTest, DISABLE_MethodMovingAsymptotesCriterion_Constraint)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tHessDiagnosticMsg.str().c_str();
-    }*/
+    }
 }
 
 TEST(PlatoTest, MethodMovingAsymptotesOperations_initialize)

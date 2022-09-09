@@ -1470,6 +1470,18 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             aOptimizerEngineStageData.setAlgebra(tAlgebraType);
         }
 
+        if( tOptionsNode.size<std::string>("DerivativeCheckerFinalSuperscript") )
+        {
+            int tFinalSuperscript = Plato::Get::Int(tOptionsNode, "DerivativeCheckerFinalSuperscript");
+            aOptimizerEngineStageData.setDerivativeCheckerFinalSuperscript(tFinalSuperscript);
+        }
+
+        if( tOptionsNode.size<std::string>("DerivativeCheckerInitialSuperscript") )
+        {
+            int tInitialSuperscript = Plato::Get::Int(tOptionsNode, "DerivativeCheckerInitialSuperscript");
+            aOptimizerEngineStageData.setDerivativeCheckerInitialSuperscript(tInitialSuperscript);
+        }
+
         if( tOptionsNode.size<std::string>("GCMMAInitialMovingAsymptoteScaleFactor") )
         {
             double tInitialMovingAsymptoteScaleFactor = Plato::Get::Double(tOptionsNode, "GCMMAInitialMovingAsymptoteScaleFactor");

@@ -2821,6 +2821,30 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageForNondeterministicUseca
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendDerivativeCheckerOptions)
+{
+    // CALL FUNCTION
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("check_gradient", "true");
+    tOptimizationParameters.append("check_hessian", "true");
+    tOptimizationParameters.append("derivative_checker_initial_superscript", "1");
+    tOptimizationParameters.append("derivative_checker_final_superscript", "8");
+    tXMLMetaData.set(tOptimizationParameters);
+    auto tOptimizerNode = tDocument.append_child("Optimizer");
+    XMLGen::append_derivative_checker_options(tXMLMetaData, tOptimizerNode);
+    ASSERT_FALSE(tOptimizerNode.empty());
+
+    // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
+    std::vector<std::string> tGoldKeys = {"CheckGradient", "CheckHessian", "UseUserInitialGuess", "Options"};
+    std::vector<std::string> tGoldValues = {"true", "true", "True", ""};
+    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
+    auto tOptionsNode = tOptimizerNode.child("Options");
+    tGoldKeys = {"DerivativeCheckerInitialSuperscript", "DerivativeCheckerFinalSuperscript"};
+    tGoldValues = {"1", "8"};
+    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
+}
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOC_Options)
 {
@@ -2985,6 +3009,30 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_ErrorOptimizerNotS
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     ASSERT_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
+}
+
+TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_DerivativeChecker)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("check_hessian", "false");
+    tOptimizationParameters.append("check_gradient", "true");
+    tOptimizationParameters.append("derivative_checker_initial_superscript", "1");
+    tOptimizationParameters.append("derivative_checker_final_superscript", "8");
+    tOptimizationParameters.append("optimization_algorithm", "derivativechecker");
+    tXMLMetaData.set(tOptimizationParameters);
+    auto tOptimizerNode = tDocument.append_child("Optimizer");
+    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode));
+
+    // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
+    std::vector<std::string> tGoldKeys = {"Package", "CheckGradient", "CheckHessian", "UseUserInitialGuess", "Options"};
+    std::vector<std::string> tGoldValues = {"DerivativeChecker", "true", "false", "True", ""};
+    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
+    auto tOptionsNode = tOptimizerNode.child("Options");
+    tGoldKeys = {"DerivativeCheckerInitialSuperscript", "DerivativeCheckerFinalSuperscript"};
+    tGoldValues = {"1", "8"};
+    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
 }
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption)
