@@ -50,7 +50,7 @@
 
 #include "Plato_SromHelpers.hpp"
 #include "Plato_DataFactory.hpp"
-
+#include "Plato_Diagnostics.hpp"
 #include "Plato_SromObjective.hpp"
 #include "Plato_Communication.hpp"
 #include "Plato_LinearAlgebra.hpp"
@@ -1377,7 +1377,7 @@ TEST(PlatoTest, NormalDistribution)
     }
 }
 
-TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Uncorrelated)
+TEST(PlatoTest, CheckSromObjectiveGradient_Uncorrelated)
 {
     // ********* ALLOCATE BETA DISTRIBUTION *********
     const double tMean = 90;
@@ -1391,7 +1391,7 @@ TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Uncorrelated)
     std::ostringstream tOutputMsg;
     const size_t tNumSamples = 4;
     const size_t tMaxNumMoments = 4;
-    /*Plato::Diagnostics<double> tDiagnostics;
+    Plato::Diagnostics<double> tDiagnostics;
     Plato::SromObjective<double> tObjective(tDistribution, tMaxNumMoments, tNumSamples);
 
     const size_t tNumVectors = 2;
@@ -1403,10 +1403,10 @@ TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Uncorrelated)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tOutputMsg.str().c_str();
-    }*/
+    }
 }
 
-TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Correlated)
+TEST(PlatoTest, CheckSromObjectiveGradient_Correlated)
 {
     // ********* ALLOCATE BETA DISTRIBUTION *********
     const double tMean = 90;
@@ -1421,7 +1421,6 @@ TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Correlated)
     const size_t tNumSamples = 4;
     const size_t tRandomVecDim = 2;
     const size_t tMaxNumMoments = 4;
-    /*
     Plato::Diagnostics<double> tDiagnostics;
     Plato::SromObjective<double> tObjective(tDistribution, tMaxNumMoments, tNumSamples, tRandomVecDim);
 
@@ -1441,10 +1440,10 @@ TEST(PlatoTest, DISABLED_CheckSromObjectiveGradient_Correlated)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tOutputMsg.str().c_str();
-    }*/
+    }
 }
 
-TEST(PlatoTest, DISABLED_CheckSromConstraintGradient)
+TEST(PlatoTest, CheckSromConstraintGradient)
 {
     // ********* CHECK CONSTRAINT GRADIENT *********
     std::shared_ptr<Plato::StandardVectorReductionOperations<double>> tReductions =
@@ -1456,7 +1455,7 @@ TEST(PlatoTest, DISABLED_CheckSromConstraintGradient)
     Plato::StandardMultiVector<double> tControl(tNumVectors, tNumSamples);
 
     std::ostringstream tOutputMsg;
-    /*Plato::Diagnostics<double> tDiagnostics;
+    Plato::Diagnostics<double> tDiagnostics;
     tDiagnostics.checkCriterionGradient(tConstraint, tControl, tOutputMsg);
     EXPECT_TRUE(tDiagnostics.didGradientTestPassed());
 
@@ -1464,7 +1463,7 @@ TEST(PlatoTest, DISABLED_CheckSromConstraintGradient)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tOutputMsg.str().c_str();
-    }*/
+    }
 }
 
 TEST(PlatoTest, PERF_SolveSromProblem_CorrelatedVars_BetaDistribution)

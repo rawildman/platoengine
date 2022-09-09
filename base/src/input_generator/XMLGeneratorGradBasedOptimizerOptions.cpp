@@ -40,7 +40,8 @@ void append_grad_based_optimizer_options
 {
     std::unordered_map<std::string, std::string> tValidOptimizers =
         { {"oc", "OC"}, {"mma", "MMA"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
-        {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"} };
+        {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"}, 
+        {"derivativechecker", "DerivativeChecker"} };
 
     auto tLower = Plato::tolower(aMetaData.optimization_parameters().optimization_algorithm());
     auto tOptimizerItr = tValidOptimizers.find(tLower);
@@ -92,6 +93,10 @@ void append_grad_based_optimizer_parameters
     {
         XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
         XMLGen::append_augmented_lagrangian_options(aMetaData, aParentNode);
+    }
+    else if(tLower.compare("derivativechecker") == 0)
+    {
+        XMLGen::append_derivative_checker_options(aMetaData, aParentNode);
     }
     else
     {
@@ -558,7 +563,20 @@ std::string get_subproblem_model(const std::string &aSubproblemModelString)
 /******************************************************************************/
 
 /******************************************************************************/
+void append_derivative_checker_options
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_node& aParentNode)
+{
+    auto tCheckGradient = aMetaData.optimization_parameters().check_gradient().empty() ? std::string("true") : aMetaData.optimization_parameters().check_gradient();
+    std::vector<std::string> tKeys = {"CheckGradient", "CheckHessian", "UseUserInitialGuess"};
+    std::vector<std::string> tValues = {tCheckGradient, aMetaData.optimization_parameters().check_hessian(), "True"};
+    XMLGen::append_children(tKeys, tValues, aParentNode);
 
+    auto tOptionsNode = aParentNode.append_child("Options");
+    tKeys = {"DerivativeCheckerInitialSuperscript", "DerivativeCheckerFinalSuperscript"};
+    tValues = {aMetaData.optimization_parameters().derivative_checker_initial_superscript(), aMetaData.optimization_parameters().derivative_checker_final_superscript()};
+    XMLGen::append_children(tKeys, tValues, tOptionsNode);
+}
 
 void append_rol_gradient_check_flags
 (const XMLGen::InputData& aMetaData,

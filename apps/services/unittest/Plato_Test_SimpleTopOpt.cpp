@@ -63,6 +63,7 @@
 #include "Plato_EpetraSerialDenseMultiVector.hpp"
 #include "Plato_StructuralTopologyOptimization.hpp"
 
+#include "Plato_Diagnostics.hpp"
 #include "Plato_OptimalityCriteriaLightInterface.hpp"
 #include "Plato_KelleySachsAugmentedLagrangianLightInterface.hpp"
 #include "Plato_GloballyConvergentMethodMovingAsymptotesLightInterface.hpp"
@@ -894,7 +895,7 @@ TEST(PlatoTest, PERF_SolveStrucTopoWithTrustRegionAugmentedLagrangianLight_5)
     }
 }
 
-TEST(PlatoTest, DISABLED_PERF_CheckSimpleTopoProxyCriteria)
+TEST(PlatoTest, PERF_CheckSimpleTopoProxyCriteria)
 {
     // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
     const double tPoissonRatio = 0.3;
@@ -925,7 +926,7 @@ TEST(PlatoTest, DISABLED_PERF_CheckSimpleTopoProxyCriteria)
     const size_t tNumVectors = 1;
     const size_t tNumControls = tPDE->getNumDesignVariables();
     Plato::EpetraSerialDenseMultiVector<double> tControl(tNumVectors, tNumControls);
-/*
+
     // ********* CHECK VOLUME CRITERION *********
     std::ostringstream tOutputMsg;
     Plato::Diagnostics<double> tDiagnostics;
@@ -941,8 +942,30 @@ TEST(PlatoTest, DISABLED_PERF_CheckSimpleTopoProxyCriteria)
     if(tComm.myProcID() == static_cast<int>(0))
     {
         std::cout << tOutputMsg.str().c_str();
-    }*/
+    }
 }
 
+TEST(PlatoTest, CheckRosenbrockCriterion)
+{
+    // ********* ALLOCATE ROSENBROCK *********
+    Plato::Rosenbrock<double> tCriterion;
+    const size_t tNumVectors = 1;
+    const size_t tNumControls = 2;
+    Plato::EpetraSerialDenseMultiVector<double> tControl(tNumVectors, tNumControls);
+
+    // ********* CHECK ROSENBROCK CRITERION *********
+    std::ostringstream tOutputMsg;
+    Plato::Diagnostics<double> tDiagnostics;
+    tDiagnostics.checkCriterionGradient(tCriterion, tControl, tOutputMsg);
+    EXPECT_TRUE(tDiagnostics.didGradientTestPassed());
+    tDiagnostics.checkCriterionHessian(tCriterion, tControl, tOutputMsg);
+    EXPECT_TRUE(tDiagnostics.didHessianTestPassed());
+
+    Plato::CommWrapper tComm(MPI_COMM_WORLD);
+    if(tComm.myProcID() == static_cast<int>(0))
+    {
+        std::cout << tOutputMsg.str().c_str();
+    }
+}
 
 } // namespace PlatoTest

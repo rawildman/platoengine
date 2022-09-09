@@ -409,6 +409,8 @@ public:
     std::string optimization_type() const {return value("optimization_type");}
     std::string check_gradient() const {return value("check_gradient");}
     std::string check_hessian() const {return value("check_hessian");}
+    std::string derivative_checker_initial_superscript() const {return value("derivative_checker_initial_superscript");}
+    std::string derivative_checker_final_superscript() const {return value("derivative_checker_final_superscript");}
     std::string max_iterations() const {return value("max_iterations");}
     std::string filter_in_engine() const {return value("filter_in_engine");}
     void filter_in_engine(const std::string& aValue) { append("filter_in_engine", aValue, true); }
