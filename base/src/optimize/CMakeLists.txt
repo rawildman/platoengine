@@ -137,10 +137,8 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_StandardVectorReductionOperations.hpp
                         Plato_NonlinearProgrammingSubProblemOC.hpp
                         Plato_Vector.hpp
-                        Plato_Diagnostics.hpp
                         Plato_DriverInterface.hpp
                         Plato_SOParameterStudies.hpp
-                        Plato_DiagnosticsInterface.hpp
                         Plato_DistributedVector.hpp
                         Plato_EpetraSerialDenseVector.hpp
                         Plato_SOParameterStudiesInterface.hpp

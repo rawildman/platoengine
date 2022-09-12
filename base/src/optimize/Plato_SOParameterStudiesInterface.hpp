@@ -59,7 +59,7 @@
 #include "Plato_Parser.hpp"
 #include "Plato_Interface.hpp"
 #include "Plato_HostBounds.hpp"
-#include "Plato_Diagnostics.hpp"
+
 #include "Plato_CommWrapper.hpp"
 #include "Plato_AlgebraFactory.hpp"
 #include "Plato_OptimizerInterface.hpp"

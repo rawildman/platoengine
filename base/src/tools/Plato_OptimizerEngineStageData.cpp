@@ -69,8 +69,6 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mProblemUpdateFrequency(0),
         mGCMMAMaxInnerIterations(5),
         mKSMaxTrustRegionIterations(25),
-        mDerivativeCheckerFinalSuperscript(8),
-        mDerivativeCheckerInitialSuperscript(1),
         mROLCheckGradientSteps(12),
         mROLCheckGradientSeed(0),
         mInitialMovingAsymptoteScaleFactor(0.5),
@@ -292,34 +290,6 @@ void OptimizerEngineStageData::setMaxNumIterations(const size_t & aInput)
 /******************************************************************************/
 {
     mMaxNumIterations = aInput;
-}
-
-/******************************************************************************/
-int OptimizerEngineStageData::getDerivativeCheckerFinalSuperscript() const
-/******************************************************************************/
-{
-    return (mDerivativeCheckerFinalSuperscript);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setDerivativeCheckerFinalSuperscript(const int & aInput)
-/******************************************************************************/
-{
-    mDerivativeCheckerFinalSuperscript = aInput;
-}
-
-/******************************************************************************/
-int OptimizerEngineStageData::getDerivativeCheckerInitialSuperscript() const
-/******************************************************************************/
-{
-    return (mDerivativeCheckerInitialSuperscript);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setDerivativeCheckerInitialSuperscript(const int & aInput)
-/******************************************************************************/
-{
-    mDerivativeCheckerInitialSuperscript = aInput;
 }
 
 /******************************************************************************/
