@@ -236,30 +236,27 @@ public:
           } catch(...){aInterface->Catch();}
         }
 #ifdef ENABLE_ROL
-       else if( tOptPackage == "ROL AugmentedLagrangian" || tOptPackage == "ROL BoundConstrained" || tOptPackage == "ROL LinearConstraint" )
+       else if( tOptPackage == "ROL AugmentedLagrangian" )
        {
          try {
-            Plato::optimizer::algorithm_t tType;
-            if(tOptPackage == "ROL AugmentedLagrangian")
-              tType = Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN;
-            else if(tOptPackage == "ROL BoundConstrained")
-              tType = Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED;
-            else
-              tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
-          
-            Plato::OptimizerEngineStageData tInputData = Plato::OptimizerEngineStageData();
-            auto tCheckGradient = tInputData.getCheckGradient();
-            auto tPerturbationScale = tInputData.getROLPerturbationScale();
-            auto tCheckGradientSteps = tInputData.getROLCheckGradientSteps();
-            auto tCheckGradientSeed = tInputData.getROLCheckGradientSeed();
-           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, 
-                                                                         aLocalComm,
-                                                                         tType,
-                                                                         tCheckGradient,
-                                                                         tPerturbationScale,
-                                                                         tCheckGradientSteps,
-                                                                         tCheckGradientSeed);
+          Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
            
+         } catch(...){aInterface->Catch();}
+       }
+       else if( tOptPackage == "ROL BoundConstrained" )
+       {
+         try {
+           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           
+         } catch(...){aInterface->Catch();}
+       }
+       else if( tOptPackage == "ROL LinearConstraint" )
+       {
+         try {
+           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
+           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
          } catch(...){aInterface->Catch();}
        }
 #endif
