@@ -344,7 +344,7 @@ void ParseUncertainty::parse(std::istream& aInputFile)
 {
     mData.clear();
     this->allocate();
-    constexpr int MAX_CHARS_PER_LINE = 512;
+    constexpr int MAX_CHARS_PER_LINE = 10000;
     std::vector<char> tBuffer(MAX_CHARS_PER_LINE);
     while (!aInputFile.eof())
     {
