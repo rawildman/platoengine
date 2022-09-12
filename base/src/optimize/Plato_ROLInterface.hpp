@@ -96,7 +96,7 @@ public:
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
         Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
         ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
-        
+                
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
             createOptimizationProblemLinearConstraint(tOptimizationProblem,tObjective,tControls,tControlBoundsMng);
@@ -109,7 +109,10 @@ public:
         tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
 
         if(this->mInputData.getCheckGradient() == true)
-          this->checkGradient(tOptimizationProblem);
+        {
+            this->checkGradient(tOptimizationProblem);
+            this->checkConstraint(tOptimizationProblem);
+        }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
             this->solveBoundConstrained(tOptimizationProblem);
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT || mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
@@ -118,9 +121,6 @@ public:
         this->finalize();
     }
 
-
-
-    
 private:
     std::ofstream mOutputFile;
     std::streambuf *getOutputBuffer() 
@@ -149,10 +149,10 @@ private:
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
         
-        aOptimizationProblem->addLinearConstraint("Equality Linear Constraint", tEquality, tDual);//, aControlBoundsMng);
+        aOptimizationProblem->addLinearConstraint("Equality Linear Constraint", tEquality, tDual);
         
         auto tParameterList = this->updateParameterListFromRolInputsFile();
-        aOptimizationProblem->setProjectionAlgorithm(*tParameterList);    
+        aOptimizationProblem->setProjectionAlgorithm(*tParameterList);   
     }
 
     void createOptimizationProblemAugmentedLagrangian
@@ -310,6 +310,51 @@ protected:
         tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);
 	    tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
         tOutputFile.close();
+    }
+
+    void checkConstraint(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
+    {
+        std::cout<<"Checking constraint..."<<std::endl;
+        auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
+        auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
+        auto tCheckGradientSeed = this->mInputData.getROLCheckGradientSeed();
+        if(tCheckGradientSeed !=0)
+        {
+            std::srand((unsigned int)tCheckGradientSeed);
+            std::cout<<"Setting seed to: "<<(unsigned int)tCheckGradientSeed<<std::endl;
+        }
+        auto tx = aOptimizationProblem->getPrimalOptimizationVector();
+        tx->randomize(0, tPerturbationScale);
+        auto tv = aOptimizationProblem->getPrimalOptimizationVector();
+        tv->randomize(0, tPerturbationScale);
+        std::ofstream tOutputFile;
+        if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
+        {
+            auto tg = aOptimizationProblem->getDualOptimizationVector();
+            tg->randomize(0, tPerturbationScale);
+            auto tc = aOptimizationProblem->getResidualVector();
+            tc->randomize(-tPerturbationScale, tPerturbationScale);
+            auto tw = aOptimizationProblem->getMultiplierVector();
+            tw->randomize(-tPerturbationScale, tPerturbationScale);
+            
+            auto tConstraint = aOptimizationProblem->getConstraint();
+            
+            tOutputFile.open("ROL_constraint_check_output.txt");
+            tConstraint->checkApplyJacobian(*tx, *tv, *tc, true, tOutputFile);
+            tOutputFile.close();
+
+            tOutputFile.open("ROL_adjoint_consistency_output.txt");
+            tConstraint->checkAdjointConsistencyJacobian(*tw, *tv, *tx, true, tOutputFile);
+            tOutputFile.close();   
+        }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
+        {
+            tOutputFile.open("ROL_linearity_check_output.txt");
+            aOptimizationProblem->checkLinearity(true, tOutputFile);
+            tOutputFile.close();
+        }
+        else
+            std::cout<<"Nothing to check on ROL_Bound_Constrained Problem"<<std::endl;
     }
 
     Teuchos::RCP<ROL::BoundConstraint<ScalarType>> setControlBounds(const OrdinalType& aNumControls)
