@@ -107,7 +107,12 @@ PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm,
   mComm = comm;
   mMetaData = meta_data;
   mBulkData = bulk_data;
+#ifdef BUILD_IN_SIERRA // GLAZE1
   mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
+#else
+  mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
+                            (stk::topology::NODE_RANK, "coordinates");
+#endif
   if(!mCoordsField)
   {
     if(mBulkData && mBulkData->parallel_rank() == 0)
@@ -129,7 +134,12 @@ PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm,
   parsed_strings.push_back(working_string);
   for(size_t i=0; i<parsed_strings.size(); ++i)
   {
+#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *cur_field = mMetaData->get_field<double>(stk::topology::NODE_RANK, parsed_strings[i]);
+#else
+    stk::mesh::Field<double> *cur_field = mMetaData->get_field<stk::mesh::Field<double> >(
+                              stk::topology::NODE_RANK, parsed_strings[i]);
+#endif
     if(!cur_field)
     {
       if(mBulkData && mBulkData->parallel_rank() == 0)
@@ -156,31 +166,6 @@ PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm) : PruneMeshAPI()
   initialize();
   mComm = comm;
 }
-
-/*
-PruneMeshAPISTK::PruneMeshAPISTK(stk::ParallelMachine* comm) : PruneMeshAPI()
-{
-  initialize();
-
-  mComm = comm;
-  mMetaData = new stk::mesh::MetaData(3);
-  mMetaData->use_simple_fields();
-  mLocallyOwnedMeta = true;
-  mCoordsField = (stk::mesh::Field<double>*)(&(mMetaData->declare_field<double>
-                            (stk::topology::NODE_RANK, "coordinates")));
-  stk::mesh::put_field_on_entire_mesh(*mCoordsField, mMetaData->spatial_dimension());
-  prepare_to_create_tris();
-  mMetaData->commit();
-  if(!mCoordsField)
-  {
-    std::cout << "Failed to find nodal coordinate field." << std::endl;
-  }
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
-  mLocallyOwnedBulk = true;
-  mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
-  mIoBroker->set_bulk_data(*mBulkData);
-}
-*/
 
 PruneMeshAPISTK::~PruneMeshAPISTK()
 {
@@ -800,20 +785,10 @@ stk::mesh::EntityId PruneMeshAPISTK::get_next_entity_id(stk::topology::rank_t ra
 
 void PruneMeshAPISTK::store_tri_to_tet_map_entry(const PruneHandle &tri, const PruneHandle &tet)
 {
-/*
-  CubitTri *ctri = CubitTri::find(tri);
-  CubitTet *ctet = CubitTet::find(tet);
-  IsoSurfaceTool::tri_to_tet_map[ctri] = ctet;
-*/
 }
 
 void PruneMeshAPISTK::store_tet_to_tri_map_entry(const PruneHandle &tet, const PruneHandle &tri)
 {
-/*
-  CubitTri *ctri = CubitTri::find(tri);
-  CubitTet *ctet = CubitTet::find(tet);
-  IsoSurfaceTool::tet_to_tri_map[ctet].push_back(ctri);
-*/
 }
 
 bool PruneMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fieldname,
@@ -835,7 +810,12 @@ bool PruneMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fiel
 
   mIoBroker->populate_bulk_data();
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
   mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
+#else
+  mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
+                            (stk::topology::NODE_RANK, "coordinates");
+#endif
 
   if(!mCoordsField)
   {
@@ -864,8 +844,12 @@ bool PruneMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fiel
 
   parsed_strings.push_back(working_string);
   for(size_t i=0; i<parsed_strings.size(); ++i)
-  {
+  { 
+#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *cur_field = mMetaData->get_field<double>(
+#else
+    stk::mesh::Field<double> *cur_field = mMetaData->get_field<stk::mesh::Field<double> >(
+#endif
                               stk::topology::NODE_RANK, parsed_strings[i]);
     if(!cur_field)
     {
@@ -1151,7 +1135,9 @@ bool PruneMeshAPISTK::prepare_as_source()
   mMetaData = new stk::mesh::MetaData;
   mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
 #endif
+#ifdef BUILD_IN_SIERRA // GLAZE1
   mMetaData->use_simple_fields();
+#endif
   mLocallyOwnedMeta = true;
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
@@ -1165,27 +1151,6 @@ stk::mesh::EntityId PruneMeshAPISTK::entity_id(PruneHandle &h)
   stk::mesh::EntityId ent_id = mBulkData->identifier(ent);
   return ent_id;
 }
-
-/*
-bool PruneMeshAPISTK::prepare_as_destination()
-{
-  mMetaData = new stk::mesh::MetaData(3);
-  mMetaData->use_simple_fields();
-  mLocallyOwnedMeta = true;
-  mCoordsField = (stk::mesh::Field<double>*)(&(mMetaData->declare_field<double>
-                            (stk::topology::NODE_RANK, "coordinates")));
-  if(!mCoordsField)
-    std::cout << "Failed to find nodal coordinate field." << std::endl;
-  stk::mesh::put_field_on_entire_mesh(*mCoordsField, mMetaData->spatial_dimension());
-  prepare_to_create_tris();
-  mMetaData->commit();
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
-  mLocallyOwnedBulk = true;
-  mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
-  mIoBroker->set_bulk_data(*mBulkData);
-  return true;
-}
-*/
 
 
 

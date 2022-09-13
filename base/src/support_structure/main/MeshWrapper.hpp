@@ -44,7 +44,11 @@ private:
     stk::ParallelMachine *mComm;
     bool mLocallyOwnedBulk;
     bool mLocallyOwnedMeta;
+#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *mCoordsField;
+#else
+    stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
+#endif
     std::vector<stk::mesh::Field<double> *> mIsoFields;
     stk::mesh::Field<double> *mSupportStructureField;
     std::vector<stk::mesh::Field<double>*> mNodalFields;

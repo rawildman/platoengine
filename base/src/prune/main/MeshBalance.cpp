@@ -23,7 +23,11 @@
     {
         int spatial_dimension = 3;
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
               typedef stk::mesh::Field<double> VectorField;
+#else
+              typedef stk::mesh::Field<double, stk::mesh::Cartesian> VectorField;
+#endif
               const stk::mesh::EntityRank rank_to_rebalance    = stk::topology::ELEMENT_RANK;
 
               Teuchos::ParameterList emptyList;
@@ -31,7 +35,11 @@
 
               stk::mesh::MetaData & fem_meta = tMeshManager.get_output_meta_data();
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
               VectorField & coord_field = fem_meta.declare_field<double>( stk::topology::NODE_RANK,  "coordinates" ) ;
+#else
+              VectorField & coord_field = fem_meta.declare_field< VectorField >( stk::topology::NODE_RANK,  "coordinates" ) ;
+#endif
               stk::mesh::Selector selector(fem_meta.universal_part());
 
               stk::rebalance::Rebalance rb;

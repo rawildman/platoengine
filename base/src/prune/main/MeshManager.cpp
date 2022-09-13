@@ -23,8 +23,10 @@ using namespace percept;
             mPerceptMeshOut(percept::PerceptMesh(3u))
 
         {
+#ifdef BUILD_IN_SIERRA // GLAZE1
             mPerceptMeshIn.use_simple_fields();
             mPerceptMeshOut.use_simple_fields();
+#endif
             mPruneFlag = 1;
             mPruneThreshold = 0.5;
             mTransferFlag = 1;
@@ -53,24 +55,48 @@ using namespace percept;
             return *mPerceptMeshOut.get_fem_meta_data();
         }
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
         stk::mesh::Field<double>* MeshManager::get_input_coordinate_field()
+#else
+        stk::mesh::Field<double,stk::mesh::Cartesian3d>* MeshManager::get_input_coordinate_field()
+#endif
         {
+#ifdef BUILD_IN_SIERRA // GLAZE1
             return mPerceptMeshIn.get_fem_meta_data()->get_field<double>(stk::topology::NODE_RANK,"coordinates");
+#else
+            return mPerceptMeshIn.get_fem_meta_data()->get_field<stk::mesh::Field<double,stk::mesh::Cartesian3d>>(stk::topology::NODE_RANK,"coordinates");
+#endif
         }
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
         stk::mesh::Field<double>* MeshManager::get_output_coordinate_field()
+#else
+        stk::mesh::Field<double,stk::mesh::Cartesian3d>* MeshManager::get_output_coordinate_field()
+#endif
         {
+#ifdef BUILD_IN_SIERRA // GLAZE1
             return mPerceptMeshOut.get_fem_meta_data()->get_field<double>(stk::topology::NODE_RANK,"coordinates");
+#else
+            return mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double,stk::mesh::Cartesian3d>>(stk::topology::NODE_RANK,"coordinates");
+#endif
         }
 
         stk::mesh::FieldBase* MeshManager::get_input_transfer_field()
         {
+#ifdef BUILD_IN_SIERRA // GLAZE1
             return mPerceptMeshIn.get_fem_meta_data()->get_field(stk::topology::NODE_RANK,mTransferFieldName);
+#else
+            return mPerceptMeshIn.get_fem_meta_data()->get_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK,mTransferFieldName);
+#endif
         }
 
         stk::mesh::FieldBase* MeshManager::get_output_transfer_field()
         {
+#ifdef BUILD_IN_SIERRA // GLAZE1
             return mPerceptMeshOut.get_fem_meta_data()->get_field(stk::topology::NODE_RANK,mTransferFieldName);
+#else
+            return mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK,mTransferFieldName);
+#endif
         }
 
 
@@ -141,7 +167,12 @@ using namespace percept;
             m_isoFields.clear();
 
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
            stk::mesh::Field<double> *cur_field = mPerceptMeshOut.get_fem_meta_data()->get_field<double>(
+#else
+           stk::mesh::Field<double> *cur_field = mPerceptMeshOut.get_fem_meta_data()->get_field<stk::mesh::Field<double> >(
+
+#endif
                                               stk::topology::NODE_RANK, mTransferFieldName);
 
             m_isoFields.push_back(cur_field);

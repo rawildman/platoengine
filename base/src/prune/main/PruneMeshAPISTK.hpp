@@ -133,7 +133,11 @@ struct NewNodeData
   }
 
   void set_node_entity(double &x, double &y, double &z, 
+#ifdef BUILD_IN_SIERRA // GLAZE1
                        stk::mesh::Field<double> *field)
+#else
+                       stk::mesh::Field<double, stk::mesh::Cartesian> *field)
+#endif
   {
     this->sort_id_proc_pairs();
     stk::mesh::EntityId id_for_node = this->get_id_for_node();
@@ -207,7 +211,11 @@ private:
   stk::ParallelMachine *mComm;
   bool mLocallyOwnedBulk;
   bool mLocallyOwnedMeta;
+#ifdef BUILD_IN_SIERRA // GLAZE1
   stk::mesh::Field<double> *mCoordsField;
+#else
+  stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
+#endif
   std::vector<stk::mesh::Field<double> *> mIsoFields;
   std::vector<stk::mesh::Field<double>*> mNodalFields;
   std::vector<stk::mesh::Field<double>*> mElementFields;

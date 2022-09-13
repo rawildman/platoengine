@@ -31,9 +31,13 @@ public:
 
            stk::mesh::MetaData& get_output_meta_data();
 
+#ifdef BUILD_IN_SIERRA // GLAZE1
            stk::mesh::Field<double>* get_input_coordinate_field();
-
            stk::mesh::Field<double>* get_output_coordinate_field();
+#else
+           stk::mesh::Field<double,stk::mesh::Cartesian3d>* get_input_coordinate_field();
+           stk::mesh::Field<double,stk::mesh::Cartesian3d>* get_output_coordinate_field();
+#endif
 
            stk::mesh::FieldBase* get_input_transfer_field();
 

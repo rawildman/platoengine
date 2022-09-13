@@ -67,7 +67,9 @@ void decomposeMesh(MPI_Comm aComm, const std::string& aMeshFile)
 
     // Read the serial mesh
     stk::io::StkMeshIoBroker ioBroker(aComm);
+#ifdef BUILD_IN_SIERRA // GLAZE1
     ioBroker.use_simple_fields();
+#endif
     ioBroker.property_add(Ioss::Property("DECOMPOSITION_METHOD", "RCB"));
     ioBroker.add_mesh_database(aMeshFile, stk::io::READ_MESH);
     ioBroker.create_input_mesh();
