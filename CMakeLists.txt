@@ -271,6 +271,7 @@ if(GEOMETRY)
 endif()
 
 if( REGRESSION )
+Plato_find_exe(NUMDIFF_COMMAND numdiff ${NUMDIFF_PATH}/bin)
   if( PLATOMAIN )
     if(SEACAS)
       Plato_find_exe(SEACAS_EPU     epu      ${SEACAS_PATH}/bin)
