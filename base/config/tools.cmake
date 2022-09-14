@@ -387,9 +387,9 @@ endfunction( Plato_add_custom_command_test )
 ## )
 ###############################################################################
 
-function( Plato_add_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE )
+function( Plato_add_numdiff_test TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE )
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source "${RUN_COMMAND}")
+    set( RUN_COMMAND "source ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source" )
 
     add_test( NAME ${TEST_NAME}
               COMMAND ${CMAKE_COMMAND} 
