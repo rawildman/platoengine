@@ -145,6 +145,33 @@ TEST(PlatoTestSu2ToExodus, readMarks)
     EXPECT_EQ(tTester.getMarkNodeIndex(1,1,2), 151);
 }
 
+TEST(PlatoTestSu2ToExodus, readMarks_ESP121Format)
+{
+    Su2ToExodus::Su2ToExodus_UnitTester tTester;
+    std::istringstream tStringStream;
+    std::string tStringInput;
+
+    tTester.setNumMarks(2);
+    tStringInput = "MARKER_TAG= BC_1\n"
+            "MARKER_ELEMS= 2\n"
+            "5 223 177 178\n"
+            "5 255 415 151\n"
+            "MARKER_TAG= 5\n"
+            "MARKER_ELEMS= 3\n"
+            "5 223 177 178\n"
+            "5 255 415 151\n"
+            "5 3 5 7\n";
+    tStringStream.str(tStringInput);
+    bool tVal = tTester.publicReadMarks(tStringStream);
+    EXPECT_EQ(tVal, true);
+    EXPECT_EQ(tTester.getMarkNodeIndex(0,0,1), 177);
+    EXPECT_EQ(tTester.getMarkNodeIndex(0,0,0), 223);
+    EXPECT_EQ(tTester.getMarkNodeIndex(0,0,2), 178);
+    EXPECT_EQ(tTester.getMarkNodeIndex(1,1,0), 255);
+    EXPECT_EQ(tTester.getMarkNodeIndex(1,1,1), 415);
+    EXPECT_EQ(tTester.getMarkNodeIndex(1,1,2), 151);
+}
+
 TEST(PlatoTestSu2ToExodus, createNodeSetFromMark)
 {
     Su2ToExodus::Su2ToExodus_UnitTester tTester;

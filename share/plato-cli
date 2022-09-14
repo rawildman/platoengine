@@ -133,9 +133,13 @@ def esp_action(args):
     argsDict['etoName'] =  args.tesselation
   if args.mesh_scale != None:
     argsDict['meshLengthFactor'] = args.mesh_scale
+  if args.mesh != None:
+    argsDict['mesh'] = args.mesh
+  if args.geom != None:
+    argsDict['geom'] = args.geom
   if args.parameters != None:
     argsDict['parameters'] = args.parameters
-
+    
   scriptFilePath = source_dir() + '/esp/mesh.py'
 
   shell_command = "python " + scriptFilePath + " " + dictToArgs(argsDict)
@@ -239,6 +243,12 @@ esp_parser.add_argument('--min-scale', dest='min_scale', \
 
 esp_parser.add_argument('--max-scale', dest='max_scale', \
   help='Maximum spacing bound relative to refLen.  Default value is 1.0. maxSpacing = maxScale*refLen')
+
+esp_parser.add_argument('--mesh', dest='mesh', type=bool, \
+  help='Whether or not to mesh with AFLR mesher after updating the geometry. Default value is \'True\'.')
+
+esp_parser.add_argument('--geom', dest='geom', \
+  help='Name of input geometry file for Morph to consume. Must be a \'stp\' or \'sat\' file')
 
 esp_parser.add_argument('--parameters', dest='parameters', nargs='*', \
   help='List of parameter values to construct the mesh')
