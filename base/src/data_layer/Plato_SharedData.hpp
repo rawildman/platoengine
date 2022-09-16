@@ -54,8 +54,11 @@
 #include <vector>
 #include <cassert>
 
+#include "Serializable.hpp"
+
 namespace Plato
 {
+struct CommunicationData;
 
 //!  Inter-program shared data
 /*!
@@ -87,9 +90,7 @@ struct data
 class SharedData
 {
 public:
-    virtual ~SharedData()
-    {
-    }
+    virtual ~SharedData() = default;
 
     /******************************************************************************//**
      * \brief Return the size of the SharedData container
@@ -131,6 +132,12 @@ public:
      * \param [in] aData standard vector
     **********************************************************************************/
     virtual void getData(std::vector<double> & aData) const = 0;
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version){};
+
+    virtual void initializeMPI(const Plato::CommunicationData& aCommData){}
 };
 // class SharedData
 

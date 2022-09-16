@@ -61,6 +61,7 @@ class InputData;
 class NormalizeObjectiveGradient : public Plato::LocalOp
 {
 public:
+    NormalizeObjectiveGradient() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -78,6 +79,16 @@ public:
      * @param [out] aLocalArgs argument list
      **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("NormalizeObjectiveGradient",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("RefValName",mRefValName);
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+    }
 
 private:
     std::string mRefValName; /*!< reference value argument name */

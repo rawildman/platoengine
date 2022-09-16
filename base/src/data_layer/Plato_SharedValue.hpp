@@ -55,7 +55,7 @@
 
 #include "mpi.h"
 #include "Plato_SharedData.hpp"
-
+#include "Serializable.hpp" 
 namespace Plato
 {
 
@@ -64,10 +64,10 @@ struct CommunicationData;
 class SharedValue : public SharedData
 {
 public:
+    SharedValue(){};
     SharedValue(const std::string & aMyName, 
                 const std::vector<std::string> & aProviderName, 
                 const Plato::CommunicationData & aCommData, int aSize = 1, bool aIsDynamic=false);
-    virtual ~SharedValue();
 
     int size() const;
     std::string myName() const;
@@ -77,6 +77,23 @@ public:
     void setData(const std::vector<double> & aData);
     void getData(std::vector<double> & aData) const;
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("SharedData", boost::serialization::base_object<SharedData>(*this));
+        aArchive & boost::serialization::make_nvp("SharedValueName",mMyName);
+        aArchive & boost::serialization::make_nvp("ProviderNames",mProviderNames);
+        aArchive & boost::serialization::make_nvp("NumData",mNumData);
+        aArchive & boost::serialization::make_nvp("IsDynamic",mIsDynamic);
+        aArchive & boost::serialization::make_nvp("Layout",mMyLayout);
+        // I don't think we need the actual data since it gets set throughout a run
+        //aArchive & boost::serialization::make_nvp("Data",mData);
+        // So resize it instead. If we're writing, this shouldn't do anything:
+        mData.resize(mNumData);
+    }
+
+    void initializeMPI(const Plato::CommunicationData& aCommData) override;
 private:
     std::string mMyName;
     std::vector<std::string> mProviderNames;

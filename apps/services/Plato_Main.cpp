@@ -68,6 +68,13 @@
 #include <fenv.h>
 #endif
 
+#include "Serializable.hpp"
+
+#include <fstream>
+#include <string>
+
+#include <cstdlib>
+
 void writeSplashScreen();
 
 /******************************************************************************/
@@ -98,9 +105,19 @@ int main(int aArgc, char *aArgv[])
         exit(0);
     };
 
+    const bool tLoadFromXML = std::getenv("PLATO_LOAD_FROM_XML") != nullptr;
     try
     {
-        tPlatoInterface = new Plato::Interface();
+        if(tLoadFromXML)
+        {
+            tPlatoInterface = new Plato::Interface(Plato::LoadFromXMLTag{});
+            Plato::loadFromXML(*tPlatoInterface, "Interface", "save_state.xml");
+            tPlatoInterface->initializePerformerMPI();
+            tPlatoInterface->setPerformerOnStages();
+            tPlatoInterface->initializeConsole();
+        } else {
+            tPlatoInterface = new Plato::Interface();
+        }
     }
     catch(Plato::ParsingException& e)
     {
@@ -135,7 +152,28 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
-        tPlatoInterface->registerApplication(tPlatoApp);
+        tPlatoInterface->registerApplicationNoInitialization(tPlatoApp);
+
+        if(tLoadFromXML) {
+            Plato::tryFCatchInterfaceExceptions(
+            [tPlatoApp](){Plato::loadFromXML(*tPlatoApp, "App", "save_app.xml");},
+            *tPlatoInterface);
+        } else {
+            Plato::tryFCatchInterfaceExceptions(
+                [tPlatoApp](){tPlatoApp->initialize();}, 
+                *tPlatoInterface);
+        }
+
+        if(tLoadFromXML){
+            tPlatoInterface->initializeSharedDataMPI();
+        } else {
+            Plato::tryFCatchInterfaceExceptions(
+                [tPlatoInterface, tPlatoApp](){tPlatoInterface->createSharedData(tPlatoApp);}, 
+                *tPlatoInterface);
+            Plato::tryFCatchInterfaceExceptions(
+                [tPlatoInterface](){tPlatoInterface->createStages();}, 
+                *tPlatoInterface);
+        }
     }
     catch(...)
     {
@@ -144,6 +182,11 @@ int main(int aArgc, char *aArgv[])
 
     writeSplashScreen();
 
+    const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
+    if(tSaveToXML){
+        Plato::saveToXML(*tPlatoInterface, "Interface", "save_state.xml");
+        Plato::saveToXML(*tPlatoApp, "App", "save_app.xml");
+    } 
     try
     {
         // Note: This code is encapsulated and is part of
@@ -163,7 +206,7 @@ int main(int aArgc, char *aArgv[])
         Plato::DriverFactory<double> tDriverFactory;
         Plato::DriverInterface<double>* tDriver = nullptr;
 
-        // Note: When frist called, the factory will look for the
+        // Note: When first called, the factory will look for the
         // first driver block. Subsequent calls will look for the
         // next driver block if it exists.
         while((tDriver =
@@ -182,11 +225,16 @@ int main(int aArgc, char *aArgv[])
             delete tDriver;
         }
     }
-
     catch(...)
     {
         safeExit();
     }
+
+    std::ofstream tOutFileStream3( "saved_operations_fin.xml");  
+        {                  
+            boost::archive::xml_oarchive tOutputArchive3(tOutFileStream3, boost::archive::no_header | boost::archive::no_tracking);        
+            tOutputArchive3 << boost::serialization::make_nvp("Operations",*tPlatoApp);                   
+        }
 
     safeExit();
 }

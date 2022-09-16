@@ -49,6 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
+#include "Serializable.hpp"
 
 class PlatoApp;
 
@@ -68,6 +69,8 @@ public:
      * @param [in] aPlatoApp PLATO application
      * @param [in] aNode input XML data
     **********************************************************************************/
+    CopyValue();
+    CopyValue(PlatoApp* aPlatoApp);
     CopyValue(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
     /******************************************************************************//**
@@ -86,7 +89,18 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
-private:
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("CopyValue",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+    }
+//    ARCHIVE_IO()
+
+public:
     std::string mInputName; /*!< input argument name */
     std::string mOutputName; /*!< output argument name */
 };

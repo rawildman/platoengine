@@ -63,6 +63,7 @@ class InputData;
 class Roughness : public Plato::LocalOp
 {
 public:
+    Roughness() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -80,6 +81,16 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("Roughness",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("TopologyName",mTopologyName);
+      aArchive & boost::serialization::make_nvp("ToughnessName",mRoughnessName);
+      aArchive & boost::serialization::make_nvp("GradientName",mGradientName);
+    }
 
 private:
     std::string mTopologyName; /*!< topology field argument name */

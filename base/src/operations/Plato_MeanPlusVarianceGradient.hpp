@@ -64,6 +64,7 @@ class InputData;
 class MeanPlusVarianceGradient : public Plato::LocalOp
 {
 public:
+    MeanPlusVarianceGradient() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application interface
@@ -328,6 +329,14 @@ private:
      *     element field gradient type
     **********************************************************************************/
     void computeGradientMeanPlusStdDevCriterionForElementField();
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("MeanPlusVarianceGradient",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("mOperationName",mOperationName);
+    }
 
 private:
     bool mIsMeanPlusStdDevFormulation; /*!< flag is set to true if it is a robust optimization problem */

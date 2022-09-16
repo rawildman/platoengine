@@ -63,6 +63,8 @@
 #include "Plato_Communication.hpp"
 #include "Plato_SharedDataInfo.hpp"
 
+#include "Serializable.hpp"
+
 namespace Plato
 {
 
@@ -72,11 +74,11 @@ struct CommunicationData;
 class SharedField : public SharedData
 {
 public:
+    SharedField(){};
     SharedField(const std::string & aMyName,
                 const Plato::communication::broadcast_t & aMyBroadcast,
                 const Plato::CommunicationData & aCommData,
                 Plato::data::layout_t aMyLayout);
-    virtual ~SharedField();
 
     int size() const;
     std::string myName() const;
@@ -90,6 +92,16 @@ public:
     void setData(const double & aDataVal, const int & aGlobalIndex);
     void getData(double & dataVal, const int & aGlobalIndex) const;
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("SharedData", boost::serialization::base_object<SharedData>(*this));
+        aArchive & boost::serialization::make_nvp("SharedFieldName",mMyName);
+        aArchive & boost::serialization::make_nvp("Layout",mMyLayout);
+        aArchive & boost::serialization::make_nvp("Broadcast",mMyBroadcast);
+    }
+    void initializeMPI(const Plato::CommunicationData& aCommData) override;
 private:
     void initialize(const Plato::CommunicationData & aCommData);
 

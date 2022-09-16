@@ -52,6 +52,8 @@
 
 #include "Plato_OperationTypes.hpp"
 
+#include "Serializable.hpp"
+
 #include <string>
 #include <vector>
 
@@ -67,6 +69,7 @@ class SharedData;
 class Performer
 {
 public:
+    Performer(){};
     Performer(const std::string & aMyName, const int & aCommID);
 
     void finalize();
@@ -88,6 +91,14 @@ public:
     std::vector<OperationType> supportedOperationTypes() const;
     static auto computeFunction(OperationType aOperation) -> std::function<void(Performer&)>;
     //!}
+    
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("PerformerName",mName);
+        //aArchive & boost::serialization::make_nvp("Application",mApplication);
+        aArchive & boost::serialization::make_nvp("CommID",mCommID);
+    } 
 
 private:
     void computeCriterionValue();
@@ -95,8 +106,8 @@ private:
     void computeCriterionHessianTimesVector();
 
     Application* mApplication;  // TODO make this a unique pointer
-    const std::string mName;
-    const int mCommID;
+    std::string mName;
+    int mCommID;
 
 private:
     Performer(const Performer& aRhs);

@@ -63,6 +63,7 @@ class InputData;
 class Reinitialize : public Plato::LocalOp
 {
 public:
+    Reinitialize() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -85,6 +86,13 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("Reinitialize",boost::serialization::base_object<LocalOp>(*this));
+    }
 };
 // class Reinitialize
 

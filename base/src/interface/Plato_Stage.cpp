@@ -65,7 +65,14 @@
 
 namespace Plato
 {
-
+Stage::Stage():
+        m_name(""),
+        m_operations(),
+        m_inputData(),
+        m_outputData(),
+        currentOperationIndex()
+{
+}
 /******************************************************************************/
 Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
              const std::shared_ptr<Plato::Performer> aPerformer,
@@ -98,7 +105,7 @@ Stage::~Stage()
     const size_t num_operations = m_operations.size();
     for(size_t operation_index = 0u; operation_index < num_operations; operation_index++)
     {
-        delete m_operations[operation_index];
+       // delete m_operations[operation_index];
     }
     m_operations.clear();
 }
@@ -128,6 +135,11 @@ void Stage::update(const Plato::StageInputDataMng & aStageInputData,
 
         m_operations[tOperationIndex]->update(tOperationDataMng, aPerformer, aSharedData);
     }
+}
+
+void Stage::addOperation(Operation* aOperation)
+{
+    m_operations.push_back(aOperation);
 }
 
 /******************************************************************************/
@@ -231,6 +243,20 @@ void Stage::end()
     for(Plato::SharedData* tSharedData : m_outputData)
     {
         tSharedData->transmitData();
+    }
+}
+
+/******************************************************************************/
+void Stage::setPerformerOnOperations(std::shared_ptr<Performer> aPerformer)
+/******************************************************************************/
+{
+    assert(aPerformer);
+    for(auto operation : m_operations)
+    {
+        if(operation)
+        {
+            operation->setPerformer(std::move(aPerformer));
+        }
     }
 }
 

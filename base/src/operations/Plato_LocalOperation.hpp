@@ -51,6 +51,7 @@
 #include <vector>
 
 #include "Plato_SharedData.hpp"
+#include "Serializable.hpp"
 
 class PlatoApp;
 
@@ -62,6 +63,7 @@ namespace Plato
 **********************************************************************************/
 struct LocalArg
 {
+    LocalArg() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aLayout data layout (e.g. scalar, node field, element field, etc.)
@@ -76,10 +78,21 @@ struct LocalArg
             mWrite(aWrite)
     {
     }
-    Plato::data::layout_t mLayout; /*!< data layout */
-    std::string mName; /*!< argument name */
-    int mLength; /*!< argument length */
-    bool mWrite; /*!< flag: write data to the exodus output file */
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("Layout",mLayout);
+        aArchive & boost::serialization::make_nvp("Name",mName);
+        aArchive & boost::serialization::make_nvp("Length",mLength);
+        aArchive & boost::serialization::make_nvp("Write",mWrite);
+    }   
+
+    Plato::data::layout_t mLayout = data::SCALAR; /*!< data layout */
+    std::string mName = ""; /*!< argument name */
+    int mLength = 0; /*!< argument length */
+    bool mWrite = false; /*!< flag: write data to the exodus output file */
 };
 // struct LocalArg
 
@@ -89,6 +102,10 @@ struct LocalArg
 class LocalOp
 {
 public:
+    LocalOp() 
+    {
+    }
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -116,6 +133,13 @@ public:
     **********************************************************************************/
     virtual void getArguments(std::vector<Plato::LocalArg>& aLocalArgs)=0;
 
+    void platoApp(PlatoApp* aPlatoApp){mPlatoApp = aPlatoApp;}
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+    } 
 protected:
     PlatoApp* mPlatoApp; /*!< PLATO application interface */
 };

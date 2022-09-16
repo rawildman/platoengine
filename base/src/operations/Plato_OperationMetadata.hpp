@@ -54,6 +54,8 @@
 #include "Plato_Macros.hpp"
 #include "Plato_FreeFunctions.hpp"
 
+#include "Serializable.hpp"
+
 namespace Plato
 {
 
@@ -73,7 +75,7 @@ enum node_type
 **********************************************************************************/
 struct Metadata
 {
-    double mOptimizationBlockValue; /*!< optimization region values. design variables in the optimization region are set to this value. */
+    double mOptimizationBlockValue = 0; /*!< optimization region values. design variables in the optimization region are set to this value. */
 
     std::vector<int> mBlockIDs; /*!< fixed block identification number */
     std::vector<int> mSidesetIDs; /*!< fixed sideset identification number */
@@ -81,6 +83,19 @@ struct Metadata
     std::vector<double> mDomainValues; /*!< fixed block domain values */
     std::vector<double> mBoundaryValues; /*!< fixed block boundary values */
     std::vector<std::string> mMaterialStates; /*!< fixed block material states */
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("OptimizationBlockValue",mOptimizationBlockValue);
+        aArchive & boost::serialization::make_nvp("BlockIDs",mBlockIDs);
+        aArchive & boost::serialization::make_nvp("SidesetIDs",mSidesetIDs);
+        aArchive & boost::serialization::make_nvp("NodesetIDs",mNodesetIDs);
+        aArchive & boost::serialization::make_nvp("DomainValues",mDomainValues);
+        aArchive & boost::serialization::make_nvp("BoundaryValues",mBoundaryValues);
+        aArchive & boost::serialization::make_nvp("MaterialStates",mMaterialStates);
+    }   
 };
 // struct Metadata
 

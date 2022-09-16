@@ -266,10 +266,10 @@ SharedField::SharedField(const std::string & aMyName,
     this->initialize(aCommData);
 }
 
-/*****************************************************************************/
-SharedField::~SharedField()
-/*****************************************************************************/
+void SharedField::initializeMPI(const Plato::CommunicationData& aCommData)
 {
+    mEpetraComm = std::make_shared<Epetra_MpiComm>(aCommData.mInterComm);
+    initialize(aCommData);
 }
 
 } // End namespace Plato

@@ -64,6 +64,8 @@ class InputData;
 class InitializeField : public Plato::LocalOp
 {
 public:
+    InitializeField() = default;
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -81,6 +83,30 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("InitializeField",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("CreateSpheres",mCreateSpheres);
+      aArchive & boost::serialization::make_nvp("Iteration",mIteration);
+      aArchive & boost::serialization::make_nvp("UniformValue",mUniformValue);
+      aArchive & boost::serialization::make_nvp("MinCoords",mMinCoords);
+      aArchive & boost::serialization::make_nvp("MaxCoords",mMaxCoords);
+      aArchive & boost::serialization::make_nvp("OutputLayout",mOutputLayout);
+      aArchive & boost::serialization::make_nvp("FileName",mFileName);
+      aArchive & boost::serialization::make_nvp("OutputFile",mFileName);
+      aArchive & boost::serialization::make_nvp("StringMethod",mStringMethod);
+      aArchive & boost::serialization::make_nvp("SphereRadius",mSphereRadius);
+      aArchive & boost::serialization::make_nvp("OutputFieldName",mOutputFieldName);
+      aArchive & boost::serialization::make_nvp("SpherePackingFactor",mSpherePackingFactor);
+      aArchive & boost::serialization::make_nvp("SphereSpacingX",mSphereSpacingX);
+      aArchive & boost::serialization::make_nvp("SphereSpacingY",mSphereSpacingY);
+      aArchive & boost::serialization::make_nvp("SphereSpacingZ",mSphereSpacingZ);
+      aArchive & boost::serialization::make_nvp("VariableName",mVariableName);
+      aArchive & boost::serialization::make_nvp("LevelSetNodesets",mLevelSetNodesets);
+    }
 
 private:
     /******************************************************************************//**
@@ -124,8 +150,8 @@ private:
     bool mCreateSpheres; /*!< create spheres-based "swiss cheese" level set field */
     int mIteration; /*!< read topology field from this optimization iteration */
     double mUniformValue; /*!< value used to initialize uniform design variable field */
-    double mMinCoords[3]; /*!< 3D array of minimum coordinates in x, y, and z */
-    double mMaxCoords[3]; /*!< 3D array of maximum coordinates in x, y, and z */
+    std::vector<double> mMinCoords; /*!< 3D array of minimum coordinates in x, y, and z */
+    std::vector<double> mMaxCoords; /*!< 3D array of maximum coordinates in x, y, and z */
     Plato::data::layout_t mOutputLayout; /*!< output data layout, e.g. scalar value, scalar field, etc */
 
     std::string mFileName; /*!< output file name */

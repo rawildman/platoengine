@@ -40,59 +40,24 @@
 //@HEADER
 */
 
-/*
- * Plato_PenaltyModel.hpp
- *
- *  Created on: April 19, 2017
- *
- *
- *  NOTE: This class is a placeholder till the TopOpt source is pulled in.
- *
- */
+#include <gtest/gtest.h>
 
-#ifndef SRC_PENALTYMODEL_HPP_
-#define SRC_PENALTYMODEL_HPP_
+#include <mpi.h>
 
-#include "Plato_Parser.hpp"
-#include "Serializable.hpp"
+#include "Plato_KokkosTypes.hpp"
 
-namespace Plato {
+int main(int argc, char **argv)
+{
+    MPI_Init(&argc, &argv);
 
-  class PenaltyModel {
-    public:
-      PenaltyModel(){}
-      virtual ~PenaltyModel(){}
-      virtual double eval(double x)=0;
-      virtual double grad(double x)=0;
-      template<class Archive>
-      void serialize(Archive & aArchive, const unsigned int version) {} 
-  };
+    Kokkos::initialize( argc , argv );
 
-  class SIMP : public PenaltyModel {
-    public:
-      SIMP(const Plato::InputData& input);
-      virtual ~SIMP(){}
-      virtual double eval(double x);
-      virtual double grad(double x);
+    testing::InitGoogleTest(&argc, argv);
+    int returnVal = RUN_ALL_TESTS();
 
-    template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
-    {
-      aArchive & boost::serialization::make_nvp("PenaltyModel",boost::serialization::base_object<PenaltyModel>(*this));
-      aArchive & boost::serialization::make_nvp("PenaltyExponent",m_penaltyExponent);
-      aArchive & boost::serialization::make_nvp("MinimumValue",m_minimumValue);
-    }
+    Kokkos::finalize();
 
-    private:
-      double m_penaltyExponent;
-      double m_minimumValue;
-  };
+    MPI_Finalize();
 
-  class PenaltyModelFactory {
-    public:
-      PenaltyModel* create(Plato::InputData& input);
-  };
-
-} /* namespace Plato */
-
-#endif /* SRC_PENALTYMODEL_HPP_ */
+    return returnVal;
+}

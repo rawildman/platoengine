@@ -78,10 +78,11 @@ set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 project(PlatoEngine)
 ###############################################################################
 
+
 if( DAKOTADRIVER )
   find_package(Dakota REQUIRED)
-  find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
 endif()
+find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
 
 set(PLATO_INCLUDES ${CMAKE_SOURCE_DIR}/apps)
 
@@ -183,6 +184,7 @@ if ( IPOPT_ENABLED )
 endif()
 
 add_subdirectory(base/src)
+add_subdirectory(base/src/tools)
 add_subdirectory(base/src/analyze)
 add_subdirectory(base/src/data_layer)
 add_subdirectory(base/src/Filters)
@@ -190,7 +192,6 @@ add_subdirectory(base/src/interface)
 add_subdirectory(base/src/models)
 add_subdirectory(base/src/optimize)
 add_subdirectory(base/src/proxy)
-add_subdirectory(base/src/tools)
 if(GEOMETRY)
   add_subdirectory(base/src/geometry/MovingLeastSquares)
   add_subdirectory(base/src/geometry/Cogent)

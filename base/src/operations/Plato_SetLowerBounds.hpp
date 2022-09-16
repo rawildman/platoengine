@@ -64,6 +64,8 @@ class InputData;
 class SetLowerBounds : public Plato::LocalOp
 {
 public:
+    SetLowerBounds();
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -81,6 +83,21 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("SetLowerBounds",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputSize",mOutputSize);
+      aArchive & boost::serialization::make_nvp("LowerBoundVectorLength",mLowerBoundVectorLength);
+      aArchive & boost::serialization::make_nvp("InputArgumentName",mInputArgumentName);
+      aArchive & boost::serialization::make_nvp("OutputArgumentName",mOutputArgumentName);
+      aArchive & boost::serialization::make_nvp("Discretization",mDiscretization);
+      aArchive & boost::serialization::make_nvp("MaterialUseCase",mMaterialUseCase);
+      aArchive & boost::serialization::make_nvp("OutputLayout",mOutputLayout);
+      aArchive & boost::serialization::make_nvp("FixedBlockMetadata",mFixedBlockMetadata);
+    }
 
 private:
     /******************************************************************************//**

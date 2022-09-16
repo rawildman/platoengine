@@ -64,6 +64,7 @@ class AbstractFilter;
 class Filter : public Plato::LocalOp
 {
 public:
+    Filter() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -86,6 +87,17 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("Filter",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputToFilterName",mInputToFilterName);
+      aArchive & boost::serialization::make_nvp("InputBaseFieldName",mInputBaseFieldName);
+      aArchive & boost::serialization::make_nvp("OutputFromFilterName",mOutputFromFilterName);
+      aArchive & boost::serialization::make_nvp("IsGradient",mIsGradient);
+    }
 
 private:
     Plato::AbstractFilter* mFilter; /*!< Kernel filter interface */

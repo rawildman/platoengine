@@ -54,7 +54,11 @@
 #include <string>
 #include <vector>
 
+#include "Serializable.hpp"
 #include "Plato_SharedData.hpp"
+#include "Plato_SharedValue.hpp"
+#include "Plato_SharedField.hpp"
+#include "Plato_Performer.hpp"
 
 namespace Plato
 {
@@ -67,9 +71,10 @@ class OperationInputDataMng;
  */
 class Operation
 {
+   
 public:
-    Operation(const ::Plato::OperationInputDataMng & aOperationDataMng,
-              const std::shared_ptr<::Plato::Performer> aPerformer,
+    Operation();
+    Operation(const std::shared_ptr<::Plato::Performer> aPerformer,
               const std::vector<::Plato::SharedData*>& aSharedData);
 
     virtual ~Operation();
@@ -95,6 +100,22 @@ public:
     {
         m_parameters[paramName]->setData({1,paramValue});
     }
+
+    void setPerformer(std::shared_ptr<Performer> aPerformer);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive.template register_type<SharedValue>(); 
+	    aArchive.template register_type<SharedField>();
+        aArchive & boost::serialization::make_nvp("OperationName",m_operationName);
+        aArchive & boost::serialization::make_nvp("Performer",m_performerName);
+        aArchive & boost::serialization::make_nvp("ArgumentNames",m_argumentNames);
+        aArchive & boost::serialization::make_nvp("InputData", m_inputData);
+        aArchive & boost::serialization::make_nvp("OutputData", m_outputData);
+        aArchive & boost::serialization::make_nvp("Parameters", m_parameters);
+    } 
 
 protected:
 
@@ -133,6 +154,7 @@ protected:
     std::map<std::string,Plato::SharedData*> m_parameters;
 
     std::shared_ptr<Performer> m_performer;
+    std::string m_performerName;
     std::string m_operationName;
 
     std::vector<Plato::SharedData*> m_inputData;
@@ -140,7 +162,6 @@ protected:
 
     std::multimap<std::string, std::string> m_argumentNames;
 };
-
 } // End namespace Plato
 
 #endif

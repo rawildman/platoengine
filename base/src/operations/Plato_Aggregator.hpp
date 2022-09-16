@@ -51,6 +51,8 @@
 #include "Plato_Console.hpp"
 #include "Plato_LocalOperation.hpp"
 
+#include "Serializable.hpp"
+
 namespace Plato
 {
 
@@ -62,6 +64,7 @@ class InputData;
 class Aggregator : public Plato::LocalOp
 {
 public:
+    Aggregator() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -79,6 +82,19 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("Aggregator",boost::serialization::base_object<LocalOp>(*this));
+        aArchive & boost::serialization::make_nvp("LimitWeight",mLimitWeight);
+        aArchive & boost::serialization::make_nvp("WeightBases",mWeightBases);
+        aArchive & boost::serialization::make_nvp("WeightNormals",mWeightNormals);
+        aArchive & boost::serialization::make_nvp("WeightMethod",mWeightMethod);
+        aArchive & boost::serialization::make_nvp("Weights",mWeights);
+        aArchive & boost::serialization::make_nvp("AggStruct",mAggStructs);
+    }
 
 private:
     struct AggStruct
@@ -86,6 +102,15 @@ private:
         Plato::data::layout_t mLayout; /*!< data layout, e.g. scalar value, scalar field, etc */
         std::string mOutputName; /*!< output argument name */
         std::vector<std::string> mInputNames; /*!< input argument name */
+
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & aArchive, const unsigned int version)
+        {
+            aArchive & boost::serialization::make_nvp("Layout",mLayout);
+            aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+            aArchive & boost::serialization::make_nvp("InputNames",mInputNames);
+        }   
     };
 
     bool mReportStatus; /*!< whether to write status to Plato::Console */

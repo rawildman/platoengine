@@ -59,6 +59,20 @@
 
 #include "Plato_Operations_incl.hpp"
 
+
+PlatoApp::PlatoApp() :
+        mLocalComm(),
+        mLightMp(nullptr),
+        mSysGraph(nullptr),
+        mMeshServices(nullptr),
+        mFilter(nullptr),
+        mAppfileData("Appfile Data"),
+        mInputfileData("Inputfile Data"),
+        mTimersTree(nullptr)
+{
+}
+
+
 PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
         mLocalComm(aLocalComm),
         mLightMp(nullptr),
@@ -738,6 +752,13 @@ void PlatoApp::compressAndUpdateNodeField(const std::string & aName)
     tLocalData->DisAssemble();
 }
 
+void PlatoApp::assignPlatoAppToOperationMap()
+{
+    for(auto& iLocalOperation : mOperationMap)
+        iLocalOperation.second->platoApp(this);
+}
+
+
 std::vector<double>* PlatoApp::getValue(const std::string & aName)
 {
     auto tIterator = mValueMap.find(aName);
@@ -815,6 +836,11 @@ double* PlatoApp::getNodeFieldData(const std::string & aName)
 LightMP* PlatoApp::getLightMP()
 {
     return mLightMp;
+}
+
+void PlatoApp::MPIComm(MPI_Comm& aMPI_Comm)
+{
+    mLocalComm = aMPI_Comm;
 }
 
 const MPI_Comm& PlatoApp::getComm() const

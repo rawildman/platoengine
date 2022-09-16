@@ -61,6 +61,7 @@ class InputData;
 class PlatoMainOutput : public Plato::LocalOp
 {
 public:
+    PlatoMainOutput() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -83,6 +84,24 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("PlatoMainOutput",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputData",mOutputData);
+      aArchive & boost::serialization::make_nvp("OutputFrequency",mOutputFrequency);
+      aArchive & boost::serialization::make_nvp("MaxIterations",mMaxIterations);
+      aArchive & boost::serialization::make_nvp("OutputMethod",mOutputMethod);
+      aArchive & boost::serialization::make_nvp("Discretization",mDiscretization);
+      aArchive & boost::serialization::make_nvp("WriteRestart",mWriteRestart);
+      aArchive & boost::serialization::make_nvp("RestartFieldName",mRestartFieldName);
+      aArchive & boost::serialization::make_nvp("BaseName",mBaseName);
+      aArchive & boost::serialization::make_nvp("AppendIterationCount",mAppendIterationCount);
+      aArchive & boost::serialization::make_nvp("RequestedFormats",mRequestedFormats);
+    }
 
 private:
     /******************************************************************************//**

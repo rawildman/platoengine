@@ -47,6 +47,7 @@ double compute(Plato::Table& aTable);
 class HarvestDataFromFile : public Plato::LocalOp
 {
 public:
+    HarvestDataFromFile() = default;
     /******************************************************************************//**
      * \brief class constructor
      * \param [in] aPlatoApp Plato service application
@@ -120,6 +121,14 @@ public:
     **********************************************************************************/
     void unittest(const bool aUnitTest);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("HarvestDataFromFile",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputStrKeyValuePairs",mInputStrKeyValuePairs);
+    }
+
 private:
     /******************************************************************************//**
      * \fn checkInputs
@@ -159,7 +168,7 @@ private:
     double mLocalOutputValue = 0.0; /*!< local copy of the output from operator()() > */
 
     Plato::InputData mInputData; /*!< local operation metadata > */
-    std::unordered_map<std::string, std::vector<std::string>> mInputStrKeyValuePairs; /*!< map from input keyword to value > */
+    std::map<std::string, std::vector<std::string>> mInputStrKeyValuePairs; /*!< map from input keyword to value > */
 };
 // class HarvestDataFromFile
 

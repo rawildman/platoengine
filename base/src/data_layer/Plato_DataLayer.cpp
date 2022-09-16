@@ -148,4 +148,12 @@ const std::vector<SharedData*> & DataLayer::getSharedData() const
     return mSharedData;
 }
 
+void DataLayer::initializeMPI(const Plato::CommunicationData& aCommData)
+{
+    for(auto tSharedData : mSharedData)
+    {
+        tSharedData->initializeMPI(aCommData);
+    }
+}
+
 } /* namespace Plato */

@@ -54,6 +54,12 @@
 #include <vector>
 #include <memory>
 
+#include "Serializable.hpp"
+#include "Plato_SingleOperation.hpp"
+#include "Plato_MultiOperation.hpp"
+#include "Plato_SharedField.hpp"
+#include "Plato_SharedValue.hpp"
+
 namespace Plato
 {
 
@@ -68,6 +74,7 @@ class StageInputDataMng;
 class Stage
 {
 public:
+    Stage();
     Stage(const Plato::StageInputDataMng & aStageInputData,
           const std::shared_ptr<Plato::Performer> aPerformer,
           const std::vector<Plato::SharedData*>& aSharedData);
@@ -75,7 +82,10 @@ public:
 
     void update(const Plato::StageInputDataMng & aStageInputData,
 		const std::shared_ptr<Plato::Performer> aPerformer,
+
 		const std::vector<Plato::SharedData*>& aSharedData);
+
+    void addOperation(Operation* aOperation);
 
     Plato::Operation* getNextOperation();
     void begin();
@@ -88,6 +98,22 @@ public:
 
     std::vector<std::string> getInputDataNames() const;
     std::vector<std::string> getOutputDataNames() const;
+
+    void setPerformerOnOperations(std::shared_ptr<Performer> aPerformer);
+
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+	    aArchive.template register_type<SingleOperation>() ; 
+	    aArchive.template register_type<MultiOperation>() ; 
+        aArchive.template register_type<SharedValue>() ; 
+	    aArchive.template register_type<SharedField>() ; 
+        
+        aArchive &  boost::serialization::make_nvp("StageName",m_name);
+        aArchive &  boost::serialization::make_nvp("Operations",m_operations);
+        aArchive &  boost::serialization::make_nvp("InputData",m_inputData);
+        aArchive &  boost::serialization::make_nvp("OutputData",m_outputData);
+    }
 
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,

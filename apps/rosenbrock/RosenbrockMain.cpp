@@ -49,6 +49,12 @@
 #include "Plato_RosenbrockApp.hpp"
 #include "Plato_Interface.hpp"
 
+#include "Serializable.hpp"
+
+#include <fstream>
+#include <string>
+#include <cstdlib>
+
 #ifndef NDEBUG
 #include <fenv.h>
 #endif
@@ -65,10 +71,20 @@ int main(int aArgc, char **aArgv)
     MPI_Init(&aArgc, &aArgv);
 
     /************************* CREATE PLATO INTERFACE *************************/
+    const bool tLoadFromXML = std::getenv("PLATO_LOAD_FROM_XML") != nullptr;
     Plato::Interface* tPlatoInterface = nullptr;
     try
     {
-        tPlatoInterface = new Plato::Interface();
+        if(tLoadFromXML)
+        {
+            tPlatoInterface = new Plato::Interface(Plato::LoadFromXMLTag{});
+            Plato::loadFromXML(*tPlatoInterface, "Interface", "save_state.xml");
+            tPlatoInterface->initializePerformerMPI();
+            tPlatoInterface->setPerformerOnStages();
+            tPlatoInterface->initializeConsole();
+        } else {
+            tPlatoInterface = new Plato::Interface();
+        }
     }
     catch(...)
     {
@@ -98,7 +114,24 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
-        tPlatoInterface->registerApplication(tMyApp);
+        tPlatoInterface->registerApplicationNoInitialization(tMyApp);
+
+
+        Plato::tryFCatchInterfaceExceptions(
+            [tMyApp](){tMyApp->initialize();}, 
+            *tPlatoInterface);
+
+        if(tLoadFromXML){
+            tPlatoInterface->initializeSharedDataMPI();
+        } else {
+            Plato::tryFCatchInterfaceExceptions(
+                [tPlatoInterface, tMyApp](){tPlatoInterface->createSharedData(tMyApp);}, 
+                *tPlatoInterface);
+            Plato::tryFCatchInterfaceExceptions(
+                [tPlatoInterface](){tPlatoInterface->createStages();}, 
+                *tPlatoInterface);
+        }
+
     }
     catch(...)
     {
@@ -107,6 +140,9 @@ int main(int aArgc, char **aArgv)
     }
     /************************** REGISTER APPLICATION **************************/
 
+    if(!tLoadFromXML){
+        Plato::saveToXML(*tPlatoInterface, "Interface", "save_state_rosenbrock.xml");
+    }
     /******************************** PERFORM *********************************/
     try
     {

@@ -49,7 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
-
+#include "Plato_PenaltyModel.hpp"
 class PlatoApp;
 
 namespace Plato
@@ -64,6 +64,7 @@ class PenaltyModel;
 class ComputeVolume : public Plato::LocalOp
 {
 public:
+    ComputeVolume() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -86,6 +87,19 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive.template register_type<Plato::SIMP>() ; 
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("TopologyName",mTopologyName);
+      aArchive & boost::serialization::make_nvp("VolumeName",mVolumeName);
+      aArchive & boost::serialization::make_nvp("GradientName",mGradientName);
+
+      aArchive & boost::serialization::make_nvp("PenaltyModel",mPenaltyModel);
+    }
 
 private:
     std::string mTopologyName; /*!< topology field argument name */

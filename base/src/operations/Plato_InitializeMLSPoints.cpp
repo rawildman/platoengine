@@ -40,64 +40,57 @@
  //@HEADER
  */
 
-/*
- * Plato_CSMParameterOutput.hpp
- *
- *  Created on: October 10, 2020
- */
-
-#pragma once
-
+#include "Plato_InitializeMLSPoints.hpp"
+#include "Plato_MLS.hpp"
+#include "Plato_Parser.hpp"
+#include "Plato_InputData.hpp"
+#include "Plato_Exceptions.hpp"
+#include "Plato_MetaDataMLS.hpp"
 #include "Plato_LocalOperation.hpp"
+#include "PlatoApp.hpp"
 
 namespace Plato
 {
 
-class InputData;
-
-/******************************************************************************//**
- * @brief Manage PLATO Main output
- **********************************************************************************/
-class CSMParameterOutput : public Plato::LocalOp
+template<int SpaceDim, typename ScalarType>
+InitializeMLSPoints<SpaceDim, ScalarType>::InitializeMLSPoints(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+        Plato::LocalOp(aPlatoApp),
+        mOutputName("MLS Point Values")
 {
-public:
-  CSMParameterOutput() = default;
-
-    /******************************************************************************//**
-     * @brief Constructor
-     * @param [in] aPlatoApp PLATO application
-     * @param [in] aNode input XML data
-     **********************************************************************************/
-    CSMParameterOutput(PlatoApp* aPlatoApp, Plato::InputData& aNode);
-
-    /******************************************************************************//**
-     * @brief Destructor
-     **********************************************************************************/
-    ~CSMParameterOutput();
-
-    /******************************************************************************//**
-     * @brief perform local operation - output data
-     **********************************************************************************/
-    void operator()();
-
-    /******************************************************************************//**
-     * @brief Return local operation's argument list
-     * @param [out] aLocalArgs argument list
-    **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
-
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    auto tName = Plato::Get::String(aNode, "MLSName");
+    auto& tMLS = mPlatoApp->getMovingLeastSquaredData();
+    if(tMLS.count(tName) == 0)
     {
-      aArchive & boost::serialization::make_nvp("CSMParametersOutput",boost::serialization::base_object<LocalOp>(*this));
-      aArchive & boost::serialization::make_nvp("InputNames",mInputNames);
+        throw Plato::ParsingException("Requested PointArray that doesn't exist.");
     }
+    mMLS = mPlatoApp->getMovingLeastSquaredData()[tName];
 
-private:
-    std::vector<std::string> mInputNames;
-};
-// class CSMParameterOutput
+    mFieldName = Plato::Get::String(aNode, "Field");
+}
+
+template<int SpaceDim, typename ScalarType>
+void InitializeMLSPoints<SpaceDim, ScalarType>::operator()()
+{
+    auto tFields = Plato::any_cast<MLS_Type>(mMLS->mls).getPointFields();
+    auto tField = tFields[mFieldName];
+
+    std::vector<double>* tLocalData = mPlatoApp->getValue(mOutputName);
+    Kokkos::View<ScalarType*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>
+        tLocalDataHost(tLocalData->data(), tLocalData->size());
+    Kokkos::deep_copy(tLocalDataHost, tField);
+}
+
+template<int SpaceDim, typename ScalarType>
+void InitializeMLSPoints<SpaceDim, ScalarType>::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+{
+    int tNumPoints = Plato::any_cast<MLS_Type>(mMLS->mls).getNumPoints();
+    aLocalArgs.push_back(Plato::LocalArg
+        { Plato::data::layout_t::SCALAR, mOutputName, tNumPoints });
+}
+
+template class InitializeMLSPoints<3>;
+template class InitializeMLSPoints<2>;
+template class InitializeMLSPoints<1>;
 
 }
 // namespace Plato

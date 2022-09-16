@@ -33,6 +33,7 @@ set(${LIB_NAME}_HEADERS Plato_Parser.hpp
                         Plato_ParseCSMUtilities.hpp
                         Plato_OperationTypes.hpp
                         Plato_EnumTable.hpp
+                        Serializable.hpp
                         )
 
 set(LIB_NAME Exceptions)

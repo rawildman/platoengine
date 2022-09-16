@@ -97,7 +97,10 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
+        tMyApp->initialize();
         tPlatoInterface->registerApplication(tMyApp);
+        tPlatoInterface->createSharedData(tMyApp);
+        tPlatoInterface->createStages();
     }
     catch(...)
     {

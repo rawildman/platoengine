@@ -50,6 +50,11 @@
 #ifndef SRC_DATALAYER_HPP_
 #define SRC_DATALAYER_HPP_
 
+#include "Plato_SharedValue.hpp"
+#include "Plato_SharedField.hpp"
+
+#include "Serializable.hpp"
+
 #include <map>
 #include <vector>
 #include <string>
@@ -69,6 +74,7 @@ struct CommunicationData;
 class DataLayer
 {
 public:
+    DataLayer() = default;
     DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato::CommunicationData & aCommData);
     ~DataLayer();
 
@@ -76,6 +82,16 @@ public:
     SharedData* getSharedData(const std::string & aName) const;
     const std::vector<SharedData*> & getSharedData() const;
 
+    template<typename Archive>
+    void serialize(Archive& aArchive, const int aVersion)
+    {
+	    aArchive.template register_type<Plato::SharedField>(); 
+	    aArchive.template register_type<Plato::SharedValue>(); 
+
+        aArchive & boost::serialization::make_nvp("SharedDataVector", mSharedData);
+        aArchive & boost::serialization::make_nvp("SharedDataMap", mSharedDataMap);
+    }
+    void initializeMPI(const Plato::CommunicationData& aCommData);
 private:
     std::vector<SharedData*> mSharedData;
     std::map<std::string, SharedData*> mSharedDataMap;

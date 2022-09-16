@@ -73,6 +73,8 @@ namespace Plato
 
 void InitializeField::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 {
+    mMinCoords.resize(3,0);
+    mMaxCoords.resize(3,0);
     aLocalArgs.push_back(Plato::LocalArg(mOutputLayout, mOutputFieldName));
 }
 

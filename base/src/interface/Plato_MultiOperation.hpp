@@ -55,6 +55,7 @@
 #include <vector>
 
 #include "Plato_Operation.hpp"
+#include "Serializable.hpp"
 
 namespace Plato
 {
@@ -68,7 +69,14 @@ class OperationInputDataMng;
  */
 class MultiOperation : public Operation
 {
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("Operation",boost::serialization::base_object<Operation>(*this));
+    }
 public:
+    MultiOperation(){};
     MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                    const std::shared_ptr<Plato::Performer> aPerformer,
                    const std::vector<Plato::SharedData*>& aSharedData);

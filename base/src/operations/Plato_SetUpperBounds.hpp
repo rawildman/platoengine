@@ -64,6 +64,7 @@ class InputData;
 class SetUpperBounds : public Plato::LocalOp
 {
 public:
+    SetUpperBounds() = default;
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
@@ -82,6 +83,20 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("SetUpperBounds",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputSize",mOutputSize);
+      aArchive & boost::serialization::make_nvp("UpperBoundVectorLength",mUpperBoundVectorLength);
+      aArchive & boost::serialization::make_nvp("InputArgumentName",mInputArgumentName);
+      aArchive & boost::serialization::make_nvp("OutputArgumentName",mOutputArgumentName);
+      aArchive & boost::serialization::make_nvp("Discretization",mDiscretization);
+      aArchive & boost::serialization::make_nvp("MaterialUseCase",mMaterialUseCase);
+      aArchive & boost::serialization::make_nvp("OutputLayout",mOutputLayout);
+      aArchive & boost::serialization::make_nvp("FixedBlockMetadata",mFixedBlockMetadata);
+    }
 private:
     /******************************************************************************//**
      * \brief Initialize upper bound vector. 

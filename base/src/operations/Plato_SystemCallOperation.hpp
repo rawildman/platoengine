@@ -68,6 +68,7 @@ class InputData;
 class SystemCallOperation : public Plato::LocalOp
 {
 public:
+    SystemCallOperation() = default;
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
@@ -85,6 +86,15 @@ public:
      * \param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+ 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("SystemCall",boost::serialization::base_object<LocalOp>(*this));
+      
+    }
+
 
 private:
     std::unique_ptr<SystemCall> mSystemCall;

@@ -58,14 +58,32 @@
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
+//BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SingleOperation);
+
 namespace Plato {
+
+SingleOperation::SingleOperation(std::string& aOperationName) : 
+Operation()
+{
+    m_operationName= aOperationName;
+}
+/******************************************************************************/
+SingleOperation::
+SingleOperation(const std::shared_ptr<Plato::Performer> aPerformer,
+                const std::vector<Plato::SharedData*>& aSharedData) :
+  Operation(aPerformer, aSharedData)
+/******************************************************************************/
+{
+   
+}
+
 
 /******************************************************************************/
 SingleOperation::
 SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<Plato::Performer> aPerformer,
                 const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aOperationDataMng, aPerformer, aSharedData)
+  Operation(aPerformer, aSharedData)
 /******************************************************************************/
 {
     initialize(aOperationDataMng, aPerformer, aSharedData);
@@ -81,7 +99,6 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
 {
     initializeBaseSingle(aOperationDataMng, aPerformer, aSharedData);
 }
-
 
 /******************************************************************************/
 void SingleOperation::

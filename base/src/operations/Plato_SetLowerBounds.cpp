@@ -58,6 +58,12 @@
 namespace Plato
 {
 
+SetLowerBounds::SetLowerBounds():
+    mInputArgumentName("Lower Bound Value"),
+    mOutputArgumentName("Lower Bound Vector")
+{
+}
+
 SetLowerBounds::SetLowerBounds(PlatoApp* p, Plato::InputData& aNode) :
     Plato::LocalOp(p)
 {
