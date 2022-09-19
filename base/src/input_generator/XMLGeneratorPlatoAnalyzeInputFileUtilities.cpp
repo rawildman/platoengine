@@ -1101,9 +1101,6 @@ void write_plato_analyze_helmholtz_input_deck_file
     bool tIsHelmholtz = true;
     XMLGen::append_spatial_model_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem, tIsHelmholtz);
 
-    // assemblies
-    XMLGen::append_assemblies_to_plato_analyze_input_deck(aXMLMetaData, tPlatoProblem);
-
     // volume length scale parameter
     auto tParameters = tPlatoProblem.append_child("ParameterList");
     XMLGen::append_attributes({"name"}, {"Parameters"}, tParameters);
