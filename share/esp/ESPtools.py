@@ -283,7 +283,7 @@ def updateModel(modelName, paramVals):
 ##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -305,9 +305,13 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if type(meshLengthFactor) == str:
     meshLengthFactor = float(meshLengthFactor)
 
+  if type(precision) == str:
+    precision = int(precision)
+
   paramVals = []
+  precision_str = '{0:.' + str(precision - 1) + 'E}'
   if type(parameters) == str:
-    paramVals = [float(entry) for entry in parameters.split(',')]
+    paramVals = [float(precision_str.format(float(entry))) for entry in parameters.split(',')]
   else:
     paramVals = getInitialValues(modelNameIn)
 

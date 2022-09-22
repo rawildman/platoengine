@@ -137,6 +137,8 @@ def esp_action(args):
     argsDict['mesh'] = args.mesh
   if args.geom != None:
     argsDict['geom'] = args.geom
+  if args.precision != None:
+    argsDict['precision'] = args.precision
   if args.parameters != None:
     argsDict['parameters'] = args.parameters
     
@@ -249,6 +251,9 @@ esp_parser.add_argument('--mesh', dest='mesh', type=bool, \
 
 esp_parser.add_argument('--geom', dest='geom', \
   help='Name of input geometry file for Morph to consume. Must be a \'stp\' or \'sat\' file')
+
+esp_parser.add_argument('--precision', dest='precision', \
+  help='Precision with which design variables are written to csm file for ESP to update geometry')
 
 esp_parser.add_argument('--parameters', dest='parameters', nargs='*', \
   help='List of parameter values to construct the mesh')
