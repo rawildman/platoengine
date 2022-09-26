@@ -378,6 +378,28 @@ function( Plato_add_custom_command_test RUN_COMMAND TEST_NAME NUM_PROCS IO_COMM_
 
 endfunction( Plato_add_custom_command_test )
 
+###############################################################################                                           
+## Plato_add_expect_fail_test(                                                                                         
+## )                                                                                                                      
+###############################################################################                                           
+
+function( Plato_add_expect_fail_test RUN_COMMAND TEST_NAME NUM_PROCS IO_COMM_INDEX EXPECTED_STRING OUTPUT_FILE )
+
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/mpirun.source "${RUN_COMMAND}")
+
+    add_test(NAME ${TEST_NAME}
+           COMMAND ${CMAKE_COMMAND}
+           -DTEST_COMMAND="${RUN_COMMAND}"
+           -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+           -DOUT_FILE=${OUT_FILE}
+           -DGOLD_FILE=${GOLD_FILE}
+           -DEXPECTED_STRING=${EXPECTED_STRING}
+           -DOUTPUT_FILE=${OUTPUT_FILE}
+           -P ${CMAKE_SOURCE_DIR}/base/config/runexpectfailtest.cmake )
+
+endfunction( Plato_add_expect_fail_test )
+
+
 
 ###############################################################################
 ## Plato_add_numdiff_test( 
