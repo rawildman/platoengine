@@ -140,6 +140,14 @@ const std::string & OperationInputDataMng::getOperationName(const std::string & 
 }
 
 /*****************************************************************************/
+boost::optional<OperationType> OperationInputDataMng::getOperationType(const std::string & aPerformerName) const
+/*****************************************************************************/
+{
+    // todo: We can probably handle the error checking of the optional on addInput
+    return operationTypeIgnoreSpaces(getOperationName(aPerformerName));
+}
+
+/*****************************************************************************/
 int OperationInputDataMng::getNumInputs(const int & aOperationIndex) const
 /*****************************************************************************/
 {

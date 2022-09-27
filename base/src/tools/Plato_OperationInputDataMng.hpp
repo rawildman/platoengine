@@ -55,6 +55,9 @@
 #include <utility>
 
 #include "Plato_InputData.hpp"
+#include "Plato_OperationTypes.hpp"
+
+#include <boost/optional.hpp>
 
 namespace Plato
 {
@@ -73,6 +76,7 @@ public:
     const std::string & getPerformerName(const int & aOperationIndex) const;
     const std::string & getOperationName(const int & aOperationIndex) const;
     const std::string & getOperationName(const std::string & aPerformerName) const;
+    boost::optional<OperationType> getOperationType(const std::string & aPerformerName) const;
 
     int getNumInputs(const int & aOperationIndex) const;
     int getNumInputs(const std::string & aPerformerName) const;

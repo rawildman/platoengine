@@ -50,7 +50,10 @@
 #ifndef SRC_PERFORMER_HPP_
 #define SRC_PERFORMER_HPP_
 
+#include "Plato_OperationTypes.hpp"
+
 #include <string>
+#include <vector>
 
 namespace Plato
 {
@@ -69,6 +72,7 @@ public:
     void finalize();
     void compute(const std::string & aOperationName);
 
+
     void importData(const std::string & aArgumentName, const SharedData & aImportData);
     void exportData(const std::string & aArgumentName, SharedData & aExportData);
 
@@ -78,7 +82,18 @@ public:
     std::string myName();
     int myCommID();
 
+    //!{
+    //! Constrained interface
+    bool usesConstrainedOperationInterface() const;
+    std::vector<OperationType> supportedOperationTypes() const;
+    static auto computeFunction(OperationType aOperation) -> std::function<void(Performer&)>;
+    //!}
+
 private:
+    void computeCriterionValue();
+    void computeCriterionGradient();
+    void computeCriterionHessianTimesVector();
+
     Application* mApplication;  // TODO make this a unique pointer
     const std::string mName;
     const int mCommID;

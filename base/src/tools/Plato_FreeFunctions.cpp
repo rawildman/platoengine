@@ -177,4 +177,12 @@ void fread(void* aBuffer, std::size_t aSize, std::size_t aCount, std::FILE* aFil
 }
 /**********************************************************************************/
 
+/**********************************************************************************/
+std::string stripSpaces(std::string aStr)
+{
+    const auto tIsSpace = [](const char aC){return aC == ' ';};
+    aStr.erase(std::remove_if(aStr.begin(), aStr.end(), tIsSpace), aStr.end());
+    return aStr;
+}
+/**********************************************************************************/
 } // end namespace Plato

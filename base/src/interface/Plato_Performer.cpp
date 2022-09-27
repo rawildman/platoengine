@@ -78,6 +78,33 @@ void Performer::compute(const std::string & aOperationName)
     }
 }
 
+void Performer::computeCriterionValue()
+{
+    if(mApplication)
+    {
+        Console::Status("Operation: (" + mName + ") Compute Objective");
+        mApplication->computeCriterionValue();
+    }
+}
+
+void Performer::computeCriterionGradient()
+{
+    if(mApplication)
+    {
+        Console::Status("Operation: (" + mName + ") Compute Gradient");
+        mApplication->computeCriterionGradient();
+    }
+}
+
+void Performer::computeCriterionHessianTimesVector()
+{
+    if(mApplication)
+    {
+        Console::Status("Operation: (" + mName + ") Compute Hessian");
+        mApplication->computeCriterionHessianTimesVector();
+    }
+}
+
 void Performer::importData(const std::string & aArgumentName, const SharedData & aImportData)
 {
     if(mApplication)
@@ -112,6 +139,47 @@ std::string Performer::myName()
 int Performer::myCommID()
 {
     return mCommID;
+}
+
+bool Performer::usesConstrainedOperationInterface() const 
+{
+    if(mApplication)
+    {
+        return mApplication->usesConstrainedOperationInterface();
+    }
+    else 
+    {
+        return false;
+    }
+}
+
+std::vector<OperationType> Performer::supportedOperationTypes() const
+{
+    if(mApplication)
+    {
+        return mApplication->supportedOperationTypes();
+    }
+    else
+    {
+        return {};
+    }
+}
+
+auto Performer::computeFunction(OperationType aOperation) -> std::function<void(Performer&)>
+{
+    switch(aOperation)
+    {
+        case OperationType::kCriterionValue:
+            return std::mem_fn(&Performer::computeCriterionValue);
+            break;
+        case OperationType::kCriterionGradient:
+            return std::mem_fn(&Performer::computeCriterionGradient);
+            break;
+        case OperationType::kCriterionHessian:
+        default:
+            return std::mem_fn(&Performer::computeCriterionHessianTimesVector);
+            break;
+    }
 }
 
 }

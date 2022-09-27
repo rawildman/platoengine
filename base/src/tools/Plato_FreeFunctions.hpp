@@ -140,4 +140,6 @@ int system_with_status(const char* aString);
 
 void fread(void* aBuffer, std::size_t aSize, std::size_t aCount, std::FILE* aFile);
 
+std::string stripSpaces(std::string aStr);
+
 } // end namespace Plato
