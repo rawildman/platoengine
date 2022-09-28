@@ -389,7 +389,7 @@ function( Plato_add_expect_fail_test RUN_COMMAND TEST_NAME NUM_PROCS IO_COMM_IND
 
     add_test(NAME ${TEST_NAME}
            COMMAND ${CMAKE_COMMAND}
-           -DTEST_COMMAND="${RUN_COMMAND}"
+           -DTEST_COMMAND=${RUN_COMMAND}
            -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
            -DOUT_FILE=${OUT_FILE}
            -DGOLD_FILE=${GOLD_FILE}
