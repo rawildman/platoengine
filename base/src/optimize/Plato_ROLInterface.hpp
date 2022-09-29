@@ -107,7 +107,6 @@ public:
         bool tPrintToStream = true;
         
         tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, mOutputFile);
-        //tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
 
         if(this->mInputData.getCheckGradient() == true)
         {
