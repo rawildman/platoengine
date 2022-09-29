@@ -69,8 +69,6 @@ public:
     static void Alert(std::string aAlertMessage);
     static void Status(std::string aStatusMessage);
 
-    static std::streambuf* mStreamBufferCout;
-
 private:
     std::string mPerformerName;
     int mPerformerID;
@@ -82,8 +80,6 @@ private:
     static int m_stdout_fd;
     static int m_stderr_fd;
     static int m_redir_fd;
-
-    static std::fstream* mConsoleFile;
 
     static void redirect();
     static void restore();

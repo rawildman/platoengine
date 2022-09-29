@@ -60,8 +60,6 @@
 namespace Plato
 {
 
-std::streambuf* Console::mStreamBufferCout = nullptr;
-std::fstream*   Console::mConsoleFile = nullptr;
 bool Console::mRedirectable = false;
 bool Console::mVerbose = false;
 bool Console::mEnabled = false;
@@ -98,30 +96,6 @@ Console::Console(const std::string & aPerformerName, int aPerformerID, InputData
 
    if( mEnabled )
    {
-/*
-       if( mStreamBufferCout == nullptr )
-       {
-           mStreamBufferCout = std::cout.rdbuf();
-       }
-
-       if( mConsoleFile == nullptr )
-       {
-           std::stringstream tNameStream;
-           tNameStream << mPerformerName << "_" << mPerformerID;
-
-           mConsoleFile = new std::fstream;
-           mConsoleFile->open(tNameStream.str(), std::ios::out);
-           redirect_cout();
-
-           m_redir_fd = open(tNameStream.str().c_str(), O_WRONLY);
-           m_stdout_fd = dup(STDOUT_FILENO);
-           m_stderr_fd = dup(STDERR_FILENO);
-           redirect_printf();
-
-           mRedirectable = true;
-       }
-*/
-
        std::stringstream tNameStream;
        tNameStream << mPerformerName << "_" << mPerformerID;
 
@@ -144,14 +118,6 @@ Console::~Console()
 {
    restore();
 
-/*
-   if (mConsoleFile != nullptr)
-   {
-      mConsoleFile->close();
-      delete mConsoleFile;
-   }
-*/
-
    if (mRedirectable )
    {
       close(m_redir_fd);
@@ -164,7 +130,6 @@ void Console::restore()
 {
    if (mRedirectable)
    {
-//      restore_cout();
       restore_printf();
    }
 }
@@ -173,7 +138,6 @@ void Console::redirect()
 {
    if (mRedirectable)
    {
-//      redirect_cout();
       redirect_printf();
    }
 }
@@ -184,29 +148,6 @@ void Console::redirect_printf()
    fflush(stderr);
    dup2(m_redir_fd, STDOUT_FILENO);
    dup2(m_redir_fd, STDERR_FILENO);
-}
-
-void Console::redirect_cout()
-{
-/*
-
-   if (mConsoleFile != nullptr)
-   {
-     std::flush(std::cout);
-     std::cout.rdbuf(mConsoleFile->rdbuf());
-   }
-*/
-}
-
-void Console::restore_cout()
-{
-/*
-   if (mStreamBufferCout != nullptr)
-   {
-     std::flush(std::cout);
-     std::cout.rdbuf(mStreamBufferCout);
-   }
-*/
 }
 
 void Console::restore_printf()
