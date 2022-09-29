@@ -60,7 +60,7 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mCheckHessian(false),
         mUserInitialGuess(false),
         mOutputControlToFile(false),
-        mOutputDiagnosticsToFile(false),
+        mOutputDiagnosticsToFile(true),
         mDisablePostSmoothing(false),
         mResetAlgorithmOnUpdate(false),
         mMaxNumAugLagSubProbIter(5),

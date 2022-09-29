@@ -98,6 +98,7 @@ Console::Console(const std::string & aPerformerName, int aPerformerID, InputData
 
    if( mEnabled )
    {
+/*
        if( mStreamBufferCout == nullptr )
        {
            mStreamBufferCout = std::cout.rdbuf();
@@ -119,6 +120,19 @@ Console::Console(const std::string & aPerformerName, int aPerformerID, InputData
 
            mRedirectable = true;
        }
+*/
+
+       std::stringstream tNameStream;
+       tNameStream << mPerformerName << "_" << mPerformerID;
+
+       m_redir_fd = open(tNameStream.str().c_str(), O_WRONLY | O_CREAT | O_TRUNC, 
+                                S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+       m_stdout_fd = dup(STDOUT_FILENO);
+       m_stderr_fd = dup(STDERR_FILENO);
+       redirect_printf();
+
+       mRedirectable = true;
+
    }
    else
    {
@@ -130,11 +144,13 @@ Console::~Console()
 {
    restore();
 
+/*
    if (mConsoleFile != nullptr)
    {
       mConsoleFile->close();
       delete mConsoleFile;
    }
+*/
 
    if (mRedirectable )
    {
@@ -148,7 +164,7 @@ void Console::restore()
 {
    if (mRedirectable)
    {
-      restore_cout();
+//      restore_cout();
       restore_printf();
    }
 }
@@ -157,7 +173,7 @@ void Console::redirect()
 {
    if (mRedirectable)
    {
-      redirect_cout();
+//      redirect_cout();
       redirect_printf();
    }
 }
@@ -172,21 +188,25 @@ void Console::redirect_printf()
 
 void Console::redirect_cout()
 {
+/*
 
    if (mConsoleFile != nullptr)
    {
      std::flush(std::cout);
      std::cout.rdbuf(mConsoleFile->rdbuf());
    }
+*/
 }
 
 void Console::restore_cout()
 {
+/*
    if (mStreamBufferCout != nullptr)
    {
      std::flush(std::cout);
      std::cout.rdbuf(mStreamBufferCout);
    }
+*/
 }
 
 void Console::restore_printf()
