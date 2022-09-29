@@ -106,7 +106,7 @@ public:
         bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
         bool tPrintToStream = true;
         
-        tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, std::cout);
+        tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, mOutputFile);
 
         if(this->mInputData.getCheckGradient() == true)
         {
@@ -177,6 +177,7 @@ private:
         ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
         std::ostream outputStream(this->mOutputBuffer);
         tOptimizer.solve(outputStream);
+        outputStream.flush();
         this->printControl(aOptimizationProblem);
     }
 
@@ -200,7 +201,8 @@ private:
             ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
                     ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
             tCurDelta = tAlgorithmState->searchSize;
-            std::cout << "Delta: " << tCurDelta << std::endl;
+            outputStream << "Delta: " << tCurDelta << std::endl;
+            outputStream.flush();
         }
         this->printControl(aOptimizationProblem);
     }
