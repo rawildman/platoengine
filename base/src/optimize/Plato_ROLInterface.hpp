@@ -392,13 +392,6 @@ protected:
     void finalize()
     {
         this->mInterface->finalize();
-/*
-        if(mOutputFile.is_open())
-        {
-            mOutputFile.flush();
-            mOutputFile.close();
-        }
-*/
     }
 };
 
