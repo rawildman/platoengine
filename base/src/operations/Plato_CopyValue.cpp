@@ -54,15 +54,10 @@
 namespace Plato
 {
 
-CopyValue::CopyValue():
-Plato::LocalOp()
-{
-}
-
-CopyValue::CopyValue(PlatoApp* aPlatoApp):
-        Plato::LocalOp(aPlatoApp),
-        mInputName("InputValue"),
-        mOutputName("OutputValue")
+CopyValue::CopyValue(const std::string& aInputName,
+                     const std::string& aOutputName):
+                     mInputName(aInputName),
+                     mOutputName(aOutputName)
 {
 }
 

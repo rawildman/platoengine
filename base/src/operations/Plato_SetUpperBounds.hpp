@@ -65,6 +65,13 @@ class SetUpperBounds : public Plato::LocalOp
 {
 public:
     SetUpperBounds() = default;
+
+    SetUpperBounds(const std::string& aDiscretization,
+                   const std::string& aMaterialUseCase,
+                   Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                   Plato::data::layout_t aOutputLayout = Plato::data::layout_t::SCALAR,
+                   int aOutputSize = 0,
+                   int aUpperBoundVectorLength = 0);
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
@@ -154,12 +161,12 @@ private:
     int mOutputSize = 0; /*!< output field length */
     int mUpperBoundVectorLength = 0; /*!< upper bound vector length */
 
-    std::string mInputArgumentName; /*!< input argument name */
-    std::string mOutputArgumentName; /*!< output argument name */
-    std::string mDiscretization; /*!< topology/design representation, levelset or density , default = 'density' */
-    std::string mMaterialUseCase; /*!< main material state use case for the problem, default = 'solid' */
+    std::string mInputArgumentName = "Upper Bound Value"; /*!< input argument name */
+    std::string mOutputArgumentName = "Lower Bound Vector"; /*!< output argument name */
+    std::string mDiscretization = "density"; /*!< topology/design representation, levelset or density , default = 'density' */
+    std::string mMaterialUseCase = "solid"; /*!< main material state use case for the problem, default = 'solid' */
     
-    Plato::data::layout_t mOutputLayout; /*!< output field data layout */
+    Plato::data::layout_t mOutputLayout = Plato::data::layout_t::SCALAR; /*!< output field data layout */
     Plato::FixedBlock::Metadata mFixedBlockMetadata; /*!< data describing fixed blocks */
 };
 // class SetUpperBounds;

@@ -64,6 +64,8 @@ class CopyField : public Plato::LocalOp
 {
 public:
     CopyField() = default;
+    CopyField(const std::string& aInputName,
+              const std::string& aOutputName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -95,10 +97,10 @@ public:
       aArchive & boost::serialization::make_nvp("InputName",mInputName);
       aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
     }
-
+  
 private:
-    std::string mInputName; /*!< input argument name */
-    std::string mOutputName; /*!< output argument name */
+    std::string mInputName = "InputField"; /*!< input argument name */
+    std::string mOutputName = "OutputField"; /*!< output argument name */
 };
 // class CopyField;
 

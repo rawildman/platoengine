@@ -58,11 +58,21 @@
 namespace Plato
 {
 
-SetLowerBounds::SetLowerBounds():
-    mInputArgumentName("Lower Bound Value"),
-    mOutputArgumentName("Lower Bound Vector")
+SetLowerBounds::SetLowerBounds(const std::string& aDiscretization,
+                                const std::string& aMaterialUseCase,
+                                Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                                Plato::data::layout_t aOutputLayout,
+                                int aOutputSize,
+                                int aLowerBoundVectorLength):
+                                mDiscretization(aDiscretization),
+                                mMaterialUseCase(aMaterialUseCase),
+                                mFixedBlockMetadata(aFixedBlockMetadata),
+                                mOutputLayout(aOutputLayout),
+                                mOutputSize(aOutputSize),
+                                mLowerBoundVectorLength(aLowerBoundVectorLength)
 {
 }
+
 
 SetLowerBounds::SetLowerBounds(PlatoApp* p, Plato::InputData& aNode) :
     Plato::LocalOp(p)

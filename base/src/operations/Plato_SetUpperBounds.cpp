@@ -57,6 +57,22 @@
 namespace Plato
 {
 
+SetUpperBounds::SetUpperBounds(const std::string& aDiscretization,
+                                const std::string& aMaterialUseCase,
+                                Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                                Plato::data::layout_t aOutputLayout,
+                                int aOutputSize,
+                                int aUpperBoundVectorLength):
+                                mDiscretization(aDiscretization),
+                                mMaterialUseCase(aMaterialUseCase),
+                                mFixedBlockMetadata(aFixedBlockMetadata),
+                                mOutputLayout(aOutputLayout),
+                                mOutputSize(aOutputSize),
+                                mUpperBoundVectorLength(aUpperBoundVectorLength)
+{
+}
+
+
 SetUpperBounds::SetUpperBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)
 {

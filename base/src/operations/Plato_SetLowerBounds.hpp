@@ -64,7 +64,14 @@ class InputData;
 class SetLowerBounds : public Plato::LocalOp
 {
 public:
-    SetLowerBounds();
+    SetLowerBounds() = default;
+
+    SetLowerBounds(const std::string& aDiscretization,
+                   const std::string& aMaterialUseCase,
+                   Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                   Plato::data::layout_t aOutputLayout = Plato::data::layout_t::SCALAR,
+                   int aOutputSize = 0,
+                   int aLowerBoundVectorLength = 0);
 
     /******************************************************************************//**
      * @brief Constructor
@@ -173,11 +180,11 @@ private:
     int mOutputSize = 0; /*!< output field length */
     int mLowerBoundVectorLength = 0; /*!< lower bound vector length */
 
-    std::string mInputArgumentName; /*!< input argument name */
-    std::string mOutputArgumentName; /*!< output argument name */
-    std::string mDiscretization; /*!< topology/design representation, levelset or density, default = 'density' */
-    std::string mMaterialUseCase; /*!< main material state use case for the problem, default = 'solid' */
-    Plato::data::layout_t mOutputLayout; /*!< output field data layout */
+    std::string mInputArgumentName = "Lower Bound Value"; /*!< input argument name */
+    std::string mOutputArgumentName = "Lower Bound Vector"; /*!< output argument name */
+    std::string mDiscretization = "density"; /*!< topology/design representation, levelset or density, default = 'density' */
+    std::string mMaterialUseCase = "solid"; /*!< main material state use case for the problem, default = 'solid' */
+    Plato::data::layout_t mOutputLayout = Plato::data::layout_t::SCALAR; /*!< output field data layout */
 
     Plato::FixedBlock::Metadata mFixedBlockMetadata; /*!< data describing fixed blocks */
 };

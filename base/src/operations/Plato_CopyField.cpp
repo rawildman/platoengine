@@ -61,6 +61,13 @@ CopyField::CopyField(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
 {
 }
 
+CopyField::CopyField(const std::string& aInputName,
+                     const std::string& aOutputName):
+                     mInputName(aInputName),
+                     mOutputName(aOutputName)
+{
+}
+
 CopyField::~CopyField()
 {
 }

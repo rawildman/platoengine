@@ -43,6 +43,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <Plato_FreeFunctions.hpp>
 
 #include "Plato_CopyValue.hpp"
 #include "Serializable.hpp"
@@ -174,34 +176,103 @@ void load(Serial& tS, std::string aFilename)
     tInFileStream.open(aFilename.c_str(),std::fstream::in);
     Archive tInputArchive(tInFileStream, 1);       
     tInputArchive >> boost::serialization::make_nvp("Serial", tS);
-}                                   
+}        
 
-TEST(BOOSTTEST, SetLowerBounds)
+template<class Serial>
+bool serializeEquals(Serial& aSerialOne, Serial& aSerialTwo)
 {
-    Plato::SetLowerBounds tSetLower;
-    Plato::SetLowerBounds tSetLower2;
+    save<boost::archive::text_oarchive>(aSerialOne,"out");
+    save<boost::archive::text_oarchive>(aSerialTwo,"out2");
 
-//    save<boost::archive::text_oarchive>(tSetLower,"lower");
-    save<boost::archive::xml_oarchive>(tSetLower,"lower.xml");
+    std::ifstream tInfile("out");
+    std::stringstream tStringstream;
+    tStringstream << tInfile.rdbuf();
+    auto tString = tStringstream.str();
+    
+    std::ifstream tInfile2("out2");
+    std::stringstream tStringstream2;
+    tStringstream2 << tInfile2.rdbuf();
+    auto tString2 = tStringstream2.str();
+    
+    Plato::system("rm -rf out");
+    Plato::system("rm -rf out2");
 
-//    {  load<boost::archive::text_iarchive>(tSetLower2,"lower");}
-    {  load<boost::archive::xml_iarchive>(tSetLower2,"lower.xml");}
+    return tString.compare(tString2) == 0;
 }
 
-TEST(BOOSTTEST, Copy)
+Plato::FixedBlock::Metadata generateFixedBlockMetadata()
 {
-    PlatoApp* tPlatoApp = nullptr;
-    CopyValue tCopy(tPlatoApp);
-    CopyValue tCopy2;
+    Plato::FixedBlock::Metadata tMeta;
+    tMeta.mOptimizationBlockValue = 1;
+    tMeta.mBoundaryValues = {0.0, 0.1, 0.2};
+    tMeta.mDomainValues = {-1.0, -2.0};
+    tMeta.mMaterialStates = {"state1", "state2"};
+    tMeta.mBlockIDs = {1 , 2 , 3, 4};
+    tMeta.mSidesetIDs = {5, 6, 7};
+    tMeta.mNodesetIDs = {8, 9};
+    return tMeta;
+}
 
-    std::string filename = "out2.txt";
+TEST(BoostSerialization, SetLowerBounds)
+{
+    auto tFixedBlockMetadata = generateFixedBlockMetadata();
 
-    //save<boost::archive::text_oarchive>(tCopy, filename);
-    //load<boost::archive::text_iarchive>(tCopy2, filename);
+    Plato::SetLowerBounds tOperation("shape",
+                                     "fluid",
+                                     tFixedBlockMetadata,
+                                     Plato::data::layout_t::SCALAR_FIELD,
+                                     3,
+                                     4);
+    Plato::SetLowerBounds tOperation2;
 
-    save<boost::archive::xml_oarchive>(tCopy, filename);
-    load<boost::archive::xml_iarchive>(tCopy2, filename);
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
 
-    EXPECT_EQ(tCopy.mInputName ,tCopy2.mInputName);
-    EXPECT_EQ(tCopy.mOutputName ,tCopy2.mOutputName);
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, SetUpperBounds)
+{
+    auto tFixedBlockMetadata = generateFixedBlockMetadata();
+
+    Plato::SetUpperBounds tOperation("shape",
+                                     "fluid",
+                                     tFixedBlockMetadata,
+                                     Plato::data::layout_t::SCALAR_FIELD,
+                                     3,
+                                     4);
+    Plato::SetUpperBounds tOperation2;
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, CopyValue)
+{
+    Plato::CopyValue tOperation("in",
+                                "out");
+    Plato::CopyValue tOperation2;
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, CopyField)
+{
+    Plato::CopyField tOperation("in",
+                                "out");
+    Plato::CopyField tOperation2;
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    //Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
 }
