@@ -88,6 +88,9 @@ public:
     virtual void computeCriterionHessianTimesVector(){}
     virtual std::vector<OperationType> supportedOperationTypes() const{return {};}
     //!@}
+    //
+    template<typename Archive>
+    void serialize(Archive& aArchive, const unsigned int version){}
 };
 
 } // End namespace Plato

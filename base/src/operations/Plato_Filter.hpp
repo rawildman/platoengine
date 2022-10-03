@@ -65,6 +65,11 @@ class Filter : public Plato::LocalOp
 {
 public:
     Filter() = default;
+    Filter(const std::string& aInputToFilterName,
+           const std::string& aInputBaseFieldName,
+           const std::string& aOutputFromFilterName,
+           Plato::AbstractFilter* aFilter,
+           bool aIsGradient);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -97,6 +102,7 @@ public:
       aArchive & boost::serialization::make_nvp("InputBaseFieldName",mInputBaseFieldName);
       aArchive & boost::serialization::make_nvp("OutputFromFilterName",mOutputFromFilterName);
       aArchive & boost::serialization::make_nvp("IsGradient",mIsGradient);
+      //TODO serilization of all the filters - they are a mess.
     }
 
 private:

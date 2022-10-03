@@ -64,7 +64,7 @@ struct CommunicationData;
 class SharedValue : public SharedData
 {
 public:
-    SharedValue(){};
+    SharedValue() = default;
     SharedValue(const std::string & aMyName, 
                 const std::vector<std::string> & aProviderName, 
                 const Plato::CommunicationData & aCommData, int aSize = 1, bool aIsDynamic=false);
@@ -77,7 +77,6 @@ public:
     void setData(const std::vector<double> & aData);
     void getData(std::vector<double> & aData) const;
 
-    friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {

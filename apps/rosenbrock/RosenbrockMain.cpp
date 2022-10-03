@@ -50,6 +50,7 @@
 #include "Plato_Interface.hpp"
 
 #include "Serializable.hpp"
+#include "Plato_SerializationUtilities.hpp"
 
 #include <fstream>
 #include <string>
@@ -58,6 +59,12 @@
 #ifndef NDEBUG
 #include <fenv.h>
 #endif
+
+const auto kInterfaceLoadXMLFileName = Plato::XMLFileName{"save_state.xml"};
+const auto kInterfaceSaveXMLFileName = Plato::XMLFileName{"save_state_rosenbrock.xml"};
+const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_app_rosenbrock.xml"};
+const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
 
 /******************************************************************************/
 int main(int aArgc, char **aArgv)
@@ -77,11 +84,7 @@ int main(int aArgc, char **aArgv)
     {
         if(tLoadFromXML)
         {
-            tPlatoInterface = new Plato::Interface(Plato::LoadFromXMLTag{});
-            Plato::loadFromXML(*tPlatoInterface, "Interface", "save_state.xml");
-            tPlatoInterface->initializePerformerMPI();
-            tPlatoInterface->setPerformerOnStages();
-            tPlatoInterface->initializeConsole();
+            tPlatoInterface = new Plato::Interface(kInterfaceLoadXMLFileName, kInterfaceXMLNodeName);
         } else {
             tPlatoInterface = new Plato::Interface();
         }
@@ -114,24 +117,15 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
-        tPlatoInterface->registerApplicationNoInitialization(tMyApp);
-
-
-        Plato::tryFCatchInterfaceExceptions(
-            [tMyApp](){tMyApp->initialize();}, 
-            *tPlatoInterface);
-
-        if(tLoadFromXML){
-            tPlatoInterface->initializeSharedDataMPI();
-        } else {
-            Plato::tryFCatchInterfaceExceptions(
-                [tPlatoInterface, tMyApp](){tPlatoInterface->createSharedData(tMyApp);}, 
-                *tPlatoInterface);
-            Plato::tryFCatchInterfaceExceptions(
-                [tPlatoInterface](){tPlatoInterface->createStages();}, 
-                *tPlatoInterface);
+        if(tLoadFromXML)
+        {
+            Plato::registerApplicationWithInterfaceLoadFromXML(
+                *tPlatoInterface, tMyApp, kAppXMLFileName, kAppXMLNodeName);
+        } 
+        else 
+        {
+            tPlatoInterface->registerApplication(tMyApp);
         }
-
     }
     catch(...)
     {
@@ -140,8 +134,10 @@ int main(int aArgc, char **aArgv)
     }
     /************************** REGISTER APPLICATION **************************/
 
-    if(!tLoadFromXML){
-        Plato::saveToXML(*tPlatoInterface, "Interface", "save_state_rosenbrock.xml");
+    const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
+    if(tSaveToXML){
+        Plato::saveToXML(*tPlatoInterface, kInterfaceSaveXMLFileName, kInterfaceXMLNodeName);
+        Plato::saveToXML(*tMyApp, kAppXMLFileName, kAppXMLNodeName);
     }
     /******************************** PERFORM *********************************/
     try

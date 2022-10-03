@@ -69,7 +69,7 @@ namespace Plato {
 class InputData {
  public:
   InputData();
-  InputData(std::string name);
+  explicit InputData(std::string name);
 
   std::string name() const;
   bool empty() const;

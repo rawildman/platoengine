@@ -69,11 +69,17 @@
 #endif
 
 #include "Serializable.hpp"
+#include "Plato_SerializationUtilities.hpp"
 
 #include <fstream>
 #include <string>
 
 #include <cstdlib>
+
+const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_state.xml"};
+const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_app.xml"};
+const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
 
 void writeSplashScreen();
 
@@ -108,14 +114,12 @@ int main(int aArgc, char *aArgv[])
     const bool tLoadFromXML = std::getenv("PLATO_LOAD_FROM_XML") != nullptr;
     try
     {
-        if(tLoadFromXML)
+        if(tLoadFromXML) 
         {
-            tPlatoInterface = new Plato::Interface(Plato::LoadFromXMLTag{});
-            Plato::loadFromXML(*tPlatoInterface, "Interface", "save_state.xml");
-            tPlatoInterface->initializePerformerMPI();
-            tPlatoInterface->setPerformerOnStages();
-            tPlatoInterface->initializeConsole();
-        } else {
+            tPlatoInterface = new Plato::Interface(kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        } 
+        else 
+        {
             tPlatoInterface = new Plato::Interface();
         }
     }
@@ -152,27 +156,14 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
-        tPlatoInterface->registerApplicationNoInitialization(tPlatoApp);
-
-        if(tLoadFromXML) {
-            Plato::tryFCatchInterfaceExceptions(
-            [tPlatoApp](){Plato::loadFromXML(*tPlatoApp, "App", "save_app.xml");},
-            *tPlatoInterface);
-        } else {
-            Plato::tryFCatchInterfaceExceptions(
-                [tPlatoApp](){tPlatoApp->initialize();}, 
-                *tPlatoInterface);
-        }
-
-        if(tLoadFromXML){
-            tPlatoInterface->initializeSharedDataMPI();
-        } else {
-            Plato::tryFCatchInterfaceExceptions(
-                [tPlatoInterface, tPlatoApp](){tPlatoInterface->createSharedData(tPlatoApp);}, 
-                *tPlatoInterface);
-            Plato::tryFCatchInterfaceExceptions(
-                [tPlatoInterface](){tPlatoInterface->createStages();}, 
-                *tPlatoInterface);
+        if(tLoadFromXML)
+        {
+            Plato::registerApplicationWithInterfaceLoadFromXML(
+                *tPlatoInterface, tPlatoApp, kAppXMLFileName, kAppXMLNodeName);
+        } 
+        else 
+        {
+            tPlatoInterface->registerApplication(tPlatoApp);
         }
     }
     catch(...)
@@ -184,8 +175,8 @@ int main(int aArgc, char *aArgv[])
 
     const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
     if(tSaveToXML){
-        Plato::saveToXML(*tPlatoInterface, "Interface", "save_state.xml");
-        Plato::saveToXML(*tPlatoApp, "App", "save_app.xml");
+        Plato::saveToXML(*tPlatoInterface, kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        Plato::saveToXML(*tPlatoApp, kAppXMLFileName, kAppXMLNodeName);
     } 
     try
     {

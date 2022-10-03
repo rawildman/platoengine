@@ -54,6 +54,18 @@
 namespace Plato
 {
 
+ComputeVolume::ComputeVolume(const std::string& aVolumeName,
+                             const std::string& aGradientName,
+                             Plato::PenaltyModel* aPenaltyModel,
+                             const std::string& aTopologyName):
+                             mVolumeName(aVolumeName),
+                             mGradientName(aGradientName),
+                             mPenaltyModel(aPenaltyModel),
+                             mTopologyName(aTopologyName)
+{
+}
+
+
 ComputeVolume::ComputeVolume(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp),
         mTopologyName("Topology"),
@@ -71,7 +83,7 @@ ComputeVolume::~ComputeVolume()
     {
         delete mPenaltyModel;
         mPenaltyModel = nullptr;
-    }
+    } 
 }
 
 void ComputeVolume::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)

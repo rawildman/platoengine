@@ -83,7 +83,7 @@ public:
     const std::vector<SharedData*> & getSharedData() const;
 
     template<typename Archive>
-    void serialize(Archive& aArchive, const int aVersion)
+    void serialize(Archive& aArchive, const unsigned int aVersion)
     {
 	    aArchive.template register_type<Plato::SharedField>(); 
 	    aArchive.template register_type<Plato::SharedValue>(); 

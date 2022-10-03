@@ -62,6 +62,16 @@ class PlatoMainOutput : public Plato::LocalOp
 {
 public:
     PlatoMainOutput() = default;
+    PlatoMainOutput(const std::string& aBaseName,
+                    const std::string& aDiscretization,
+                    const std::string& aRestartFieldName,
+                    const std::vector<std::string>& aRequestedFormats,
+                    const std::vector<Plato::LocalArg>& aOutputData,
+                    int aOutputMethod,
+                    int aOutputFrequency,
+                    int aMaxIterations,
+                    bool aWriteRestart,
+                    bool aAppendIterationCount);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -120,10 +130,10 @@ private:
 
 private:
     std::vector<Plato::LocalArg> mOutputData; /*!< set of output data */
-    int mOutputFrequency; /*!< output frequency */
-    int mMaxIterations; /*!< max iterations */
+    int mOutputFrequency = 1000; /*!< output frequency */
+    int mMaxIterations = 1; /*!< max iterations */
     int mOutputMethod; /*!< epu output data - distributed or serial */
-    std::string mDiscretization; /*!< topology representation, density or levelset */
+    std::string mDiscretization = "density"; /*!< topology representation, density or levelset */
     bool mWriteRestart; /*!< flag - write restart file */
     std::string mRestartFieldName; /*!< name of field to put in restart file */
     std::string mBaseName; /*!< output file base name */

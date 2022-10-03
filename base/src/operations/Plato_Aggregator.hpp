@@ -50,6 +50,7 @@
 
 #include "Plato_Console.hpp"
 #include "Plato_LocalOperation.hpp"
+#include "Plato_SharedData.hpp"
 
 #include "Serializable.hpp"
 
@@ -57,14 +58,37 @@ namespace Plato
 {
 
 class InputData;
+struct AggStruct
+    {
+        Plato::data::layout_t mLayout; /*!< data layout, e.g. scalar value, scalar field, etc */
+        std::string mOutputName; /*!< output argument name */
+        std::vector<std::string> mInputNames; /*!< input argument name */
 
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & aArchive, const unsigned int version)
+        {
+            aArchive & boost::serialization::make_nvp("Layout",mLayout);
+            aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+            aArchive & boost::serialization::make_nvp("InputNames",mInputNames);
+        }   
+    };
 /******************************************************************************//**
  * @brief Aggregate a quantity of interest
 **********************************************************************************/
 class Aggregator : public Plato::LocalOp
 {
+
 public:
     Aggregator() = default;
+    Aggregator(const std::vector<double>& aWeights,
+               const std::vector<std::string>& aWeightBases,
+               const std::vector<std::string>& aWeightNormals,
+               const std::vector<AggStruct>& aAggStructs,
+               const std::string& aWeightMethod = "FIXED", 
+               double aLimitWeight = 1, 
+               bool aReportStatus = false);
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -97,28 +121,13 @@ public:
     }
 
 private:
-    struct AggStruct
-    {
-        Plato::data::layout_t mLayout; /*!< data layout, e.g. scalar value, scalar field, etc */
-        std::string mOutputName; /*!< output argument name */
-        std::vector<std::string> mInputNames; /*!< input argument name */
-
-        friend class boost::serialization::access;
-        template<class Archive>
-        void serialize(Archive & aArchive, const unsigned int version)
-        {
-            aArchive & boost::serialization::make_nvp("Layout",mLayout);
-            aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
-            aArchive & boost::serialization::make_nvp("InputNames",mInputNames);
-        }   
-    };
-
-    bool mReportStatus; /*!< whether to write status to Plato::Console */
-    double mLimitWeight; /*!< weight's upper bound */
+  
+    bool mReportStatus = false; /*!< whether to write status to Plato::Console */
+    double mLimitWeight = 1; /*!< weight's upper bound */
     std::vector<std::string> mWeightBases; /*!< weight bases */
     std::vector<std::string> mWeightNormals; /*!< weight normals */
-    std::string mWeightMethod; /*!< method - basically, how are weights applied */
-    std::vector<double> mWeights; /*!< weights for each component */
+    std::string mWeightMethod = "FIXED"; /*!< method - basically, how are weights applied */
+    std::vector<double> mWeights = {1}; /*!< weights for each component */
     std::vector<AggStruct> mAggStructs; /*!< core data for each aggregated component */
 
     /******************************************************************************//**

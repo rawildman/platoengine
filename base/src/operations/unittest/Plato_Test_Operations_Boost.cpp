@@ -44,6 +44,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <memory>
 #include <Plato_FreeFunctions.hpp>
 
 #include "Plato_CopyValue.hpp"
@@ -63,6 +64,7 @@
 #include "Plato_EnforceBounds.hpp"
 #include "Plato_UpdateProblem.hpp"
 #include "Plato_ComputeVolume.hpp"
+#include "Plato_PenaltyModel.hpp"
 #include "Plato_CSMMeshOutput.hpp"
 #include "Plato_SetUpperBounds.hpp"
 #include "Plato_SetLowerBounds.hpp"
@@ -81,86 +83,13 @@
 #include "Plato_OutputNodalFieldSharedData.hpp"
 #include "Plato_ReciprocateObjectiveGradient.hpp"
 
-BOOST_CLASS_IMPLEMENTATION(Plato::SetLowerBounds, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::SetLowerBounds, boost::serialization::track_never )
-
-/*
-BOOST_CLASS_IMPLEMENTATION(Plato::Aggregator, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::Aggregator, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::ComputeVolume, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::ComputeVolume, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::CopyField, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::CopyField, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::CopyValue, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::CopyValue, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::DesignVolume, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::DesignVolume, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::EnforceBounds, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::EnforceBounds, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::Filter, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::Filter, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::HarvestDataFromFile, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::HarvestDataFromFile, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::OutputNodalFieldSharedData, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::OutputNodalFieldSharedData, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::InitializeField, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::InitializeField, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::InitializeValues, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::InitializeValues, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::PlatoMainOutput, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::PlatoMainOutput, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::SetLowerBounds, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::SetLowerBounds, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::SetUpperBounds, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::SetUpperBounds, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::SystemCallOperation, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::SystemCallOperation, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::UpdateProblem, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::UpdateProblem, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::Roughness, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::Roughness, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::Reinitialize, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::Reinitialize, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::CSMMeshOutput, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::CSMMeshOutput, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::WriteGlobalValue, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::WriteGlobalValue, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::CSMParameterOutput, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::CSMParameterOutput, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::NormalizeObjectiveGradient, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::NormalizeObjectiveGradient, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::NormalizeObjectiveValue, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::NormalizeObjectiveValue, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::MeanPlusVarianceGradient, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::MeanPlusVarianceGradient, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::MeanPlusVarianceMeasure, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::MeanPlusVarianceMeasure, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::ReciprocateObjectiveGradient, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::ReciprocateObjectiveGradient, boost::serialization::track_never )
-BOOST_CLASS_IMPLEMENTATION(Plato::ReciprocateObjectiveValue, boost::serialization::object_serializable )
-BOOST_CLASS_TRACKING(Plato::ReciprocateObjectiveValue, boost::serialization::track_never )
-*/
 using namespace Plato;
 
 /*
-void load(CopyValue& tCopy, std::string aFilename)                                        
-    {                                                                       
-        std::fstream tInFileStream;
-        tInFileStream.open(aFilename.c_str(),std::fstream::in);                     
-                
-        boost::archive::text_iarchive tInputArchive(tInFileStream);       
-        tInputArchive >> boost::serialization::make_nvp("CopyValue", tCopy);
-        tInFileStream.close(); 
-    }                                           
-		                                  
-	void save(CopyValue& tCopy, std::string aFilename)                                        
-    {                                                                       
-        std::ofstream tOutFileStream(aFilename.c_str());                    
-        boost::archive::text_oarchive tOutputArchive(tOutFileStream);       
-        tOutputArchive << boost::serialization::make_nvp("CopyValue", tCopy);             
-        tOutFileStream.close();                                             
-    }     
+    These tests verify that each individual object is being serialized and deserialized properly. 
+    These tests DO NOT consider what set of objects specifically are being serialized.
 */
+
 template<class Archive,class Serial>
 void save(Serial& tS, std::string aFilename)
 {                                                                       
@@ -224,6 +153,7 @@ TEST(BoostSerialization, SetLowerBounds)
                                      3,
                                      4);
     Plato::SetLowerBounds tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
 
     save<boost::archive::xml_oarchive>(tOperation,"out.xml");
     load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
@@ -243,6 +173,7 @@ TEST(BoostSerialization, SetUpperBounds)
                                      3,
                                      4);
     Plato::SetUpperBounds tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
 
     save<boost::archive::xml_oarchive>(tOperation,"out.xml");
     load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
@@ -256,6 +187,7 @@ TEST(BoostSerialization, CopyValue)
     Plato::CopyValue tOperation("in",
                                 "out");
     Plato::CopyValue tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
 
     save<boost::archive::xml_oarchive>(tOperation,"out.xml");
     load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
@@ -269,10 +201,140 @@ TEST(BoostSerialization, CopyField)
     Plato::CopyField tOperation("in",
                                 "out");
     Plato::CopyField tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
 
     save<boost::archive::xml_oarchive>(tOperation,"out.xml");
     load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
-    //Plato::system("rm -rf out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, Aggregator)
+{
+    Plato::AggStruct tAggStruct;
+    tAggStruct.mLayout = Plato::data::layout_t::SCALAR;
+    tAggStruct.mOutputName = "Value";
+    tAggStruct.mInputNames = {"Result1", "Result2", "Result3"};
+
+    Plato::Aggregator tOperation({0.5, 0.5},
+                                 {"BASES"},
+                                 {"NORMALS"},
+                                 {tAggStruct},
+                                 "FIXED",
+                                 2,
+                                 true);
+    Plato::Aggregator tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, ComputeVolume)
+{
+    Plato::PenaltyModel* tPenaltyModel = new Plato::SIMP(2,0.4);
+    Plato::ComputeVolume tOperation("Volume",
+                                    "Volume Gradient",
+                                    tPenaltyModel,
+                                    "Topology");
+    Plato::ComputeVolume tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, DesignVolume)
+{
+    Plato::LocalArg tDefaultLocalArg;
+    Plato::LocalArg tLocalArg(Plato::data::layout_t::SCALAR_FIELD, "Dummy", 4, true);
+    
+    Plato::DesignVolume tOperation({tDefaultLocalArg, tLocalArg});
+    Plato::DesignVolume tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, Filter)
+{
+    Plato::AbstractFilter* tFilter = nullptr; //new Plato::AbstractFilter();
+           
+    Plato::Filter tOperation("Field","","Filtered Field",tFilter,true);
+    Plato::Filter tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+
+TEST(BoostSerialization, PlatoMainOutput)
+{
+    Plato::LocalArg tLocalArg1(Plato::data::layout_t::SCALAR_FIELD, "topology", 0, true);
+    Plato::LocalArg tLocalArg2(Plato::data::layout_t::SCALAR_FIELD, "control", 0, true);
+    Plato::LocalArg tLocalArg3(Plato::data::layout_t::SCALAR_FIELD, "objective gradient", 0, true);
+    Plato::LocalArg tLocalArg4(Plato::data::layout_t::SCALAR_FIELD, "constraint gradient", 0, true);
+    Plato::LocalArg tLocalArg5(Plato::data::layout_t::SCALAR_FIELD, "dispx", 0, true);
+
+    Plato::PlatoMainOutput tOperation("Iteration",
+                                      "",
+                                      "control",
+                                      {"exo"},
+                                      {tLocalArg1, tLocalArg2, tLocalArg3, tLocalArg4, tLocalArg5},
+                                      2,
+                                      1001,
+                                      20,
+                                      false,
+                                      true);
+    Plato::PlatoMainOutput tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, InitializeField)
+{           
+    Plato::InitializeField tOperation("File Name",
+                                        "Uniform",
+                                        "",
+                                        "Initialized Field",
+                                        "SPF",
+                                        "X",
+                                        "Y",
+                                        "Z",
+                                        "VN",
+                                        {0,0,0},
+                                        {1,1,1},
+                                        {0},
+                                        Plato::data::layout_t::SCALAR,
+                                        0.5,
+                                        0,
+                                        false);
+    Plato::InitializeField tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
 
     EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
 }

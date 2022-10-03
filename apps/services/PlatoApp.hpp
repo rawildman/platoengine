@@ -81,7 +81,6 @@
 #include "Plato_OutputNodalFieldSharedData.hpp"
 #include "Plato_ReciprocateObjectiveGradient.hpp"
        
-
 #include "Serializable.hpp"
 
 #ifdef GEOMETRY
@@ -416,6 +415,9 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
+        // Serialization TODO: We can remove this explicit type registration
+        // using BOOST_CLASS_EXPORT_GUID in their cpp files along with
+        // explicit instantiation of their serialize member functions templates.
 	    aArchive.template register_type<Plato::Aggregator>() ; 
         aArchive.template register_type<Plato::ComputeVolume>() ; 
         aArchive.template register_type<Plato::CopyField>() ; 
@@ -460,7 +462,8 @@ public:
         aArchive.template register_type<Plato::MapMLSField<1>>();
         #endif
 
-        aArchive &  boost::serialization::make_nvp("OperationMap",mOperationMap);
+        aArchive & boost::serialization::make_nvp("Application", boost::serialization::base_object<Application>(*this));
+        aArchive & boost::serialization::make_nvp("OperationMap", mOperationMap);
     }
     
 private:
@@ -524,4 +527,3 @@ private:
 
 };
 // class PlatoApp
-

@@ -66,6 +66,23 @@ class InitializeField : public Plato::LocalOp
 public:
     InitializeField() = default;
 
+    InitializeField(const std::string& aFileName,
+                    const std::string& aStringMethod,
+                    const std::string& aSphereRadius,
+                    const std::string& aOutputFieldName,
+                    const std::string& aSpherePackingFactor,
+                    const std::string& aSphereSpacingX,
+                    const std::string& aSphereSpacingY,
+                    const std::string& aSphereSpacingZ,
+                    const std::string& aVariableName,
+                    const std::vector<double>& aMinCoords,
+                    const std::vector<double>& aMaxCoords,
+                    const std::vector<int>& aLevelSetNodes,
+                    Plato::data::layout_t aOutputLayout,
+                    double aUniformValue,
+                    int aIteration,
+                    bool aCreateSpheres);
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application

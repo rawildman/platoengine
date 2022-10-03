@@ -99,8 +99,6 @@ int main(int aArgc, char **aArgv)
     {
         tMyApp->initialize();
         tPlatoInterface->registerApplication(tMyApp);
-        tPlatoInterface->createSharedData(tMyApp);
-        tPlatoInterface->createStages();
     }
     catch(...)
     {

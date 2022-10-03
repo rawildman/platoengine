@@ -886,4 +886,3 @@ Plato::TimersTree* PlatoApp::getTimersTree()
 {
     return mTimersTree;
 }
-

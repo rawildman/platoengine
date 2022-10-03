@@ -64,28 +64,35 @@ namespace Plato {
       virtual ~PenaltyModel(){}
       virtual double eval(double x)=0;
       virtual double grad(double x)=0;
+
       template<class Archive>
       void serialize(Archive & aArchive, const unsigned int version) {} 
   };
 
   class SIMP : public PenaltyModel {
     public:
+      SIMP() = default;
+      SIMP(double a_penaltyExponent, double a_minimumValue)
+      {
+        m_penaltyExponent = a_penaltyExponent;
+        m_minimumValue = a_minimumValue;
+      }
       SIMP(const Plato::InputData& input);
-      virtual ~SIMP(){}
+
       virtual double eval(double x);
       virtual double grad(double x);
 
-    template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
-    {
-      aArchive & boost::serialization::make_nvp("PenaltyModel",boost::serialization::base_object<PenaltyModel>(*this));
-      aArchive & boost::serialization::make_nvp("PenaltyExponent",m_penaltyExponent);
-      aArchive & boost::serialization::make_nvp("MinimumValue",m_minimumValue);
-    }
+      template<class Archive>
+      void serialize(Archive & aArchive, const unsigned int version)
+      {
+        aArchive & boost::serialization::make_nvp("PenaltyModel",boost::serialization::base_object<PenaltyModel>(*this));
+        aArchive & boost::serialization::make_nvp("PenaltyExponent",m_penaltyExponent);
+        aArchive & boost::serialization::make_nvp("MinimumValue",m_minimumValue);
+      }
 
     private:
-      double m_penaltyExponent;
-      double m_minimumValue;
+      double m_penaltyExponent = 1;
+      double m_minimumValue = 0.5;
   };
 
   class PenaltyModelFactory {

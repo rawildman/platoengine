@@ -58,8 +58,6 @@
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
-//BOOST_CLASS_EXPORT_IMPLEMENT(Plato::MultiOperation);
-
 namespace Plato {
 
 /******************************************************************************/

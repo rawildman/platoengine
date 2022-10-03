@@ -63,7 +63,7 @@ class InputData;
 class DesignVolume : public Plato::LocalOp
 {
 private:
-    DesignVolume() = default;
+   
     /******************************************************************************//**
      * \fn initialize
      * \brief Allocate member data.
@@ -71,7 +71,9 @@ private:
     **********************************************************************************/
     void initialize(Plato::InputData& aOperationNode);
 
-public:
+public: 
+    DesignVolume() = default;
+    DesignVolume(const std::vector<Plato::LocalArg>& aLocalArguments);
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
@@ -96,6 +98,7 @@ public:
     void serialize(Archive & aArchive, const unsigned int version)
     {
       aArchive & boost::serialization::make_nvp("DesignVolume",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("LocalArguments",mLocalArguments);
     }
 
 private:

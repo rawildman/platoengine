@@ -65,6 +65,10 @@ class ComputeVolume : public Plato::LocalOp
 {
 public:
     ComputeVolume() = default;
+    ComputeVolume(const std::string& aVolumeName,
+                  const std::string& aGradientName,
+                  Plato::PenaltyModel* aPenaltyModel,
+                  const std::string& aTopologyName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -102,10 +106,10 @@ public:
     }
 
 private:
-    std::string mTopologyName; /*!< topology field argument name */
+    std::string mTopologyName = "density"; /*!< topology field argument name */
     std::string mVolumeName;  /*!< volume argument name */
     std::string mGradientName; /*!< volume gradient argument name */
-    Plato::PenaltyModel* mPenaltyModel; /*!< material penalty model, e.g. SIMP */
+    Plato::PenaltyModel* mPenaltyModel = nullptr; /*!< material penalty model, e.g. SIMP */
 };
 // class ComputeVolume
 

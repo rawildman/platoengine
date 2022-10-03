@@ -65,6 +65,8 @@
 #include "Plato_StandardMultiVector.hpp"
 #include "Plato_OperationTypes.hpp"
 
+#include "Serializable.hpp"
+
 namespace Plato
 {
 
@@ -74,7 +76,7 @@ class RosenbrockApp : public CriterionApplication
 public:
     RosenbrockApp() :
             mNumControls(2),
-            mCriterion(std::make_shared<Plato::Rosenbrock<ScalarType, OrdinalType>>()),
+            mCriterion(std::make_unique<Plato::Rosenbrock<ScalarType, OrdinalType>>()),
             mDataMap()
     {
         this->makeDataMap();
@@ -217,6 +219,14 @@ public:
         mCriterion->hessian(tControls, tDirection, tHessianTimesVector);
     }
 
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        // Don't serialize anything, since this class is only default constructed, and
+        // otherwise can't be modified.
+        aArchive & boost::serialization::make_nvp("Application", boost::serialization::base_object<Application>(*this));
+    }
+
 private:
     /****************************************************************************************/
     void makeDataMap()
@@ -295,7 +305,7 @@ private:
 
 private:
     OrdinalType mNumControls;
-    std::shared_ptr<Plato::Rosenbrock<ScalarType, OrdinalType>> mCriterion;
+    std::unique_ptr<Plato::Rosenbrock<ScalarType, OrdinalType>> mCriterion;
     std::map<std::string, std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>>> mDataMap;
 
 private:

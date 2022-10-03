@@ -53,6 +53,10 @@
 
 namespace Plato
 {
+DesignVolume::DesignVolume(const std::vector<Plato::LocalArg>& aLocalArguments) :
+                           mLocalArguments(aLocalArguments)
+{
+}
 
 DesignVolume::DesignVolume(PlatoApp* aPlatoApp, Plato::InputData& aOperationNode) :
         Plato::LocalOp(aPlatoApp)

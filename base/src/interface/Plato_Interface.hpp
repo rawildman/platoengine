@@ -67,11 +67,7 @@
 #include "Plato_Stage.hpp"
 
 #include "Serializable.hpp"
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/serialization.hpp>
+
 namespace Plato
 {
 
@@ -94,7 +90,7 @@ struct PerformerInfo
     int mId;
 
     template<typename Archive>
-    void serialize(Archive& aArchive, const int aVersion)
+    void serialize(Archive& aArchive, const unsigned int aVersion)
     {
         aArchive & boost::serialization::make_nvp("Names", mNames);
         aArchive & boost::serialization::make_nvp("Code", mCodeName);
@@ -102,7 +98,26 @@ struct PerformerInfo
     }
 };
 
-struct LoadFromXMLTag{};
+struct SharedDataSerializedInfo
+{
+    std::string mName;
+    std::string mLayout;
+    int mSize;
+    bool mIsDynamic;
+    std::vector<std::string> mProviderNames;
+    std::vector<std::string> mReceiverNames;
+
+    template<typename Archive>
+    void serialize(Archive& aArchive, const unsigned int aVersion)
+    {
+        aArchive & boost::serialization::make_nvp("Name", mName);
+        aArchive & boost::serialization::make_nvp("Layout", mLayout);
+        aArchive & boost::serialization::make_nvp("Size", mSize);
+        aArchive & boost::serialization::make_nvp("Dynamic", mIsDynamic);
+        aArchive & boost::serialization::make_nvp("OwnerName", mProviderNames);
+        aArchive & boost::serialization::make_nvp("UserName", mReceiverNames);
+    }
+};
 
 /**
  * This class provides an interface between PlatoEngine and the
@@ -115,19 +130,23 @@ struct LoadFromXMLTag{};
  This should be separated into two virtual bases.
  */
 /******************************************************************************/
-class Interface
+class Interface final
 {
 public:
     explicit Interface(MPI_Comm aGlobalComm = MPI_COMM_WORLD);
-    explicit Interface(LoadFromXMLTag, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
+    /// This ctor initializes Interface from the saved state in the XML file with name
+    /// @a aFileName, and assumes the data with XML tag @a aNodeName.
+    Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
     Interface(const int & aCommID, const std::string & a_XML_String, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
-    virtual ~Interface();
+    ~Interface();
 
     void registerApplication(Plato::Application* aApplication);
 
-    /// Register @a aApplication without performing any initializtion. The purpose of
-    /// this function is so that the full object state an be deserialized.
-    void registerApplicationNoInitialization(Plato::Application* aApplication);
+    /// Register @a aApplication and initialize its data layer MPI. The purpose of this function is
+    /// similar to registerApplication, however, it should be used when using the serialization 
+    /// interface. 
+    /// @pre @a aApplication must have been initialized already using the serialization interface.
+    void registerApplicationOnlyInitializeMPI(Application* aApplication);
 
     // driver interface
     void run();
@@ -163,16 +182,25 @@ public:
     void serialize(Archive & aArchive, const unsigned int version)
     {
         aArchive & boost::serialization::make_nvp("AllPerformers", mAllPerformersInfo);
+        aArchive & boost::serialization::make_nvp("AllSharedData", mAllSharedDataInfo);
         aArchive & boost::serialization::make_nvp("DataLayer", mDataLayer);
         aArchive & boost::serialization::make_nvp("Stages",mStages);
     }
 
     void createStages();
-    void createSharedData(Plato::Application* aApplication);
+    void createSharedData(Application* aApplication);
     void initializeConsole();
-    void initializeSharedDataMPI();
+    void initializeSharedDataMPI(Application* aApplication);
     void initializePerformerMPI();
     void setPerformerOnStages();
+
+    /// This function calls callable @a aF and uses the exception handling in Interface.
+    /// Because exception handling is complicated by MPMD, this function helps 
+    /// consolidate necessary MPI calls. This is most easily called with a lambda, as in:
+    /// @code tryFCatchInterfaceExceptions([this](){createPerformers();});
+    template<typename F>
+    void tryFCatchInterfaceExceptions(const F& aF);
+
 private:
     void perform(Plato::Stage* aStage);
     void broadcastStageIndex(int & aStageIndex);
@@ -187,45 +215,53 @@ private:
 
     void exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,
                      Plato::Application* aApplication,
-                     Plato::CommunicationData & aCommunicationData);
+                     Plato::CommunicationData & aCommunicationData) const;
     void exportOwnedGlobalIDs(const Plato::data::layout_t & aLayout,
                               Plato::Application* aApplication,
-                              Plato::CommunicationData & aCommunicationData);
+                              Plato::CommunicationData & aCommunicationData) const;
+
+    void getSharedDataAndCommunicationInfo(Application* aApplication, 
+        SharedDataInfo& aSharedDataInfo, 
+        CommunicationData& aCommunicationData) const;
+
+    void checkAndSetApplication(Application* aApplication);
 
 private:
+    // Serializable state
+    std::vector<PerformerInfo> mAllPerformersInfo;
+    std::vector<SharedDataSerializedInfo> mAllSharedDataInfo;
+
+    // Internal state
     Plato::DataLayer* mDataLayer = nullptr;
 
     std::shared_ptr<Plato::Performer> mPerformer;
-    std::vector<PerformerInfo> mAllPerformersInfo;
     std::vector<Plato::Stage*> mStages;
 
-    Plato::ExceptionHandler* mExceptionHandler;
+    Plato::ExceptionHandler* mExceptionHandler = nullptr;
 
-    Plato::Console* mConsole;
+    Plato::Console* mConsole = nullptr;
 
-    int mLocalCommID;
-    int mPerformerID;
+    int mLocalCommID = -1;
+    int mPerformerID = -1;
     std::string mLocalPerformerName;
-    Plato::InputData mInputData;
+    Plato::InputData mInputData{"Input Data"};
 
     MPI_Comm mLocalComm;
     MPI_Comm mGlobalComm;
-    bool mIsDone;
+    bool mIsDone = false;
 };
 
-/// This function calls callable @a aF and uses the exception handling of @a aInterface
-/// to handle any exceptions. Because exception handling is complicated by MPMD, this 
-/// function helps consolidate calls necessary to handle exception handling over MPI.
 template<typename F>
-void tryFCatchInterfaceExceptions(const F& aF, Plato::Interface& aInterface)
+void Interface::tryFCatchInterfaceExceptions(const F& aF)
 {
     try{
         aF();
     } catch(...){
-        aInterface.Catch();
+        Catch();
     }
-    aInterface.handleExceptions();
+    handleExceptions();
 }
+
 
 } /* namespace Plato */
 

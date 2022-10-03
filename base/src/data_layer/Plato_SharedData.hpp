@@ -54,8 +54,6 @@
 #include <vector>
 #include <cassert>
 
-#include "Serializable.hpp"
-
 namespace Plato
 {
 struct CommunicationData;
@@ -133,7 +131,6 @@ public:
     **********************************************************************************/
     virtual void getData(std::vector<double> & aData) const = 0;
 
-    friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version){};
 
