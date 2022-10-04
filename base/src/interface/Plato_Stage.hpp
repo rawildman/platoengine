@@ -113,6 +113,7 @@ public:
         aArchive &  boost::serialization::make_nvp("Operations",m_operations);
         aArchive &  boost::serialization::make_nvp("InputData",m_inputData);
         aArchive &  boost::serialization::make_nvp("OutputData",m_outputData);
+        aArchive &  boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
 private:

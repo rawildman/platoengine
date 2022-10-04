@@ -129,6 +129,32 @@ bool serializeEquals(Serial& aSerialOne, Serial& aSerialTwo)
     return tString.compare(tString2) == 0;
 }
 
+class OpMap
+{
+
+public:
+    std::map<std::string, Plato::LocalOp*> mOperationMap;
+
+template<class Archive>
+ void serialize(Archive & aArchive, const unsigned int version)
+    {
+	    aArchive.template register_type<Plato::Aggregator>() ; 
+        aArchive.template register_type<Plato::ComputeVolume>() ; 
+        aArchive.template register_type<Plato::CopyField>() ; 
+        aArchive.template register_type<Plato::CopyValue>() ; 
+        aArchive.template register_type<Plato::DesignVolume>() ; 
+        aArchive.template register_type<Plato::EnforceBounds>() ; 
+        aArchive.template register_type<Plato::Filter>() ; 
+        aArchive.template register_type<Plato::InitializeField>() ; 
+        aArchive.template register_type<Plato::InitializeValues>() ; 
+        aArchive.template register_type<Plato::PlatoMainOutput>() ; 
+        aArchive.template register_type<Plato::SetLowerBounds>() ; 
+        aArchive.template register_type<Plato::SetUpperBounds>() ; 
+        
+        aArchive &  boost::serialization::make_nvp("OperationMap",mOperationMap);
+    }
+
+};
 Plato::FixedBlock::Metadata generateFixedBlockMetadata()
 {
     Plato::FixedBlock::Metadata tMeta;
@@ -282,7 +308,6 @@ TEST(BoostSerialization, Filter)
     EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
 }
 
-
 TEST(BoostSerialization, PlatoMainOutput)
 {
     Plato::LocalArg tLocalArg1(Plato::data::layout_t::SCALAR_FIELD, "topology", 0, true);
@@ -337,4 +362,93 @@ TEST(BoostSerialization, InitializeField)
     Plato::system("rm -rf out.xml");
 
     EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, OperationsMap)
+{     
+    OpMap tOM;
+    
+    tOM.mOperationMap["Initialize"] = new Plato::InitializeField("File Name",
+                                        "Uniform",
+                                        "",
+                                        "Initialized Field",
+                                        "SPF",
+                                        "X",
+                                        "Y",
+                                        "Z",
+                                        "VN",
+                                        {0,0,0},
+                                        {1,1,1},
+                                        {0},
+                                        Plato::data::layout_t::SCALAR,
+                                        0.5,
+                                        0,
+                                        false);
+    Plato::LocalArg tLocalArg1(Plato::data::layout_t::SCALAR_FIELD, "topology", 0, true);
+    Plato::LocalArg tLocalArg2(Plato::data::layout_t::SCALAR_FIELD, "control", 0, true);
+    Plato::LocalArg tLocalArg3(Plato::data::layout_t::SCALAR_FIELD, "objective gradient", 0, true);
+    Plato::LocalArg tLocalArg4(Plato::data::layout_t::SCALAR_FIELD, "constraint gradient", 0, true);
+    Plato::LocalArg tLocalArg5(Plato::data::layout_t::SCALAR_FIELD, "dispx", 0, true);
+
+    tOM.mOperationMap["PlatoMainOutput"] = new Plato::PlatoMainOutput("Iteration",
+                                      "",
+                                      "control",
+                                      {"exo"},
+                                      {tLocalArg1, tLocalArg2, tLocalArg3, tLocalArg4, tLocalArg5},
+                                      2,
+                                      1001,
+                                      20,
+                                      false,
+                                      true);
+
+    Plato::PenaltyModel* tPenaltyModel = new Plato::SIMP(2,0.4);
+    tOM.mOperationMap["Compute Volume"] = new Plato::ComputeVolume("Volume",
+                                    "Volume Gradient",
+                                    tPenaltyModel,
+                                    "Topology");
+
+    Plato::AggStruct tAggStruct;
+    tAggStruct.mLayout = Plato::data::layout_t::SCALAR;
+    tAggStruct.mOutputName = "Value";
+    tAggStruct.mInputNames = {"Result1", "Result2", "Result3"};
+
+    tOM.mOperationMap["Aggregator"] = new Plato::Aggregator({0.5, 0.5},
+                                 {"BASES"},
+                                 {"NORMALS"},
+                                 {tAggStruct},
+                                 "FIXED",
+                                 2,
+                                 true);
+
+    tOM.mOperationMap["Copy Field"] = new Plato::CopyField("in",
+                                "out");
+    tOM.mOperationMap["Copy Value"] = new Plato::CopyValue("in",
+                                "out");
+    
+    auto tFixedBlockMetadata = generateFixedBlockMetadata();
+
+    tOM.mOperationMap["Set Upper Bounds"] = new Plato::SetUpperBounds("shape",
+                                     "fluid",
+                                     tFixedBlockMetadata,
+                                     Plato::data::layout_t::SCALAR_FIELD,
+                                     3,
+                                     4);
+    tOM.mOperationMap["Set Lower Bounds"] = new Plato::SetLowerBounds("shape",
+                                     "fluid",
+                                     tFixedBlockMetadata,
+                                     Plato::data::layout_t::SCALAR_FIELD,
+                                     3,
+                                     4);     
+
+    tOM.mOperationMap["Compute Volume"] = new Plato::ComputeVolume("Volume",
+                                    "Volume Gradient",
+                                    tPenaltyModel,
+                                    "Topology");                                
+
+    Plato::LocalArg tDefaultLocalArg;
+    Plato::LocalArg tLocalArg(Plato::data::layout_t::SCALAR_FIELD, "Dummy", 4, true);
+    tOM.mOperationMap["Design Volume"] = new Plato::DesignVolume({tDefaultLocalArg, tLocalArg});
+
+    save<boost::archive::xml_oarchive>(tOM,"out.xml");
+
 }

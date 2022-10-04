@@ -56,6 +56,7 @@
 
 #include "Plato_InputData.hpp"
 #include "Plato_OperationTypes.hpp"
+#include "Serializable.hpp"
 
 #include <boost/optional.hpp>
 
@@ -113,6 +114,17 @@ public:
                     const std::vector<std::string> & aSharedDataNames,
                     const std::vector<std::string> & aArgumentNames);
 
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("InputData",boost::serialization::base_object<Plato::InputData>(*this));
+      aArchive & boost::serialization::make_nvp("PerformerName",mPerformerName);
+      aArchive & boost::serialization::make_nvp("OperationMap",mOperationMap);
+      aArchive & boost::serialization::make_nvp("InputDataMap",mInputDataMap);
+      aArchive & boost::serialization::make_nvp("OutputDataMap",mOutputDataMap);
+    }
 
 private:
     std::vector<std::string> mPerformerName;

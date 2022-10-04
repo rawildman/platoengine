@@ -46,6 +46,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "Serializable.hpp"
 
 #ifdef USE_CXX_14
 #include <experimental/any>
@@ -208,6 +209,14 @@ class InputData {
   friend std::ostream& operator<<(std::ostream& os, const InputData& v);
 #endif
 
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("Name",m_name);
+      aArchive & boost::serialization::make_nvp("Parameters",m_parameters);
+    }
 
  private:
   std::string m_name;

@@ -181,6 +181,28 @@ public:
     {
         Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData, this->mOptimizerIndex);
     }
+    
+    void saveXML()
+    {
+        std::string tFileName = "saved_driver.xml";
+        std::ofstream tOutFileStream(tFileName.c_str());
+        boost::archive::xml_oarchive tOutputArchive(tOutFileStream, boost::archive::no_header | boost::archive::no_tracking);
+        tOutputArchive << boost::serialization::make_nvp("Driver", *this); 
+    }
+
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("mOptimizerName",mOptimizerName);
+      aArchive & boost::serialization::make_nvp("mOptimizerIndex",mOptimizerIndex);
+      aArchive & boost::serialization::make_nvp("mLastOptimizer",mLastOptimizer);
+      aArchive & boost::serialization::make_nvp("mHasInnerLoop",mHasInnerLoop);
+      //aArchive & boost::serialization::make_nvp("mInterface",*mInterface);
+      aArchive & boost::serialization::make_nvp("mInputData",mInputData);
+      aArchive & boost::serialization::make_nvp("mStageDataMng",mStageDataMng);
+    }
 
 protected:
     /******************************************************************************//**
