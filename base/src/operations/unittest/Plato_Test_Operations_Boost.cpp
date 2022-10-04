@@ -452,3 +452,62 @@ TEST(BoostSerialization, OperationsMap)
     save<boost::archive::xml_oarchive>(tOM,"out.xml");
 
 }
+
+TEST(BoostSerialization, Roughness)
+{           
+    Plato::Roughness tOperation("Topology Name",
+                                        "Roughness Name",
+                                        "Gradient Name");
+    Plato::Roughness tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+TEST(BoostSerialization, WriteGlobalValue)
+{           
+    Plato::WriteGlobalValue tOperation("Input Name",
+                                        "File Name",
+                                       3);
+    Plato::WriteGlobalValue tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+/*
+TEST(BoostSerialization, UpdateProblem)
+{           
+    //This test is somewhat of a placeholder, this operation doesn't seem to need anything.
+    Plato::UpdateProblem tOperation();
+    Plato::UpdateProblem tOperation2;
+    
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+*/
+TEST(BoostSerialization, EnforceBounds)
+{
+    Plato::EnforceBounds tOperation("Lower Bound Vector",
+                                    "Upper Bound Vector",
+                                    "Topology",
+                                    "Clamped Topology");
+    Plato::EnforceBounds tOperation2;
+    EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
+
+    save<boost::archive::xml_oarchive>(tOperation,"out.xml");
+    load<boost::archive::xml_iarchive>(tOperation2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}

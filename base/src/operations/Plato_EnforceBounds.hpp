@@ -64,6 +64,10 @@ class EnforceBounds : public Plato::LocalOp
 {
 public:
     EnforceBounds() = default;
+    EnforceBounds(const std::string& aLowerBoundVectorFieldName,
+                  const std::string& aUpperBoundVectorFieldName,
+                  const std::string& aTopologyFieldName,
+                  const std::string& aTopologyOutputFieldName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application

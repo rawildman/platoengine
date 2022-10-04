@@ -78,19 +78,6 @@ public:
         return mAlgorithmType;
     }
 
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
-    {
-    //  aArchive & boost::serialization::make_nvp("OptimizerInterface",boost::serialization::base_object<Plato::OptimizerInterface<ScalarType,OridnalType>>(*this));
-    }
-
-    /*void saveXML()
-    {
-        Plato::OptimizerInterface::saveXML();
-       
-    }*/
-
     /******************************************************************************/
     void run()
     /******************************************************************************/

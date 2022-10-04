@@ -64,6 +64,9 @@ class Roughness : public Plato::LocalOp
 {
 public:
     Roughness() = default;
+    Roughness(const std::string& aTopologyName,
+              const std::string& aRoughnessName,
+              const std::string& aGradientName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -86,10 +89,10 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("Roughness",boost::serialization::base_object<LocalOp>(*this));
-      aArchive & boost::serialization::make_nvp("TopologyName",mTopologyName);
-      aArchive & boost::serialization::make_nvp("ToughnessName",mRoughnessName);
-      aArchive & boost::serialization::make_nvp("GradientName",mGradientName);
+      aArchive & boost::serialization::make_nvp("Roughness", boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("TopologyName", mTopologyName);
+      aArchive & boost::serialization::make_nvp("RoughnessName", mRoughnessName);
+      aArchive & boost::serialization::make_nvp("GradientName", mGradientName);
     }
 
 private:

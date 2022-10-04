@@ -215,7 +215,7 @@ class InputData {
     void serialize(Archive & aArchive, const unsigned int version)
     {
       aArchive & boost::serialization::make_nvp("Name",m_name);
-      aArchive & boost::serialization::make_nvp("Parameters",m_parameters);
+      //aArchive & boost::serialization::make_nvp("Parameters",m_parameters);
     }
 
  private:

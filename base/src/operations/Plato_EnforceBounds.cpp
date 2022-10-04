@@ -54,6 +54,17 @@
 
 namespace Plato
 {
+    
+EnforceBounds::EnforceBounds(const std::string& aLowerBoundVectorFieldName,
+                            const std::string& aUpperBoundVectorFieldName,
+                            const std::string& aTopologyFieldName,
+                            const std::string& aTopologyOutputFieldName) :
+                            mLowerBoundVectorFieldName(aLowerBoundVectorFieldName),
+                            mUpperBoundVectorFieldName(aUpperBoundVectorFieldName),
+                            mTopologyFieldName(aTopologyFieldName),
+                            mTopologyOutputFieldName(aTopologyOutputFieldName)
+{
+}
 
 EnforceBounds::EnforceBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)

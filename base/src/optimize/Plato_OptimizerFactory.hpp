@@ -321,6 +321,11 @@ public:
         // Store the index of the current optimizer block so to be
         // able to read additional serial optimizer blocks.
         mOptimizerIndex = aOptimizerIndex;
+
+        const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
+      
+        if(tSaveToXML)
+          Plato::saveToXML(*tOptimizer, Plato::XMLFileName{"save_optimizer.xml"}, Plato::XMLNodeName{"Optimizer"});
       }
 
       catch(...)

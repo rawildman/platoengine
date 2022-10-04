@@ -62,6 +62,9 @@ class WriteGlobalValue : public Plato::LocalOp
 {
 public:
     WriteGlobalValue() = default;
+    WriteGlobalValue(const std::string& aInputName,
+                     const std::string& aFilename,
+                     int aSize);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application

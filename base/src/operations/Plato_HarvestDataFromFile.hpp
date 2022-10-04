@@ -127,6 +127,9 @@ public:
     {
       aArchive & boost::serialization::make_nvp("HarvestDataFromFile",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("InputStrKeyValuePairs",mInputStrKeyValuePairs);
+      aArchive & boost::serialization::make_nvp("InputData",mInputData);
+      aArchive & boost::serialization::make_nvp("LocalOutputValue",mLocalOutputValue);
+      aArchive & boost::serialization::make_nvp("UnitTest",mUnitTest);
     }
 
 private:

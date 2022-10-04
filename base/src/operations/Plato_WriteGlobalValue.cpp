@@ -59,6 +59,15 @@
 namespace Plato
 {
 
+WriteGlobalValue::WriteGlobalValue(const std::string& aInputName,
+                                   const std::string& aFilename,
+                                   int aSize) : 
+                                   mInputName(aInputName),
+                                   mFilename(aFilename),
+                                   mSize(aSize)
+{
+}
+
 WriteGlobalValue::WriteGlobalValue(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)
 {
