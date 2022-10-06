@@ -1,4 +1,6 @@
 #include "Plato_ParseCSMUtilities.hpp"
+#include "Plato_FreeFunctions.hpp"
+
 #include <gtest/gtest.h>
 
 namespace PlatoTestUtilityFunctions
@@ -223,6 +225,13 @@ TEST(ParseCSMUtilities, getCorrectDescriptors)
     EXPECT_EQ(tDescriptors.size(), 2);
     EXPECT_EQ(tDescriptors[0], "Param1");
     EXPECT_EQ(tDescriptors[1], "Param2");
+}
+
+TEST(FreeFunctions, stripSpaces)
+{
+    EXPECT_EQ(Plato::stripSpaces("  Hello    World    "), "HelloWorld");
+    EXPECT_EQ(Plato::stripSpaces("HelloWorld"), "HelloWorld");
+    EXPECT_NE(Plato::stripSpaces("Hello World"), "Hello World");
 }
 
 } 
