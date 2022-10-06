@@ -80,7 +80,7 @@ public:
 
     virtual void sendInput();
     virtual void sendOutput();
-    virtual void compute();
+    void compute();
 
     virtual void importData(std::string sharedDataName, Plato::SharedData* sf);
     virtual void exportData(std::string sharedDataName, Plato::SharedData* sf);
@@ -98,10 +98,18 @@ public:
 
 protected:
 
+    /// @pre m_performer must not be `nullptr`.
+    virtual void computeImpl();
+
     void addArgument(const std::string & tArgumentName,
                      const std::string & tSharedDataName,
                      const std::vector<Plato::SharedData*>& aSharedData,
                      std::vector<Plato::SharedData*>& aLocalData);
+
+    void initializeBaseSingle(
+      const Plato::OperationInputDataMng & aOperationDataMng,
+      const std::shared_ptr<Plato::Performer> aPerformer,
+      const std::vector<Plato::SharedData*>& aSharedData);
 
     class Parameter : public Plato::SharedData {
       const std::string m_name;

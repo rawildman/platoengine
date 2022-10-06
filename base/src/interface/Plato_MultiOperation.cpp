@@ -218,6 +218,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
             break;
         }
     }
+
 }
 
 /******************************************************************************/

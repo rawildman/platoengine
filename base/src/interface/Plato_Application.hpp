@@ -55,6 +55,7 @@
 #include <vector>
 
 #include "Plato_SharedData.hpp"
+#include "Plato_OperationTypes.hpp"
 
 namespace Plato
 {
@@ -65,9 +66,7 @@ namespace Plato
 class Application
 {
 public:
-    virtual ~Application()
-    {
-    }
+    virtual ~Application() = default;
 
     virtual void finalize() = 0;
     virtual void initialize() = 0;
@@ -77,6 +76,18 @@ public:
     virtual void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) = 0;
 
     virtual void reinitialize() { std::cout << "WARNING: default Plato::Application::reinitialize() was called." << std::endl; }
+
+    //!@{
+    //! Constrained interface functions
+    //!
+    //! The purpose of this interface is to clarify which functions derived classes must
+    //! implement. 
+    bool usesConstrainedOperationInterface() const {return !supportedOperationTypes().empty();}
+    virtual void computeCriterionValue(){} 
+    virtual void computeCriterionGradient(){}
+    virtual void computeCriterionHessianTimesVector(){}
+    virtual std::vector<OperationType> supportedOperationTypes() const{return {};}
+    //!@}
 };
 
 } // End namespace Plato

@@ -6,6 +6,7 @@ set(${LIB_NAME}_SOURCES Plato_Interface.cpp
                         Plato_Operation.cpp
                         Plato_MultiOperation.cpp
                         Plato_SingleOperation.cpp
+                        Plato_FunctionOperation.cpp
                         Plato_OperationFactory.cpp
                         Plato_Stage.cpp
                         Plato_Performer.cpp)
@@ -13,6 +14,7 @@ set(${LIB_NAME}_HEADERS Plato_Application.hpp
                         Plato_Interface.hpp
                         Plato_Operation.hpp
                         Plato_MultiOperation.hpp
+                        Plato_FunctionOperation.hpp
                         Plato_SingleOperation.hpp
                         Plato_OperationFactory.hpp
                         Plato_Stage.hpp

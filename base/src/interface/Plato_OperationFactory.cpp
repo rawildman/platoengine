@@ -57,6 +57,7 @@
 #include "Plato_Operation.hpp"
 #include "Plato_MultiOperation.hpp"
 #include "Plato_SingleOperation.hpp"
+#include "Plato_FunctionOperation.hpp"
 
 #include "Plato_Parser.hpp"
 #include "Plato_Performer.hpp"
@@ -76,12 +77,21 @@ OperationFactory::create(
 {
     Plato::InputData inputNode = aOperationDataMng.get<Plato::InputData>("Input Data");
 
-    std::string opType = inputNode.name();
+    const std::string opType = inputNode.name();
     if( opType == "Operation" ){
-      bool tHasSubOperations = aOperationDataMng.hasSubOperations();
+      const bool tHasSubOperations = aOperationDataMng.hasSubOperations();
+      
       if(tHasSubOperations == true)
       {
+        if(aPerformer->usesConstrainedOperationInterface())
+        {
+          throw std::runtime_error("This app does not support suboperations.");
+        }
         return new MultiOperation(aOperationDataMng, aPerformer, aSharedData);
+      }
+      else if(aPerformer->usesConstrainedOperationInterface())
+      {
+        return new FunctionOperation(aOperationDataMng, aPerformer, aSharedData);
       }
       else
       {

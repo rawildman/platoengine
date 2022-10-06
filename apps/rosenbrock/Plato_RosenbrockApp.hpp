@@ -58,17 +58,18 @@
 #include <sstream>
 
 #include "Plato_SharedData.hpp"
-#include "Plato_Application.hpp"
+#include "Plato_CriterionApplication.hpp"
 
 #include "Plato_Rosenbrock.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_StandardMultiVector.hpp"
+#include "Plato_OperationTypes.hpp"
 
 namespace Plato
 {
 
 template<typename ScalarType, typename OrdinalType = size_t>
-class RosenbrockApp : public Plato::Application
+class RosenbrockApp : public CriterionApplication
 {
 public:
     RosenbrockApp() :
@@ -77,9 +78,6 @@ public:
             mDataMap()
     {
         this->makeDataMap();
-    }
-    virtual ~RosenbrockApp()
-    {
     }
 
     /****************************************************************************************/
@@ -98,26 +96,11 @@ public:
     void compute(const std::string & aOperationName)
     /****************************************************************************************/
     {
-        if(aOperationName.compare("Objective") == static_cast<int>(0))
-        {
-            this->objective();
-        }
-        else if(aOperationName.compare("Gradient") == static_cast<int>(0))
-        {
-            this->gradient();
-        }
-        else if(aOperationName.compare("HessianTimesVector") == static_cast<int>(0))
-        {
-            this->hessian();
-        }
-        else
-        {
-            std::ostringstream tErrorMsg;
-            tErrorMsg << "\n\n********* ERROR IN " << __FILE__ << ", FUNCTION: " << __func__ << ", LINE: " << __LINE__
-                      << ", MESSAGE: OPERATION NAME = '" << aOperationName.c_str()
-                      << "' IS NOT DEFINED IN THE OPERATION MAP. ABORT! *********\n\n";
-            std::perror(tErrorMsg.str().c_str());
-        }
+        std::ostringstream tErrorMsg;
+        tErrorMsg << "\n\n********* ERROR IN " << __FILE__ << ", FUNCTION: " << __func__ << ", LINE: " << __LINE__
+                  << ", MESSAGE: OPERATION NAME = '" << aOperationName.c_str()
+                  << "' IS NOT DEFINED IN THE OPERATION MAP. ABORT! *********\n\n";
+        std::perror(tErrorMsg.str().c_str());
     }
     /****************************************************************************************/
     void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData)
@@ -177,6 +160,61 @@ public:
           THIS APPLICATION DOES NOT HAVE A GRAPH. HENCE, EXPORT DATA MAP IS A NULL OPERATION.
           THIS APPLICATION IS MEANT TO BE RUN IN SERIAL (NO DATA IS DISTRIBUTED).
          ************************************************************************************/
+    }
+
+    /****************************************************************************************/
+    void computeCriterionValue() override
+    /****************************************************************************************/
+    {
+        std::string tArgumentName("Controls");
+        auto tIterator = mDataMap.find(tArgumentName);
+        assert(tIterator != mDataMap.end());
+        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = tIterator->second.operator*();
+        ScalarType tObjectiveValue = mCriterion->value(tControls);
+
+        tArgumentName = "RosenbrockObjective";
+        tIterator = mDataMap.find(tArgumentName);
+        assert(tIterator != mDataMap.end());
+        const OrdinalType tVECTOR_INDEX = 0;
+        const OrdinalType tOBJECTIVE_INDEX = 0;
+        tIterator->second->operator()(tVECTOR_INDEX, tOBJECTIVE_INDEX) = tObjectiveValue;
+    }
+
+    /****************************************************************************************/
+    void computeCriterionGradient() override
+    /****************************************************************************************/
+    {
+        std::string tArgumentName("Controls");
+        auto tIterator = mDataMap.find(tArgumentName);
+        assert(tIterator != mDataMap.end());
+        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = tIterator->second.operator*();
+
+        tArgumentName = "RosenbrockGradient";
+        tIterator = mDataMap.find(tArgumentName);
+        assert(tIterator != mDataMap.end());
+        Plato::MultiVector<ScalarType, OrdinalType> & tGradient = tIterator->second.operator*();
+        mCriterion->gradient(tControls, tGradient);
+    }
+
+    /****************************************************************************************/
+    void computeCriterionHessianTimesVector() override
+    /****************************************************************************************/
+    {
+        std::string tArgumentName("Controls");
+        auto Iterator = mDataMap.find(tArgumentName);
+        assert(Iterator != mDataMap.end());
+        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = Iterator->second.operator*();
+
+        tArgumentName = "Direction";
+        Iterator = mDataMap.find(tArgumentName);
+        assert(Iterator != mDataMap.end());
+        const Plato::MultiVector<ScalarType, OrdinalType> & tDirection = Iterator->second.operator*();
+
+        tArgumentName = "RosenbrockHessianTimesVector";
+        Iterator = mDataMap.find(tArgumentName);
+        assert(Iterator != mDataMap.end());
+        Plato::MultiVector<ScalarType, OrdinalType> & tHessianTimesVector = Iterator->second.operator*();
+        mCriterion->hessian(tControls, tDirection, tHessianTimesVector);
     }
 
 private:
@@ -253,58 +291,6 @@ private:
         Plato::StandardVector<ScalarType, OrdinalType> tOutputData(tMyLength);
         tOutputData.update(static_cast<ScalarType>(1), tMyAppVector, static_cast<ScalarType>(1));
         aExportData.setData(tOutputData.vector());
-    }
-    /****************************************************************************************/
-    void objective()
-    /****************************************************************************************/
-    {
-        std::string tArgumentName("Controls");
-        auto tIterator = mDataMap.find(tArgumentName);
-        assert(tIterator != mDataMap.end());
-        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = tIterator->second.operator*();
-        ScalarType tObjectiveValue = mCriterion->value(tControls);
-
-        tArgumentName = "RosenbrockObjective";
-        tIterator = mDataMap.find(tArgumentName);
-        assert(tIterator != mDataMap.end());
-        const OrdinalType tVECTOR_INDEX = 0;
-        const OrdinalType tOBJECTIVE_INDEX = 0;
-        tIterator->second->operator()(tVECTOR_INDEX, tOBJECTIVE_INDEX) = tObjectiveValue;
-    }
-    /****************************************************************************************/
-    void gradient()
-    /****************************************************************************************/
-    {
-        std::string tArgumentName("Controls");
-        auto tIterator = mDataMap.find(tArgumentName);
-        assert(tIterator != mDataMap.end());
-        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = tIterator->second.operator*();
-
-        tArgumentName = "RosenbrockGradient";
-        tIterator = mDataMap.find(tArgumentName);
-        assert(tIterator != mDataMap.end());
-        Plato::MultiVector<ScalarType, OrdinalType> & tGradient = tIterator->second.operator*();
-        mCriterion->gradient(tControls, tGradient);
-    }
-    /****************************************************************************************/
-    void hessian()
-    /****************************************************************************************/
-    {
-        std::string tArgumentName("Controls");
-        auto Iterator = mDataMap.find(tArgumentName);
-        assert(Iterator != mDataMap.end());
-        const Plato::MultiVector<ScalarType, OrdinalType> & tControls = Iterator->second.operator*();
-
-        tArgumentName = "Direction";
-        Iterator = mDataMap.find(tArgumentName);
-        assert(Iterator != mDataMap.end());
-        const Plato::MultiVector<ScalarType, OrdinalType> & tDirection = Iterator->second.operator*();
-
-        tArgumentName = "RosenbrockHessianTimesVector";
-        Iterator = mDataMap.find(tArgumentName);
-        assert(Iterator != mDataMap.end());
-        Plato::MultiVector<ScalarType, OrdinalType> & tHessianTimesVector = Iterator->second.operator*();
-        mCriterion->hessian(tControls, tDirection, tHessianTimesVector);
     }
 
 private:
