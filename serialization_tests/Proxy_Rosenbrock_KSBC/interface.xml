@@ -70,7 +70,7 @@
 
   <Operation>
     <PerformerName>Proxy</PerformerName>
-    <Name>Objective</Name>
+    <Name>Criterion Value</Name>
     <Input>
       <ArgumentName>Controls</ArgumentName>
       <SharedDataName>Control</SharedDataName>
@@ -95,7 +95,7 @@
   
   <Operation>
     <PerformerName>Proxy</PerformerName>
-    <Name>Gradient</Name>
+    <Name>Criterion Gradient</Name>
     <Input>
       <ArgumentName>Controls</ArgumentName>
       <SharedDataName>Control</SharedDataName>
@@ -123,7 +123,7 @@
   
   <Operation>
     <PerformerName>Proxy</PerformerName>
-    <Name>HessianTimesVector</Name>
+    <Name>Criterion Hessian</Name>
     <Input>
       <ArgumentName>Controls</ArgumentName>
       <SharedDataName>Control</SharedDataName>

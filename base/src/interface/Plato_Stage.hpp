@@ -104,16 +104,16 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-	    aArchive.template register_type<SingleOperation>() ; 
-	    aArchive.template register_type<MultiOperation>() ; 
-        aArchive.template register_type<SharedValue>() ; 
-	    aArchive.template register_type<SharedField>() ; 
+	    aArchive.template register_type<SingleOperation>();
+	    aArchive.template register_type<MultiOperation>();
+        aArchive.template register_type<SharedValue>();
+	    aArchive.template register_type<SharedField>();
         
-        aArchive &  boost::serialization::make_nvp("StageName",m_name);
-        aArchive &  boost::serialization::make_nvp("Operations",m_operations);
-        aArchive &  boost::serialization::make_nvp("InputData",m_inputData);
-        aArchive &  boost::serialization::make_nvp("OutputData",m_outputData);
-        aArchive &  boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
+        aArchive & boost::serialization::make_nvp("StageName",m_name);
+        aArchive & boost::serialization::make_nvp("Operations",m_operations);
+        aArchive & boost::serialization::make_nvp("InputData",m_inputData);
+        aArchive & boost::serialization::make_nvp("OutputData",m_outputData);
+        aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
 private:

@@ -76,18 +76,18 @@ class MultiOperation : public Operation
         aArchive & boost::serialization::make_nvp("Operation",boost::serialization::base_object<Operation>(*this));
     }
 public:
-    MultiOperation(){};
+    MultiOperation() = default;
     MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                    const std::shared_ptr<Plato::Performer> aPerformer,
                    const std::vector<Plato::SharedData*>& aSharedData);
 
-    virtual void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
-                        const std::shared_ptr<::Plato::Performer> aPerformer,
-                        const std::vector<::Plato::SharedData*>& aSharedData) override;
+    void update(const Plato::OperationInputDataMng & aOperationDataMng,
+                const std::shared_ptr<Plato::Performer> aPerformer,
+                const std::vector<Plato::SharedData*>& aSharedData) override;
 
-    void initialize(const ::Plato::OperationInputDataMng & aOperationDataMng,
-                    const std::shared_ptr<::Plato::Performer> aPerformer,
-                    const std::vector<::Plato::SharedData*>& aSharedData);
+    void initialize(const Plato::OperationInputDataMng & aOperationDataMng,
+                    const std::shared_ptr<Plato::Performer> aPerformer,
+                    const std::vector<Plato::SharedData*>& aSharedData);
 };
 
 } // End namespace Plato

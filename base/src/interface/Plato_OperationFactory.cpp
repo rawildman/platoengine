@@ -57,7 +57,6 @@
 #include "Plato_Operation.hpp"
 #include "Plato_MultiOperation.hpp"
 #include "Plato_SingleOperation.hpp"
-#include "Plato_FunctionOperation.hpp"
 
 #include "Plato_Parser.hpp"
 #include "Plato_Performer.hpp"
@@ -83,15 +82,7 @@ OperationFactory::create(
       
       if(tHasSubOperations == true)
       {
-        if(aPerformer->usesConstrainedOperationInterface())
-        {
-          throw std::runtime_error("This app does not support suboperations.");
-        }
         return new MultiOperation(aOperationDataMng, aPerformer, aSharedData);
-      }
-      else if(aPerformer->usesConstrainedOperationInterface())
-      {
-        return new FunctionOperation(aOperationDataMng, aPerformer, aSharedData);
       }
       else
       {

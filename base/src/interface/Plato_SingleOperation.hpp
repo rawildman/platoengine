@@ -50,6 +50,7 @@
 #ifndef SRC_SINGLE_OPERATION_HPP_
 #define SRC_SINGLE_OPERATION_HPP_
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -69,14 +70,8 @@ class OperationInputDataMng;
  */
 class SingleOperation : public Operation
 {   
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
-    {
-      aArchive & boost::serialization::make_nvp("Operation",boost::serialization::base_object<Operation>(*this));
-    }
 public:
-    SingleOperation(){};
+    SingleOperation() = default;
     SingleOperation(std::string& aOperationName);
     SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<Plato::Performer> aPerformer,
@@ -85,13 +80,26 @@ public:
     SingleOperation(const std::shared_ptr<Plato::Performer> aPerformer,
                     const std::vector<Plato::SharedData*>& aSharedData);
 
-    virtual void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
-                        const std::shared_ptr<::Plato::Performer> aPerformer,
-                        const std::vector<::Plato::SharedData*>& aSharedData) override;
+    void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
+                const std::shared_ptr<::Plato::Performer> aPerformer,
+                const std::vector<::Plato::SharedData*>& aSharedData) override;
 
+private:
     void initialize(const ::Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<::Plato::Performer> aPerformer,
                     const std::vector<::Plato::SharedData*>& aSharedData);
+    void computeImpl() override;
+    void setComputeFunctionOnNewPerformer() override;
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("Operation",boost::serialization::base_object<Operation>(*this));
+    }
+
+private:
+    std::function<void(Performer&)> mComputeFunction;
 };
 
 } // End namespace Plato

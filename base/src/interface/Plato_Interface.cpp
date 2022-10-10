@@ -118,7 +118,6 @@ Interface::Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName,
 {
     Plato::loadFromXML(*this, aFileName, aNodeName);
     initializePerformerMPI();
-    setPerformerOnStages();
     initializeConsole();
 }
 
@@ -512,6 +511,7 @@ void Interface::registerApplicationOnlyInitializeMPI(Application* aApplication)
 /******************************************************************************/
 {
     checkAndSetApplication(aApplication);
+    setPerformerOnStages();
     initializeSharedDataMPI(aApplication);
 }
 

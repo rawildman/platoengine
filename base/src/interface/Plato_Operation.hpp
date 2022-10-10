@@ -103,15 +103,15 @@ public:
 
     void setPerformer(std::shared_ptr<Performer> aPerformer);
 
-    friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
         aArchive.template register_type<SharedValue>(); 
-	    aArchive.template register_type<SharedField>();
-        aArchive & boost::serialization::make_nvp("OperationName",m_operationName);
-        aArchive & boost::serialization::make_nvp("Performer",m_performerName);
-        aArchive & boost::serialization::make_nvp("ArgumentNames",m_argumentNames);
+        aArchive.template register_type<SharedField>();
+
+        aArchive & boost::serialization::make_nvp("OperationName", m_operationName);
+        aArchive & boost::serialization::make_nvp("Performer", m_performerName);
+        aArchive & boost::serialization::make_nvp("ArgumentNames", m_argumentNames);
         aArchive & boost::serialization::make_nvp("InputData", m_inputData);
         aArchive & boost::serialization::make_nvp("OutputData", m_outputData);
         aArchive & boost::serialization::make_nvp("Parameters", m_parameters);
@@ -121,16 +121,15 @@ protected:
 
     /// @pre m_performer must not be `nullptr`.
     virtual void computeImpl();
+    /// Called from setPerformer, this sets up the compute function needed by the constrained
+    /// performer/application interface.
+    /// @pre m_performer must not be `nullptr`
+    virtual void setComputeFunctionOnNewPerformer(){}
 
     void addArgument(const std::string & tArgumentName,
                      const std::string & tSharedDataName,
                      const std::vector<Plato::SharedData*>& aSharedData,
                      std::vector<Plato::SharedData*>& aLocalData);
-
-    void initializeBaseSingle(
-      const Plato::OperationInputDataMng & aOperationDataMng,
-      const std::shared_ptr<Plato::Performer> aPerformer,
-      const std::vector<Plato::SharedData*>& aSharedData);
 
     class Parameter : public Plato::SharedData {
       const std::string m_name;

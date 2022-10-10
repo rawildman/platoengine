@@ -97,7 +97,6 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
-        tMyApp->initialize();
         tPlatoInterface->registerApplication(tMyApp);
     }
     catch(...)

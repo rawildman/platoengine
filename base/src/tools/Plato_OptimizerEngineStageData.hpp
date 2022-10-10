@@ -517,8 +517,6 @@ public:
 
       aArchive & boost::serialization::make_nvp("GCMMAMaxInnerIterations",mGCMMAMaxInnerIterations);
       aArchive & boost::serialization::make_nvp("KSMaxTrustRegionIterations",mKSMaxTrustRegionIterations);
-      aArchive & boost::serialization::make_nvp("DerivativeCheckerFinalSuperscript",mDerivativeCheckerFinalSuperscript);
-      aArchive & boost::serialization::make_nvp("DerivativeCheckerInitialSuperscript",mDerivativeCheckerInitialSuperscript);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSteps",mROLCheckGradientSteps);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSeed",mROLCheckGradientSeed);
 
