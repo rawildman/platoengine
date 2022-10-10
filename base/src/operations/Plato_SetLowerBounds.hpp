@@ -95,7 +95,7 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("SetLowerBounds",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("OutputSize",mOutputSize);
       aArchive & boost::serialization::make_nvp("LowerBoundVectorLength",mLowerBoundVectorLength);
       aArchive & boost::serialization::make_nvp("InputArgumentName",mInputArgumentName);

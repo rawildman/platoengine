@@ -111,7 +111,7 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-        aArchive & boost::serialization::make_nvp("Aggregator",boost::serialization::base_object<LocalOp>(*this));
+        aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
         aArchive & boost::serialization::make_nvp("LimitWeight",mLimitWeight);
         aArchive & boost::serialization::make_nvp("WeightBases",mWeightBases);
         aArchive & boost::serialization::make_nvp("WeightNormals",mWeightNormals);

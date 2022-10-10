@@ -140,8 +140,8 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("MeanPlusVarianceMeasure",boost::serialization::base_object<LocalOp>(*this));
-      aArchive & boost::serialization::make_nvp("mOperationName",mOperationName);
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OperationName",mOperationName);
     }
 
 private:

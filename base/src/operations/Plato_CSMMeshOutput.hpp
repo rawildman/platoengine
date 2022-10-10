@@ -89,7 +89,7 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("CSMMeshOutput",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("BaseMeshName",mBaseMeshName);
       aArchive & boost::serialization::make_nvp("OutputFrequency",mOutputFrequency);
       aArchive & boost::serialization::make_nvp("MaxIterations",mMaxIterations);

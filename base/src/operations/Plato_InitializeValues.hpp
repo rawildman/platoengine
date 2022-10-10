@@ -92,7 +92,7 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("InitializeValues",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("ValueNames",mValuesName);
       aArchive & boost::serialization::make_nvp("UpperBoundsName",mUpperBoundsName);
       aArchive & boost::serialization::make_nvp("LowerBoundsName",mLowerBoundsName);

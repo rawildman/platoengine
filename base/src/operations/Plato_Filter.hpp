@@ -97,7 +97,7 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive & boost::serialization::make_nvp("Filter",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("InputToFilterName",mInputToFilterName);
       aArchive & boost::serialization::make_nvp("InputBaseFieldName",mInputBaseFieldName);
       aArchive & boost::serialization::make_nvp("OutputFromFilterName",mOutputFromFilterName);
