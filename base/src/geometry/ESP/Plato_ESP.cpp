@@ -78,7 +78,7 @@ ScalarType ESP<ScalarType,ScalarVectorType>::sensitivity(int aParameterIndex, Sc
 template <typename ScalarType, typename ScalarVectorType>
 void ESP<ScalarType,ScalarVectorType>::readNames()
 {
-    mParameterNames.empty();
+    mParameterNames.clear();
     std::ifstream tInputStream;
     tInputStream.open(mModelFileName.c_str());
     if(tInputStream.good())
