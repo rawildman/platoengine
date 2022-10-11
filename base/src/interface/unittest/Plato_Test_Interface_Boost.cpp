@@ -51,7 +51,7 @@
 #include "Plato_SingleOperation.hpp"
 #include "Plato_Stage.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 using namespace Plato;
 

@@ -66,7 +66,8 @@
 
 #include "Plato_Stage.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
+#include "Plato_SerializationLoadSave.hpp"
 
 namespace Plato
 {

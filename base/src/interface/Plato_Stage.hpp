@@ -54,7 +54,7 @@
 #include <vector>
 #include <memory>
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 #include "Plato_SingleOperation.hpp"
 #include "Plato_MultiOperation.hpp"
 #include "Plato_SharedField.hpp"
@@ -104,11 +104,11 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-	    aArchive.template register_type<SingleOperation>();
-	    aArchive.template register_type<MultiOperation>();
+        aArchive.template register_type<SingleOperation>();
+        aArchive.template register_type<MultiOperation>();
+        aArchive.template register_type<SharedField>();
         aArchive.template register_type<SharedValue>();
-	    aArchive.template register_type<SharedField>();
-        
+
         aArchive & boost::serialization::make_nvp("StageName",m_name);
         aArchive & boost::serialization::make_nvp("Operations",m_operations);
         aArchive & boost::serialization::make_nvp("InputData",m_inputData);

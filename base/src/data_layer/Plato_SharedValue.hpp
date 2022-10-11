@@ -55,7 +55,7 @@
 
 #include "mpi.h"
 #include "Plato_SharedData.hpp"
-#include "Serializable.hpp" 
+#include "Plato_SerializationHeaders.hpp" 
 namespace Plato
 {
 

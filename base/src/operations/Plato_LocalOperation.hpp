@@ -51,7 +51,7 @@
 #include <vector>
 
 #include "Plato_SharedData.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 class PlatoApp;
 
@@ -146,4 +146,5 @@ protected:
 // class LocalOp
 
 }
+
 // namespace Plato

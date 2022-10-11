@@ -50,6 +50,10 @@
 
 #include "Plato_LocalOperation.hpp"
 
+#include <boost/serialization/array.hpp>
+
+#include <array>
+
 class PlatoApp;
 class DistributedVector;
 
@@ -75,8 +79,8 @@ public:
                     const std::string& aSphereSpacingY,
                     const std::string& aSphereSpacingZ,
                     const std::string& aVariableName,
-                    const std::vector<double>& aMinCoords,
-                    const std::vector<double>& aMaxCoords,
+                    const std::array<double, 3>& aMinCoords,
+                    const std::array<double, 3>& aMaxCoords,
                     const std::vector<int>& aLevelSetNodes,
                     Plato::data::layout_t aOutputLayout,
                     double aUniformValue,
@@ -167,8 +171,8 @@ private:
     bool mCreateSpheres; /*!< create spheres-based "swiss cheese" level set field */
     int mIteration; /*!< read topology field from this optimization iteration */
     double mUniformValue; /*!< value used to initialize uniform design variable field */
-    std::vector<double> mMinCoords; /*!< 3D array of minimum coordinates in x, y, and z */
-    std::vector<double> mMaxCoords; /*!< 3D array of maximum coordinates in x, y, and z */
+    std::array<double, 3> mMinCoords; /*!< 3D array of minimum coordinates in x, y, and z */
+    std::array<double, 3> mMaxCoords; /*!< 3D array of maximum coordinates in x, y, and z */
     Plato::data::layout_t mOutputLayout; /*!< output data layout, e.g. scalar value, scalar field, etc */
 
     std::string mFileName; /*!< output file name */

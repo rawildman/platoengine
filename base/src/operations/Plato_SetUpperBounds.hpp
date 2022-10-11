@@ -162,7 +162,7 @@ private:
     int mUpperBoundVectorLength = 0; /*!< upper bound vector length */
 
     std::string mInputArgumentName = "Upper Bound Value"; /*!< input argument name */
-    std::string mOutputArgumentName = "Lower Bound Vector"; /*!< output argument name */
+    std::string mOutputArgumentName = "Upper Bound Vector"; /*!< output argument name */
     std::string mDiscretization = "density"; /*!< topology/design representation, levelset or density , default = 'density' */
     std::string mMaterialUseCase = "solid"; /*!< main material state use case for the problem, default = 'solid' */
     

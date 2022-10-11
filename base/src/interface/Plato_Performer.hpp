@@ -52,7 +52,7 @@
 
 #include "Plato_OperationTypes.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 #include <string>
 #include <vector>

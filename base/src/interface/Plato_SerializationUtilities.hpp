@@ -2,7 +2,7 @@
 #define PLATO_SERIALIZATIONUTILITIES_H
 
 #include "Plato_Interface.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationLoadSave.hpp"
 
 namespace Plato{
 

@@ -1,1 +1,1 @@
-add_subdirectory(Proxy_Rosenbrock_KSBC)
+add_subdirectory(Serialization_Proxy_Rosenbrock)

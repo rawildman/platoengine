@@ -49,7 +49,7 @@
 #include "Plato_RosenbrockApp.hpp"
 #include "Plato_Interface.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 #include "Plato_SerializationUtilities.hpp"
 
 #include <fstream>

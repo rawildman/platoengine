@@ -68,7 +68,7 @@
 #include <fenv.h>
 #endif
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 #include "Plato_SerializationUtilities.hpp"
 
 #include <fstream>

@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include <unordered_map>
-
 #include "Plato_LocalOperation.hpp"
+
+#include <boost/serialization/unordered_map.hpp>
+
+#include <unordered_map>
 
 class PlatoApp;
 
@@ -171,7 +173,7 @@ private:
     double mLocalOutputValue = 0.0; /*!< local copy of the output from operator()() > */
 
     Plato::InputData mInputData; /*!< local operation metadata > */
-    std::map<std::string, std::vector<std::string>> mInputStrKeyValuePairs; /*!< map from input keyword to value > */
+    std::unordered_map<std::string, std::vector<std::string>> mInputStrKeyValuePairs; /*!< map from input keyword to value > */
 };
 // class HarvestDataFromFile
 

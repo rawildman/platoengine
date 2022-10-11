@@ -25,13 +25,7 @@ set(Plato_Operations_UnitTester_LIBS GTest::GTest
                                      ${Trilinos_LIBRARIES}
                                      ${Trilinos_TPL_LIBRARIES}
                                      ${Boost_LIBRARIES}
-                                     #libboost_serialization.a
-                                     #libboost_system.a
-                                     #libboost_filesystem.a
-                                     #libboost_wserialization.a
-                                     
                                      )
-
                                      
  
 add_executable(Plato_Operations_UnitTester ${Plato_Operations_UnitTester_SRCS})

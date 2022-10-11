@@ -49,7 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 class PlatoApp;
 

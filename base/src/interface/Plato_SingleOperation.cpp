@@ -74,14 +74,6 @@ std::string unrecognizedOperationErrorMessage(
 }
 
 /******************************************************************************/
-SingleOperation::SingleOperation(std::string& aOperationName) : 
-    Operation()
-/******************************************************************************/
-{
-    m_operationName = aOperationName;
-}
-
-/******************************************************************************/
 SingleOperation::
 SingleOperation(const std::shared_ptr<Plato::Performer> aPerformer,
                 const std::vector<Plato::SharedData*>& aSharedData) :

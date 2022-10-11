@@ -54,7 +54,7 @@
 #include "Plato_Macros.hpp"
 #include "Plato_FreeFunctions.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {

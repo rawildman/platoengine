@@ -56,7 +56,7 @@
 #include <vector>
 
 #include "Plato_Operation.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {
@@ -72,7 +72,6 @@ class SingleOperation : public Operation
 {   
 public:
     SingleOperation() = default;
-    SingleOperation(std::string& aOperationName);
     SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<Plato::Performer> aPerformer,
                     const std::vector<Plato::SharedData*>& aSharedData);

@@ -54,7 +54,7 @@
 #define SRC_PENALTYMODEL_HPP_
 
 #include "Plato_Parser.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato {
 
@@ -72,10 +72,10 @@ namespace Plato {
   class SIMP : public PenaltyModel {
     public:
       SIMP() = default;
-      SIMP(double a_penaltyExponent, double a_minimumValue)
+      SIMP(double a_penaltyExponent, double a_minimumValue) :
+        m_penaltyExponent(a_penaltyExponent),
+        m_minimumValue(a_minimumValue)
       {
-        m_penaltyExponent = a_penaltyExponent;
-        m_minimumValue = a_minimumValue;
       }
       SIMP(const Plato::InputData& input);
 
@@ -92,7 +92,7 @@ namespace Plato {
 
     private:
       double m_penaltyExponent = 1;
-      double m_minimumValue = 0.5;
+      double m_minimumValue = 0.0;
   };
 
   class PenaltyModelFactory {

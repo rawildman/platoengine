@@ -65,7 +65,7 @@
 #include "Plato_StandardMultiVector.hpp"
 #include "Plato_OperationTypes.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {

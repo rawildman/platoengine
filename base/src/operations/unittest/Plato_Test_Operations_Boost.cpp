@@ -48,7 +48,7 @@
 #include <Plato_FreeFunctions.hpp>
 
 #include "Plato_CopyValue.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 #include "Plato_LocalOperation.hpp"
 
@@ -83,6 +83,12 @@
 #include "Plato_OutputNodalFieldSharedData.hpp"
 #include "Plato_ReciprocateObjectiveGradient.hpp"
 
+#include <boost/serialization/unique_ptr.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
 using namespace Plato;
 
 /*
@@ -91,7 +97,7 @@ using namespace Plato;
 */
 
 template<class Archive,class Serial>
-void save(Serial& tS, std::string aFilename)
+void save(const Serial& tS, const std::string& aFilename)
 {                                                                       
     std::ofstream tOutFileStream(aFilename.c_str());                    
     Archive tOutputArchive(tOutFileStream, boost::archive::no_header | boost::archive::no_tracking);       
@@ -131,12 +137,11 @@ bool serializeEquals(Serial& aSerialOne, Serial& aSerialTwo)
 
 class OpMap
 {
-
 public:
-    std::map<std::string, Plato::LocalOp*> mOperationMap;
+    std::map<std::string, std::unique_ptr<Plato::LocalOp>> mOperationMap;
 
-template<class Archive>
- void serialize(Archive & aArchive, const unsigned int version)
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
     {
 	    aArchive.template register_type<Plato::Aggregator>() ; 
         aArchive.template register_type<Plato::ComputeVolume>() ; 
@@ -153,8 +158,8 @@ template<class Archive>
         
         aArchive &  boost::serialization::make_nvp("OperationMap",mOperationMap);
     }
-
 };
+
 Plato::FixedBlock::Metadata generateFixedBlockMetadata()
 {
     Plato::FixedBlock::Metadata tMeta;
@@ -347,9 +352,9 @@ TEST(BoostSerialization, InitializeField)
                                         "Y",
                                         "Z",
                                         "VN",
-                                        {0,0,0},
-                                        {1,1,1},
-                                        {0},
+                                        std::array<double,3>{0,0,0},
+                                        std::array<double,3>{1,1,1},
+                                        std::vector<int>{0},
                                         Plato::data::layout_t::SCALAR,
                                         0.5,
                                         0,
@@ -368,7 +373,8 @@ TEST(BoostSerialization, OperationsMap)
 {     
     OpMap tOM;
     
-    tOM.mOperationMap["Initialize"] = new Plato::InitializeField("File Name",
+    tOM.mOperationMap["Initialize"] = std::make_unique<Plato::InitializeField>(
+                                        "File Name",
                                         "Uniform",
                                         "",
                                         "Initialized Field",
@@ -377,9 +383,9 @@ TEST(BoostSerialization, OperationsMap)
                                         "Y",
                                         "Z",
                                         "VN",
-                                        {0,0,0},
-                                        {1,1,1},
-                                        {0},
+                                        std::array<double,3>{0.0, 0.0, 0.0},
+                                        std::array<double,3>{1.0, 1.0, 1.0},
+                                        std::vector<int>{0},
                                         Plato::data::layout_t::SCALAR,
                                         0.5,
                                         0,
@@ -390,11 +396,11 @@ TEST(BoostSerialization, OperationsMap)
     Plato::LocalArg tLocalArg4(Plato::data::layout_t::SCALAR_FIELD, "constraint gradient", 0, true);
     Plato::LocalArg tLocalArg5(Plato::data::layout_t::SCALAR_FIELD, "dispx", 0, true);
 
-    tOM.mOperationMap["PlatoMainOutput"] = new Plato::PlatoMainOutput("Iteration",
+    tOM.mOperationMap["PlatoMainOutput"] = std::make_unique<Plato::PlatoMainOutput>("Iteration",
                                       "",
                                       "control",
-                                      {"exo"},
-                                      {tLocalArg1, tLocalArg2, tLocalArg3, tLocalArg4, tLocalArg5},
+                                      std::vector<std::string>{"exo"},
+                                      std::vector<Plato::LocalArg>{tLocalArg1, tLocalArg2, tLocalArg3, tLocalArg4, tLocalArg5},
                                       2,
                                       1001,
                                       20,
@@ -402,7 +408,7 @@ TEST(BoostSerialization, OperationsMap)
                                       true);
 
     Plato::PenaltyModel* tPenaltyModel = new Plato::SIMP(2,0.4);
-    tOM.mOperationMap["Compute Volume"] = new Plato::ComputeVolume("Volume",
+    tOM.mOperationMap["Compute Volume"] = std::make_unique<Plato::ComputeVolume>("Volume",
                                     "Volume Gradient",
                                     tPenaltyModel,
                                     "Topology");
@@ -412,45 +418,39 @@ TEST(BoostSerialization, OperationsMap)
     tAggStruct.mOutputName = "Value";
     tAggStruct.mInputNames = {"Result1", "Result2", "Result3"};
 
-    tOM.mOperationMap["Aggregator"] = new Plato::Aggregator({0.5, 0.5},
-                                 {"BASES"},
-                                 {"NORMALS"},
-                                 {tAggStruct},
+    tOM.mOperationMap["Aggregator"] = std::make_unique<Plato::Aggregator>(
+                                 std::vector<double>{0.5, 0.5},
+                                 std::vector<std::string>{"BASES"},
+                                 std::vector<std::string>{"NORMALS"},
+                                 std::vector<Plato::AggStruct>{tAggStruct},
                                  "FIXED",
                                  2,
                                  true);
 
-    tOM.mOperationMap["Copy Field"] = new Plato::CopyField("in",
-                                "out");
-    tOM.mOperationMap["Copy Value"] = new Plato::CopyValue("in",
-                                "out");
+    tOM.mOperationMap["Copy Field"] = std::make_unique<Plato::CopyField>("in", "out");
+    tOM.mOperationMap["Copy Value"] = std::make_unique<Plato::CopyValue>("in","out");
     
     auto tFixedBlockMetadata = generateFixedBlockMetadata();
 
-    tOM.mOperationMap["Set Upper Bounds"] = new Plato::SetUpperBounds("shape",
+    tOM.mOperationMap["Set Upper Bounds"] = std::make_unique<Plato::SetUpperBounds>("shape",
                                      "fluid",
                                      tFixedBlockMetadata,
                                      Plato::data::layout_t::SCALAR_FIELD,
                                      3,
                                      4);
-    tOM.mOperationMap["Set Lower Bounds"] = new Plato::SetLowerBounds("shape",
+                                     
+    tOM.mOperationMap["Set Lower Bounds"] = std::make_unique<Plato::SetLowerBounds>("shape",
                                      "fluid",
                                      tFixedBlockMetadata,
                                      Plato::data::layout_t::SCALAR_FIELD,
                                      3,
                                      4);     
 
-    tOM.mOperationMap["Compute Volume"] = new Plato::ComputeVolume("Volume",
-                                    "Volume Gradient",
-                                    tPenaltyModel,
-                                    "Topology");                                
-
     Plato::LocalArg tDefaultLocalArg;
     Plato::LocalArg tLocalArg(Plato::data::layout_t::SCALAR_FIELD, "Dummy", 4, true);
-    tOM.mOperationMap["Design Volume"] = new Plato::DesignVolume({tDefaultLocalArg, tLocalArg});
+    tOM.mOperationMap["Design Volume"] = std::make_unique<Plato::DesignVolume>(std::vector<Plato::LocalArg>{tDefaultLocalArg, tLocalArg});
 
     save<boost::archive::xml_oarchive>(tOM,"out.xml");
-
 }
 
 TEST(BoostSerialization, Roughness)

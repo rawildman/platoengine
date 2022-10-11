@@ -63,7 +63,7 @@
 #include "Plato_Communication.hpp"
 #include "Plato_SharedDataInfo.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {

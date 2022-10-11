@@ -102,7 +102,7 @@ public:
       aArchive & boost::serialization::make_nvp("InputBaseFieldName",mInputBaseFieldName);
       aArchive & boost::serialization::make_nvp("OutputFromFilterName",mOutputFromFilterName);
       aArchive & boost::serialization::make_nvp("IsGradient",mIsGradient);
-      //TODO serilization of all the filters - they are a mess.
+      //TODO serialization of all the filters
     }
 
 private:

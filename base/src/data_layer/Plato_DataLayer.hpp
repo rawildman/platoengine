@@ -53,7 +53,7 @@
 #include "Plato_SharedValue.hpp"
 #include "Plato_SharedField.hpp"
 
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 #include <map>
 #include <vector>
@@ -85,8 +85,8 @@ public:
     template<typename Archive>
     void serialize(Archive& aArchive, const unsigned int aVersion)
     {
-	    aArchive.template register_type<Plato::SharedField>(); 
-	    aArchive.template register_type<Plato::SharedValue>(); 
+        aArchive.template register_type<SharedField>();
+        aArchive.template register_type<SharedValue>();
 
         aArchive & boost::serialization::make_nvp("SharedDataVector", mSharedData);
         aArchive & boost::serialization::make_nvp("SharedDataMap", mSharedDataMap);

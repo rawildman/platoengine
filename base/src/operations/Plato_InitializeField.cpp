@@ -79,8 +79,8 @@ InitializeField::InitializeField(const std::string& aFileName,
                                 const std::string& aSphereSpacingY,
                                 const std::string& aSphereSpacingZ,
                                 const std::string& aVariableName,
-                                const std::vector<double>& aMinCoords,
-                                const std::vector<double>& aMaxCoords,
+                                const std::array<double, 3>& aMinCoords,
+                                const std::array<double, 3>& aMaxCoords,
                                 const std::vector<int>& aLevelSetNodes,
                                 Plato::data::layout_t aOutputLayout,
                                 double aUniformValue,
@@ -107,8 +107,6 @@ InitializeField::InitializeField(const std::string& aFileName,
 
 void InitializeField::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 {
-    mMinCoords.resize(3,0);
-    mMaxCoords.resize(3,0);
     aLocalArgs.push_back(Plato::LocalArg(mOutputLayout, mOutputFieldName));
 }
 

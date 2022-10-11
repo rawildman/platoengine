@@ -55,7 +55,7 @@
 #include <utility>
 
 #include "Plato_InputData.hpp"
-#include "Serializable.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {
