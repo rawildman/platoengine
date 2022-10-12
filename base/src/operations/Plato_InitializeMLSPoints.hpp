@@ -102,3 +102,8 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<1>, "InitializeMLSPoints_1")
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<2>, "InitializeMLSPoints_2")
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<3>, "InitializeMLSPoints_3")

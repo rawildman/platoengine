@@ -50,9 +50,7 @@
 #ifndef SRC_DATALAYER_HPP_
 #define SRC_DATALAYER_HPP_
 
-#include "Plato_SharedValue.hpp"
-#include "Plato_SharedField.hpp"
-
+#include "Plato_SharedData.hpp"
 #include "Plato_SerializationHeaders.hpp"
 
 #include <map>
@@ -61,8 +59,6 @@
 
 namespace Plato
 {
-
-class SharedData;
 class SharedDataInfo;
 struct CommunicationData;
 
@@ -85,9 +81,6 @@ public:
     template<typename Archive>
     void serialize(Archive& aArchive, const unsigned int aVersion)
     {
-        aArchive.template register_type<SharedField>();
-        aArchive.template register_type<SharedValue>();
-
         aArchive & boost::serialization::make_nvp("SharedDataVector", mSharedData);
         aArchive & boost::serialization::make_nvp("SharedDataMap", mSharedDataMap);
     }

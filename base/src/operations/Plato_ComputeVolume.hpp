@@ -96,7 +96,6 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-      aArchive.template register_type<Plato::SIMP>() ; 
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("TopologyName",mTopologyName);
       aArchive & boost::serialization::make_nvp("VolumeName",mVolumeName);
@@ -115,3 +114,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::ComputeVolume, "ComputeVolume")

@@ -92,4 +92,7 @@ public:
 
 } // End namespace Plato
 
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::MultiOperation, "MultiOperation")
+
 #endif

@@ -103,3 +103,8 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::ComputeMLSField<1>, "ComputeMLSField_1")
+BOOST_CLASS_EXPORT_KEY2(Plato::ComputeMLSField<2>, "ComputeMLSField_2")
+BOOST_CLASS_EXPORT_KEY2(Plato::ComputeMLSField<3>, "ComputeMLSField_3")

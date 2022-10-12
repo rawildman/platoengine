@@ -54,6 +54,10 @@
 #include "Plato_OutputNodalFieldSharedData.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::OutputNodalFieldSharedData)
+
 namespace Plato
 {
 

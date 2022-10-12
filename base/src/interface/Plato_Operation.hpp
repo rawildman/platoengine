@@ -156,4 +156,7 @@ protected:
 };
 } // End namespace Plato
 
+#include <boost/serialization/assume_abstract.hpp>
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Plato::Operation)
+
 #endif

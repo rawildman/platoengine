@@ -51,6 +51,10 @@
 #include "Plato_PenaltyModel.hpp"
 #include "Plato_ComputeVolume.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::ComputeVolume)
+
 namespace Plato
 {
 

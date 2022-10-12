@@ -143,19 +143,6 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-	    aArchive.template register_type<Plato::Aggregator>() ; 
-        aArchive.template register_type<Plato::ComputeVolume>() ; 
-        aArchive.template register_type<Plato::CopyField>() ; 
-        aArchive.template register_type<Plato::CopyValue>() ; 
-        aArchive.template register_type<Plato::DesignVolume>() ; 
-        aArchive.template register_type<Plato::EnforceBounds>() ; 
-        aArchive.template register_type<Plato::Filter>() ; 
-        aArchive.template register_type<Plato::InitializeField>() ; 
-        aArchive.template register_type<Plato::InitializeValues>() ; 
-        aArchive.template register_type<Plato::PlatoMainOutput>() ; 
-        aArchive.template register_type<Plato::SetLowerBounds>() ; 
-        aArchive.template register_type<Plato::SetUpperBounds>() ; 
-        
         aArchive &  boost::serialization::make_nvp("OperationMap",mOperationMap);
     }
 };

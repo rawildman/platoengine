@@ -62,6 +62,10 @@
 #include "Plato_OperationsUtilities.hpp"
 #include <Plato_FreeFunctions.hpp>
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::PlatoMainOutput)
+
 namespace Plato
 {
 PlatoMainOutput::PlatoMainOutput(const std::string& aBaseName,

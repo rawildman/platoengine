@@ -102,3 +102,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::WriteGlobalValue, "WriteGlobalValue")

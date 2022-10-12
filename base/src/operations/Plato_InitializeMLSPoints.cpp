@@ -49,6 +49,12 @@
 #include "Plato_LocalOperation.hpp"
 #include "PlatoApp.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::InitializeMLSPoints<1>)
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::InitializeMLSPoints<2>)
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::InitializeMLSPoints<3>)
+
 namespace Plato
 {
 

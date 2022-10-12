@@ -48,6 +48,10 @@
 #include "Plato_SystemCallOperation.hpp"
 #include "PlatoApp.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SystemCallOperation)
+
 namespace Plato
 {
 

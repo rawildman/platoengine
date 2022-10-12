@@ -36,7 +36,6 @@ set(${LIB_NAME}_HEADERS Plato_Parser.hpp
                         Plato_Utils.hpp
                         Plato_SerializationHeaders.hpp
                         Plato_SerializationLoadSave.hpp
-                        Plato_SerializationClassRegistry.hpp
                         )
 
 set(LIB_NAME Exceptions)

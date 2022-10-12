@@ -49,45 +49,10 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_TimersTree.hpp"
 #include <Plato_FreeFunctions.hpp>
-
-
-#include "Plato_Filter.hpp"
-#include "Plato_CopyField.hpp"
-#include "Plato_CopyValue.hpp"
-#include "Plato_Roughness.hpp"
-
-#include "Plato_SystemCallOperation.hpp"
-#include "Plato_Aggregator.hpp"
-#include "Plato_DesignVolume.hpp"
-#include "Plato_Reinitialize.hpp"
-#include "Plato_EnforceBounds.hpp"
-#include "Plato_UpdateProblem.hpp"
-#include "Plato_ComputeVolume.hpp"
-#include "Plato_CSMMeshOutput.hpp"
-#include "Plato_SetUpperBounds.hpp"
-#include "Plato_SetLowerBounds.hpp"
-#include "Plato_PlatoMainOutput.hpp"
-#include "Plato_InitializeField.hpp"
-#include "Plato_InitializeValues.hpp"
-#include "Plato_WriteGlobalValue.hpp"
-#include "Plato_CSMParameterOutput.hpp"
-#include "Plato_HarvestDataFromFile.hpp"
-#include "Plato_OperationsUtilities.hpp"
-#include "Plato_NormalizeObjectiveValue.hpp"
-#include "Plato_MeanPlusVarianceMeasure.hpp"
-#include "Plato_MeanPlusVarianceGradient.hpp"
-#include "Plato_ReciprocateObjectiveValue.hpp"
-#include "Plato_NormalizeObjectiveGradient.hpp"
-#include "Plato_OutputNodalFieldSharedData.hpp"
-#include "Plato_ReciprocateObjectiveGradient.hpp"
-       
 #include "Plato_SerializationHeaders.hpp"
 
 #ifdef GEOMETRY
 #include "Plato_MetaDataMLS.hpp"
-#include "Plato_ComputeMLSField.hpp"
-#include "Plato_InitializeMLSPoints.hpp"
-#include "Plato_MapMLSField.hpp"
 #endif
 
 namespace pugi
@@ -412,53 +377,6 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-        // Serialization TODO: We can remove this explicit type registration
-        // using BOOST_CLASS_EXPORT_GUID in their cpp files along with
-        // explicit instantiation of their serialize member functions templates.
-	    aArchive.template register_type<Plato::Aggregator>() ; 
-        aArchive.template register_type<Plato::ComputeVolume>() ; 
-        aArchive.template register_type<Plato::CopyField>() ; 
-        aArchive.template register_type<Plato::CopyValue>() ; 
-        aArchive.template register_type<Plato::DesignVolume>() ; 
-        aArchive.template register_type<Plato::EnforceBounds>() ; 
-        aArchive.template register_type<Plato::Filter>() ; 
-        aArchive.template register_type<Plato::HarvestDataFromFile>() ; 
-        aArchive.template register_type<Plato::OutputNodalFieldSharedData>() ; 
-        aArchive.template register_type<Plato::InitializeField>() ; 
-        aArchive.template register_type<Plato::InitializeValues>() ; 
-        aArchive.template register_type<Plato::PlatoMainOutput>() ; 
-        aArchive.template register_type<Plato::SetLowerBounds>() ; 
-        aArchive.template register_type<Plato::SetUpperBounds>() ; 
-        aArchive.template register_type<Plato::SystemCallOperation>() ; 
-        aArchive.template register_type<Plato::UpdateProblem>() ; 
-
-        aArchive.template register_type<Plato::Roughness>() ; 
-        
-        aArchive.template register_type<Plato::Reinitialize>() ; 
-        aArchive.template register_type<Plato::CSMMeshOutput>() ; 
-        aArchive.template register_type<Plato::WriteGlobalValue>() ; 
-        aArchive.template register_type<Plato::CSMParameterOutput>() ; 
-        aArchive.template register_type<Plato::NormalizeObjectiveGradient>() ; 
-        aArchive.template register_type<Plato::NormalizeObjectiveValue>() ; 
-        aArchive.template register_type<Plato::MeanPlusVarianceGradient>() ; 
-        aArchive.template register_type<Plato::MeanPlusVarianceMeasure>() ; 
-        aArchive.template register_type<Plato::ReciprocateObjectiveGradient>() ; 
-        aArchive.template register_type<Plato::ReciprocateObjectiveValue>() ; 
-
-        #ifdef GEOMETRY
-        aArchive.template register_type<Plato::ComputeMLSField<3>>();
-        aArchive.template register_type<Plato::ComputeMLSField<2>>();
-        aArchive.template register_type<Plato::ComputeMLSField<1>>();
-
-        aArchive.template register_type<Plato::InitializeMLSPoints<3>>();
-        aArchive.template register_type<Plato::InitializeMLSPoints<2>>();
-        aArchive.template register_type<Plato::InitializeMLSPoints<1>>();
-
-        aArchive.template register_type<Plato::MapMLSField<3>>();
-        aArchive.template register_type<Plato::MapMLSField<2>>();
-        aArchive.template register_type<Plato::MapMLSField<1>>();
-        #endif
-
         aArchive & boost::serialization::make_nvp("Application", boost::serialization::base_object<Application>(*this));
         aArchive & boost::serialization::make_nvp("OperationMap", mOperationMap);
     }

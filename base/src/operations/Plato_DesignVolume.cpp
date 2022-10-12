@@ -51,6 +51,10 @@
 #include "Plato_InputData.hpp"
 #include "Plato_DesignVolume.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::DesignVolume)
+
 namespace Plato
 {
 DesignVolume::DesignVolume(const std::vector<Plato::LocalArg>& aLocalArguments) :
