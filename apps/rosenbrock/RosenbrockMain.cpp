@@ -60,11 +60,13 @@
 #include <fenv.h>
 #endif
 
+namespace{
 const auto kInterfaceLoadXMLFileName = Plato::XMLFileName{"save_state.xml"};
 const auto kInterfaceSaveXMLFileName = Plato::XMLFileName{"save_state_rosenbrock.xml"};
 const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
 const auto kAppXMLFileName = Plato::XMLFileName{"save_app_rosenbrock.xml"};
 const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
+}
 
 /******************************************************************************/
 int main(int aArgc, char **aArgv)

@@ -686,6 +686,12 @@ PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData)
     }
 }
 
+InputData inputDataFromPugiParsedFile(const std::string& aFileName)
+{
+    Plato::PugiParser tParser;
+    return tParser.parseFile(aFileName);
+}
+
 namespace Get
 {
 /******************************************************************************/

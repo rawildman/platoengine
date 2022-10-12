@@ -65,23 +65,11 @@
 
 namespace Plato
 {
-Stage::Stage():
-        m_name(""),
-        m_operations(),
-        m_inputData(),
-        m_outputData(),
-        currentOperationIndex()
-{
-}
 /******************************************************************************/
 Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
              const std::shared_ptr<Plato::Performer> aPerformer,
              const std::vector<Plato::SharedData*>& aSharedData) :
-        m_name(aStageInputData.getStageName()),
-        m_operations(),
-        m_inputData(),
-        m_outputData(),
-        currentOperationIndex()
+        m_name(aStageInputData.getStageName())
 /******************************************************************************/
 {
     this->initializeSharedData(aStageInputData,aPerformer,aSharedData);

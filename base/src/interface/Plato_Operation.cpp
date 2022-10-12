@@ -59,29 +59,6 @@
 #include "Plato_OperationInputDataMng.hpp"
 
 namespace Plato {
-Operation::Operation():m_performer(nullptr),
-        m_performerName(),
-        m_operationName(),
-        m_inputData(),
-        m_outputData()
-        {}
-/******************************************************************************/
-Operation::
-Operation(const std::shared_ptr<::Plato::Performer> aPerformer,
-          const std::vector<::Plato::SharedData*>& aSharedData) :
-        m_performer(nullptr),
-        m_performerName(),
-        m_operationName(),
-        m_inputData(),
-        m_outputData()
-{
-}
-
-/******************************************************************************/
-Operation::~Operation()
-/******************************************************************************/
-{
-}
 
 /******************************************************************************/
 void

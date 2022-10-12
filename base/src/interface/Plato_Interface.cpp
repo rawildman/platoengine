@@ -87,22 +87,13 @@ int performerID()
         return -1;
     }
 }
-
-/// @brief Parses the input file with naem given by environment variable PLATO_INTERFACE_FILE
-/// @throw std::logic_error if PLATO_INTERFACE_FILE doesn't exist.
-InputData inputDataFromParsedFile()
-{
-    const char* tInputFileName = getenv("PLATO_INTERFACE_FILE");
-    Plato::PugiParser tParser;
-    return tParser.parseFile(tInputFileName);
-}
 }
 
 /******************************************************************************/
 Interface::Interface(MPI_Comm aGlobalComm) :
 /******************************************************************************/
         mPerformerID(performerID()),
-        mInputData(inputDataFromParsedFile()),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
         mGlobalComm(aGlobalComm)
 {
     createPerformers();
@@ -112,7 +103,7 @@ Interface::Interface(MPI_Comm aGlobalComm) :
 /******************************************************************************/
 Interface::Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm) :
         mPerformerID(performerID()),
-        mInputData(inputDataFromParsedFile()),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
         mGlobalComm(aGlobalComm)
 /******************************************************************************/
 {
@@ -124,7 +115,7 @@ Interface::Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName,
 /******************************************************************************/
 Interface::Interface(const int & aCommID, const std::string & aXML_String, MPI_Comm aGlobalComm) :
         mLocalCommID(aCommID),
-        mInputData(inputDataFromParsedFile()),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
         mGlobalComm(aGlobalComm)
 /******************************************************************************/
 {

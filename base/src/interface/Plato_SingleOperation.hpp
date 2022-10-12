@@ -76,9 +76,6 @@ public:
                     const std::shared_ptr<Plato::Performer> aPerformer,
                     const std::vector<Plato::SharedData*>& aSharedData);
 
-    SingleOperation(const std::shared_ptr<Plato::Performer> aPerformer,
-                    const std::vector<Plato::SharedData*>& aSharedData);
-
     void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<::Plato::Performer> aPerformer,
                 const std::vector<::Plato::SharedData*>& aSharedData) override;

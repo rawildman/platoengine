@@ -325,7 +325,9 @@ public:
         const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
       
         if(tSaveToXML)
+        {
           Plato::saveToXML(*tOptimizer, Plato::XMLFileName{"save_optimizer.xml"}, Plato::XMLNodeName{"Optimizer"});
+        }
       }
 
       catch(...)

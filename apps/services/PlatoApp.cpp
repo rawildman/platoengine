@@ -59,71 +59,26 @@
 
 #include "Plato_Operations_incl.hpp"
 
-
-PlatoApp::PlatoApp() :
-        mLocalComm(),
-        mLightMp(nullptr),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Appfile Data"),
-        mInputfileData("Inputfile Data"),
-        mTimersTree(nullptr)
-{
-}
-
-
 PlatoApp::PlatoApp(MPI_Comm& aLocalComm) :
-        mLocalComm(aLocalComm),
-        mLightMp(nullptr),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Appfile Data"),
-        mInputfileData("Inputfile Data"),
-        mTimersTree(nullptr)
+        mLocalComm(aLocalComm)
 {
     WorldComm.init(aLocalComm);
 }
 
 PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
         mLocalComm(aLocalComm),
-        mLightMp(nullptr),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Appfile Data"),
-        mInputfileData("Inputfile Data"),
-        mTimersTree(nullptr)
+        mAppfileData(Plato::inputDataFromPugiParsedFile(getenv("PLATO_APP_FILE"))),
+        mInputfileData(Plato::inputDataFromPugiParsedFile(aArgc == 2 ? aArgv[1] : "platomain.xml"))
 {
     WorldComm.init(aLocalComm);
 
-    const char* input_char = getenv("PLATO_APP_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mAppfileData = parser->parseFile(input_char);
-
     // create the FEM utility object
-    std::string tInputfile;
-    if(aArgc == 2)
-    {
-        tInputfile = aArgv[1];
-    }
-    else
-    {
-        tInputfile = "platomain.xml";
-    }
-    mInputfileData = parser->parseFile(tInputfile.c_str());
     auto tMeshSpec = mInputfileData.getByName<Plato::InputData>("mesh");
     if (tMeshSpec.size() != 0)
     {
-        mLightMp = new LightMP(tInputfile);
+        const std::string tInputFile{aArgc == 2 ? aArgv[1] : "platomain.xml"};
+        mLightMp = new LightMP(tInputFile);
         mInputTree = mLightMp->getInput();
-    }
-
-    if (parser)
-    {
-        delete parser;
-        parser = nullptr;
     }
 
     // parse/create the MLS PointArrays
@@ -163,22 +118,14 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
 
 PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp_XML_File, MPI_Comm& aLocalComm) :
         mLocalComm(aLocalComm),
-        mSysGraph(nullptr),
-        mMeshServices(nullptr),
-        mFilter(nullptr),
-        mAppfileData("Input Data"),
-        mTimersTree(nullptr)
+        mAppfileData(Plato::inputDataFromPugiParsedFile(getenv("PLATO_APP_FILE"))),
+        mInputfileData(Plato::inputDataFromPugiParsedFile(aPhysics_XML_File))
 {
     WorldComm.init(aLocalComm);
-
-    const char* input_char = getenv("PLATO_APP_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mAppfileData = parser->parseFile(input_char);
 
     std::shared_ptr<pugi::xml_document> tTempDoc = std::make_shared<pugi::xml_document>();
     tTempDoc->load_string(aPhysics_XML_File.c_str());
 
-    mInputfileData = parser->parseFile(aPhysics_XML_File.c_str());
     mLightMp = new LightMP(tTempDoc);
 }
 
@@ -752,13 +699,6 @@ void PlatoApp::compressAndUpdateNodeField(const std::string & aName)
     tLocalData->DisAssemble();
 }
 
-void PlatoApp::assignPlatoAppToOperationMap()
-{
-    for(auto& iLocalOperation : mOperationMap)
-        iLocalOperation.second->platoApp(this);
-}
-
-
 std::vector<double>* PlatoApp::getValue(const std::string & aName)
 {
     auto tIterator = mValueMap.find(aName);
@@ -836,11 +776,6 @@ double* PlatoApp::getNodeFieldData(const std::string & aName)
 LightMP* PlatoApp::getLightMP()
 {
     return mLightMp;
-}
-
-void PlatoApp::MPIComm(MPI_Comm& aMPI_Comm)
-{
-    mLocalComm = aMPI_Comm;
 }
 
 const MPI_Comm& PlatoApp::getComm() const

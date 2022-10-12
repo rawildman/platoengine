@@ -113,8 +113,8 @@ class LightMP{
 
   public:
     LightMP();
-    LightMP(std::string inputfile);
-    LightMP(std::shared_ptr<pugi::xml_document> inputTree);
+    explicit LightMP(std::string inputfile);
+    explicit LightMP(std::shared_ptr<pugi::xml_document> inputTree);
     ~LightMP();
 
     void Parse(std::string inputfile);

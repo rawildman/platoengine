@@ -45,7 +45,7 @@
 namespace Plato {
 InputData::InputData() : m_name("Input Data") { init(); }
 
-InputData::InputData(std::string name) : m_name(name) { init(); }
+InputData::InputData(std::string name) : m_name(std::move(name)) { init(); }
 
 std::string InputData::name()  const { return m_name; }
 bool        InputData::empty() const { return m_parameters->empty(); }

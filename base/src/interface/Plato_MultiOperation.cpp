@@ -64,8 +64,7 @@ namespace Plato {
 MultiOperation::
 MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                const std::shared_ptr<Plato::Performer> aPerformer,
-               const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aPerformer, aSharedData)
+               const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
     this->initialize(aOperationDataMng, aPerformer, aSharedData);

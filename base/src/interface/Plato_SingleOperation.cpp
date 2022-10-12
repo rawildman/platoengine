@@ -75,19 +75,9 @@ std::string unrecognizedOperationErrorMessage(
 
 /******************************************************************************/
 SingleOperation::
-SingleOperation(const std::shared_ptr<Plato::Performer> aPerformer,
-                const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aPerformer, aSharedData)
-/******************************************************************************/
-{
-}
-
-/******************************************************************************/
-SingleOperation::
 SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<Plato::Performer> aPerformer,
-                const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aPerformer, aSharedData)
+                const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
     initialize(aOperationDataMng, aPerformer, aSharedData);

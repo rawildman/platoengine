@@ -74,7 +74,7 @@ class StageInputDataMng;
 class Stage
 {
 public:
-    Stage();
+    Stage() = default;
     Stage(const Plato::StageInputDataMng & aStageInputData,
           const std::shared_ptr<Plato::Performer> aPerformer,
           const std::vector<Plato::SharedData*>& aSharedData);
@@ -126,7 +126,7 @@ private:
     std::vector<Plato::SharedData*> m_inputData;
     std::vector<Plato::SharedData*> m_outputData;
 
-    int currentOperationIndex;
+    int currentOperationIndex = 0;
 };
 
 } // End namespace Plato

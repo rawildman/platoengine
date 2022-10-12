@@ -221,12 +221,6 @@ int main(int aArgc, char *aArgv[])
         safeExit();
     }
 
-    std::ofstream tOutFileStream3( "saved_operations_fin.xml");  
-        {                  
-            boost::archive::xml_oarchive tOutputArchive3(tOutFileStream3, boost::archive::no_header | boost::archive::no_tracking);        
-            tOutputArchive3 << boost::serialization::make_nvp("Operations",*tPlatoApp);                   
-        }
-
     safeExit();
 }
 

@@ -73,11 +73,7 @@ class Operation
 {
    
 public:
-    Operation();
-    Operation(const std::shared_ptr<::Plato::Performer> aPerformer,
-              const std::vector<::Plato::SharedData*>& aSharedData);
-
-    virtual ~Operation();
+    virtual ~Operation() = default;
 
     virtual void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
                         const std::shared_ptr<::Plato::Performer> aPerformer,
