@@ -95,7 +95,7 @@ FOREACH(PLATO_LIB ${LIB_NAMES})
 if( ENABLE_ISO )
   target_link_libraries(Plato${PLATO_LIB} IsoExtract)
 endif()
-  target_link_libraries(Plato${PLATO_LIB} ${Boost_LIBRARIES})
+  target_link_libraries(Plato${PLATO_LIB} Boost::serialization)
   set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
 ENDFOREACH()
 

@@ -24,7 +24,7 @@ set(Plato_Operations_UnitTester_LIBS GTest::GTest
                                      ${PLATO_LIBRARIES}
                                      ${Trilinos_LIBRARIES}
                                      ${Trilinos_TPL_LIBRARIES}
-                                     ${Boost_LIBRARIES}
+                                     Boost::serialization
                                      )
                                      
  

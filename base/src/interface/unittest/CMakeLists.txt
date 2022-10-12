@@ -22,7 +22,7 @@ set(Plato_Interface_UnitTester_LIBS GTest::GTest
                                      ${PLATO_LIBRARIES}
                                      ${Trilinos_LIBRARIES}
                                      ${Trilinos_TPL_LIBRARIES}
-                                     ${Boost_LIBRARIES}
+                                     Boost::serialization
                                      )
  
 add_executable(Plato_Interface_UnitTester ${Plato_Interface_UnitTester_SRCS})
