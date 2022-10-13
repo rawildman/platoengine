@@ -40,39 +40,45 @@
 //@HEADER
 */
 
-/*
- * Plato_PenaltyModel.hpp
- *
- *  Created on: April 19, 2017
- *
- *
- *  NOTE: This class is a placeholder till the TopOpt source is pulled in.
- *
- */
+#ifndef SRC_SIMP_HPP_
+#define SRC_SIMP_HPP_
 
-#ifndef SRC_PENALTYMODEL_HPP_
-#define SRC_PENALTYMODEL_HPP_
+#include "Plato_PenaltyModel.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato {
 
 class InputData;
 
-  class PenaltyModel {
+  class SIMP : public PenaltyModel {
     public:
-      PenaltyModel(){}
-      virtual ~PenaltyModel(){}
-      virtual double eval(double x)=0;
-      virtual double grad(double x)=0;
+      SIMP() = default;
+      SIMP(double a_penaltyExponent, double a_minimumValue) :
+        m_penaltyExponent(a_penaltyExponent),
+        m_minimumValue(a_minimumValue)
+      {
+      }
+      SIMP(const Plato::InputData& input);
+
+      double eval(double x) override;
+      double grad(double x) override;
 
       template<class Archive>
-      void serialize(Archive & aArchive, const unsigned int version) {} 
-  };
+      void serialize(Archive & aArchive, const unsigned int version)
+      {
+        aArchive & boost::serialization::make_nvp("PenaltyModel",boost::serialization::base_object<PenaltyModel>(*this));
+        aArchive & boost::serialization::make_nvp("PenaltyExponent",m_penaltyExponent);
+        aArchive & boost::serialization::make_nvp("MinimumValue",m_minimumValue);
+      }
 
-  class PenaltyModelFactory {
-    public:
-      PenaltyModel* create(Plato::InputData& input);
+    private:
+      double m_penaltyExponent = 1;
+      double m_minimumValue = 0.0;
   };
 
 } /* namespace Plato */
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::SIMP, "SIMP")
 
 #endif /* SRC_PENALTYMODEL_HPP_ */

@@ -50,6 +50,7 @@
 
 #include "Plato_LocalOperation.hpp"
 #include "Plato_PenaltyModel.hpp"
+
 class PlatoApp;
 
 namespace Plato
