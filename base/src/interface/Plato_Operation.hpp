@@ -103,12 +103,42 @@ public:
     void serialize(Archive & aArchive, const unsigned int version)
     {
         aArchive & boost::serialization::make_nvp("OperationName", m_operationName);
-        aArchive & boost::serialization::make_nvp("Performer", m_performerName);
+        aArchive & boost::serialization::make_nvp("PerformerName", m_performerName);
         aArchive & boost::serialization::make_nvp("ArgumentNames", m_argumentNames);
         aArchive & boost::serialization::make_nvp("InputData", m_inputData);
         aArchive & boost::serialization::make_nvp("OutputData", m_outputData);
         aArchive & boost::serialization::make_nvp("Parameters", m_parameters);
     } 
+
+    class Parameter : public Plato::SharedData {
+      std::string m_name;
+      std::string m_operation;
+      double m_value = 0.0;
+      public:
+        Parameter() = default;
+        Parameter(std::string name, std::string op, const double value=0.0) :
+          m_name(std::move(name)), m_operation(std::move(op)), m_value(value){}
+
+        // required (pure virtual in SharedData base class)
+        int size() const {return 1;}
+        std::string myName() const {return m_name;}
+        std::string myContext() const {return m_operation;}
+        Plato::data::layout_t myLayout() const
+         {return Plato::data::layout_t::SCALAR_PARAMETER;}
+        void transmitData(){assert(0);}
+        void setData(const std::vector<double> & aData) {m_value = aData[0];}
+        void getData(std::vector<double> & aData) const {aData[0] = m_value;}
+
+        template<class Archive>
+        void serialize(Archive & aArchive, const unsigned int version)
+        {
+            aArchive & boost::serialization::make_nvp("SharedData",
+                boost::serialization::base_object<SharedData>(*this));
+            aArchive & boost::serialization::make_nvp("Name", m_name);
+            aArchive & boost::serialization::make_nvp("Operation", m_operation);
+            aArchive & boost::serialization::make_nvp("Value", m_value);
+        }
+    };
 
 protected:
 
@@ -123,25 +153,6 @@ protected:
                      const std::string & tSharedDataName,
                      const std::vector<Plato::SharedData*>& aSharedData,
                      std::vector<Plato::SharedData*>& aLocalData);
-
-    class Parameter : public Plato::SharedData {
-      const std::string m_name;
-      const std::string m_operation;
-      double m_value;
-      public:
-        Parameter(std::string& name, std::string& op, double value=0.0) :
-          m_name(name), m_operation(op), m_value(value){}
-
-        // required (pure virtual in SharedData base class)
-        int size() const {return 1;}
-        std::string myName() const {return m_name;}
-        std::string myContext() const {return m_operation;}
-        Plato::data::layout_t myLayout() const
-         {return Plato::data::layout_t::SCALAR_PARAMETER;}
-        void transmitData(){assert(0);}
-        void setData(const std::vector<double> & aData) {m_value = aData[0];}
-        void getData(std::vector<double> & aData) const {aData[0] = m_value;}
-    };
 
     std::map<std::string,Plato::SharedData*> m_parameters;
 
@@ -158,5 +169,8 @@ protected:
 
 #include <boost/serialization/assume_abstract.hpp>
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Plato::Operation)
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::Operation::Parameter, "Parameter")
 
 #endif
