@@ -72,7 +72,7 @@ Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
         m_name(aStageInputData.getStageName())
 /******************************************************************************/
 {
-    this->initializeSharedData(aStageInputData,aPerformer,aSharedData);
+    initializeSharedData(aStageInputData, aSharedData);
 
     // Parse/Create Operations
     //
@@ -112,7 +112,7 @@ void Stage::update(const Plato::StageInputDataMng & aStageInputData,
     m_inputData.clear();
     m_outputData.clear();
 
-    this->initializeSharedData(aStageInputData,aPerformer,aSharedData);
+    initializeSharedData(aStageInputData, aSharedData);
 
     // Update the operations.
     const size_t num_operations = m_operations.size();
@@ -132,7 +132,6 @@ void Stage::addOperation(Operation* aOperation)
 
 /******************************************************************************/
 void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                                 const std::shared_ptr<Plato::Performer> aPerformer,
                                  const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {

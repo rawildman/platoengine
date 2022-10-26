@@ -101,7 +101,7 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
         }
         else
         {
-            // TODO: TRHOW
+            // TODO: THROW
             std::stringstream ss;
             ss << "Plato::DataLayer: Given unknown SharedData Layout ('" << tMyLayout << "').";
             throw ParsingException(ss.str());
@@ -148,7 +148,9 @@ const std::vector<SharedData*> & DataLayer::getSharedData() const
     return mSharedData;
 }
 
+/******************************************************************************/
 void DataLayer::initializeMPI(const Plato::CommunicationData& aCommData)
+/******************************************************************************/
 {
     for(auto tSharedData : mSharedData)
     {

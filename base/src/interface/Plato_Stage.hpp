@@ -108,7 +108,6 @@ public:
 
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                              const std::shared_ptr<Plato::Performer> aPerformer,
                               const std::vector<Plato::SharedData*>& aSharedData);
 
     std::string m_name;
