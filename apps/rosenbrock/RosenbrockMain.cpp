@@ -61,10 +61,9 @@
 #endif
 
 namespace{
-const auto kInterfaceLoadXMLFileName = Plato::XMLFileName{"save_state.xml"};
-const auto kInterfaceSaveXMLFileName = Plato::XMLFileName{"save_state_rosenbrock.xml"};
+const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_rosenbrock_interface.xml"};
 const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
-const auto kAppXMLFileName = Plato::XMLFileName{"save_app_rosenbrock.xml"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_rosenbrock_app.xml"};
 const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
 }
 
@@ -86,7 +85,7 @@ int main(int aArgc, char **aArgv)
     {
         if(tLoadFromXML)
         {
-            tPlatoInterface = new Plato::Interface(kInterfaceLoadXMLFileName, kInterfaceXMLNodeName);
+            tPlatoInterface = new Plato::Interface(kInterfaceXMLFileName, kInterfaceXMLNodeName);
         } else {
             tPlatoInterface = new Plato::Interface();
         }
@@ -138,7 +137,7 @@ int main(int aArgc, char **aArgv)
 
     const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
     if(tSaveToXML){
-        Plato::saveToXML(*tPlatoInterface, kInterfaceSaveXMLFileName, kInterfaceXMLNodeName);
+        Plato::saveToXML(*tPlatoInterface, kInterfaceXMLFileName, kInterfaceXMLNodeName);
         Plato::saveToXML(*tMyApp, kAppXMLFileName, kAppXMLNodeName);
     }
     /******************************** PERFORM *********************************/

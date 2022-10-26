@@ -76,9 +76,9 @@
 
 #include <cstdlib>
 
-const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_state.xml"};
+const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_main_interface.xml"};
 const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
-const auto kAppXMLFileName = Plato::XMLFileName{"save_app.xml"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_main_app.xml"};
 const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
 
 void writeSplashScreen();
