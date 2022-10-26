@@ -52,8 +52,23 @@
 #include "Plato_InputData.hpp"
 #include "Plato_EnforceBounds.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::EnforceBounds)
+
 namespace Plato
 {
+    
+EnforceBounds::EnforceBounds(const std::string& aLowerBoundVectorFieldName,
+                            const std::string& aUpperBoundVectorFieldName,
+                            const std::string& aTopologyFieldName,
+                            const std::string& aTopologyOutputFieldName) :
+                            mLowerBoundVectorFieldName(aLowerBoundVectorFieldName),
+                            mUpperBoundVectorFieldName(aUpperBoundVectorFieldName),
+                            mTopologyFieldName(aTopologyFieldName),
+                            mTopologyOutputFieldName(aTopologyOutputFieldName)
+{
+}
 
 EnforceBounds::EnforceBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)

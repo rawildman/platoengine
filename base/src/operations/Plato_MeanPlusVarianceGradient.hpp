@@ -64,6 +64,7 @@ class InputData;
 class MeanPlusVarianceGradient : public Plato::LocalOp
 {
 public:
+    MeanPlusVarianceGradient() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application interface
@@ -329,6 +330,14 @@ private:
     **********************************************************************************/
     void computeGradientMeanPlusStdDevCriterionForElementField();
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OperationName",mOperationName);
+    }
+
 private:
     bool mIsMeanPlusStdDevFormulation; /*!< flag is set to true if it is a robust optimization problem */
 
@@ -354,3 +363,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::MeanPlusVarianceGradient, "MeanPlusVarianceGradient")

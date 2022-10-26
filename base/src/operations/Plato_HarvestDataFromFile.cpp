@@ -11,6 +11,10 @@
 #include "Plato_OperationsUtilities.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::HarvestDataFromFile)
+
 namespace Plato
 {
 

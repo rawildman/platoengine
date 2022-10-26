@@ -64,6 +64,14 @@ class InputData;
 class SetUpperBounds : public Plato::LocalOp
 {
 public:
+    SetUpperBounds() = default;
+
+    SetUpperBounds(const std::string& aDiscretization,
+                   const std::string& aMaterialUseCase,
+                   Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                   Plato::data::layout_t aOutputLayout = Plato::data::layout_t::SCALAR,
+                   int aOutputSize = 0,
+                   int aUpperBoundVectorLength = 0);
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aPlatoApp PLATO application
@@ -82,6 +90,20 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputSize",mOutputSize);
+      aArchive & boost::serialization::make_nvp("UpperBoundVectorLength",mUpperBoundVectorLength);
+      aArchive & boost::serialization::make_nvp("InputArgumentName",mInputArgumentName);
+      aArchive & boost::serialization::make_nvp("OutputArgumentName",mOutputArgumentName);
+      aArchive & boost::serialization::make_nvp("Discretization",mDiscretization);
+      aArchive & boost::serialization::make_nvp("MaterialUseCase",mMaterialUseCase);
+      aArchive & boost::serialization::make_nvp("OutputLayout",mOutputLayout);
+      aArchive & boost::serialization::make_nvp("FixedBlockMetadata",mFixedBlockMetadata);
+    }
 private:
     /******************************************************************************//**
      * \brief Initialize upper bound vector. 
@@ -139,15 +161,18 @@ private:
     int mOutputSize = 0; /*!< output field length */
     int mUpperBoundVectorLength = 0; /*!< upper bound vector length */
 
-    std::string mInputArgumentName; /*!< input argument name */
-    std::string mOutputArgumentName; /*!< output argument name */
-    std::string mDiscretization; /*!< topology/design representation, levelset or density , default = 'density' */
-    std::string mMaterialUseCase; /*!< main material state use case for the problem, default = 'solid' */
+    std::string mInputArgumentName = "Upper Bound Value"; /*!< input argument name */
+    std::string mOutputArgumentName = "Upper Bound Vector"; /*!< output argument name */
+    std::string mDiscretization = "density"; /*!< topology/design representation, levelset or density , default = 'density' */
+    std::string mMaterialUseCase = "solid"; /*!< main material state use case for the problem, default = 'solid' */
     
-    Plato::data::layout_t mOutputLayout; /*!< output field data layout */
+    Plato::data::layout_t mOutputLayout = Plato::data::layout_t::SCALAR; /*!< output field data layout */
     Plato::FixedBlock::Metadata mFixedBlockMetadata; /*!< data describing fixed blocks */
 };
 // class SetUpperBounds;
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::SetUpperBounds, "SetUpperBounds")

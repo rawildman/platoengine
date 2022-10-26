@@ -6,7 +6,6 @@ set(${LIB_NAME}_SOURCES Plato_Interface.cpp
                         Plato_Operation.cpp
                         Plato_MultiOperation.cpp
                         Plato_SingleOperation.cpp
-                        Plato_FunctionOperation.cpp
                         Plato_OperationFactory.cpp
                         Plato_Stage.cpp
                         Plato_Performer.cpp)
@@ -14,7 +13,6 @@ set(${LIB_NAME}_HEADERS Plato_Application.hpp
                         Plato_Interface.hpp
                         Plato_Operation.hpp
                         Plato_MultiOperation.hpp
-                        Plato_FunctionOperation.hpp
                         Plato_SingleOperation.hpp
                         Plato_OperationFactory.hpp
                         Plato_Stage.hpp
@@ -23,8 +21,9 @@ set(${LIB_NAME}_HEADERS Plato_Application.hpp
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
 FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB}     ${${PLATO_LIB}_SOURCES}     ${${PLATO_LIB}_HEADERS}     )
+  add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
   set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
+  target_link_libraries(Plato${PLATO_LIB} LINK_PUBLIC ${PLATO_LIBRARIES} Boost::serialization)
 ENDFOREACH()
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
 
@@ -37,3 +36,4 @@ if( CMAKE_INSTALL_PREFIX )
   install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
  ENDFOREACH()
 endif()
+

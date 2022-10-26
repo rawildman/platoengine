@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include <unordered_map>
-
 #include "Plato_LocalOperation.hpp"
+
+#include <boost/serialization/unordered_map.hpp>
+
+#include <unordered_map>
 
 class PlatoApp;
 
@@ -47,6 +49,7 @@ double compute(Plato::Table& aTable);
 class HarvestDataFromFile : public Plato::LocalOp
 {
 public:
+    HarvestDataFromFile() = default;
     /******************************************************************************//**
      * \brief class constructor
      * \param [in] aPlatoApp Plato service application
@@ -120,6 +123,17 @@ public:
     **********************************************************************************/
     void unittest(const bool aUnitTest);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputStrKeyValuePairs",mInputStrKeyValuePairs);
+      aArchive & boost::serialization::make_nvp("InputData",mInputData);
+      aArchive & boost::serialization::make_nvp("LocalOutputValue",mLocalOutputValue);
+      aArchive & boost::serialization::make_nvp("UnitTest",mUnitTest);
+    }
+
 private:
     /******************************************************************************//**
      * \fn checkInputs
@@ -165,3 +179,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::HarvestDataFromFile, "HarvestDataFromFile")

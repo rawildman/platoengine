@@ -61,6 +61,7 @@ class InputData;
 class ReciprocateObjectiveValue : public Plato::LocalOp
 {
 public:
+    ReciprocateObjectiveValue() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -79,6 +80,15 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+    }
+
 private:
     std::string mOutputName; /*!< output argument name */
     std::string mInputName; /*!< input argument name */
@@ -87,3 +97,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::ReciprocateObjectiveValue, "ReciprocateObjectiveValue")

@@ -125,6 +125,10 @@ class PugiParser : public Parser {
     };
 };
 
+/// @brief Parses the input file with name given by @a aFileName using the PugiParser.
+/// @throw std::logic_error if @a aFileName does not refer to a valid file.
+InputData inputDataFromPugiParsedFile(const std::string& aFileName);
+
 namespace Get
 {
 bool                Bool      (const Plato::InputData & aInputData, const std::string & aFieldname, bool aDefaultValue=false );

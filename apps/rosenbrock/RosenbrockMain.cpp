@@ -49,9 +49,23 @@
 #include "Plato_RosenbrockApp.hpp"
 #include "Plato_Interface.hpp"
 
+#include "Plato_SerializationHeaders.hpp"
+#include "Plato_SerializationUtilities.hpp"
+
+#include <fstream>
+#include <string>
+#include <cstdlib>
+
 #ifndef NDEBUG
 #include <fenv.h>
 #endif
+
+namespace{
+const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_rosenbrock_interface.xml"};
+const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_rosenbrock_app.xml"};
+const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
+}
 
 /******************************************************************************/
 int main(int aArgc, char **aArgv)
@@ -65,10 +79,16 @@ int main(int aArgc, char **aArgv)
     MPI_Init(&aArgc, &aArgv);
 
     /************************* CREATE PLATO INTERFACE *************************/
+    const bool tLoadFromXML = std::getenv("PLATO_LOAD_FROM_XML") != nullptr;
     Plato::Interface* tPlatoInterface = nullptr;
     try
     {
-        tPlatoInterface = new Plato::Interface();
+        if(tLoadFromXML)
+        {
+            tPlatoInterface = new Plato::Interface(kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        } else {
+            tPlatoInterface = new Plato::Interface();
+        }
     }
     catch(...)
     {
@@ -98,7 +118,15 @@ int main(int aArgc, char **aArgv)
     /************************** REGISTER APPLICATION **************************/
     try
     {
-        tPlatoInterface->registerApplication(tMyApp);
+        if(tLoadFromXML)
+        {
+            Plato::registerApplicationWithInterfaceLoadFromXML(
+                *tPlatoInterface, tMyApp, kAppXMLFileName, kAppXMLNodeName);
+        } 
+        else 
+        {
+            tPlatoInterface->registerApplication(tMyApp);
+        }
     }
     catch(...)
     {
@@ -107,6 +135,11 @@ int main(int aArgc, char **aArgv)
     }
     /************************** REGISTER APPLICATION **************************/
 
+    const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
+    if(tSaveToXML){
+        Plato::saveToXML(*tPlatoInterface, kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        Plato::saveToXML(*tMyApp, kAppXMLFileName, kAppXMLNodeName);
+    }
     /******************************** PERFORM *********************************/
     try
     {

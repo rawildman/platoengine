@@ -49,6 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
+#include "Plato_PenaltyModel.hpp"
 
 class PlatoApp;
 
@@ -64,6 +65,11 @@ class PenaltyModel;
 class ComputeVolume : public Plato::LocalOp
 {
 public:
+    ComputeVolume() = default;
+    ComputeVolume(const std::string& aVolumeName,
+                  const std::string& aGradientName,
+                  Plato::PenaltyModel* aPenaltyModel,
+                  const std::string& aTopologyName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -87,13 +93,28 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("TopologyName",mTopologyName);
+      aArchive & boost::serialization::make_nvp("VolumeName",mVolumeName);
+      aArchive & boost::serialization::make_nvp("GradientName",mGradientName);
+
+      aArchive & boost::serialization::make_nvp("PenaltyModel",mPenaltyModel);
+    }
+
 private:
-    std::string mTopologyName; /*!< topology field argument name */
+    std::string mTopologyName = "density"; /*!< topology field argument name */
     std::string mVolumeName;  /*!< volume argument name */
     std::string mGradientName; /*!< volume gradient argument name */
-    Plato::PenaltyModel* mPenaltyModel; /*!< material penalty model, e.g. SIMP */
+    Plato::PenaltyModel* mPenaltyModel = nullptr; /*!< material penalty model, e.g. SIMP */
 };
 // class ComputeVolume
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::ComputeVolume, "ComputeVolume")

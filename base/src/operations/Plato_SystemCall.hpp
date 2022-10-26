@@ -72,6 +72,7 @@ class InputData;
 class SystemCall
 {
 public:
+    SystemCall() = default;
     /******************************************************************************//**
      * \brief Constructor
      * \param [in] aNode input metadata
@@ -148,6 +149,8 @@ public:
      * \return list of names
     **********************************************************************************/
     std::string commandPlusArguments() const {return mCommandPlusArguments; }
+
+   
 
 private:
     /******************************************************************************//**

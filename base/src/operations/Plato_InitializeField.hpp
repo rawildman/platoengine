@@ -50,6 +50,10 @@
 
 #include "Plato_LocalOperation.hpp"
 
+#include <boost/serialization/array.hpp>
+
+#include <array>
+
 class PlatoApp;
 class DistributedVector;
 
@@ -64,6 +68,25 @@ class InputData;
 class InitializeField : public Plato::LocalOp
 {
 public:
+    InitializeField() = default;
+
+    InitializeField(const std::string& aFileName,
+                    const std::string& aStringMethod,
+                    const std::string& aSphereRadius,
+                    const std::string& aOutputFieldName,
+                    const std::string& aSpherePackingFactor,
+                    const std::string& aSphereSpacingX,
+                    const std::string& aSphereSpacingY,
+                    const std::string& aSphereSpacingZ,
+                    const std::string& aVariableName,
+                    const std::array<double, 3>& aMinCoords,
+                    const std::array<double, 3>& aMaxCoords,
+                    const std::vector<int>& aLevelSetNodes,
+                    Plato::data::layout_t aOutputLayout,
+                    double aUniformValue,
+                    int aIteration,
+                    bool aCreateSpheres);
+
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -81,6 +104,30 @@ public:
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("CreateSpheres",mCreateSpheres);
+      aArchive & boost::serialization::make_nvp("Iteration",mIteration);
+      aArchive & boost::serialization::make_nvp("UniformValue",mUniformValue);
+      aArchive & boost::serialization::make_nvp("MinCoords",mMinCoords);
+      aArchive & boost::serialization::make_nvp("MaxCoords",mMaxCoords);
+      aArchive & boost::serialization::make_nvp("OutputLayout",mOutputLayout);
+      aArchive & boost::serialization::make_nvp("FileName",mFileName);
+      aArchive & boost::serialization::make_nvp("OutputFile",mFileName);
+      aArchive & boost::serialization::make_nvp("StringMethod",mStringMethod);
+      aArchive & boost::serialization::make_nvp("SphereRadius",mSphereRadius);
+      aArchive & boost::serialization::make_nvp("OutputFieldName",mOutputFieldName);
+      aArchive & boost::serialization::make_nvp("SpherePackingFactor",mSpherePackingFactor);
+      aArchive & boost::serialization::make_nvp("SphereSpacingX",mSphereSpacingX);
+      aArchive & boost::serialization::make_nvp("SphereSpacingY",mSphereSpacingY);
+      aArchive & boost::serialization::make_nvp("SphereSpacingZ",mSphereSpacingZ);
+      aArchive & boost::serialization::make_nvp("VariableName",mVariableName);
+      aArchive & boost::serialization::make_nvp("LevelSetNodesets",mLevelSetNodesets);
+    }
 
 private:
     /******************************************************************************//**
@@ -124,8 +171,8 @@ private:
     bool mCreateSpheres; /*!< create spheres-based "swiss cheese" level set field */
     int mIteration; /*!< read topology field from this optimization iteration */
     double mUniformValue; /*!< value used to initialize uniform design variable field */
-    double mMinCoords[3]; /*!< 3D array of minimum coordinates in x, y, and z */
-    double mMaxCoords[3]; /*!< 3D array of maximum coordinates in x, y, and z */
+    std::array<double, 3> mMinCoords; /*!< 3D array of minimum coordinates in x, y, and z */
+    std::array<double, 3> mMaxCoords; /*!< 3D array of maximum coordinates in x, y, and z */
     Plato::data::layout_t mOutputLayout; /*!< output data layout, e.g. scalar value, scalar field, etc */
 
     std::string mFileName; /*!< output file name */
@@ -143,3 +190,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeField, "InitializeField")

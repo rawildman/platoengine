@@ -64,6 +64,7 @@ class InputData;
 class MeanPlusVarianceMeasure : public Plato::LocalOp
 {
 public:
+    MeanPlusVarianceMeasure() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application interface
@@ -134,6 +135,14 @@ public:
      * @return output argument name
     **********************************************************************************/
     std::string getOutputArgument(const std::string& aInput) const;
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OperationName",mOperationName);
+    }
 
 private:
     /******************************************************************************//**
@@ -308,3 +317,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::MeanPlusVarianceMeasure, "MeanPlusVarianceMeasure")

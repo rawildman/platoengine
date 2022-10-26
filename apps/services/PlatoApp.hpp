@@ -49,6 +49,7 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_TimersTree.hpp"
 #include <Plato_FreeFunctions.hpp>
+#include "Plato_SerializationHeaders.hpp"
 
 #ifdef GEOMETRY
 #include "Plato_MetaDataMLS.hpp"
@@ -75,6 +76,7 @@ class AbstractFilter;
 class PlatoApp : public Plato::Application
 {
 public:
+    PlatoApp() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aLocalComm local communicator
@@ -372,6 +374,13 @@ public:
         }
     }
 
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("Application", boost::serialization::base_object<Application>(*this));
+        aArchive & boost::serialization::make_nvp("OperationMap", mOperationMap);
+    }
+    
 private:
     /******************************************************************************//**
      * @brief Parsing exception handler
@@ -411,13 +420,13 @@ private:
     void initialize( bool initializeTimers );
 
     MPI_Comm mLocalComm; /*!< local communicator */
-    LightMP* mLightMp; /*!< application-specific services */
-    SystemContainer* mSysGraph; /*!< parallel graph services */
-    MeshServices* mMeshServices; /*!< mesh services */
-    Plato::AbstractFilter* mFilter; /*!< filter services */
-    Plato::InputData mAppfileData; /*!< PLATO application input data */
-    Plato::InputData mInputfileData; /*!< Shared input data */
-    std::shared_ptr<pugi::xml_document> mInputTree{nullptr}; /*!< Original input tree */
+    LightMP* mLightMp = nullptr; /*!< application-specific services */
+    SystemContainer* mSysGraph = nullptr; /*!< parallel graph services */
+    MeshServices* mMeshServices = nullptr; /*!< mesh services */
+    Plato::AbstractFilter* mFilter = nullptr; /*!< filter services */
+    Plato::InputData mAppfileData{"Appfile Data"}; /*!< PLATO application input data */
+    Plato::InputData mInputfileData{"Inputfile Data"}; /*!< Shared input data */
+    std::shared_ptr<pugi::xml_document> mInputTree = nullptr; /*!< Original input tree */
 
 #ifdef GEOMETRY
     std::map<std::string,std::shared_ptr<Plato::MLSstruct>> mMLS;  /*!< Moving Least Squared (MLS) metadata */
@@ -429,7 +438,7 @@ private:
     std::map<std::string, std::vector<double>*> mValueMap; /*!< Name - Scalar values map */
     std::map<std::string, Plato::LocalOp*> mOperationMap; /*!< Name - Operation map */
 
-    Plato::TimersTree* mTimersTree; /*!< timer tools/services */
+    Plato::TimersTree* mTimersTree = nullptr; /*!< timer tools/services */
+
 };
 // class PlatoApp
-

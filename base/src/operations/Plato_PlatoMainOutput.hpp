@@ -61,6 +61,17 @@ class InputData;
 class PlatoMainOutput : public Plato::LocalOp
 {
 public:
+    PlatoMainOutput() = default;
+    PlatoMainOutput(const std::string& aBaseName,
+                    const std::string& aDiscretization,
+                    const std::string& aRestartFieldName,
+                    const std::vector<std::string>& aRequestedFormats,
+                    const std::vector<Plato::LocalArg>& aOutputData,
+                    int aOutputMethod,
+                    int aOutputFrequency,
+                    int aMaxIterations,
+                    bool aWriteRestart,
+                    bool aAppendIterationCount);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -84,6 +95,24 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputData",mOutputData);
+      aArchive & boost::serialization::make_nvp("OutputFrequency",mOutputFrequency);
+      aArchive & boost::serialization::make_nvp("MaxIterations",mMaxIterations);
+      aArchive & boost::serialization::make_nvp("OutputMethod",mOutputMethod);
+      aArchive & boost::serialization::make_nvp("Discretization",mDiscretization);
+      aArchive & boost::serialization::make_nvp("WriteRestart",mWriteRestart);
+      aArchive & boost::serialization::make_nvp("RestartFieldName",mRestartFieldName);
+      aArchive & boost::serialization::make_nvp("BaseName",mBaseName);
+      aArchive & boost::serialization::make_nvp("AppendIterationCount",mAppendIterationCount);
+      aArchive & boost::serialization::make_nvp("RequestedFormats",mRequestedFormats);
+    }
+
 private:
     /******************************************************************************//**
      * @brief Extract iso-surface
@@ -101,10 +130,10 @@ private:
 
 private:
     std::vector<Plato::LocalArg> mOutputData; /*!< set of output data */
-    int mOutputFrequency; /*!< output frequency */
-    int mMaxIterations; /*!< max iterations */
+    int mOutputFrequency = 1000; /*!< output frequency */
+    int mMaxIterations = 1; /*!< max iterations */
     int mOutputMethod; /*!< epu output data - distributed or serial */
-    std::string mDiscretization; /*!< topology representation, density or levelset */
+    std::string mDiscretization = "density"; /*!< topology representation, density or levelset */
     bool mWriteRestart; /*!< flag - write restart file */
     std::string mRestartFieldName; /*!< name of field to put in restart file */
     std::string mBaseName; /*!< output file base name */
@@ -115,3 +144,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::PlatoMainOutput, "PlatoMainOutput")

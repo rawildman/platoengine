@@ -181,6 +181,19 @@ public:
     {
         Plato::initialize<ScalarType, OrdinalType>(this->mInterface, this->mInputData, this->mOptimizerIndex);
     }
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("OptimizerName",mOptimizerName);
+      aArchive & boost::serialization::make_nvp("OptimizerIndex",mOptimizerIndex);
+      aArchive & boost::serialization::make_nvp("LastOptimizer",mLastOptimizer);
+      aArchive & boost::serialization::make_nvp("HasInnerLoop",mHasInnerLoop);
+      //aArchive & boost::serialization::make_nvp("Interface",*mInterface);<<<this is already serialized 
+      aArchive & boost::serialization::make_nvp("InputData",mInputData);
+      aArchive & boost::serialization::make_nvp("StageDataMng",mStageDataMng);
+    }
 
 protected:
     /******************************************************************************//**

@@ -32,6 +32,9 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_OutputNodalFieldSharedData.cpp
                         Plato_ReciprocateObjectiveGradient.cpp
                         Plato_StatisticsOperationsUtilities.cpp
+                        Plato_MapMLSField.cpp
+                        Plato_ComputeMLSField.cpp
+                        Plato_InitializeMLSPoints.cpp
                         )
                         
 set(${LIB_NAME}_HEADERS Plato_Filter.hpp
@@ -64,6 +67,7 @@ set(${LIB_NAME}_HEADERS Plato_Filter.hpp
                         Plato_NormalizeObjectiveGradient.hpp
                         Plato_ReciprocateObjectiveGradient.hpp
                         Plato_StatisticsOperationsUtilities.hpp
+                        
                         )
                         
 if( ENABLE_ISO )
@@ -91,6 +95,7 @@ FOREACH(PLATO_LIB ${LIB_NAMES})
 if( ENABLE_ISO )
   target_link_libraries(Plato${PLATO_LIB} IsoExtract)
 endif()
+  target_link_libraries(Plato${PLATO_LIB} Boost::serialization)
   set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
 ENDFOREACH()
 

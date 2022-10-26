@@ -54,12 +54,13 @@
 #include <vector>
 #include <memory>
 
+#include "Plato_Operation.hpp"
+#include "Plato_SharedData.hpp"
+#include "Plato_SerializationHeaders.hpp"
+
 namespace Plato
 {
-
 class Performer;
-class SharedData;
-class Operation;
 class StageInputDataMng;
 
 //! Sequence of Operations that correspond to a call to Plato::Interface::compute()
@@ -68,6 +69,7 @@ class StageInputDataMng;
 class Stage
 {
 public:
+    Stage() = default;
     Stage(const Plato::StageInputDataMng & aStageInputData,
           const std::shared_ptr<Plato::Performer> aPerformer,
           const std::vector<Plato::SharedData*>& aSharedData);
@@ -75,7 +77,10 @@ public:
 
     void update(const Plato::StageInputDataMng & aStageInputData,
 		const std::shared_ptr<Plato::Performer> aPerformer,
+
 		const std::vector<Plato::SharedData*>& aSharedData);
+
+    void addOperation(Operation* aOperation);
 
     Plato::Operation* getNextOperation();
     void begin();
@@ -89,9 +94,20 @@ public:
     std::vector<std::string> getInputDataNames() const;
     std::vector<std::string> getOutputDataNames() const;
 
+    void setPerformerOnOperations(std::shared_ptr<Performer> aPerformer);
+
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("StageName",m_name);
+        aArchive & boost::serialization::make_nvp("Operations",m_operations);
+        aArchive & boost::serialization::make_nvp("InputData",m_inputData);
+        aArchive & boost::serialization::make_nvp("OutputData",m_outputData);
+        aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
+    }
+
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                              const std::shared_ptr<Plato::Performer> aPerformer,
                               const std::vector<Plato::SharedData*>& aSharedData);
 
     std::string m_name;
@@ -99,7 +115,7 @@ private:
     std::vector<Plato::SharedData*> m_inputData;
     std::vector<Plato::SharedData*> m_outputData;
 
-    int currentOperationIndex;
+    int currentOperationIndex = 0;
 };
 
 } // End namespace Plato

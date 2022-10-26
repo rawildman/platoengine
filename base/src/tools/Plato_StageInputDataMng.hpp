@@ -55,6 +55,7 @@
 #include <utility>
 
 #include "Plato_InputData.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 namespace Plato
 {
@@ -100,7 +101,17 @@ public:
     const Plato::OperationInputDataMng & getOperationInputData(const std::string & aStageName, const int & aOperationIndex) const;
     void addOperationInputData(const std::string & aStageName, const Plato::OperationInputDataMng & aOperationInputData);
     void addOperationInputData(const std::string & aStageName, const std::vector<Plato::OperationInputDataMng> & aOperationInputData);
-
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("InputData",boost::serialization::base_object<Plato::InputData>(*this));
+      aArchive & boost::serialization::make_nvp("StageNames",mStageNames);
+      aArchive & boost::serialization::make_nvp("OperationInputs",mOperationInputs);
+      aArchive & boost::serialization::make_nvp("SharedDataMap",mSharedDataMap);
+    }
+  
 private:
     std::vector<std::string> mStageNames;
     std::map<std::string, std::vector<Plato::OperationInputDataMng>> mOperationInputs;

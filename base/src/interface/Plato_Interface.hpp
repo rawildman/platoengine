@@ -64,10 +64,14 @@
 #include "Plato_SharedData.hpp"
 #include "Plato_Console.hpp"
 
+#include "Plato_Stage.hpp"
+
+#include "Plato_SerializationHeaders.hpp"
+#include "Plato_SerializationLoadSave.hpp"
+
 namespace Plato
 {
 
-class Stage;
 class Performer;
 class SharedData;
 class Application;
@@ -78,6 +82,42 @@ enum stage_index_t
 {
     INVALID_STAGE = -2,
     TERMINATE_STAGE = -1
+};
+
+struct PerformerInfo
+{
+    std::vector<std::string> mNames;
+    std::string mCodeName;
+    int mId;
+
+    template<typename Archive>
+    void serialize(Archive& aArchive, const unsigned int aVersion)
+    {
+        aArchive & boost::serialization::make_nvp("Names", mNames);
+        aArchive & boost::serialization::make_nvp("Code", mCodeName);
+        aArchive & boost::serialization::make_nvp("ID", mId);
+    }
+};
+
+struct SharedDataSerializedInfo
+{
+    std::string mName;
+    std::string mLayout;
+    int mSize;
+    bool mIsDynamic;
+    std::vector<std::string> mProviderNames;
+    std::vector<std::string> mReceiverNames;
+
+    template<typename Archive>
+    void serialize(Archive& aArchive, const unsigned int aVersion)
+    {
+        aArchive & boost::serialization::make_nvp("Name", mName);
+        aArchive & boost::serialization::make_nvp("Layout", mLayout);
+        aArchive & boost::serialization::make_nvp("Size", mSize);
+        aArchive & boost::serialization::make_nvp("Dynamic", mIsDynamic);
+        aArchive & boost::serialization::make_nvp("OwnerName", mProviderNames);
+        aArchive & boost::serialization::make_nvp("UserName", mReceiverNames);
+    }
 };
 
 /**
@@ -91,14 +131,23 @@ enum stage_index_t
  This should be separated into two virtual bases.
  */
 /******************************************************************************/
-class Interface
+class Interface final
 {
 public:
     explicit Interface(MPI_Comm aGlobalComm = MPI_COMM_WORLD);
+    /// This ctor initializes Interface from the saved state in the XML file with name
+    /// @a aFileName, and assumes the data with XML tag @a aNodeName.
+    Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
     Interface(const int & aCommID, const std::string & a_XML_String, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
-    virtual ~Interface();
+    ~Interface();
 
     void registerApplication(Plato::Application* aApplication);
+
+    /// Register @a aApplication and initialize its data layer MPI. The purpose of this function is
+    /// similar to registerApplication, however, it should be used when using the serialization 
+    /// interface. 
+    /// @pre @a aApplication must have been initialized already using the serialization interface.
+    void registerApplicationOnlyInitializeMPI(Application* aApplication);
 
     // driver interface
     void run();
@@ -130,6 +179,29 @@ public:
     // control
     bool isDone();
 
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+        aArchive & boost::serialization::make_nvp("AllPerformers", mAllPerformersInfo);
+        aArchive & boost::serialization::make_nvp("AllSharedData", mAllSharedDataInfo);
+        aArchive & boost::serialization::make_nvp("DataLayer", mDataLayer);
+        aArchive & boost::serialization::make_nvp("Stages",mStages);
+    }
+
+    void createStages();
+    void createSharedData(Application* aApplication);
+    void initializeConsole();
+    void initializeSharedDataMPI(Application* aApplication);
+    void initializePerformerMPI();
+    void setPerformerOnStages();
+
+    /// This function calls callable @a aF and uses the exception handling in Interface.
+    /// Because exception handling is complicated by MPMD, this function helps 
+    /// consolidate necessary MPI calls. This is most easily called with a lambda, as in:
+    /// @code tryFCatchInterfaceExceptions([this](){createPerformers();});
+    template<typename F>
+    void tryFCatchInterfaceExceptions(const F& aF);
+
 private:
     void perform(Plato::Stage* aStage);
     void broadcastStageIndex(int & aStageIndex);
@@ -138,38 +210,59 @@ private:
     Plato::Stage* getStage(std::string aStageName);
     int getStageIndex(std::string aStageName) const;
 
-    void createStages();
     void updateStages();
     void createPerformers();
     void reinitializePerformer();
-    void createSharedData(Plato::Application* aApplication);
 
     void exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,
                      Plato::Application* aApplication,
-                     Plato::CommunicationData & aCommunicationData);
+                     Plato::CommunicationData & aCommunicationData) const;
     void exportOwnedGlobalIDs(const Plato::data::layout_t & aLayout,
                               Plato::Application* aApplication,
-                              Plato::CommunicationData & aCommunicationData);
+                              Plato::CommunicationData & aCommunicationData) const;
+
+    void getSharedDataAndCommunicationInfo(Application* aApplication, 
+        SharedDataInfo& aSharedDataInfo, 
+        CommunicationData& aCommunicationData) const;
+
+    void checkAndSetApplication(Application* aApplication);
 
 private:
+    // Serializable state
+    std::vector<PerformerInfo> mAllPerformersInfo;
+    std::vector<SharedDataSerializedInfo> mAllSharedDataInfo;
+
+    // Internal state
     Plato::DataLayer* mDataLayer = nullptr;
 
     std::shared_ptr<Plato::Performer> mPerformer;
     std::vector<Plato::Stage*> mStages;
 
-    Plato::ExceptionHandler* mExceptionHandler;
+    Plato::ExceptionHandler* mExceptionHandler = nullptr;
 
-    Plato::Console* mConsole;
+    Plato::Console* mConsole = nullptr;
 
-    int mLocalCommID;
-    int mPerformerID;
+    int mLocalCommID = -1;
+    int mPerformerID = -1;
     std::string mLocalPerformerName;
-    Plato::InputData mInputData;
+    Plato::InputData mInputData{"Input Data"};
 
     MPI_Comm mLocalComm;
     MPI_Comm mGlobalComm;
-    bool mIsDone;
+    bool mIsDone = false;
 };
+
+template<typename F>
+void Interface::tryFCatchInterfaceExceptions(const F& aF)
+{
+    try{
+        aF();
+    } catch(...){
+        Catch();
+    }
+    handleExceptions();
+}
+
 
 } /* namespace Plato */
 

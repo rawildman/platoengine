@@ -49,6 +49,10 @@
 
 #include "Plato_SharedField.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SharedField)
+
 namespace Plato
 {
 
@@ -267,9 +271,11 @@ SharedField::SharedField(const std::string & aMyName,
 }
 
 /*****************************************************************************/
-SharedField::~SharedField()
+void SharedField::initializeMPI(const Plato::CommunicationData& aCommData)
 /*****************************************************************************/
 {
+    mEpetraComm = std::make_shared<Epetra_MpiComm>(aCommData.mInterComm);
+    initialize(aCommData);
 }
 
 } // End namespace Plato

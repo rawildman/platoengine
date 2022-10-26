@@ -52,8 +52,26 @@
 #include "Plato_InputData.hpp"
 #include "PlatoEngine_AbstractFilter.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::Filter)
+
 namespace Plato
 {
+
+Filter::Filter(const std::string& aInputToFilterName,
+               const std::string& aInputBaseFieldName,
+               const std::string& aOutputFromFilterName,
+               Plato::AbstractFilter* aFilter,
+               bool aIsGradient) :
+               mInputToFilterName(aInputToFilterName),
+               mInputBaseFieldName(aInputBaseFieldName),
+               mOutputFromFilterName(aOutputFromFilterName),
+               mFilter(aFilter),
+               mIsGradient(aIsGradient)
+{
+}
+
 
 Filter::Filter(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp),

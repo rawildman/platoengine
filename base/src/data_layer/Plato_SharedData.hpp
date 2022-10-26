@@ -56,6 +56,7 @@
 
 namespace Plato
 {
+struct CommunicationData;
 
 //!  Inter-program shared data
 /*!
@@ -87,9 +88,7 @@ struct data
 class SharedData
 {
 public:
-    virtual ~SharedData()
-    {
-    }
+    virtual ~SharedData() = default;
 
     /******************************************************************************//**
      * \brief Return the size of the SharedData container
@@ -131,11 +130,18 @@ public:
      * \param [in] aData standard vector
     **********************************************************************************/
     virtual void getData(std::vector<double> & aData) const = 0;
+
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version){};
+
+    virtual void initializeMPI(const Plato::CommunicationData& aCommData){}
 };
 // class SharedData
 
 }
 // End namespace Plato
 
+#include <boost/serialization/assume_abstract.hpp>
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Plato::SharedData)
 
 #endif

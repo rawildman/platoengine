@@ -61,6 +61,7 @@
 #include "Plato_Application.hpp"
 #include "Plato_Performer.hpp"
 #include "Plato_Operation.hpp"
+#include "Plato_Operation.hpp"
 #include "Plato_Stage.hpp"
 #include "Plato_Exceptions.hpp"
 #include "Plato_Parser.hpp"
@@ -70,74 +71,63 @@
 namespace Plato
 {
 
-/******************************************************************************/
-Interface::Interface(MPI_Comm aGlobalComm) :
-        mDataLayer(nullptr),
-        mPerformer(nullptr),
-        mStages(),
-        mExceptionHandler(nullptr),
-        mConsole(nullptr),
-        mLocalCommID(-1),
-        mPerformerID(-1),
-        mLocalPerformerName(),
-        mInputData("Input Data"),
-        mLocalComm(),
-        mGlobalComm(aGlobalComm),
-        mIsDone(false)
-/******************************************************************************/
+namespace{
+/// @return The local program's communicator id from the environment.
+/// This value (PLATO_PERFORMER_ID) is specified as an argument to mpirun.
+/// An invalid value of -1 is returned if the environment variable doesn't exist.
+int performerID()
 {
-    // get the local program's communicator id from the environment.
-    // This value (PLATO_PERFORMER_ID) is specified as an argument to mpirun.
-    const char* tPerfChar = getenv("PLATO_PERFORMER_ID");
+    const char* const tPerfChar = getenv("PLATO_PERFORMER_ID");
     if(tPerfChar)
     {
-        mPerformerID = atoi(tPerfChar);
+        return atoi(tPerfChar);
     }
     else
     {
-        // throw
+        return -1;
     }
+}
+}
 
-    const char* input_char = getenv("PLATO_INTERFACE_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mInputData = parser->parseFile(input_char);
-    delete parser;
+/******************************************************************************/
+Interface::Interface(MPI_Comm aGlobalComm) :
+/******************************************************************************/
+        mPerformerID(performerID()),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
+        mGlobalComm(aGlobalComm)
+{
+    createPerformers();
+    initializeConsole();
+}
 
-    this->createPerformers();
-
-    mConsole = new Console(mLocalPerformerName, mPerformerID, Plato::Get::InputData(mInputData,"Console"), mLocalComm);
+/******************************************************************************/
+Interface::Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm) :
+        mPerformerID(performerID()),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
+        mGlobalComm(aGlobalComm)
+/******************************************************************************/
+{
+    Plato::loadFromXML(*this, aFileName, aNodeName);
+    initializePerformerMPI();
+    initializeConsole();
 }
 
 /******************************************************************************/
 Interface::Interface(const int & aCommID, const std::string & aXML_String, MPI_Comm aGlobalComm) :
-        mDataLayer(nullptr),
-        mPerformer(nullptr),
-        mStages(),
-        mExceptionHandler(nullptr),
-        mConsole(nullptr),
-        mLocalCommID(-1),
-        mPerformerID(-1),
-        mLocalPerformerName(),
-        mInputData("Input Data"),
-        mLocalComm(),
-        mGlobalComm(aGlobalComm),
-        mIsDone(false)
+        mLocalCommID(aCommID),
+        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
+        mGlobalComm(aGlobalComm)
 /******************************************************************************/
 {
-    // get the local program's communicator id.
-    // This value is specified as an argument to mpirun.
-    // if(comm_id is valid) TODO: not sure what valid is here
-    mLocalCommID = aCommID;
+    // The local program's communicator id (in argument aCommID) is specified as an 
+    // argument to mpirun.
+    // TODO: Add validation, not sure what valid is here
+    // if(comm_id is valid) 
     //else
     // throw
 
-    const char* input_char = getenv("PLATO_INTERFACE_FILE");
-    Plato::Parser* parser = new Plato::PugiParser();
-    mInputData = parser->parseFile(input_char);
-
-    this->createPerformers();
-
-    mConsole = new Console(mLocalPerformerName, mPerformerID, Plato::Get::InputData(mInputData,"Console"), mLocalComm);
+    createPerformers();
+    initializeConsole();
 }
 
 /******************************************************************************/
@@ -277,7 +267,7 @@ void Interface::run()
     Plato::DriverFactory<double> tDriverFactory;
     Plato::DriverInterface<double>* tDriver = nullptr;
 
-    // Note: When frist called, the factory will look for the
+    // Note: When first called, the factory will look for the
     // first driver block. Subsequent calls will look for the
     // next driver block if it exists.
     while((tDriver =
@@ -309,7 +299,6 @@ void Interface::perform()
     {
         // Performers 'hang' here until a new stage is established
         Plato::Stage* tStage = this->getStage();
-
         // 'Terminate' stage is nullptr
         if(tStage == nullptr)
         {
@@ -362,7 +351,6 @@ void Interface::perform(Plato::Stage* aStage)
         while(tOperation)
         {
             // Console::Status("Perform Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
-
             tOperation->sendInput();
 
             // copy data from Plato::SharedData buffers to hostedCode data containers
@@ -503,46 +491,19 @@ void Interface::importData(double* aTo, Plato::SharedData* aFrom)
 void Interface::registerApplication(Plato::Application* aApplication)
 /******************************************************************************/
 {
-    if(aApplication == nullptr)
-    {
-        registerException(Plato::ParsingException("Failed to create Application"));
-    }
-    this->handleExceptions();
+    checkAndSetApplication(aApplication);
+    tryFCatchInterfaceExceptions([aApplication](){aApplication->initialize();});
+    tryFCatchInterfaceExceptions([this, aApplication](){createSharedData(aApplication);});
+    tryFCatchInterfaceExceptions([this](){createStages();});
+}
 
-    try
-    {
-        aApplication->initialize();
-    }
-    catch(...)
-    {
-        mExceptionHandler->Catch();
-    }
-    this->handleExceptions();
-
-    if(mPerformer)
-    {
-        mPerformer->setApplication(aApplication);
-    }
-
-    try
-    {
-        this->createSharedData(aApplication);
-    }
-    catch(...)
-    {
-        mExceptionHandler->Catch();
-    }
-    this->handleExceptions();
-
-    try
-    {
-        this->createStages();
-    }
-    catch(...)
-    {
-        mExceptionHandler->Catch();
-    }
-    this->handleExceptions();
+/******************************************************************************/
+void Interface::registerApplicationOnlyInitializeMPI(Application* aApplication)
+/******************************************************************************/
+{
+    checkAndSetApplication(aApplication);
+    setPerformerOnStages();
+    initializeSharedDataMPI(aApplication);
 }
 
 /******************************************************************************/
@@ -572,6 +533,8 @@ void Interface::createStages()
 void Interface::updateStages()
 /******************************************************************************/
 {
+    // Serialization TODO: I don't think this will be correctly handled without an interface file
+
     // After creating the shared data all of the stages and their
     // operations need to be updated so to have the new links to
     // the shared data.
@@ -608,18 +571,101 @@ void Interface::updateStages()
 void Interface::createPerformers()
 /******************************************************************************/
 {
+    for( auto tNode : mInputData.getByName<Plato::InputData>("Performer") )
+    {
+        int tLocalPerformerID = Plato::Get::Int(tNode, "PerformerID", std::numeric_limits<int>::min());
+        std::vector<std::string> tPerformerNames;
+        for(const auto& tName : tNode.getByName<std::string>("Name"))
+        {
+            tPerformerNames.push_back(tName);
+        }
+        const std::string& tPerformerCode = Plato::Get::String(tNode, "Code");
+        // C++20 use designated initializers:
+        mAllPerformersInfo.push_back({tPerformerNames, tPerformerCode, tLocalPerformerID});
+    }
+    initializePerformerMPI();
+}
+
+/******************************************************************************/
+void Interface::createSharedData(Plato::Application* const aApplication)
+/******************************************************************************/
+{
+    for( auto tNode : mInputData.getByName<Plato::InputData>("SharedData") )
+    {
+        // Use designated initializers in C++20
+        mAllSharedDataInfo.push_back({
+            Plato::Get::String(tNode, "Name"),
+            Plato::Get::String(tNode, "Layout"),
+            tNode.size<std::string>("Size") ? Plato::Get::Int(tNode, "Size") : 1,
+            Plato::Get::Bool(tNode, "Dynamic", false),
+            tNode.getByName<std::string>("OwnerName"),
+            tNode.getByName<std::string>("UserName")
+        });
+    }
+    SharedDataInfo tSharedDataInfo;
+    CommunicationData tCommunicationData;
+    getSharedDataAndCommunicationInfo(aApplication, tSharedDataInfo, tCommunicationData);
+
+    if(mDataLayer)
+    {
+        delete mDataLayer;
+    }
+    mDataLayer = new Plato::DataLayer(tSharedDataInfo, tCommunicationData);
+}
+
+/******************************************************************************/
+void Interface::getSharedDataAndCommunicationInfo(Application* const aApplication, 
+        SharedDataInfo& aSharedDataInfo,
+        CommunicationData& aCommunicationData) const
+/******************************************************************************/
+{
+    aCommunicationData.mLocalComm = mLocalComm;
+    aCommunicationData.mInterComm = mGlobalComm;
+    aCommunicationData.mLocalCommName = mLocalPerformerName;
+    for(const auto& tInfo : mAllSharedDataInfo)
+    {
+        aSharedDataInfo.setSharedDataMap(tInfo.mProviderNames, tInfo.mReceiverNames);
+
+        Plato::communication::broadcast_t tMyBroadcast =
+                Plato::getBroadcastType(aCommunicationData.mLocalCommName, tInfo.mProviderNames, tInfo.mReceiverNames);
+        aSharedDataInfo.setMyBroadcast(tMyBroadcast);
+
+        aSharedDataInfo.setSharedDataSize(tInfo.mName, tInfo.mSize);
+        aSharedDataInfo.setSharedDataDynamic(tInfo.mName, tInfo.mIsDynamic);
+
+        std::string tLayoutUppercase = tInfo.mLayout;
+        Parse::toUppercase(tLayoutUppercase);
+        aSharedDataInfo.setSharedDataIdentifiers(tInfo.mName, tLayoutUppercase);
+    }
+
+    this->exportGraph(aSharedDataInfo, aApplication, aCommunicationData);
+}
+
+/******************************************************************************/
+void Interface::initializeSharedDataMPI(Application* const aApplication)
+/******************************************************************************/
+{
+    SharedDataInfo tSharedDataInfo;
+    CommunicationData tCommunicationData;
+    getSharedDataAndCommunicationInfo(aApplication, tSharedDataInfo, tCommunicationData);
+    mDataLayer->initializeMPI(tCommunicationData);
+}
+
+/******************************************************************************/
+void Interface::initializePerformerMPI()
+/******************************************************************************/
+{
     int tMyRank, tNumGlobalRanks;
     MPI_Comm_rank(mGlobalComm, &tMyRank);
     MPI_Comm_size(mGlobalComm, &tNumGlobalRanks);
 
     std::vector<int> tPerfIDs;
     std::map<int,int> tPerfCommSize;
-    for( auto tNode : mInputData.getByName<Plato::InputData>("Performer") )
+    for(const auto& tPerformer : mAllPerformersInfo)
     {
         // is a PerformerID specified?  If not, error out.
         //
-        int tLocalPerformerID = Plato::Get::Int(tNode, "PerformerID", std::numeric_limits<int>::min());
-
+        int tLocalPerformerID = tPerformer.mId;
         if( tLocalPerformerID == std::numeric_limits<int>::min() )
         {
             if( tMyRank == 0 )
@@ -694,11 +740,11 @@ void Interface::createPerformers()
     MPI_Allgather(&mPerformerID, 1, MPI_INT, tPerformerIDs.data(), 1, MPI_INT, mGlobalComm);
 
     int tCommIndex = 0;
-    for( auto tNode : mInputData.getByName<Plato::InputData>("Performer") )
+    for(const auto& tPerformer : mAllPerformersInfo)
     {
-        int tLocalPerformerID = Plato::Get::Int(tNode, "PerformerID");
+        int tLocalPerformerID = tPerformer.mId;
         int tNumRanksThisID = tPerfCommSize[tLocalPerformerID];
-        auto tPerformerNames = tNode.getByName<std::string>("Name");
+        const auto& tPerformerNames = tPerformer.mNames;
         int tNumCommsThisID = tPerformerNames.size();
         int tLocalPerformerCommSize = tNumRanksThisID / tNumCommsThisID;
 
@@ -763,53 +809,32 @@ void Interface::createPerformers()
 }
 
 /******************************************************************************/
-void Interface::createSharedData(Plato::Application* aApplication)
+void Interface::setPerformerOnStages()
 /******************************************************************************/
 {
-    Plato::CommunicationData tCommunicationData;
-    tCommunicationData.mLocalComm = mLocalComm;
-    tCommunicationData.mInterComm = mGlobalComm;
-    tCommunicationData.mLocalCommName = mLocalPerformerName;
-
-    Plato::SharedDataInfo tSharedDataInfo;
-    for( auto tNode : mInputData.getByName<Plato::InputData>("SharedData") )
+    for(auto tStage : mStages)
     {
-        std::vector<std::string> tMyProviderNames = tNode.getByName<std::string>("OwnerName");
-
-        std::vector<std::string> tMyReceiverNames = tNode.getByName<std::string>("UserName");
-        tSharedDataInfo.setSharedDataMap(tMyProviderNames, tMyReceiverNames);
-
-        Plato::communication::broadcast_t tMyBroadcast =
-                Plato::getBroadcastType(tCommunicationData.mLocalCommName, tMyProviderNames, tMyReceiverNames);
-        tSharedDataInfo.setMyBroadcast(tMyBroadcast);
-
-        int tMySize = 1;
-        if( tNode.size<std::string>("Size") )
+        if(tStage)
         {
-            tMySize = Plato::Get::Int(tNode, "Size");
+            tStage->setPerformerOnOperations(mPerformer);
         }
-        std::string tMyName = Plato::Get::String(tNode, "Name");
-        std::string tMyLayout = Plato::Get::String(tNode, "Layout");
-        bool tIsDynamic = Plato::Get::Bool(tNode, "Dynamic", false);
-        Parse::toUppercase(tMyLayout);
-        tSharedDataInfo.setSharedDataSize(tMyName, tMySize);
-        tSharedDataInfo.setSharedDataDynamic(tMyName, tIsDynamic);
-        tSharedDataInfo.setSharedDataIdentifiers(tMyName, tMyLayout);
     }
+}
 
-    this->exportGraph(tSharedDataInfo, aApplication, tCommunicationData);
-
-    if(mDataLayer)
+/******************************************************************************/
+void Interface::initializeConsole()
+/******************************************************************************/
+{
+    if(mConsole == nullptr)
     {
-        delete mDataLayer;
+        mConsole = new Console(mLocalPerformerName, mPerformerID, Plato::Get::InputData(mInputData,"Console"), mLocalComm);
     }
-    mDataLayer = new Plato::DataLayer(tSharedDataInfo, tCommunicationData);
 }
 
 /******************************************************************************/
 void Interface::exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,
-                            Plato::Application* aApplication,
-                            Plato::CommunicationData & aCommunicationData)
+                            Plato::Application* const aApplication,
+                            Plato::CommunicationData & aCommunicationData) const
 /******************************************************************************/
 {
     if(aSharedDataInfo.isLayoutDefined("NODAL FIELD") == true)
@@ -827,8 +852,8 @@ void Interface::exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,
 
 /******************************************************************************/
 void Interface::exportOwnedGlobalIDs(const Plato::data::layout_t & aLayout,
-                                     Plato::Application* aApplication,
-                                     Plato::CommunicationData & aCommunicationData)
+                                     Plato::Application* const aApplication,
+                                     Plato::CommunicationData & aCommunicationData) const
 /******************************************************************************/
 {
     try
@@ -933,6 +958,20 @@ Interface::~Interface()
         delete mStages[tStageIndex];
     }
     mStages.clear();
+}
+
+void Interface::checkAndSetApplication(Application* aApplication)
+{
+    if(aApplication == nullptr)
+    {
+        registerException(Plato::ParsingException("Failed to create Application"));
+    }
+    this->handleExceptions();
+
+    if(mPerformer)
+    {
+        mPerformer->setApplication(aApplication);
+    }
 }
 
 } /* namespace Plato */

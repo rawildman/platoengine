@@ -55,8 +55,28 @@
 #include "Plato_SetLowerBounds.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SetLowerBounds)
+
 namespace Plato
 {
+
+SetLowerBounds::SetLowerBounds(const std::string& aDiscretization,
+                                const std::string& aMaterialUseCase,
+                                Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                                Plato::data::layout_t aOutputLayout,
+                                int aOutputSize,
+                                int aLowerBoundVectorLength):
+                                mDiscretization(aDiscretization),
+                                mMaterialUseCase(aMaterialUseCase),
+                                mFixedBlockMetadata(aFixedBlockMetadata),
+                                mOutputLayout(aOutputLayout),
+                                mOutputSize(aOutputSize),
+                                mLowerBoundVectorLength(aLowerBoundVectorLength)
+{
+}
+
 
 SetLowerBounds::SetLowerBounds(PlatoApp* p, Plato::InputData& aNode) :
     Plato::LocalOp(p)

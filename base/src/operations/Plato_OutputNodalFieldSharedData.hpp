@@ -61,6 +61,7 @@ class InputData;
 class OutputNodalFieldSharedData : public Plato::LocalOp
 {
 public:
+    OutputNodalFieldSharedData() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -84,6 +85,14 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputNames",mInputNames);
+      aArchive & boost::serialization::make_nvp("Index",mIndex);
+    }
 private:
     std::vector<std::string> mInputNames;
     int mIndex;
@@ -92,3 +101,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::OutputNodalFieldSharedData, "OutputNodalFieldSharedData")

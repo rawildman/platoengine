@@ -61,6 +61,10 @@ class InputData;
 class WriteGlobalValue : public Plato::LocalOp
 {
 public:
+    WriteGlobalValue() = default;
+    WriteGlobalValue(const std::string& aInputName,
+                     const std::string& aFilename,
+                     int aSize);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -79,6 +83,16 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+      aArchive & boost::serialization::make_nvp("Filename",mFilename);
+      aArchive & boost::serialization::make_nvp("Size",mSize);
+    }
+
 private:
     std::string mInputName; /*!< argument data */
     std::string mFilename; /*!< output file name */
@@ -88,3 +102,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::WriteGlobalValue, "WriteGlobalValue")

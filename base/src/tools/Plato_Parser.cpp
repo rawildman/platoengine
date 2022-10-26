@@ -65,6 +65,7 @@
 #include "Plato_Parser.hpp"
 #include "Plato_Exceptions.hpp"
 
+
 namespace Plato
 {
 
@@ -683,6 +684,12 @@ PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData)
         inputData.add<Plato::InputData>(child.name(), newData);
       }
     }
+}
+
+InputData inputDataFromPugiParsedFile(const std::string& aFileName)
+{
+    Plato::PugiParser tParser;
+    return tParser.parseFile(aFileName);
 }
 
 namespace Get

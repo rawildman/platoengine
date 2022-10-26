@@ -49,14 +49,13 @@
 #pragma once
 
 #include "Plato_MLS.hpp"
-#include "Plato_Parser.hpp"
-#include "Plato_InputData.hpp"
-#include "Plato_Exceptions.hpp"
-#include "Plato_MetaDataMLS.hpp"
 #include "Plato_LocalOperation.hpp"
+
+class PlatoApp;
 
 namespace Plato
 {
+struct MLSstruct;
 
 /******************************************************************************//**
  * @brief Initialize Moving Least Square (MLS) points
@@ -65,66 +64,46 @@ template<int SpaceDim, typename ScalarType = double>
 class InitializeMLSPoints : public Plato::LocalOp
 {
 public:
+    InitializeMLSPoints() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
      * @param [in] aNode input XML data
     **********************************************************************************/
-    InitializeMLSPoints(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
-            Plato::LocalOp(aPlatoApp),
-            mOutputName("MLS Point Values")
-    {
-        auto tName = Plato::Get::String(aNode, "MLSName");
-        auto& tMLS = mPlatoApp->getMovingLeastSquaredData();
-        if(tMLS.count(tName) == 0)
-        {
-            throw Plato::ParsingException("Requested PointArray that doesn't exist.");
-        }
-        mMLS = mPlatoApp->getMovingLeastSquaredData()[tName];
-
-        mFieldName = Plato::Get::String(aNode, "Field");
-    }
-
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    ~InitializeMLSPoints()
-    {
-    }
+    InitializeMLSPoints(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
     /******************************************************************************//**
      * @brief perform local operation - initialize MLS points
     **********************************************************************************/
-    void operator()()
-    {
-        auto tFields = Plato::any_cast<MLS_Type>(mMLS->mls).getPointFields();
-        auto tField = tFields[mFieldName];
-
-        std::vector<double>* tLocalData = mPlatoApp->getValue(mOutputName);
-        Kokkos::View<ScalarType*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>
-            tLocalDataHost(tLocalData->data(), tLocalData->size());
-        Kokkos::deep_copy(tLocalDataHost, tField);
-    }
+    void operator()();
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
     {
-        int tNumPoints = Plato::any_cast<MLS_Type>(mMLS->mls).getNumPoints();
-        aLocalArgs.push_back(Plato::LocalArg
-            { Plato::data::layout_t::SCALAR, mOutputName, tNumPoints });
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
     }
 
 private:
     typedef typename Plato::Geometry::MovingLeastSquares<SpaceDim, ScalarType> MLS_Type;
 
     std::shared_ptr<Plato::MLSstruct> mMLS; /*!< MLS meta data */
-    const std::string mOutputName; /*!< output argument name */
+    std::string mOutputName; /*!< output argument name */
     std::string mFieldName; /*!< field argument name */
 };
 // class InitializeMLSPoints;
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<1>, "InitializeMLSPoints_1")
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<2>, "InitializeMLSPoints_2")
+BOOST_CLASS_EXPORT_KEY2(Plato::InitializeMLSPoints<3>, "InitializeMLSPoints_3")

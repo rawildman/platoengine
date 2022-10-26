@@ -58,14 +58,17 @@
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::MultiOperation)
+
 namespace Plato {
 
 /******************************************************************************/
 MultiOperation::
 MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                const std::shared_ptr<Plato::Performer> aPerformer,
-               const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aOperationDataMng, aPerformer, aSharedData)
+               const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
     this->initialize(aOperationDataMng, aPerformer, aSharedData);
@@ -89,7 +92,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
     const int tNumSubOperations = aOperationDataMng.getNumOperations();
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName =
+        const std::string tPerformerName =
           aOperationDataMng.getPerformerName(tSubOperationIndex);
 
         if(aPerformer->myName() != tPerformerName)
@@ -117,7 +120,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
     //
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
+        const std::string tPerformerName = aOperationDataMng.getPerformerName(tSubOperationIndex);
 
         // Get the input shared data.
         const int tNumInputs = aOperationDataMng.getNumInputs(tPerformerName);
@@ -169,12 +172,13 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
     //
     for(int tSubOperationIndex = 0; tSubOperationIndex < tNumSubOperations; tSubOperationIndex++)
     {
-        const std::string & tPerformerName =
+        const std::string tPerformerName =
           aOperationDataMng.getPerformerName(tSubOperationIndex);
 
         if(aPerformer->myName() == tPerformerName)
         {
             m_performer = aPerformer;
+            m_performerName = tPerformerName;
         }
 
         if(m_performer != nullptr)

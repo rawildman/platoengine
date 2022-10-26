@@ -53,6 +53,10 @@
 
 #include "Plato_ParseCSMUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::InitializeValues)
+
 namespace Plato
 {
 

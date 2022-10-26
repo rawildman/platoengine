@@ -51,6 +51,10 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_NormalizeObjectiveValue.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::NormalizeObjectiveValue)
+
 namespace Plato
 {
 

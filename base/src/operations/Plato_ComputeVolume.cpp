@@ -51,8 +51,24 @@
 #include "Plato_PenaltyModel.hpp"
 #include "Plato_ComputeVolume.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::ComputeVolume)
+
 namespace Plato
 {
+
+ComputeVolume::ComputeVolume(const std::string& aVolumeName,
+                             const std::string& aGradientName,
+                             Plato::PenaltyModel* aPenaltyModel,
+                             const std::string& aTopologyName):
+                             mVolumeName(aVolumeName),
+                             mGradientName(aGradientName),
+                             mPenaltyModel(aPenaltyModel),
+                             mTopologyName(aTopologyName)
+{
+}
+
 
 ComputeVolume::ComputeVolume(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp),
@@ -71,7 +87,7 @@ ComputeVolume::~ComputeVolume()
     {
         delete mPenaltyModel;
         mPenaltyModel = nullptr;
-    }
+    } 
 }
 
 void ComputeVolume::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)

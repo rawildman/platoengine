@@ -58,14 +58,30 @@
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SingleOperation)
+
 namespace Plato {
+namespace {
+std::string unrecognizedOperationErrorMessage(
+    const std::string& aErroneousOperation, 
+    const Performer& aPerformer)
+{
+    std::string errorMessage = R"(Unknown operation ")" + aErroneousOperation + R"(". Performer supports: )";
+    for(const OperationType operation : aPerformer.supportedOperationTypes())
+    {
+        errorMessage += "\n  " + operationTypeName(operation);
+    }
+    return errorMessage;
+}
+}
 
 /******************************************************************************/
 SingleOperation::
 SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<Plato::Performer> aPerformer,
-                const std::vector<Plato::SharedData*>& aSharedData) :
-  Operation(aOperationDataMng, aPerformer, aSharedData)
+                const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
     initialize(aOperationDataMng, aPerformer, aSharedData);
@@ -79,9 +95,51 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
            const std::vector<Plato::SharedData*>& aSharedData)
 /******************************************************************************/
 {
-    initializeBaseSingle(aOperationDataMng, aPerformer, aSharedData);
-}
+    m_performer = nullptr;
+    m_parameters.clear();
+    m_inputData.clear();
+    m_outputData.clear();
+    m_argumentNames.clear();
 
+    m_performerName = aOperationDataMng.getPerformerName();
+    m_operationName = aOperationDataMng.getOperationName(m_performerName);
+
+    auto tAllParamsData = aOperationDataMng.get<Plato::InputData>("Parameters");
+    if( tAllParamsData.size<Plato::InputData>(m_performerName) )
+    {
+        auto tParamsData = tAllParamsData.get<Plato::InputData>(m_performerName);
+        for( auto tParamData : tParamsData.getByName<Plato::InputData>("Parameter") )
+        {
+            auto tArgName  = Plato::Get::String(tParamData,"ArgumentName");
+            auto tArgValue = Plato::Get::Double(tParamData,"ArgumentValue");
+            m_parameters.insert(
+              std::pair<std::string, Parameter*>(tArgName, new Parameter(tArgName, m_operationName, tArgValue)));
+        }
+    }
+
+    // Get the input shared data.
+    const int tNumInputs = aOperationDataMng.getNumInputs(m_performerName);
+    for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
+    {
+        const std::string & tArgumentName = aOperationDataMng.getInputArgument(m_performerName, tInputIndex);
+        const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(m_performerName, tInputIndex);
+        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
+    }
+    
+    // Get the output shared data.
+    const int tNumOutputs = aOperationDataMng.getNumOutputs(m_performerName);
+    for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
+    {
+        const std::string & tArgumentName = aOperationDataMng.getOutputArgument(m_performerName, tOutputIndex);
+        const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(m_performerName, tOutputIndex);
+        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_outputData);
+    }
+    if(aPerformer->myName() == m_performerName)
+    {
+        m_performer = aPerformer;
+        setComputeFunctionOnNewPerformer();
+    }
+}
 
 /******************************************************************************/
 void SingleOperation::
@@ -94,6 +152,37 @@ update(const Plato::OperationInputDataMng & aOperationDataMng,
     // updated so to have the new links to the shared data.
 
     initialize(aOperationDataMng, aPerformer, aSharedData);
+}
+
+/******************************************************************************/
+void SingleOperation::computeImpl()
+/******************************************************************************/
+{
+    if(mComputeFunction)
+    {
+        mComputeFunction(*m_performer);
+    }
+    else 
+    {
+        Operation::computeImpl();
+    }
+}
+
+/******************************************************************************/
+void SingleOperation::setComputeFunctionOnNewPerformer()
+/******************************************************************************/
+{
+    if(m_performer->usesConstrainedOperationInterface())
+    {
+        const boost::optional<OperationType> tOperation = operationTypeIgnoreSpaces(m_operationName);
+        if(!tOperation)
+        {
+            throw ParsingException(unrecognizedOperationErrorMessage(
+                m_operationName, *m_performer
+            ));
+        }
+        mComputeFunction = Performer::computeFunction(*tOperation);
+    }
 }
 
 } // End namespace Plato

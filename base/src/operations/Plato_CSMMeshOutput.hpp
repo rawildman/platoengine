@@ -61,6 +61,7 @@ class InputData;
 class CSMMeshOutput : public Plato::LocalOp
 {
 public:
+    CSMMeshOutput() = default;
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -84,6 +85,17 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("BaseMeshName",mBaseMeshName);
+      aArchive & boost::serialization::make_nvp("OutputFrequency",mOutputFrequency);
+      aArchive & boost::serialization::make_nvp("MaxIterations",mMaxIterations);
+      aArchive & boost::serialization::make_nvp("CurIteration",mCurIteration);
+    }
+
 private:
     /******************************************************************************//**
      * @brief build a string based on the current iteration
@@ -102,3 +114,6 @@ private:
 
 }
 // namespace Plato
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::CSMMeshOutput, "CSMMeshOutput")

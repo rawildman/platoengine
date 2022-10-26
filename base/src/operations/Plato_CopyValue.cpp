@@ -51,8 +51,19 @@
 #include "Plato_CopyValue.hpp"
 #include "Plato_InputData.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::CopyValue)
+
 namespace Plato
 {
+
+CopyValue::CopyValue(const std::string& aInputName,
+                     const std::string& aOutputName):
+                     mInputName(aInputName),
+                     mOutputName(aOutputName)
+{
+}
 
 CopyValue::CopyValue(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp),

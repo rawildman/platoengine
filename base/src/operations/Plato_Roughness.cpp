@@ -52,11 +52,24 @@
 #include "Plato_Roughness.hpp"
 #include "Plato_InputData.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::Roughness)
+
 namespace Plato
 {
 
-Roughness::Roughness(PlatoApp* aPlatoAppp, Plato::InputData& aNode) :
-        Plato::LocalOp(aPlatoAppp),
+Roughness::Roughness(const std::string& aTopologyName,
+                     const std::string& aRoughnessName,
+                     const std::string& aGradientName) : 
+                     mTopologyName(aTopologyName),
+                     mRoughnessName(aRoughnessName),
+                     mGradientName(aGradientName)
+{
+}
+
+Roughness::Roughness(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+        Plato::LocalOp(aPlatoApp),
         mTopologyName("Topology"),
         mRoughnessName("Roughness"),
         mGradientName("Roughness Gradient")

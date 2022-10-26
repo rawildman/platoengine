@@ -68,8 +68,46 @@
 #include "Plato_InitializeField.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::InitializeField)
+
 namespace Plato
 {
+InitializeField::InitializeField(const std::string& aFileName,
+                                const std::string& aStringMethod,
+                                const std::string& aSphereRadius,
+                                const std::string& aOutputFieldName,
+                                const std::string& aSpherePackingFactor,
+                                const std::string& aSphereSpacingX,
+                                const std::string& aSphereSpacingY,
+                                const std::string& aSphereSpacingZ,
+                                const std::string& aVariableName,
+                                const std::array<double, 3>& aMinCoords,
+                                const std::array<double, 3>& aMaxCoords,
+                                const std::vector<int>& aLevelSetNodes,
+                                Plato::data::layout_t aOutputLayout,
+                                double aUniformValue,
+                                int aIteration,
+                                bool aCreateSpheres) : 
+                                mFileName(aFileName),
+                                mStringMethod(aStringMethod),
+                                mSphereRadius(aSphereRadius),
+                                mOutputFieldName(aOutputFieldName),
+                                mSpherePackingFactor(aSpherePackingFactor),
+                                mSphereSpacingX(aSphereSpacingX),
+                                mSphereSpacingY(aSphereSpacingY),
+                                mSphereSpacingZ(aSphereSpacingZ),
+                                mVariableName(aVariableName),
+                                mMinCoords(aMinCoords),
+                                mMaxCoords(aMaxCoords),
+                                mLevelSetNodesets(aLevelSetNodes),
+                                mOutputLayout(aOutputLayout),
+                                mUniformValue(aUniformValue),
+                                mIteration(aIteration),
+                                mCreateSpheres(aCreateSpheres)
+{
+}
 
 void InitializeField::getArguments(std::vector<Plato::LocalArg> & aLocalArgs)
 {

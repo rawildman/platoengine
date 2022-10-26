@@ -62,8 +62,35 @@
 #include "Plato_OperationsUtilities.hpp"
 #include <Plato_FreeFunctions.hpp>
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::PlatoMainOutput)
+
 namespace Plato
 {
+PlatoMainOutput::PlatoMainOutput(const std::string& aBaseName,
+                                 const std::string& aDiscretization,
+                                 const std::string& aRestartFieldName,
+                                 const std::vector<std::string>& aRequestedFormats,
+                                 const std::vector<Plato::LocalArg>& aOutputData,
+                                 int aOutputMethod,
+                                 int aOutputFrequency,
+                                 int aMaxIterations,
+                                 bool aWriteRestart,
+                                 bool aAppendIterationCount) : 
+                                 mBaseName(aBaseName),
+                                 mDiscretization(aDiscretization),
+                                 mRestartFieldName(aRestartFieldName),
+                                 mRequestedFormats(aRequestedFormats),
+                                 mOutputData(aOutputData),
+                                 mOutputMethod(aOutputMethod),
+                                 mOutputFrequency(aOutputFrequency),
+                                 mMaxIterations(aMaxIterations),
+                                 mWriteRestart(aWriteRestart),
+                                 mAppendIterationCount(aAppendIterationCount)
+{
+}
+
 
 PlatoMainOutput::PlatoMainOutput(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)

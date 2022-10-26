@@ -68,6 +68,19 @@
 #include <fenv.h>
 #endif
 
+#include "Plato_SerializationHeaders.hpp"
+#include "Plato_SerializationUtilities.hpp"
+
+#include <fstream>
+#include <string>
+
+#include <cstdlib>
+
+const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_main_interface.xml"};
+const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
+const auto kAppXMLFileName = Plato::XMLFileName{"save_main_app.xml"};
+const auto kAppXMLNodeName = Plato::XMLNodeName{"App"};
+
 void writeSplashScreen();
 
 /******************************************************************************/
@@ -98,9 +111,17 @@ int main(int aArgc, char *aArgv[])
         exit(0);
     };
 
+    const bool tLoadFromXML = std::getenv("PLATO_LOAD_FROM_XML") != nullptr;
     try
     {
-        tPlatoInterface = new Plato::Interface();
+        if(tLoadFromXML) 
+        {
+            tPlatoInterface = new Plato::Interface(kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        } 
+        else 
+        {
+            tPlatoInterface = new Plato::Interface();
+        }
     }
     catch(Plato::ParsingException& e)
     {
@@ -135,7 +156,15 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
-        tPlatoInterface->registerApplication(tPlatoApp);
+        if(tLoadFromXML)
+        {
+            Plato::registerApplicationWithInterfaceLoadFromXML(
+                *tPlatoInterface, tPlatoApp, kAppXMLFileName, kAppXMLNodeName);
+        } 
+        else 
+        {
+            tPlatoInterface->registerApplication(tPlatoApp);
+        }
     }
     catch(...)
     {
@@ -144,6 +173,11 @@ int main(int aArgc, char *aArgv[])
 
     writeSplashScreen();
 
+    const bool tSaveToXML = std::getenv("PLATO_SAVE_TO_XML") != nullptr;
+    if(tSaveToXML){
+        Plato::saveToXML(*tPlatoInterface, kInterfaceXMLFileName, kInterfaceXMLNodeName);
+        Plato::saveToXML(*tPlatoApp, kAppXMLFileName, kAppXMLNodeName);
+    } 
     try
     {
         // Note: This code is encapsulated and is part of
@@ -163,7 +197,7 @@ int main(int aArgc, char *aArgv[])
         Plato::DriverFactory<double> tDriverFactory;
         Plato::DriverInterface<double>* tDriver = nullptr;
 
-        // Note: When frist called, the factory will look for the
+        // Note: When first called, the factory will look for the
         // first driver block. Subsequent calls will look for the
         // next driver block if it exists.
         while((tDriver =
@@ -182,7 +216,6 @@ int main(int aArgc, char *aArgv[])
             delete tDriver;
         }
     }
-
     catch(...)
     {
         safeExit();

@@ -496,6 +496,104 @@ public:
     bool getResetAlgorithmOnUpdate() const;
     void setResetAlgorithmOnUpdate(const bool& aInput);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("InputData",boost::serialization::base_object<Plato::InputData>(*this));
+      aArchive & boost::serialization::make_nvp("MeanNorm",mMeanNorm);
+      aArchive & boost::serialization::make_nvp("CheckGradient",mCheckGradient);
+      aArchive & boost::serialization::make_nvp("CheckHessian",mCheckHessian);
+      aArchive & boost::serialization::make_nvp("UserInitialGuess",mUserInitialGuess);
+      aArchive & boost::serialization::make_nvp("OutputControlToFile",mOutputControlToFile);
+      aArchive & boost::serialization::make_nvp("OutputDiagnosticsToFile",mOutputDiagnosticsToFile);
+      aArchive & boost::serialization::make_nvp("DisablePostSmoothing",mDisablePostSmoothing);
+      aArchive & boost::serialization::make_nvp("ResetAlgorithmOnUpdate",mResetAlgorithmOnUpdate);
+
+      aArchive & boost::serialization::make_nvp("MaxNumAugLagSubProbIter",mMaxNumAugLagSubProbIter);
+      aArchive & boost::serialization::make_nvp("MaxNumIterations",mMaxNumIterations);
+      aArchive & boost::serialization::make_nvp("LimitedMemoryStorage",mLimitedMemoryStorage);
+      aArchive & boost::serialization::make_nvp("ProblemUpdateFrequency",mProblemUpdateFrequency);
+
+      aArchive & boost::serialization::make_nvp("GCMMAMaxInnerIterations",mGCMMAMaxInnerIterations);
+      aArchive & boost::serialization::make_nvp("KSMaxTrustRegionIterations",mKSMaxTrustRegionIterations);
+      aArchive & boost::serialization::make_nvp("ROLCheckGradientSteps",mROLCheckGradientSteps);
+      aArchive & boost::serialization::make_nvp("ROLCheckGradientSeed",mROLCheckGradientSeed);
+
+      aArchive & boost::serialization::make_nvp("InitialMovingAsymptoteScaleFactor",mInitialMovingAsymptoteScaleFactor);
+      aArchive & boost::serialization::make_nvp("GCMMAInnerKKTTolerance",mGCMMAInnerKKTTolerance);
+      aArchive & boost::serialization::make_nvp("CCSAOuterKKTTolerance",mCCSAOuterKKTTolerance);
+      aArchive & boost::serialization::make_nvp("CCSAOuterControlStagnationTolerance",mCCSAOuterControlStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("GCMMAInnerControlStagnationTolerance",mGCMMAInnerControlStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("CCSAOuterObjectiveStagnationTolerance",mCCSAOuterObjectiveStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("CCSAOuterStationarityTolerance",mCCSAOuterStationarityTolerance);
+      aArchive & boost::serialization::make_nvp("KSTrustRegionExpansionFactor",mKSTrustRegionExpansionFactor);
+      aArchive & boost::serialization::make_nvp("KSTrustRegionContractionFactor",mKSTrustRegionContractionFactor);
+      aArchive & boost::serialization::make_nvp("KSOuterGradientTolerance",mKSOuterGradientTolerance);
+      aArchive & boost::serialization::make_nvp("KSOuterStationarityTolerance",mKSOuterStationarityTolerance);
+      aArchive & boost::serialization::make_nvp("KSOuterStagnationTolerance",mKSOuterStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("KSOuterControlStagnationTolerance",mKSOuterControlStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("KSOuterActualReductionTolerance",mKSOuterActualReductionTolerance);
+      aArchive & boost::serialization::make_nvp("KSInitialRadiusScale",mKSInitialRadiusScale);
+      aArchive & boost::serialization::make_nvp("KSMaxRadiusScale",mKSMaxRadiusScale);
+      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioLow",mKSTrustRegionRatioLow);
+      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioMid",mKSTrustRegionRatioMid);
+      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioUpper",mKSTrustRegionRatioUpper);
+      aArchive & boost::serialization::make_nvp("FeasibilityTolerance",mFeasibilityTolerance);
+      aArchive & boost::serialization::make_nvp("MinTrustRegionRadius",mMinTrustRegionRadius);
+      aArchive & boost::serialization::make_nvp("MaxTrustRegionRadius",mMaxTrustRegionRadius);
+      aArchive & boost::serialization::make_nvp("AugLagPenaltyParameter",mAugLagPenaltyParameter);
+      aArchive & boost::serialization::make_nvp("AugLagPenaltyScaleParameter",mAugLagPenaltyScaleParameter);
+      aArchive & boost::serialization::make_nvp("OCControlStagnationTolerance",mOCControlStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("OCObjectiveStagnationTolerance",mOCObjectiveStagnationTolerance);
+      aArchive & boost::serialization::make_nvp("OCGradientTolerance",mOCGradientTolerance);
+      aArchive & boost::serialization::make_nvp("ROLPerturbationScale",mROLPerturbationScale);
+      
+      aArchive & boost::serialization::make_nvp("Algebra",mAlgebra);
+      aArchive & boost::serialization::make_nvp("StateName",mStateName);
+      aArchive & boost::serialization::make_nvp("HessianType",mHessianType);
+      aArchive & boost::serialization::make_nvp("InputFileName",mInputFileName);
+      aArchive & boost::serialization::make_nvp("CacheStageName",mCacheStageName);
+      aArchive & boost::serialization::make_nvp("OutputStageName",mOutputStageName);
+      aArchive & boost::serialization::make_nvp("ObjectiveValueOutputName",mObjectiveValueOutputName);
+      aArchive & boost::serialization::make_nvp("ObjectiveGradientOutputName",mObjectiveGradientOutputName);
+      aArchive & boost::serialization::make_nvp("ObjectiveHessianOutputName",mObjectiveHessianOutputName);
+      aArchive & boost::serialization::make_nvp("InitializationStageName",mInitializationStageName);
+      aArchive & boost::serialization::make_nvp("InitialControlDataName",mInitialControlDataName);
+      aArchive & boost::serialization::make_nvp("FinalizationStageName",mFinalizationStageName);
+      aArchive & boost::serialization::make_nvp("SetLowerBoundsStageName",mSetLowerBoundsStageName);
+      aArchive & boost::serialization::make_nvp("SetUpperBoundsStageName",mSetUpperBoundsStageName);
+      aArchive & boost::serialization::make_nvp("LowerBoundValueName",mLowerBoundValueName);
+      aArchive & boost::serialization::make_nvp("LowerBoundVectorName",mLowerBoundVectorName);
+      aArchive & boost::serialization::make_nvp("UpperBoundValueName",mUpperBoundValueName);
+      aArchive & boost::serialization::make_nvp("UpperBoundVectorName",mUpperBoundVectorName);
+      aArchive & boost::serialization::make_nvp("ObjectiveValueStageName",mObjectiveValueStageName);
+      aArchive & boost::serialization::make_nvp("ObjectiveGradientStageName",mObjectiveGradientStageName);
+      aArchive & boost::serialization::make_nvp("ObjectiveHessianStageName",mObjectiveHessianStageName);
+      
+      aArchive & boost::serialization::make_nvp("InitialGuess",mInitialGuess);
+      aArchive & boost::serialization::make_nvp("LowerBoundValues",mLowerBoundValues);
+      aArchive & boost::serialization::make_nvp("UpperBoundValues",mUpperBoundValues);
+
+      aArchive & boost::serialization::make_nvp("ConstraintNormalizedTargetValues",mConstraintNormalizedTargetValues);
+      aArchive & boost::serialization::make_nvp("ConstraintAbsoluteTargetValues",mConstraintAbsoluteTargetValues);
+      aArchive & boost::serialization::make_nvp("ConstraintReferenceValues",mConstraintReferenceValues);
+
+      aArchive & boost::serialization::make_nvp("ControlNames",mControlNames);
+      aArchive & boost::serialization::make_nvp("FilteredControlNames",mFilteredControlNames);
+      aArchive & boost::serialization::make_nvp("ConstraintValueNames",mConstraintValueNames);
+      aArchive & boost::serialization::make_nvp("DescentDirectionNames",mDescentDirectionNames);
+      aArchive & boost::serialization::make_nvp("ConstraintValueStageNames",mConstraintValueStageNames);
+      aArchive & boost::serialization::make_nvp("ConstraintGradientStageNames",mConstraintGradientStageNames);
+      aArchive & boost::serialization::make_nvp("ConstraintHessianStageNames",mConstraintHessianStageNames);
+      aArchive & boost::serialization::make_nvp("UpdateProblemStageNames",mUpdateProblemStageNames);
+
+      aArchive & boost::serialization::make_nvp("ConstraintGradientNames",mConstraintGradientNames);
+      aArchive & boost::serialization::make_nvp("ConstraintHessianNames",mConstraintHessianNames);
+      aArchive & boost::serialization::make_nvp("ConstraintReferenceValueNames",mConstraintReferenceValueNames);
+      
+    }
+
 private:
     bool mMeanNorm;
     bool mCheckGradient;

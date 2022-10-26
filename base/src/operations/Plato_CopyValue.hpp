@@ -49,6 +49,7 @@
 #pragma once
 
 #include "Plato_LocalOperation.hpp"
+#include "Plato_SerializationHeaders.hpp"
 
 class PlatoApp;
 
@@ -68,6 +69,10 @@ public:
      * @param [in] aPlatoApp PLATO application
      * @param [in] aNode input XML data
     **********************************************************************************/
+    CopyValue() = default;
+    CopyValue(const std::string& aInputName,
+              const std::string& aOutputName);
+    CopyValue(PlatoApp* aPlatoApp);
     CopyValue(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
     /******************************************************************************//**
@@ -86,10 +91,22 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+    }
+
 private:
-    std::string mInputName; /*!< input argument name */
-    std::string mOutputName; /*!< output argument name */
+    std::string mInputName = "InputValue"; /*!< input argument name */
+    std::string mOutputName = "OutputValue"; /*!< output argument name */
 };
 // class CopyValue;
 
 }
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::CopyValue, "CopyValue")

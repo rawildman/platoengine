@@ -52,8 +52,29 @@
 #include "Plato_Aggregator.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::Aggregator)
+
 namespace Plato
 {
+
+Aggregator::Aggregator(const std::vector<double>& aWeights,
+                       const std::vector<std::string>& aWeightBases,
+                       const std::vector<std::string>& aWeightNormals,
+                       const std::vector<AggStruct>& aAggStructs,
+                       const std::string& aWeightMethod, 
+                       double aLimitWeight, 
+                       bool aReportStatus):
+                       mWeights(aWeights),
+                       mWeightBases(aWeightBases),
+                       mWeightNormals(aWeightNormals),
+                       mAggStructs(aAggStructs),
+                       mWeightMethod(aWeightMethod),
+                       mLimitWeight(aLimitWeight),
+                       mReportStatus(aReportStatus)
+{
+}
 
 Aggregator::Aggregator(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)

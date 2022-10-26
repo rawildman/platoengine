@@ -53,6 +53,10 @@
 #include "Plato_SharedValue.hpp"
 #include "Plato_Communication.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SharedValue)
+
 namespace Plato
 {
 
@@ -203,9 +207,12 @@ SharedValue::SharedValue(const std::string & aMyName,
 }
 
 /*****************************************************************************/
-SharedValue::~SharedValue()
+void SharedValue::initializeMPI(const Plato::CommunicationData& aCommData)
 /*****************************************************************************/
 {
+    mLocalCommName = aCommData.mLocalCommName;
+    mMyComm = aCommData.mLocalComm;
+    mInterComm = aCommData.mInterComm;
 }
 
 } // End namespace Plato

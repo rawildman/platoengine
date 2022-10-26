@@ -2,8 +2,8 @@ set(LIB_NAMES)
 
 set(LIB_NAME PenaltyModels)
 set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_PenaltyModel.cpp)
-set(${LIB_NAME}_HEADERS Plato_PenaltyModel.hpp)
+set(${LIB_NAME}_SOURCES Plato_PenaltyModel.cpp Plato_SIMP.cpp)
+set(${LIB_NAME}_HEADERS Plato_PenaltyModel.hpp Plato_SIMP.hpp)
 
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 

@@ -53,9 +53,9 @@
 #ifndef SRC_PENALTYMODEL_HPP_
 #define SRC_PENALTYMODEL_HPP_
 
-#include "Plato_Parser.hpp"
-
 namespace Plato {
+
+class InputData;
 
   class PenaltyModel {
     public:
@@ -63,17 +63,9 @@ namespace Plato {
       virtual ~PenaltyModel(){}
       virtual double eval(double x)=0;
       virtual double grad(double x)=0;
-  };
 
-  class SIMP : public PenaltyModel {
-    public:
-      SIMP(const Plato::InputData& input);
-      virtual ~SIMP(){}
-      virtual double eval(double x);
-      virtual double grad(double x);
-    private:
-      double m_penaltyExponent;
-      double m_minimumValue;
+      template<class Archive>
+      void serialize(Archive & aArchive, const unsigned int version) {} 
   };
 
   class PenaltyModelFactory {

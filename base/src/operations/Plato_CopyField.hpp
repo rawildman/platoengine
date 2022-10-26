@@ -63,6 +63,9 @@ class InputData;
 class CopyField : public Plato::LocalOp
 {
 public:
+    CopyField() = default;
+    CopyField(const std::string& aInputName,
+              const std::string& aOutputName);
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aPlatoApp PLATO application
@@ -86,10 +89,22 @@ public:
     **********************************************************************************/
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & aArchive, const unsigned int version)
+    {
+      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("InputName",mInputName);
+      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
+    }
+  
 private:
-    std::string mInputName; /*!< input argument name */
-    std::string mOutputName; /*!< output argument name */
+    std::string mInputName = "InputField"; /*!< input argument name */
+    std::string mOutputName = "OutputField"; /*!< output argument name */
 };
 // class CopyField;
 
 }
+
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_KEY2(Plato::CopyField, "CopyField")

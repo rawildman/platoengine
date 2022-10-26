@@ -54,8 +54,28 @@
 #include "Plato_SetUpperBounds.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SetUpperBounds)
+
 namespace Plato
 {
+
+SetUpperBounds::SetUpperBounds(const std::string& aDiscretization,
+                                const std::string& aMaterialUseCase,
+                                Plato::FixedBlock::Metadata aFixedBlockMetadata,
+                                Plato::data::layout_t aOutputLayout,
+                                int aOutputSize,
+                                int aUpperBoundVectorLength):
+                                mDiscretization(aDiscretization),
+                                mMaterialUseCase(aMaterialUseCase),
+                                mFixedBlockMetadata(aFixedBlockMetadata),
+                                mOutputLayout(aOutputLayout),
+                                mOutputSize(aOutputSize),
+                                mUpperBoundVectorLength(aUpperBoundVectorLength)
+{
+}
+
 
 SetUpperBounds::SetUpperBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)
