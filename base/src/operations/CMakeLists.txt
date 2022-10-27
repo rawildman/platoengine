@@ -32,9 +32,6 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_OutputNodalFieldSharedData.cpp
                         Plato_ReciprocateObjectiveGradient.cpp
                         Plato_StatisticsOperationsUtilities.cpp
-                        Plato_MapMLSField.cpp
-                        Plato_ComputeMLSField.cpp
-                        Plato_InitializeMLSPoints.cpp
                         )
                         
 set(${LIB_NAME}_HEADERS Plato_Filter.hpp
@@ -77,6 +74,12 @@ endif()
 
 if( GEOMETRY )
                         
+set(${LIB_NAME}_SOURCES ${${LIB_NAME}_SOURCES}
+                        Plato_MapMLSField.cpp
+                        Plato_ComputeMLSField.cpp
+                        Plato_InitializeMLSPoints.cpp
+                        )
+
 set(${LIB_NAME}_HEADERS ${${LIB_NAME}_HEADERS}
                         Plato_MapMLSField.hpp
                         Plato_MetaDataMLS.hpp
