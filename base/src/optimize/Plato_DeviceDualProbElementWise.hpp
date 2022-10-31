@@ -93,7 +93,7 @@ public:
         const ScalarType* tUpperAsymptotesData = aUpperAsymptotes.data();
 
         const OrdinalType tNumElements = aOutput.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DeviceDualProbElementWise::updateTrialControl", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tSqrtTermA = sqrt(tTermA_Data[aIndex]);
             ScalarType tSqrtTermB = sqrt(tTermB_Data[aIndex]);
@@ -105,7 +105,7 @@ public:
             // Project trial control to feasible set
             tOutputData[aIndex] = fmax(tOutputData[aIndex], tLowerBoundsData[aIndex]);
             tOutputData[aIndex] = fmin(tOutputData[aIndex], tUpperBoundsData[aIndex]);
-        }, "DeviceDualProbElementWise::updateTrialControl");
+        });
     }
 
     void updateGradientCoeff(const Plato::Vector<ScalarType, OrdinalType> & aTrialControls,
@@ -132,11 +132,11 @@ public:
         const ScalarType* tUpperAsymptotesData = aUpperAsymptotes.data();
 
         const OrdinalType tNumControls = aTrialControls.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DeviceDualProbElementWise::updateGradientCoeff", Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             tOutputOneData[aIndex] = tPcoeffData[aIndex] / (tUpperAsymptotesData[aIndex] - tTrialControlsData[aIndex]);
             tOutputTwoData[aIndex] = tQcoeffData[aIndex] / (tTrialControlsData[aIndex] - tLowerAsymptotesData[aIndex]);
-        }, "DeviceDualProbElementWise::updateGradientCoeff");
+        });
     }
 
     void updateObjectiveCoeff(const ScalarType & aGlobalizationFactor,
@@ -158,7 +158,7 @@ public:
         const ScalarType* tCurrentGradientData = aCurrentGradient.data();
 
         OrdinalType tNumElements = aCurrentSigma.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DeviceDualProbElementWise::updateObjectiveCoeff", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tCurrentSigmaTimesCurrentSigma = tCurrentSigmaData[aIndex] * tCurrentSigmaData[aIndex];
             ScalarType tValue = tCurrentSigmaTimesCurrentSigma
@@ -172,7 +172,7 @@ public:
             tQcoeffData[aIndex] = tValue;
 
             tRcoeffData[aIndex] = (tPcoeffData[aIndex] + tQcoeffData[aIndex]) / tCurrentSigmaData[aIndex];
-        }, "DeviceDualProbElementWise::updateObjectiveCoeff");
+        });
     }
 
     void updateConstraintCoeff(const ScalarType & aGlobalizationFactor,
@@ -194,7 +194,7 @@ public:
         const ScalarType* tCurrentGradientData = aCurrentGradient.data();
 
         const OrdinalType tNumControls = aCurrentSigma.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DeviceDualProbElementWise::updateConstraintCoeff", Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tCurrentSigmaTimesCurrentSigma = tCurrentSigmaData[aIndex] * tCurrentSigmaData[aIndex];
             ScalarType tValue = tCurrentSigmaTimesCurrentSigma
@@ -208,7 +208,7 @@ public:
             tQcoeffData[aIndex] = tValue;
 
             tRcoeffData[aIndex] = (tPcoeffData[aIndex] + tQcoeffData[aIndex]) / tCurrentSigmaData[aIndex];
-        }, "DeviceDualProbElementWise::updateConstraintCoeff");
+        });
     }
 
     void updateMovingAsymptotesCoeff(const Plato::Vector<ScalarType, OrdinalType> & aTrialControl,
@@ -241,7 +241,7 @@ public:
         const ScalarType* tDualTimesConstraintQcoeffData = aDualTimesConstraintQcoeff.data();
 
         const OrdinalType tNumControls = aTrialControl.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DeviceDualProbElementWise::updateMovingAsymptotesCoeff", Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tNumerator = tObjectivePcoeffData[aIndex] + tDualTimesConstraintPcoeffData[aIndex];
             ScalarType tDenominator = tUpperAsymptotesData[aIndex] - tTrialControlData[aIndex];
@@ -250,7 +250,7 @@ public:
             tNumerator = tObjectiveQcoeffData[aIndex] + tDualTimesConstraintQcoeffData[aIndex];
             tDenominator = tTrialControlData[aIndex] - tLowerAsymptotesData[aIndex];
             tOutputTwoData[aIndex] = tNumerator / tDenominator;
-        }, "DeviceDualProbElementWise::updateMovingAsymptotesCoeff");
+        });
     }
 
 private:
