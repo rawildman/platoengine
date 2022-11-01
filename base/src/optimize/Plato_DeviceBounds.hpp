@@ -92,11 +92,11 @@ public:
             const ScalarType* tLowerBoundData = tLowerBound.data();
 
             OrdinalType tNumElements = tInput.size();
-            Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+            Kokkos::parallel_for("DeviceBounds::project", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
             {
                 tInputData[aIndex] = fmax(tInputData[aIndex], tLowerBoundData[aIndex]);
                 tInputData[aIndex] = fmin(tInputData[aIndex], tUpperBoundData[aIndex]);
-            }, "DeviceBounds::project");
+            });
         }
     }
 
@@ -136,14 +136,14 @@ public:
             const ScalarType* tUpperBoundData = tUpperBound.data();
 
             OrdinalType tNumElements = tVector.size();
-            Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+            Kokkos::parallel_for("DeviceBounds::computeActiveAndInactiveSets", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
             {
                 tActiveSetData[aIndex] = static_cast<OrdinalType>((tVectorData[aIndex] >= tUpperBoundData[aIndex])
                         || (tVectorData[aIndex] <= tLowerBoundData[aIndex]));
 
                 tInactiveSetData[aIndex] = static_cast<OrdinalType>((tVectorData[aIndex] < tUpperBoundData[aIndex])
                         && (tVectorData[aIndex] > tLowerBoundData[aIndex]));
-            }, "DeviceBounds::computeActiveAndInactiveSets");
+            });
         }
     }
 

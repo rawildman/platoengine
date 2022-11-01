@@ -89,10 +89,10 @@ public:
     {
         ScalarType* tMyData = this->data();
         const OrdinalType tSize = this->size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tSize),
+        Kokkos::parallel_for("KokkosVector::scale(aInput)", Kokkos::RangePolicy<>(0, tSize),
                              KOKKOS_LAMBDA(const OrdinalType & aIndex){
             tMyData[aIndex] = tMyData[aIndex] * aInput;
-        }, "KokkosVector::scale(aInput)");
+        });
     }
     //! Entry-Wise product of two vectors.
     void entryWiseProduct(const Plato::Vector<ScalarType, OrdinalType> & aInput)
@@ -102,10 +102,10 @@ public:
         ScalarType* tMyData = this->data();
         const OrdinalType tSize = this->size();
         const ScalarType* tInputData = aInput.data();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tSize),
+        Kokkos::parallel_for("KokkosVector::entryWiseProduct(aInput)", Kokkos::RangePolicy<>(0, tSize),
                              KOKKOS_LAMBDA(const OrdinalType & aIndex){
             tMyData[aIndex] = tMyData[aIndex] * tInputData[aIndex];
-        }, "KokkosVector::entryWiseProduct(aInput)");
+        });
     }
     //! Update vector values with scaled values of A, this = beta*this + alpha*A.
     void update(const ScalarType & aAlpha,
@@ -117,20 +117,20 @@ public:
         ScalarType* tMyData = this->data();
         const OrdinalType tSize = this->size();
         const ScalarType* tInputData = aInputVector.data();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tSize),
+        Kokkos::parallel_for("KokkosVector::update(aAlpha, aInputVec, aBeta)", Kokkos::RangePolicy<>(0, tSize),
                              KOKKOS_LAMBDA(const OrdinalType & aIndex){
             tMyData[aIndex] = aBeta * tMyData[aIndex] + aAlpha * tInputData[aIndex];
-        }, "KokkosVector::update(aAlpha, aInputVec, aBeta)");
+        });
     }
     //! Computes the absolute value of each element in the container.
     void modulus()
     {
         ScalarType* tMyData = this->data();
         const OrdinalType tSize = this->size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tSize),
+        Kokkos::parallel_for("KokkosVector::modulus()", Kokkos::RangePolicy<>(0, tSize),
                              KOKKOS_LAMBDA(const OrdinalType & aIndex){
             tMyData[aIndex] = std::abs(tMyData[aIndex]);
-        }, "KokkosVector::modulus()");
+        });
     }
     //! Returns the inner product of two vectors.
     ScalarType dot(const Plato::Vector<ScalarType, OrdinalType> & aInput) const
@@ -154,10 +154,10 @@ public:
     {
         OrdinalType tSize = this->size();
         ScalarType* tMyData = mView.data();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tSize),
+        Kokkos::parallel_for("KokkosVector::fill(aInput)", Kokkos::RangePolicy<>(0, tSize),
                              KOKKOS_LAMBDA(const OrdinalType & aIndex){
             tMyData[aIndex] = aInput;
-        }, "KokkosVector::fill(aInput)");
+        });
     }
     //! Returns the number of local elements in the Vector.
     OrdinalType size() const

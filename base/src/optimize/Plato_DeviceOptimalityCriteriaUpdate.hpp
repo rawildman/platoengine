@@ -116,7 +116,7 @@ public:
         ScalarType tScaleFactor = mScaleFactor;
         ScalarType tDampingPower = mDampingPower;
         OrdinalType tNumControls = aTrialControls.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aControlIndex)
+        Kokkos::parallel_for("OptimalityCriteriaSubProblem::KokkosUpdate", Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aControlIndex)
         {
             ScalarType tOffset = ( tScaleFactor * ( tUpperBounds[aControlIndex] - tLowerBounds[aControlIndex] ) )
                   - tLowerBounds[aControlIndex];
@@ -133,7 +133,7 @@ public:
             tTrialControlVal = fmin(tUpperBounds[aControlIndex], tTrialControlVal);
             tTrialControlVal = fmax(tLowerBounds[aControlIndex], tTrialControlVal);
             tTrialControls[aControlIndex] = tTrialControlVal;
-        }, "OptimalityCriteriaSubProblem::KokkosUpdate");
+        });
     }
 
     /********************************************************************************/

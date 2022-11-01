@@ -83,12 +83,12 @@ public:
         const ScalarType tInitialMovingAsymptoteMultiplier = aInitialMovingAsymptoteMultiplier;
 
         const OrdinalType tNumElements = aCurrentSigma.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DevicePrimalProbElementWise::updateInitialSigmaCoeff", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             const ScalarType tBoundsMisfit = tUpperBoundsData[aIndex] - tLowerBoundsData[aIndex];
             const ScalarType tValue = tInitialMovingAsymptoteMultiplier * tBoundsMisfit;
             tCurrentSigmaData[aIndex] = tBoundsMisfit <= static_cast<ScalarType>(0) ? tInitialMovingAsymptoteMultiplier : tValue;
-        }, "DevicePrimalProbElementWise::updateInitialSigmaCoeff");
+        });
     }
 
     void updateSigmaCoeff(const std::map<Plato::element_wise::constant_t, ScalarType> & aConstants,
@@ -122,7 +122,7 @@ public:
         const ScalarType* tAntepenultimateControlsData = aAntepenultimateControls.data();
 
         const OrdinalType tNumElements = aCurrentSigma.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DevicePrimalProbElementWise::updateSigmaCoeff", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tValue = (tCurrentControlData[aIndex] - tPreviousControlData[aIndex])
                     * (tPreviousControlData[aIndex] - tAntepenultimateControlsData[aIndex]);
@@ -146,7 +146,7 @@ public:
             tSlopeValue = tUpperBoundScaleFactor * tBoundsMisfit;
             tValue = tBoundsMisfit <= static_cast<ScalarType>(0) ? tUpperBoundScaleFactor : tSlopeValue;
             tCurrentSigmaData[aIndex] = fmin(tValue, tCurrentSigmaData[aIndex]);
-        }, "DevicePrimalProbElementWise::updateSigmaCoeff");
+        });
     }
 
     void updateObjectiveGlobalizationCoeff(const Plato::Vector<ScalarType, OrdinalType> & aDeltaControl,
@@ -167,7 +167,7 @@ public:
         const ScalarType* tCurrentGradientData = aCurrentGradient.data();
 
         const OrdinalType tNumElements = aOutputOne.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DevicePrimalProbElementWise::updateObjectiveGlobalizationCoeff", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tNumerator = tDeltaControlData[aIndex] * tDeltaControlData[aIndex];
             ScalarType tDenominator = (tCurrentSigmaData[aIndex] * tCurrentSigmaData[aIndex])
@@ -179,7 +179,7 @@ public:
                     + ( tCurrentSigmaData[aIndex] * fabs(tCurrentGradientData[aIndex])
                             * (tDeltaControlData[aIndex] * tDeltaControlData[aIndex]) );
             tOutputTwoData[aIndex] = tNumerator / tDenominator;
-        }, "DevicePrimalProbElementWise::updateObjectiveGlobalizationCoeff");
+        });
     }
 
     void updateConstraintGlobalizationCoeff(const Plato::Vector<ScalarType, OrdinalType> & aDeltaControl,
@@ -200,7 +200,7 @@ public:
         const ScalarType* tCurrentGradientData = aCurrentGradient.data();
 
         const OrdinalType tNumElements = aOutputOne.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DevicePrimalProbElementWise::updateConstraintGlobalizationCoeff", Kokkos::RangePolicy<>(0, tNumElements), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             ScalarType tNumerator = tDeltaControlData[aIndex] * tDeltaControlData[aIndex];
             ScalarType tDenominator = (tCurrentSigmaData[aIndex] * tCurrentSigmaData[aIndex])
@@ -212,7 +212,7 @@ public:
                     + (tCurrentSigmaData[aIndex] * fabs(tCurrentGradientData[aIndex])
                             * (tDeltaControlData[aIndex] * tDeltaControlData[aIndex]));
             tOutputTwoData[aIndex] = tNumerator / tDenominator;
-        }, "DevicePrimalProbElementWise::updateConstraintGlobalizationCoeff");
+        });
     }
 
     void computeKarushKuhnTuckerObjectiveConditions(const Plato::Vector<ScalarType, OrdinalType> & aControl,
@@ -233,7 +233,7 @@ public:
         const ScalarType* tConstraintGradientTimesDualData = aConstraintGradientTimesDual.data();
 
         const OrdinalType tNumControls = aControl.size();
-        Kokkos::parallel_for(Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
+        Kokkos::parallel_for("DevicePrimalProbElementWise::computeKarushKuhnTuckerObjectiveConditions", Kokkos::RangePolicy<>(0, tNumControls), KOKKOS_LAMBDA(const OrdinalType & aIndex)
         {
             tOutputOneData[aIndex] = tObjectiveGradientData[aIndex] + tConstraintGradientTimesDualData[aIndex];
             tOutputOneData[aIndex] = fmax(static_cast<ScalarType>(0), tOutputOneData[aIndex]);
@@ -244,7 +244,7 @@ public:
             tOutputTwoData[aIndex] = fmax(static_cast<ScalarType>(0), -tOutputTwoData[aIndex]);
             tOutputTwoData[aIndex] = (static_cast<ScalarType>(1) - tControlData[aIndex]) * tOutputTwoData[aIndex];
             tOutputTwoData[aIndex] = tOutputTwoData[aIndex] * tOutputTwoData[aIndex];
-        }, "DevicePrimalProbElementWise::computeKarushKuhnTuckerObjectiveConditions");
+        });
     }
 
 private:
