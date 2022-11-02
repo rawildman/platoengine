@@ -50,6 +50,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 #include "Plato_Vector.hpp"
 
