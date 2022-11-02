@@ -495,6 +495,8 @@ std::string check_physics_keyword(const std::string& aInput)
     {
         THROWERR(std::string("Check Physics Keyword: keyword 'physics' with tag '") + aInput + "' is not supported.")
     }
+    if(tValue == "steady_state_thermomechanics")
+        THROWERR("Physics option 'steady_state_thermomechanics' is currently disabled from the XML Generator.")
     return tValue;
 }
 // function check_physics_keyword

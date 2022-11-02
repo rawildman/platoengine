@@ -468,6 +468,28 @@ function( Plato_add_xmlgen_custom_command_test TEST_NAME XMLGEN_COMMAND CUSTOM_C
 
 endfunction( Plato_add_xmlgen_custom_command_test )
 
+
+###############################################################################
+## Plato_add_xmlgen_no_run_expect_fail_test(
+## )
+###############################################################################
+
+function( Plato_add_xmlgen_no_run_expect_fail_test TEST_NAME XMLGEN_COMMAND )
+
+  set( RUN_COMMAND "${XMLGEN_COMMAND} >& xmllog" )
+
+    add_test(NAME ${TEST_NAME}
+           COMMAND ${CMAKE_COMMAND}
+           -DTEST_COMMAND=${RUN_COMMAND}
+           -DXMLGEN_COMMAND=${XMLGEN_COMMAND}
+           -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+           -DOUT_FILE=${OUT_FILE}
+           -DGOLD_FILE=${GOLD_FILE}
+	   -P ${CMAKE_SOURCE_DIR}/base/config/runxmlgenexpectfailtest.cmake )
+
+endfunction( Plato_add_xmlgen_no_run_expect_fail_test )
+
+
 ###############################################################################
 ## Plato_add_xmlgen_no_run_custom_command_test( 
 ## )

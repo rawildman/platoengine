@@ -317,6 +317,7 @@ pugi::xml_node append_thermomechanical_compliance_criterion
 (const Criterion& aCriterion,
  pugi::xml_node& aParentNode)
 {
+    
     auto tCriterion = XMLGen::Private::append_scalar_function_criterion(aCriterion, aParentNode);
     if(tCriterion.empty())
     {
