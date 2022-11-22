@@ -42,13 +42,10 @@
 
 #pragma once
 
-#include <mpi.h>
-
 #include "Plato_ESP.hpp"
 #include "Plato_LocalOperation.hpp"
 #include "Plato_Application.hpp"
 #include "Plato_TimersTree.hpp"
-#include "Plato_InputData.hpp"
 
 typedef double ScalarType;
 typedef std::vector<ScalarType> ScalarVector;

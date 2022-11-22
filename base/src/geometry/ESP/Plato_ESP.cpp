@@ -42,7 +42,6 @@
 
 #include "Plato_ESP.hpp"
 #include "Plato_KokkosTypes.hpp"
-#include "Plato_Exceptions.hpp"
 
 namespace Plato {
 namespace Geometry {
@@ -74,12 +73,6 @@ ScalarType ESP<ScalarType,ScalarVectorType>::sensitivity(int aParameterIndex, Sc
         tDfDp += tSensitivity[k]*aGradientX[k];
     }
     return tDfDp;
-}
-
-template <typename ScalarType, typename ScalarVectorType>
-void ESP<ScalarType,ScalarVectorType>::throwWithError(std::string aError)
-{
-    throw Plato::ParsingException(aError);
 }
 
 template <typename ScalarType, typename ScalarVectorType>
