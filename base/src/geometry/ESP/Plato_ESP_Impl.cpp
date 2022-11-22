@@ -46,7 +46,7 @@ private:
     void *model = nullptr;
     modl_T *modelT = nullptr;
 
-    void throwWithError(std::string aError) override;
+    void throwWithError(std::string aError);
     void tesselate();
     ScalarType computeSensitivity(VectorType& aDXDp);
     void buildGeometryAndGetBodies();
@@ -299,7 +299,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::throwWithError(std::string aError)
 {
     safeFreeOCSM();
     safeFreeContext();
-    ESP<ScalarType,ScalarVectorType>::throwWithError(aError);
+    throw Plato::ParsingException(aError);
 }
 
 template class ESPImpl<double,std::vector<double>>;
