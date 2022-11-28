@@ -18,7 +18,6 @@ set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 
 set(${LIB_NAME}_SOURCES
        Plato_ESP_Impl.cpp
-       Plato_ESP.cpp
        bodyTess.c
    )
 
