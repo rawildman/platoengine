@@ -18,7 +18,6 @@ set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 
 set(${LIB_NAME}_SOURCES
        Plato_ESP_Impl.cpp
-       Plato_ESP.cpp
        bodyTess.c
    )
 
@@ -36,7 +35,7 @@ FOREACH(PLATO_LIB ${LIB_NAMES})
   if(${${PLATO_LIB}_TYPE} STREQUAL "STATIC")
     set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
   else()
-    target_link_libraries(Plato${PLATO_LIB} ${OCSM_LIB} ${ESP_LIB})
+    target_link_libraries(Plato${PLATO_LIB} PlatoGeometryESP ${OCSM_LIB} ${ESP_LIB})
   endif()
 ENDFOREACH()
 
