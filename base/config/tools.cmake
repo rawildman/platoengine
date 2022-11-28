@@ -448,6 +448,32 @@ function( Plato_add_xmlgen_numdiff_test TEST_NAME XMLGEN_COMMAND NUMDIFF_COMMAND
 endfunction( Plato_add_xmlgen_numdiff_test )
 
 ###############################################################################
+## Plato_add_parallel_numdiff_test( 
+##    TEST_NAME      == test name
+## )
+###############################################################################
+
+function( Plato_add_parallel_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE NUM_PROCS IO_COMM_INDEX INPUT_MESH )
+
+    add_test( NAME ${TEST_NAME}
+              COMMAND ${CMAKE_COMMAND} 
+              -DTEST_COMMAND=${RUN_COMMAND}
+              -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR} 
+              -DOUT_FILE=${OUT_FILE} 
+              -DGOLD_FILE=${GOLD_FILE} 
+              -DNUMDIFF_COMMAND=${NUMDIFF_COMMAND}
+              -DNUMDIFF_ABSOLUTE=${NUMDIFF_ABSOLUTE}
+              -DNUMDIFF_TOLERANCE=${NUMDIFF_TOLERANCE}
+              -DNUM_PROCS=${NUM_PROCS}
+              -DSEACAS_DECOMP=${SEACAS_DECOMP}
+              -DINPUT_MESH=${INPUT_MESH}
+              -DIO_COMM_INDEX=${IO_COMM_INDEX}
+              -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+              -P ${CMAKE_SOURCE_DIR}/base/config/runparallelnumdifftest.cmake )
+
+endfunction( Plato_add_numdiff_test )
+
+###############################################################################
 ## Plato_add_xmlgen_custom_command_test( 
 ## )
 ###############################################################################
