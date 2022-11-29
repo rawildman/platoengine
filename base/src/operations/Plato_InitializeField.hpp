@@ -168,12 +168,12 @@ private:
                                        double aAverageElemLength);
 
 private:
-    bool mCreateSpheres; /*!< create spheres-based "swiss cheese" level set field */
-    int mIteration; /*!< read topology field from this optimization iteration */
-    double mUniformValue; /*!< value used to initialize uniform design variable field */
-    std::array<double, 3> mMinCoords; /*!< 3D array of minimum coordinates in x, y, and z */
-    std::array<double, 3> mMaxCoords; /*!< 3D array of maximum coordinates in x, y, and z */
-    Plato::data::layout_t mOutputLayout; /*!< output data layout, e.g. scalar value, scalar field, etc */
+    bool mCreateSpheres = false; /*!< create spheres-based "swiss cheese" level set field */
+    int mIteration = 0; /*!< read topology field from this optimization iteration */
+    double mUniformValue = 0.0; /*!< value used to initialize uniform design variable field */
+    std::array<double, 3> mMinCoords = {0,0,0}; /*!< 3D array of minimum coordinates in x, y, and z */
+    std::array<double, 3> mMaxCoords = {0,0,0}; /*!< 3D array of maximum coordinates in x, y, and z */
+    Plato::data::layout_t mOutputLayout = data::SCALAR; /*!< output data layout, e.g. scalar value, scalar field, etc */
 
     std::string mFileName; /*!< output file name */
     std::string mStringMethod; /*!< method used to initialized level set field */

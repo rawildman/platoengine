@@ -59,8 +59,6 @@
 #include <fstream>
 #include <cctype>
 
-#include "Plato_Exceptions.hpp"
-
 namespace Plato {
 namespace Geometry {
 
@@ -89,6 +87,9 @@ class ESP
     decltype(mSensitivity) getSensitivities(){ return mSensitivity; }
 
     ScalarType sensitivity(int aParameterIndex, ScalarVectorType aGradientX);
+
+protected:
+    virtual void throwWithError(std::string aError);
 
   private:
     void readNames();
