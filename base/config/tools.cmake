@@ -454,6 +454,12 @@ endfunction( Plato_add_xmlgen_numdiff_test )
 ###############################################################################
 
 function( Plato_add_parallel_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE NUM_PROCS IO_COMM_INDEX INPUT_MESH )
+    # Check for RESTART_MESH
+    set(OptionalArgs ${ARGN})
+    list(LENGTH OptionalArgs NumOptionalArgs)
+    if(NumOptionalArgs GREATER 0)
+        list(GET OptionalArgs 0 RESTART_MESH)
+    endif()
 
     add_test( NAME ${TEST_NAME}
               COMMAND ${CMAKE_COMMAND} 
@@ -467,6 +473,7 @@ function( Plato_add_parallel_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND 
               -DNUM_PROCS=${NUM_PROCS}
               -DSEACAS_DECOMP=${SEACAS_DECOMP}
               -DINPUT_MESH=${INPUT_MESH}
+              -DRESTART_MESH=${RESTART_MESH}
               -DIO_COMM_INDEX=${IO_COMM_INDEX}
               -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
               -P ${CMAKE_SOURCE_DIR}/base/config/runparallelnumdifftest.cmake )

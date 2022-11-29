@@ -3,7 +3,6 @@ macro( runmeshdecomp SEACAS_DECOMP NUM_PROCS INPUT_MESH )
 # Check for RESTART_MESH
 set(OptionalArgs ${ARGN})
 list(LENGTH OptionalArgs NumOptionalArgs)
-
 if(NumOptionalArgs GREATER 0)
     list(GET OptionalArgs 0 RESTART_MESH)
 endif()
@@ -15,7 +14,7 @@ message(STATUS "decomp is ${SEACAS_DECOMP}")
 if (NOT SEACAS_DECOMP)
   message(FATAL_ERROR "Cannot find decomp")
 endif()
-
+message(STATUS "RESTART_MESH: ${RESTART_MESH}")
 if (RESTART_MESH)
   foreach(NUM_PROC ${NUM_PROCS_LIST})
     SET(DECOMP_COMMAND ${SEACAS_DECOMP} -processors ${NUM_PROC} ${RESTART_MESH})
