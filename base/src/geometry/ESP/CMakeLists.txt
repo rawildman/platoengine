@@ -35,7 +35,7 @@ FOREACH(PLATO_LIB ${LIB_NAMES})
   if(${${PLATO_LIB}_TYPE} STREQUAL "STATIC")
     set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
   else()
-    target_link_libraries(Plato${PLATO_LIB} PlatoGeometryESP ${OCSM_LIB} ${ESP_LIB})
+    target_link_libraries(Plato${PLATO_LIB} PlatoGeometryESP PlatoExceptions ${OCSM_LIB} ${ESP_LIB})
   endif()
 ENDFOREACH()
 
