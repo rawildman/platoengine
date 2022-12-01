@@ -61,9 +61,7 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
-#ifdef BUILD_IN_SIERRA
 #include <stk_mesh/base/MeshBuilder.hpp>
-#endif
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 
 
@@ -140,30 +138,15 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm,
   initialize();
 
   mComm = comm;
-#ifdef BUILD_IN_SIERRA
   mMetaData = std::shared_ptr<stk::mesh::MetaData>(meta_data,[](auto ptrWeWontDelete){});
   mBulkData = std::shared_ptr<stk::mesh::BulkData>(bulk_data,[](auto ptrWeWontDelete){});
-#else
-  mMetaData = meta_data;
-  mBulkData = bulk_data;
-#endif
-
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
-#else
-  mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-                            (stk::topology::NODE_RANK, "coordinates");
-#endif
 
   if(!mCoordsField)
   {
     std::cout << "Failed to find nodal coordinate field." << std::endl;
   }
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mIsoField = mMetaData->get_field<double>(stk::topology::NODE_RANK, fieldname);
-#else
-  mIsoField = mMetaData->get_field<stk::mesh::Field<double> >(stk::topology::NODE_RANK, fieldname);
-#endif
   if(!mIsoField)
   {
     std::cout << "Failed to find " << fieldname << " nodal variable." << std::endl;
@@ -184,40 +167,18 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm) : IVEMeshAPI()
 {
   initialize();
   mComm = comm;
-#ifdef BUILD_IN_SIERRA
   mMetaData = stk::mesh::MeshBuilder().set_spatial_dimension(3).create_meta_data();
-#else
-  mMetaData = new stk::mesh::MetaData(3);
-#endif
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mMetaData->use_simple_fields();
-#endif
   mLocallyOwnedMeta = true;
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mCoordsField = (stk::mesh::Field<double>*)(&(mMetaData->
                 declare_field<double>(stk::topology::NODE_RANK, "coordinates")));
-#else
-  mCoordsField = (stk::mesh::Field<double, stk::mesh::Cartesian>*)(&(mMetaData->
-                declare_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-                            (stk::topology::NODE_RANK, "coordinates")));
-#endif
   if(!mCoordsField)
     std::cout << "Failed to find nodal coordinate field." << std::endl;
-#ifdef BUILD_IN_SIERRA // GLAZE1
   stk::mesh::put_field_on_entire_mesh(*mCoordsField, mMetaData->spatial_dimension());
-#else
-  stk::mesh::put_field_on_entire_mesh(*mCoordsField);
-#endif
 }
 
 IVEMeshAPISTK::~IVEMeshAPISTK()
 {
-#ifndef BUILD_IN_SIERRA
-  if ( mLocallyOwnedBulk && mBulkData )
-    delete mBulkData;
-  if ( mLocallyOwnedMeta && mMetaData )
-    delete mMetaData;
-#endif
   if(mIoBroker)
     delete mIoBroker;
 }
@@ -854,12 +815,7 @@ bool IVEMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fieldn
 
   mIoBroker->populate_bulk_data();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
-#else
-  mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-                            (stk::topology::NODE_RANK, "coordinates");
-#endif
 
   if(!mCoordsField)
   {
@@ -874,11 +830,7 @@ bool IVEMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fieldn
     return false;
   }
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mIsoField = mMetaData->get_field<double>(stk::topology::NODE_RANK, fieldname);
-#else
-  mIsoField = mMetaData->get_field<stk::mesh::Field<double> >(stk::topology::NODE_RANK, fieldname);
-#endif
   if(!mIsoField)
   {
     std::cout << "Failed to find " << fieldname << " nodal variable." << std::endl;
@@ -954,11 +906,7 @@ void IVEMeshAPISTK::print_boundary_node_info(std::vector<BoundaryNodeInfo> &bni)
 
 void IVEMeshAPISTK::add_nodal_field(std::string &name)
 {
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *cur_field = &mMetaData->declare_field<double>(stk::topology::NODE_RANK, name, 1);
-#else
-    stk::mesh::Field<double> *cur_field = &mMetaData->declare_field<stk::mesh::Field<double> >(stk::topology::NODE_RANK, name, 1);
-#endif
     stk::mesh::put_field_on_entire_mesh(*cur_field);
 //    stk::io::set_field_role(*cur_field, Ioss::Field::ATTRIBUTE);
     mNodalFields.push_back((stk::mesh::Field<double>*)cur_field);
@@ -966,11 +914,7 @@ void IVEMeshAPISTK::add_nodal_field(std::string &name)
 
 void IVEMeshAPISTK::add_element_field(std::string &name)
 {
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *cur_field = &mMetaData->declare_field<double>(stk::topology::ELEMENT_RANK, name, 1);
-#else
-    stk::mesh::Field<double> *cur_field = &mMetaData->declare_field<stk::mesh::Field<double> >(stk::topology::ELEMENT_RANK, name, 1);
-#endif
     stk::mesh::put_field_on_entire_mesh(*cur_field);
 //    stk::io::set_field_role(*cur_field, Ioss::Field::ATTRIBUTE);
     mElementFields.push_back((stk::mesh::Field<double>*)cur_field);
@@ -1143,22 +1087,14 @@ void IVEMeshAPISTK::prepare_to_create_tris()
   stk::io::put_io_part_attribute(*mFixedTriPart);
 
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mFixedTriMap = &mMetaData->declare_field<double>(stk::topology::ELEMENT_RANK, "FixedTriMap", 1);
-#else
-  mFixedTriMap = &mMetaData->declare_field<stk::mesh::Field<double> >(stk::topology::ELEMENT_RANK, "FixedTriMap", 1);
-#endif
   stk::mesh::put_field_on_mesh(*mFixedTriMap, *mFixedTriPart, nullptr);
   stk::io::set_field_role(*mFixedTriMap, Ioss::Field::ATTRIBUTE);
 
   mOptimizedTriPart = &mMetaData->declare_part_with_topology( "OptimizedTriangles", stk::topology::SHELL_TRI_3 );
   stk::io::put_io_part_attribute(*mOptimizedTriPart);
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
   mOptimizedTriMap = &mMetaData->declare_field<double>(stk::topology::ELEMENT_RANK, "OptimizedTriMap", 1);
-#else
-  mOptimizedTriMap = &mMetaData->declare_field<stk::mesh::Field<double> >(stk::topology::ELEMENT_RANK, "OptimizedTriMap", 1);
-#endif
   stk::mesh::put_field_on_mesh(*mOptimizedTriMap, *mOptimizedTriPart, nullptr);
   stk::io::set_field_role(*mOptimizedTriMap, Ioss::Field::ATTRIBUTE);
 
@@ -1311,22 +1247,11 @@ bool IVEMeshAPISTK::prepare_as_source()
 {
   if(!mMetaData)
   {
-#ifdef BUILD_IN_SIERRA
     mMetaData = stk::mesh::MeshBuilder().create_meta_data();
-#else
-    mMetaData = new stk::mesh::MetaData;
-#endif
-
-#ifdef BUILD_IN_SIERRA // GLAZE1
     mMetaData->use_simple_fields();
-#endif
     mLocallyOwnedMeta = true;
   }
-#ifdef BUILD_IN_SIERRA
   mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
-#else
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
-#endif
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);
@@ -1337,11 +1262,7 @@ bool IVEMeshAPISTK::prepare_as_destination()
 {
   prepare_to_create_tris();
   mMetaData->commit();
-#ifdef BUILD_IN_SIERRA
   mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
-#else
-  mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
-#endif
   mLocallyOwnedBulk = true;
   mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
   mIoBroker->set_bulk_data(*mBulkData);

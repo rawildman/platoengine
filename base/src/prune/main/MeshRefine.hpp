@@ -14,11 +14,7 @@
 #include <adapt/UniformRefinerPattern_def.hpp>
 
 #include "MeshManager.hpp"
-#ifdef BUILD_IN_SIERRA
 #include <percept/PerceptMesh.hpp>
-#else
-#include <PerceptMesh.hpp>
-#endif
 
 class MeshRefine
 {

@@ -19,9 +19,7 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
-#ifdef BUILD_IN_SIERRA
 #include <stk_mesh/base/MeshBuilder.hpp>
-#endif
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 #include "Teuchos_CommandLineProcessor.hpp"
 
@@ -61,16 +59,9 @@ int main(int argc,  char **argv)
     }
 
     // Initialize stk::mesh data
-#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> bulkData = stk::mesh::MeshBuilder(*comm).create();
     stk::mesh::MetaData *metaData = &bulkData->mesh_meta_data();
-#else
-    stk::mesh::MetaData *metaData = new stk::mesh::MetaData;
-    stk::mesh::BulkData *bulkData = new stk::mesh::BulkData(*metaData, *comm);
-#endif
-#ifdef BUILD_IN_SIERRA // GLAZE1
     metaData->use_simple_fields();
-#endif
     stk::io::StkMeshIoBroker *ioBroker = new stk::io::StkMeshIoBroker(*comm);
     ioBroker->set_bulk_data(*bulkData);
 
@@ -81,11 +72,7 @@ int main(int argc,  char **argv)
     ioBroker->create_input_mesh();
     ioBroker->add_all_mesh_fields_as_input_fields();
     ioBroker->populate_bulk_data();
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *supportStructureField = metaData->get_field<double>(
-#else
-    stk::mesh::Field<double> *supportStructureField = metaData->get_field<stk::mesh::Field<double> >(
-#endif
             stk::topology::NODE_RANK, "support_structure");
     ioBroker->read_defined_input_fields(1);
 
@@ -120,10 +107,6 @@ int main(int argc,  char **argv)
         fclose(fp);
     }
 
-#ifndef BUILD_IN_SIERRA
-    delete bulkData;
-    delete metaData;
-#endif
     delete ioBroker;
     stk::parallel_machine_finalize();
 
