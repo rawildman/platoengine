@@ -27,6 +27,9 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
+#ifdef BUILD_IN_SIERRA
+#include <stk_mesh/base/MeshBuilder.hpp>
+#endif
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 
 namespace plato
@@ -41,10 +44,12 @@ MeshWrapper::MeshWrapper(stk::ParallelMachine* comm)
 
 MeshWrapper::~MeshWrapper()
 {
+#ifndef BUILD_IN_SIERRA
     if ( mLocallyOwnedBulk && mBulkData )
         delete mBulkData;
     if ( mLocallyOwnedMeta && mMetaData )
         delete mMetaData;
+#endif
     if(mIoBroker)
         delete mIoBroker;
 }
@@ -62,12 +67,20 @@ void MeshWrapper::initialize()
 
 bool MeshWrapper::prepare_as_source()
 {
+#ifdef BUILD_IN_SIERRA
+    mMetaData = stk::mesh::MeshBuilder().create_meta_data();
+#else
     mMetaData = new stk::mesh::MetaData;
+#endif
 #ifdef BUILD_IN_SIERRA // GLAZE1
     mMetaData->use_simple_fields();
 #endif
     mLocallyOwnedMeta = true;
+#ifdef BUILD_IN_SIERRA
+    mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
+#else
     mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+#endif
     mLocallyOwnedBulk = true;
     mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
     mIoBroker->set_bulk_data(*mBulkData);

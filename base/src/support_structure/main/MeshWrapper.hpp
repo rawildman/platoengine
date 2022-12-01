@@ -38,8 +38,13 @@ class MeshWrapper
 {
 
 private:
+#ifdef BUILD_IN_SIERRA
+    std::shared_ptr<stk::mesh::BulkData> mBulkData;
+    std::shared_ptr<stk::mesh::MetaData> mMetaData;
+#else
     stk::mesh::BulkData *mBulkData;
     stk::mesh::MetaData *mMetaData;
+#endif
     stk::io::StkMeshIoBroker *mIoBroker;
     stk::ParallelMachine *mComm;
     bool mLocallyOwnedBulk;
@@ -67,8 +72,13 @@ public:
     bool read_exodus_mesh(std::string &meshfile, std::string &fieldname,
                           std::string &outputFieldsString,
                           int input_file_is_spread, int time_step);
-    stk::mesh::BulkData* bulk_data() { return mBulkData; }
+#ifdef BUILD_IN_SIERRA
+    stk::mesh::MetaData* meta_data() { return mMetaData.get(); }
+    stk::mesh::BulkData* bulk_data() { return mBulkData.get(); }
+#else
     stk::mesh::MetaData* meta_data() { return mMetaData; }
+    stk::mesh::BulkData* bulk_data() { return mBulkData; }
+#endif
     void get_output_fields(std::string &outputFieldsString);
     void export_my_mesh();
     void get_shared_boundary_nodes(std::set<uint64_t> &shared_boundary_nodes);
