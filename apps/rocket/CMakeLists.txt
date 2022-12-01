@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
 # actual target:
 set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
-    ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES}
+    Trilinos::all_selected_libs
     ${Plato_EXTRA_LINK_FLAGS})
 add_executable(${ExeName} ${${ExeName}_SRCS})
 target_link_libraries(${ExeName} ${${ExeName}_LIBS})

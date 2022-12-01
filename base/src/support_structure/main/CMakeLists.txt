@@ -11,7 +11,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 add_library(SupportStructureLib ${SupportStructureLib_SOURCES} ${SupportStructureLib_HEADERS})
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} SupportStructureLib PARENT_SCOPE)
 
-target_link_libraries(SupportStructureLib ${Trilinos_LIBRARIES})
+target_link_libraries(SupportStructureLib Trilinos::all_selected_libs)
 
 install( TARGETS SupportStructureLib EXPORT SupportStructureLib
          LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

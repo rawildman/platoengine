@@ -16,7 +16,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 add_library(IsoExtract ${IsoExtract_SOURCES} ${IsoExtract_HEADERS})
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} IsoExtract PARENT_SCOPE)
 
-target_link_libraries(IsoExtract ${Trilinos_LIBRARIES})
+target_link_libraries(IsoExtract Trilinos::all_selected_libs)
 
 install( TARGETS IsoExtract EXPORT IsoExtract
          LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

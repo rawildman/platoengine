@@ -7,7 +7,7 @@ set(DecomposeMesh_headers Plato_DecomposeMesh.hpp)
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 add_library(PlatoDecomposeMesh     ${DecomposeMesh_sources}     ${DecomposeMesh_headers}     )
 
-target_link_libraries(PlatoDecomposeMesh ${Trilinos_LIBRARIES} )
+target_link_libraries(PlatoDecomposeMesh Trilinos::all_selected_libs )
 set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} PlatoDecomposeMesh)
 
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} )

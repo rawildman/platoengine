@@ -25,8 +25,7 @@ set(PlatoXTK_UnitTester_LIBS
     ${PETSc_Libs}
     ${XTK_LIBRARIES}
     ${PLATOXTK}
-    ${Trilinos_LIBRARIES} 
-    ${Trilinos_TPL_LIBRARIES}
+    Trilinos::all_selected_libs
     ${Plato_EXTRA_LINK_FLAGS} )
 
 add_executable(PlatoXTK_UnitTester ${PlatoXTK_UnitTester_SRCS})

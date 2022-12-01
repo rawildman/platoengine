@@ -22,8 +22,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 set(Plato_Operations_UnitTester_LIBS GTest::GTest 
                                      PlatoApp
                                      ${PLATO_LIBRARIES}
-                                     ${Trilinos_LIBRARIES}
-                                     ${Trilinos_TPL_LIBRARIES}
+                                     Trilinos::all_selected_libs
                                      Boost::serialization
                                      )
                                      

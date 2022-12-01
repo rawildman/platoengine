@@ -20,8 +20,7 @@ set(Plato_Interface_UnitTester_LIBS GTest::GTest
                                      PlatoApp
                                      PlatoInterface
                                      ${PLATO_LIBRARIES}
-                                     ${Trilinos_LIBRARIES}
-                                     ${Trilinos_TPL_LIBRARIES}
+                                     Trilinos::all_selected_libs
                                      Boost::serialization
                                      )
  

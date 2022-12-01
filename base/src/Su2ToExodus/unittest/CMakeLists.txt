@@ -19,8 +19,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
 set(PlatoSu2ToExodus_UnitTester_LIBS GTest::GTest)
 add_executable(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_SRCS})
-#target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
-target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} ${Trilinos_LIBRARIES})
+target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} Trilinos::all_selected_libs)
 add_test(NAME PlatoSu2ToExodus_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/Su2ToExodus/unittest/PlatoSu2ToExodus_UnitTester)
 set_property(TEST PlatoSu2ToExodus_UnitTester PROPERTY LABELS "small")
 

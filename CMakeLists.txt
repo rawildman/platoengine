@@ -1,5 +1,5 @@
 ############ Project setup ##################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 #############################################################################
 
 include( ${CMAKE_SOURCE_DIR}/base/config/tools.cmake )
@@ -60,9 +60,6 @@ MESSAGE("End of Trilinos details\n")
 if( ENABLE_ROL )
   add_definitions(-DENABLE_ROL)
 endif()
-
-include_directories(SYSTEM ${Trilinos_INCLUDE_DIRS} ${Trilinos_TPL_INCLUDE_DIRS})
-list(REMOVE_DUPLICATES Trilinos_TPL_LIBRARIES)
 
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
