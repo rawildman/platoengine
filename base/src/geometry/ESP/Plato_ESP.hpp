@@ -89,7 +89,7 @@ class ESP
     ScalarType sensitivity(int aParameterIndex, ScalarVectorType aGradientX);
 
 protected:
-    virtual void throwWithError(std::string aError);
+    void throwWithError(std::string aError);
 
   private:
     void readNames();

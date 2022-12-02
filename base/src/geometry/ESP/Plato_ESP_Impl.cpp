@@ -46,7 +46,7 @@ private:
     void *model = nullptr;
     modl_T *modelT = nullptr;
 
-    void throwWithError(std::string aError) override;
+    void cleanUpAndThrow(std::string aError);
     void tesselate();
     ScalarType computeSensitivity(VectorType& aDXDp);
     void buildGeometryAndGetBodies();
@@ -75,7 +75,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
         auto tStatus = EG_loadTess(tBody, (char*)this->mTessFileName.c_str(), &modelT->body[ibody].etess);
         if (tStatus != EGADS_SUCCESS)
         {
-            this->throwWithError("EG_loadTess failed.");
+            cleanUpAndThrow("EG_loadTess failed.");
         }
     }
     int tNumParams = this->mParameterNames.size();
@@ -110,7 +110,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
         auto tStatus = bodyTess(modelT->body[ibody].etess, &tNface, &tNedge, &tNvert, &tCoords, &tVtags, &tNtri, &tTris);
         if (tStatus != EGADS_SUCCESS)
         {
-           this->throwWithError("bodyTess failed.");
+           cleanUpAndThrow("bodyTess failed.");
         }
 
         aDXDp = VectorType(tNvert*this->mSpaceDim);
@@ -130,7 +130,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
                 std::stringstream ss;
                 ss << "ocsmGetTessVel Parameter " << this->mActiveParameterName << " vert " << j+1 << " failed: " 
                     << tStatus << " (Node = " << tVtags[j].pindex << ")!";
-                this->throwWithError(ss.str());
+                cleanUpAndThrow(ss.str());
             }
             aDXDp[3*j  ] = tPcsens[0];
             aDXDp[3*j+1] = tPcsens[1];
@@ -149,7 +149,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
                 EG_free(tCoords);
                 std::stringstream ss;
                 ss << " ocsmGetTessVel Parameter " << this->mActiveParameterName << " Edge " << j << " failed: " << tStatus;
-                this->throwWithError(ss.str());
+                cleanUpAndThrow(ss.str());
             }
             for (int k = 0; k < tNvert; k++)
             {
@@ -171,7 +171,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
             EG_free(tCoords);
             std::stringstream ss;
             ss << " ocsmGetTessVel Parameter " << this->mActiveParameterName << " Face " << j << "failed: " << tStatus;
-            this->throwWithError(ss.str());
+            cleanUpAndThrow(ss.str());
             }
             for (int k=0; k<tNvert; k++)
             if ((tVtags[k].ptype < 0) && (tVtags[k].pindex == j)) {
@@ -199,7 +199,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::buildGeometryAndGetBodies()
     EG_deleteObject(context); context = nullptr;
     if (tStatus != OCSM_SUCCESS)
     {
-        this->throwWithError("ocsmBuild failed");
+        cleanUpAndThrow("ocsmBuild failed");
     }
     tNbody = 0;
     for (int ibody=1; ibody<=modelT->nbody; ibody++)
@@ -210,10 +210,10 @@ void ESPImpl<ScalarType,ScalarVectorType>::buildGeometryAndGetBodies()
     }
     if (tNbody <= 0)
     {
-        this->throwWithError("No bodies found.");
+        cleanUpAndThrow("No bodies found.");
     }
     if (tNbody != 1) {
-        this->throwWithError(" ERROR: ETO option only works for a single body!");
+        cleanUpAndThrow(" ERROR: ETO option only works for a single body!");
     }
 }
 
@@ -227,7 +227,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::activateParameterInModel(const std::s
     {
         auto tStatus = ocsmGetPmtr(model, j+1, &tType, &tNumRows, &tNumCols, tParameterName);
         if (tStatus != OCSM_SUCCESS) {
-            this->throwWithError("ocsmGetPmtr failed.");
+            cleanUpAndThrow("ocsmGetPmtr failed.");
         }
         if (strcmp(aParameterName.c_str(), tParameterName) == 0) {
             this->mActiveParameterIndex = j+1;
@@ -239,7 +239,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::activateParameterInModel(const std::s
     {
         std::stringstream ss;
         ss << "Parameter not found: " << aParameterName;
-        this->throwWithError(ss.str());
+        cleanUpAndThrow(ss.str());
     }
 }
 
@@ -249,7 +249,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::openContext()
     auto tStatus = EG_open(&context);
     if (tStatus != EGADS_SUCCESS)
     {
-        this->throwWithError("EGADS failed to Open");
+        cleanUpAndThrow("EGADS failed to Open");
     }
 }
 
@@ -259,7 +259,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::openModel()
     auto tStatus = ocsmLoad((char*)this->mModelFileName.c_str(), &model);
     if (tStatus < OCSM_SUCCESS)
     {
-        this->throwWithError("ocsmLoad failed");
+        cleanUpAndThrow("ocsmLoad failed");
     }
     modelT = (modl_T*)model;
     modelT->context = context;
@@ -271,7 +271,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::checkModel()
     auto tStatus = ocsmCheck(model);
     if (tStatus < OCSM_SUCCESS)
     {
-        this->throwWithError("ocsmCheck failed");
+        cleanUpAndThrow("ocsmCheck failed");
     }
 }
 
@@ -295,11 +295,11 @@ void ESPImpl<ScalarType,ScalarVectorType>::safeFreeContext()
 }
 
 template <typename ScalarType, typename ScalarVectorType>
-void ESPImpl<ScalarType,ScalarVectorType>::throwWithError(std::string aError)
+void ESPImpl<ScalarType,ScalarVectorType>::cleanUpAndThrow(std::string aError)
 {
     safeFreeOCSM();
     safeFreeContext();
-    ESP<ScalarType,ScalarVectorType>::throwWithError(aError);
+    this->throwWithError(aError);
 }
 
 template class ESPImpl<double,std::vector<double>>;
