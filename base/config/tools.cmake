@@ -688,3 +688,13 @@ function( Plato_abstract_to_realized ABSOLUTE_PATH_TO_ABSTRACT_FILES BINARY_REAL
     endforeach()
 
 endfunction( Plato_abstract_to_realized )
+
+###############################################################################
+## Plato_disable_test
+###############################################################################
+
+function( Plato_disable_test TEST_NAME REASON )
+    #set_property(TEST ${TEST_NAME} APPEND PROPERTY LABELS "disabled")
+    set_property(TEST ${TEST_NAME} APPEND PROPERTY DISABLED TRUE)
+    message(WARNING "${TEST_NAME} test disabled, reason: ${REASON}")
+endfunction( Plato_disable_test)
