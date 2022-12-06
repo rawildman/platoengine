@@ -690,11 +690,27 @@ function( Plato_abstract_to_realized ABSOLUTE_PATH_TO_ABSTRACT_FILES BINARY_REAL
 endfunction( Plato_abstract_to_realized )
 
 ###############################################################################
+## Plato_add_output_exists_test 
+## The purpose of this test is to check for the existence of a file after
+## another test has been run. 
+##   TEST_NAME      == Main test name, which should produce an expected output
+##                     file
+##   FILE_NAME      == The file to check
+##    
+###############################################################################
+function( Plato_add_output_exists_test TEST_NAME FILE_NAME )
+    set(TEST_NAME_OUTPUT_EXISTS ${TEST_NAME}_output_exists)
+    add_test(NAME ${TEST_NAME_OUTPUT_EXISTS} COMMAND test -f ${FILE_NAME})
+    set_tests_properties( ${TEST_NAME_OUTPUT_EXISTS} PROPERTIES DEPENDS ${TEST_NAME})
+    set_property(TEST ${TEST_NAME_OUTPUT_EXISTS} PROPERTY LABELS "small")
+
+endfunction( Plato_add_file_exists_test )
+
+###############################################################################
 ## Plato_disable_test
 ###############################################################################
 
 function( Plato_disable_test TEST_NAME REASON )
-    #set_property(TEST ${TEST_NAME} APPEND PROPERTY LABELS "disabled")
     set_property(TEST ${TEST_NAME} APPEND PROPERTY DISABLED TRUE)
     message(WARNING "${TEST_NAME} test disabled, reason: ${REASON}")
 endfunction( Plato_disable_test)
