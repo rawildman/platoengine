@@ -253,36 +253,26 @@ function( Plato_add_test RUN_COMMANDS TEST_NAME NUM_PROCS IO_COMM_INDEX INPUT_ME
     set(OptionalArgs ${ARGN})
     list(LENGTH OptionalArgs NumOptionalArgs)
     if(NumOptionalArgs GREATER 0)
-      list(GET OptionalArgs 0 RESTART_MESH)
-      add_test(NAME ${TEST_NAME}
-             COMMAND ${CMAKE_COMMAND}
-             "-DTEST_COMMANDS=${RUN_COMMANDS}"
-             -DTEST_NAME=${TEST_NAME}
-             -DNUM_PROCS=${NUM_PROCS}
-             -DSEACAS_EPU=${SEACAS_EPU}
-             -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
-             -DSEACAS_DECOMP=${SEACAS_DECOMP}
-             -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-             -DIO_COMM_INDEX=${IO_COMM_INDEX}
-             -DINPUT_MESH=${INPUT_MESH}
-             -DOUTPUT_MESH=${OUTPUT_MESH}
-             -DRESTART_MESH=${RESTART_MESH}
-             -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
+        list(GET OptionalArgs 0 RESTART_MESH)
     else()
-      add_test(NAME ${TEST_NAME}
-             COMMAND ${CMAKE_COMMAND}
-             "-DTEST_COMMANDS=${RUN_COMMANDS}"
-             -DTEST_NAME=${TEST_NAME}
-             -DNUM_PROCS=${NUM_PROCS}
-             -DSEACAS_EPU=${SEACAS_EPU}
-             -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
-             -DSEACAS_DECOMP=${SEACAS_DECOMP}
-             -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-             -DIO_COMM_INDEX=${IO_COMM_INDEX}
-             -DINPUT_MESH=${INPUT_MESH}
-             -DOUTPUT_MESH=${OUTPUT_MESH}
-             -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
+        unset(RESTART_MESH)
     endif()
+
+    add_test(NAME ${TEST_NAME}
+      COMMAND ${CMAKE_COMMAND}
+      "-DTEST_COMMANDS=${RUN_COMMANDS}"
+      -DTEST_NAME=${TEST_NAME}
+      -DNUM_PROCS=${NUM_PROCS}
+      -DSEACAS_EPU=${SEACAS_EPU}
+      -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
+      -DSEACAS_DECOMP=${SEACAS_DECOMP}
+      -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+      -DIO_COMM_INDEX=${IO_COMM_INDEX}
+      -DINPUT_MESH=${INPUT_MESH}
+      -DOUTPUT_MESH=${OUTPUT_MESH}
+      -DRESTART_MESH=${RESTART_MESH}
+      -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+      -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
 
     set_tests_properties(${TEST_NAME} PROPERTIES REQUIRED_FILES "${SEACAS_EPU};${SEACAS_EXODIFF}")
 
@@ -698,4 +688,3 @@ function( Plato_abstract_to_realized ABSOLUTE_PATH_TO_ABSTRACT_FILES BINARY_REAL
     endforeach()
 
 endfunction( Plato_abstract_to_realized )
-
