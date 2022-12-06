@@ -62,6 +62,7 @@ private:
 template <typename ScalarType, typename ScalarVectorType>
 void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
 {
+    int tCntr=0;
     /* store the tessellation object in OpenCSM */
     for (int ibody=1; ibody<=modelT->nbody; ibody++)
     {
@@ -72,7 +73,12 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
         {
             EG_deleteObject(modelT->body[ibody].etess);
         }
-        auto tStatus = EG_loadTess(tBody, (char*)this->mTessFileName.c_str(), &modelT->body[ibody].etess);
+std::string tCurTessName = "egadsTess_" + std::to_string(tCntr) + ".eto";
+tCntr++;
+std::cout << "\n*************** tess file name: " << tCurTessName << " ***************\n" << std::endl << std::flush;
+//std::string tCurTessName = "egadsTess_0.eto";
+        auto tStatus = EG_loadTess(tBody, (char*)tCurTessName.c_str(), &modelT->body[ibody].etess);
+ //       auto tStatus = EG_loadTess(tBody, (char*)this->mTessFileName.c_str(), &modelT->body[ibody].etess);
         if (tStatus != EGADS_SUCCESS)
         {
             cleanUpAndThrow("EG_loadTess failed.");
@@ -90,6 +96,9 @@ template <typename ScalarType, typename ScalarVectorType>
 ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& aDXDp)
 {
     ScalarType tSensitivity(0.0);
+
+static int cntr=0;
+    aDXDp.clear();
 
     /* clear all then set the parameter & tell OpenCSM */
     ocsmSetVelD(model, 0,     0,    0,    0.0);
@@ -113,7 +122,8 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
            cleanUpAndThrow("bodyTess failed.");
         }
 
-        aDXDp = VectorType(tNvert*this->mSpaceDim);
+        VectorType tCurDXDpVector = VectorType(tNvert*this->mSpaceDim);
+        //aDXDp = VectorType(tNvert*this->mSpaceDim);
 
         const ScalarType *tPcsens;
     
@@ -132,9 +142,9 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
                     << tStatus << " (Node = " << tVtags[j].pindex << ")!";
                 cleanUpAndThrow(ss.str());
             }
-            aDXDp[3*j  ] = tPcsens[0];
-            aDXDp[3*j+1] = tPcsens[1];
-            aDXDp[3*j+2] = tPcsens[2];
+            tCurDXDpVector[3*j  ] = tPcsens[0];
+            tCurDXDpVector[3*j+1] = tPcsens[1];
+            tCurDXDpVector[3*j+2] = tPcsens[2];
         }
     
         /* next do all of the edges */
@@ -155,9 +165,9 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
             {
                 if ((tVtags[k].ptype > 0) && (tVtags[k].pindex == j)) {
                     tIndex       = tVtags[k].ptype - 1;
-                    aDXDp[3*k  ] = tPcsens[3*tIndex  ];
-                    aDXDp[3*k+1] = tPcsens[3*tIndex+1];
-                    aDXDp[3*k+2] = tPcsens[3*tIndex+2];
+                    tCurDXDpVector[3*k  ] = tPcsens[3*tIndex  ];
+                    tCurDXDpVector[3*k+1] = tPcsens[3*tIndex+1];
+                    tCurDXDpVector[3*k+2] = tPcsens[3*tIndex+2];
                 }
             }
         }
@@ -176,17 +186,29 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
             for (int k=0; k<tNvert; k++)
             if ((tVtags[k].ptype < 0) && (tVtags[k].pindex == j)) {
                 tIndex       = -tVtags[k].ptype - 1;
-                aDXDp[3*k  ] = tPcsens[3*tIndex  ];
-                aDXDp[3*k+1] = tPcsens[3*tIndex+1];
-                aDXDp[3*k+2] = tPcsens[3*tIndex+2];
+                tCurDXDpVector[3*k  ] = tPcsens[3*tIndex  ];
+                tCurDXDpVector[3*k+1] = tPcsens[3*tIndex+1];
+                tCurDXDpVector[3*k+2] = tPcsens[3*tIndex+2];
             }
         }
     
         EG_free(tTris);
         EG_free(tVtags);
         EG_free(tCoords);
+        
+char name[1000];
+sprintf(name, "sens%d_%d.txt", ibody, cntr);
+FILE *fp=fopen(name, "w");
+if(fp)
+{
+  for(int i=0; i<tCurDXDpVector.size(); ++i)
+    fprintf(fp, "%lf\n", tCurDXDpVector[i]);
+  fclose(fp);
+}
+        aDXDp.insert(aDXDp.end(), tCurDXDpVector.begin(), tCurDXDpVector.end());
 
     }
+cntr++;
     return tSensitivity;
 }
 
@@ -212,9 +234,11 @@ void ESPImpl<ScalarType,ScalarVectorType>::buildGeometryAndGetBodies()
     {
         cleanUpAndThrow("No bodies found.");
     }
+/*
     if (tNbody != 1) {
         cleanUpAndThrow(" ERROR: ETO option only works for a single body!");
     }
+*/
 }
 
 template <typename ScalarType, typename ScalarVectorType>

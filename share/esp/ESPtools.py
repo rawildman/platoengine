@@ -1,6 +1,8 @@
 import os
 import sys
+import fnmatch
 import subprocess
+import pyCAPS
 from shutil import copyfile
 from pyCAPS import capsProblem
 from contextlib import contextmanager
@@ -281,6 +283,108 @@ def updateModel(modelName, paramVals):
   subprocess.call(['mv', modedName, modelName])
 
 ##############################################################################
+## define function that converts su2 mesh to exo mesh
+##############################################################################
+def updateModel2(modelName, paramVals):
+
+
+  #
+  # Add requisite body and face attributes for meshing
+  #
+
+  # find mesh size attribute 'MeshLength'
+  #
+#  response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
+
+  ## is 'MeshLength' in the csm file?
+#  if response == "":
+#    raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
+
+  ## is 'MeshLength' in the csm file only once?
+#  tokens = response.rstrip().split("\n")
+#  if len(tokens) > 1:
+#    raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
+
+#  MeshLength = str(response)
+
+  modedName = modelName + ".tmp"
+
+  f_in = open(modelName)
+  f_out = open(modedName, 'w')
+
+  for line in f_in:
+#    if line.strip().lower() == 'end':
+#      f_out.write("select body\n")
+#      f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM\n")
+#      f_out.write("attribute capsGroup $solid_group\n")
+#      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
+#
+#      f_out.write("select face\n")
+#      f_out.write("attribute capsGroup $solid_group\n")
+#      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
+
+    f_out.write(line)
+
+  f_out.close()
+
+
+  #
+  # If paramVals were provided, set them in the model file
+  #
+
+  for ip in range(len(paramVals)):
+    p = paramVals[ip]
+    print("param: " + str(p))
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
+    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
+    print("command: ", command)
+    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
+    f.close()
+    subprocess.call(['mv', tmp_string, modedName])
+
+  subprocess.call(['mv', modedName, modelName])
+
+  #
+  # find any face attribute assignments and copy them to the end of the file
+  #
+
+#  f_in = open(modelName)
+#  f_out = open(modedName, 'w')
+#
+#  faceAttrs = []
+#
+#  bodyLine = ""
+#  faceLine = ""
+#  for line in f_in:
+#    if line.strip().lower() == 'end':
+#      for faceAttr in faceAttrs:
+#        for attrLine in faceAttr:
+#          f_out.write(attrLine)
+#    else:
+#      tokens = line.split(' ')
+#      tokens = list(filter(None, tokens)) ## filter out empty strings
+#      if bodyLine != "" and faceLine != "":
+#        if tokens[0] == "attribute" and tokens[1] == "capsGroup":
+#          faceAttrs.append([bodyLine, faceLine, line])
+#          bodyLine = ""
+#          faceLine = ""
+#      elif bodyLine != "":
+#        if tokens[0] == "select" and tokens[1] == "face":
+#          faceLine = line
+#        else:
+#          bodyLine = ""
+#      else:
+#        if tokens[0] == "select" and tokens[1] == "body":
+#          bodyLine = line
+#
+#    f_out.write(line)
+#
+#  f_out.close()
+
+#  subprocess.call(['mv', modedName, modelName])
+
+##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
 def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, parameters=None ):
@@ -319,7 +423,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   # with redirected('csm.console'):
   #   updateModel(modelNameOut, paramVals)
-  updateModel(modelNameOut, paramVals)
+  updateModel2(modelNameOut, paramVals)
 
   if geom != None:
     # with redirected('dump.console'):
@@ -328,31 +432,52 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   if mesh == True:
     with redirected('aflr.console'):
-      aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+      problem = pyCAPS.Problem(problemName = "Mesh",
+                         capsFile=modelNameOut,
+                         outLevel=1)
+      surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
+      surface.input.Tess_Params = [.1, 0.01, 20.0]
+      volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
+      volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
+      volume.input.Multiple_Mesh = 'MultiDomain'
+      volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
+      volume.runAnalysis()
+      plato = problem.analysis.create(aim='platoAIM', name='plato')
+      plato.input["Mesh"].link(volume.output["Volume_Mesh"])
+      plato.preAnalysis()
+      plato.postAnalysis()
+      subprocess.call(['cp', './Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+      for file in os.listdir('./Mesh/Scratch/egads'):
+        if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
+          subprocess.call(['cp', './Mesh/Scratch/egads/' + file, '.'])
+      #subprocess.call(['cp', "./Mesh/Scratch/egads/egadsTess_0.eto", etoName])
+
+
+#      aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
     ## get capsGroup map
-    groupAttrs = []
-    f_in = open('aflr.console')
-    for line in f_in:
-      tokens = line.split(' ')
-      tokens = list(filter(None, tokens)) ## filter out empty strings
-      if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
-        numberLine = f_in.readline()
-        tokens = numberLine.split(' = ')
-        tokens = list(filter(None, tokens)) ## filter out empty strings
-        if tokens[0].strip() == "Number of unique capsGroup attributes":
-          numLines = int(tokens[1].strip())
-          for iEntry in range(numLines):
-            nextLine = f_in.readline()
-            defs = nextLine.split(', ')
-            defs = list(filter(None, defs)) ## filter out empty strings
-            groupName = defs[0].split(' = ')[1].strip()
-            groupIndex = defs[1].split(' = ')[1].strip()
-            groupAttrs.append({"name": groupName, "index": groupIndex})
+#    groupAttrs = []
+#    f_in = open('aflr.console')
+#    for line in f_in:
+#      tokens = line.split(' ')
+#      tokens = list(filter(None, tokens)) ## filter out empty strings
+#      if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
+#        numberLine = f_in.readline()
+#        tokens = numberLine.split(' = ')
+#        tokens = list(filter(None, tokens)) ## filter out empty strings
+#        if tokens[0].strip() == "Number of unique capsGroup attributes":
+#          numLines = int(tokens[1].strip())
+#          for iEntry in range(numLines):
+#            nextLine = f_in.readline()
+#            defs = nextLine.split(', ')
+#            defs = list(filter(None, defs)) ## filter out empty strings
+#            groupName = defs[0].split(' = ')[1].strip()
+#            groupIndex = defs[1].split(' = ')[1].strip()
+#            groupAttrs.append({"name": groupName, "index": groupIndex})
         
 
-    with redirected('toExo.console'):
-      toExo(meshName, groupAttrs)
+#    with redirected('toExo.console'):
+#      toExo(meshName, groupAttrs)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])
