@@ -391,7 +391,7 @@ protected:
     **********************************************************************************/
     void finalize()
     {
-        this->mInterface->finalize();
+        this->mInterface->finalize(this->mInputData.getFinalizationStageName());
     }
 };
 
