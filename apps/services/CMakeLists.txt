@@ -52,6 +52,7 @@ endif()
 ###############################################################################
 
 add_library(PlatoApp PlatoApp.cpp)
+target_link_libraries(PlatoApp Trilinos::all_selected_libs)
 
 if( UNIT_TESTING )
   message( "-- Enabling unit testing " )

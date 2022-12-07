@@ -23,7 +23,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 FOREACH(PLATO_LIB ${LIB_NAMES})
   add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
   set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-  target_link_libraries(Plato${PLATO_LIB} LINK_PUBLIC ${PLATO_LIBRARIES} Boost::serialization)
+  target_link_libraries(Plato${PLATO_LIB} LINK_PUBLIC ${PLATO_LIBRARIES} Trilinos::all_selected_libs Boost::serialization)
 ENDFOREACH()
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
 
