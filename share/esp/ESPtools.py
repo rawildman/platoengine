@@ -176,7 +176,12 @@ def toExo(meshName, groupAttrs):
         callArgs.append("sideset")
       callArgs.append(entry["name"])
 
-  subprocess.call(callArgs)
+  return_code = subprocess.call(callArgs)
+  if return_code != 0:
+    print("*******************************")
+    print("ESP operation failed.. aborting")
+    print("*******************************")
+    exit(return_code)
 
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh
@@ -324,7 +329,12 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if geom != None:
     # with redirected('dump.console'):
     #   subprocess.call(['serveCSM', '-batch', modelNameOut])
-    subprocess.call(['serveCSM', '-batch', modelNameOut])
+    return_code = subprocess.call(['serveCSM', '-batch', modelNameOut])
+    if return_code != 0:
+      print("*******************************")
+      print("ESP operation failed.. aborting")
+      print("*******************************")
+      exit(return_code)
 
   if mesh == True:
     with redirected('aflr.console'):
