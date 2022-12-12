@@ -28,6 +28,7 @@
 int main(int argc,  char **argv)
 {
   stk::parallel_machine_init(&argc,&argv);
+  Kokkos::initialize(argc, argv);
 
   MeshManager tMeshManager;
   MeshTransfer tMeshTransfer;
@@ -60,6 +61,7 @@ int main(int argc,  char **argv)
 
   tMeshManager.write_mesh();
 
+  Kokkos::finalize();
   stk::parallel_machine_finalize();
 
   return 0;

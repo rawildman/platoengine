@@ -38,6 +38,8 @@ int main(int argc,  char **argv)
         return false;
     }
 
+    Kokkos::initialize(argc, argv);
+
     // parse command line arguments
     std::string inputFilename;
     std::string outputFilename;
@@ -108,6 +110,7 @@ int main(int argc,  char **argv)
     }
 
     delete ioBroker;
+    Kokkos::finalize();
     stk::parallel_machine_finalize();
 
 
