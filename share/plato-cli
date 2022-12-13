@@ -26,9 +26,9 @@ def source_dir():
   return str(parent)
 
 def is_executable(exeName):
-  command = 'which ' + exeName
+  command = ['bash', '-c', 'command -v ' + exeName]
   try:
-    response = subprocess.check_output(command.split())
+    response = subprocess.check_output(command)
   except:
     return False
   else:

@@ -253,36 +253,26 @@ function( Plato_add_test RUN_COMMANDS TEST_NAME NUM_PROCS IO_COMM_INDEX INPUT_ME
     set(OptionalArgs ${ARGN})
     list(LENGTH OptionalArgs NumOptionalArgs)
     if(NumOptionalArgs GREATER 0)
-      list(GET OptionalArgs 0 RESTART_MESH)
-      add_test(NAME ${TEST_NAME}
-             COMMAND ${CMAKE_COMMAND}
-             "-DTEST_COMMANDS=${RUN_COMMANDS}"
-             -DTEST_NAME=${TEST_NAME}
-             -DNUM_PROCS=${NUM_PROCS}
-             -DSEACAS_EPU=${SEACAS_EPU}
-             -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
-             -DSEACAS_DECOMP=${SEACAS_DECOMP}
-             -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-             -DIO_COMM_INDEX=${IO_COMM_INDEX}
-             -DINPUT_MESH=${INPUT_MESH}
-             -DOUTPUT_MESH=${OUTPUT_MESH}
-             -DRESTART_MESH=${RESTART_MESH}
-             -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
+        list(GET OptionalArgs 0 RESTART_MESH)
     else()
-      add_test(NAME ${TEST_NAME}
-             COMMAND ${CMAKE_COMMAND}
-             "-DTEST_COMMANDS=${RUN_COMMANDS}"
-             -DTEST_NAME=${TEST_NAME}
-             -DNUM_PROCS=${NUM_PROCS}
-             -DSEACAS_EPU=${SEACAS_EPU}
-             -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
-             -DSEACAS_DECOMP=${SEACAS_DECOMP}
-             -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-             -DIO_COMM_INDEX=${IO_COMM_INDEX}
-             -DINPUT_MESH=${INPUT_MESH}
-             -DOUTPUT_MESH=${OUTPUT_MESH}
-             -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
+        unset(RESTART_MESH)
     endif()
+
+    add_test(NAME ${TEST_NAME}
+      COMMAND ${CMAKE_COMMAND}
+      "-DTEST_COMMANDS=${RUN_COMMANDS}"
+      -DTEST_NAME=${TEST_NAME}
+      -DNUM_PROCS=${NUM_PROCS}
+      -DSEACAS_EPU=${SEACAS_EPU}
+      -DSEACAS_EXODIFF=${SEACAS_EXODIFF}
+      -DSEACAS_DECOMP=${SEACAS_DECOMP}
+      -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+      -DIO_COMM_INDEX=${IO_COMM_INDEX}
+      -DINPUT_MESH=${INPUT_MESH}
+      -DOUTPUT_MESH=${OUTPUT_MESH}
+      -DRESTART_MESH=${RESTART_MESH}
+      -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+      -P ${CMAKE_SOURCE_DIR}/base/config/runtest.cmake)
 
     set_tests_properties(${TEST_NAME} PROPERTIES REQUIRED_FILES "${SEACAS_EPU};${SEACAS_EXODIFF}")
 
@@ -446,6 +436,39 @@ function( Plato_add_xmlgen_numdiff_test TEST_NAME XMLGEN_COMMAND NUMDIFF_COMMAND
            -P ${CMAKE_SOURCE_DIR}/base/config/runxmlgennumdifftest.cmake)
 
 endfunction( Plato_add_xmlgen_numdiff_test )
+
+###############################################################################
+## Plato_add_parallel_numdiff_test( 
+##    TEST_NAME      == test name
+## )
+###############################################################################
+
+function( Plato_add_parallel_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND NUMDIFF_ABSOLUTE NUMDIFF_TOLERANCE NUM_PROCS IO_COMM_INDEX INPUT_MESH )
+    # Check for RESTART_MESH
+    set(OptionalArgs ${ARGN})
+    list(LENGTH OptionalArgs NumOptionalArgs)
+    if(NumOptionalArgs GREATER 0)
+        list(GET OptionalArgs 0 RESTART_MESH)
+    endif()
+
+    add_test( NAME ${TEST_NAME}
+              COMMAND ${CMAKE_COMMAND} 
+              -DTEST_COMMAND=${RUN_COMMAND}
+              -DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR} 
+              -DOUT_FILE=${OUT_FILE} 
+              -DGOLD_FILE=${GOLD_FILE} 
+              -DNUMDIFF_COMMAND=${NUMDIFF_COMMAND}
+              -DNUMDIFF_ABSOLUTE=${NUMDIFF_ABSOLUTE}
+              -DNUMDIFF_TOLERANCE=${NUMDIFF_TOLERANCE}
+              -DNUM_PROCS=${NUM_PROCS}
+              -DSEACAS_DECOMP=${SEACAS_DECOMP}
+              -DINPUT_MESH=${INPUT_MESH}
+              -DRESTART_MESH=${RESTART_MESH}
+              -DIO_COMM_INDEX=${IO_COMM_INDEX}
+              -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+              -P ${CMAKE_SOURCE_DIR}/base/config/runparallelnumdifftest.cmake )
+
+endfunction( Plato_add_numdiff_test )
 
 ###############################################################################
 ## Plato_add_xmlgen_custom_command_test( 
@@ -666,3 +689,28 @@ function( Plato_abstract_to_realized ABSOLUTE_PATH_TO_ABSTRACT_FILES BINARY_REAL
 
 endfunction( Plato_abstract_to_realized )
 
+###############################################################################
+## Plato_add_output_exists_test 
+## The purpose of this test is to check for the existence of a file after
+## another test has been run. 
+##   TEST_NAME      == Main test name, which should produce an expected output
+##                     file
+##   FILE_NAME      == The file to check
+##    
+###############################################################################
+function( Plato_add_output_exists_test TEST_NAME FILE_NAME )
+    set(TEST_NAME_OUTPUT_EXISTS ${TEST_NAME}_output_exists)
+    add_test(NAME ${TEST_NAME_OUTPUT_EXISTS} COMMAND test -f ${FILE_NAME})
+    set_tests_properties( ${TEST_NAME_OUTPUT_EXISTS} PROPERTIES DEPENDS ${TEST_NAME})
+    set_property(TEST ${TEST_NAME_OUTPUT_EXISTS} PROPERTY LABELS "small")
+
+endfunction( Plato_add_file_exists_test )
+
+###############################################################################
+## Plato_disable_test
+###############################################################################
+
+function( Plato_disable_test TEST_NAME REASON )
+    set_property(TEST ${TEST_NAME} APPEND PROPERTY DISABLED TRUE)
+    message(WARNING "${TEST_NAME} test disabled, reason: ${REASON}")
+endfunction( Plato_disable_test)
