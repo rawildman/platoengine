@@ -162,7 +162,9 @@ public:
         debugOutput("value() called");
 
         if(!mStateComputed)
+        {
             computeValue(aControl);
+        }
 
         return mObjectiveValue;
     }
@@ -239,7 +241,7 @@ private:
       const std::vector<ScalarType> & tControlData = tControl.vector();
       assert(tControlData.size() == mControl.size());
       std::copy(tControlData.begin(), tControlData.end(), mControl.begin());
-      const size_t tCONTROL_VECTOR_INDEX = 0;
+      constexpr size_t tCONTROL_VECTOR_INDEX = 0;
       const std::string tControlName = mEngineInputData.getControlName(tCONTROL_VECTOR_INDEX);
       mParameterList.set(tControlName, mControl.data());
     }

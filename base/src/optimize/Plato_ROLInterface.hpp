@@ -63,9 +63,7 @@ public:
     ROLInterface(Plato::Interface* aInterface, const MPI_Comm & aComm, const Plato::optimizer::algorithm_t& aType):
         OptimizerInterface<ScalarType,OrdinalType>(aInterface,aComm),
         mAlgorithmType(aType)
-        { }
-
-    virtual ~ROLInterface() = default;
+    {}
 
     void initialize() final override 
     {
@@ -78,9 +76,7 @@ public:
         return mAlgorithmType;
     }
 
-    /******************************************************************************/
     void run()
-    /******************************************************************************/
     {
         this->initialize();
         const OrdinalType tCONTROL_VECTOR_INDEX = 0;
@@ -99,24 +95,32 @@ public:
                 
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
-            createOptimizationProblemLinearConstraint(tOptimizationProblem,tObjective,tControls,tControlBoundsMng);
+        {
+            createOptimizationProblemLinearConstraint(*tOptimizationProblem);
+        }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
-            createOptimizationProblemAugmentedLagrangian(tOptimizationProblem,tObjective,tControls,tControlBoundsMng);
+        {
+            createOptimizationProblemAugmentedLagrangian(*tOptimizationProblem);
+        }
         
-        bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
-        bool tPrintToStream = true;
+        const bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        constexpr bool tPrintToStream = true;
         
         tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, mOutputFile);
 
-        if(this->mInputData.getCheckGradient() == true)
+        if(this->mInputData.getCheckGradient())
         {
             this->checkGradient(tOptimizationProblem);
             this->checkConstraint(tOptimizationProblem);
         }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
+        {
             this->solveBoundConstrained(tOptimizationProblem);
+        }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT || mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
+        {
             this->solve(tOptimizationProblem);
+        }
         
         this->finalize();
     }
@@ -127,8 +131,8 @@ private:
     {
         int tMyRank = -1;
         MPI_Comm_rank(this->mComm, &tMyRank);
-        assert(tMyRank >= static_cast<int>(0));
-        if(tMyRank == static_cast<int>(0))
+        assert(tMyRank >= 0);
+        if(tMyRank == 0)
         {
             if (this->mInputData.getOutputDiagnosticsToFile()) {
                 mOutputFile.open("ROL_output.txt", std::ofstream::out);
@@ -138,40 +142,28 @@ private:
         return std::cout.rdbuf();
     }
 
-    void createOptimizationProblemLinearConstraint
-         (ROL::Ptr<ROL::Problem<ScalarType>>& aOptimizationProblem,
-         Teuchos::RCP<ROL::Objective<ScalarType>>& aObjective,
-         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>>& aControls,
-         Teuchos::RCP<ROL::BoundConstraint<ScalarType>>& aControlBoundsMng
-         )
+    void createOptimizationProblemLinearConstraint(ROL::Problem<ScalarType>& aOptimizationProblem)
     {
         Teuchos::RCP<ROL::Constraint<ScalarType>> tEquality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface));
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
         
-        aOptimizationProblem->addLinearConstraint("Equality Linear Constraint", tEquality, tDual);
+        aOptimizationProblem.addLinearConstraint("Equality Linear Constraint", tEquality, tDual);
         
         auto tParameterList = this->updateParameterListFromRolInputsFile();
-        aOptimizationProblem->setProjectionAlgorithm(*tParameterList);   
+        aOptimizationProblem.setProjectionAlgorithm(*tParameterList);   
     }
 
-    void createOptimizationProblemAugmentedLagrangian
-         (ROL::Ptr<ROL::Problem<ScalarType>>& aOptimizationProblem,
-         Teuchos::RCP<ROL::Objective<ScalarType>>& aObjective,
-         Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>>& aControls,
-         Teuchos::RCP<ROL::BoundConstraint<ScalarType>>& aControlBoundsMng
-         )   
+    void createOptimizationProblemAugmentedLagrangian(ROL::Problem<ScalarType>& aOptimizationProblem)   
     {
         Teuchos::RCP<ROL::Constraint<ScalarType>> tEquality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface));
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
         
-        aOptimizationProblem->addConstraint("Equality Constraint", tEquality, tDual);//, aControlBoundsMng);  
+        aOptimizationProblem.addConstraint("Equality Constraint", tEquality, tDual);
     }    
 
-    /******************************************************************************/
     void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    /******************************************************************************/
     {
         auto tParameterList = this->updateParameterListFromRolInputsFile();   
         ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
@@ -181,20 +173,22 @@ private:
         this->printControl(aOptimizationProblem);
     }
 
-    /******************************************************************************/
     void solveBoundConstrained(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    /******************************************************************************/
     {
         auto tParameterList = this->updateParameterListFromRolInputsFile();
         int tNumSolves=1;
         if(this->mInputData.getResetAlgorithmOnUpdate())
+        {
             tNumSolves = this->mInputData.getMaxNumIterations()/this->mInputData.getProblemUpdateFrequency();
-        
+        }
+
         double tCurDelta;
         for(int i=0; i<tNumSolves; ++i)
         {
             if(i>0)
+            {
                 tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
+            }
             ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
             std::ostream outputStream(this->mOutputBuffer);
             tOptimizer.solve(outputStream);
@@ -207,15 +201,12 @@ private:
         this->printControl(aOptimizationProblem);
     }
     
-    
 protected:
 
     std::streambuf *mOutputBuffer;
     Plato::optimizer::algorithm_t mAlgorithmType;
 
-    /******************************************************************************/
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    /******************************************************************************/
     {
         int tMyRank = -1;
         MPI_Comm_rank(this->mComm, &tMyRank);
@@ -238,9 +229,7 @@ protected:
         }
     }
 
-    /******************************************************************************/
     void setBounds(const std::vector<ScalarType> & aInputs, Plato::DistributedVectorROL<ScalarType> & aBounds)
-    /******************************************************************************/
     {
         assert(aInputs.empty() == false);
         if(aInputs.size() == static_cast<size_t>(1))
@@ -255,9 +244,7 @@ protected:
         }
     }
 
-    /******************************************************************************/
     void setInitialGuess(const std::string & aMyName, Plato::DistributedVectorROL<ScalarType> & aControl)
-    /******************************************************************************/
     {
         std::string tInitializationStageName = this->mInputData.getInitializationStageName();
         if(tInitializationStageName.empty() == false)
