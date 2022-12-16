@@ -5,6 +5,7 @@ set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 set(${LIB_NAME}_SOURCES Plato_Filter.cpp
                         Plato_CopyField.cpp
                         Plato_CopyValue.cpp
+                        Plato_ChainRule.cpp
                         Plato_Roughness.cpp
                         Plato_SystemCall.cpp
                         Plato_SystemCallOperation.cpp
@@ -37,6 +38,7 @@ set(${LIB_NAME}_SOURCES Plato_Filter.cpp
 set(${LIB_NAME}_HEADERS Plato_Filter.hpp
                         Plato_CopyField.hpp
                         Plato_CopyValue.hpp
+                        Plato_ChainRule.hpp
                         Plato_Roughness.hpp
                         Plato_SystemCall.hpp
                         Plato_SystemCallOperation.hpp

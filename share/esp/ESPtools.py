@@ -432,7 +432,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   if mesh == True:
     with redirected('aflr.console'):
-      problem = pyCAPS.Problem(problemName = "Mesh",
+      problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                          capsFile=modelNameOut,
                          outLevel=1)
       surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
@@ -446,11 +446,10 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
       plato.input["Mesh"].link(volume.output["Volume_Mesh"])
       plato.preAnalysis()
       plato.postAnalysis()
-      subprocess.call(['cp', './Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
-      for file in os.listdir('./Mesh/Scratch/egads'):
+      subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+      for file in os.listdir('./ESP_Mesh/Scratch/egads'):
         if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
-          subprocess.call(['cp', './Mesh/Scratch/egads/' + file, '.'])
-      #subprocess.call(['cp', "./Mesh/Scratch/egads/egadsTess_0.eto", etoName])
+          subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, '.'])
 
 
 #      aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
