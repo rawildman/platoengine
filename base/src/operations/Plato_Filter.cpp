@@ -64,10 +64,10 @@ Filter::Filter(const std::string& aInputToFilterName,
                const std::string& aOutputFromFilterName,
                Plato::AbstractFilter* aFilter,
                bool aIsGradient) :
+               mFilter(aFilter),
                mInputToFilterName(aInputToFilterName),
                mInputBaseFieldName(aInputBaseFieldName),
                mOutputFromFilterName(aOutputFromFilterName),
-               mFilter(aFilter),
                mIsGradient(aIsGradient)
 {
 }
