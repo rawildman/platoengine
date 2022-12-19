@@ -318,7 +318,6 @@ protected:
     {
         std::cout<<"Checking constraint..."<<std::endl;
         auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
-        auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
         auto tCheckGradientSeed = this->mInputData.getROLCheckGradientSeed();
         if(tCheckGradientSeed !=0)
         {
