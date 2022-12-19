@@ -62,10 +62,10 @@ ComputeVolume::ComputeVolume(const std::string& aVolumeName,
                              const std::string& aGradientName,
                              Plato::PenaltyModel* aPenaltyModel,
                              const std::string& aTopologyName):
+                             mTopologyName(aTopologyName),
                              mVolumeName(aVolumeName),
                              mGradientName(aGradientName),
-                             mPenaltyModel(aPenaltyModel),
-                             mTopologyName(aTopologyName)
+                             mPenaltyModel(aPenaltyModel)
 {
 }
 

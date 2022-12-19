@@ -78,16 +78,16 @@ PlatoMainOutput::PlatoMainOutput(const std::string& aBaseName,
                                  int aMaxIterations,
                                  bool aWriteRestart,
                                  bool aAppendIterationCount) : 
-                                 mBaseName(aBaseName),
-                                 mDiscretization(aDiscretization),
-                                 mRestartFieldName(aRestartFieldName),
-                                 mRequestedFormats(aRequestedFormats),
                                  mOutputData(aOutputData),
-                                 mOutputMethod(aOutputMethod),
                                  mOutputFrequency(aOutputFrequency),
                                  mMaxIterations(aMaxIterations),
+                                 mOutputMethod(aOutputMethod),
+                                 mDiscretization(aDiscretization),
                                  mWriteRestart(aWriteRestart),
-                                 mAppendIterationCount(aAppendIterationCount)
+                                 mRestartFieldName(aRestartFieldName),
+                                 mBaseName(aBaseName),
+                                 mAppendIterationCount(aAppendIterationCount),
+                                 mRequestedFormats(aRequestedFormats)
 {
 }
 

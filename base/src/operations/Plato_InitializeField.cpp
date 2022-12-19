@@ -88,6 +88,12 @@ InitializeField::InitializeField(const std::string& aFileName,
                                 double aUniformValue,
                                 int aIteration,
                                 bool aCreateSpheres) : 
+                                mCreateSpheres(aCreateSpheres),
+                                mIteration(aIteration),
+                                mUniformValue(aUniformValue),
+                                mMinCoords(aMinCoords),
+                                mMaxCoords(aMaxCoords),
+                                mOutputLayout(aOutputLayout),
                                 mFileName(aFileName),
                                 mStringMethod(aStringMethod),
                                 mSphereRadius(aSphereRadius),
@@ -97,13 +103,7 @@ InitializeField::InitializeField(const std::string& aFileName,
                                 mSphereSpacingY(aSphereSpacingY),
                                 mSphereSpacingZ(aSphereSpacingZ),
                                 mVariableName(aVariableName),
-                                mMinCoords(aMinCoords),
-                                mMaxCoords(aMaxCoords),
-                                mLevelSetNodesets(aLevelSetNodes),
-                                mOutputLayout(aOutputLayout),
-                                mUniformValue(aUniformValue),
-                                mIteration(aIteration),
-                                mCreateSpheres(aCreateSpheres)
+                                mLevelSetNodesets(aLevelSetNodes)
 {
 }
 
