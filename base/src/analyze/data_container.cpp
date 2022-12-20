@@ -66,7 +66,7 @@ void ExternalVector::setData(int i, Vector data, StateIndex state)
 void ExternalVector::advanceState(){
   if( varNumStates == 1 ) return;
   if( varNumStates == 2 ) {
-    memcpy( varData[CURRENT], varData[UPDATED], varLength*sizeof(Vector) );
+    std::copy_n(varData[UPDATED], varLength, varData[CURRENT]);
   } else {
     Vector* back = varData[varNumStates-1];
     for( int i=3; i<varNumStates; i++){
@@ -75,7 +75,7 @@ void ExternalVector::advanceState(){
     varData[2] = varData[CURRENT];
     varData[CURRENT] = varData[UPDATED];
     varData[UPDATED] = back;
-    memcpy( varData[UPDATED], varData[CURRENT], varLength*sizeof(Vector) );
+    std::copy_n(varData[CURRENT], varLength, varData[UPDATED]);
   }
 }
 
@@ -168,7 +168,7 @@ void ExternalTensor::advanceState()
         return;
     if(varNumStates == 2)
     {
-        memcpy(varData[CURRENT], varData[UPDATED], varLength * sizeof(Tensor));
+        std::copy_n(varData[UPDATED], varLength, varData[CURRENT]);
     }
     else
     {
@@ -179,7 +179,7 @@ void ExternalTensor::advanceState()
     varData[2] = varData[CURRENT];
     varData[CURRENT] = varData[UPDATED];
     varData[UPDATED] = back;
-    memcpy( varData[UPDATED], varData[CURRENT], varLength*sizeof(Tensor) );
+    std::copy_n(varData[CURRENT], varLength, varData[UPDATED]);
   }
 }
 
@@ -252,7 +252,7 @@ ExternalSymTensor::ExternalSymTensor( Real** data, string name, int numData,
 void ExternalSymTensor::advanceState(){
   if( varNumStates == 1 ) return;
   if( varNumStates == 2 ) {
-    memcpy( varData[CURRENT], varData[UPDATED], varLength*sizeof(SymTensor) );
+    std::copy_n(varData[UPDATED], varLength, varData[CURRENT]);
   } else {
     SymTensor* back = varData[varNumStates-1];
     for( int i=3; i<varNumStates; i++){
@@ -261,7 +261,7 @@ void ExternalSymTensor::advanceState(){
     varData[2] = varData[CURRENT];
     varData[CURRENT] = varData[UPDATED];
     varData[UPDATED] = back;
-    memcpy(varData[UPDATED], varData[CURRENT], varLength * sizeof(SymTensor));
+    std::copy_n(varData[CURRENT], varLength, varData[UPDATED]);
     }
 }
 
