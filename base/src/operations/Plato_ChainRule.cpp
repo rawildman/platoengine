@@ -141,6 +141,7 @@ void ChainRule::operator()()
     std::vector<double>& tOutputVector = *(mPlatoApp->getValue(mOutputName));
     tOutputVector.resize(mInputNames.size());
     const auto& tDFDX = *(mPlatoApp->getValue(mDFDXName));
+    unsigned int tLargestAllowableDFDXGlobalNodeID = tDFDX.size()/3;
 
     bool tFirstTime = true;
     unsigned int tNumMapEntries=tLocalToGlobalNodeIDMap.size();
@@ -182,15 +183,19 @@ std::ofstream tDebugOutputFile(tDebugFilename.c_str());
         for( unsigned int tIndex=0; tIndex<tNumNodes; tIndex++)
         {
             unsigned int tLocalIndex = tIndex*3;
-            unsigned int tGlobalIndex = (tLocalToGlobalNodeIDMap[tIndex]-1)*3;
+            unsigned int tGlobalNodeID = tLocalToGlobalNodeIDMap[tIndex];
+            if(tGlobalNodeID <= tLargestAllowableDFDXGlobalNodeID)
+            {
+                unsigned int tGlobalIndex = (tLocalToGlobalNodeIDMap[tIndex]-1)*3;
 /************
 tDebugOutputFile << "draw line location " << X[tLocalToGlobalNodeIDMap[tIndex]-1] << " " << Y[tLocalToGlobalNodeIDMap[tIndex]-1] <<
         " " << Z[tLocalToGlobalNodeIDMap[tIndex]-1] << " location " << X[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex] <<
         " " << Y[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex+1] << " " << Z[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex+2] << std::endl;
 */
-            for(int tSpatialDim=0; tSpatialDim<3; tSpatialDim++)
-            {
-                tValue += tCurDXDP[tLocalIndex+tSpatialDim]*tDFDX[tGlobalIndex+tSpatialDim];
+                for(int tSpatialDim=0; tSpatialDim<3; tSpatialDim++)
+                {
+                    tValue += tCurDXDP[tLocalIndex+tSpatialDim]*tDFDX[tGlobalIndex+tSpatialDim];
+                }
             }
         }
         tOutputVector[tEntryIndex++] = tValue;

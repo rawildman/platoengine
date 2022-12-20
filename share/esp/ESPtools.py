@@ -436,11 +436,13 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
                          capsFile=modelNameOut,
                          outLevel=1)
       surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
-      surface.input.Tess_Params = [.1, 0.01, 20.0]
+      surface.input.Tess_Params = [1, 0.01, 20.0]
+      #surface.input.Tess_Params = [.1, 0.01, 20.0]
       volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
       volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
       volume.input.Multiple_Mesh = 'MultiDomain'
-      volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
+      #volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
+      volume.input.Mesh_Gen_Input_String="a9.4e-4pYT1.00e-16A"
       volume.runAnalysis()
       plato = problem.analysis.create(aim='platoAIM', name='plato')
       plato.input["Mesh"].link(volume.output["Volume_Mesh"])
