@@ -451,7 +451,7 @@ void append_block_blocks
             outfile << "  material " << tBlock.material_id << std::endl;
 
         }
-        if(tBlock.element_type == "hex8")
+        if(tBlock.element_type.substr(0,4) == "hex8")
         {
             outfile << "  hex8u" << std::endl; 
         }
