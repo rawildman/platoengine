@@ -79,9 +79,10 @@ public:
      * \param [in] aInputData XML input data
      * \param [in] aInterface PLATO Engine interface
     **********************************************************************************/
-    ReducedConstraintROL(const Plato::OptimizerEngineStageData & aInputData, Plato::Interface* aInterface) :
+    ReducedConstraintROL(const Plato::OptimizerEngineStageData & aInputData, Plato::Interface* aInterface, const int aConstraintIndex) :
             mInterface(aInterface),
             mEngineInputData(aInputData),
+            mConstraintIndex(aConstraintIndex),
             mControl(numDesignVariables()),
             mAdjointJacobian(numDesignVariables())
     {
@@ -103,25 +104,22 @@ public:
     {
         setViewToControlVector(aControl);
 
-        for(int tConstraintIndex = 0; tConstraintIndex < mEngineInputData.getNumConstraints(); ++tConstraintIndex)
-        {
-            ScalarType tConstraintValue = 0;
-            mParameterList.set(mEngineInputData.getConstraintValueName(tConstraintIndex), &tConstraintValue);
+        ScalarType tConstraintValue = 0;
+        mParameterList.set(mEngineInputData.getConstraintValueName(mConstraintIndex), &tConstraintValue);
 
-            // ********* Compute constraint value. Meaning, just the evaluation not the actual residual, i.e. h(z)<=0 ********* //
-            mInterface->compute({mEngineInputData.getConstraintValueStageName(tConstraintIndex)}, mParameterList);
+        // ********* Compute constraint value. Meaning, just the evaluation not the actual residual, i.e. h(z)<=0 ********* //
+        mInterface->compute({mEngineInputData.getConstraintValueStageName(mConstraintIndex)}, mParameterList);
 
-            // NOTE: THE CURRENT ASSUMPTION IS THAT THE USER ONLY PROVIDES THE CONSTRAINT EVALUATION.
-            // THUS, THE USER IS NOT PROVIDING THE ACTUAL CONSTRAINT RESIDUAL, WHICH IS DEFINED AS
-            // RESIDUAL = CONSTRAINT_VALUE - CONSTRAINT_TARGET. THE USER IS JUST PROVIDING THE
-            // CONSTRAINT_VALUE.  THE OPTIMALITY CRITERIA OPTIMIZER IS EXPECTING THE CONSTRAINT
-            // RESIDUAL AND THUS WE NEED TO DO THE FOLLOWING CALCULATION:
-            const ScalarType tConstraintTarget = mEngineInputData.getConstraintNormalizedTargetValue(tConstraintIndex);
-            const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(tConstraintIndex);
-            const ScalarType tOutput = (tConstraintValue / tConstraintReferenceValue) - tConstraintTarget;
-            Plato::SerialVectorROL<ScalarType> & tConstraints = dynamic_cast<Plato::SerialVectorROL<ScalarType>&>(aConstraints);
-            tConstraints.vector()[tConstraintIndex] = tOutput;
-        }
+        // NOTE: THE CURRENT ASSUMPTION IS THAT THE USER ONLY PROVIDES THE CONSTRAINT EVALUATION.
+        // THUS, THE USER IS NOT PROVIDING THE ACTUAL CONSTRAINT RESIDUAL, WHICH IS DEFINED AS
+        // RESIDUAL = CONSTRAINT_VALUE - CONSTRAINT_TARGET. THE USER IS JUST PROVIDING THE
+        // CONSTRAINT_VALUE.  THE OPTIMALITY CRITERIA OPTIMIZER IS EXPECTING THE CONSTRAINT
+        // RESIDUAL AND THUS WE NEED TO DO THE FOLLOWING CALCULATION:
+        const ScalarType tConstraintTarget = mEngineInputData.getConstraintNormalizedTargetValue(mConstraintIndex);
+        const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(mConstraintIndex);
+        const ScalarType tOutput = (tConstraintValue / tConstraintReferenceValue) - tConstraintTarget;
+        Plato::SerialVectorROL<ScalarType> & tConstraints = dynamic_cast<Plato::SerialVectorROL<ScalarType>&>(aConstraints);
+        tConstraints.vector().front() = tOutput;
     }
 
     /******************************************************************************//**
@@ -141,27 +139,24 @@ public:
 
         setViewToControlVector(aControl);
 
-        for(int tConstraintIndex = 0; tConstraintIndex < mEngineInputData.getNumConstraints(); ++tConstraintIndex)
-        {
-            // ********* Set view to constraint value ********* //
-            Teuchos::RCP<ROL::Vector<ScalarType>> tJacobian = aControl.clone();
-            Plato::DistributedVectorROL<ScalarType>* tJacobianVector =
-                    dynamic_cast<Plato::DistributedVectorROL<ScalarType>*>(tJacobian.get());
-            std::string tConstraintGradientName = mEngineInputData.getConstraintGradientName(tConstraintIndex);
-            std::vector<ScalarType> & tJacobianVectorData = tJacobianVector->vector();
-            std::fill(tJacobianVectorData.begin(), tJacobianVectorData.end(), static_cast<ScalarType>(0));
-            mParameterList.set(tConstraintGradientName, tJacobianVectorData.data());
+        // ********* Set view to constraint value ********* //
+        Teuchos::RCP<ROL::Vector<ScalarType>> tJacobian = aControl.clone();
+        Plato::DistributedVectorROL<ScalarType>* tJacobianVector =
+                dynamic_cast<Plato::DistributedVectorROL<ScalarType>*>(tJacobian.get());
+        std::string tConstraintGradientName = mEngineInputData.getConstraintGradientName(mConstraintIndex);
+        std::vector<ScalarType> & tJacobianVectorData = tJacobianVector->vector();
+        std::fill(tJacobianVectorData.begin(), tJacobianVectorData.end(), static_cast<ScalarType>(0));
+        mParameterList.set(tConstraintGradientName, tJacobianVectorData.data());
 
-            // ********* Compute constraint Jacobian ********* //
-            mInterface->compute({mEngineInputData.getConstraintGradientStageName(tConstraintIndex)}, mParameterList);
+        // ********* Compute constraint Jacobian ********* //
+        mInterface->compute({mEngineInputData.getConstraintGradientStageName(mConstraintIndex)}, mParameterList);
 
-            // ********* Apply direction to Jacobian ********* //
-            const ScalarType tJacobianDotDirection = tJacobianVector->dot(aDirection);
-            Plato::SerialVectorROL<ScalarType> & tJacobianTimesDirectionVector =
-                    dynamic_cast<Plato::SerialVectorROL<ScalarType>&>(aJacobianTimesDirection);
-            const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(tConstraintIndex);
-            tJacobianTimesDirectionVector.vector()[tConstraintIndex] = tJacobianDotDirection/tConstraintReferenceValue;
-        }
+        // ********* Apply direction to Jacobian ********* //
+        const ScalarType tJacobianDotDirection = tJacobianVector->dot(aDirection);
+        Plato::SerialVectorROL<ScalarType> & tJacobianTimesDirectionVector =
+                dynamic_cast<Plato::SerialVectorROL<ScalarType>&>(aJacobianTimesDirection);
+        const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(mConstraintIndex);
+        tJacobianTimesDirectionVector.vector().front() = tJacobianDotDirection/tConstraintReferenceValue;
     }
 
     /******************************************************************************//**
@@ -181,25 +176,22 @@ public:
 
         setViewToControlVector(aControl);
 
-        for(int tConstraintIndex = 0; tConstraintIndex < mEngineInputData.getNumConstraints(); ++tConstraintIndex)
-        {
-            // ********* Set view to adjoint Jacobian ********* //
-            std::fill(mAdjointJacobian.begin(), mAdjointJacobian.end(), static_cast<ScalarType>(0));
-            mParameterList.set(mEngineInputData.getConstraintGradientName(tConstraintIndex), mAdjointJacobian.data());
+        // ********* Set view to adjoint Jacobian ********* //
+        std::fill(mAdjointJacobian.begin(), mAdjointJacobian.end(), static_cast<ScalarType>(0));
+        mParameterList.set(mEngineInputData.getConstraintGradientName(mConstraintIndex), mAdjointJacobian.data());
 
-            // ********* Compute adjoint Jacobian ********* //
-            mInterface->compute({mEngineInputData.getConstraintGradientStageName(tConstraintIndex)}, mParameterList);
-            Plato::DistributedVectorROL<ScalarType> & tOutput =
-                    dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(aAdjointJacobianTimesDirection);
-            std::copy(mAdjointJacobian.begin(), mAdjointJacobian.end(), tOutput.vector().begin());
+        // ********* Compute adjoint Jacobian ********* //
+        mInterface->compute({mEngineInputData.getConstraintGradientStageName(mConstraintIndex)}, mParameterList);
+        Plato::DistributedVectorROL<ScalarType> & tOutput =
+                dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(aAdjointJacobianTimesDirection);
+        std::copy(mAdjointJacobian.begin(), mAdjointJacobian.end(), tOutput.vector().begin());
 
-            // ********* Apply direction to adjoint Jacobian ********* //
-            const Plato::SerialVectorROL<ScalarType> & tDirection =
-                    dynamic_cast<const Plato::SerialVectorROL<ScalarType>&>(aDual);
-            const ScalarType tValue = tDirection.vector()[tConstraintIndex];
-            const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(tConstraintIndex);
-            tOutput.scale(tValue/tConstraintReferenceValue);
-        }
+        // ********* Apply direction to adjoint Jacobian ********* //
+        const Plato::SerialVectorROL<ScalarType> & tDirection =
+                dynamic_cast<const Plato::SerialVectorROL<ScalarType>&>(aDual);
+        const ScalarType tValue = tDirection.vector().front();
+        const ScalarType tConstraintReferenceValue = mEngineInputData.getConstraintReferenceValue(mConstraintIndex);
+        tOutput.scale(tValue/tConstraintReferenceValue);
     }
 
 private:
@@ -228,6 +220,7 @@ private:
     Plato::Interface* mInterface; /*!< PLATO Engine interface */
     Plato::OptimizerEngineStageData mEngineInputData; /*!< XML input data */
     Teuchos::ParameterList mParameterList; /*!< parameter list used in-memory to transfer data through PLATO Engine */
+    int mConstraintIndex; /*!< The index of the constraint to use for getting stage names, etc.*/
 
     std::vector<ScalarType> mControl; /*!< design variables */
     std::vector<ScalarType> mAdjointJacobian; /*!< adjoint constraint Jacobian */
