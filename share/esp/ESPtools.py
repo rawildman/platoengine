@@ -443,10 +443,15 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
       max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
       max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
       surf_mesh_sizing={}
-      for i in range(len(face_sizes)):
-        temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
-        cur_name = "FaceSize" + str(i+1)
-        surf_mesh_sizing[cur_name] = temp
+      if hasattr(face_sizes, "__len__"): 
+        for i in range(len(face_sizes)):
+          temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
+          cur_name = "FaceSize" + str(i+1)
+          surf_mesh_sizing[cur_name] = temp
+      else:
+        temp={"tessParams":[face_sizes,max_curvature_dists,max_dihedral_angles]}
+        surf_mesh_sizing["FaceSize1"] = temp
+
       surface.input.Mesh_Sizing = surf_mesh_sizing
 
       volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
