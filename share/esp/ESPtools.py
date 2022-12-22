@@ -436,20 +436,28 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
                          capsFile=modelNameOut,
                          outLevel=1)
       surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
-      mesh_edge_length = problem.geometry.cfgpmtr.egadsMeshEdgeLength;
-      mesh_max_curvature_distance = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistance;
-      mesh_max_dihedral_angle = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngle;
+
       surface.input.Mesh_Length_Factor = 1.0;
-      surface.input.Tess_Params = [mesh_edge_length, mesh_max_curvature_distance, mesh_max_dihedral_angle]
-      #surface.input.Tess_Params = [.1, 0.01, 20.0]
+
+      surf_sizes = problem.geometry.cfgpmtr.egadsSurfMeshSizes
+      max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
+      max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
+      surf_mesh_sizing={}
+      for i in range(len(surf_sizes)):
+        temp={"tessParams":[surf_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
+        cur_name = "SurfSize" + str(i+1)
+        surf_mesh_sizing[cur_name] = temp
+      surface.input.Mesh_Sizing = surf_mesh_sizing
+
       volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
       volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
       volume.input.Multiple_Mesh = 'MultiDomain'
       #volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
       # Equation for volume of perfectly formed tet
-      adjusted_mesh_edge_length = .8*mesh_edge_length
+      #adjusted_mesh_edge_length = .8*mesh_edge_length
+      adjusted_mesh_edge_length = .8*problem.geometry.cfgpmtr.egadsMaxTetEdgeSize
       mesh_max_tet_volume = adjusted_mesh_edge_length*adjusted_mesh_edge_length*adjusted_mesh_edge_length/8.485
-      volume.input.Mesh_Gen_Input_String="a" + str(mesh_max_tet_volume) + "pYT1.00e-16A"
+      volume.input.Mesh_Gen_Input_String="a" + str(mesh_max_tet_volume) + "pYq1.100/0.000T1.00e-16A"
       volume.runAnalysis()
       plato = problem.analysis.create(aim='platoAIM', name='plato')
       plato.input["Mesh"].link(volume.output["Volume_Mesh"])
