@@ -439,13 +439,13 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
       surface.input.Mesh_Length_Factor = 1.0;
 
-      surf_sizes = problem.geometry.cfgpmtr.egadsSurfMeshSizes
+      face_sizes = problem.geometry.cfgpmtr.egadsFaceMeshSizes
       max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
       max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
       surf_mesh_sizing={}
-      for i in range(len(surf_sizes)):
-        temp={"tessParams":[surf_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
-        cur_name = "SurfSize" + str(i+1)
+      for i in range(len(face_sizes)):
+        temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
+        cur_name = "FaceSize" + str(i+1)
         surf_mesh_sizing[cur_name] = temp
       surface.input.Mesh_Sizing = surf_mesh_sizing
 
