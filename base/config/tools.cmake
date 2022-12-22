@@ -468,7 +468,7 @@ function( Plato_add_parallel_numdiff_test RUN_COMMAND TEST_NAME NUMDIFF_COMMAND 
               -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
               -P ${CMAKE_SOURCE_DIR}/base/config/runparallelnumdifftest.cmake )
 
-endfunction( Plato_add_numdiff_test )
+endfunction( Plato_add_parallel_numdiff_test )
 
 ###############################################################################
 ## Plato_add_xmlgen_custom_command_test( 
@@ -704,7 +704,7 @@ function( Plato_add_output_exists_test TEST_NAME FILE_NAME )
     set_tests_properties( ${TEST_NAME_OUTPUT_EXISTS} PROPERTIES DEPENDS ${TEST_NAME})
     set_property(TEST ${TEST_NAME_OUTPUT_EXISTS} PROPERTY LABELS "small")
 
-endfunction( Plato_add_file_exists_test )
+endfunction( Plato_add_output_exists_test )
 
 ###############################################################################
 ## Plato_disable_test
