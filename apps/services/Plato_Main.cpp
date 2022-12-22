@@ -203,7 +203,15 @@ int main(int aArgc, char *aArgv[])
         while((tDriver =
                tDriverFactory.create(tPlatoInterface, tLocalComm)) != nullptr)
         {
-            tDriver->run();
+            try
+            {
+                tDriver->run();
+            }
+            catch(const std::exception& tErr)
+            {
+                tPlatoInterface->registerException(Plato::LogicException(tErr.what()));
+                tPlatoInterface->handleExceptions();
+            }
 
             // If the last driver compute the final stage before
             // deleting it. The driver finalize calls the interface

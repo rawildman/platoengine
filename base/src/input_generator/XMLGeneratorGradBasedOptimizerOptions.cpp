@@ -295,9 +295,13 @@ void generate_rol_input_file(const XMLGen::InputData& aMetaData)
     addNTVParameter(n3, "Use as Preconditioner", "bool", "false");
     addNTVParameter(n3, "Use as Hessian", "bool", "false");
     if(aMetaData.optimization_parameters().limited_memory_storage().length() > 0)
+    {
         addNTVParameter(n3, "Maximum Storage", "int", aMetaData.optimization_parameters().limited_memory_storage());
+    }
     else
+    {
         addNTVParameter(n3, "Maximum Storage", "int", "10");
+    }
     addNTVParameter(n3, "Barzilai-Borwein Type", "int", "1");
 
     n3 = n2.append_child("ParameterList");
@@ -308,7 +312,14 @@ void generate_rol_input_file(const XMLGen::InputData& aMetaData)
     addNTVParameter(n3, "Iteration Limit", "int", "1");
     n3 = n2.append_child("ParameterList");
     n3.append_attribute("name") = "Polyhedral Projection";
-    addNTVParameter(n3, "Type", "string", "Dai-Fletcher");
+    if(aMetaData.constraints.size() > 1)
+    {
+        addNTVParameter(n3, "Type", "string", "Semismooth Newton");
+    }
+    else 
+    {
+        addNTVParameter(n3, "Type", "string", "Dai-Fletcher");
+    }
     addNTVParameter(n3, "Iteration Limit", "int", "1000");
 
     XMLGen::append_rol_step_block(aMetaData, n1); 
