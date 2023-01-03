@@ -201,7 +201,7 @@ MathParser::parse(std::string aExpr)
 }
 
 InputData
-PugiParser::parseFile(const std::string& filename)
+PugiParser::parseFile(const std::string& filename) const
 {
     auto tInput = std::make_shared<pugi::xml_document>();
     pugi::xml_parse_result tResult = tInput->load_file(filename.c_str());
@@ -215,7 +215,7 @@ PugiParser::parseFile(const std::string& filename)
 }
 
 InputData
-PugiParser::parseString(const std::string& inputString)
+PugiParser::parseString(const std::string& inputString) const
 {
     auto tInput = std::make_shared<pugi::xml_document>();
     pugi::xml_parse_result tResult = tInput->load_string(inputString.c_str());
@@ -227,7 +227,7 @@ PugiParser::parseString(const std::string& inputString)
 }
 
 InputData
-PugiParser::read(std::shared_ptr<pugi::xml_document> doc)
+PugiParser::read(std::shared_ptr<pugi::xml_document> doc) const
 {
 
     preProcess(doc);
@@ -244,7 +244,7 @@ PugiParser::read(std::shared_ptr<pugi::xml_document> doc)
 
 
 void
-PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
+PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc) const
 {
 
     // process 'includes'.  included files are pulled in verbatim.
@@ -669,7 +669,7 @@ PugiParser::findReplace(std::string aString, std::string aFind, std::string aRep
 }
 
 void
-PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData)
+PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData) const
 {
     for (pugi::xml_node& child: node.children())
     {

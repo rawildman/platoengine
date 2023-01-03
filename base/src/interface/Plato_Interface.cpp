@@ -193,9 +193,8 @@ Interface::getStage(std::string aStageName)
     tControlFile.open("plato.control");
     if(tControlFile)
     {
-        Plato::Parser* parser = new Plato::PugiParser();
-        auto tControlData = parser->parseFile("plato.control");
-        delete parser;
+        const Plato::PugiParser parser;
+        auto tControlData = parser.parseFile("plato.control");
 
         auto tTerminate = Plato::Get::Bool(tControlData, "Terminate", false);
 

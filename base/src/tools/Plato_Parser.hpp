@@ -79,16 +79,15 @@ class MathParser {
 
 class Parser {
   public:
-    virtual ~Parser(){}
-    virtual InputData parseFile(const std::string& fileName) = 0;
-    virtual InputData parseString(const std::string& inputString) = 0;
+    virtual ~Parser() = default;
+    virtual InputData parseFile(const std::string& fileName) const = 0;
+    virtual InputData parseString(const std::string& inputString) const = 0;
 };
 
 class PugiParser : public Parser {
   public:
-    ~PugiParser(){}
-    Plato::InputData parseFile(const std::string& fileName);
-    Plato::InputData parseString(const std::string& inputString);
+    Plato::InputData parseFile(const std::string& fileName) const override;
+    Plato::InputData parseString(const std::string& inputString) const override;
 
     static void recursiveFindReplace(pugi::xml_node aNode, std::string aFind, std::string aReplace);
     static void deleteNodesByName(pugi::xml_node aNode, std::string aNodeName);
@@ -97,9 +96,9 @@ class PugiParser : public Parser {
 
 
   private:
-    Plato::InputData read(std::shared_ptr<pugi::xml_document> doc);
-    void addChildren(const pugi::xml_node& node, InputData& inputData);
-    void preProcess(std::shared_ptr<pugi::xml_document> doc);
+    Plato::InputData read(std::shared_ptr<pugi::xml_document> doc) const;
+    void addChildren(const pugi::xml_node& node, InputData& inputData) const;
+    void preProcess(std::shared_ptr<pugi::xml_document> doc) const;
 
     class ForWalker : public pugi::xml_tree_walker
     {
