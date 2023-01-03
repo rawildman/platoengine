@@ -73,12 +73,13 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
         {
             EG_deleteObject(modelT->body[ibody].etess);
         }
-std::string tCurTessName = "egadsTess_" + std::to_string(tCntr) + ".eto";
-tCntr++;
-std::cout << "\n*************** tess file name: " << tCurTessName << " ***************\n" << std::endl << std::flush;
-//std::string tCurTessName = "egadsTess_0.eto";
+        std::string tCurTessName = this->mTessFileName;
+        if(tCurTessName == "")
+        {
+            tCurTessName = "egadsTess_" + std::to_string(tCntr++) + ".eto";
+        }
+       
         auto tStatus = EG_loadTess(tBody, (char*)tCurTessName.c_str(), &modelT->body[ibody].etess);
- //       auto tStatus = EG_loadTess(tBody, (char*)this->mTessFileName.c_str(), &modelT->body[ibody].etess);
         if (tStatus != EGADS_SUCCESS)
         {
             cleanUpAndThrow("EG_loadTess failed.");
@@ -97,7 +98,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
 {
     ScalarType tSensitivity(0.0);
 
-static int cntr=0;
+//static int cntr=0;
     aDXDp.clear();
 
     /* clear all then set the parameter & tell OpenCSM */
@@ -196,6 +197,7 @@ static int cntr=0;
         EG_free(tVtags);
         EG_free(tCoords);
         
+/*
 char name[1000];
 sprintf(name, "sens%d_%d.txt", ibody, cntr);
 FILE *fp=fopen(name, "w");
@@ -205,10 +207,11 @@ if(fp)
     fprintf(fp, "%lf\n", tCurDXDpVector[i]);
   fclose(fp);
 }
+*/
         aDXDp.insert(aDXDp.end(), tCurDXDpVector.begin(), tCurDXDpVector.end());
 
     }
-cntr++;
+//cntr++;
     return tSensitivity;
 }
 
