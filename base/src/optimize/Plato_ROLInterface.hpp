@@ -147,7 +147,7 @@ private:
     void createOptimizationProblemLinearConstraint(ROL::Problem<ScalarType>& aOptimizationProblem)
     {
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
-        for(int tConstraintIndex = 0; tConstraintIndex < tNumConstraints; ++tConstraintIndex)
+        for(OrdinalType tConstraintIndex = 0; tConstraintIndex < tNumConstraints; ++tConstraintIndex)
         {
             Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(1));
             Teuchos::RCP<ROL::Constraint<ScalarType>> tEquality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface, tConstraintIndex));
@@ -164,7 +164,7 @@ private:
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
         Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
         
-        for(int tConstraintIndex = 0; tConstraintIndex < tNumConstraints; ++tConstraintIndex)
+        for(OrdinalType tConstraintIndex = 0; tConstraintIndex < tNumConstraints; ++tConstraintIndex)
         {
             Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
             Teuchos::RCP<ROL::Constraint<ScalarType>> tEquality = Teuchos::rcp(new Plato::ReducedConstraintROL<ScalarType>(this->mInputData, this->mInterface, tConstraintIndex));
