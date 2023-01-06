@@ -15,18 +15,22 @@
 #include <iostream>
 
 #include "STKExtract.hpp"
-
+#include "Kokkos_Core.hpp"
 
 using namespace iso;
 
 int main(int argc,  char **argv)
 {
+  Kokkos::initialize(argc, argv);
+
   STKExtract ex;
   if(ex.create_mesh_apis_stand_alone(argc, argv, "", "", "LSD", "", 1e-5,
                      0.0, 0, 1, 0, 0))
   {
       ex.run_stand_alone();
   }
+
+  Kokkos::finalize();
 
   return 0;
 }
