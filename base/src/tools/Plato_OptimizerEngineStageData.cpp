@@ -1052,6 +1052,19 @@ void OptimizerEngineStageData::setInitialControlDataName(const std::string & aIn
     mInitialControlDataName.assign(aInput.begin(), aInput.end());
 }
 
+/******************************************************************************/
+const std::string& OptimizerEngineStageData::getStochasticParametersName() const
+/******************************************************************************/
+{
+    return mStochasticParametersName;
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setStochasticParametersName(std::string aInput)
+/******************************************************************************/
+{
+    mStochasticParametersName = std::move(aInput);
+}
 
 std::string OptimizerEngineStageData::getFinalizationStageName() const
 {

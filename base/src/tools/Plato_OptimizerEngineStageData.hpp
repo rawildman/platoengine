@@ -331,6 +331,9 @@ public:
     std::string getInitialControlDataName() const;
     void setInitialControlDataName(const std::string & aInput);
 
+    const std::string& getStochasticParametersName() const;
+    void setStochasticParametersName(std::string aInput);
+
     /******************************************************************************//**
      * @brief Return finalization stage name: stage responsible for writing output files
      * @return stage name
@@ -570,6 +573,7 @@ public:
       aArchive & boost::serialization::make_nvp("ObjectiveValueStageName",mObjectiveValueStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveGradientStageName",mObjectiveGradientStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveHessianStageName",mObjectiveHessianStageName);
+      aArchive & boost::serialization::make_nvp("StochasticParametersName",mStochasticParametersName);
       
       aArchive & boost::serialization::make_nvp("InitialGuess",mInitialGuess);
       aArchive & boost::serialization::make_nvp("LowerBoundValues",mLowerBoundValues);
@@ -591,7 +595,6 @@ public:
       aArchive & boost::serialization::make_nvp("ConstraintGradientNames",mConstraintGradientNames);
       aArchive & boost::serialization::make_nvp("ConstraintHessianNames",mConstraintHessianNames);
       aArchive & boost::serialization::make_nvp("ConstraintReferenceValueNames",mConstraintReferenceValueNames);
-      
     }
 
 private:
@@ -665,6 +668,7 @@ private:
     std::string mObjectiveValueStageName;
     std::string mObjectiveGradientStageName;
     std::string mObjectiveHessianStageName;
+    std::string mStochasticParametersName;
 
     std::vector<double> mInitialGuess;
     std::vector<double> mLowerBoundValues;

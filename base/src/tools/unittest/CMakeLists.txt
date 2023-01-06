@@ -5,7 +5,8 @@ SET(PlatoTools_UnitTester_SRCS UnitMain.cpp
                                    ../Plato_ParseCSMUtilities.cpp
                                    Plato_Test_InputData.cpp
                                    Plato_Test_Utilities.cpp
-                                   Plato_Test_EnumTable.cpp)
+                                   Plato_Test_EnumTable.cpp
+                                   Plato_Test_EngineDataParser.cpp)
 
 SET(PlatoTools_UnitTester_HDRS )
 

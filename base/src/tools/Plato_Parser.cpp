@@ -1206,6 +1206,7 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.addDescentDirectionName(tDescentDirectionName);
     }
+    aOptimizerEngineStageData.setStochasticParametersName(Get::String(tOptimizationVariablesNode, "StochasticParametersName"));
 }
 
 /******************************************************************************/
