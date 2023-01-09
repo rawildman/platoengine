@@ -84,11 +84,12 @@ namespace XMLGen
        aInputData.optimization_parameters().csm_exodus_file() != "")
     {
         fprintf(aFile,
-            "plato-cli geometry esp --input %s --output-model %s --output-mesh %s --tesselation %s; \\\n",
+            "plato-cli geometry esp --input %s --output-model %s --output-mesh %s --tesselation %s --workflow %s; \\\n",
             aInputData.optimization_parameters().csm_file().c_str(),
             aInputData.optimization_parameters().csm_opt_file().c_str(),
             aInputData.optimization_parameters().csm_exodus_file().c_str(),
-            aInputData.optimization_parameters().csm_tesselation_file().c_str());
+            aInputData.optimization_parameters().csm_tesselation_file().c_str(),
+            aInputData.optimization_parameters().esp_workflow().c_str());
     }
   }
 

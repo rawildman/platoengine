@@ -43,21 +43,77 @@ TEST(PlatoTestXMLGenerator, StageOperation_get_objective_gradient_operation_name
 TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF)
 {
     pugi::xml_document tDocument;
-    XMLGen::append_compute_objective_sensitivity_operation("sierra_tf", "shared_data_name", tDocument);
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("esp_workflow", "aflr");
+    tMetaData.set(tOptimizationParameters);
+    XMLGen::Service tService;
+    tService.id("2");
+    tService.code("sierra_tf");
+    XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
     tDocument.save_file("xml.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("xml.txt");
     std::string tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Name>") +
         std::string("ComputeCriterionGradientwrtCADParameters</Name>") +
-        std::string("<PerformerName>sierra_tf</PerformerName><Forvar=\"I\"in=\"Parameters\">") +
+        std::string("<PerformerName>sierra_tf_2</PerformerName><Forvar=\"I\"in=\"Parameters\">") +
         std::string("<Input><ArgumentName>ParameterSensitivity{I}</ArgumentName>") +
         std::string("<SharedDataName>ParameterSensitivity{I}</SharedDataName>") +
         std::string("</Input></For><Output><ArgumentName>CriterionGradientwrtCADParameters") +
-        std::string("</ArgumentName><SharedDataName>shared_data_name</SharedDataName>") +
+        std::string("</ArgumentName><SharedDataName>CriterionGradient-CriterionIdentifierString</SharedDataName>") +
         std::string("</Output></Operation>");
 
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm xml.txt");
+}
+
+TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF_egads_tetgen_workflow)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("esp_workflow", "egads_tetgen");
+    tMetaData.set(tOptimizationParameters);
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+    tService.id("2");
+    tService.code("sierra_tf");
+    tMetaData.append(tService);
+    XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
+    tDocument.save_file("xml.txt", " ");
+
+    auto tReadData = XMLGen::read_data_from_file("xml.txt");
+    std::string tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Name>") +
+        std::string("ChainRule</Name>") +
+        std::string("<PerformerName>platomain_1</PerformerName><Forvar=\"I\"in=\"Parameters\">") +
+        std::string("<Input><ArgumentName>ParameterSensitivity{I}</ArgumentName>") +
+        std::string("<SharedDataName>ParameterSensitivity{I}</SharedDataName>") +
+        std::string("</Input></For><Input><ArgumentName>DFDX</ArgumentName><SharedDataName>") +
+        std::string("CriterionGradientX-CriterionIdentifierString</SharedDataName></Input><Output><ArgumentName>FullGradient") +
+        std::string("</ArgumentName><SharedDataName>CriterionGradient-CriterionIdentifierString</SharedDataName>") +
+        std::string("</Output></Operation>");
+
+    ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
+    Plato::system("rm xml.txt");
+}
+
+TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF_unknown_esp_workflow)
+{
+    pugi::xml_document tDocument;
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("esp_workflow", "unknown_workflow");
+    tMetaData.set(tOptimizationParameters);
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+    tService.id("2");
+    tService.code("sierra_tf");
+    tMetaData.append(tService);
+    EXPECT_THROW(XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument), std::exception);
 }
 
 }

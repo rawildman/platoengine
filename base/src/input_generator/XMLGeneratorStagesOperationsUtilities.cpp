@@ -906,39 +906,63 @@ void append_aggregate_objective_value_operation_for_non_multi_load_case
 
 /******************************************************************************/
 void append_compute_objective_sensitivity_operation
-(const std::string &aPerformer,
- const std::string &aSharedDataName,
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Service &aService,
+ const std::string &aIdentifierString,
  pugi::xml_node &aParentNode)
 {
+    std::string tCode = aService.code();
+    std::string tPerformer = aService.performer();
+    std::string tOperationName;
+    std::string tOutputArgumentName;
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    {
+        if(tCode == "plato_analyze")
+        {
+            tOperationName = "Compute Objective Sensitivity";
+            tOutputArgumentName = "Criterion Sensitivity";
+        }
+        else if(tCode == "sierra_sd")
+        {
+            tOperationName = "Compute Objective Gradient wrt CAD Parameters";
+            tOutputArgumentName = "Internal Energy Gradient";
+        }
+        else if(tCode == "sierra_tf")
+        {
+            tOperationName = "Compute Criterion Gradient wrt CAD Parameters";
+            tOutputArgumentName = "Criterion Gradient wrt CAD Parameters";
+        }
+    }
+    else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+    {
+        tPerformer = aMetaData.getFirstPlatoMainPerformer();
+        tOperationName = "Chain Rule";
+        tOutputArgumentName = "Full Gradient";
+    }
+    else
+    {
+        THROWERR("Unrecognized esp workflow type: " + aMetaData.optimization_parameters().esp_workflow() + 
+                 " encountered in function: append_compute_objetive_sensitivity_operation.")
+    }
+    
     auto tOperationNode = aParentNode.append_child("Operation");
-    if(aPerformer.find("sierra_sd") != std::string::npos) 
-    {
-        XMLGen::append_children({"Name", "PerformerName"}, {"Compute Objective Gradient wrt CAD Parameters", aPerformer}, tOperationNode);
-    }
-    else if(aPerformer.find("sierra_tf") != std::string::npos) 
-    {
-        XMLGen::append_children({"Name", "PerformerName"}, {"Compute Criterion Gradient wrt CAD Parameters", aPerformer}, tOperationNode);
-    }
-    else {
-        XMLGen::append_children({"Name", "PerformerName"}, {"Compute Objective Sensitivity", aPerformer}, tOperationNode);
-    }
+    XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tPerformer}, tOperationNode);
+
     auto tForNode = tOperationNode.append_child("For");
     XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     auto tInputNode = tForNode.append_child("Input");
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"}, tInputNode);
+
+    if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+    {
+        auto tDFDXSharedDataName = "Criterion GradientX - " + aIdentifierString;
+        auto tInputNode = tOperationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DFDX", tDFDXSharedDataName}, tInputNode);
+    }
+
+    std::string tOutputSharedDataName = "Criterion Gradient - " + aIdentifierString;
     auto tOutputNode = tOperationNode.append_child("Output");
-    if(aPerformer.find("sierra_sd") != std::string::npos) 
-    {
-        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Internal Energy Gradient", aSharedDataName}, tOutputNode);
-    }
-    else if(aPerformer.find("sierra_tf") != std::string::npos) 
-    {
-        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Criterion Gradient wrt CAD Parameters", aSharedDataName}, tOutputNode);
-    }
-    else
-    {
-        XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Criterion Sensitivity", aSharedDataName}, tOutputNode);
-    }
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {tOutputArgumentName, tOutputSharedDataName}, tOutputNode);
 }
 // function append_compute_objective_sensitivity_operation
 /******************************************************************************/
@@ -1128,14 +1152,30 @@ void append_objective_gradient_operation_for_non_multi_load_case
         auto tOperationNode = aParentNode.append_child("Operation");
         auto tOperationName = XMLGen::get_objective_gradient_operation_name(tService);
         XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tService.performer()}, tOperationNode);
-        if(tDesignVariableName != "")
+
+        if(aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY)
         {
-            auto tOperationInput = tOperationNode.append_child("Input");
-            XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Topology", tDesignVariableName}, tOperationInput);
-            auto tOperationOutput = tOperationNode.append_child("Output");
-            auto tOutputSharedData = std::string("Criterion Gradient - ") + tIdentifierString;
-            auto tOperationOutputName = XMLGen::get_objective_gradient_operation_output_name(tService);
-            XMLGen::append_children({"ArgumentName", "SharedDataName"}, {tOperationOutputName, tOutputSharedData}, tOperationOutput);
+            if(tDesignVariableName != "")
+            {
+                auto tOperationInput = tOperationNode.append_child("Input");
+                XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Topology", tDesignVariableName}, tOperationInput);
+                auto tOperationOutput = tOperationNode.append_child("Output");
+                auto tOutputSharedData = std::string("Criterion Gradient - ") + tIdentifierString;
+                auto tOperationOutputName = XMLGen::get_objective_gradient_operation_output_name(tService);
+                XMLGen::append_children({"ArgumentName", "SharedDataName"}, {tOperationOutputName, tOutputSharedData}, tOperationOutput);
+            }
+        }
+        else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+        {
+            if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+            {
+            }
+            else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+            {
+                auto tOperationOutput = tOperationNode.append_child("Output");
+                auto tOutputSharedData = std::string("Criterion GradientX - ") + tIdentifierString;
+                XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DFDX", tOutputSharedData}, tOperationOutput);
+            }
         }
     }
 }

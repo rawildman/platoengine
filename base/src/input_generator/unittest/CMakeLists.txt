@@ -20,6 +20,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorPlatoAnalyzeOperationsFile_UnitTester.cpp
                                       XMLGeneratorSierraSDInputFile_UnitTester.cpp
                                       XMLGeneratorSierraTFOperationsFile_UnitTester.cpp
+                                      XMLGeneratorSierraSDOperationsFile_UnitTester.cpp
                                       XMLGeneratorXTKInputDeck_UnitTester.cpp
                                       XMLGeneratorStageOperationsUtilities_UnitTester.cpp
                                       XMLGeneratorUtilities_UnitTester.cpp
@@ -87,6 +88,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       ../XMLGeneratorParseEssentialBoundaryCondition.cpp
                                       ../XMLGeneratorSierraSDOperationsFileUtilities.cpp
                                       ../XMLGeneratorSierraTFOperationsFileUtilities.cpp
+                                      ../XMLGeneratorSierraSDOperationsFileUtilities.cpp
                                       ../XMLGeneratorAnalyzeLoadTagFunctionInterface.cpp
                                       ../XMLGeneratorParseMethodInputOptionsUtilities.cpp
                                       ../XMLGeneratorPostOptimizationRunFileUtilities.cpp

@@ -311,7 +311,7 @@ def updateModelEgadsTetgenExodus(modelName, paramVals):
 ##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="Aflr4Aflr3Exodus", parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr", parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -346,9 +346,9 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   subprocess.call(['cp', modelNameIn, modelNameOut])
 
   #with redirected('csm.console'):
-  if workflow == "Aflr4Aflr3Exodus":
+  if workflow == "aflr":
     updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
-  elif workflow == "EgadsTetgenExodus":
+  elif workflow == "egads_tetgen":
     updateModelEgadsTetgenExodus(modelNameOut, paramVals)
 
   if geom != None:
@@ -362,7 +362,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
       exit(return_code)
 
   if mesh == True:
-    if workflow == "Aflr4Aflr3Exodus":
+    if workflow == "aflr":
       with redirected('aflr.console'):
         aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
@@ -390,7 +390,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
         with redirected('toExo.console'):
           toExo(meshName, groupAttrs)
 
-    elif workflow == "EgadsTetgenExodus":
+    elif workflow == "egads_tetgen":
       with redirected('tetgen.console'):
         problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                            capsFile=modelNameOut,

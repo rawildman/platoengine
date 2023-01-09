@@ -390,9 +390,9 @@ TEST(PlatoTestXMLGenerator, InsertShapeOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_shape_optimization_input_options(tTags);
-    EXPECT_EQ(2u, tTags.size());
+    EXPECT_EQ(3u, tTags.size());
 
-    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""} };
+    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
@@ -1669,6 +1669,7 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
     tOptimizationParameters.append("num_shape_design_variables", "3");
+    tOptimizationParameters.append("esp_workflow", "aflr");
     tXMLMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1682,12 +1683,12 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     std::vector<std::string> tKeys = {"Function", "Name", 
         "Command", "OnChange", 
         "Argument", "Argument", "Argument", 
-        "Argument", "Argument", 
+        "Argument", "Argument", "Argument", 
         "AppendInput", "Input"};
     std::vector<std::string> tValues = {"SystemCall", "update_geometry_on_change_0", 
         "cd evaluations_0; plato-cli geometry esp", "true", 
         "--input rocker_0.csm", "--output-model rocker_opt_0.csm", "--output-mesh rocker_0.exo",
-        "--tesselation rocker_0.eto", "--parameters",
+        "--tesselation rocker_0.eto", "--workflow aflr", "--parameters",
         "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
@@ -1702,12 +1703,12 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tKeys = {"Function", "Name", 
         "Command", "OnChange", 
         "Argument", "Argument", "Argument", 
-        "Argument", "Argument", 
+        "Argument", "Argument", "Argument", 
         "AppendInput", "Input"};
     tValues = {"SystemCall", "update_geometry_on_change_1", 
         "cd evaluations_1; plato-cli geometry esp", "true", 
         "--input rocker_1.csm", "--output-model rocker_opt_1.csm", "--output-mesh rocker_1.exo",
-        "--tesselation rocker_1.eto", "--parameters",
+        "--tesselation rocker_1.eto", "--workflow aflr", "--parameters",
         "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");

@@ -1680,6 +1680,7 @@ struct ValidOptimizationParameterKeys
      "rol_gradient_check_perturbation_scale",
      "rol_gradient_check_steps",
      "rol_gradient_check_random_seed",
+     "esp_workflow",
     };
 };
 

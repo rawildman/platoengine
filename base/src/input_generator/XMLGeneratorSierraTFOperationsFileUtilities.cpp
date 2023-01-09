@@ -36,12 +36,21 @@ void append_criterion_gradient_wrt_CAD_parameters
 }
 /**************************************************************************/
 void append_criterion_gradient_operation
-(pugi::xml_document& aDocument)
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
     XMLGen::append_children({"Name"}, {"Compute Criterion Gradient"}, tOperationNode);
-    auto tOutputNode = tOperationNode.append_child("OutputGradient");
-    XMLGen::append_children({"Name"}, {"Criterion Gradient"}, tOutputNode);
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    {
+        auto tOutputNode = tOperationNode.append_child("OutputGradient");
+        XMLGen::append_children({"Name"}, {"Criterion Gradient"}, tOutputNode);
+    }
+    else
+    {
+        auto tOutputNode = tOperationNode.append_child("Output");
+        XMLGen::append_children({"ArgumentName"}, {"DFDX"}, tOutputNode);
+    }
 }
 /**************************************************************************/
 void add_operations_gradient_based_problem
@@ -50,8 +59,11 @@ void add_operations_gradient_based_problem
 {
 //    XMLGen::append_version_entry(aDocument);
     append_criterion_value_operation(aDocument);
-    append_criterion_gradient_operation(aDocument);
-    append_criterion_gradient_wrt_CAD_parameters(aDocument);
+    append_criterion_gradient_operation(aMetaData, aDocument);
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    {
+        append_criterion_gradient_wrt_CAD_parameters(aDocument);
+    }
 }
 /**************************************************************************/
 void add_operations

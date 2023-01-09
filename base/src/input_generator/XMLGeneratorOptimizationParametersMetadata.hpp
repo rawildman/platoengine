@@ -508,6 +508,8 @@ public:
     std::string rol_gradient_check_steps() const {return value("rol_gradient_check_steps");}
     std::string rol_gradient_check_random_seed() const {return value("rol_gradient_check_random_seed");}
 
+    std::string esp_workflow() const {return value("esp_workflow");}
+
 };
 // struct OptimizationParameters
 

@@ -708,5 +708,15 @@ void append_deterministic_qoi_to_output_operation_for_multi_load_case
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node &aParentNode);
 
+/******************************************************************************//**
+ * \fn append_chain_rule_operation_to_plato_main_operation
+ * \brief Append operation for performing chain rule to get DF/DP
+ * \param [in]     aXMLMetaData Plato problem input data
+ * \param [in/out] aDocument    pugi::xml_document
+**********************************************************************************/
+void append_chain_rule_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document &aDocument);
+
 }
 // namespace XMLGen

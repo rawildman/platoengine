@@ -41,6 +41,7 @@ XMLGen::InputData setUpMetaDataForExistingTFInputDeck() {
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("esp_workflow", "aflr");
     aXMLMetaData.set(tOptimizationParameters);
 
     return aXMLMetaData;
