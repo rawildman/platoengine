@@ -17,7 +17,7 @@ endif()
 set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/base/src/tools)
 INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
-set(PlatoTools_UnitTester_LIBS GTest::GTest PlatoParser PlatoExceptions ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES} )
+set(PlatoTools_UnitTester_LIBS GTest::GTest PlatoParser PlatoExceptions Trilinos::all_selected_libs )
 add_executable(PlatoTools_UnitTester ${PlatoTools_UnitTester_SRCS})
 target_link_libraries(PlatoTools_UnitTester ${PlatoTools_UnitTester_LIBS})
 add_test(NAME PlatoTools_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/tools/unittest/PlatoTools_UnitTester)

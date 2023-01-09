@@ -9,7 +9,7 @@ include_directories(${PLATO_INCLUDES})
 
 # actual target:
 set(PLATOESP_LIBS  ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}  
-     ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES}
+     Trilinos::all_selected_libs
      ${Plato_EXTRA_LINK_FLAGS})
 add_executable(PlatoESP ${PlatoESP_SRCS})
 target_link_libraries(PlatoESP ${PLATOESP_LIBS})
@@ -23,8 +23,8 @@ if (PLATO_ENABLE_SERVICES_PYTHON)
     find_package(Python3 COMPONENTS Development Interpreter)
     add_library( PythonPlatoESP SHARED PlatoESPApp.cpp PlatoESPPythonModule.cpp )
     target_include_directories(PythonPlatoESP SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
-    target_link_libraries( PythonPlatoESP ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES}
-                           ${Trilinos_TPL_LIBRARIES} ${Python3_LIBRARIES} )
+    target_link_libraries( PythonPlatoESP ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
+                           Trilinos::all_selected_libs ${Python3_LIBRARIES} )
     set_target_properties( PythonPlatoESP PROPERTIES PREFIX "" )
     target_compile_options( PythonPlatoESP PRIVATE "-lmpi" )
 

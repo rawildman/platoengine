@@ -83,8 +83,7 @@ set(XTKMAIN_LIBS
     ${MTK_LIBRARIES}
     ${ALL_MRS_LIBS}
     ${ALL_MRS_LIBS}
-    ${Trilinos_LIBRARIES} 
-    ${Trilinos_TPL_LIBRARIES}
+    Trilinos::all_selected_libs
     ${Plato_EXTRA_LINK_FLAGS})
 
 

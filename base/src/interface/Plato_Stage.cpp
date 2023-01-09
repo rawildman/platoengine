@@ -93,7 +93,7 @@ Stage::~Stage()
     const size_t num_operations = m_operations.size();
     for(size_t operation_index = 0u; operation_index < num_operations; operation_index++)
     {
-       // delete m_operations[operation_index];
+       delete m_operations[operation_index];
     }
     m_operations.clear();
 }

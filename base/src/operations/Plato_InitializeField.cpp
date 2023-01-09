@@ -53,9 +53,7 @@
 #include <stk_mesh/base/Field.hpp>
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/CoordinateSystems.hpp>
-#ifdef BUILD_IN_SIERRA
 #include <stk_mesh/base/MeshBuilder.hpp>
-#endif
 #endif
 
 #include "lightmp.hpp"
@@ -90,6 +88,12 @@ InitializeField::InitializeField(const std::string& aFileName,
                                 double aUniformValue,
                                 int aIteration,
                                 bool aCreateSpheres) : 
+                                mCreateSpheres(aCreateSpheres),
+                                mIteration(aIteration),
+                                mUniformValue(aUniformValue),
+                                mMinCoords(aMinCoords),
+                                mMaxCoords(aMaxCoords),
+                                mOutputLayout(aOutputLayout),
                                 mFileName(aFileName),
                                 mStringMethod(aStringMethod),
                                 mSphereRadius(aSphereRadius),
@@ -99,13 +103,7 @@ InitializeField::InitializeField(const std::string& aFileName,
                                 mSphereSpacingY(aSphereSpacingY),
                                 mSphereSpacingZ(aSphereSpacingZ),
                                 mVariableName(aVariableName),
-                                mMinCoords(aMinCoords),
-                                mMaxCoords(aMaxCoords),
-                                mLevelSetNodesets(aLevelSetNodes),
-                                mOutputLayout(aOutputLayout),
-                                mUniformValue(aUniformValue),
-                                mIteration(aIteration),
-                                mCreateSpheres(aCreateSpheres)
+                                mLevelSetNodesets(aLevelSetNodes)
 {
 }
 
@@ -433,16 +431,9 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
 {
 #ifdef STK_ENABLED
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
-#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
-#else
-    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
-    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
-#endif
-#ifdef BUILD_IN_SIERRA // GLAZE1
     tMetaData->use_simple_fields();
-#endif
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -450,23 +441,14 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
     tBroker->add_mesh_database(mFileName, "exodus", stk::io::READ_MESH);
     tBroker->create_input_mesh();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> &tTempField = tMetaData->declare_field<double>(stk::topology::NODE_RANK, "swiss", 1);
-#else
-    stk::mesh::Field<double> &tTempField = tMetaData->declare_field<stk::mesh::Field<double>>(stk::topology::NODE_RANK, "swiss", 1);
-#endif
 
     std::vector<double> tTempFieldVals(2541, 0);
     stk::mesh::put_field_on_mesh(tTempField, tMetaData->universal_part(), tTempFieldVals.data());
 
     tBroker->populate_bulk_data();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *tCoordsField = tMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
-#else
-    stk::mesh::Field<double, stk::mesh::Cartesian> *tCoordsField = tMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-    (stk::topology::NODE_RANK, "coordinates");
-#endif
 
     std::vector<stk::mesh::Entity> tNodes;
     tBulkData->get_entities(stk::topology::NODE_RANK, tMetaData->universal_part(), tNodes);
@@ -600,10 +582,6 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
         aValues.push_back(tVal);
     }
 
-#ifndef BUILD_IN_SIERRA
-    delete tBulkData;
-    delete tMetaData;
-#endif
     delete tBroker;
 #else
     throw Plato::LogicException("Functionality not available.  Recompile with STK enabled.");
@@ -615,16 +593,9 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
 /******************************************************************************/
 {
 #ifdef STK_ENABLED
-#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
-#else
-    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
-    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
-#endif
-#ifdef BUILD_IN_SIERRA // GLAZE1
     tMetaData->use_simple_fields();
-#endif
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
     tBroker->set_bulk_data(*tBulkData);
 
@@ -635,12 +606,7 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
 
     tBroker->populate_bulk_data();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *tCoordsField = tMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
-#else
-    stk::mesh::Field<double, stk::mesh::Cartesian> *tCoordsField =
-            tMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian>>(stk::topology::NODE_RANK, "coordinates");
-#endif
 
     // Hard code 4 plane tValues (brick)
     // double tPlanes[6][3] = {{-5.25,.1875,.1875},{-5.25,.1875,.1875},{-5.25,-.1875,-.1875},{-5.25,-.1875,-.1875},{-5.25,.1875,.1875},{-.25,-.1875,-.1875}};
@@ -723,10 +689,6 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
         }
     }
 
-#ifndef BUILD_IN_SIERRA
-    delete tBulkData;
-    delete tMetaData;
-#endif
     delete tBroker;
 #else
     throw Plato::LogicException("Functionality not available.  Recompile with STK enabled.");
@@ -739,16 +701,9 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
     bool IsInputFileSpread = true;
 
     stk::io::StkMeshIoBroker *tBroker = new stk::io::StkMeshIoBroker(mPlatoApp->getComm());
-#ifdef BUILD_IN_SIERRA
     std::shared_ptr<stk::mesh::BulkData> tBulkData = stk::mesh::MeshBuilder(mPlatoApp->getComm()).create();
     stk::mesh::MetaData *tMetaData = &tBulkData->mesh_meta_data();
-#else
-    stk::mesh::MetaData *tMetaData = new stk::mesh::MetaData;
-    stk::mesh::BulkData *tBulkData = new stk::mesh::BulkData(*tMetaData, mPlatoApp->getComm());
-#endif
-#ifdef BUILD_IN_SIERRA // GLAZE1
     tMetaData->use_simple_fields();
-#endif
     tBroker->set_bulk_data(*tBulkData);
 
     tBroker->set_option_to_not_collapse_sequenced_fields();
@@ -765,11 +720,7 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
     tBroker->populate_bulk_data();
     stk::mesh::Field<double> *tIsoField;
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
     tIsoField = tMetaData->get_field<double>(stk::topology::NODE_RANK, mVariableName);
-#else
-    tIsoField = tMetaData->get_field<stk::mesh::Field<double> >(stk::topology::NODE_RANK, mVariableName);
-#endif
 
     if(mIteration == -1)
     {
@@ -791,10 +742,6 @@ void InitializeField::getInitialValuesForRestart(const DistributedVector &field,
         aValues.push_back(*tValues);
     }
 
-#ifndef BUILD_IN_SIERRA
-    delete tBulkData;
-    delete tMetaData;
-#endif
     delete tBroker;
 
 #else

@@ -8,11 +8,7 @@
 #ifndef ISO_PRUNE_MAIN_MESHMANAGER_HPP_
 #define ISO_PRUNE_MAIN_MESHMANAGER_HPP_
 
-#ifdef BUILD_IN_SIERRA
 #include <percept/PerceptMesh.hpp>
-#else
-#include <PerceptMesh.hpp>
-#endif
 #include "Teuchos_CommandLineProcessor.hpp"
 #include "PruneMeshAPISTK.hpp"
 
@@ -31,13 +27,8 @@ public:
 
            stk::mesh::MetaData& get_output_meta_data();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
            stk::mesh::Field<double>* get_input_coordinate_field();
            stk::mesh::Field<double>* get_output_coordinate_field();
-#else
-           stk::mesh::Field<double,stk::mesh::Cartesian3d>* get_input_coordinate_field();
-           stk::mesh::Field<double,stk::mesh::Cartesian3d>* get_output_coordinate_field();
-#endif
 
            stk::mesh::FieldBase* get_input_transfer_field();
 

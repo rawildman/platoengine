@@ -18,7 +18,6 @@
 #include <stk_mesh/base/MetaData.hpp>
 #include <stk_mesh/base/DestroyElements.hpp>
 
-#ifdef BUILD_IN_SIERRA
 #include <percept/xfer/STKMeshTransferSetup.hpp>
 #include <percept/PerceptMesh.hpp>
 #include <percept/function/StringFunction.hpp>
@@ -28,17 +27,6 @@
 #include <percept/Util.hpp>
 #include <percept/ExceptionWatch.hpp>
 #include <percept/GeometryVerifier.hpp>
-#else
-#include <STKMeshTransferSetup.hpp>
-#include <PerceptMesh.hpp>
-#include <StringFunction.hpp>
-#include <FieldFunction.hpp>
-#include <Percept.hpp>
-#include <Util.hpp>
-#include <ExceptionWatch.hpp>
-#include <GeometryVerifier.hpp>
-#include <ConstantFunction.hpp>
-#endif
 
 #include <Ioss_SubSystem.h>
 

@@ -11,7 +11,7 @@ add_compile_definitions(${Dakota_DEFINES})
 
 # actual target:
 set(PLATOMAIN_LIBS  ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}  
-     ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES}
+     Trilinos::all_selected_libs
      ${Plato_EXTRA_LINK_FLAGS} Boost::serialization)
 add_executable(PlatoMain ${PlatoMain_SRCS})
 target_link_libraries(PlatoMain ${PLATOMAIN_LIBS})
@@ -36,7 +36,7 @@ if (PLATO_ENABLE_SERVICES_PYTHON)
     find_package(Python3 COMPONENTS Development Interpreter)
     add_library( PlatoServices SHARED PlatoApp.cpp ServicesPythonModule.cpp )
     target_include_directories(PlatoServices SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
-    target_link_libraries( PlatoServices ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${Trilinos_LIBRARIES} 
+    target_link_libraries( PlatoServices ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} Trilinos::all_selected_libs
                            ${Python3_LIBRARIES} Boost::serialization)
     set_target_properties( PlatoServices PROPERTIES PREFIX "" )
     target_compile_options( PlatoServices PRIVATE "-lmpi" )
@@ -52,6 +52,7 @@ endif()
 ###############################################################################
 
 add_library(PlatoApp PlatoApp.cpp)
+target_link_libraries(PlatoApp Trilinos::all_selected_libs)
 
 if( UNIT_TESTING )
   message( "-- Enabling unit testing " )

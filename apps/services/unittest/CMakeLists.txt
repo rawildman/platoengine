@@ -144,7 +144,7 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
 # actual target:
 set(PLATOMAINUNITTESTER_LIBS ${PLATOMAINUNITTESTER_ADDITIONAL_LIBS} ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} 
-                             ${NLOPT_LIBRARY} GTest::GTest ${Trilinos_LIBRARIES} ${PYTHON_LIBRARY} 
+                             ${NLOPT_LIBRARY} GTest::GTest Trilinos::all_selected_libs ${PYTHON_LIBRARY} 
                              ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
 
 if( DAKOTADRIVER )

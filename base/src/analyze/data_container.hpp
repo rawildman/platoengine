@@ -140,7 +140,7 @@ class DataEntity : public AbstractData {
     void advanceState() {
       if( varNumStates == 1 ) return;
       if( varNumStates == 2 ) {
-        memcpy( varPntr[CURRENT], varPntr[UPDATED], varLength*sizeof(dataType) );
+        std::copy_n(varPntr[UPDATED], varLength, varPntr[CURRENT]);
       } else {
         dataType* back = varPntr[varNumStates-1];
         for( int i=3; i<varNumStates; i++){
@@ -149,7 +149,7 @@ class DataEntity : public AbstractData {
         varPntr[2] = varPntr[CURRENT];
         varPntr[CURRENT] = varPntr[UPDATED];
         varPntr[UPDATED] = back;
-        memcpy( varPntr[UPDATED], varPntr[CURRENT], varLength*sizeof(dataType) );
+        std::copy_n(varPntr[CURRENT], varLength, varPntr[UPDATED]);
       }
     }
 

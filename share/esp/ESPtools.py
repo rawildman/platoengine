@@ -178,7 +178,12 @@ def toExo(meshName, groupAttrs):
         callArgs.append("sideset")
       callArgs.append(entry["name"])
 
-  subprocess.call(callArgs)
+  return_code = subprocess.call(callArgs)
+  if return_code != 0:
+    print("*******************************")
+    print("ESP operation failed.. aborting")
+    print("*******************************")
+    exit(return_code)
 
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh

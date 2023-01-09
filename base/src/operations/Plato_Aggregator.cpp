@@ -66,13 +66,13 @@ Aggregator::Aggregator(const std::vector<double>& aWeights,
                        const std::string& aWeightMethod, 
                        double aLimitWeight, 
                        bool aReportStatus):
-                       mWeights(aWeights),
+                       mReportStatus(aReportStatus),
+                       mLimitWeight(aLimitWeight),
                        mWeightBases(aWeightBases),
                        mWeightNormals(aWeightNormals),
-                       mAggStructs(aAggStructs),
                        mWeightMethod(aWeightMethod),
-                       mLimitWeight(aLimitWeight),
-                       mReportStatus(aReportStatus)
+                       mWeights(aWeights),
+                       mAggStructs(aAggStructs)
 {
 }
 

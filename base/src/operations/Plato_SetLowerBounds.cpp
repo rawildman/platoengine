@@ -68,12 +68,12 @@ SetLowerBounds::SetLowerBounds(const std::string& aDiscretization,
                                 Plato::data::layout_t aOutputLayout,
                                 int aOutputSize,
                                 int aLowerBoundVectorLength):
+                                mOutputSize(aOutputSize),
+                                mLowerBoundVectorLength(aLowerBoundVectorLength),
                                 mDiscretization(aDiscretization),
                                 mMaterialUseCase(aMaterialUseCase),
-                                mFixedBlockMetadata(aFixedBlockMetadata),
                                 mOutputLayout(aOutputLayout),
-                                mOutputSize(aOutputSize),
-                                mLowerBoundVectorLength(aLowerBoundVectorLength)
+                                mFixedBlockMetadata(aFixedBlockMetadata)
 {
 }
 

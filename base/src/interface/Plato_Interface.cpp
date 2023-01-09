@@ -162,6 +162,8 @@ int Interface::getStageIndex(std::string aStageName) const
 void Interface::broadcastStageIndex(int & aStageIndex)
 /******************************************************************************/
 {
+    handleExceptions();
+
     MPI_Bcast(&aStageIndex, 1, MPI_INT, 0, mGlobalComm);
 
     if(aStageIndex == INVALID_STAGE)
@@ -178,7 +180,7 @@ void Interface::broadcastStageIndex(int & aStageIndex)
         Plato::TerminateSignal tTerminateSignal(tMsg.str());
         registerException(tTerminateSignal);
     }
-    this->handleExceptions();
+    handleExceptions();
 }
 
 /******************************************************************************/

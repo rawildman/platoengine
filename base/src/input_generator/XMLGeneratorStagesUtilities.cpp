@@ -314,13 +314,9 @@ void append_update_problem_stage
             }
 
         }
-
-        return;
-
     }
     else if(XMLGen::need_update_problem_stage(aMetaData))
     {
-        std::cout<<"SHOULDNT BE HERE RIGHT NOW"<<std::endl;
         auto tStageNode = aDocument.append_child("Stage");
         XMLGen::append_children( { "Name" }, { "Update Problem" }, tStageNode);
         for (auto &tService : aMetaData.services())

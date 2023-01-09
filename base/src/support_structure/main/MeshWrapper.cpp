@@ -27,6 +27,7 @@
 #include <stk_io/StkMeshIoBroker.hpp>
 #include <stk_mesh/base/Types.hpp>
 #include <stk_mesh/base/FieldRestriction.hpp>
+#include <stk_mesh/base/MeshBuilder.hpp>
 #include "Ioss_Region.h"                // for Region, NodeSetContainer, etc
 
 namespace plato
@@ -41,10 +42,6 @@ MeshWrapper::MeshWrapper(stk::ParallelMachine* comm)
 
 MeshWrapper::~MeshWrapper()
 {
-    if ( mLocallyOwnedBulk && mBulkData )
-        delete mBulkData;
-    if ( mLocallyOwnedMeta && mMetaData )
-        delete mMetaData;
     if(mIoBroker)
         delete mIoBroker;
 }
@@ -62,12 +59,10 @@ void MeshWrapper::initialize()
 
 bool MeshWrapper::prepare_as_source()
 {
-    mMetaData = new stk::mesh::MetaData;
-#ifdef BUILD_IN_SIERRA // GLAZE1
+    mMetaData = stk::mesh::MeshBuilder().create_meta_data();
     mMetaData->use_simple_fields();
-#endif
     mLocallyOwnedMeta = true;
-    mBulkData = new stk::mesh::BulkData(*mMetaData, *mComm);
+    mBulkData = stk::mesh::MeshBuilder(*mComm).create(mMetaData);
     mLocallyOwnedBulk = true;
     mIoBroker = new stk::io::StkMeshIoBroker(*mComm);
     mIoBroker->set_bulk_data(*mBulkData);
@@ -171,12 +166,7 @@ bool MeshWrapper::read_exodus_mesh( std::string &aMeshFile, std::string &aFieldN
                                     int aInputFileIsSpread,
                                     int aTimeStep )
 {
-#ifdef BUILD_IN_SIERRA // GLAZE1
     mSupportStructureField = &(mMetaData->declare_field<double>(stk::topology::NODE_RANK, "support_structure"));
-#else
-    mSupportStructureField = &(mMetaData->declare_field<stk::mesh::Field<double> >
-    (stk::topology::NODE_RANK, "support_structure"));
-#endif
     stk::mesh::put_field_on_entire_mesh(*mSupportStructureField);
 
     mIoBroker->set_option_to_not_collapse_sequenced_fields();
@@ -191,12 +181,7 @@ bool MeshWrapper::read_exodus_mesh( std::string &aMeshFile, std::string &aFieldN
 
     mIoBroker->populate_bulk_data();
 
-#ifdef BUILD_IN_SIERRA // GLAZE1
     mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
-#else
-    mCoordsField = mMetaData->get_field<stk::mesh::Field<double, stk::mesh::Cartesian> >
-    (stk::topology::NODE_RANK, "coordinates");
-#endif
 
     if(!mCoordsField)
     {
@@ -226,11 +211,7 @@ bool MeshWrapper::read_exodus_mesh( std::string &aMeshFile, std::string &aFieldN
     parsed_strings.push_back(working_string);
     for(size_t i=0; i<parsed_strings.size(); ++i)
     {
-#ifdef BUILD_IN_SIERRA // GLAZE1
         stk::mesh::Field<double> *cur_field = mMetaData->get_field<double>(
-#else
-        stk::mesh::Field<double> *cur_field = mMetaData->get_field<stk::mesh::Field<double> >(
-#endif
                 stk::topology::NODE_RANK, parsed_strings[i]);
         if(!cur_field)
         {

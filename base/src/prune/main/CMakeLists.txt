@@ -28,7 +28,7 @@ INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 add_library(Prune ${Prune_SOURCES} ${Prune_HEADERS})
 set(PLATO_LIBRARIES ${PLATO_LIBRARIES} Prune PARENT_SCOPE)
 
-target_link_libraries(Prune ${Trilinos_LIBRARIES})
+target_link_libraries(Prune Trilinos::all_selected_libs)
 
 install( TARGETS Prune EXPORT Prune
          LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

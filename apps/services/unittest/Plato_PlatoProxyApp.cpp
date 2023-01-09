@@ -91,9 +91,7 @@ void PlatoProxyApp::initialize()
 {
     // Build Temporary Mesh Database
     stk::io::StkMeshIoBroker tMeshData(mAppComm);
-#ifdef BUILD_IN_SIERRA // GLAZE1
     tMeshData.use_simple_fields();
-#endif
     tMeshData.add_mesh_database(mInputMeshFile, stk::io::READ_MESH);
     tMeshData.create_input_mesh();
     tMeshData.populate_bulk_data();

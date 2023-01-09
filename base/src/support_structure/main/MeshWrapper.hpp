@@ -38,17 +38,13 @@ class MeshWrapper
 {
 
 private:
-    stk::mesh::BulkData *mBulkData;
-    stk::mesh::MetaData *mMetaData;
+    std::shared_ptr<stk::mesh::BulkData> mBulkData;
+    std::shared_ptr<stk::mesh::MetaData> mMetaData;
     stk::io::StkMeshIoBroker *mIoBroker;
     stk::ParallelMachine *mComm;
     bool mLocallyOwnedBulk;
     bool mLocallyOwnedMeta;
-#ifdef BUILD_IN_SIERRA // GLAZE1
     stk::mesh::Field<double> *mCoordsField;
-#else
-    stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
-#endif
     std::vector<stk::mesh::Field<double> *> mIsoFields;
     stk::mesh::Field<double> *mSupportStructureField;
     std::vector<stk::mesh::Field<double>*> mNodalFields;
@@ -67,8 +63,8 @@ public:
     bool read_exodus_mesh(std::string &meshfile, std::string &fieldname,
                           std::string &outputFieldsString,
                           int input_file_is_spread, int time_step);
-    stk::mesh::BulkData* bulk_data() { return mBulkData; }
-    stk::mesh::MetaData* meta_data() { return mMetaData; }
+    stk::mesh::MetaData* meta_data() { return mMetaData.get(); }
+    stk::mesh::BulkData* bulk_data() { return mBulkData.get(); }
     void get_output_fields(std::string &outputFieldsString);
     void export_my_mesh();
     void get_shared_boundary_nodes(std::set<uint64_t> &shared_boundary_nodes);

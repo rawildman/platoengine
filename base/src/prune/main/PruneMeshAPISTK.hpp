@@ -133,11 +133,7 @@ struct NewNodeData
   }
 
   void set_node_entity(double &x, double &y, double &z, 
-#ifdef BUILD_IN_SIERRA // GLAZE1
                        stk::mesh::Field<double> *field)
-#else
-                       stk::mesh::Field<double, stk::mesh::Cartesian> *field)
-#endif
   {
     this->sort_id_proc_pairs();
     stk::mesh::EntityId id_for_node = this->get_id_for_node();
@@ -200,22 +196,13 @@ class PruneMeshAPISTK : public PruneMeshAPI
 {
   
 private:
-#ifdef BUILD_IN_SIERRA
   std::shared_ptr<stk::mesh::BulkData> mBulkData;
   std::shared_ptr<stk::mesh::MetaData> mMetaData;
-#else
-  stk::mesh::BulkData *mBulkData;
-  stk::mesh::MetaData *mMetaData;
-#endif
   stk::io::StkMeshIoBroker *mIoBroker;
   stk::ParallelMachine *mComm;
   bool mLocallyOwnedBulk;
   bool mLocallyOwnedMeta;
-#ifdef BUILD_IN_SIERRA // GLAZE1
   stk::mesh::Field<double> *mCoordsField;
-#else
-  stk::mesh::Field<double, stk::mesh::Cartesian> *mCoordsField;
-#endif
   std::vector<stk::mesh::Field<double> *> mIsoFields;
   std::vector<stk::mesh::Field<double>*> mNodalFields;
   std::vector<stk::mesh::Field<double>*> mElementFields;
@@ -231,13 +218,8 @@ public:
 
   // Constructors
   PruneMeshAPISTK(stk::ParallelMachine* comm,
-#ifdef BUILD_IN_SIERRA
                 std::shared_ptr<stk::mesh::BulkData> bulk_data,
                 std::shared_ptr<stk::mesh::MetaData> meta_data,
-#else
-                stk::mesh::BulkData* bulk_data,
-                stk::mesh::MetaData* meta_data,
-#endif
                 std::string fieldname);
   PruneMeshAPISTK(stk::ParallelMachine* comm);
 
@@ -298,26 +280,16 @@ public:
   stk::mesh::EntityId entity_id(PruneHandle &h);
   void prepare_new_block();
   void get_output_fields(std::string &outputFieldsString);
-#ifdef BUILD_IN_SIERRA
   stk::mesh::MetaData* meta_data() { return mMetaData.get(); }
   stk::mesh::BulkData* bulk_data() { return mBulkData.get(); }
-#else
-  stk::mesh::MetaData* meta_data() { return mMetaData; }
-  stk::mesh::BulkData* bulk_data() { return mBulkData; }
-#endif
   bool read_exodus_mesh(std::string &meshfile, std::string &fieldname, 
                         std::string &outputFieldsString,
                         int input_file_is_spread, int time_step);
   void write_exodus_mesh(std::string &meshfile, int concatenate, int iso_only);
   void set_comm(stk::ParallelMachine* comm) { mComm = comm; }
   stk::ParallelMachine* get_comm() { return mComm; }
-#ifdef BUILD_IN_SIERRA
   void set_bulk_data_ptr(std::shared_ptr<stk::mesh::BulkData> bp) { mBulkData = bp; }
   void set_meta_data_ptr(std::shared_ptr<stk::mesh::MetaData> mp) { mMetaData = mp; }
-#else
-  void set_bulk_data_ptr(stk::mesh::BulkData *bp) { mBulkData = bp; }
-  void set_meta_data_ptr(stk::mesh::MetaData *mp) { mMetaData = mp; }
-#endif
   PruneHandle get_handle(const stk::mesh::Entity &entity) const;
   stk::mesh::Entity get_stk_entity(const PruneHandle &handle) const;
   int time_step() { return mTimeStep; };
