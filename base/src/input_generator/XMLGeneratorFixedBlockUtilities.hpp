@@ -8,6 +8,7 @@
 
 #include "Plato_FreeFunctions.hpp"
 #include "XMLGeneratorOptimizationParametersMetadata.hpp"
+#include <algorithm>
 
 namespace XMLGen
 {
