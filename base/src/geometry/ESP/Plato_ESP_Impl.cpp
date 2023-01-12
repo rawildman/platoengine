@@ -74,7 +74,8 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
             EG_deleteObject(modelT->body[ibody].etess);
         }
         std::string tCurTessName = this->mTessFileName;
-        if(tCurTessName == "")
+        if(modelT->nbody > 1)
+        //if(tCurTessName == "")
         {
             tCurTessName = "egadsTess_" + std::to_string(tCntr++) + ".eto";
         }
