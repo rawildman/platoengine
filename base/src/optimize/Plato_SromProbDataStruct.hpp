@@ -70,41 +70,25 @@ enum struct DistributionName
 template<typename ScalarType, typename OrdinalType = size_t>
 struct SromInputs
 {
-    Plato::SromInitialGuess mInitialGuess; /*!< initial guess type, options: random, uniform */
-    Plato::DistributionName mDistribution; /*!< distribution type, options: beta, normal, uniform */
+    Plato::SromInitialGuess mInitialGuess = Plato::SromInitialGuess::uniform; /*!< initial guess type, options: random, uniform */
+    Plato::DistributionName mDistribution = Plato::DistributionName::beta; /*!< distribution type, options: beta, normal, uniform */
 
-    ScalarType mMean;       /*!< distribution's mean */
-    ScalarType mVariance;   /*!< distribution's variance */
-    ScalarType mLowerBound; /*!< distribution's lower bound */
-    ScalarType mUpperBound; /*!< distribution's upper bound */
+    ScalarType mMean = 0.0;       /*!< distribution's mean */
+    ScalarType mVariance = 0.0;   /*!< distribution's variance */
+    ScalarType mLowerBound = 0.0; /*!< distribution's lower bound */
+    ScalarType mUpperBound = 0.0; /*!< distribution's upper bound */
 
-    ScalarType mMomentErrorCriterionWeight;            /*!< weight on moment misfit term in the SROM objective function */
-    ScalarType mCorrelationErrorCriterionWeight;       /*!< weight on correlation misfit term in the SROM objective function */
-    ScalarType mCumulativeDistributionFuncErrorWeight; /*!< weight on cumulative distribution function misfit term in the SROM objective function */
+    ScalarType mMomentErrorCriterionWeight = 1.0;            /*!< weight on moment misfit term in the SROM objective function */
+    ScalarType mCorrelationErrorCriterionWeight = 1.0;       /*!< weight on correlation misfit term in the SROM objective function */
+    ScalarType mCumulativeDistributionFuncErrorWeight = 1.0; /*!< weight on cumulative distribution function misfit term in the SROM objective function */
 
     OrdinalType mDimensions = 1;            /*!< random vector dimensions */
     OrdinalType mRandomSeed = 2;            /*!< random seed */
-    OrdinalType mNumSamples;                /*!< number of SROM samples */
-    OrdinalType mNumMonteCarloSamples;      /*!< number of Monte Carlo samples */
-    OrdinalType mMaxNumDistributionMoments; /*!< number of raw moments to match in the SROM optimization problem, if zero, then use default = 4 */
+    OrdinalType mNumSamples = 0;                /*!< number of SROM samples */
+    OrdinalType mNumMonteCarloSamples = 1000;      /*!< number of Monte Carlo samples */
+    OrdinalType mMaxNumDistributionMoments = 4; /*!< number of raw moments to match in the SROM optimization problem, if zero, then use default = 4 */
 
     std::string mCorrelationMatrixFilename; /*!< name of the file containing the truth correlation matrix */
-
-    SromInputs() :   // default Constructor
-        mInitialGuess(Plato::SromInitialGuess::uniform),
-        mDistribution(Plato::DistributionName::beta),
-        mMean(0.),
-        mVariance(0.),
-        mLowerBound(0.),
-        mUpperBound(0.),
-        mMomentErrorCriterionWeight(1.0),
-        mCorrelationErrorCriterionWeight(1.0),
-        mCumulativeDistributionFuncErrorWeight(1.0),
-        mNumSamples(0),
-        mNumMonteCarloSamples(1000),
-        mMaxNumDistributionMoments(4)
-    {
-    }
 };
 // struct UncertaintyInputStruct
 
