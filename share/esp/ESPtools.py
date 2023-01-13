@@ -354,6 +354,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if workflow == "aflr":
     updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
   elif workflow == "egads_tetgen":
+    #updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
     updateModelEgadsTetgenExodus(modelNameOut, paramVals)
 
   if geom != None:
@@ -397,30 +398,63 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
     elif workflow == "egads_tetgen":
       with redirected('tetgen.console'):
-        problem = pyCAPS.Problem(problemName = "ESP_Mesh",
-                           capsFile=modelNameOut,
-                           outLevel=1)
-        surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
-  
-        surface.input.Mesh_Length_Factor = 1.0;
 
-        face_sizes = problem.geometry.cfgpmtr.egadsFaceMeshSizes
-        max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
-        max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
-        surf_mesh_sizing={}
-        if hasattr(face_sizes, "__len__"): 
-          for i in range(len(face_sizes)):
-            temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
-            cur_name = "FaceSize" + str(i+1)
-            surf_mesh_sizing[cur_name] = temp
-        else:
-          temp={"tessParams":[face_sizes,max_curvature_dists,max_dihedral_angles]}
-          surf_mesh_sizing["FaceSize1"] = temp
-  
-        surface.input.Mesh_Sizing = surf_mesh_sizing
-  
+# attempt to use AFLR4
+        problem = capsProblem()
+        model = problem.loadCAPS(modelNameOut)
+        aflr4 = problem.loadAIM(aim         = "aflr4AIM",
+                            altName     = "aflr4",
+                            analysisDir = ".")
+
+        #problem = pyCAPS.Problem(problemName = "ESP_Mesh",
+        #                   capsFile=modelNameOut,
+        #                   outLevel=1)
+        #aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
+        #aflr4 = problem.loadAIM(aim         = "aflr4AIM",
+        #                    altName     = "aflr4",
+        #                    analysisDir = ".")
+#        aflr4.setAnalysisVal("Proj_Name", "ESP_Mesh")
+#        aflr4.setAnalysisVal("Mesh_Format", "ETO")
+        aflr4.setAnalysisVal("Mesh_Length_Factor", .2)
+        aflr4.setAnalysisVal("min_scale", 1)
+        aflr4.setAnalysisVal("max_scale", 1)
+        #aflr4.input.Mesh_Format = "ETO"
+        #aflr4.input.Mesh_Length_Factor = 1 
+        #aflr4.input.min_scale =  1
+        #aflr4.input.max_scale = 1
+        #aflr4.runAnalysis()
+        aflr4.preAnalysis()
+        aflr4.postAnalysis()
         volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
-        volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
+        volume.input["Surface_Mesh"].link(aflr4.output["Surface_Mesh"])
+
+
+
+# old code
+#        problem = pyCAPS.Problem(problemName = "ESP_Mesh",
+#                           capsFile=modelNameOut,
+#                           outLevel=1)
+#        surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
+#  
+#        surface.input.Mesh_Length_Factor = 1.0;
+#
+#        face_sizes = problem.geometry.cfgpmtr.egadsFaceMeshSizes
+#        max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
+#        max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
+#        surf_mesh_sizing={}
+#        if hasattr(face_sizes, "__len__"): 
+#          for i in range(len(face_sizes)):
+#            temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
+#            cur_name = "FaceSize" + str(i+1)
+#            surf_mesh_sizing[cur_name] = temp
+#        else:
+#          temp={"tessParams":[face_sizes,max_curvature_dists,max_dihedral_angles]}
+#          surf_mesh_sizing["FaceSize1"] = temp
+#  
+#        surface.input.Mesh_Sizing = surf_mesh_sizing
+#        volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
+#        volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
+  
         volume.input.Multiple_Mesh = 'MultiDomain'
         #volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
         # Equation for volume of perfectly formed tet
@@ -433,10 +467,16 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
         plato.input["Mesh"].link(volume.output["Volume_Mesh"])
         plato.preAnalysis()
         plato.postAnalysis()
-        subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
-        for file in os.listdir('./ESP_Mesh/Scratch/egads'):
-          if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
-            subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, '.'])
+
+        tokens = meshName.split('.')
+        tokens.pop()
+        etoBaseName = '.'.join(tokens) + '_'
+        subprocess.call(['cp', './mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+        cntr=0
+        for file in os.listdir('./mesh/Scratch/aflr4_aflr4AIM'):
+          if fnmatch.fnmatch(file, 'aflr4_*.eto'):
+            subprocess.call(['cp', './mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + str(cntr) + '.eto'])
+            cntr += 1
   
   
   if deleteOnExit:

@@ -63,6 +63,12 @@ template <typename ScalarType, typename ScalarVectorType>
 void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
 {
     int tCntr=0;
+    std::string tTessBaseName("");
+    if(modelT->nbody > 1)
+    {
+        std::size_t tPos = this->mTessFileName.find(".eto");
+        tTessBaseName = this->mTessFileName.substr(0, tPos);
+    }
     /* store the tessellation object in OpenCSM */
     for (int ibody=1; ibody<=modelT->nbody; ibody++)
     {
@@ -75,9 +81,8 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
         }
         std::string tCurTessName = this->mTessFileName;
         if(modelT->nbody > 1)
-        //if(tCurTessName == "")
         {
-            tCurTessName = "egadsTess_" + std::to_string(tCntr++) + ".eto";
+            tCurTessName = tTessBaseName + "_" + std::to_string(tCntr++) + ".eto";
         }
        
         auto tStatus = EG_loadTess(tBody, (char*)tCurTessName.c_str(), &modelT->body[ibody].etess);
