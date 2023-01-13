@@ -47,31 +47,22 @@
  *
  */
 
-#include <iostream>
-#include <algorithm>
-#include <sstream>
-
-#include "Plato_Exceptions.hpp"
-
 #include "Plato_OperationFactory.hpp"
-#include "Plato_Operation.hpp"
 #include "Plato_MultiOperation.hpp"
 #include "Plato_SingleOperation.hpp"
 
 #include "Plato_Parser.hpp"
-#include "Plato_Performer.hpp"
-#include "Plato_SharedData.hpp"
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
 namespace Plato {
 
 /******************************************************************************/
-Operation*
+std::unique_ptr<Operation>
 OperationFactory::create(
   const Plato::OperationInputDataMng & aOperationDataMng,
   const std::shared_ptr<Plato::Performer> aPerformer,
-  const std::vector<Plato::SharedData*>& aSharedData)
+  const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
     Plato::InputData inputNode = aOperationDataMng.get<Plato::InputData>("Input Data");
@@ -82,11 +73,11 @@ OperationFactory::create(
       
       if(tHasSubOperations == true)
       {
-        return new MultiOperation(aOperationDataMng, aPerformer, aSharedData);
+        return std::make_unique<MultiOperation>(aOperationDataMng, aPerformer, aSharedData);
       }
       else
       {
-        return new SingleOperation(aOperationDataMng, aPerformer, aSharedData);
+        return std::make_unique<SingleOperation>(aOperationDataMng, aPerformer, aSharedData);
       }
     }
     return nullptr;

@@ -50,11 +50,10 @@
 #ifndef SRC_INTERFACE_HPP_
 #define SRC_INTERFACE_HPP_
 
-#include <memory>
-
 #include <Teuchos_ParameterList.hpp>
 
 #include <mpi.h>
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -68,6 +67,8 @@
 
 #include "Plato_SerializationHeaders.hpp"
 #include "Plato_SerializationLoadSave.hpp"
+
+#include <boost/serialization/unique_ptr.hpp>
 
 namespace Plato
 {
@@ -158,8 +159,8 @@ public:
 
     // data motion
     int size(const std::string & aName) const;
-    void exportData(double* aFrom, Plato::SharedData* aTo);
-    void importData(double* aTo, Plato::SharedData* aFrom);
+    void exportData(double* aFrom, Plato::SharedData& aTo);
+    void importData(double* aTo, Plato::SharedData& aFrom);
 
     // local communicator functionality
     void getLocalComm(MPI_Comm& aLocalComm);
@@ -202,13 +203,18 @@ public:
     template<typename F>
     void tryFCatchInterfaceExceptions(const F& aF);
 
+    void setParameterOnOperation(const std::string& aStageName,
+        const std::string& aOperationName, 
+        const std::string& aParameterName,
+        double aValue);
+
 private:
-    void perform(Plato::Stage* aStage);
-    void broadcastStageIndex(int & aStageIndex);
+    void perform(Plato::Stage& aStage);
+    void broadcastStageIndex(int& aStageIndex);
 
     Plato::Stage* getStage();
-    Plato::Stage* getStage(std::string aStageName);
-    int getStageIndex(std::string aStageName) const;
+    Plato::Stage* getStage(const std::string& aStageName);
+    int getStageIndex(const std::string& aStageName) const;
 
     void updateStages();
     void createPerformers();
@@ -236,7 +242,7 @@ private:
     Plato::DataLayer* mDataLayer = nullptr;
 
     std::shared_ptr<Plato::Performer> mPerformer;
-    std::vector<Plato::Stage*> mStages;
+    std::vector<std::unique_ptr<Plato::Stage>> mStages;
 
     Plato::ExceptionHandler* mExceptionHandler = nullptr;
 

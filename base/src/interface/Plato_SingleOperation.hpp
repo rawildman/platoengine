@@ -69,21 +69,21 @@ class OperationInputDataMng;
 /*!
  */
 class SingleOperation : public Operation
-{   
+{
 public:
     SingleOperation() = default;
     SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<Plato::Performer> aPerformer,
-                    const std::vector<Plato::SharedData*>& aSharedData);
+                    const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     void update(const ::Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<::Plato::Performer> aPerformer,
-                const std::vector<::Plato::SharedData*>& aSharedData) override;
+                const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData) override;
 
 private:
     void initialize(const ::Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<::Plato::Performer> aPerformer,
-                    const std::vector<::Plato::SharedData*>& aSharedData);
+                    const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
     void computeImpl() override;
     void setComputeFunctionOnNewPerformer() override;
 

@@ -79,15 +79,15 @@ public:
     MultiOperation() = default;
     MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                    const std::shared_ptr<Plato::Performer> aPerformer,
-                   const std::vector<Plato::SharedData*>& aSharedData);
+                   const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     void update(const Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<Plato::Performer> aPerformer,
-                const std::vector<Plato::SharedData*>& aSharedData) override;
+                const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData) override;
 
     void initialize(const Plato::OperationInputDataMng & aOperationDataMng,
                     const std::shared_ptr<Plato::Performer> aPerformer,
-                    const std::vector<Plato::SharedData*>& aSharedData);
+                    const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 };
 
 } // End namespace Plato

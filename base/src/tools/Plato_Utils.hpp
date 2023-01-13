@@ -42,6 +42,7 @@
 #ifndef PLATO_UTILS_H
 #define PLATO_UTILS_H
 
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <unistd.h>
@@ -114,14 +115,14 @@ struct NamedType
 
 /************* byName **************/
 template <typename T>
-T* Plato::Utils::byName(const std::vector<T*> & aArgumentVector, const std::string & aName)
+T Plato::Utils::byName(const std::vector<T> & aArgumentVector, const std::string & aName)
 {
-  for( T* item : aArgumentVector ){
-    if( item->myName() == aName ){
-      return item;
-    }
-  }
-  return nullptr;
+  const auto tItemIter = std::find_if(aArgumentVector.cbegin(), aArgumentVector.cend(), 
+  [&aName](const T& aItem)
+  {
+    return aItem->myName() == aName;
+  });
+  return tItemIter == aArgumentVector.cend() ? nullptr : *tItemIter;
 }
 /************* byName **************/
 

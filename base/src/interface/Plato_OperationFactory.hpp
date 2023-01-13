@@ -63,18 +63,14 @@ class SharedData;
 class Operation;
 class OperationInputDataMng;
 
-//! Performer with input and output shared fields.
-/*!
- */
-class OperationFactory
+namespace OperationFactory
 {
-public:
-    Operation*
-    create(const Plato::OperationInputDataMng & aOperationDataMng,
-           const std::shared_ptr<Plato::Performer> aPerformer,
-           const std::vector<Plato::SharedData*>& aSharedData);
-};
-
+//! Performer with input and output shared fields.
+std::unique_ptr<Operation>
+create(const Plato::OperationInputDataMng & aOperationDataMng,
+       const std::shared_ptr<Plato::Performer> aPerformer,
+       const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
+}
 } // End namespace Plato
 
 #endif

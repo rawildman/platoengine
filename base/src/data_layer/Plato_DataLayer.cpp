@@ -78,17 +78,17 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
         std::string tMyName = aSharedDataInfo.getSharedDataName(tIndex);
         std::string tMyLayout = aSharedDataInfo.getSharedDataLayout(tIndex);
 
-        SharedData* tNewData = nullptr;
+        std::shared_ptr<SharedData> tNewData;
         if(tMyLayout == "NODAL FIELD" )
         {
             const Plato::communication::broadcast_t tBroadcastType = aSharedDataInfo.getMyBroadcast(tIndex);
-            tNewData = new Plato::SharedField(tMyName, tBroadcastType, aCommData,  Plato::data::layout_t::SCALAR_FIELD);
+            tNewData = std::make_shared<SharedField>(tMyName, tBroadcastType, aCommData,  Plato::data::layout_t::SCALAR_FIELD);
         }
         else
         if(tMyLayout == "ELEMENT FIELD")
         {
             const Plato::communication::broadcast_t tBroadcastType = aSharedDataInfo.getMyBroadcast(tIndex);
-            tNewData = new Plato::SharedField(tMyName, tBroadcastType, aCommData, Plato::data::layout_t::ELEMENT_FIELD);
+            tNewData = std::make_shared<SharedField>(tMyName, tBroadcastType, aCommData, Plato::data::layout_t::ELEMENT_FIELD);
         }
         else
         if(tMyLayout == "GLOBAL")
@@ -96,8 +96,19 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
             const int tSize = aSharedDataInfo.getSharedDataSize(tMyName);
             const int tIsDynamic = aSharedDataInfo.getSharedDataDynamic(tMyName);
             assert(tSize > static_cast<int>(0));
-            std::vector<std::string> tMyProviderNames = aSharedDataInfo.getProviderNames(tIndex);
-            tNewData = new Plato::SharedValue(tMyName, tMyProviderNames, aCommData, tSize, tIsDynamic);
+            const std::vector<std::string>& tMyProviderNames = aSharedDataInfo.getProviderNames(tIndex);
+            tNewData = std::make_shared<SharedValue>(tMyName, tMyProviderNames, aCommData, Plato::data::layout_t::SCALAR, tSize, tIsDynamic);
+        }
+        else
+        if(tMyLayout == "PARAMETER")
+        {
+            const int tSize = aSharedDataInfo.getSharedDataSize(tMyName);
+            if(tSize != 1)
+            {
+                std::cout << "Warning: Shared data parameter " << tMyName << " requested size " << tSize << ", but must be size 1." << std::endl;
+            }
+            const std::vector<std::string>& tMyProviderNames = aSharedDataInfo.getProviderNames(tIndex);
+            tNewData = std::make_shared<SharedValue>(tMyName, tMyProviderNames, aCommData, Plato::data::layout_t::SCALAR_PARAMETER);
         }
         else
         {
@@ -113,25 +124,15 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
 }
 
 /******************************************************************************/
-DataLayer::~DataLayer()
-/******************************************************************************/
-{
-    for(auto& tSharedData : mSharedData)
-    {
-        delete tSharedData;
-    }
-    mSharedData.clear();
-    mSharedDataMap.clear();
-}
-
-/******************************************************************************/
-SharedData* DataLayer::getSharedData(const std::string & aName) const
+SharedData& DataLayer::getSharedData(const std::string & aName) const
 /******************************************************************************/
 {
     auto tIterator = mSharedDataMap.find(aName);
     if(tIterator != mSharedDataMap.end())
     {
-        return tIterator->second;
+        std::shared_ptr<SharedData> tData = tIterator->second.lock();
+        assert(tData);
+        return *tData;
     }
     else
     {
@@ -142,7 +143,7 @@ SharedData* DataLayer::getSharedData(const std::string & aName) const
 }
 
 /******************************************************************************/
-const std::vector<SharedData*> & DataLayer::getSharedData() const
+const std::vector<std::shared_ptr<SharedData>> & DataLayer::getSharedData() const
 /******************************************************************************/
 {
     return mSharedData;
@@ -152,7 +153,7 @@ const std::vector<SharedData*> & DataLayer::getSharedData() const
 void DataLayer::initializeMPI(const Plato::CommunicationData& aCommData)
 /******************************************************************************/
 {
-    for(auto tSharedData : mSharedData)
+    for(auto& tSharedData : mSharedData)
     {
         tSharedData->initializeMPI(aCommData);
     }

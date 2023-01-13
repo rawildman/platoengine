@@ -68,10 +68,10 @@ namespace Plato {
 MultiOperation::
 MultiOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                const std::shared_ptr<Plato::Performer> aPerformer,
-               const std::vector<Plato::SharedData*>& aSharedData)
+               const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
-    this->initialize(aOperationDataMng, aPerformer, aSharedData);
+    initialize(aOperationDataMng, aPerformer, aSharedData);
 }
 
 /******************************************************************************/
@@ -79,7 +79,7 @@ void
 MultiOperation::
 initialize(const Plato::OperationInputDataMng & aOperationDataMng,
            const std::shared_ptr<Plato::Performer> aPerformer,
-           const std::vector<Plato::SharedData*>& aSharedData)
+           const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
     // Clear local data
@@ -110,8 +110,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
             {
                 auto tArgName  = Plato::Get::String(tParamData,"ArgumentName");
                 auto tArgValue = Plato::Get::Double(tParamData,"ArgumentValue");
-                m_parameters.insert(
-                  std::pair<std::string, Parameter*>(tArgName, new Parameter(tArgName, m_operationName, tArgValue)));
+                m_parameters.insert({tArgName, std::make_unique<Parameter>(tArgName, m_operationName, tArgValue)});
             }
         }
     }
@@ -128,13 +127,10 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
         {
             const std::string & tSharedDataName =
               aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
-            Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+            std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
-                if(std::count(m_inputData.begin(), m_inputData.end(), tSharedData) == 0)
-                {
-                    m_inputData.push_back(tSharedData);
-                }
+                addIfDoesNotExist(tSharedData, m_inputData);
             }
             else
             {
@@ -150,13 +146,10 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
         {
             const std::string & tSharedDataName =
               aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
-            Plato::SharedData *tSharedData = Utils::byName(aSharedData, tSharedDataName);
+            std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tSharedDataName);
             if(tSharedData != nullptr)
             {
-                if(std::count(m_outputData.begin(), m_outputData.end(), tSharedData) == 0)
-                {
-                    m_outputData.push_back(tSharedData);
-                }
+                addIfDoesNotExist(tSharedData, m_outputData);
             }
             else
             {
@@ -194,7 +187,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
             {
                 const std::string & tArgumentName = aOperationDataMng.getInputArgument(tPerformerName, tInputIndex);
                 const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(tPerformerName, tInputIndex);
-                for(Plato::SharedData* tSharedData : m_inputData)
+                for(const auto& tSharedData : m_inputData)
                 {
                     if(tSharedData->myName() == tSharedDataName)
                     {
@@ -210,7 +203,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
             {
                 const std::string & tArgumentName = aOperationDataMng.getOutputArgument(tPerformerName, tOutputIndex);
                 const std::string & tSharedDataName = aOperationDataMng.getOutputSharedData(tPerformerName, tOutputIndex);
-                for(Plato::SharedData* tSharedData : m_outputData)
+                for(const auto& tSharedData : m_outputData)
                 {
                     if(tSharedData->myName() == tSharedDataName)
                     {
@@ -229,13 +222,12 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
 void MultiOperation::
 update(const Plato::OperationInputDataMng & aOperationDataMng,
        const std::shared_ptr<Plato::Performer> aPerformer,
-       const std::vector<Plato::SharedData*>& aSharedData)
+       const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
     // If the shared data is recreated then the operation must be
     // updated so to have the new links to the shared data.
-
-    this->initialize(aOperationDataMng, aPerformer, aSharedData);
+    initialize(aOperationDataMng, aPerformer, aSharedData);
 }
 
 } // End namespace Plato

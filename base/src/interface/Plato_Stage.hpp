@@ -54,6 +54,8 @@
 #include <vector>
 #include <memory>
 
+#include <boost/serialization/shared_ptr.hpp>
+
 #include "Plato_Operation.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_SerializationHeaders.hpp"
@@ -66,21 +68,17 @@ class StageInputDataMng;
 //! Sequence of Operations that correspond to a call to Plato::Interface::compute()
 /*!
  */
-class Stage
+class Stage final
 {
 public:
     Stage() = default;
     Stage(const Plato::StageInputDataMng & aStageInputData,
           const std::shared_ptr<Plato::Performer> aPerformer,
-          const std::vector<Plato::SharedData*>& aSharedData);
-    ~Stage();
+          const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     void update(const Plato::StageInputDataMng & aStageInputData,
 		const std::shared_ptr<Plato::Performer> aPerformer,
-
-		const std::vector<Plato::SharedData*>& aSharedData);
-
-    void addOperation(Operation* aOperation);
+		const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     Plato::Operation* getNextOperation();
     void begin();
@@ -106,14 +104,17 @@ public:
         aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
+    void setParameterOnOperation(const std::string& aOperationName, 
+        const std::string& aParameterName,
+        double aValue);
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                              const std::vector<Plato::SharedData*>& aSharedData);
+                              const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     std::string m_name;
-    std::vector<Plato::Operation*> m_operations;
-    std::vector<Plato::SharedData*> m_inputData;
-    std::vector<Plato::SharedData*> m_outputData;
+    std::vector<std::unique_ptr<Operation>> m_operations;
+    std::vector<std::shared_ptr<Plato::SharedData>> m_inputData;
+    std::vector<std::shared_ptr<Plato::SharedData>> m_outputData;
 
     int currentOperationIndex = 0;
 };

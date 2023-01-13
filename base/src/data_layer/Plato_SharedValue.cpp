@@ -184,15 +184,32 @@ std::string SharedValue::myName() const
 
 /******************************************************************************/
 Plato::data::layout_t SharedValue::myLayout() const
+/******************************************************************************/
 {
     return mMyLayout;
+}
+
+/******************************************************************************/
+std::string SharedValue::myContext() const
+/******************************************************************************/
+{
+    return mMyContext;
+}
+
+/******************************************************************************/
+void SharedValue::setMyContext(std::string aContext)
+/******************************************************************************/
+{
+    mMyContext = std::move(aContext);
 }
 
 /*****************************************************************************/
 SharedValue::SharedValue(const std::string & aMyName,
                          const std::vector<std::string> & aProviderNames,
                          const Plato::CommunicationData & aCommData,
-                         int aSize, bool aIsDynamic) :
+                         const data::layout_t aLayout,
+                         const int aSize, 
+                         const bool aIsDynamic) :
         mMyName(aMyName),
         mProviderNames(aProviderNames),
         mLocalCommName(aCommData.mLocalCommName),
@@ -201,7 +218,7 @@ SharedValue::SharedValue(const std::string & aMyName,
         mNumData(aSize),
         mIsDynamic(aIsDynamic),
         mData(std::vector<double>(aSize)),
-        mMyLayout(Plato::data::layout_t::SCALAR)
+        mMyLayout(aLayout)
 /*****************************************************************************/
 {
 }

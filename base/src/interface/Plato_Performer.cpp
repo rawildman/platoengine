@@ -131,7 +131,7 @@ Application * Performer::getApplication() const
     return mApplication;
 }
 
-std::string Performer::myName()
+const std::string& Performer::myName()
 {
     return mName;
 }

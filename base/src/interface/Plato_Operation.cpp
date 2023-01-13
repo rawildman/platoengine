@@ -58,10 +58,6 @@
 #include "Plato_Utils.hpp"
 #include "Plato_OperationInputDataMng.hpp"
 
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-BOOST_CLASS_EXPORT_IMPLEMENT(Plato::Operation::Parameter)
-
 namespace Plato {
 
 /******************************************************************************/
@@ -69,20 +65,17 @@ void
 Operation::
 addArgument(const std::string & tArgumentName,
             const std::string & tSharedDataName,
-            const std::vector<Plato::SharedData*>& aSharedData,
-            std::vector<SharedData*>& aLocalData)
+            const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData,
+            std::vector<std::shared_ptr<SharedData>>& aLocalData)
 /******************************************************************************/
 {
     bool tFoundData = false;
-    for(Plato::SharedData* tSharedData : aSharedData)
+    for(const auto& tSharedData : aSharedData)
     {
         if(tSharedData->myName() == tSharedDataName)
         {
-            m_argumentNames.insert(std::pair<std::string, std::string>(tSharedDataName, tArgumentName));
-            if(std::count(aLocalData.begin(), aLocalData.end(), tSharedData) == 0)
-            {
-                aLocalData.push_back(tSharedData);
-            }
+            m_argumentNames.insert({tSharedDataName, tArgumentName});
+            addIfDoesNotExist(tSharedData, aLocalData);
             tFoundData = true;
             break;
         }
@@ -95,13 +88,27 @@ addArgument(const std::string & tArgumentName,
     }
 }
 
+void Operation::addIfDoesNotExist(const std::shared_ptr<Plato::SharedData>& aDataToAdd,
+        std::vector<std::shared_ptr<Plato::SharedData>>& aLocalData)
+{
+    const bool tDataExists = std::any_of(aLocalData.cbegin(), aLocalData.cend(), 
+    [&aDataToAdd](const std::shared_ptr<SharedData>& aCurData)
+    { 
+      return aCurData == aDataToAdd;
+    });
+    if(!tDataExists)
+    {
+      aLocalData.push_back(aDataToAdd);
+    }
+}
+
 /******************************************************************************/
 void
 Operation::
 sendInput()
 /******************************************************************************/
 {
-  for( SharedData* sd : m_inputData )
+  for( auto& sd : m_inputData )
     sd->transmitData();
 }
 
@@ -111,8 +118,20 @@ Operation::
 sendOutput()
 /******************************************************************************/
 {
-  for( SharedData* sd : m_outputData )
+  for( auto& sd : m_outputData )
     sd->transmitData();
+}
+
+/******************************************************************************/
+void 
+Operation::
+sendParameters()
+/******************************************************************************/
+{
+  for( const auto& sd : m_parameters)
+  {
+    sd.second->transmitData();
+  }
 }
 
 /******************************************************************************/
@@ -122,9 +141,10 @@ getInputDataNames() const
 /******************************************************************************/
 {
   std::vector<std::string> names;
-  for(SharedData* sf : m_inputData)
+  for(const auto& sf : m_inputData)
+  {
     names.push_back(sf->myName());
-
+  }
   return names;
 }
 
@@ -135,9 +155,10 @@ getOutputDataNames() const
 /******************************************************************************/
 {
   std::vector<std::string> names;
-  for(SharedData* sf : m_outputData)
+  for(const auto& sf : m_outputData)
+  {
     names.push_back(sf->myName());
-
+  }
   return names;
 }
 
@@ -149,9 +170,9 @@ compute()
 {
   if(m_performer)
   {
-     for( auto p : m_parameters )
+     for( const auto& p : m_parameters )
      {
-       m_performer->importData(p.first, *(p.second));
+        m_performer->importData(p.first, *(p.second));
      }
      computeImpl();
   }
@@ -169,13 +190,13 @@ computeImpl()
 /******************************************************************************/
 void
 Operation::
-importData(std::string aSharedDataName, SharedData* aImportData)
+importData(const std::string& aSharedDataName, SharedData& aImportData)
 /******************************************************************************/
 {
   if(m_performer){
     auto range = m_argumentNames.equal_range(aSharedDataName);
     for( auto it = range.first; it != range.second; ++it ){
-      m_performer->importData(it->second, *aImportData);
+      m_performer->importData(it->second, aImportData);
     }
   }
 }
@@ -183,13 +204,13 @@ importData(std::string aSharedDataName, SharedData* aImportData)
 /******************************************************************************/
 void
 Operation::
-exportData(std::string aSharedDataName, SharedData* aExportData)
+exportData(const std::string& aSharedDataName, SharedData& aExportData)
 /******************************************************************************/
 {
   if(m_performer){
     auto range = m_argumentNames.equal_range(aSharedDataName);
     for( auto it = range.first; it != range.second; ++it ){
-      m_performer->exportData(it->second, *aExportData);
+      m_performer->exportData(it->second, aExportData);
     }
   }
 }
@@ -208,7 +229,7 @@ getPerformerName() const
 }
 
 /******************************************************************************/
-std::string
+const std::string&
 Operation::
 getOperationName() const
 /******************************************************************************/
@@ -228,4 +249,21 @@ void Operation::setPerformer(std::shared_ptr<Performer> aPerformer)
     }
 }
 
+/******************************************************************************/
+bool Operation::hasParameter(const std::string& aParamName)
+/******************************************************************************/
+{
+    return m_parameters.count(aParamName) > 0;
+}
+
+/******************************************************************************/
+void Operation::setParameterValue(const std::string& aParamName, const double aParamValue)
+/******************************************************************************/
+{
+    //m_parameters.at(aParamName)->setData({1,aParamValue});
+    m_parameters.at(aParamName)->setData({aParamValue});
+}
+
+/******************************************************************************/
+/******************************************************************************/
 } // End namespace Plato
