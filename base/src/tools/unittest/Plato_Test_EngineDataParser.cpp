@@ -59,7 +59,8 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerData)
   "  <UpperBoundVectorName>Upper Bound Vector</UpperBoundVectorName>\n"
   "  <SetLowerBoundsStage>Set Lower Bounds</SetLowerBoundsStage>\n"
   "  <SetUpperBoundsStage>Set Upper Bounds</SetUpperBoundsStage>\n"
-  "  <StochasticParametersName>Stochastic Parameters</StochasticParametersName>\n"
+  "  <StochasticParameterName>Stochastic Parameter 0</StochasticParameterName>\n"
+  "  <StochasticParameterName>Stochastic Parameter 1</StochasticParameterName>\n"
   "</OptimizationVariables>\n";
 
   const Plato::PugiParser tParser;
@@ -78,6 +79,66 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerData)
   EXPECT_EQ(tEngineData.getUpperBoundVectorName(), "Upper Bound Vector"); // UpperBoundVectorName
   EXPECT_EQ(tEngineData.getSetLowerBoundsStageName(), "Set Lower Bounds"); // SetLowerBoundsStage
   EXPECT_EQ(tEngineData.getSetUpperBoundsStageName(), "Set Upper Bounds"); // SetUpperBoundsStage
-  EXPECT_EQ(tEngineData.getStochasticParametersName(), "Stochastic Parameters");
+  EXPECT_EQ(tEngineData.getStochasticParameterNames().size(), 2);
+  EXPECT_EQ(tEngineData.getStochasticParameterNames().front(), "Stochastic Parameter 0");
+  EXPECT_EQ(tEngineData.getStochasticParameterNames().back(), "Stochastic Parameter 1");
 }
+
+TEST(PlatoTestEngineDataParser, ParseObjectiveData)
+{
+  const std::string tInput =
+  "<Objective>\n"
+  "  <GradientName>one fish</GradientName>\n"
+  "  <GradientStageName>two fish</GradientStageName>\n"
+  "  <GradientParametersOperationName>red fish</GradientParametersOperationName>\n"
+  
+  "  <ValueName>blue fish</ValueName>\n"
+  "  <ValueStageName>old fish</ValueStageName>\n"
+  "  <ValueParametersOperationName>new fish</ValueParametersOperationName>\n"
+
+  "  <HessianName>Some are fast</HessianName>\n"
+  "  <HessianStageName>Some are slow</HessianStageName>\n"
+  "  <HessianParametersOperationName>Not one of them is like another</HessianParametersOperationName>\n"
+  "</Objective>\n";
+
+  const Plato::PugiParser tParser;
+  const Plato::InputData tInputData = tParser.parseString(tInput);
+  auto tObjectiveNode = tInputData.get<Plato::InputData>("Objective");
+
+  Plato::OptimizerEngineStageData tEngineData;
+  Plato::Parse::parseObjectiveStagesData(tObjectiveNode, tEngineData);
+
+  EXPECT_EQ(tEngineData.getObjectiveGradientOutputName(), "one fish");
+  EXPECT_EQ(tEngineData.getObjectiveGradientStageName(), "two fish");
+  EXPECT_EQ(tEngineData.getObjectiveGradientParametersOperationName(), "red fish");
+
+  EXPECT_EQ(tEngineData.getObjectiveValueOutputName(), "blue fish");
+  EXPECT_EQ(tEngineData.getObjectiveValueStageName(), "old fish");
+  EXPECT_EQ(tEngineData.getObjectiveValueParametersOperationName(), "new fish");
+
+  EXPECT_EQ(tEngineData.getObjectiveHessianOutputName(), "Some are fast");
+  EXPECT_EQ(tEngineData.getObjectiveHessianStageName(), "Some are slow");
+  EXPECT_EQ(tEngineData.getObjectiveHessianParametersOperationName(), "Not one of them is like another");
+}
+
+TEST(PlatoTestEngineDataParser, ParseOptimizerOptions)
+{
+  const std::string tInput =
+  "<Options>\n"
+  "  <InputFileName>Max</InputFileName>\n"
+  "  <ROLStochasticDistributionsFile>Carol</ROLStochasticDistributionsFile>\n"
+  "  <ROLStochasticNumberOfSamples>42</ROLStochasticNumberOfSamples>\n"
+  "<Options>\n";
+
+  const Plato::PugiParser tParser;
+  const Plato::InputData tInputData = tParser.parseString(tInput);
+
+  Plato::OptimizerEngineStageData tEngineData;
+  Plato::Parse::parseOptimizerOptions(tInputData, tEngineData);
+
+  EXPECT_EQ(tEngineData.getInputFileName(), "Max");
+  EXPECT_EQ(tEngineData.getROLStochasticDistributionsFile(), "Carol");
+  EXPECT_EQ(tEngineData.getROLStochasticNumberOfSamples(), 42);
+}
+
 } // end PlatoTestInputData namespace

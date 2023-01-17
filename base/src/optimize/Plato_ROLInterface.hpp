@@ -48,6 +48,7 @@
 #include "ROL_Solver.hpp"
 
 #include "Plato_ReducedObjectiveROL.hpp"
+#include "Plato_ReducedStochasticObjectiveROL.hpp"
 #include "Plato_ReducedConstraintROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
 
@@ -72,12 +73,12 @@ public:
         mOutputBuffer = getOutputBuffer();
     }
 
-    Plato::optimizer::algorithm_t algorithm() const
+    Plato::optimizer::algorithm_t algorithm() const override
     {
         return mAlgorithmType;
     }
 
-    void run()
+    void run() override
     {
         this->initialize();
         constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
@@ -127,8 +128,7 @@ public:
         this->finalize();
     }
 
-private:
-    std::ofstream mOutputFile;
+protected:
     std::streambuf *getOutputBuffer() 
     {
         int tMyRank = -1;
@@ -211,11 +211,6 @@ private:
         this->printControl(aOptimizationProblem);
     }
     
-protected:
-
-    std::streambuf *mOutputBuffer;
-    Plato::optimizer::algorithm_t mAlgorithmType;
-
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     {
         int tMyRank = -1;
@@ -387,10 +382,17 @@ protected:
      * @brief All optimizing is done so do any optional final
      * stages. Called only once from the interface.
     **********************************************************************************/
-    void finalize()
+    void finalize() override
     {
         this->mInterface->finalize(this->mInputData.getFinalizationStageName());
     }
+
+protected:
+    std::ofstream mOutputFile;
+
+private:
+    std::streambuf *mOutputBuffer;
+    Plato::optimizer::algorithm_t mAlgorithmType;
 };
 
 } // namespace Plato

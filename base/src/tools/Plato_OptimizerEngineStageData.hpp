@@ -62,7 +62,6 @@ class OptimizerEngineStageData : public Plato::InputData
 {
 public:
     OptimizerEngineStageData();
-    ~OptimizerEngineStageData();
 
     void setCheckGradient(const bool & aInput);
     void setCheckHessian(const bool & aInput);
@@ -183,6 +182,11 @@ public:
     void setROLCheckGradientSteps(const int & aInput);
     int getROLCheckGradientSeed() const;
     void setROLCheckGradientSeed(const int & aInput);
+
+    const std::string& getROLStochasticDistributionsFile() const;
+    void setROLStochasticDistributionsFile(std::string aInput);
+    int getROLStochasticNumberOfSamples() const;
+    void setROLStochasticNumberOfSamples(int aInput);
 
     /******************************************************************************//**
      * @brief Return limited memory storage capacity for LBFG Hessian method
@@ -310,20 +314,26 @@ public:
     std::vector<std::string> getUpdateProblemStageNames() const;
     void setUpdateProblemStageNames(const std::vector<std::string> & aInput);
 
-    std::string  getObjectiveValueOutputName() const;
+    const std::string& getObjectiveValueOutputName() const;
     void setObjectiveValueOutputName(const std::string & aInput);
-    std::string  getObjectiveValueStageName() const;
+    const std::string& getObjectiveValueStageName() const;
     void setObjectiveValueStageName(const std::string & aInput);
+    const std::string& getObjectiveValueParametersOperationName() const;
+    void setObjectiveValueParametersOperationName(std::string aInput);
 
-    std::string getObjectiveHessianOutputName() const;
+    const std::string& getObjectiveHessianOutputName() const;
     void setObjectiveHessianOutputName(const std::string & aInput);
-    std::string  getObjectiveHessianStageName() const;
+    const std::string& getObjectiveHessianStageName() const;
     void setObjectiveHessianStageName(const std::string & aInput);
+    const std::string& getObjectiveHessianParametersOperationName() const;
+    void setObjectiveHessianParametersOperationName(std::string aInput);
 
-    std::string getObjectiveGradientOutputName() const;
+    const std::string& getObjectiveGradientOutputName() const;
     void setObjectiveGradientOutputName(const std::string & aInput);
-    std::string getObjectiveGradientStageName() const;
+    const std::string& getObjectiveGradientStageName() const;
     void setObjectiveGradientStageName(const std::string & aInput);
+    const std::string& getObjectiveGradientParametersOperationName() const;
+    void setObjectiveGradientParametersOperationName(std::string aInput);
 
     std::string getInitializationStageName() const;
     void setInitializationStageName(const std::string & aInput);
@@ -331,8 +341,8 @@ public:
     std::string getInitialControlDataName() const;
     void setInitialControlDataName(const std::string & aInput);
 
-    const std::string& getStochasticParametersName() const;
-    void setStochasticParametersName(std::string aInput);
+    const std::vector<std::string>& getStochasticParameterNames() const;
+    void setStochasticParameterNames(std::vector<std::string> aInput);
 
     /******************************************************************************//**
      * @brief Return finalization stage name: stage responsible for writing output files
@@ -523,6 +533,9 @@ public:
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSteps",mROLCheckGradientSteps);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSeed",mROLCheckGradientSeed);
 
+      aArchive & boost::serialization::make_nvp("ROLStochasticDistributionsFile",mROLStochasticDistributionsFile);
+      aArchive & boost::serialization::make_nvp("ROLStochasticNumberOfSamples",mROLStochasticNumberOfSamples);
+
       aArchive & boost::serialization::make_nvp("InitialMovingAsymptoteScaleFactor",mInitialMovingAsymptoteScaleFactor);
       aArchive & boost::serialization::make_nvp("GCMMAInnerKKTTolerance",mGCMMAInnerKKTTolerance);
       aArchive & boost::serialization::make_nvp("CCSAOuterKKTTolerance",mCCSAOuterKKTTolerance);
@@ -573,7 +586,10 @@ public:
       aArchive & boost::serialization::make_nvp("ObjectiveValueStageName",mObjectiveValueStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveGradientStageName",mObjectiveGradientStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveHessianStageName",mObjectiveHessianStageName);
-      aArchive & boost::serialization::make_nvp("StochasticParametersName",mStochasticParametersName);
+      aArchive & boost::serialization::make_nvp("ObjectiveValueParametersOperationName",mObjectiveValueParametersOperationName);
+      aArchive & boost::serialization::make_nvp("ObjectiveGradientParametersOperationName",mObjectiveGradientParametersOperationName);
+      aArchive & boost::serialization::make_nvp("ObjectiveHessianParametersOperationName",mObjectiveHessianParametersOperationName);
+      aArchive & boost::serialization::make_nvp("StochasticParametersNames",mStochasticParametersNames);
       
       aArchive & boost::serialization::make_nvp("InitialGuess",mInitialGuess);
       aArchive & boost::serialization::make_nvp("LowerBoundValues",mLowerBoundValues);
@@ -616,6 +632,8 @@ private:
     int mKSMaxTrustRegionIterations;
     int mROLCheckGradientSteps;
     int mROLCheckGradientSeed;
+    std::string mROLStochasticDistributionsFile = "distributions.xml";
+    int mROLStochasticNumberOfSamples = 3;
 
     double mInitialMovingAsymptoteScaleFactor;
     double mGCMMAInnerKKTTolerance;
@@ -668,7 +686,10 @@ private:
     std::string mObjectiveValueStageName;
     std::string mObjectiveGradientStageName;
     std::string mObjectiveHessianStageName;
-    std::string mStochasticParametersName;
+    std::string mObjectiveValueParametersOperationName;
+    std::string mObjectiveGradientParametersOperationName;
+    std::string mObjectiveHessianParametersOperationName;
+    std::vector<std::string> mStochasticParametersNames;
 
     std::vector<double> mInitialGuess;
     std::vector<double> mLowerBoundValues;

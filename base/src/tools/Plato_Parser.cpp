@@ -1206,7 +1206,8 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.addDescentDirectionName(tDescentDirectionName);
     }
-    aOptimizerEngineStageData.setStochasticParametersName(Get::String(tOptimizationVariablesNode, "StochasticParametersName"));
+    aOptimizerEngineStageData.setStochasticParameterNames(
+        tOptimizationVariablesNode.getByName<std::string>("StochasticParameterName"));
 }
 
 /******************************************************************************/
@@ -1379,6 +1380,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
+    aOptimizerStageData.setObjectiveValueParametersOperationName(Plato::Get::String(aObjectiveNode, "ValueParametersOperationName"));
 
     std::string tOutputSharedDataGradientName = Plato::Get::String(aObjectiveNode, "GradientName");
     std::string tObjectiveGradientStageName = Plato::Get::String(aObjectiveNode, "GradientStageName");
@@ -1394,6 +1396,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << __LINE__ << ", MESSAGE: USER DID NOT DEFINE OBJECTIVE FUNCTION OUTPUT SHARED DATA OR ITS STAGE NAME. " << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
+    aOptimizerStageData.setObjectiveGradientParametersOperationName(Plato::Get::String(aObjectiveNode, "GradientParametersOperationName"));
 
     std::string tOutputSharedDataHessianName = Plato::Get::String(aObjectiveNode, "HessianName");
     std::string tObjectiveHessianStageName = Plato::Get::String(aObjectiveNode, "HessianStageName");
@@ -1402,6 +1405,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
         aOptimizerStageData.setObjectiveHessianStageName(tObjectiveHessianStageName);
         aOptimizerStageData.setObjectiveHessianOutputName(tOutputSharedDataHessianName);
     }
+    aOptimizerStageData.setObjectiveHessianParametersOperationName(Plato::Get::String(aObjectiveNode, "HessianParametersOperationName"));
 }
 
 /******************************************************************************/
@@ -1649,6 +1653,14 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
         {
             bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
             aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
+        }
+        if( tOptionsNode.size<std::string>("ROLStochasticDistributionsFile"))
+        {
+            aOptimizerEngineStageData.setROLStochasticDistributionsFile(Get::String(tOptionsNode, "ROLStochasticDistributionsFile"));
+        }
+        if( tOptionsNode.size<std::string>("ROLStochasticNumberOfSamples"))
+        {
+            aOptimizerEngineStageData.setROLStochasticNumberOfSamples(Get::Int(tOptionsNode, "ROLStochasticNumberOfSamples"));
         }
     }
 }
