@@ -360,7 +360,7 @@ void append_chain_rule_operation_to_plato_main_operation
 {
     if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
-        if(aXMLMetaData.optimization_parameters().esp_workflow() != "aflr")
+        if(aXMLMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
         {
             auto tOperationNode = aDocument.append_child("Operation");
             XMLGen::append_children({"Name","Function"}, {"Chain Rule","ChainRule"}, tOperationNode);

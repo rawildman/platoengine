@@ -302,14 +302,15 @@ void append_gradient_based_criterion_shared_data
         }
         else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
-            if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+            if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
             {
                 tTag = std::string("Criterion Gradient - ") + tIdentifierString;
                 tValues = { tTag, "Scalar", "Global", aMetaData.optimization_parameters().num_shape_design_variables(), tOwnerName, tFirstPlatoMainPerformer };
                 tSharedDataNode = aDocument.append_child("SharedData");
                 XMLGen::append_children(tKeys, tValues, tSharedDataNode);
             }
-            else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+            else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen" ||
+                    aMetaData.optimization_parameters().esp_workflow() == "aflr4_tetgen")
             {
                 tKeys = { "Name", "Type", "Layout", "Dynamic", "OwnerName", "UserName" };
                 tTag = std::string("Criterion GradientX - ") + tIdentifierString;
@@ -323,6 +324,10 @@ void append_gradient_based_criterion_shared_data
                             tFirstPlatoMainPerformer };
                 tSharedDataNode = aDocument.append_child("SharedData");
                 XMLGen::append_children(tKeys, tValues, tSharedDataNode);
+            }
+            else
+            {
+                THROWERR("Unrecognized type of esp workflow in append_gradient_based_criterion_shared_data().")
             }
         }
     }

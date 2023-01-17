@@ -41,7 +41,7 @@ void append_criterion_gradient_operation
 {
     auto tOperationNode = aDocument.append_child("Operation");
     XMLGen::append_children({"Name"}, {"Compute Criterion Gradient"}, tOperationNode);
-    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
     {
         auto tOutputNode = tOperationNode.append_child("OutputGradient");
         XMLGen::append_children({"Name"}, {"Criterion Gradient"}, tOutputNode);
@@ -60,7 +60,7 @@ void add_operations_gradient_based_problem
 //    XMLGen::append_version_entry(aDocument);
     append_criterion_value_operation(aDocument);
     append_criterion_gradient_operation(aMetaData, aDocument);
-    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
     {
         append_criterion_gradient_wrt_CAD_parameters(aDocument);
     }

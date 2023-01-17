@@ -946,15 +946,13 @@ void append_boundary_block
 void append_contact_block(const XMLGen::InputData& aMetaData,
                           std::ostream &outfile)
 {
-    if (XMLGen::have_auxiliary_mesh(aMetaData)) {
-        outfile << "begin contact definition" << std::endl
-                << "    skin all blocks = on" << std::endl
-                << "    begin interaction defaults" << std::endl
-                << "        general contact = on" << std::endl
-                << "        friction model = tied" << std::endl
-                << "    end interaction defaults" << std::endl
-                << "end" << std::endl;
-    }
+    outfile << "begin contact definition" << std::endl
+            << "    skin all blocks = on" << std::endl
+            << "    begin interaction defaults" << std::endl
+            << "        general contact = on" << std::endl
+            << "        friction model = tied" << std::endl
+            << "    end interaction defaults" << std::endl
+            << "end" << std::endl;
 }
 
 void add_input_deck_blocks
@@ -978,7 +976,11 @@ void add_input_deck_blocks
     append_material_blocks(aMetaData, tCriterion, tScenario, outfile);
     append_block_blocks(aMetaData, tCriterion, tScenario, outfile);
     append_topology_optimization_block(aMetaData, tCriterion, tScenario, outfile);
-    append_contact_block(aMetaData, outfile);
+    if (XMLGen::have_auxiliary_mesh(aMetaData) || 
+       (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE && aMetaData.blocks.size() > 1 )) 
+    {
+        append_contact_block(aMetaData, outfile);
+    }
     append_file_block(aMetaData, outfile);
     append_loads_block(aMetaData, tCriterion, tScenario, outfile);
     append_boundary_block(aMetaData, tCriterion, tScenario, outfile);

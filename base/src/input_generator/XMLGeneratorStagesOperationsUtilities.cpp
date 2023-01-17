@@ -915,7 +915,7 @@ void append_compute_objective_sensitivity_operation
     std::string tPerformer = aService.performer();
     std::string tOperationName;
     std::string tOutputArgumentName;
-    if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+    if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
     {
         if(tCode == "plato_analyze")
         {
@@ -933,7 +933,8 @@ void append_compute_objective_sensitivity_operation
             tOutputArgumentName = "Criterion Gradient wrt CAD Parameters";
         }
     }
-    else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+    else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen" ||
+            aMetaData.optimization_parameters().esp_workflow() == "aflr4_tetgen")
     {
         tPerformer = aMetaData.getFirstPlatoMainPerformer();
         tOperationName = "Chain Rule";
@@ -953,7 +954,8 @@ void append_compute_objective_sensitivity_operation
     auto tInputNode = tForNode.append_child("Input");
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"}, tInputNode);
 
-    if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+    if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen" ||
+       aMetaData.optimization_parameters().esp_workflow() == "aflr4_tetgen")
     {
         auto tDFDXSharedDataName = "Criterion GradientX - " + aIdentifierString;
         auto tInputNode = tOperationNode.append_child("Input");
@@ -1167,10 +1169,11 @@ void append_objective_gradient_operation_for_non_multi_load_case
         }
         else if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
         {
-            if(aMetaData.optimization_parameters().esp_workflow() == "aflr")
+            if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
             {
             }
-            else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen")
+            else if(aMetaData.optimization_parameters().esp_workflow() == "egads_tetgen" ||
+                    aMetaData.optimization_parameters().esp_workflow() == "aflr4_tetgen")
             {
                 auto tOperationOutput = tOperationNode.append_child("Output");
                 auto tOutputSharedData = std::string("Criterion GradientX - ") + tIdentifierString;

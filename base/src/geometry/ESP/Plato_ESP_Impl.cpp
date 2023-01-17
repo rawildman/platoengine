@@ -63,8 +63,17 @@ template <typename ScalarType, typename ScalarVectorType>
 void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
 {
     int tCntr=0;
+    int tNumActiveBodies=0;
+    // Count the "active bodies" (those on the stack).
+    for (int ibody=1; ibody<=modelT->nbody; ibody++)
+    {
+        if (modelT->body[ibody].onstack == 1)
+        {
+            tNumActiveBodies++;
+        }
+    }
     std::string tTessBaseName("");
-    if(modelT->nbody > 1)
+    if(tNumActiveBodies > 1)
     {
         std::size_t tPos = this->mTessFileName.find(".eto");
         tTessBaseName = this->mTessFileName.substr(0, tPos);
@@ -80,7 +89,7 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
             EG_deleteObject(modelT->body[ibody].etess);
         }
         std::string tCurTessName = this->mTessFileName;
-        if(modelT->nbody > 1)
+        if(tNumActiveBodies > 1)
         {
             tCurTessName = tTessBaseName + "_" + std::to_string(tCntr++) + ".eto";
         }
