@@ -466,6 +466,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     tryFCatchInterfaceExceptions([aApplication](){aApplication->initialize();});
     tryFCatchInterfaceExceptions([this, aApplication](){createSharedData(aApplication);});
     tryFCatchInterfaceExceptions([this](){createStages();});
+    validate();
 }
 
 /******************************************************************************/
@@ -475,6 +476,7 @@ void Interface::registerApplicationOnlyInitializeMPI(Application* aApplication)
     checkAndSetApplication(aApplication);
     setPerformerOnStages();
     initializeSharedDataMPI(aApplication);
+    validate();
 }
 
 /******************************************************************************/
@@ -929,7 +931,7 @@ void Interface::checkAndSetApplication(Application* aApplication)
 bool Interface::hasStageOperationAndParameter(
         const StageName& aStageName,
         const OperationName& aOperationName, 
-        const ParameterName& aParameterName)
+        const ParameterName& aParameterName) const
 {
     const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
     [&aStageName](const std::unique_ptr<Stage>& aStage){
@@ -954,9 +956,27 @@ void Interface::setParameterOnOperation(
     } 
 }
 
-void Interface::validate() const
+bool Interface::parameterExists(const std::string& aParameterName) const
 {
+    return std::any_of(mStages.cbegin(), mStages.cend(), 
+    [&aParameterName](const std::unique_ptr<Stage>& aStage)
+    {
+        return aStage->hasParameter(aParameterName);
+    });
+}
 
+void Interface::validate()
+{
+    for(const auto& tSharedData : mDataLayer->getSharedData())
+    {
+        if(tSharedData->myLayout() == data::layout_t::SCALAR_PARAMETER 
+            && !parameterExists(tSharedData->myName()))
+        {
+            registerException(ParsingException(
+                "A SharedData parameter was found without a matching Operation parameter. SharedData parameter name: "
+                + tSharedData->myName()));
+        }
+    }
 }
 
 } /* namespace Plato */

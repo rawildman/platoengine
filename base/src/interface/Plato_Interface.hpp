@@ -208,7 +208,7 @@ public:
     bool hasStageOperationAndParameter(
         const StageName& aStageName,
         const OperationName& aOperationName, 
-        const ParameterName& aParameterName);
+        const ParameterName& aParameterName) const;
 
     /// Attempts to assign @a aValue to the parameter with name @a aParameter name held by operation
     /// with name @a aOperationName on stage with name @a aStageName.
@@ -244,7 +244,8 @@ private:
 
     void checkAndSetApplication(Application* aApplication);
 
-    void validate() const;
+    bool parameterExists(const std::string& aParameterName) const;
+    void validate();
 
 private:
     // Serializable state

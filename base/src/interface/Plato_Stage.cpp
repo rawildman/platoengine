@@ -228,9 +228,18 @@ void Stage::setPerformerOnOperations(std::shared_ptr<Performer> aPerformer)
     }
 }
 
+bool Stage::hasParameter(const std::string& aParameterName) const
+{
+    return std::any_of(m_operations.cbegin(), m_operations.cend(), 
+    [&aParameterName](const std::unique_ptr<Operation>& aOperation)
+    {
+        return aOperation->hasParameter(aParameterName);
+    });
+}
+
 bool Stage::operationHasParameter(
         const OperationName& aOperationName, 
-        const ParameterName& aParameterName)
+        const ParameterName& aParameterName) const
 {
     const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
     [&aOperationName](const std::unique_ptr<Operation>& aOperation){
@@ -242,7 +251,7 @@ bool Stage::operationHasParameter(
 void Stage::setParameterOnOperation(
         const OperationName& aOperationName, 
         const ParameterName& aParameterName,
-        const double aValue)
+        const double aValue) const
 {
     const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
     [&aOperationName](const std::unique_ptr<Operation>& aOperation){
