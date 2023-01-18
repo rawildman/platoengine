@@ -23,6 +23,7 @@ public:
     {
         // TODO: Integrate this with base class's implementation to not repeat code
         this->initialize();
+        this->validateDistributionNames();
         this->initializeDistributions();
         constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
         const std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
@@ -57,19 +58,35 @@ public:
     }
 
 private:
+    /// Checks that each stochastic parameter has a matching distribution defined in the distributions
+    /// input file. If a parameter does not have a distribution, an exception is registered.
+    void validateDistributionNames()
+    {
+        const std::string& tDistributionsFile = this->mInputData.getROLStochasticDistributionsFile();
+        const Teuchos::RCP<Teuchos::ParameterList> tDistributionParameters = 
+            Teuchos::getParametersFromXmlFile(tDistributionsFile);
+        for(const auto& tParameterName : this->mInputData.getStochasticParameterNames())
+        {
+            if(!tDistributionParameters->isSublist(tParameterName))
+            {
+                this->mInterface->registerException(
+                    ParsingException("Could not find distribution with name " 
+                    + tParameterName + ". Check input file " + tDistributionsFile));
+            }
+        }
+    }
+    /// @brief Construct all probability distributions defined in an input file and construct the
+    ///  random sampler from those distributions.
+    /// @pre validateDistributionNames should be called first. Otherwise, non-existent distributions 
+    ///  default to uniform on [0, 1], which may give unexpected results.
     void initializeDistributions()
     {
         mNumSamples = this->mInputData.getROLStochasticNumberOfSamples();
         const std::string& tDistributionsFile = this->mInputData.getROLStochasticDistributionsFile();
-        std::cout << "Using distribution inputs from file " << tDistributionsFile << std::endl;
-        std::cout << "Number of samples: " << mNumSamples << std::endl;
         const Teuchos::RCP<Teuchos::ParameterList> tDistributionParameters = 
             Teuchos::getParametersFromXmlFile(tDistributionsFile);
-        // TODO: Validate that the distribution names match parameter names
         for(const auto& tParameterName : this->mInputData.getStochasticParameterNames())
         {
-            std::cout << "Adding distribution for " << tParameterName << std::endl;
-            // TODO: Validate that the sublist exists in the distributions.xml file
             Teuchos::ParameterList tDistributionForParameter;
             tDistributionForParameter.sublist("SOL").sublist("Distribution") = tDistributionParameters->sublist(tParameterName);
             ROL::Ptr<ROL::Distribution<ScalarType>> tDistribution = 

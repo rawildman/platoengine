@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Plato_Utils.hpp"
 
 namespace Plato

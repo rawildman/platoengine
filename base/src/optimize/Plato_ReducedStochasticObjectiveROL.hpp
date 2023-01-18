@@ -91,16 +91,12 @@ public:
 private:
     void updateStochasticParameters()
     {
-        // TODO: Figure out how to cache states based on stochastic parameters
-        this->unsetComputedStateFlags();
-        // TODO: Validate that getParameter() and engineInputData().getStochasticParameterNames() have the same size
-        // Currently throws out of bounds exception
+        this->unsetComputedStateFlags(); // TODO: Figure out how to cache states based on stochastic parameters
+        assert(this->getParameter().size() == this->engineInputData().getStochasticParameterNames().size());
         for(int i = 0; i < this->getParameter().size(); ++i)
         {
             const double tStochasticParameterValue = this->getParameter()[i];
             const std::string& tStochasticParameterName = this->engineInputData().getStochasticParameterNames().at(i);
-            std::cout << "Updating parameter " << tStochasticParameterName << " to value " << tStochasticParameterValue << std::endl;
-            // TODO: Change setParameterOnOperation interface to be strongly typed
             this->interface()->setParameterOnOperation(
                 StageName{this->engineInputData().getObjectiveValueStageName()}, 
                 OperationName{this->engineInputData().getObjectiveValueParametersOperationName()},
