@@ -128,6 +128,7 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerOptions)
   "  <InputFileName>Max</InputFileName>\n"
   "  <ROLStochasticDistributionsFile>Carol</ROLStochasticDistributionsFile>\n"
   "  <ROLStochasticNumberOfSamples>42</ROLStochasticNumberOfSamples>\n"
+  "  <ROLStochasticSamplerSeed>17</ROLStochasticSamplerSeed>\n"
   "<Options>\n";
 
   const Plato::PugiParser tParser;
@@ -139,6 +140,7 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerOptions)
   EXPECT_EQ(tEngineData.getInputFileName(), "Max");
   EXPECT_EQ(tEngineData.getROLStochasticDistributionsFile(), "Carol");
   EXPECT_EQ(tEngineData.getROLStochasticNumberOfSamples(), 42);
+  EXPECT_EQ(tEngineData.getROLStochasticSamplerSeed(), 17);
 }
 
 } // end PlatoTestInputData namespace

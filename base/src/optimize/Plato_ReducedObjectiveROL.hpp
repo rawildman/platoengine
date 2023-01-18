@@ -299,6 +299,7 @@ private:
         std::string tCacheStageName = mEngineInputData.getCacheStageName();
         if(tCacheStageName.empty() == false)
         {
+            debugOutput("      caching state with stage " + tCacheStageName);
             tStageNames.push_back(tCacheStageName);
             mInterface->compute(tStageNames, mParameterList);
         }

@@ -628,6 +628,16 @@ void OptimizerEngineStageData::setROLStochasticNumberOfSamples(const int aInput)
     mROLStochasticNumberOfSamples = aInput;
 }
 
+int OptimizerEngineStageData::getROLStochasticSamplerSeed() const
+{
+    return mROLStochasticSamplerSeed;
+}
+
+void OptimizerEngineStageData::setROLStochasticSamplerSeed(const int aInput)
+{
+    mROLStochasticSamplerSeed = aInput;
+}
+
 /******************************************************************************/
 double OptimizerEngineStageData::getAugLagPenaltyScaleParameter() const
 {

@@ -1662,6 +1662,10 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
         {
             aOptimizerEngineStageData.setROLStochasticNumberOfSamples(Get::Int(tOptionsNode, "ROLStochasticNumberOfSamples"));
         }
+        if( tOptionsNode.size<std::string>("ROLStochasticSamplerSeed"))
+        {
+            aOptimizerEngineStageData.setROLStochasticSamplerSeed(Get::Int(tOptionsNode, "ROLStochasticSamplerSeed"));
+        }
     }
 }
 

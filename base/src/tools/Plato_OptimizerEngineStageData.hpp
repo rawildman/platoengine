@@ -187,6 +187,8 @@ public:
     void setROLStochasticDistributionsFile(std::string aInput);
     int getROLStochasticNumberOfSamples() const;
     void setROLStochasticNumberOfSamples(int aInput);
+    int getROLStochasticSamplerSeed() const;
+    void setROLStochasticSamplerSeed(int aInput);
 
     /******************************************************************************//**
      * @brief Return limited memory storage capacity for LBFG Hessian method
@@ -535,6 +537,7 @@ public:
 
       aArchive & boost::serialization::make_nvp("ROLStochasticDistributionsFile",mROLStochasticDistributionsFile);
       aArchive & boost::serialization::make_nvp("ROLStochasticNumberOfSamples",mROLStochasticNumberOfSamples);
+      aArchive & boost::serialization::make_nvp("ROLStochasticSamplerSeed",mROLStochasticSamplerSeed);
 
       aArchive & boost::serialization::make_nvp("InitialMovingAsymptoteScaleFactor",mInitialMovingAsymptoteScaleFactor);
       aArchive & boost::serialization::make_nvp("GCMMAInnerKKTTolerance",mGCMMAInnerKKTTolerance);
@@ -634,6 +637,7 @@ private:
     int mROLCheckGradientSeed;
     std::string mROLStochasticDistributionsFile = "distributions.xml";
     int mROLStochasticNumberOfSamples = 3;
+    int mROLStochasticSamplerSeed = 42;
 
     double mInitialMovingAsymptoteScaleFactor;
     double mGCMMAInnerKKTTolerance;

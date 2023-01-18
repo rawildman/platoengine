@@ -76,7 +76,12 @@ private:
                 ROL::DistributionFactory<ScalarType>(tDistributionForParameter);
             mSampleDistributions.push_back(tDistribution);
         }
-        mSampler = ROL::makePtr<ROL::MonteCarloGenerator<ScalarType>>(mNumSamples, mSampleDistributions, mBatchManager);
+        // Default values from ROL
+        constexpr bool tUseSA = false;
+        constexpr bool tAdaptive = false;
+        constexpr int tNumNewSamples = 0;
+        mSampler = ROL::makePtr<ROL::MonteCarloGenerator<ScalarType>>(mNumSamples, mSampleDistributions, mBatchManager, 
+            tUseSA, tAdaptive, tNumNewSamples, this->mInputData.getROLStochasticSamplerSeed());
     }
 
 private:
