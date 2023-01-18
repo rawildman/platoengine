@@ -105,6 +105,14 @@ public:
         aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
+    /// @return `true` if this stage has an operation with name @a aOperationName and that operation has
+    ///  a parameter with name @a aParameterName.
+    bool operationHasParameter(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName);
+    /// Attempts to assign @a aValue to the parameter with name @a aParameter name held by operation
+    /// with name @a aOperationName.
+    /// @pre operationHasParameter returns `true`. Otherwise, no parameter is set.
     void setParameterOnOperation(
         const OperationName& aOperationName, 
         const ParameterName& aParameterName,

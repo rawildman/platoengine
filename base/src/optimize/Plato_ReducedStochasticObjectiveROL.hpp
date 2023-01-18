@@ -1,35 +1,27 @@
 #pragma once
 
+#include "Plato_Interface.hpp"
+#include "Plato_DistributedVectorROL.hpp"
+#include "Plato_OptimizerEngineStageData.hpp"
+#include "Plato_ReducedObjectiveROL.hpp"
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <cassert>
 #include <algorithm>
 
-#include "Plato_Interface.hpp"
-#include "Plato_DistributedVectorROL.hpp"
-#include "Plato_OptimizerEngineStageData.hpp"
-#include "Plato_ReducedObjectiveROL.hpp"
-
 namespace Plato
 {
 
-/******************************************************************************//**
- * \brief PLATO Engine interface to a ROL reduced objective function
- * \tparam scalar type, e.g. double, float, etc.
-**********************************************************************************/
+/// Implements the ROL::Objective interface, specialized for stochastic problems.
+/// In particular, maps stochastic parameters from ROL::Objective::getParameters
+/// to internal parameters set on Operations. These are communicated through
+/// shared data.
 template<typename ScalarType>
 class ReducedStochasticObjectiveROL : public ReducedObjectiveROL<ScalarType>
 {
 public:
-    using Base = ROL::Objective<ScalarType>;
-
-    /******************************************************************************//**
-     * \brief Constructor
-     * \param [in] aInputData XML input data
-     * \param [in] aInterface PLATO Engine interface
-     * \pre @a aInterface must not be `nullptr`
-    **********************************************************************************/
     ReducedStochasticObjectiveROL(const Plato::OptimizerEngineStageData & aInputData, Plato::Interface* aInterface) :
         ReducedObjectiveROL<ScalarType>(aInputData, aInterface)
     {
@@ -40,55 +32,69 @@ public:
     ReducedStochasticObjectiveROL(Plato::ReducedStochasticObjectiveROL<ScalarType> && aRhs) = delete;
     Plato::ReducedStochasticObjectiveROL<ScalarType> & operator=(Plato::ReducedStochasticObjectiveROL<ScalarType> && aRhs) = delete;
 
-    /******************************************************************************//**
-     * \brief Updates physics and enables continuation of app-based parameters.
-     * \param [in] aControl design variables
-     * \param [in] aFlag indicates if vector of design variables was updated
-     * \param [in] aIteration outer loop optimization iteration
-    **********************************************************************************/
     using ROL::Objective<ScalarType>::update;
     void update(const ROL::Vector<ScalarType> & aControl, ROL::UpdateType aUpdateType, int aIteration = -1) override
     {
         ReducedObjectiveROL<ScalarType>::update(aControl, aUpdateType, aIteration);
     }
 
-    /******************************************************************************//**
-     * \brief Returns current objective value
-     * \param [in] aControl design variables
-     * \param [in] aTolerance inexactness tolerance
-     * \return objective function value
-    **********************************************************************************/
     ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         updateStochasticParameters();
         return ReducedObjectiveROL<ScalarType>::value(aControl, aTolerance);
     }
 
-    /******************************************************************************//**
-     * \brief Returns current gradient value
-     * \param [out] aGradient objective function gradient
-     * \param [in] aControl design variables
-     * \param [in] aTolerance inexactness tolerance
-    **********************************************************************************/
     void gradient(ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         updateStochasticParameters();
         ReducedObjectiveROL<ScalarType>::gradient(aGradient, aControl, aTolerance);
     }
-    /******************************************************************************//**
-     * \brief Returns current hessian applied to a vector
-     * \param [out] aHessVec objective function Hessian applied to a vector
-     * \param [in] aVector design variable direction vector
-     * \param [in] aControl design variables
-     * \param [in] aTolerance inexactness tolerance
-     **********************************************************************************/
+
     void hessVec(ROL::Vector<ScalarType> & aHessVec, const ROL::Vector<ScalarType> & aVector, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         updateStochasticParameters();
         ReducedObjectiveROL<ScalarType>::hessVec(aHessVec, aVector, aControl, aTolerance);
     }
 
+    void validate() const
+    {
+        for(const std::string& tParameter : this->engineInputData().getStochasticParameterNames())
+        {
+            validateStageOperationAndParameter(
+                StageName{this->engineInputData().getObjectiveValueStageName()}, 
+                OperationName{this->engineInputData().getObjectiveValueParametersOperationName()},
+                ParameterName{tParameter});
+            validateStageOperationAndParameter(
+                StageName{this->engineInputData().getObjectiveGradientStageName()}, 
+                OperationName{this->engineInputData().getObjectiveGradientParametersOperationName()},
+                ParameterName{tParameter});
+            if(!this->engineInputData().getObjectiveHessianStageName().empty())
+            {
+                validateStageOperationAndParameter(
+                    StageName{this->engineInputData().getObjectiveHessianStageName()}, 
+                    OperationName{this->engineInputData().getObjectiveHessianParametersOperationName()},
+                    ParameterName{tParameter});
+            }
+        }
+
+    }
+
 private:
+    void validateStageOperationAndParameter(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName) const
+    {
+        if(!this->interface()->hasStageOperationAndParameter(aStageName, aOperationName, aParameterName))
+        {
+            this->interface()->registerException(ParsingException(
+                R"(While setting an Operation Parameter, couldn't find requested Stage ")" + aStageName.mValue 
+                + R"(", Operation ")" + aOperationName.mValue
+                + R"(" and/or Parameter ")" + aParameterName.mValue
+                + R"(". Please check interface file.)"));
+        }
+    }
+
     void updateStochasticParameters()
     {
         this->unsetComputedStateFlags(); // TODO: Figure out how to cache states based on stochastic parameters
@@ -118,7 +124,6 @@ private:
         }
    }
 };
-// class ReducedStochasticObjectiveROL
 
 }
 // namespace Plato

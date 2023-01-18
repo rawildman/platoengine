@@ -926,6 +926,18 @@ void Interface::checkAndSetApplication(Application* aApplication)
     }
 }
 
+bool Interface::hasStageOperationAndParameter(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName)
+{
+    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
+    [&aStageName](const std::unique_ptr<Stage>& aStage){
+        return aStage->getName() == aStageName.mValue;
+    });
+    return tStageIter != mStages.end() ? (*tStageIter)->operationHasParameter(aOperationName, aParameterName) : false;
+}
+
 void Interface::setParameterOnOperation(
         const StageName& aStageName,
         const OperationName& aOperationName, 
@@ -940,13 +952,11 @@ void Interface::setParameterOnOperation(
     {
         (*tStageIter)->setParameterOnOperation(aOperationName, aParameterName, aValue);
     } 
-    else
-    {
-        // TODO: handle error, warning or stop execution?
-        std::cout << "Couldn't find Parameter: " << aParameterName.mValue
-            << " on Operation: " << aOperationName.mValue
-            << ", on Stage:  " << aStageName.mValue << std::endl;
-    }
+}
+
+void Interface::validate() const
+{
+
 }
 
 } /* namespace Plato */

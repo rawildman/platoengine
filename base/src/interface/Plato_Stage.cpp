@@ -228,6 +228,17 @@ void Stage::setPerformerOnOperations(std::shared_ptr<Performer> aPerformer)
     }
 }
 
+bool Stage::operationHasParameter(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName)
+{
+    const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
+    [&aOperationName](const std::unique_ptr<Operation>& aOperation){
+        return aOperation->getOperationName() == aOperationName.mValue;
+    });
+    return tOperationIter != m_operations.end() ? (*tOperationIter)->hasParameter(aParameterName.mValue) : false;
+}
+
 void Stage::setParameterOnOperation(
         const OperationName& aOperationName, 
         const ParameterName& aParameterName,
@@ -241,13 +252,6 @@ void Stage::setParameterOnOperation(
     {
         (*tOperationIter)->setParameterValue(aParameterName.mValue, aValue);
     } 
-    else
-    {
-        // TODO: handle error, warning or stop execution?
-        std::cout << "Couldn't find Parameter: " << aParameterName.mValue
-            << " on Operation: " << aOperationName.mValue
-            << ", on Stage:  " << m_name << std::endl;;
-    }
 }
 
 } // End namespace Plato

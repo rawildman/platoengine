@@ -36,9 +36,10 @@ public:
         this->setInitialGuess(tControlName, *tControls);
         
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
-        Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedStochasticObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
+        auto tObjective = Teuchos::rcp(new Plato::ReducedStochasticObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
+        tObjective->validate();
         ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
-                
+
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
         this->createOptimizationProblemLinearConstraint(*tOptimizationProblem);
         

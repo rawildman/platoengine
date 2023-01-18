@@ -203,6 +203,16 @@ public:
     template<typename F>
     void tryFCatchInterfaceExceptions(const F& aF);
 
+    /// @return `true` if a stage with name @a aStage name exists that holds an operation with name @a aOperation,
+    ///  that holds a parameter with name @a aParameterName. 
+    bool hasStageOperationAndParameter(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName);
+
+    /// Attempts to assign @a aValue to the parameter with name @a aParameter name held by operation
+    /// with name @a aOperationName on stage with name @a aStageName.
+    /// @pre stageHasOperationWithParameter returns `true`. Otherwise, nothing is set.
     void setParameterOnOperation(
         const StageName& aStageName,
         const OperationName& aOperationName, 
@@ -233,6 +243,8 @@ private:
         CommunicationData& aCommunicationData) const;
 
     void checkAndSetApplication(Application* aApplication);
+
+    void validate() const;
 
 private:
     // Serializable state

@@ -260,7 +260,6 @@ bool Operation::hasParameter(const std::string& aParamName)
 void Operation::setParameterValue(const std::string& aParamName, const double aParamValue)
 /******************************************************************************/
 {
-    //m_parameters.at(aParamName)->setData({1,aParamValue});
     m_parameters.at(aParamName)->setData({aParamValue});
 }
 
