@@ -228,23 +228,24 @@ void Stage::setPerformerOnOperations(std::shared_ptr<Performer> aPerformer)
     }
 }
 
-void Stage::setParameterOnOperation(const std::string& aOperationName, 
-        const std::string& aParameterName,
+void Stage::setParameterOnOperation(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
         const double aValue)
 {
     const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
     [&aOperationName](const std::unique_ptr<Operation>& aOperation){
-        return aOperation->getOperationName() == aOperationName;
+        return aOperation->getOperationName() == aOperationName.mValue;
     });
-    if(tOperationIter != m_operations.end() && (*tOperationIter)->hasParameter(aParameterName))
+    if(tOperationIter != m_operations.end() && (*tOperationIter)->hasParameter(aParameterName.mValue))
     {
-        (*tOperationIter)->setParameterValue(aParameterName, aValue);
+        (*tOperationIter)->setParameterValue(aParameterName.mValue, aValue);
     } 
     else
     {
-        // handle error, warning or stop execution?
-        std::cout << "Couldn't find Parameter: " << aParameterName 
-            << " on Operation: " << aOperationName 
+        // TODO: handle error, warning or stop execution?
+        std::cout << "Couldn't find Parameter: " << aParameterName.mValue
+            << " on Operation: " << aOperationName.mValue
             << ", on Stage:  " << m_name << std::endl;;
     }
 }

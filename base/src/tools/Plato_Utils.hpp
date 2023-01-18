@@ -101,8 +101,8 @@ inline std::string current_working_directory();
 template <typename T, typename NameTag>
 struct NamedType
 {
-    explicit NamedType(const T& value) : mValue(value) {}
-    explicit NamedType(T&& value) : mValue(std::move(value)) {}
+    constexpr explicit NamedType(const T& value) : mValue(value) {}
+    constexpr explicit NamedType(T&& value) : mValue(std::move(value)) {}
 
     T mValue;
 };

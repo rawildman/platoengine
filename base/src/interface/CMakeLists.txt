@@ -16,7 +16,8 @@ set(${LIB_NAME}_HEADERS Plato_Application.hpp
                         Plato_SingleOperation.hpp
                         Plato_OperationFactory.hpp
                         Plato_Stage.hpp
-                        Plato_Performer.hpp)
+                        Plato_Performer.hpp
+                        Plato_InterfaceTypes.hpp)
 
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 

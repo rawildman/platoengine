@@ -62,7 +62,7 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_Console.hpp"
-
+#include "Plato_InterfaceTypes.hpp"
 #include "Plato_Stage.hpp"
 
 #include "Plato_SerializationHeaders.hpp"
@@ -203,9 +203,10 @@ public:
     template<typename F>
     void tryFCatchInterfaceExceptions(const F& aF);
 
-    void setParameterOnOperation(const std::string& aStageName,
-        const std::string& aOperationName, 
-        const std::string& aParameterName,
+    void setParameterOnOperation(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
         double aValue);
 
 private:

@@ -926,13 +926,15 @@ void Interface::checkAndSetApplication(Application* aApplication)
     }
 }
 
-void Interface::setParameterOnOperation(const std::string& aStageName,
-        const std::string& aOperationName, 
-        const std::string& aParameterName,
+void Interface::setParameterOnOperation(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
         const double aValue)
 {
-    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), [&aStageName](const std::unique_ptr<Stage>& aStage){
-        return aStage->getName() == aStageName;
+    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
+    [&aStageName](const std::unique_ptr<Stage>& aStage){
+        return aStage->getName() == aStageName.mValue;
     });
     if(tStageIter != mStages.end())
     {
@@ -940,10 +942,10 @@ void Interface::setParameterOnOperation(const std::string& aStageName,
     } 
     else
     {
-        // handle error, warning or stop execution?
-        std::cout << "Couldn't find Parameter: " << aParameterName 
-            << " on Operation: " << aOperationName 
-            << ", on Stage:  " << aStageName << std::endl;
+        // TODO: handle error, warning or stop execution?
+        std::cout << "Couldn't find Parameter: " << aParameterName.mValue
+            << " on Operation: " << aOperationName.mValue
+            << ", on Stage:  " << aStageName.mValue << std::endl;
     }
 }
 

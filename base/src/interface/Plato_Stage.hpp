@@ -59,6 +59,7 @@
 #include "Plato_Operation.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_SerializationHeaders.hpp"
+#include "Plato_InterfaceTypes.hpp"
 
 namespace Plato
 {
@@ -104,8 +105,9 @@ public:
         aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
-    void setParameterOnOperation(const std::string& aOperationName, 
-        const std::string& aParameterName,
+    void setParameterOnOperation(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
         double aValue);
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,

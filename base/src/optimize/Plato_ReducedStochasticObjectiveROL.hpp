@@ -101,17 +101,23 @@ private:
             const std::string& tStochasticParameterName = this->engineInputData().getStochasticParameterNames().at(i);
             std::cout << "Updating parameter " << tStochasticParameterName << " to value " << tStochasticParameterValue << std::endl;
             // TODO: Change setParameterOnOperation interface to be strongly typed
-            this->interface()->setParameterOnOperation(this->engineInputData().getObjectiveValueStageName(), 
-                this->engineInputData().getObjectiveValueParametersOperationName(),
-                tStochasticParameterName, tStochasticParameterValue);
-            this->interface()->setParameterOnOperation(this->engineInputData().getObjectiveGradientStageName(), 
-                this->engineInputData().getObjectiveGradientParametersOperationName(),
-                tStochasticParameterName, tStochasticParameterValue);
+            this->interface()->setParameterOnOperation(
+                StageName{this->engineInputData().getObjectiveValueStageName()}, 
+                OperationName{this->engineInputData().getObjectiveValueParametersOperationName()},
+                ParameterName{tStochasticParameterName},
+                tStochasticParameterValue);
+            this->interface()->setParameterOnOperation(
+                StageName{this->engineInputData().getObjectiveGradientStageName()}, 
+                OperationName{this->engineInputData().getObjectiveGradientParametersOperationName()},
+                ParameterName{tStochasticParameterName}, 
+                tStochasticParameterValue);
             if(!this->engineInputData().getObjectiveHessianStageName().empty())
             {
-                this->interface()->setParameterOnOperation(this->engineInputData().getObjectiveHessianStageName(), 
-                    this->engineInputData().getObjectiveHessianParametersOperationName(),
-                    tStochasticParameterName, tStochasticParameterValue);
+                this->interface()->setParameterOnOperation(
+                    StageName{this->engineInputData().getObjectiveHessianStageName()}, 
+                    OperationName{this->engineInputData().getObjectiveHessianParametersOperationName()},
+                    ParameterName{tStochasticParameterName}, 
+                    tStochasticParameterValue);
             }
         }
    }
