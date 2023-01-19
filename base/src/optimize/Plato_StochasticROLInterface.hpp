@@ -19,43 +19,28 @@ public:
     {
     }
 
-    void run() override
+    void initialize() override 
     {
-        // TODO: Integrate this with base class's implementation to not repeat code
-        this->initialize();
+        ROLInterface<ScalarType, OrdinalType>::initialize();
         this->validateDistributionNames();
         this->initializeDistributions();
-        constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
-        const std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
-        const OrdinalType tNumControls = this->mInterface->size(tControlName);
-        auto tControlBoundsMng = this->setControlBounds(tNumControls);
-        
-        /******************************** SET CONTROL INITIAL GUESS *********************************/
-        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControls =
-                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, tNumControls));
-        this->setInitialGuess(tControlName, *tControls);
-        
-        /********************************* SET OPTIMIZATION PROBLEM *********************************/
+    }
+
+protected:
+    Teuchos::RCP<ROL::Objective<ScalarType>> makeObjective() const override
+    {
         auto tObjective = Teuchos::rcp(new Plato::ReducedStochasticObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
         tObjective->validate();
-        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
+        return tObjective;
+    }
 
-        tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
-        this->createOptimizationProblemLinearConstraint(*tOptimizationProblem);
-        
-        ROL::Ptr<ROL::StochasticProblem<ScalarType>> tStochasticOptimizationProblem = ROL::makePtr<ROL::StochasticProblem<ScalarType>>(*tOptimizationProblem);
-
+    ROL::Ptr<ROL::Problem<ScalarType>> updateProblem(ROL::Ptr<ROL::Problem<ScalarType>>&& aOptimizationProblem) const override
+    {
+        ROL::Ptr<ROL::StochasticProblem<ScalarType>> tStochasticOptimizationProblem 
+            = ROL::makePtr<ROL::StochasticProblem<ScalarType>>(*aOptimizationProblem);
         auto tParameterList = this->updateParameterListFromRolInputsFile();
-
         tStochasticOptimizationProblem->makeObjectiveStochastic(*tParameterList, mSampler);
-
-        const bool tLumpConstraints = ( this->algorithm() == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
-        constexpr bool tPrintToStream = true;
-
-        tStochasticOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, this->mOutputFile);
-
-        this->solve(tStochasticOptimizationProblem);
-        this->finalize();
+        return tStochasticOptimizationProblem;
     }
 
 private:
