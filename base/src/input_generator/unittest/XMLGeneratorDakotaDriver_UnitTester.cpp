@@ -392,7 +392,7 @@ TEST(PlatoTestXMLGenerator, InsertShapeOptimizationInputs)
     XMLGen::insert_shape_optimization_input_options(tTags);
     EXPECT_EQ(3u, tTags.size());
 
-    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr"} };
+    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr4_aflr3"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
@@ -2277,12 +2277,14 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_PAPerformer)
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("mpiexec--oversubscribe-np1-xPLATO_PERFORMER_ID=0\\") + 
@@ -2339,12 +2341,13 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_SDPerformer)
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("mpiexec--oversubscribe-np1-xPLATO_PERFORMER_ID=0\\") + 
@@ -2431,12 +2434,13 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_SDPerformer_Decomp_T
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("cdevaluations_0;cubit-inputsubBlock.jou-batch-nographics-nogui-noecho-nojournal-nobanner-informationoff;cd..") +

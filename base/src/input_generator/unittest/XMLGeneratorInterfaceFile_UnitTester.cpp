@@ -265,7 +265,7 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage_shape_multi_performer)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
-    tOptimizationParameters.append("esp_workflow", "aflr");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -2047,7 +2047,7 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedData_SO_aflr_workflow)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
-    tOptimizationParameters.append("esp_workflow", "aflr");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tOptimizationParameters.append("num_shape_design_variables", "4");
     tMetaData.set(tOptimizationParameters);
 

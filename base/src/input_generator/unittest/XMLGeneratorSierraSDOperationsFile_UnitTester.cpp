@@ -7,13 +7,13 @@
 
 namespace PlatoTestXMLGenerator {
 
-TEST(PlatoTestXMLGenerator, SDOperationsFile_append_internal_energy_gradient_operation_shape_aflr)
+TEST(PlatoTestXMLGenerator, SDOperationsFile_append_internal_energy_gradient_operation_shape_aflr4_aflr3)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
-    tOptimizationParameters.append("esp_workflow", "aflr");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tMetaData.set(tOptimizationParameters);
     XMLGen::append_internal_energy_gradient_operation_shape(tMetaData, tDocument);
     tDocument.save_file("xml.txt", " ");

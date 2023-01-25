@@ -45,7 +45,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     pugi::xml_document tDocument;
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("esp_workflow", "aflr");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("2");
