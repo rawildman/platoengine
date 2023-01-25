@@ -785,8 +785,10 @@ expy_get_coord_names(PyObject *self, PyObject *args)
 
   if(num_dim == 3)
     return Py_BuildValue("[OOO]", names[0], names[1], names[2]);
-  else
+  else if(num_dim == 2)
     return Py_BuildValue("[OO]", names[0], names[1]);
+  else
+    return NULL;
   
 }
 
