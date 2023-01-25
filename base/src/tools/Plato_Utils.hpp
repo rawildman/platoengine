@@ -53,8 +53,8 @@ namespace Plato
 namespace Utils
 {
 
-template<typename T>
-T* byName(const std::vector<T*> & aArgumentVector, const std::string & aName);
+template <typename T>
+T byName(const std::vector<T> & aArgumentVector, const std::string & aName);
 
 /******************************************************************************//**
  * \brief Utility function used to avoid warning related to unused variables.
