@@ -1,0 +1,80 @@
+stages: [clean, setup-spack, build-dependencies, build-install-test, unit-test]
+
+variables:
+  SPACK_REPO: https://github.com/platoengine/spack.git
+  SPACK_DIR: /home/gitlab-runner/spack_cache
+  SPACK_MIRROR_DIR: /home/gitlab-runner/spack-mirror
+  CLEAN_CACHE: "false"
+  PLATO_ENGINE_SPEC: "+esp+expy+geometry+iso+platoproxy+platostatics+prune+rol+stk+unit_testing~ipopt"
+  THIRD_PARTY_SPEC: "^trilinos~mumps+rol~pardiso ^esp@120Lin"
+  
+include:
+  local: ci-templates.yml
+
+# GPU build
+clean-caches-gpu:
+  extends: .clean-caches
+  tags:
+    - gpu
+
+setup-spack-gpu:
+  stage: setup-spack
+  extends: .setup-local-spack-installation
+  tags:
+    - gpu
+  needs: ["clean-caches-gpu"]
+
+build-dependencies-gpu:
+  extends: .build-and-cache-dependencies
+  tags:
+    - gpu
+  needs: ["setup-spack-gpu"]
+
+build-install-test-platoengine-gpu:
+  extends: .build-install-test-platoengine
+  tags:
+    - gpu
+  needs: ["build-dependencies-gpu"]
+
+plato-engine-unit-tests-gpu:
+  parallel:
+    matrix:
+      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoGeometryCogent_UnitTester, PlatoGeometryMLS_UnitTester, PlatoXMLGenerator_UnitTester, Plato_Operations_UnitTester, PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
+  extends: .plato-engine-test
+  tags:
+    - gpu
+  needs: ["build-install-test-platoengine-gpu"]
+
+# CPU build
+clean-caches-cpu:
+  extends: .clean-caches
+  tags:
+    - cpu
+  
+setup-spack-cpu:
+  stage: setup-spack
+  extends: .setup-local-spack-installation
+  tags:
+    - cpu
+  needs: ["clean-caches-cpu"]
+
+build-dependencies-cpu:
+  extends: .build-and-cache-dependencies
+  tags:
+    - cpu
+  needs: ["setup-spack-cpu"]
+
+build-install-test-platoengine-cpu:
+  extends: .build-install-test-platoengine
+  tags:
+    - cpu
+  needs: ["build-dependencies-cpu"]
+
+plato-engine-unit-tests-cpu:
+  parallel:
+    matrix:
+      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoGeometryCogent_UnitTester, PlatoGeometryMLS_UnitTester, PlatoXMLGenerator_UnitTester, Plato_Operations_UnitTester, PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
+  extends: .plato-engine-test
+  tags:
+    - cpu
+  needs: ["build-install-test-platoengine-cpu"]

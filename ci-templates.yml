@@ -1,0 +1,95 @@
+.clean-caches:
+  stage: clean
+  script:
+    - echo "Cleaning caches? $CLEAN_CACHE"
+    - | 
+      if [[ $CLEAN_CACHE == "true" ]] ; then
+        rm -rf ${SPACK_DIR}
+        rm -rf ${SPACK_MIRROR_DIR}/build_cache
+        echo "All spack cache files deleted"
+      fi
+    - echo "Done"
+
+.setup-local-spack-installation:
+  stage: setup-spack
+  before_script:
+    - mkdir -p ${SPACK_DIR}
+    - cd ${SPACK_DIR}
+    - |
+      if [ -d "./spack" ] 
+      then 
+        pushd spack && git pull && popd
+      else
+        git clone ${SPACK_REPO}
+      fi
+    - rm -f spack.yaml
+    - source spack/share/spack/setup-env.sh
+    - spack env create -d .
+  script:
+    - spack env activate --without-view .
+    - echo "Adding spec platoengine@develop${PLATO_ENGINE_SPEC} ${THIRD_PARTY_SPEC}"
+    - spack add platoengine@develop${PLATO_ENGINE_SPEC} ${THIRD_PARTY_SPEC}
+    - spack develop --path ${CI_PROJECT_DIR} platoengine@develop
+    - spack config add config:install_tree:padded_length:256
+    - spack mirror add mirror ${SPACK_MIRROR_DIR}
+
+.build-and-cache-dependencies:
+  stage: build-dependencies
+  timeout: 4 hours
+  before_script:
+    - echo "Building dependencies for branch ${CI_COMMIT_BRANCH}"
+    - cd ${SPACK_DIR}
+    - source spack/share/spack/setup-env.sh
+  script:
+    - spack env activate --without-view .
+    - spack buildcache update-index -d ${SPACK_MIRROR_DIR}
+    - spack buildcache list
+    - spack concretize -f
+    - spack install --use-cache --no-check-signature --only dependencies
+
+.build-install-test-platoengine:
+  stage: build-install-test
+  allow_failure: false
+  before_script:
+    - echo "Building platoengine for branch ${CI_COMMIT_BRANCH}"
+    - cd ${SPACK_DIR}
+    - source spack/share/spack/setup-env.sh
+  script: 
+    - spack env activate --without-view .
+    - spack uninstall -ay platoengine || true
+    - spack install --overwrite --no-cache --only package
+    - spack buildcache create --allow-root --rebuild-index --unsigned --only dependencies -d ${SPACK_MIRROR_DIR} platoengine
+    - export PLATOENGINE_BUILD_DIR=$(spack location -b platoengine)
+# TODO: Ideally, this would be in a separate job, but I think we'd need to upload the whole build directory
+    - spack load platoengine
+    - cd ${PLATOENGINE_BUILD_DIR}
+    - ctest -L small --output-junit small_tests.xml || FAILURE=true
+    - mkdir -p ${CI_PROJECT_DIR}/jobs_scratch_dir/
+    - cp small_tests.xml ${CI_PROJECT_DIR}/jobs_scratch_dir/
+    - if [ ${FAILURE} == "true" ]; then (exit 1); fi # Fail if ctest failed
+  artifacts:
+    when: always
+    paths:
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir/small_tests.xml"
+      - "spack-build-out.txt"
+    reports:
+      junit: 
+        - "${CI_PROJECT_DIR}/jobs_scratch_dir/small_tests.xml"
+
+.plato-engine-test:
+  stage: unit-test
+  when: always
+  before_script:
+    - cd ${SPACK_DIR}
+    - source spack/share/spack/setup-env.sh
+  script: 
+    - spack env activate --without-view .
+    - spack load platoengine
+    - ${PLATO_ENGINE_UNIT_TESTER} --gtest_output=xml:${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml
+  artifacts:
+    when: always
+    paths:
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml"
+    reports:
+      junit: 
+        - "${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml"
