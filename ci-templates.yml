@@ -1,19 +1,17 @@
 .clean-caches:
   stage: clean
+  rules:
+    - if: $CLEAN_CACHE == "true"
   script:
-    - echo "Cleaning caches? $CLEAN_CACHE"
-    - | 
-      if [[ $CLEAN_CACHE == "true" ]] ; then
-        rm -rf ${SPACK_DIR}
-        rm -rf ${SPACK_MIRROR_DIR}/build_cache
-        echo "All spack cache files deleted"
-      fi
-    - echo "Done"
+    - rm -rf ${SPACK_DIR}
+    - rm -rf ${SPACK_MIRROR_DIR}/build_cache
+    - echo "All spack cache files deleted"
 
 .setup-local-spack-installation:
   stage: setup-spack
   before_script:
     - mkdir -p ${SPACK_DIR}
+    - mkdir -p ${SPACK_MIRROR_DIR}
     - cd ${SPACK_DIR}
     - |
       if [ -d "./spack" ] 
@@ -49,7 +47,6 @@
 
 .build-install-test-platoengine:
   stage: build-install-test
-  allow_failure: false
   before_script:
     - echo "Building platoengine for branch ${CI_COMMIT_BRANCH}"
     - cd ${SPACK_DIR}
@@ -71,7 +68,7 @@
     when: always
     paths:
       - "${CI_PROJECT_DIR}/jobs_scratch_dir/small_tests.xml"
-      - "spack-build-out.txt"
+      - "${CI_PROJECT_DIR}/spack-build-out.txt"
     reports:
       junit: 
         - "${CI_PROJECT_DIR}/jobs_scratch_dir/small_tests.xml"
