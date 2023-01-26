@@ -385,13 +385,21 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
 
   tokens = meshName.split('.')
   tokens.pop()
-  etoBaseName = '.'.join(tokens) + '_'
+  etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
-  cntr=0
+  num_tess_files=0
   for file in os.listdir('./ESP_Mesh/Scratch/egads'):
     if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
-      subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + str(cntr) + '.eto'])
-      cntr += 1
+      num_tess_files += 1
+
+  if num_tess_files == 1:
+    subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in os.listdir('./ESP_Mesh/Scratch/egads'):
+      if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
+        subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+        cntr += 1
 
 ##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
@@ -440,13 +448,21 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
 
   tokens = meshName.split('.')
   tokens.pop()
-  etoBaseName = '.'.join(tokens) + '_'
-  subprocess.call(['cp', './mesh/Scratch/tetgen/tetgen_0.exo', meshName])
-  cntr=0
-  for file in os.listdir('./mesh/Scratch/aflr4_aflr4AIM'):
+  etoBaseName = '.'.join(tokens)
+  subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+  num_tess_files=0
+  for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
     if fnmatch.fnmatch(file, 'aflr4_*.eto'):
-      subprocess.call(['cp', './mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + str(cntr) + '.eto'])
-      cntr += 1
+      num_tess_files += 1
+
+  if num_tess_files == 1:
+    subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
+      if fnmatch.fnmatch(file, 'aflr4_*.eto'):
+        subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+        cntr += 1
 
 ##############################################################################
 ## define function that generates exodus mesh from csm file
