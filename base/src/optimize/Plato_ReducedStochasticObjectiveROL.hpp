@@ -103,6 +103,7 @@ private:
         {
             const double tStochasticParameterValue = this->getParameter()[i];
             const std::string& tStochasticParameterName = this->engineInputData().getStochasticParameterNames().at(i);
+            this->debugOutput("   Updating stochastic parameter with name " + tStochasticParameterName + " to " + std::to_string(tStochasticParameterValue));
             this->interface()->setParameterOnOperation(
                 StageName{this->engineInputData().getObjectiveValueStageName()}, 
                 OperationName{this->engineInputData().getObjectiveValueParametersOperationName()},

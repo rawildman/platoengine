@@ -216,7 +216,7 @@ public:
         }
     }
 
-private:
+protected:
     void debugOutput(const std::string& aOutput) const
     {
         if(mDebugOutput)
@@ -225,6 +225,7 @@ private:
         }
     }
 
+private:
     std::size_t numDesignVariables() const
     {
         constexpr size_t tCONTROL_INDEX = 0;
@@ -337,7 +338,7 @@ private:
 
     bool mStateComputed = false;
     bool mGradientComputed = false;
-    bool mDebugOutput = true;
+    bool mDebugOutput = false;
     std::string mHessianType;
 
     mutable std::ofstream mDebugLog;
