@@ -63,21 +63,10 @@ template <typename ScalarType, typename ScalarVectorType>
 void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
 {
     int tCntr=0;
-    int tNumActiveBodies=0;
-    // Count the "active bodies" (those on the stack).
-    for (int ibody=1; ibody<=modelT->nbody; ibody++)
-    {
-        if (modelT->body[ibody].onstack == 1)
-        {
-            tNumActiveBodies++;
-        }
-    }
     std::string tTessBaseName("");
-    if(tNumActiveBodies > 1)
-    {
-        std::size_t tPos = this->mTessFileName.find(".eto");
-        tTessBaseName = this->mTessFileName.substr(0, tPos);
-    }
+    std::size_t tPos = this->mTessFileName.find(".eto");
+    tTessBaseName = this->mTessFileName.substr(0, tPos);
+
     /* store the tessellation object in OpenCSM */
     for (int ibody=1; ibody<=modelT->nbody; ibody++)
     {
@@ -88,11 +77,8 @@ void ESPImpl<ScalarType,ScalarVectorType>::tesselate()
         {
             EG_deleteObject(modelT->body[ibody].etess);
         }
-        std::string tCurTessName = this->mTessFileName;
-        if(tNumActiveBodies > 1)
-        {
-            tCurTessName = tTessBaseName + "_" + std::to_string(tCntr++) + ".eto";
-        }
+
+        std::string tCurTessName = tTessBaseName + "_" + std::to_string(tCntr++) + ".eto";
        
         auto tStatus = EG_loadTess(tBody, (char*)tCurTessName.c_str(), &modelT->body[ibody].etess);
         if (tStatus != EGADS_SUCCESS)
