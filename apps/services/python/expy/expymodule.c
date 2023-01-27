@@ -770,7 +770,7 @@ expy_get_coord_names(PyObject *self, PyObject *args)
   int i;
   int exoid, num_dim;
   char *coord_names[3];
-  PyObject *names[3];
+  PyObject *names[3] = {NULL, NULL, NULL};
 
   if (!PyArg_ParseTuple(args, "ii:get_coord_names", &exoid, &num_dim))
     return NULL;
