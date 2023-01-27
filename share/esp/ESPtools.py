@@ -1,6 +1,8 @@
 import os
 import sys
+import fnmatch
 import subprocess
+import pyCAPS
 from shutil import copyfile
 from pyCAPS import capsProblem
 from contextlib import contextmanager
@@ -186,7 +188,7 @@ def toExo(meshName, groupAttrs):
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh
 ##############################################################################
-def updateModel(modelName, paramVals):
+def updateModelAflr4Aflr3Exodus(modelName, paramVals):
 
 
   #
@@ -286,9 +288,186 @@ def updateModel(modelName, paramVals):
   subprocess.call(['mv', modedName, modelName])
 
 ##############################################################################
+## define function that converts su2 mesh to exo mesh
+##############################################################################
+def updateModelXXXTetgenExodus(modelName, paramVals):
+
+  modedName = modelName + ".tmp"
+
+  subprocess.call(['cp', modelName, modedName])
+
+  #
+  # If paramVals were provided, set them in the model file
+  #
+
+  for ip in range(len(paramVals)):
+    p = paramVals[ip]
+    print("param: " + str(p))
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
+    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
+    print("command: ", command)
+    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
+    f.close()
+    subprocess.call(['mv', tmp_string, modedName])
+
+  subprocess.call(['mv', modedName, modelName])
+
+##############################################################################
+## define function for running aflr4_aflr3 meshing workflow
+##############################################################################
+def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+
+  aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+
+  ## get capsGroup map
+  groupAttrs = []
+  f_in = open('aflr4_aflr3.console')
+  for line in f_in:
+    tokens = line.split(' ')
+    tokens = list(filter(None, tokens)) ## filter out empty strings
+    if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
+      numberLine = f_in.readline()
+      tokens = numberLine.split(' = ')
+      tokens = list(filter(None, tokens)) ## filter out empty strings
+      if tokens[0].strip() == "Number of unique capsGroup attributes":
+        numLines = int(tokens[1].strip())
+        for iEntry in range(numLines):
+          nextLine = f_in.readline()
+          defs = nextLine.split(', ')
+          defs = list(filter(None, defs)) ## filter out empty strings
+          groupName = defs[0].split(' = ')[1].strip()
+          groupIndex = defs[1].split(' = ')[1].strip()
+          groupAttrs.append({"name": groupName, "index": groupIndex})
+  
+  with redirected('toExo.console'):
+    toExo(meshName, groupAttrs)
+
+##############################################################################
+## define function for running aflr4_aflr3 meshing workflow
+##############################################################################
+def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+
+  problem = pyCAPS.Problem(problemName = "ESP_Mesh",
+                     capsFile=modelNameOut,
+                     outLevel=1)
+  surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
+
+  surface.input.Mesh_Length_Factor = 1.0;
+
+  face_sizes = problem.geometry.cfgpmtr.egadsFaceMeshSizes
+  max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
+  max_dihedral_angles = problem.geometry.cfgpmtr.egadsMeshMaxDihedralAngles
+  surf_mesh_sizing={}
+  if hasattr(face_sizes, "__len__"): 
+    for i in range(len(face_sizes)):
+      temp={"tessParams":[face_sizes[i],max_curvature_dists[i],max_dihedral_angles[i]]}
+      cur_name = "FaceSize" + str(i+1)
+      surf_mesh_sizing[cur_name] = temp
+  else:
+    temp={"tessParams":[face_sizes,max_curvature_dists,max_dihedral_angles]}
+    surf_mesh_sizing["FaceSize1"] = temp
+  
+  surface.input.Mesh_Sizing = surf_mesh_sizing
+  volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
+  volume.input["Surface_Mesh"].link(surface.output["Surface_Mesh"])
+
+  volume.input.Multiple_Mesh = 'MultiDomain'
+  # Equation for volume of perfectly formed tet
+  adjusted_mesh_edge_length = .8*problem.geometry.cfgpmtr.egadsMaxTetEdgeSize
+  mesh_max_tet_volume = adjusted_mesh_edge_length*adjusted_mesh_edge_length*adjusted_mesh_edge_length/8.485
+  volume.input.Mesh_Gen_Input_String="a" + str(mesh_max_tet_volume) + "pYq1.100/0.000T1.00e-16A"
+  volume.runAnalysis()
+  plato = problem.analysis.create(aim='platoAIM', name='plato')
+  plato.input["Mesh"].link(volume.output["Volume_Mesh"])
+  plato.preAnalysis()
+  plato.postAnalysis()
+
+  tokens = meshName.split('.')
+  tokens.pop()
+  etoBaseName = '.'.join(tokens)
+  subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+  num_tess_files=0
+  for file in os.listdir('./ESP_Mesh/Scratch/egads'):
+    if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
+      num_tess_files += 1
+
+  if num_tess_files == 1:
+    subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in os.listdir('./ESP_Mesh/Scratch/egads'):
+      if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
+        subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+        cntr += 1
+
+##############################################################################
+## define function for running aflr4_aflr3 meshing workflow
+##############################################################################
+def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+
+  problem = capsProblem()
+  model = problem.loadCAPS(modelNameOut)
+  aflr4 = problem.loadAIM(aim         = "aflr4AIM",
+                      altName     = "aflr4",
+                      analysisDir = ".")
+
+  #problem = pyCAPS.Problem(problemName = "ESP_Mesh",
+  #                   capsFile=modelNameOut,
+  #                   outLevel=1)
+  #aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
+  #aflr4 = problem.loadAIM(aim         = "aflr4AIM",
+  #                    altName     = "aflr4",
+  #                    analysisDir = ".")
+  aflr4.setAnalysisVal("Proj_Name", "ESP_Mesh")
+  aflr4.setAnalysisVal("Mesh_Format", "ETO")
+  aflr4.setAnalysisVal("Mesh_Length_Factor", .2)
+  aflr4.setAnalysisVal("min_scale", 1)
+  aflr4.setAnalysisVal("max_scale", 1)
+  #aflr4.input.Mesh_Format = "ETO"
+  #aflr4.input.Mesh_Length_Factor = 1 
+  #aflr4.input.min_scale =  1
+  #aflr4.input.max_scale = 1
+  #aflr4.runAnalysis()
+  aflr4.preAnalysis()
+  aflr4.postAnalysis()
+  volume = problem.analysis.create(aim='tetgenAIM', name='tetgen')
+  volume.input["Surface_Mesh"].link(aflr4.output["Surface_Mesh"])
+  volume.input.Multiple_Mesh = 'MultiDomain'
+  #volume.input.Mesh_Gen_Input_String="a2.00e-4pYq1.500/0.000T1.00e-16A"
+  # Equation for volume of perfectly formed tet
+  #adjusted_mesh_edge_length = .8*mesh_edge_length
+  adjusted_mesh_edge_length = .8*problem.geometry.cfgpmtr.egadsMaxTetEdgeSize
+  mesh_max_tet_volume = adjusted_mesh_edge_length*adjusted_mesh_edge_length*adjusted_mesh_edge_length/8.485
+  volume.input.Mesh_Gen_Input_String="a" + str(mesh_max_tet_volume) + "pYq1.100/0.000T1.00e-16A"
+  volume.runAnalysis()
+  plato = problem.analysis.create(aim='platoAIM', name='plato')
+  plato.input["Mesh"].link(volume.output["Volume_Mesh"])
+  plato.preAnalysis()
+  plato.postAnalysis()
+
+  tokens = meshName.split('.')
+  tokens.pop()
+  etoBaseName = '.'.join(tokens)
+  subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+  num_tess_files=0
+  for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
+    if fnmatch.fnmatch(file, 'aflr4_*.eto'):
+      num_tess_files += 1
+
+  if num_tess_files == 1:
+    subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
+      if fnmatch.fnmatch(file, 'aflr4_*.eto'):
+        subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+        cntr += 1
+
+##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -322,9 +501,12 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   subprocess.call(['cp', modelNameIn, modelNameOut])
 
-  # with redirected('csm.console'):
-  #   updateModel(modelNameOut, paramVals)
-  updateModel(modelNameOut, paramVals)
+  if workflow == "aflr4_aflr3":
+    updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
+  elif workflow == "egads_tetgen":
+    updateModelXXXTetgenExodus(modelNameOut, paramVals)
+  elif workflow == "aflr4_tetgen":
+    updateModelXXXTetgenExodus(modelNameOut, paramVals)
 
   if geom != None:
     # with redirected('dump.console'):
@@ -337,32 +519,17 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
       exit(return_code)
 
   if mesh == True:
-    with redirected('aflr.console'):
-      aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+    if workflow == "aflr4_aflr3":
+      with redirected('aflr4_aflr3.console'):
+        aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
-    ## get capsGroup map
-    groupAttrs = []
-    f_in = open('aflr.console')
-    for line in f_in:
-      tokens = line.split(' ')
-      tokens = list(filter(None, tokens)) ## filter out empty strings
-      if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
-        numberLine = f_in.readline()
-        tokens = numberLine.split(' = ')
-        tokens = list(filter(None, tokens)) ## filter out empty strings
-        if tokens[0].strip() == "Number of unique capsGroup attributes":
-          numLines = int(tokens[1].strip())
-          for iEntry in range(numLines):
-            nextLine = f_in.readline()
-            defs = nextLine.split(', ')
-            defs = list(filter(None, defs)) ## filter out empty strings
-            groupName = defs[0].split(' = ')[1].strip()
-            groupIndex = defs[1].split(' = ')[1].strip()
-            groupAttrs.append({"name": groupName, "index": groupIndex})
-        
+    elif workflow == "egads_tetgen":
+      with redirected('egads_tetgen.console'):
+        egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
-    with redirected('toExo.console'):
-      toExo(meshName, groupAttrs)
+    elif workflow == "aflr4_tetgen":
+      with redirected('aflr4_tetgen.console'):
+        aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])

@@ -128,7 +128,7 @@ void append_compute_objective_gradient_operation_for_shape_problem
     addChild(tmp_node1, "ArgumentName", "Internal Energy Gradient");
 }
 /**************************************************************************/
-void append_internal_energy_gradient_operation
+void append_internal_energy_gradient_operation_topology
 (const XMLGen::Scenario& aScenario,
  pugi::xml_document& aDocument)
 {
@@ -139,6 +139,19 @@ void append_internal_energy_gradient_operation
     append_SIMP_penalty_model(aScenario, tOperationNode);
     auto tOutputNode = tOperationNode.append_child("OutputGradient");
     append_children({"Name"}, {"Internal Energy Gradient"}, tOutputNode);
+}
+/**************************************************************************/
+void append_internal_energy_gradient_operation_shape
+(const XMLGen::InputData& aMetaData,
+ pugi::xml_document& aDocument)
+{
+    auto tOperationNode = aDocument.append_child("Operation");
+    append_children({"Function", "Name"}, {"Compute Criterion Gradient", "Compute Gradient"}, tOperationNode);
+    if(aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
+    {
+        auto tOutputNode = tOperationNode.append_child("Output");
+        append_children({"ArgumentName"}, {"DFDX"}, tOutputNode);
+    }
 }
 /**************************************************************************/
 void append_internal_energy_hessian_operation
@@ -247,9 +260,17 @@ void add_operations_gradient_based_problem
     append_cache_state_operation(aMetaData, aDocument);
     append_displacement_operation(aScenario, aDocument);
     append_internal_energy_operation(aScenario, aDocument);
-    append_internal_energy_gradient_operation(aScenario, aDocument);
-    if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) {
-        append_compute_objective_gradient_operation_for_shape_problem(aScenario, aDocument);
+    if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY) 
+    {
+        append_internal_energy_gradient_operation_topology(aScenario, aDocument);
+    }
+    else if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) 
+    {
+        append_internal_energy_gradient_operation_shape(aMetaData, aDocument);
+        if (aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3") 
+        {
+            append_compute_objective_gradient_operation_for_shape_problem(aScenario, aDocument);
+        }
     }
     append_internal_energy_hessian_operation(aMetaData, aScenario, aDocument);
 }

@@ -141,6 +141,8 @@ def esp_action(args):
     argsDict['precision'] = args.precision
   if args.parameters != None:
     argsDict['parameters'] = args.parameters
+  if args.workflow != None:
+    argsDict['workflow'] = args.workflow
     
   scriptFilePath = source_dir() + '/esp/mesh.py'
 
@@ -257,6 +259,9 @@ esp_parser.add_argument('--precision', dest='precision', \
 
 esp_parser.add_argument('--parameters', dest='parameters', nargs='*', \
   help='List of parameter values to construct the mesh')
+
+esp_parser.add_argument('--workflow', dest='workflow', \
+  help='String identifying which CAP workflow to use')
 
 esp_parser.set_defaults(func=esp_action)
 

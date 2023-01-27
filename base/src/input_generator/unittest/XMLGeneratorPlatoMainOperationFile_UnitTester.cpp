@@ -51,6 +51,46 @@ TEST(PlatoTestXMLGenerator, AppendEnforceBoundsToPlatoMainOperationsFile)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendChainRuleToPlatoMainOperationsFile)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("esp_workflow", "egads_tetgen");
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_chain_rule_operation_to_plato_main_operation(tMetaData, tDocument);
+    //tDocument.save_file("xml.txt", " ");
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+
+    std::vector<std::string> tKeys = {"Name", "Function", "For", "Input", "Output"};
+    std::vector<std::string> tValues = {"Chain Rule", "ChainRule", "", "", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tFor = tOperation.child("For");
+    ASSERT_FALSE(tFor.empty());
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tFor);
+
+    auto tInput = tFor.child("Input");
+    tKeys = {"ArgumentName"};
+    tValues = {"Parameter Sensitivity {I}"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    tInput = tOperation.child("Input");
+    tKeys = {"ArgumentName"};
+    tValues = {"DFDX"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    auto tOutput = tOperation.child("Output");
+    tKeys = {"ArgumentName"};
+    tValues = {"Full Gradient"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOutput);
+}
+
 TEST(PlatoTestXMLGenerator, AppendDeterministicQoIToOutputOperation_non_multi_load_case)
 {
     XMLGen::InputData tMetaData;

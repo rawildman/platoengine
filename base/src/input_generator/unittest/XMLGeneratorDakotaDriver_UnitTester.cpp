@@ -390,9 +390,9 @@ TEST(PlatoTestXMLGenerator, InsertShapeOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_shape_optimization_input_options(tTags);
-    EXPECT_EQ(2u, tTags.size());
+    EXPECT_EQ(3u, tTags.size());
 
-    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""} };
+    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr4_aflr3"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
@@ -1669,6 +1669,7 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
     tOptimizationParameters.append("num_shape_design_variables", "3");
+    tOptimizationParameters.append("esp_workflow", "aflr");
     tXMLMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
@@ -1682,12 +1683,12 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     std::vector<std::string> tKeys = {"Function", "Name", 
         "Command", "OnChange", 
         "Argument", "Argument", "Argument", 
-        "Argument", "Argument", 
+        "Argument", "Argument", "Argument", 
         "AppendInput", "Input"};
     std::vector<std::string> tValues = {"SystemCall", "update_geometry_on_change_0", 
         "cd evaluations_0; plato-cli geometry esp", "true", 
         "--input rocker_0.csm", "--output-model rocker_opt_0.csm", "--output-mesh rocker_0.exo",
-        "--tesselation rocker_0.eto", "--parameters",
+        "--tesselation rocker_0.eto", "--workflow aflr", "--parameters",
         "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
@@ -1702,12 +1703,12 @@ TEST(PlatoTestXMLGenerator, AppendUpdateGeometryOnChangeToPlatoMainOperationsFil
     tKeys = {"Function", "Name", 
         "Command", "OnChange", 
         "Argument", "Argument", "Argument", 
-        "Argument", "Argument", 
+        "Argument", "Argument", "Argument", 
         "AppendInput", "Input"};
     tValues = {"SystemCall", "update_geometry_on_change_1", 
         "cd evaluations_1; plato-cli geometry esp", "true", 
         "--input rocker_1.csm", "--output-model rocker_opt_1.csm", "--output-mesh rocker_1.exo",
-        "--tesselation rocker_1.eto", "--parameters",
+        "--tesselation rocker_1.eto", "--workflow aflr", "--parameters",
         "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     tInput = tOperation.child("Input");
@@ -2276,12 +2277,14 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_PAPerformer)
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("mpiexec--oversubscribe-np1-xPLATO_PERFORMER_ID=0\\") + 
@@ -2338,12 +2341,13 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_SDPerformer)
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("mpiexec--oversubscribe-np1-xPLATO_PERFORMER_ID=0\\") + 
@@ -2430,12 +2434,13 @@ TEST(PlatoTestXMLGenerator, AppendMPIRunLinesToLaunchScript_SDPerformer_Decomp_T
     tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
     tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
     tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tInputData.set(tOptimizationParameters);
 
     ASSERT_NO_THROW(XMLGen::generate_mpirun_launch_script(tInputData));
 
     auto tReadData = XMLGen::read_data_from_file("mpirun.source");
-    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto;\\") + 
+    auto tGold = std::string("plato-cligeometryesp--inputrocker.csm--output-modelrocker_opt.csm--output-meshrocker.exo--tesselationrocker.eto--workflowaflr4_aflr3;\\") + 
         std::string("cprocker.exoevaluations_0/rocker_0.exo") + 
         std::string("cprocker.exoevaluations_1/rocker_1.exo") + 
         std::string("cdevaluations_0;cubit-inputsubBlock.jou-batch-nographics-nogui-noecho-nojournal-nobanner-informationoff;cd..") +

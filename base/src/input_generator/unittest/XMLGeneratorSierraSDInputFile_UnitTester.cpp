@@ -63,7 +63,15 @@ TEST(PlatoTestXMLGenerator, SD_changeSolutionCase)
     "TOPOLOGY-OPTIMIZATION\n"
     "  algorithm = plato_engine\n"
     "  volume_fraction = .314\n"
-    "END\n";
+    "END\n"
+    "begin contact definition\n"
+    "    skin all blocks = on\n"
+    "    begin interaction defaults\n"
+    "        general contact = on\n"
+    "        friction model = tied\n"
+    "    end interaction defaults\n"
+    "end\n";
+
 
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }
@@ -92,7 +100,14 @@ TEST(PlatoTestXMLGenerator, SD_augmentMaterialSection)
     "TOPOLOGY-OPTIMIZATION\n"
     "  algorithm = plato_engine\n"
     "  volume_fraction = .314\n"
-    "END\n";
+    "END\n"
+    "begin contact definition\n"
+    "    skin all blocks = on\n"
+    "    begin interaction defaults\n"
+    "        general contact = on\n"
+    "        friction model = tied\n"
+    "    end interaction defaults\n"
+    "end\n";
 
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }
@@ -117,7 +132,14 @@ TEST(PlatoTestXMLGenerator, SD_augmentOutputsSection)
     "TOPOLOGY-OPTIMIZATION\n"
     "  algorithm = plato_engine\n"
     "  volume_fraction = .314\n"
-    "END\n";
+    "END\n"
+    "begin contact definition\n"
+    "    skin all blocks = on\n"
+    "    begin interaction defaults\n"
+    "        general contact = on\n"
+    "        friction model = tied\n"
+    "    end interaction defaults\n"
+    "end\n";
 
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }
@@ -142,7 +164,14 @@ TEST(PlatoTestXMLGenerator, SD_augmentEchoSection)
     "TOPOLOGY-OPTIMIZATION\n"
     "  algorithm = plato_engine\n"
     "  volume_fraction = .314\n"
-    "END\n";
+    "END\n"
+    "begin contact definition\n"
+    "    skin all blocks = on\n"
+    "    begin interaction defaults\n"
+    "        general contact = on\n"
+    "        friction model = tied\n"
+    "    end interaction defaults\n"
+    "end\n";
 
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }
@@ -199,7 +228,14 @@ TEST(PlatoTestXMLGenerator, SD_deckWithManySections)
     "TOPOLOGY-OPTIMIZATION\n"
     "  algorithm = plato_engine\n"
     "  volume_fraction = .314\n"
-    "END\n";
+    "END\n"
+    "begin contact definition\n"
+    "    skin all blocks = on\n"
+    "    begin interaction defaults\n"
+    "        general contact = on\n"
+    "        friction model = tied\n"
+    "    end interaction defaults\n"
+    "end\n";
 
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }

@@ -920,8 +920,7 @@ void append_objective_gradient_stage_for_shape_problem
             XMLGen::Service tService = aMetaData.service(tServiceID); 
             ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
             auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
-            auto tSharedDataName = "Criterion Gradient - " + tIdentifierString;
-            XMLGen::append_compute_objective_sensitivity_operation(tService.performer(), tSharedDataName, tOuterOperationNode);
+            XMLGen::append_compute_objective_sensitivity_operation(aMetaData, tService, tIdentifierString, tOuterOperationNode);
         }
         if(aMetaData.needToAggregate())
         {

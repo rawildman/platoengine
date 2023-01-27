@@ -442,13 +442,15 @@ void append_aggregate_objective_value_operation_for_non_multi_load_case
 /******************************************************************************//**
  * \fn append_compute_objective_sensitivity_operation
  * \brief Append objective sensitivity operation for shape optimization problem
- * \param [in]  aPerformer Name of current performer
- * \param [in]  aSharedDataName Name of shared data to store result
+ * \param [in]  aMetaData  Plato problem input data
+ * \param [in]  aService Current service
+ * \param [in]  aSharedDataName Criterion identifier string
  * \param [out] aParentNode parent xml node
 **********************************************************************************/
 void append_compute_objective_sensitivity_operation
-(const std::string &aPerformer,
- const std::string &aSharedDataName,
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Service &aService,
+ const std::string &aIdentifierString,
  pugi::xml_node &aParentNode);
 
 /******************************************************************************//**

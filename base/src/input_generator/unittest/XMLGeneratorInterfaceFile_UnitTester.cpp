@@ -265,10 +265,12 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStage_shape_multi_performer)
 
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
     ASSERT_NO_THROW(XMLGen::append_objective_gradient_stage(tMetaData, tDocument));
+    tDocument.save_file("xml.txt", " ");
 
     // STAGE INPUTS
     auto tStage = tDocument.child("Stage");
@@ -1955,6 +1957,115 @@ TEST(PlatoTestXMLGenerator, AppendObjectiveGradientStageWithHelmholtz)
     auto tOutput = tStage.child("Output");
     ASSERT_STREQ("Output", tOutput.name());
     PlatoTestXMLGenerator::test_children({"SharedDataName"}, {"Objective Gradient"}, tOutput);
+}
+
+TEST(PlatoTestXMLGenerator, AppendCriteriaSharedData_SO_egads_tetgen_workflow)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+    tService.id("2");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("esp_workflow", "egads_tetgen");
+    tOptimizationParameters.append("num_shape_design_variables", "3");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_criterion_shared_data(tMetaData, tDocument));
+
+    auto tSharedData = tDocument.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    std::vector<std::string> tValues = {"Criterion Value - criterion_3_service_2_scenario_14", "Scalar", "Global", "1", "plato_analyze_2", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tSharedData = tSharedData.next_sibling("SharedData");
+    tKeys = {"Name", "Type", "Layout", "Dynamic", "OwnerName", "UserName"};
+    tValues = {"Criterion GradientX - criterion_3_service_2_scenario_14", "Scalar", "Global", "true", "plato_analyze_2", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tSharedData = tSharedData.next_sibling("SharedData");
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"Criterion Gradient - criterion_3_service_2_scenario_14", "Scalar", "Global", "3", "platomain_1", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+}
+
+TEST(PlatoTestXMLGenerator, AppendCriteriaSharedData_SO_aflr_workflow)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("platomain");
+    tMetaData.append(tService);
+    tService.id("2");
+    tService.code("plato_analyze");
+    tMetaData.append(tService);
+    
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("3");
+    tCriterion.type("mechanical_compliance");
+    tMetaData.append(tCriterion);
+
+    XMLGen::Scenario tScenario;
+    tScenario.id("14");
+    tScenario.physics("steady_state_mechanics");
+    tMetaData.append(tScenario);
+    
+    XMLGen::Objective tObjective;
+    tObjective.type = "single_criterion";
+    tObjective.serviceIDs.push_back("2");
+    tObjective.criteriaIDs.push_back("3");
+    tObjective.scenarioIDs.push_back("14");
+    tObjective.weights.push_back("1");
+    tMetaData.objective = tObjective;
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
+    tOptimizationParameters.append("num_shape_design_variables", "4");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+
+    ASSERT_NO_THROW(XMLGen::append_gradient_based_criterion_shared_data(tMetaData, tDocument));
+
+    auto tSharedData = tDocument.child("SharedData");
+    ASSERT_FALSE(tSharedData.empty());
+    ASSERT_STREQ("SharedData", tSharedData.name());
+    std::vector<std::string> tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    std::vector<std::string> tValues = {"Criterion Value - criterion_3_service_2_scenario_14", "Scalar", "Global", "1", "plato_analyze_2", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
+
+    tSharedData = tSharedData.next_sibling("SharedData");
+    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
+    tValues = {"Criterion Gradient - criterion_3_service_2_scenario_14", "Scalar", "Global", "4", "plato_analyze_2", "platomain_1"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 }
 
 TEST(PlatoTestXMLGenerator, AppendConstraintGradientStageWithHelmholtz)

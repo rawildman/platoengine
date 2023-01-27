@@ -64,6 +64,7 @@ void write_plato_main_operations_xml_file
     XMLGen::append_initialize_geometry_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(aMetaData, tDocument);
     XMLGen::append_enforce_bounds_operation_to_plato_main_operation(aMetaData, tDocument);
+    XMLGen::append_chain_rule_operation_to_plato_main_operation(aMetaData, tDocument);
     
     if (XMLGen::do_tet10_conversion(aMetaData)) 
         XMLGen::append_tet10_conversion_operation_to_plato_main_operation(aMetaData, tDocument);
@@ -350,6 +351,31 @@ void append_enforce_bounds_operation_to_plato_main_operation
     }
 }
 // function append_enforce_bounds_operation_to_plato_main_operation
+/******************************************************************************/
+
+/******************************************************************************/
+void append_chain_rule_operation_to_plato_main_operation
+(const XMLGen::InputData& aXMLMetaData,
+ pugi::xml_document &aDocument)
+{
+    if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
+    {
+        if(aXMLMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
+        {
+            auto tOperationNode = aDocument.append_child("Operation");
+            XMLGen::append_children({"Name","Function"}, {"Chain Rule","ChainRule"}, tOperationNode);
+            auto tForNode = tOperationNode.append_child("For");
+            XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
+            auto tInputNode = tForNode.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"Parameter Sensitivity {I}"}, tInputNode);
+            tInputNode = tOperationNode.append_child("Input");
+            XMLGen::append_children({"ArgumentName"}, {"DFDX"}, tInputNode);
+            auto tOutputNode = tOperationNode.append_child("Output");
+            XMLGen::append_children({"ArgumentName"}, {"Full Gradient"}, tOutputNode);
+        }
+    }
+}
+// function append_chain_rule_operation_to_plato_main_operation
 /******************************************************************************/
 
 /******************************************************************************/
@@ -896,6 +922,7 @@ void append_initialize_geometry_operation_to_plato_main_operation
         addChild(tmp_node, "Argument", std::string("--output-model ") + aXMLMetaData.optimization_parameters().csm_opt_file());
         addChild(tmp_node, "Argument", std::string("--output-mesh ") + aXMLMetaData.optimization_parameters().csm_exodus_file());
         addChild(tmp_node, "Argument", std::string("--tesselation ") + aXMLMetaData.optimization_parameters().csm_tesselation_file());
+        addChild(tmp_node, "Argument", std::string("--workflow ") + aXMLMetaData.optimization_parameters().esp_workflow());
     }
 }
 // function append_initialize_geometry_operation_to_plato_main_operation
@@ -1141,6 +1168,7 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "Argument", std::string("--output-model ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_opt_file(),aTag));
     addChild(aParentNode, "Argument", std::string("--output-mesh ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),aTag));
     addChild(aParentNode, "Argument", std::string("--tesselation ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_tesselation_file(),aTag));
+    addChild(aParentNode, "Argument", std::string("--workflow ") + aXMLMetaData.optimization_parameters().esp_workflow());
     addChild(aParentNode, "Argument", "--parameters");
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");

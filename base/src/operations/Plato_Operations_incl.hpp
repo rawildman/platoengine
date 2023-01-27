@@ -51,6 +51,7 @@
 #include "Plato_Filter.hpp"
 #include "Plato_CopyField.hpp"
 #include "Plato_CopyValue.hpp"
+#include "Plato_ChainRule.hpp"
 #include "Plato_Roughness.hpp"
 #include "Plato_SystemCall.hpp"
 #include "Plato_SystemCallOperation.hpp"

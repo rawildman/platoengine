@@ -318,6 +318,14 @@ void PlatoApp::initialize( bool initializeTimers )
                 continue;
             }
 
+            tFunctions.push_back("ChainRule");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::ChainRule(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("CopyValue");
             if(tStrFunction == tFunctions.back())
             {

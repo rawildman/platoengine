@@ -826,7 +826,7 @@ ExodusIO::readConn()
         ++global_element_count;
       }
     } else if (!strncasecmp(elemtype, "TETRA", 5) ||
-               !strncasecmp(elemtype, "TET4",  4) ) {
+               !strncasecmp(elemtype, "TET4",  3) ) {
       const int NNPE = 4;
       int* loconn = connect;
       for( int k=0; k<num_elem_in_block[i]; ++k ) {

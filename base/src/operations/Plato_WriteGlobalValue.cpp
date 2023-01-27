@@ -98,7 +98,7 @@ void WriteGlobalValue::operator()()
 
         for(unsigned int i = 0; i < tFromData.size(); i++)
         {
-            tOutfile << std::setprecision(8) << tFromData[i] << " ";
+            tOutfile << std::setprecision(8) << tFromData[i] << std::endl;
         }
         tOutfile << std::endl;
         tOutfile.close();
