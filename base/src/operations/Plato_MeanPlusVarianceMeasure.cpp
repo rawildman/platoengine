@@ -68,10 +68,6 @@ MeanPlusVarianceMeasure::MeanPlusVarianceMeasure(PlatoApp *aPlatoApp,
     this->initialize(aOperationNode);
 }
 
-MeanPlusVarianceMeasure::~MeanPlusVarianceMeasure()
-{
-}
-
 void MeanPlusVarianceMeasure::operator()()
 {
     this->computeMeanQoI();

@@ -53,7 +53,11 @@
 #include "Plato_SharedData.hpp"
 #include "Plato_SerializationHeaders.hpp"
 
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/weak_ptr.hpp>
+
 #include <map>
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -72,11 +76,15 @@ class DataLayer
 public:
     DataLayer() = default;
     DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato::CommunicationData & aCommData);
-    ~DataLayer();
+
+    DataLayer(const Plato::DataLayer & aRhs) = delete;
+    Plato::DataLayer & operator=(const Plato::DataLayer & aRhs) = delete;
+    DataLayer(Plato::DataLayer && aRhs) = delete;
+    Plato::DataLayer & operator=(Plato::DataLayer && aRhs) = delete;
 
     // accessors
-    SharedData* getSharedData(const std::string & aName) const;
-    const std::vector<SharedData*> & getSharedData() const;
+    SharedData& getSharedData(const std::string & aName) const;
+    const std::vector<std::shared_ptr<SharedData>> & getSharedData() const;
 
     template<typename Archive>
     void serialize(Archive& aArchive, const unsigned int aVersion)
@@ -85,13 +93,10 @@ public:
         aArchive & boost::serialization::make_nvp("SharedDataMap", mSharedDataMap);
     }
     void initializeMPI(const Plato::CommunicationData& aCommData);
-private:
-    std::vector<SharedData*> mSharedData;
-    std::map<std::string, SharedData*> mSharedDataMap;
 
 private:
-    DataLayer(const Plato::DataLayer & aRhs);
-    Plato::DataLayer & operator=(const Plato::DataLayer & aRhs);
+    std::vector<std::shared_ptr<SharedData>> mSharedData;
+    std::map<std::string, std::weak_ptr<SharedData>> mSharedDataMap;
 };
 
 } /* namespace Plato */

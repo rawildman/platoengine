@@ -54,9 +54,12 @@
 #include <vector>
 #include <memory>
 
+#include <boost/serialization/shared_ptr.hpp>
+
 #include "Plato_Operation.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_SerializationHeaders.hpp"
+#include "Plato_InterfaceTypes.hpp"
 
 namespace Plato
 {
@@ -66,21 +69,17 @@ class StageInputDataMng;
 //! Sequence of Operations that correspond to a call to Plato::Interface::compute()
 /*!
  */
-class Stage
+class Stage final
 {
 public:
     Stage() = default;
     Stage(const Plato::StageInputDataMng & aStageInputData,
           const std::shared_ptr<Plato::Performer> aPerformer,
-          const std::vector<Plato::SharedData*>& aSharedData);
-    ~Stage();
+          const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     void update(const Plato::StageInputDataMng & aStageInputData,
 		const std::shared_ptr<Plato::Performer> aPerformer,
-
-		const std::vector<Plato::SharedData*>& aSharedData);
-
-    void addOperation(Operation* aOperation);
+		const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     Plato::Operation* getNextOperation();
     void begin();
@@ -106,14 +105,30 @@ public:
         aArchive & boost::serialization::make_nvp("CurrentOperationIndex",currentOperationIndex);
     }
 
+    /// @return `true` if any operation on this stage has a parameter with name @a aParameterName
+    bool hasParameter(const std::string& aParameterName) const;
+
+    /// @return `true` if this stage has an operation with name @a aOperationName and that operation has
+    ///  a parameter with name @a aParameterName.
+    bool operationHasParameter(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName) const;
+
+    /// Attempts to assign @a aValue to the parameter with name @a aParameter name held by operation
+    /// with name @a aOperationName.
+    /// @pre operationHasParameter returns `true`. Otherwise, no parameter is set.
+    void setParameterOnOperation(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
+        double aValue) const;
 private:
     void initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                              const std::vector<Plato::SharedData*>& aSharedData);
+                              const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData);
 
     std::string m_name;
-    std::vector<Plato::Operation*> m_operations;
-    std::vector<Plato::SharedData*> m_inputData;
-    std::vector<Plato::SharedData*> m_outputData;
+    std::vector<std::unique_ptr<Operation>> m_operations;
+    std::vector<std::shared_ptr<Plato::SharedData>> m_inputData;
+    std::vector<std::shared_ptr<Plato::SharedData>> m_outputData;
 
     int currentOperationIndex = 0;
 };

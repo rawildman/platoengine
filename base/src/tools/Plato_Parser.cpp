@@ -201,7 +201,7 @@ MathParser::parse(std::string aExpr)
 }
 
 InputData
-PugiParser::parseFile(const std::string& filename)
+PugiParser::parseFile(const std::string& filename) const
 {
     auto tInput = std::make_shared<pugi::xml_document>();
     pugi::xml_parse_result tResult = tInput->load_file(filename.c_str());
@@ -215,7 +215,7 @@ PugiParser::parseFile(const std::string& filename)
 }
 
 InputData
-PugiParser::parseString(const std::string& inputString)
+PugiParser::parseString(const std::string& inputString) const
 {
     auto tInput = std::make_shared<pugi::xml_document>();
     pugi::xml_parse_result tResult = tInput->load_string(inputString.c_str());
@@ -227,7 +227,7 @@ PugiParser::parseString(const std::string& inputString)
 }
 
 InputData
-PugiParser::read(std::shared_ptr<pugi::xml_document> doc)
+PugiParser::read(std::shared_ptr<pugi::xml_document> doc) const
 {
 
     preProcess(doc);
@@ -244,7 +244,7 @@ PugiParser::read(std::shared_ptr<pugi::xml_document> doc)
 
 
 void
-PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc)
+PugiParser::preProcess(std::shared_ptr<pugi::xml_document> doc) const
 {
 
     // process 'includes'.  included files are pulled in verbatim.
@@ -669,7 +669,7 @@ PugiParser::findReplace(std::string aString, std::string aFind, std::string aRep
 }
 
 void
-PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData)
+PugiParser::addChildren(const pugi::xml_node& node, InputData& inputData) const
 {
     for (pugi::xml_node& child: node.children())
     {
@@ -1206,6 +1206,8 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.addDescentDirectionName(tDescentDirectionName);
     }
+    aOptimizerEngineStageData.setStochasticParameterNames(
+        tOptimizationVariablesNode.getByName<std::string>("StochasticParameterName"));
 }
 
 /******************************************************************************/
@@ -1378,6 +1380,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
+    aOptimizerStageData.setObjectiveValueParametersOperationName(Plato::Get::String(aObjectiveNode, "ValueParametersOperationName"));
 
     std::string tOutputSharedDataGradientName = Plato::Get::String(aObjectiveNode, "GradientName");
     std::string tObjectiveGradientStageName = Plato::Get::String(aObjectiveNode, "GradientStageName");
@@ -1393,6 +1396,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << __LINE__ << ", MESSAGE: USER DID NOT DEFINE OBJECTIVE FUNCTION OUTPUT SHARED DATA OR ITS STAGE NAME. " << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
+    aOptimizerStageData.setObjectiveGradientParametersOperationName(Plato::Get::String(aObjectiveNode, "GradientParametersOperationName"));
 
     std::string tOutputSharedDataHessianName = Plato::Get::String(aObjectiveNode, "HessianName");
     std::string tObjectiveHessianStageName = Plato::Get::String(aObjectiveNode, "HessianStageName");
@@ -1401,6 +1405,7 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
         aOptimizerStageData.setObjectiveHessianStageName(tObjectiveHessianStageName);
         aOptimizerStageData.setObjectiveHessianOutputName(tOutputSharedDataHessianName);
     }
+    aOptimizerStageData.setObjectiveHessianParametersOperationName(Plato::Get::String(aObjectiveNode, "HessianParametersOperationName"));
 }
 
 /******************************************************************************/
@@ -1648,6 +1653,18 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
         {
             bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
             aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
+        }
+        if( tOptionsNode.size<std::string>("ROLStochasticDistributionsFile"))
+        {
+            aOptimizerEngineStageData.setROLStochasticDistributionsFile(Get::String(tOptionsNode, "ROLStochasticDistributionsFile"));
+        }
+        if( tOptionsNode.size<std::string>("ROLStochasticNumberOfSamples"))
+        {
+            aOptimizerEngineStageData.setROLStochasticNumberOfSamples(Get::Int(tOptionsNode, "ROLStochasticNumberOfSamples"));
+        }
+        if( tOptionsNode.size<std::string>("ROLStochasticSamplerSeed"))
+        {
+            aOptimizerEngineStageData.setROLStochasticSamplerSeed(Get::Int(tOptionsNode, "ROLStochasticSamplerSeed"));
         }
     }
 }

@@ -109,6 +109,12 @@ public:
     virtual std::string myContext() const { return std::string(); }
 
     /******************************************************************************//**
+     * \brief Set the context of the shared data, typically the name of the operation
+     *  for a parameter.
+    **********************************************************************************/
+    virtual void setMyContext(std::string /*aContext*/) {}
+
+    /******************************************************************************//**
      * \brief Return data layout/format
      * \return data layout/format
     **********************************************************************************/

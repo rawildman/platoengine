@@ -48,6 +48,7 @@
 #include "ROL_Solver.hpp"
 
 #include "Plato_ReducedObjectiveROL.hpp"
+#include "Plato_ReducedStochasticObjectiveROL.hpp"
 #include "Plato_ReducedConstraintROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
 
@@ -66,18 +67,18 @@ public:
     {
     }
 
-    void initialize() final override 
+    void initialize() override 
     {
         OptimizerInterface<ScalarType,OrdinalType>::initialize();
         mOutputBuffer = getOutputBuffer();
     }
 
-    Plato::optimizer::algorithm_t algorithm() const
+    Plato::optimizer::algorithm_t algorithm() const override
     {
         return mAlgorithmType;
     }
 
-    void run()
+    void run() override
     {
         this->initialize();
         constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
@@ -91,7 +92,7 @@ public:
         this->setInitialGuess(tControlName, *tControls);
         
         /********************************* SET OPTIMIZATION PROBLEM *********************************/
-        Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
+        Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = makeObjective();
         ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(tObjective, tControls);
                 
         tOptimizationProblem->addBoundConstraint(tControlBoundsMng);
@@ -104,6 +105,8 @@ public:
             createOptimizationProblemAugmentedLagrangian(*tOptimizationProblem);
         }
         
+        tOptimizationProblem = updateProblem(std::move(tOptimizationProblem));
+
         const bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
         constexpr bool tPrintToStream = true;
 
@@ -127,8 +130,20 @@ public:
         this->finalize();
     }
 
-private:
-    std::ofstream mOutputFile;
+protected:
+    virtual Teuchos::RCP<ROL::Objective<ScalarType>> makeObjective() const
+    {
+        return Teuchos::rcp(new Plato::ReducedObjectiveROL<ScalarType>(this->mInputData, this->mInterface));
+    }
+
+    /// Override this function to perform any additional setup for the optimization problem.
+    /// For example, the stochastic optimization methods need to specify that the objective
+    /// and or constraint are stochastic.
+    virtual ROL::Ptr<ROL::Problem<ScalarType>> updateProblem(ROL::Ptr<ROL::Problem<ScalarType>>&& aOptimizationProblem) const
+    {
+        return std::move(aOptimizationProblem);
+    }
+
     std::streambuf *getOutputBuffer() 
     {
         int tMyRank = -1;
@@ -211,11 +226,6 @@ private:
         this->printControl(aOptimizationProblem);
     }
     
-protected:
-
-    std::streambuf *mOutputBuffer;
-    Plato::optimizer::algorithm_t mAlgorithmType;
-
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     {
         int tMyRank = -1;
@@ -282,7 +292,7 @@ protected:
         }
     }
 
-    Teuchos::RCP<Teuchos::ParameterList> updateParameterListFromRolInputsFile()
+    Teuchos::RCP<Teuchos::ParameterList> updateParameterListFromRolInputsFile() const
     {
         const std::string tFileName = this->mInputData.getInputFileName();
         Teuchos::RCP<Teuchos::ParameterList> tParameterList = Teuchos::rcp(new Teuchos::ParameterList);
@@ -387,10 +397,17 @@ protected:
      * @brief All optimizing is done so do any optional final
      * stages. Called only once from the interface.
     **********************************************************************************/
-    void finalize()
+    void finalize() override
     {
         this->mInterface->finalize(this->mInputData.getFinalizationStageName());
     }
+
+protected:
+    std::ofstream mOutputFile;
+
+private:
+    std::streambuf *mOutputBuffer;
+    Plato::optimizer::algorithm_t mAlgorithmType;
 };
 
 } // namespace Plato

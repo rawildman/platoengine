@@ -81,7 +81,7 @@ class InputData {
    *  If an entry by this name already exists and the typeids do not match, an exception is thrown.
    */
   template <typename T>
-  void set(std::string name, const T& value, unsigned int index = 0)
+  void set(const std::string& name, const T& value, unsigned int index = 0)
   {
     auto num = m_parameters->count(name);
 
@@ -111,7 +111,7 @@ class InputData {
    */ 
  
   template <typename T>
-  unsigned int size(std::string name) const
+  unsigned int size(const std::string& name) const
   {
     unsigned int numWithNameAndType = 0;
     for( auto it  = m_parameters->lower_bound(name); 
@@ -130,7 +130,7 @@ class InputData {
    */ 
  
   template <typename T>
-  T get(std::string name, unsigned int index = 0) const
+  T get(const std::string& name, unsigned int index = 0) const
   {
     auto num = m_parameters->count(name);
 
@@ -156,7 +156,7 @@ class InputData {
    */ 
  
   template <typename T>
-  T get_add(std::string name, unsigned int index = 0) 
+  T get_add(const std::string& name, unsigned int index = 0) 
   {
     auto num = m_parameters->count(name);
     if( index == num ){
@@ -173,7 +173,7 @@ class InputData {
    *   
    */
   template <typename T>
-  void add(std::string name, const T& value)
+  void add(const std::string& name, const T& value)
   {
     auto range = m_parameters->equal_range(name);
     for(auto it=range.first; it!=range.second; ++it){
@@ -191,7 +191,7 @@ class InputData {
    *
    */
   template <typename T>
-  std::vector<T> getByName(std::string name) const
+  std::vector<T> getByName(const std::string& name) const
   {
     std::vector<T> retVector;
     auto range = m_parameters->equal_range(name);

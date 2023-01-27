@@ -65,43 +65,40 @@
 
 namespace Plato
 {
+namespace{
+std::vector<std::string> getSharedDataNames(const std::vector<std::shared_ptr<SharedData>>& aSharedData)
+{
+    std::vector<std::string> tNames;
+    std::transform(aSharedData.cbegin(), aSharedData.cend(), std::back_inserter(tNames), 
+    [](const std::shared_ptr<SharedData>& tSharedData)
+    {
+        return tSharedData->myName();
+    });
+    return tNames;
+}   
+}
+
 /******************************************************************************/
 Stage::Stage(const Plato::StageInputDataMng & aStageInputData,
              const std::shared_ptr<Plato::Performer> aPerformer,
-             const std::vector<Plato::SharedData*>& aSharedData) :
+             const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData) :
         m_name(aStageInputData.getStageName())
 /******************************************************************************/
 {
     initializeSharedData(aStageInputData, aSharedData);
 
-    // Parse/Create Operations
-    //
-    Plato::OperationFactory opFactory;
-
     const int tNumOperations = aStageInputData.getNumOperations(m_name);
     for(int tOperationIndex = 0; tOperationIndex < tNumOperations; tOperationIndex++)
     {
         const Plato::OperationInputDataMng & tOperationDataMng = aStageInputData.getOperationInputData(m_name, tOperationIndex);
-        m_operations.push_back(opFactory.create(tOperationDataMng, aPerformer, aSharedData));
+        m_operations.push_back(OperationFactory::create(tOperationDataMng, aPerformer, aSharedData));
     }
-}
-
-/******************************************************************************/
-Stage::~Stage()
-/******************************************************************************/
-{
-    const size_t num_operations = m_operations.size();
-    for(size_t operation_index = 0u; operation_index < num_operations; operation_index++)
-    {
-       delete m_operations[operation_index];
-    }
-    m_operations.clear();
 }
 
 /******************************************************************************/
 void Stage::update(const Plato::StageInputDataMng & aStageInputData,
 		   const std::shared_ptr<Plato::Performer> aPerformer,
-		   const std::vector<Plato::SharedData*>& aSharedData)
+		   const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
     // If the shared data is recreated then the stage and its
@@ -119,20 +116,15 @@ void Stage::update(const Plato::StageInputDataMng & aStageInputData,
     for(size_t tOperationIndex = 0u; tOperationIndex < num_operations; tOperationIndex++)
     {
         const Plato::OperationInputDataMng & tOperationDataMng =
-	  aStageInputData.getOperationInputData(m_name, tOperationIndex);
+	        aStageInputData.getOperationInputData(m_name, tOperationIndex);
 
         m_operations[tOperationIndex]->update(tOperationDataMng, aPerformer, aSharedData);
     }
 }
 
-void Stage::addOperation(Operation* aOperation)
-{
-    m_operations.push_back(aOperation);
-}
-
 /******************************************************************************/
 void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputData,
-                                 const std::vector<Plato::SharedData*>& aSharedData)
+                                 const std::vector<std::shared_ptr<Plato::SharedData>>& aSharedData)
 /******************************************************************************/
 {
     // Get the input shared data.
@@ -140,7 +132,7 @@ void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputDat
     for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
     {
         std::string tSharedDataName = aStageInputData.getInput(m_name, tInputIndex);
-        Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+        std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tSharedDataName);
         if(tSharedData)
         {
             m_inputData.push_back(tSharedData);
@@ -158,10 +150,10 @@ void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputDat
     for(int tOutputIndex = 0; tOutputIndex < tNumOutputs; tOutputIndex++)
     {
         std::string tSharedDataName = aStageInputData.getOutput(m_name, tOutputIndex);
-        Plato::SharedData* tSharedData = Utils::byName(aSharedData, tSharedDataName);
+        std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tSharedDataName);
         if(tSharedData)
         {
-            m_outputData.push_back(tSharedData);
+            m_outputData.push_back(std::move(tSharedData));
         }
         else
         {
@@ -170,38 +162,27 @@ void Stage::initializeSharedData(const Plato::StageInputDataMng & aStageInputDat
             throw Plato::ParsingException(tErrorMessage.str());
         }
     }
-
 }
 
 /******************************************************************************/
 std::vector<std::string> Stage::getInputDataNames() const
 /******************************************************************************/
 {
-    std::vector<std::string> tNames;
-    for(Plato::SharedData* tSharedData : m_inputData)
-    {
-        tNames.push_back(tSharedData->myName());
-    }
-    return tNames;
+    return getSharedDataNames(m_inputData);
 }
 
 /******************************************************************************/
 std::vector<std::string> Stage::getOutputDataNames() const
 /******************************************************************************/
 {
-    std::vector<std::string> tNames;
-    for(Plato::SharedData* tSharedData : m_outputData)
-    {
-        tNames.push_back(tSharedData->myName());
-    }
-    return tNames;
+    return getSharedDataNames(m_outputData);
 }
 
 /******************************************************************************/
 void Stage::begin()
 /******************************************************************************/
 {
-    for(Plato::SharedData* tSharedData : m_inputData)
+    for(auto& tSharedData : m_inputData)
     {
         tSharedData->transmitData();
     }
@@ -217,7 +198,7 @@ Stage::getNextOperation()
     Plato::Operation* tOperation = nullptr;
     if(static_cast<int>(m_operations.size()) > currentOperationIndex)
     {
-        tOperation = m_operations[currentOperationIndex];
+        tOperation = m_operations[currentOperationIndex].get();
     }
     currentOperationIndex++;
     return tOperation;
@@ -227,7 +208,7 @@ Stage::getNextOperation()
 void Stage::end()
 /******************************************************************************/
 {
-    for(Plato::SharedData* tSharedData : m_outputData)
+    for(auto& tSharedData : m_outputData)
     {
         tSharedData->transmitData();
     }
@@ -238,13 +219,48 @@ void Stage::setPerformerOnOperations(std::shared_ptr<Performer> aPerformer)
 /******************************************************************************/
 {
     assert(aPerformer);
-    for(auto operation : m_operations)
+    for(auto& operation : m_operations)
     {
         if(operation)
         {
             operation->setPerformer(std::move(aPerformer));
         }
     }
+}
+
+bool Stage::hasParameter(const std::string& aParameterName) const
+{
+    return std::any_of(m_operations.cbegin(), m_operations.cend(), 
+    [&aParameterName](const std::unique_ptr<Operation>& aOperation)
+    {
+        return aOperation->hasParameter(aParameterName);
+    });
+}
+
+bool Stage::operationHasParameter(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName) const
+{
+    const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
+    [&aOperationName](const std::unique_ptr<Operation>& aOperation){
+        return aOperation->getOperationName() == aOperationName.mValue;
+    });
+    return tOperationIter != m_operations.end() ? (*tOperationIter)->hasParameter(aParameterName.mValue) : false;
+}
+
+void Stage::setParameterOnOperation(
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
+        const double aValue) const
+{
+    const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
+    [&aOperationName](const std::unique_ptr<Operation>& aOperation){
+        return aOperation->getOperationName() == aOperationName.mValue;
+    });
+    if(tOperationIter != m_operations.end() && (*tOperationIter)->hasParameter(aParameterName.mValue))
+    {
+        (*tOperationIter)->setParameterValue(aParameterName.mValue, aValue);
+    } 
 }
 
 } // End namespace Plato

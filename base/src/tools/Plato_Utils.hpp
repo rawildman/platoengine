@@ -42,6 +42,7 @@
 #ifndef PLATO_UTILS_H
 #define PLATO_UTILS_H
 
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <unistd.h>
@@ -52,8 +53,8 @@ namespace Plato
 namespace Utils
 {
 
-template<typename T>
-T* byName(const std::vector<T*> & aArgumentVector, const std::string & aName);
+template <typename T>
+T byName(const std::vector<T> & aArgumentVector, const std::string & aName);
 
 /******************************************************************************//**
  * \brief Utility function used to avoid warning related to unused variables.
@@ -100,8 +101,8 @@ inline std::string current_working_directory();
 template <typename T, typename NameTag>
 struct NamedType
 {
-    explicit NamedType(const T& value) : mValue(value) {}
-    explicit NamedType(T&& value) : mValue(std::move(value)) {}
+    constexpr explicit NamedType(const T& value) : mValue(value) {}
+    constexpr explicit NamedType(T&& value) : mValue(std::move(value)) {}
 
     T mValue;
 };
@@ -114,14 +115,14 @@ struct NamedType
 
 /************* byName **************/
 template <typename T>
-T* Plato::Utils::byName(const std::vector<T*> & aArgumentVector, const std::string & aName)
+T Plato::Utils::byName(const std::vector<T> & aArgumentVector, const std::string & aName)
 {
-  for( T* item : aArgumentVector ){
-    if( item->myName() == aName ){
-      return item;
-    }
-  }
-  return nullptr;
+  const auto tItemIter = std::find_if(aArgumentVector.cbegin(), aArgumentVector.cend(), 
+  [&aName](const T& aItem)
+  {
+    return aItem->myName() == aName;
+  });
+  return tItemIter == aArgumentVector.cend() ? nullptr : *tItemIter;
 }
 /************* byName **************/
 

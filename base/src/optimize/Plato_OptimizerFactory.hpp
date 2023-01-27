@@ -63,6 +63,7 @@
 
 #ifdef ENABLE_ROL
 #include "Plato_ROLInterface.hpp"
+#include "Plato_StochasticROLInterface.hpp"
 #endif
 
 namespace Plato
@@ -72,22 +73,15 @@ namespace Plato
  * \brief Construct interface to optimization algorithm
 **********************************************************************************/
 template<typename ScalarType, typename OrdinalType = size_t>
-class OptimizerFactory
+class OptimizerFactory final
 {
 public:
-    /******************************************************************************//**
-     * \brief Constructor
-    **********************************************************************************/
-    OptimizerFactory()
-    {
-    }
+    OptimizerFactory() = default;
 
-    /******************************************************************************//**
-     * \brief Destructuor
-    **********************************************************************************/
-    ~OptimizerFactory()
-    {
-    }
+    OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&) = delete;
+    Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&) = delete;
+    OptimizerFactory(Plato::OptimizerFactory<ScalarType, OrdinalType>&&) = delete;
+    Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(Plato::OptimizerFactory<ScalarType, OrdinalType>&&) = delete;
 
     /******************************************************************************//**
      * \brief Construct interface to optimization algorithm
@@ -259,6 +253,14 @@ public:
            tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
          } catch(...){aInterface->Catch();}
        }
+       else if( tOptPackage == "ROL Stochastic" )
+       {
+         try {
+          // todo: Need to set up linear constraint vs. bound vs. nonlinear?
+           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
+           tOptimizer = new Plato::StochasticROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+         } catch(...){aInterface->Catch();}
+       }
 #endif
         else
         {
@@ -343,9 +345,6 @@ public:
     }
 
 private:
-    OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
-
-    Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&);
 
     std::vector<size_t> mOptimizerIndex;
 };

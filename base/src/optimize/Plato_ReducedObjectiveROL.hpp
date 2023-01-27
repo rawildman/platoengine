@@ -126,7 +126,7 @@ public:
      * \param [in] aIteration outer loop optimization iteration
     **********************************************************************************/
     using ROL::Objective<ScalarType>::update;
-    void update(const ROL::Vector<ScalarType> & aControl, ROL::UpdateType aUpdateType, int aIteration = -1)
+    void update(const ROL::Vector<ScalarType> & aControl, ROL::UpdateType aUpdateType, int aIteration = -1) override
     {
         debugOutput("update() called with aUpdateType: " + updateType(aUpdateType) + " and aIteration: " + std::to_string(aIteration));
 
@@ -157,10 +157,9 @@ public:
      * \param [in] aTolerance inexactness tolerance
      * \return objective function value
     **********************************************************************************/
-    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         debugOutput("value() called");
-
         if(!mStateComputed)
         {
             computeValue(aControl);
@@ -175,7 +174,7 @@ public:
      * \param [in] aControl design variables
      * \param [in] aTolerance inexactness tolerance
     **********************************************************************************/
-    void gradient(ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    void gradient(ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         debugOutput("gradient() called");
         if(!mStateComputed)
@@ -200,7 +199,7 @@ public:
      * \param [in] aControl design variables
      * \param [in] aTolerance inexactness tolerance
      **********************************************************************************/
-    void hessVec(ROL::Vector<ScalarType> & aHessVec, const ROL::Vector<ScalarType> & aVector, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    void hessVec(ROL::Vector<ScalarType> & aHessVec, const ROL::Vector<ScalarType> & aVector, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
     {
         debugOutput("hessVec() called");
         if(mHessianType == "zero")
@@ -217,7 +216,7 @@ public:
         }
     }
 
-private:
+protected:
     void debugOutput(const std::string& aOutput) const
     {
         if(mDebugOutput)
@@ -226,11 +225,12 @@ private:
         }
     }
 
+private:
     std::size_t numDesignVariables() const
     {
         constexpr size_t tCONTROL_INDEX = 0;
-        std::vector<std::string> tControlNames = mEngineInputData.getControlNames();
-        std::string tMyControlName = tControlNames[tCONTROL_INDEX];
+        const std::vector<std::string> tControlNames = mEngineInputData.getControlNames();
+        const std::string tMyControlName = tControlNames[tCONTROL_INDEX];
         return mInterface->size(tMyControlName);
     }
 
@@ -300,6 +300,7 @@ private:
         std::string tCacheStageName = mEngineInputData.getCacheStageName();
         if(tCacheStageName.empty() == false)
         {
+            debugOutput("      caching state with stage " + tCacheStageName);
             tStageNames.push_back(tCacheStageName);
             mInterface->compute(tStageNames, mParameterList);
         }
@@ -307,6 +308,22 @@ private:
         mStateComputed = true;
     }
 
+protected:
+    Interface* interface() const
+    {
+        return mInterface;
+    }
+
+    const OptimizerEngineStageData& engineInputData() const
+    {
+        return mEngineInputData;
+    }
+
+    void unsetComputedStateFlags()
+    {
+        mStateComputed = false;
+        mGradientComputed = false;
+    }
 private:
     Plato::Interface* mInterface; /*!< PLATO Engine interface */
     Plato::OptimizerEngineStageData mEngineInputData; /*!< XML input data */

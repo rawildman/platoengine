@@ -929,7 +929,8 @@ inline bool build_load_sroms
  std::vector<Plato::srom::RandomLoadCase>& aOutput)
 {
     aOutput.clear();
-    std::vector<Plato::srom::Load> tRandomLoads, tDeterministicLoads;
+    std::vector<Plato::srom::Load> tDeterministicLoads;
+    std::vector<Plato::srom::Load> tRandomLoads;
     if(Plato::srom::expand_random_and_deterministic_loads(aLoads, tRandomLoads, tDeterministicLoads) == false)
     {
         PRINTERR("FAILED TO GENERATE THE SETS OF RANDOM AND DETERMINISTIC LOADS.\n");

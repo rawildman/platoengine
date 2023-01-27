@@ -145,17 +145,15 @@ Plato::InputData Interface::getInputData() const
 }
 
 /******************************************************************************/
-int Interface::getStageIndex(std::string aStageName) const
+int Interface::getStageIndex(const std::string& aStageName) const
 /******************************************************************************/
 {
-    for(size_t tIndex = 0; tIndex < mStages.size(); ++tIndex)
+    const auto tStageIter = std::find_if(mStages.cbegin(), mStages.cend(), 
+    [&aStageName](const std::unique_ptr<Stage>& aStage)
     {
-        if(mStages[tIndex]->getName() == aStageName)
-        {
-            return tIndex;
-        }
-    }
-    return -1;
+        return aStage->getName() == aStageName;
+    });
+    return tStageIter != mStages.cend() ? static_cast<int>(std::distance(mStages.cbegin(), tStageIter)) : -1;
 }
 
 /******************************************************************************/
@@ -185,38 +183,27 @@ void Interface::broadcastStageIndex(int & aStageIndex)
 
 /******************************************************************************/
 Plato::Stage*
-Interface::getStage(std::string aStageName)
+Interface::getStage(const std::string& aStageName)
 /******************************************************************************/
 {
     // check for control file
     std::ifstream tControlFile;
     tControlFile.open("plato.control");
+    bool tControlTerminate = false;
     if(tControlFile)
     {
-        Plato::Parser* parser = new Plato::PugiParser();
-        auto tControlData = parser->parseFile("plato.control");
-        delete parser;
-
-        auto tTerminate = Plato::Get::Bool(tControlData, "Terminate", false);
-
-        if(tTerminate)
-        {
-            aStageName = "Terminate";
-        }
+        const Plato::PugiParser tParser;
+        auto tControlData = tParser.parseFile("plato.control");
+        tControlTerminate = Plato::Get::Bool(tControlData, "Terminate", false);
     }
-
     // broadcast the index of the next stage
-    int tStageIndex;
-    if(aStageName == "Terminate")
-        tStageIndex = TERMINATE_STAGE;
-    else
-        tStageIndex = getStageIndex(aStageName);
-
+    const bool tIsTerminateStage = aStageName == "Terminate" || tControlTerminate;
+    int tStageIndex = tIsTerminateStage ? TERMINATE_STAGE : getStageIndex(aStageName);
     broadcastStageIndex(tStageIndex);
 
     if(tStageIndex >= 0)
     {
-        return mStages[tStageIndex];
+        return mStages[tStageIndex].get();
     }
     else
     {
@@ -237,7 +224,7 @@ Interface::getStage()
 
     if(tStageIndex >= 0)
     {
-        return mStages[tStageIndex];
+        return mStages[tStageIndex].get();
     }
     else
     {
@@ -295,19 +282,18 @@ void Interface::perform()
 /******************************************************************************/
 {
     // This handleException matches the one in Plato_Main.cpp main().
-    this->handleExceptions();
+    handleExceptions();
 
-    while(this->isDone() == false)
+    while(isDone() == false)
     {
         // Performers 'hang' here until a new stage is established
-        Plato::Stage* tStage = this->getStage();
+        Plato::Stage* const tStage = getStage();
         // 'Terminate' stage is nullptr
         if(tStage == nullptr)
         {
             continue;
         }
-
-        this->perform(tStage);
+        perform(*tStage);
     }
 
     mPerformer->finalize();
@@ -321,90 +307,73 @@ void Interface::reinitializePerformer()
 }
 
 /******************************************************************************/
-void Interface::perform(Plato::Stage* aStage)
+void Interface::perform(Plato::Stage& aStage)
 /******************************************************************************/
 {
     // Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
 
     // Intercept this stage as it is an internal stage. That is the
     // user does not need to define it.
-    if( aStage->getName() == "Update Shared Data" )
+    if( aStage.getName() == "Update Shared Data" )
     {
-        Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage->getName());
+        Console::Status("Perform Stage: (" + mPerformer->myName() + ") " + aStage.getName());
 
-        this->createSharedData( mPerformer->getApplication() );
+        createSharedData( mPerformer->getApplication() );
 
         // After creating the shared data all of the stages and their
         // operations need to be updated so to have the new links to
         // the shared data.
-        this->updateStages();
+        updateStages();
 
-        this->reinitializePerformer();
+        reinitializePerformer();
     }
     else
     {
         // transmits input data
         //
-        aStage->begin();
+        aStage.begin();
 
         // any local operations?
         //
-        Plato::Operation* tOperation = aStage->getNextOperation();
+        Plato::Operation* tOperation = aStage.getNextOperation();
         while(tOperation)
         {
             // Console::Status("Perform Operation: (" + mPerformer->myName() + ") " + tOperation->getOperationName());
             tOperation->sendInput();
+            tOperation->sendParameters();
 
             // copy data from Plato::SharedData buffers to hostedCode data containers
             //
-            std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
-            for(std::string tName : tOperationInputDataNames)
+            const std::vector<std::string> tOperationInputDataNames = tOperation->getInputDataNames();
+            for(const std::string& tName : tOperationInputDataNames)
             {
-                try
-                {
+                tryFCatchInterfaceExceptions([tOperation, &tName, this](){
                     tOperation->importData(tName, mDataLayer->getSharedData(tName));
-                }
-                catch(...)
-                {
-                    mExceptionHandler->Catch();
-                }
-                this->handleExceptions();
+                });
             }
 
-            try
-            {
+            tryFCatchInterfaceExceptions([tOperation](){
                 tOperation->compute();
-            }
-            catch(...)
-            {
-                mExceptionHandler->Catch();
-            }
-            this->handleExceptions();
+            });
 
             // copy data from hostedCode data containers to Plato::SharedData buffers
             //
-            std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
-            for(std::string tName : tOperationOutputDataNames)
+            const std::vector<std::string> tOperationOutputDataNames = tOperation->getOutputDataNames();
+            for(const std::string& tName : tOperationOutputDataNames)
             {
-                try
-                {
+                tryFCatchInterfaceExceptions([tOperation, &tName, this](){
                     tOperation->exportData(tName, mDataLayer->getSharedData(tName));
-                }
-                catch(...)
-                {
-                    mExceptionHandler->Catch();
-                }
-                this->handleExceptions();
+                });
             }
 
             tOperation->sendOutput();
 
-            tOperation = aStage->getNextOperation();
+            tOperation = aStage.getNextOperation();
         }
 
         // transmits output data
         //
-        aStage->end();
+        aStage.end();
     }
 }
 
@@ -416,11 +385,11 @@ void Interface::finalize( std::string aStageName )
     if(aStageName.empty() == false)
     {
         Teuchos::ParameterList tParameterList;
-        this->compute(aStageName, tParameterList);
+        compute(aStageName, tParameterList);
     }
 
     // At this point all drivers have completed so terminate.
-    this->getStage("Terminate");
+    getStage("Terminate");
 }
 
 /******************************************************************************/
@@ -429,7 +398,7 @@ void Interface::compute(const std::vector<std::string> & aStageNames, Teuchos::P
 {
     for(const std::string & tStageName : aStageNames)
     {
-        this->compute(tStageName, aArguments);
+        compute(tStageName, aArguments);
     }
 }
 
@@ -440,7 +409,7 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
     // Console::Status("Compute Stage: (" + mPerformer->myName() + ") " + aStageName);
 
     // Find the requested stage
-    Plato::Stage* tStage = getStage(aStageName);
+    Plato::Stage* const tStage = getStage(aStageName);
 
     if( tStage == nullptr )
     {
@@ -452,40 +421,40 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
 
     // Unpack input arguments into Plato::SharedData
     //
-    std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
-    for(std::string tName : tStageInputDataNames)
+    const std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
+    for(const std::string& tName : tStageInputDataNames)
     {
         exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
     }
 
-    this->perform(tStage);
+    perform(*tStage);
 
     // Unpack output arguments from Plato::SharedData
     //
-    std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
-    for(std::string tName : tStageOutputDataNames)
+    const std::vector<std::string> tStageOutputDataNames = tStage->getOutputDataNames();
+    for(const std::string& tName : tStageOutputDataNames)
     {
         importData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
     }
 }
 
 /******************************************************************************/
-void Interface::exportData(double* aFrom, Plato::SharedData* aTo)
+void Interface::exportData(double* aFrom, Plato::SharedData& aTo)
 /******************************************************************************/
 {
-    int tMyLength = aTo->size();
+    const int tMyLength = aTo.size();
     std::vector<double> tExportData(tMyLength);
     std::copy(aFrom, aFrom + tMyLength, tExportData.begin());
-    aTo->setData(tExportData);
+    aTo.setData(tExportData);
 }
 
 /******************************************************************************/
-void Interface::importData(double* aTo, Plato::SharedData* aFrom)
+void Interface::importData(double* aTo, Plato::SharedData& aFrom)
 /******************************************************************************/
 {
-    int tMyLength = aFrom->size();
+    const int tMyLength = aFrom.size();
     std::vector<double> tImportData(tMyLength);
-    aFrom->getData(tImportData);
+    aFrom.getData(tImportData);
     std::copy(tImportData.begin(), tImportData.end(), aTo);
 }
 
@@ -497,6 +466,7 @@ void Interface::registerApplication(Plato::Application* aApplication)
     tryFCatchInterfaceExceptions([aApplication](){aApplication->initialize();});
     tryFCatchInterfaceExceptions([this, aApplication](){createSharedData(aApplication);});
     tryFCatchInterfaceExceptions([this](){createStages();});
+    validate();
 }
 
 /******************************************************************************/
@@ -506,6 +476,7 @@ void Interface::registerApplicationOnlyInitializeMPI(Application* aApplication)
     checkAndSetApplication(aApplication);
     setPerformerOnStages();
     initializeSharedDataMPI(aApplication);
+    validate();
 }
 
 /******************************************************************************/
@@ -517,8 +488,7 @@ void Interface::createStages()
     {
         Plato::StageInputDataMng tStageInputDataMng;
         Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
-        Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
-        mStages.push_back(tNewStage);
+        mStages.push_back(std::make_unique<Stage>(tStageInputDataMng, mPerformer, mDataLayer->getSharedData()));
     }
 
     // Add the internal stages. That is stages that the user does not
@@ -526,8 +496,7 @@ void Interface::createStages()
     {
         Plato::StageInputDataMng tStageInputDataMng;
         tStageInputDataMng.add("Update Shared Data");
-        Plato::Stage* tNewStage = new Plato::Stage(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
-        mStages.push_back(tNewStage);
+        mStages.push_back(std::make_unique<Stage>(tStageInputDataMng, mPerformer, mDataLayer->getSharedData()));
     }
 }
 
@@ -547,10 +516,10 @@ void Interface::updateStages()
         Plato::StageInputDataMng tStageInputDataMng;
         Plato::Parse::parseStageData(*tStageNode, tStageInputDataMng);
 
-        Plato::Stage* tStage =
-          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+        Plato::Stage& tStage =
+          *mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
 
-        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+        tStage.update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
     }
 
     // Update the internal stages. That is stages that the user does not
@@ -562,10 +531,10 @@ void Interface::updateStages()
 
         Plato::StageInputDataMng tStageInputDataMng;
         tStageInputDataMng.add("Update Shared Data");
-        Plato::Stage* tStage =
-          mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
+        Plato::Stage& tStage =
+          *mStages[ getStageIndex( tStageInputDataMng.getStageName() ) ];
 
-        tStage->update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
+        tStage.update(tStageInputDataMng, mPerformer, mDataLayer->getSharedData());
     }
 }
 
@@ -640,7 +609,7 @@ void Interface::getSharedDataAndCommunicationInfo(Application* const aApplicatio
         aSharedDataInfo.setSharedDataIdentifiers(tInfo.mName, tLayoutUppercase);
     }
 
-    this->exportGraph(aSharedDataInfo, aApplication, aCommunicationData);
+    exportGraph(aSharedDataInfo, aApplication, aCommunicationData);
 }
 
 /******************************************************************************/
@@ -814,7 +783,7 @@ void Interface::initializePerformerMPI()
 void Interface::setPerformerOnStages()
 /******************************************************************************/
 {
-    for(auto tStage : mStages)
+    for(const auto& tStage : mStages)
     {
         if(tStage)
         {
@@ -842,13 +811,13 @@ void Interface::exportGraph(const Plato::SharedDataInfo & aSharedDataInfo,
     if(aSharedDataInfo.isLayoutDefined("NODAL FIELD") == true)
     {
         auto tLayout = Plato::data::layout_t::SCALAR_FIELD;
-        this->exportOwnedGlobalIDs(tLayout, aApplication, aCommunicationData);
+        exportOwnedGlobalIDs(tLayout, aApplication, aCommunicationData);
     }
 
     if(aSharedDataInfo.isLayoutDefined("ELEMENT FIELD") == true)
     {
         auto tLayout = Plato::data::layout_t::ELEMENT_FIELD;
-        this->exportOwnedGlobalIDs(tLayout, aApplication, aCommunicationData);
+        exportOwnedGlobalIDs(tLayout, aApplication, aCommunicationData);
     }
 }
 
@@ -872,18 +841,7 @@ void Interface::exportOwnedGlobalIDs(const Plato::data::layout_t & aLayout,
 int Interface::size(const std::string & aName) const
 /******************************************************************************/
 {
-    int tLength = 0;
-
-    Plato::SharedData* tSharedData = mDataLayer->getSharedData(aName);
-    if(tSharedData)
-    {
-        tLength = tSharedData->size();
-    }
-    else
-    {
-        // TODO: throw?  return zereo?
-    }
-    return tLength;
+    return mDataLayer->getSharedData(aName).size();
 }
 
 /******************************************************************************/
@@ -954,12 +912,6 @@ Interface::~Interface()
         delete mConsole;
         mConsole = nullptr;
     }
-    const size_t tNumStages = mStages.size();
-    for(size_t tStageIndex = 0u; tStageIndex < tNumStages; tStageIndex++)
-    {
-        delete mStages[tStageIndex];
-    }
-    mStages.clear();
 }
 
 void Interface::checkAndSetApplication(Application* aApplication)
@@ -968,11 +920,62 @@ void Interface::checkAndSetApplication(Application* aApplication)
     {
         registerException(Plato::ParsingException("Failed to create Application"));
     }
-    this->handleExceptions();
+    handleExceptions();
 
     if(mPerformer)
     {
         mPerformer->setApplication(aApplication);
+    }
+}
+
+bool Interface::hasStageOperationAndParameter(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName) const
+{
+    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
+    [&aStageName](const std::unique_ptr<Stage>& aStage){
+        return aStage->getName() == aStageName.mValue;
+    });
+    return tStageIter != mStages.end() ? (*tStageIter)->operationHasParameter(aOperationName, aParameterName) : false;
+}
+
+void Interface::setParameterOnOperation(
+        const StageName& aStageName,
+        const OperationName& aOperationName, 
+        const ParameterName& aParameterName,
+        const double aValue)
+{
+    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
+    [&aStageName](const std::unique_ptr<Stage>& aStage){
+        return aStage->getName() == aStageName.mValue;
+    });
+    if(tStageIter != mStages.end())
+    {
+        (*tStageIter)->setParameterOnOperation(aOperationName, aParameterName, aValue);
+    } 
+}
+
+bool Interface::parameterExists(const std::string& aParameterName) const
+{
+    return std::any_of(mStages.cbegin(), mStages.cend(), 
+    [&aParameterName](const std::unique_ptr<Stage>& aStage)
+    {
+        return aStage->hasParameter(aParameterName);
+    });
+}
+
+void Interface::validate()
+{
+    for(const auto& tSharedData : mDataLayer->getSharedData())
+    {
+        if(tSharedData->myLayout() == data::layout_t::SCALAR_PARAMETER 
+            && !parameterExists(tSharedData->myName()))
+        {
+            registerException(ParsingException(
+                "A SharedData parameter was found without a matching Operation parameter. SharedData parameter name: "
+                + tSharedData->myName()));
+        }
     }
 }
 

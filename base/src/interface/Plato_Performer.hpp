@@ -82,7 +82,7 @@ public:
     void setApplication(Application* aApplication);
     Application * getApplication() const;
 
-    std::string myName();
+    const std::string& myName();
     int myCommID();
 
     //!{

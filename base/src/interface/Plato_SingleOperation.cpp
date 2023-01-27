@@ -81,7 +81,7 @@ std::string unrecognizedOperationErrorMessage(
 SingleOperation::
 SingleOperation(const Plato::OperationInputDataMng & aOperationDataMng,
                 const std::shared_ptr<Plato::Performer> aPerformer,
-                const std::vector<Plato::SharedData*>& aSharedData)
+                const std::vector<std::shared_ptr<SharedData>>& aSharedData)
 /******************************************************************************/
 {
     initialize(aOperationDataMng, aPerformer, aSharedData);
@@ -92,7 +92,7 @@ void
 SingleOperation::
 initialize(const Plato::OperationInputDataMng & aOperationDataMng,
            const std::shared_ptr<Plato::Performer> aPerformer,
-           const std::vector<Plato::SharedData*>& aSharedData)
+           const std::vector<std::shared_ptr<SharedData>>& aSharedData)
 /******************************************************************************/
 {
     m_performer = nullptr;
@@ -110,20 +110,27 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
         auto tParamsData = tAllParamsData.get<Plato::InputData>(m_performerName);
         for( auto tParamData : tParamsData.getByName<Plato::InputData>("Parameter") )
         {
-            auto tArgName  = Plato::Get::String(tParamData,"ArgumentName");
-            auto tArgValue = Plato::Get::Double(tParamData,"ArgumentValue");
-            m_parameters.insert(
-              std::pair<std::string, Parameter*>(tArgName, new Parameter(tArgName, m_operationName, tArgValue)));
+            const auto tArgName  = Plato::Get::String(tParamData,"ArgumentName");
+            const auto tArgValue = Plato::Get::Double(tParamData,"ArgumentValue");
+            std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tArgName);
+            if(tSharedData != nullptr)
+            {
+                tSharedData->setMyContext(m_operationName);
+                m_parameters.insert({tArgName, std::move(tSharedData)});
+            }
+            else
+            {
+                m_parameters.insert({tArgName, std::make_shared<Parameter>(tArgName, m_operationName, tArgValue)});
+            }
         }
     }
-
     // Get the input shared data.
     const int tNumInputs = aOperationDataMng.getNumInputs(m_performerName);
     for(int tInputIndex = 0; tInputIndex < tNumInputs; tInputIndex++)
     {
         const std::string & tArgumentName = aOperationDataMng.getInputArgument(m_performerName, tInputIndex);
         const std::string & tSharedDataName = aOperationDataMng.getInputSharedData(m_performerName, tInputIndex);
-        this->addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
+        addArgument(tArgumentName, tSharedDataName, aSharedData, m_inputData);
     }
     
     // Get the output shared data.
@@ -145,12 +152,11 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
 void SingleOperation::
 update(const Plato::OperationInputDataMng & aOperationDataMng,
        const std::shared_ptr<Plato::Performer> aPerformer,
-       const std::vector<Plato::SharedData*>& aSharedData)
+       const std::vector<std::shared_ptr<SharedData>>& aSharedData)
 /******************************************************************************/
 {
     // If the shared data is recreated then the operation must be
     // updated so to have the new links to the shared data.
-
     initialize(aOperationDataMng, aPerformer, aSharedData);
 }
 

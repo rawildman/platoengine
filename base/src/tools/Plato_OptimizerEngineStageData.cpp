@@ -144,12 +144,6 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
 }
 
 /******************************************************************************/
-OptimizerEngineStageData::~OptimizerEngineStageData()
-/******************************************************************************/
-{
-}
-
-/******************************************************************************/
 std::vector<double> OptimizerEngineStageData::getLowerBoundValues() const
 /******************************************************************************/
 {
@@ -614,6 +608,36 @@ void OptimizerEngineStageData::setROLCheckGradientSeed(const int & aInput)
     mROLCheckGradientSeed = aInput;
 }
 
+const std::string& OptimizerEngineStageData::getROLStochasticDistributionsFile() const
+{
+    return mROLStochasticDistributionsFile;
+}
+
+void OptimizerEngineStageData::setROLStochasticDistributionsFile(std::string aInput)
+{
+    mROLStochasticDistributionsFile = std::move(aInput);
+}
+
+int OptimizerEngineStageData::getROLStochasticNumberOfSamples() const
+{
+    return mROLStochasticNumberOfSamples;
+}
+
+void OptimizerEngineStageData::setROLStochasticNumberOfSamples(const int aInput)
+{
+    mROLStochasticNumberOfSamples = aInput;
+}
+
+int OptimizerEngineStageData::getROLStochasticSamplerSeed() const
+{
+    return mROLStochasticSamplerSeed;
+}
+
+void OptimizerEngineStageData::setROLStochasticSamplerSeed(const int aInput)
+{
+    mROLStochasticSamplerSeed = aInput;
+}
+
 /******************************************************************************/
 double OptimizerEngineStageData::getAugLagPenaltyScaleParameter() const
 {
@@ -919,11 +943,11 @@ void OptimizerEngineStageData::setUpdateProblemStageNames(const std::vector< std
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveValueOutputName() const
+const std::string& OptimizerEngineStageData::getObjectiveValueOutputName() const
 /******************************************************************************/
 {
     assert(mObjectiveValueOutputName.empty() == false);
-    return (mObjectiveValueOutputName);
+    return mObjectiveValueOutputName;
 }
 
 /******************************************************************************/
@@ -935,10 +959,10 @@ void OptimizerEngineStageData::setObjectiveValueOutputName(const std::string & a
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveValueStageName() const
+const std::string& OptimizerEngineStageData::getObjectiveValueStageName() const
 /******************************************************************************/
 {
-    return (mObjectiveValueStageName);
+    return mObjectiveValueStageName;
 }
 
 /******************************************************************************/
@@ -950,10 +974,24 @@ void OptimizerEngineStageData::setObjectiveValueStageName(const std::string & aI
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveHessianOutputName() const
+const std::string& OptimizerEngineStageData::getObjectiveValueParametersOperationName() const
 /******************************************************************************/
 {
-    return (mObjectiveHessianOutputName);
+    return mObjectiveValueParametersOperationName;
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setObjectiveValueParametersOperationName(std::string aInput)
+/******************************************************************************/
+{
+    mObjectiveValueParametersOperationName = std::move(aInput);
+}
+
+/******************************************************************************/
+const std::string& OptimizerEngineStageData::getObjectiveHessianOutputName() const
+/******************************************************************************/
+{
+    return mObjectiveHessianOutputName;
 }
 
 /******************************************************************************/
@@ -966,10 +1004,10 @@ void OptimizerEngineStageData::setObjectiveHessianOutputName(const std::string &
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveHessianStageName() const
+const std::string& OptimizerEngineStageData::getObjectiveHessianStageName() const
 /******************************************************************************/
 {
-    return (mObjectiveHessianStageName);
+    return mObjectiveHessianStageName;
 }
 
 /******************************************************************************/
@@ -982,11 +1020,25 @@ void OptimizerEngineStageData::setObjectiveHessianStageName(const std::string & 
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveGradientOutputName() const
+const std::string& OptimizerEngineStageData::getObjectiveHessianParametersOperationName() const
+/******************************************************************************/
+{
+    return mObjectiveHessianParametersOperationName;
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setObjectiveHessianParametersOperationName(std::string aInput)
+/******************************************************************************/
+{
+    mObjectiveHessianParametersOperationName = std::move(aInput);
+}
+
+/******************************************************************************/
+const std::string& OptimizerEngineStageData::getObjectiveGradientOutputName() const
 /******************************************************************************/
 {
     assert(mObjectiveGradientOutputName.empty() == false);
-    return (mObjectiveGradientOutputName);
+    return mObjectiveGradientOutputName;
 }
 
 /******************************************************************************/
@@ -999,10 +1051,10 @@ void OptimizerEngineStageData::setObjectiveGradientOutputName(const std::string 
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getObjectiveGradientStageName() const
+const std::string& OptimizerEngineStageData::getObjectiveGradientStageName() const
 /******************************************************************************/
 {
-    return (mObjectiveGradientStageName);
+    return mObjectiveGradientStageName;
 }
 
 /******************************************************************************/
@@ -1011,6 +1063,20 @@ void OptimizerEngineStageData::setObjectiveGradientStageName(const std::string &
 {
     mObjectiveGradientStageName.clear();
     mObjectiveGradientStageName.assign(aInput.begin(), aInput.end());
+}
+
+/******************************************************************************/
+const std::string& OptimizerEngineStageData::getObjectiveGradientParametersOperationName() const
+/******************************************************************************/
+{
+    return mObjectiveGradientParametersOperationName;
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setObjectiveGradientParametersOperationName(std::string aInput)
+/******************************************************************************/
+{
+    mObjectiveGradientParametersOperationName = std::move(aInput);
 }
 
 /******************************************************************************/
@@ -1052,13 +1118,30 @@ void OptimizerEngineStageData::setInitialControlDataName(const std::string & aIn
     mInitialControlDataName.assign(aInput.begin(), aInput.end());
 }
 
+/******************************************************************************/
+const std::vector<std::string>& OptimizerEngineStageData::getStochasticParameterNames() const
+/******************************************************************************/
+{
+    return mStochasticParametersNames;
+}
 
+/******************************************************************************/
+void OptimizerEngineStageData::setStochasticParameterNames(std::vector<std::string> aInput)
+/******************************************************************************/
+{
+    mStochasticParametersNames = std::move(aInput);
+}
+
+/******************************************************************************/
 std::string OptimizerEngineStageData::getFinalizationStageName() const
+/******************************************************************************/
 {
     return (mFinalizationStageName);
 }
 
+/******************************************************************************/
 void OptimizerEngineStageData::setFinalizationStageName(const std::string & aInput)
+/******************************************************************************/
 {
     mFinalizationStageName.clear();
     mFinalizationStageName = aInput;

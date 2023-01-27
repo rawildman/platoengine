@@ -67,11 +67,22 @@ public:
     SharedValue() = default;
     SharedValue(const std::string & aMyName, 
                 const std::vector<std::string> & aProviderName, 
-                const Plato::CommunicationData & aCommData, int aSize = 1, bool aIsDynamic=false);
+                const Plato::CommunicationData & aCommData, 
+                data::layout_t aLayout=data::layout_t::SCALAR,
+                int aSize = 1, 
+                bool aIsDynamic=false);
+
+    SharedValue(const SharedValue& aRhs) = delete;
+    SharedValue& operator=(const SharedValue& aRhs) = delete;
+    SharedValue(SharedValue&& aRhs) = delete;
+    SharedValue& operator=(SharedValue&& aRhs) = delete;
 
     int size() const;
     std::string myName() const;
     Plato::data::layout_t myLayout() const;
+
+    std::string myContext() const override;
+    void setMyContext(std::string aContext) override;
 
     void transmitData();
     void setData(const std::vector<double> & aData);
@@ -95,6 +106,7 @@ public:
     void initializeMPI(const Plato::CommunicationData& aCommData) override;
 private:
     std::string mMyName;
+    std::string mMyContext;
     std::vector<std::string> mProviderNames;
     std::string mLocalCommName;
 
@@ -107,8 +119,6 @@ private:
     Plato::data::layout_t mMyLayout;
 
 private:
-    SharedValue(const SharedValue& aRhs);
-    SharedValue& operator=(const SharedValue& aRhs);
 };
 
 } // End namespace Plato
