@@ -1,18 +1,18 @@
 stages: [plato-build-test]
 
 variables:
-  CLEAN_CACHE: "false"
+  CLEAN_CACHE: "true"
   PLATO_ENGINE_OPTIONS: "+esp+expy+geometry+iso+platoproxy+platostatics+prune+rol+stk+unit_testing~ipopt"
   THIRD_PARTY_GPU_OPTIONS: "^trilinos~mumps+rol~pardiso cuda_arch=70 ^openmpi@4.1.3 ^esp@120Lin"
   THIRD_PARTY_CPU_OPTIONS: "^trilinos~mumps+rol~pardiso ^openmpi@4.1.3 ^esp@120Lin"
-  SPACK_DIR: /home/gitlab-runner/spack_pe_cache_${CI_PROJECT_ID}
+  SPACK_DIR_FOR_PE: spack_pe_cache_${CI_PROJECT_ID}
   
 trigger-cpu:
   stage: plato-build-test
   variables:
     TRIGGER_PLATO_ENGINE_OPTIONS: ${PLATO_ENGINE_OPTIONS}
     TRIGGER_THIRD_PARTY_OPTIONS: ${THIRD_PARTY_CPU_OPTIONS}
-    TRIGGER_SPACK_DIR: ${SPACK_DIR}
+    TRIGGER_SPACK_DIR: ${SPACK_DIR_FOR_PE}
     CONFIGURATION: "cpu"
   trigger:
     include: ci-pipeline.yml
@@ -24,7 +24,7 @@ trigger-gpu:
   variables:
     TRIGGER_PLATO_ENGINE_OPTIONS: ${PLATO_ENGINE_OPTIONS}
     TRIGGER_THIRD_PARTY_OPTIONS: ${THIRD_PARTY_GPU_OPTIONS}
-    TRIGGER_SPACK_DIR: ${SPACK_DIR}
+    TRIGGER_SPACK_DIR: ${SPACK_DIR_FOR_PE}
     CONFIGURATION: "gpu"
   trigger:
     include: ci-pipeline.yml

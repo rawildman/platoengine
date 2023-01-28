@@ -1,19 +1,12 @@
-stages: [clean, setup-spack, build-dependencies, build-install-test, unit-test]
+stages: [setup-spack, build-dependencies, build-install, test, unit-test, clean-up]
 
 variables:
   SPACK_REPO: https://github.com/platoengine/spack.git
   SPACK_MIRROR_DIR: /home/gitlab-runner/spack-mirror
-  CLEAN_CACHE: "false"
+  RUNNER_HOME: /home/gitlab-runner
   
 include:
   local: ci-templates.yml
-
-clean-caches:
-  extends: .clean-caches
-  variables:
-    SPACK_DIR: ${TRIGGER_SPACK_DIR}
-  tags:
-    - ${CONFIGURATION}
 
 setup-spack:
   stage: setup-spack
@@ -21,36 +14,55 @@ setup-spack:
   variables:
     PLATO_ENGINE_SPEC: ${TRIGGER_PLATO_ENGINE_OPTIONS}
     THIRD_PARTY_SPEC: ${TRIGGER_THIRD_PARTY_OPTIONS}
-    SPACK_DIR: ${TRIGGER_SPACK_DIR}
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
   tags:
     - ${CONFIGURATION}
-  needs: 
-    - job: clean-caches
-      optional: true
 
 build-dependencies:
   extends: .build-and-cache-dependencies
   variables:
-    SPACK_DIR: ${TRIGGER_SPACK_DIR}
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
   tags:
     - ${CONFIGURATION}
   needs: ["setup-spack"]
 
-build-install-test-platoengine:
-  extends: .build-install-test-platoengine
+build-install-platoengine:
+  extends: .build-install-platoengine
   variables:
-    SPACK_DIR: ${TRIGGER_SPACK_DIR}
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
   tags:
     - ${CONFIGURATION}
   needs: ["build-dependencies"]
 
-plato-engine-unit-tests:
+test-platoengine:
+  extends: .test-platoengine
+  variables:
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+  tags:
+    - ${CONFIGURATION}
+  needs: ["build-install-platoengine"]
+
+unit-test-platoengine:
   parallel:
     matrix:
       - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoGeometryCogent_UnitTester, PlatoGeometryMLS_UnitTester, PlatoXMLGenerator_UnitTester, Plato_Operations_UnitTester, PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
-  extends: .plato-engine-test
+  extends: .unit-test-platoengine
   variables:
-    SPACK_DIR: ${TRIGGER_SPACK_DIR}
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
   tags:
     - ${CONFIGURATION}
-  needs: ["build-install-test-platoengine"]
+  needs: ["build-install-platoengine"]
+
+clean-build-cache:
+  stage: clean-up
+  extends: .clean-temporary-build-cache
+  variables:
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+  tags:
+    - ${CONFIGURATION}
+  needs: ["test-platoengine"]
