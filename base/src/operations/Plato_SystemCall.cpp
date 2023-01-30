@@ -375,6 +375,7 @@ void SystemCallMPI::executeCommand(const std::vector<std::string> &aArguments)
                                       0,
                                       mComm,
                                       &tIntercom, MPI_ERRCODES_IGNORE);
+    MPI_Barrier(tIntercom);
 
     if (tExitStatus != MPI_SUCCESS)
     {
