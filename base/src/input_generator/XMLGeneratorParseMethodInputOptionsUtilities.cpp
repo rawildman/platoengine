@@ -24,7 +24,7 @@ void insert_shape_optimization_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "csm_file", { { {"csm_file"}, ""}, "" } });
     aTags.insert({ "num_shape_design_variables", { { {"num_shape_design_variables"}, ""}, "" } });
-    aTags.insert({ "esp_workflow", { { {"esp_workflow"}, ""}, "aflr4_aflr3" } });
+    aTags.insert({ "esp_workflow", { { {"esp_workflow"}, ""}, "egads_tetgen" } });
 }
 // function insert_shape_optimization_input_options
 /******************************************************************************/
