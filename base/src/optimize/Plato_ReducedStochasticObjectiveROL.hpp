@@ -99,7 +99,7 @@ private:
     {
         this->unsetComputedStateFlags(); // TODO: Figure out how to cache states based on stochastic parameters
         assert(this->getParameter().size() == this->engineInputData().getStochasticParameterNames().size());
-        for(int i = 0; i < this->getParameter().size(); ++i)
+        for(size_t i = 0; i < this->getParameter().size(); ++i)
         {
             const double tStochasticParameterValue = this->getParameter()[i];
             const std::string& tStochasticParameterName = this->engineInputData().getStochasticParameterNames().at(i);
