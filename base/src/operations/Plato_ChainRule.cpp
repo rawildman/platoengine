@@ -80,6 +80,10 @@ ChainRule::ChainRule(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         mOutputName = Plato::Get::String(tOutputNode[0], "ArgumentName");
     }
 
+    if( aNode.size<std::string>("Dimensions") )
+    {
+        mSpatialDims = Plato::Get::Int(aNode, "Dimensions");
+    }
 }
 
 ChainRule::~ChainRule()
@@ -141,39 +145,23 @@ void ChainRule::operator()()
     std::vector<double>& tOutputVector = *(mPlatoApp->getValue(mOutputName));
     tOutputVector.resize(mInputNames.size());
     const auto& tDFDX = *(mPlatoApp->getValue(mDFDXName));
-    unsigned int tLargestAllowableDFDXGlobalNodeID = tDFDX.size()/3;
+    unsigned int tLargestAllowableDFDXGlobalNodeID = tDFDX.size()/mSpatialDims;
 
     bool tFirstTime = true;
     unsigned int tNumMapEntries=tLocalToGlobalNodeIDMap.size();
     unsigned int tNumNodes = tNumMapEntries;
     unsigned int tNumSensEntries=0;
     unsigned int tEntryIndex = 0;
-/*
-double *X = mPlatoApp->getLightMP()->getMesh()->getX();
-double *Y = mPlatoApp->getLightMP()->getMesh()->getY();
-double *Z = mPlatoApp->getLightMP()->getMesh()->getZ();
-static int tIteration=0;
-int param_index=1;
-std::string tCoordsFilename = "coords.txt";
-std::ofstream tCoordsFile(tCoordsFilename.c_str());
-for(int k=0; k<tNumNodes; ++k)
-{
-    tCoordsFile << "create vertex " << X[k] << " " << Y[k] << " " << Z[k] << std::endl;
-}
-tCoordsFile.close();
-*/
+
+    unsigned int tESPSpatialDims = 3;
+
     for( const auto& tInputName : mInputNames )
     {
-/*
-std::string tDebugFilename = "param_" + std::to_string(param_index) + "_iter_" + std::to_string(tIteration) + ".txt";
-param_index++;
-std::ofstream tDebugOutputFile(tDebugFilename.c_str());
-*/
         const auto& tCurDXDP = *(mPlatoApp->getValue(tInputName));
         if(tFirstTime)
         {
             tNumSensEntries = tCurDXDP.size();
-            if(tNumSensEntries/3 != tNumNodes)
+            if( tNumSensEntries/tESPSpatialDims != tNumNodes ) 
             {
                 THROWERR(std::string("Mismatch between number of sensitivities and sensitivity map in ChainRule operation.\n"))
             }
@@ -182,27 +170,19 @@ std::ofstream tDebugOutputFile(tDebugFilename.c_str());
         double tValue(0.0);
         for( unsigned int tIndex=0; tIndex<tNumNodes; tIndex++)
         {
-            unsigned int tLocalIndex = tIndex*3;
+            unsigned int tLocalIndex = tIndex*tESPSpatialDims;
             unsigned int tGlobalNodeID = tLocalToGlobalNodeIDMap[tIndex];
             if(tGlobalNodeID <= tLargestAllowableDFDXGlobalNodeID)
             {
-                unsigned int tGlobalIndex = (tLocalToGlobalNodeIDMap[tIndex]-1)*3;
-/************
-tDebugOutputFile << "draw line location " << X[tLocalToGlobalNodeIDMap[tIndex]-1] << " " << Y[tLocalToGlobalNodeIDMap[tIndex]-1] <<
-        " " << Z[tLocalToGlobalNodeIDMap[tIndex]-1] << " location " << X[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex] <<
-        " " << Y[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex+1] << " " << Z[tLocalToGlobalNodeIDMap[tIndex]-1]+tCurDXDP[tLocalIndex+2] << std::endl;
-*/
-                for(int tSpatialDim=0; tSpatialDim<3; tSpatialDim++)
+                unsigned int tGlobalIndex = (tLocalToGlobalNodeIDMap[tIndex]-1)*mSpatialDims;
+                for(int tSpatialDim = 0; tSpatialDim < mSpatialDims; tSpatialDim++)
                 {
                     tValue += tCurDXDP[tLocalIndex+tSpatialDim]*tDFDX[tGlobalIndex+tSpatialDim];
                 }
             }
         }
         tOutputVector[tEntryIndex++] = tValue;
-//tDebugOutputFile.close();
     }
-//tIteration++;
-//exit(1);
 }
 
 void ChainRule::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
