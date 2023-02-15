@@ -958,7 +958,7 @@ void append_compute_objective_sensitivity_operation
        aMetaData.optimization_parameters().esp_workflow() == "aflr4_tetgen")
     {
         auto tDFDXSharedDataName = "Criterion GradientX - " + aIdentifierString;
-        auto tInputNode = tOperationNode.append_child("Input");
+        tInputNode = tOperationNode.append_child("Input");
         XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DFDX", tDFDXSharedDataName}, tInputNode);
     }
 
