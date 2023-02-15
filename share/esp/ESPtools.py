@@ -386,19 +386,22 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
   tokens = meshName.split('.')
   tokens.pop()
   etoBaseName = '.'.join(tokens)
-  subprocess.call(['cp', './ESP_Mesh/Scratch/tetgen/tetgen_0.exo', meshName])
+  subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
   num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/egads'):
-    if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
+  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
+    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
       num_tess_files += 1
 
+  if num_tess_files == 0:
+    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
+
   if num_tess_files == 1:
-    subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + '.eto'])
+    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + '.eto'])
   else:
     cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/egads'):
-      if fnmatch.fnmatch(file, 'egadsTess_*.eto'):
-        subprocess.call(['cp', './ESP_Mesh/Scratch/egads/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
+      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
+        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
         cntr += 1
 
 ##############################################################################
