@@ -126,7 +126,7 @@ public:
         std::string myContext() const override {return m_operation;}
         Plato::data::layout_t myLayout() const override
          {return Plato::data::layout_t::SCALAR_PARAMETER;}
-        void transmitData() override {assert(0);}
+        void transmitData() override {}
         void setData(const std::vector<double> & aData) override {m_value = aData[0];}
         void getData(std::vector<double> & aData) const override {aData[0] = m_value;}
 
