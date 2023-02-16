@@ -527,24 +527,6 @@ public:
     }
 
     /******************************************************************************//**
-     * \fn shapeSideset
-     * \brief Set string value for Sierra/SD shape sideset
-     * \param [in] aInput string value
-    **********************************************************************************/
-    void shapeSideset(const std::string& aInput) {
-        this->append("shape_sideset", aInput);
-    }
-
-    /******************************************************************************//**
-     * \fn shapeSideset
-     * \brief Return string value Sierra/SD shape sideset
-     * \return value
-    **********************************************************************************/
-    std::string shapeSideset() const {
-        return (this->value("shape_sideset"));
-    }
-
-    /******************************************************************************//**
      * \fn ref_data_file
      * \brief Return string value ref_data_file
      * \return value
