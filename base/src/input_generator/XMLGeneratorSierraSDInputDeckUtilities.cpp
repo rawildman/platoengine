@@ -281,8 +281,6 @@ void writeModalInverseBlocks(const XMLGen::InputData &aMetaData,
 
     writeDummyModalFiles(aScenario, aCriterion, outfile);
 
-    outfile << "  shape_sideset " << aCriterion.shapeSideset() << std::endl;
-
     // dummy value doesn't matter because SD just computes the gradient
     outfile << "  shape_bounds 1.0" << std::endl;
  
