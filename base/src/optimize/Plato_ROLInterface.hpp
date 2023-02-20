@@ -177,7 +177,6 @@ protected:
     void createOptimizationProblemAugmentedLagrangian(ROL::Problem<ScalarType>& aOptimizationProblem)   
     {
         const OrdinalType tNumConstraints = this->mInputData.getNumConstraints();
-        Teuchos::RCP<Plato::SerialVectorROL<ScalarType>> tDual = Teuchos::rcp(new Plato::SerialVectorROL<ScalarType>(tNumConstraints));
         
         for(OrdinalType tConstraintIndex = 0; tConstraintIndex < tNumConstraints; ++tConstraintIndex)
         {

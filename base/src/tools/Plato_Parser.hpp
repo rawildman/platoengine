@@ -86,6 +86,7 @@ class Parser {
 
 class PugiParser : public Parser {
   public:
+    PugiParser() = default;
     Plato::InputData parseFile(const std::string& fileName) const override;
     Plato::InputData parseString(const std::string& inputString) const override;
 
