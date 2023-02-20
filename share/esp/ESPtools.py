@@ -449,7 +449,7 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
     raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
 
   if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + '.eto'])
+    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
   else:
     cntr=0
     for file in os.listdir('./ESP_Mesh/Scratch/plato'):

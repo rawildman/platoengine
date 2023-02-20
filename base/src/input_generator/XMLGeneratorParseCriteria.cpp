@@ -145,7 +145,6 @@ void ParseCriteria::allocate()
     this->insertTag("eigen_solver_shift", "-1e6");
     this->insertTag("camp_solver_tol", "1e-6");
     this->insertTag("camp_max_iter", "1000");
-    this->insertTag("shape_sideset");
     this->insertTag("ref_data_file");
     this->insertTag("match_nodesets");
 
