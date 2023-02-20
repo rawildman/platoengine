@@ -610,12 +610,13 @@ void append_spatial_model_to_plato_problem
         tValues = {"Material Model", "string", tMaterial.name()};
         XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
 
-        auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
-        if(tItr != tFixedBlockIds.end() && !aIsHelmholtz)
-        {
-            tValues = {"Fixed Control", "bool", "true"};
-            XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
-        }
+        // 'Fixed Control' doesn't seem to work in PA
+        //auto tItr = std::find(tFixedBlockIds.begin(), tFixedBlockIds.end(), tBlock.block_id);
+        //if(tItr != tFixedBlockIds.end() && !aIsHelmholtz)
+        //{
+        //    tValues = {"Fixed Control", "bool", "true"};
+        //    XMLGen::append_parameter_plus_attributes(tKeys, tValues, tCurDomain);
+        //}
 
     }
 }
