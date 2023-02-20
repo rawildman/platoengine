@@ -390,9 +390,9 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
   cntr=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+  for file in os.listdir('./ESP_Mesh/Scratch/aflr4'):
+    if fnmatch.fnmatch(file, 'aflr4_*.eto'):
+      subprocess.call(['mv', './ESP_Mesh/Scratch/aflr4/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
       cntr += 1
 
 
