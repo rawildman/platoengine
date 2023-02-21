@@ -110,7 +110,6 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
 {
     ScalarType tSensitivity(0.0);
 
-//static int cntr=0;
     aDXDp.clear();
 
     /* clear all then set the parameter & tell OpenCSM */
@@ -136,7 +135,6 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
         }
 
         VectorType tCurDXDpVector = VectorType(tNvert*this->mSpaceDim);
-        //aDXDp = VectorType(tNvert*this->mSpaceDim);
 
         const ScalarType *tPcsens;
     
@@ -209,21 +207,9 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
         EG_free(tVtags);
         EG_free(tCoords);
         
-/*
-char name[1000];
-sprintf(name, "sens%d_%d.txt", ibody, cntr);
-FILE *fp=fopen(name, "w");
-if(fp)
-{
-  for(int i=0; i<tCurDXDpVector.size(); ++i)
-    fprintf(fp, "%lf\n", tCurDXDpVector[i]);
-  fclose(fp);
-}
-*/
         aDXDp.insert(aDXDp.end(), tCurDXDpVector.begin(), tCurDXDpVector.end());
 
     }
-//cntr++;
     return tSensitivity;
 }
 
