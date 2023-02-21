@@ -100,13 +100,13 @@ public:
 */
     }
 
-
 private:
     void parseSensitivityMap(std::vector<unsigned int> &aLocalToGlobalNodeIDMap);
 
     std::string mOutputName; 
     std::string mDFDXName; 
     std::vector<std::string> mInputNames;
+    unsigned int mSpatialDims = 3;
 };
 // class ChainRule;
 
