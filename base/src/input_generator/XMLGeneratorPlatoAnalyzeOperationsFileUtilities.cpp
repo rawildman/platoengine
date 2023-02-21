@@ -133,12 +133,12 @@ namespace XMLGen
     {
         auto tOperation = aDocument.append_child("Operation");
         XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionX", "Compute Objective Gradient", "My Objective"}, tOperation);
-        if(aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
-        {
+//        if(aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
+//        {
             auto tNode = tOperation.append_child("Output");
             addChild(tNode, "ArgumentName", "DFDX");
             addChild(tNode, "Argument", "Gradient");
-        }
+//        }
 
         if (XMLGen::is_robust_optimization_problem(aMetaData))
         {
@@ -146,20 +146,20 @@ namespace XMLGen
             XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
         }
 
-        if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
-        {
-            pugi::xml_node tmp_node = aDocument.append_child("Operation");
-            addChild(tmp_node, "Name", "Compute Objective Sensitivity");
-            addChild(tmp_node, "Function", "MapCriterionGradientX");
-            addChild(tmp_node, "Criterion", "My Objective");
-            pugi::xml_node tForNode = tmp_node.append_child("For");
-            tForNode.append_attribute("var") = "I";
-            tForNode.append_attribute("in") = "Parameters";
-            pugi::xml_node tmp_node1 = tForNode.append_child("Input");
-            addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
-            tmp_node1 = tmp_node.append_child("Output");
-            addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
-        }
+//        if(aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3")
+//        {
+//            pugi::xml_node tmp_node = aDocument.append_child("Operation");
+//            addChild(tmp_node, "Name", "Compute Objective Sensitivity");
+//            addChild(tmp_node, "Function", "MapCriterionGradientX");
+//            addChild(tmp_node, "Criterion", "My Objective");
+//            pugi::xml_node tForNode = tmp_node.append_child("For");
+//            tForNode.append_attribute("var") = "I";
+//            tForNode.append_attribute("in") = "Parameters";
+//            pugi::xml_node tmp_node1 = tForNode.append_child("Input");
+//            addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
+//            tmp_node1 = tmp_node.append_child("Output");
+//            addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
+//        }
     }
     /******************************************************************************/
 
