@@ -132,6 +132,10 @@ void ChainRule::parseSensitivityMap(std::vector<unsigned int> &aLocalToGlobalNod
     tFileStream.close();
 }
 
+/* This operation assumes that the dFdX data is coming in a vector that is num_nodes*3 long
+ * and is indexed by global_node_id-1 where the dFdX of node with global id 1 occupies 
+ * locations 0, 1, and 2 in the vector (for x, y, and z components dFdX).
+ */
 void ChainRule::operator()()
 {
     if(mPlatoApp->getTimersTree())
