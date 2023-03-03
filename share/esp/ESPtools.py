@@ -314,6 +314,100 @@ def updateModelXXXTetgenExodus(modelName, paramVals):
   subprocess.call(['mv', modedName, modelName])
 
 ##############################################################################
+## define function that sets up csm file for aflr2 and plato AIMS
+##############################################################################
+def updateModelAflr2Exodus(modelName, paramVals):
+
+  # find mesh size attribute 'MeshLength'
+  #
+  response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
+  if response == "":
+    raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
+
+  tokens = response.rstrip().split("\n")
+  if len(tokens) > 1:
+    raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
+
+  MeshLength = str(response)
+
+  # append necessary lines to csm file
+  #
+  modedName = modelName + ".tmp"
+
+  f_in = open(modelName)
+  f_out = open(modedName, 'w')
+
+  bodyName = "solid_group"
+
+  for line in f_in:
+    if line.strip().lower() == 'end':
+      f_out.write("select body\n")
+      f_out.write("attribute capsAIM $aflr2AIM;platoAIM\n")
+      f_out.write("attribute capsGroup $" + bodyName + "\n")
+      f_out.write("attribute capsMesh $" + bodyName + "\n")
+
+      f_out.write("select edge\n")
+      f_out.write("attribute capsGroup $remaining_surface_sideset\n")
+
+    f_out.write(line)
+
+  f_out.close()
+
+  # If paramVals were provided, set them in the model file
+  #
+  for ip in range(len(paramVals)):
+    p = paramVals[ip]
+    print("param: " + str(p))
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
+    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
+    print("command: ", command)
+    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
+    f.close()
+    subprocess.call(['mv', tmp_string, modedName])
+
+  subprocess.call(['mv', modedName, modelName])
+
+  # find any boundary attribute assignments and copy them to the end of the file
+  #
+  boundaryTag = "edge"
+
+  f_in = open(modelName)
+  f_out = open(modedName, 'w')
+
+  boundaryAttrs = []
+
+  bodyLine = ""
+  boundaryLine = ""
+  for line in f_in:
+    if line.strip().lower() == 'end':
+      for boundaryAttr in boundaryAttrs:
+        for attrLine in boundaryAttr:
+          f_out.write(attrLine)
+    else:
+      tokens = line.split(' ')
+      tokens = list(filter(None, tokens)) ## filter out empty strings
+      if bodyLine != "" and boundaryLine != "":
+        if tokens[0] == "attribute" and tokens[1] == "capsGroup":
+          boundaryAttrs.append([bodyLine, boundaryLine, line])
+          bodyLine = ""
+          boundaryLine = ""
+      elif bodyLine != "":
+        if tokens[0] == "select" and tokens[1] == boundaryTag:
+          boundaryLine = line
+        else:
+          bodyLine = ""
+      else:
+        if tokens[0] == "select" and tokens[1] == "body":
+          bodyLine = line
+
+    f_out.write(line)
+
+  f_out.close()
+
+  subprocess.call(['mv', modedName, modelName])
+
+##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
 ##############################################################################
 #def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
@@ -413,7 +507,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
 
 
 ##############################################################################
-## define function for running aflr4_aflr3 meshing workflow
+## define function for running egads_tetgen meshing workflow
 ##############################################################################
 def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
 
@@ -422,7 +516,7 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
                      outLevel=1)
   surface = problem.analysis.create(aim='egadsTessAIM', name='egads')
 
-  surface.input.Mesh_Length_Factor = 1.0;
+  surface.input.Mesh_Length_Factor = 1.0
 
   face_sizes = problem.geometry.cfgpmtr.egadsFaceMeshSizes
   max_curvature_dists = problem.geometry.cfgpmtr.egadsMeshMaxCurvatureDistances
@@ -474,7 +568,7 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
         cntr += 1
 
 ##############################################################################
-## define function for running aflr4_aflr3 meshing workflow
+## define function for running aflr4_tetgen meshing workflow
 ##############################################################################
 def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
 
@@ -537,6 +631,44 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
         cntr += 1
 
 ##############################################################################
+## define function for running aflr2 meshing workflow
+##############################################################################
+def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+
+  problem = pyCAPS.Problem(problemName = "ESP_Mesh",
+                     capsFile=modelNameOut,
+                     outLevel=1)
+
+  aflr2 = problem.analysis.create(aim='aflr2AIM', name='aflr2')
+  aflr2.input.Tess_Params = [problem.geometry.outpmtr.MeshLength, 1.0, 20.0]
+
+  plato = problem.analysis.create(aim='platoAIM', name='plato')
+  plato.input["Mesh"].link(aflr2.output["Area_Mesh"])
+  plato.preAnalysis()
+  plato.postAnalysis()
+
+  tokens = meshName.split('.')
+  tokens.pop()
+  etoBaseName = '.'.join(tokens)
+  subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
+  num_tess_files=0
+  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
+    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
+      num_tess_files += 1
+
+  if num_tess_files == 0:
+    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
+
+  if num_tess_files == 1:
+    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
+      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
+        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
+        cntr += 1
+
+##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
 def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", parameters=None ):
@@ -580,6 +712,8 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
     updateModelXXXTetgenExodus(modelNameOut, paramVals)
   elif workflow == "aflr4_tetgen":
     updateModelXXXTetgenExodus(modelNameOut, paramVals)
+  elif workflow == "aflr2":
+    updateModelAflr2Exodus(modelNameOut, paramVals)
 
   if geom != None:
     # with redirected('dump.console'):
@@ -603,6 +737,10 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
     elif workflow == "aflr4_tetgen":
       with redirected('aflr4_tetgen.console'):
         aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+
+    elif workflow == "aflr2":
+      with redirected('aflr2.console'):
+        aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])
