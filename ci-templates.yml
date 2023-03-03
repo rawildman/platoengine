@@ -1,3 +1,6 @@
+variables: 
+  KCOV_DIR: /home/gitlab-runner/kcov/
+
 .setup-local-spack-installation:
   stage: setup-spack
   # TODO: Replace below with ${SPACK_RESOURCE}, there's currently a bug
@@ -98,14 +101,54 @@
   script: 
     - spack env activate --without-view .
     - spack load platoengine
-    - ${PLATO_ENGINE_UNIT_TESTER} --gtest_output=xml:${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml
+    - mkdir -p ${CI_PROJECT_DIR}/jobs_scratch_dir/
+    - |
+      if [ ${TRIGGER_KCOV} == "false" ]
+      then
+        echo "Running ${PLATO_ENGINE_UNIT_TESTER}"
+        ${PLATO_ENGINE_UNIT_TESTER} --gtest_output=xml:${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml
+      else
+        echo "Running ${PLATO_ENGINE_UNIT_TESTER} with kcov"
+        mkdir -p ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_UNIT_TESTER}
+        ${KCOV_DIR}/./kcov --include-pattern=platoengine --exclude-pattern=_UnitTester.cpp,/usr/include/,/usr/lib,googletest,/unittest/  ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_UNIT_TESTER} ${PLATO_ENGINE_UNIT_TESTER} --gtest_output=xml:${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml
+      fi
   artifacts:
     when: always
     paths:
       - "${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml"
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_UNIT_TESTER}"
     reports:
       junit: 
         - "${CI_PROJECT_DIR}/jobs_scratch_dir/${PLATO_ENGINE_UNIT_TESTER}.xml"
+
+.coverage-platoengine:
+  stage: coverage
+  resource_group: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+  script:
+    - mkdir -p ${CI_PROJECT_DIR}/jobs_scratch_dir/
+    - ALL_PE_COVERAGE_DIR_STRING=""
+    - |
+      for test in ${PLATO_ENGINE_UNIT_TESTER}
+      do
+        ALL_PE_COVERAGE_DIR_STRING="${ALL_PE_COVERAGE_DIR_STRING} ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${test} "
+      done
+    - echo ${ALL_PE_COVERAGE_DIR_STRING}
+    - |
+      if [ ${TRIGGER_KCOV} == "true" ]
+      then
+        echo "Merging KCOV with pattern ${PLATO_ENGINE_FOLDER_PATTERN}"
+        mkdir -p ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_FOLDER_PATTERN}
+        ${KCOV_DIR}/./kcov --include-pattern=${PLATO_ENGINE_FOLDER_PATTERN}  --merge ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_FOLDER_PATTERN} ${ALL_PE_COVERAGE_DIR_STRING}
+        cd ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_FOLDER_PATTERN}
+        grep -oP 'coverage line-rate="[0-9].[0-9]*"' ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_FOLDER_PATTERN}/kcov-merged/cobertura.xml | grep -oP '[0-9].[0-9]*' > grepcov.txt
+        perl -e 'print '`cat grepcov.txt`'*100' > prcnt
+        echo ${PLATO_ENGINE_FOLDER_PATTERN}' Percentage Covered '`cat prcnt`
+      fi
+  coverage: '/Percentage Covered \d+\.\d+/'
+  artifacts:
+    when: always
+    paths:
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_${PLATO_ENGINE_FOLDER_PATTERN}"
 
 .clean-temporary-build-cache:
   stage: clean-up
