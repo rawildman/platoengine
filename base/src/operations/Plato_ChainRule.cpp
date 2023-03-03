@@ -59,6 +59,16 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Plato::ChainRule)
 namespace Plato
 {
 
+ChainRule::ChainRule(std::string aOutputName,
+    std::string aDFDXName,
+    std::vector<std::string> aInputNames,
+    unsigned int aSpatialDims) :
+    mOutputName(std::move(aOutputName)),
+    mDFDXName(std::move(aDFDXName)),
+    mInputNames(std::move(aInputNames)),
+    mSpatialDims(aSpatialDims)
+{}
+
 ChainRule::ChainRule(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp)
 {
@@ -84,10 +94,6 @@ ChainRule::ChainRule(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
     {
         mSpatialDims = Plato::Get::Int(aNode, "Dimensions");
     }
-}
-
-ChainRule::~ChainRule()
-{
 }
 
 void ChainRule::parseSensitivityMap(std::vector<unsigned int> &aLocalToGlobalNodeIDMap)

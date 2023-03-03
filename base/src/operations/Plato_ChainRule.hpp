@@ -70,13 +70,12 @@ public:
      * @param [in] aNode input XML data
     **********************************************************************************/
     ChainRule() = default;
+    ChainRule(std::string mOutputName,
+        std::string mDFDXName,
+        std::vector<std::string> mInputNames,
+        unsigned int mSpatialDims = 3);
     ChainRule(PlatoApp* aPlatoApp);
     ChainRule(PlatoApp* aPlatoApp, Plato::InputData& aNode);
-
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~ChainRule();
 
     /******************************************************************************//**
      * @brief perform local operation - apply copy
@@ -93,11 +92,11 @@ public:
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int version)
     {
-/*
-      aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
-      aArchive & boost::serialization::make_nvp("InputName",mInputName);
-      aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
-*/
+      aArchive & boost::serialization::make_nvp("LocalOp", boost::serialization::base_object<LocalOp>(*this));
+      aArchive & boost::serialization::make_nvp("OutputName", mOutputName);
+      aArchive & boost::serialization::make_nvp("DFDXName", mDFDXName);
+      aArchive & boost::serialization::make_nvp("InputNames", mInputNames);
+      aArchive & boost::serialization::make_nvp("SpatialDims", mSpatialDims);
     }
 
 private:
