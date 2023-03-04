@@ -106,11 +106,11 @@ public:
     }
 
 private:
-    Plato::AbstractFilter* mFilter; /*!< Kernel filter interface */
+    Plato::AbstractFilter* mFilter = nullptr; /*!< Kernel filter interface */
     std::string mInputToFilterName; /*!< input argument name */
     std::string mInputBaseFieldName; /*!< input base field argument name */
     std::string mOutputFromFilterName; /*!< output argument name */
-    bool mIsGradient; /*!< is the gradient the input argument to the filter */
+    bool mIsGradient = false; /*!< is the gradient the input argument to the filter */
 };
 // class Filter;
 
