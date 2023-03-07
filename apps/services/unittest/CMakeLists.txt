@@ -30,12 +30,14 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 							 Plato_Test_UniqueCounter.cpp
 							 Plato_Test_SimpleRocketOptimization.cpp
 							 Plato_Test_UncertainLoadGeneratorXML.cpp
-                             Plato_Test_UncertainMaterial.cpp
-                             Plato_Test_Srom.cpp
+							 Plato_Test_UncertainMaterial.cpp
+							 Plato_Test_Srom.cpp
 							 Plato_Test_LocalStatisticsOperations.cpp
 							 Plato_Test_MethodMovingAsymptotes.cpp
 							 Plato_Test_WriteParameterStudyData.cpp
                                                          Plato_Test_FreeFunctions.cpp
+							 Plato_Test_ROL.cpp
+							 Plato_Test_TimersTree.cpp
 							 PSL_Test_Triangle.cpp  
 							 PSL_Test_OverhangFilter.cpp  
 							 PSL_Test_KernelThenHeavisideFilter.cpp  
@@ -66,7 +68,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 							 PSL_Test_AbstractAuthority.cpp
 							 PSL_Test_Point.cpp
 							 PSL_Test_Vector.cpp
-							 Plato_Test_TimersTree.cpp
                                                          PSL_Test_OrthogonalGridUtilities.cpp
                                                          PSL_Test_RegularHex8.cpp
 							 )
@@ -74,10 +75,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
 if( AMFILTER_ENABLED )
     SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} PSL_Test_TetMeshUtilities.cpp PSL_Test_AMFilterUtilities.cpp)
 endif()
-
-IF( ENABLE_ROL )
-    SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} Plato_Test_ROL.cpp)
-ENDIF()
 
 IF( DAKOTADRIVER )
     SET(PlatoMainUnitTester_SRCS ${PlatoMainUnitTester_SRCS} Plato_Test_PlatoDakotaDriver.cpp)

@@ -60,11 +60,8 @@
 #include "Plato_KelleySachsBoundConstrainedInterface.hpp"
 #include "Plato_KelleySachsAugmentedLagrangianInterface.hpp"
 #include "Plato_GloballyConvergentMethodMovingAsymptotesInterface.hpp"
-
-#ifdef ENABLE_ROL
 #include "Plato_ROLInterface.hpp"
 #include "Plato_StochasticROLInterface.hpp"
-#endif
 
 namespace Plato
 {
@@ -229,7 +226,6 @@ public:
             tOptimizer = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
-#ifdef ENABLE_ROL
        else if( tOptPackage == "ROL AugmentedLagrangian" )
        {
          try {
@@ -261,7 +257,6 @@ public:
            tOptimizer = new Plato::StochasticROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
          } catch(...){aInterface->Catch();}
        }
-#endif
         else
         {
           std::stringstream tStringStream;
@@ -278,11 +273,9 @@ public:
             << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
             << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
             << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
-#ifdef ENABLE_ROL
             << "\t ROL AugmentedLagrangian... Rapid Optimization Library Augmented Lagrangian\n"
             << "\t ROL BoundConstrained... Rapid Optimization Library Bound Constrained\n"
             << "\t ROL LinearConstraint... Rapid Optimization Library LinearConstraint\n"
-#endif
             << std::endl;
 
           // Dump a console message as exception handling cannot be
