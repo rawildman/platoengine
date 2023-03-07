@@ -3,7 +3,7 @@ stages: [plato-build-test]
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   CLEAN_CACHE: "true"
-  PLATO_ENGINE_OPTIONS: "+esp+expy+geometry+iso+platoproxy+platostatics+prune+rol+stk+unit_testing~ipopt"
+  PLATO_ENGINE_OPTIONS: "+esp+expy+iso+platoproxy+platostatics+prune+rol+stk+unit_testing~ipopt"
   THIRD_PARTY_GPU_OPTIONS: "^trilinos~mumps+rol~pardiso cuda_arch=70 ^openmpi@4.1.3 ^esp@120Lin"
   THIRD_PARTY_CPU_OPTIONS: "^trilinos~mumps+rol~pardiso ^openmpi@4.1.3 ^esp@120Lin"
   SPACK_DIR_FOR_PE: spack_pe_cache_${CI_PROJECT_ID}

@@ -52,9 +52,6 @@
 
 #include "types.hpp"
 #include "Plato_Parser.hpp"
-#ifdef GEOMETRY
-#include "core/Cogent_Integrator.hpp"
-#endif
 #include <cassert>
 
 #include <string>
@@ -97,22 +94,6 @@ class CustomIntegration : public ElementIntegration
     CustomIntegration( pugi::xml_node& node, int myDim );
     virtual ~CustomIntegration() {}
 };
-
-#ifdef GEOMETRY
-class CogentIntegration : public ElementIntegration
-{
-  public: 
-    CogentIntegration( pugi::xml_node& node, Teuchos::RCP<shards::CellTopology> blockTopology );
-    virtual ~CogentIntegration() {}
-    void getCubatureWeights(Intrepid::FieldContainer<double>& cubWeights, 
-                      const Intrepid::FieldContainer<double>& nodes);
-  private:
-    int mNumNodes, mNumDims, mNumPts;
-    Teuchos::RCP<Cogent::Integrator> mCubature;
-    Kokkos::DynRankView<Real, Kokkos::Serial> mCoordVals;
-    Kokkos::DynRankView<Real, Kokkos::Serial> mWeights;
-};
-#endif
 
 class Element {
   

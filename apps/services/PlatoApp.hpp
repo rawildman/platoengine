@@ -51,10 +51,6 @@
 #include <Plato_FreeFunctions.hpp>
 #include "Plato_SerializationHeaders.hpp"
 
-#ifdef GEOMETRY
-#include "Plato_MetaDataMLS.hpp"
-#endif
-
 namespace pugi
 {
 
@@ -251,16 +247,6 @@ public:
     **********************************************************************************/
     void compressAndUpdateNodeField(const std::string & aName);
 
-#ifdef GEOMETRY
-
-    /******************************************************************************//**
-     * @brief Return Moving Least Squared (MLS) data
-     * @return reference to MLS data
-    **********************************************************************************/
-    std::map<std::string,std::shared_ptr<Plato::MLSstruct>>& getMovingLeastSquaredData()
-        {return mMLS;}
-#endif
-
     /******************************************************************************//**
      * @brief Import data operation
      * @param [in] aArgumentName name used to identify data
@@ -427,10 +413,6 @@ private:
     Plato::InputData mAppfileData{"Appfile Data"}; /*!< PLATO application input data */
     Plato::InputData mInputfileData{"Inputfile Data"}; /*!< Shared input data */
     std::shared_ptr<pugi::xml_document> mInputTree = nullptr; /*!< Original input tree */
-
-#ifdef GEOMETRY
-    std::map<std::string,std::shared_ptr<Plato::MLSstruct>> mMLS;  /*!< Moving Least Squared (MLS) metadata */
-#endif
 
     std::map<std::string, std::string> mSharedDataNames; /*!< Argument name -> SharedData name */
     std::map<std::string, VarIndex> mElementFieldMap; /*!< Name - Element Field map */

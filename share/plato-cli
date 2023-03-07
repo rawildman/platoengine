@@ -166,17 +166,13 @@ def gmsh_action(args):
   print('calling Gmsh.')
   print(args)
 
-def cogent_action(args):
-  print('calling Cogent.')
-  print(args)
-
 def cubit_action(args):
   print('calling Cubit.')
   print(args)
 
 
 def geometry_action(args):
-  print('dealing with some geometry in this hizzow.')
+  print('geometry action')
   print(args)
 
 def analyze_action(args):
@@ -274,11 +270,6 @@ xtk_parser.set_defaults(func=xtk_action)
 gmsh_parser = geo_subparsers.add_parser('gmsh', help='Gmsh options')
 gmsh_parser.add_argument('--input', help='input file name')
 gmsh_parser.set_defaults(func=gmsh_action)
-
-# geometry - cogent
-cogent_parser = geo_subparsers.add_parser('cogent', help='Cogent options')
-cogent_parser.add_argument('--input', help='input file name')
-cogent_parser.set_defaults(func=cogent_action)
 
 # geometry - cubit
 cubit_parser = geo_subparsers.add_parser('cubit', help='Cubit options')
