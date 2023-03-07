@@ -23,3 +23,7 @@ if( CMAKE_INSTALL_PREFIX )
   install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
  ENDFOREACH()
 endif()
+
+if( UNIT_TESTING )
+  add_subdirectory(./unittest)
+endif()
