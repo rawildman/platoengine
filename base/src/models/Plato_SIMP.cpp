@@ -23,21 +23,13 @@ SIMP::SIMP(const Plato::InputData& input)
 double SIMP::eval(double x)
 /******************************************************************************/
 {
-  if (x != 0.0)
-    return m_minimumValue+(1.0-m_minimumValue)*pow(x,m_penaltyExponent);
-  else
-    return m_minimumValue;
+  return m_minimumValue + (1.0 - m_minimumValue)*pow(x, m_penaltyExponent);
 }
 
 /******************************************************************************/
 double SIMP::grad(double x)
 /******************************************************************************/
 {
-  if (x != 0.0)
-    return m_minimumValue+
-           (1.0-m_minimumValue)*m_penaltyExponent*pow(x,m_penaltyExponent-1.0);
-  else
-    return m_minimumValue;
-
+  return (1.0 - m_minimumValue)*m_penaltyExponent*pow(x,m_penaltyExponent - 1.0);
 }
 }

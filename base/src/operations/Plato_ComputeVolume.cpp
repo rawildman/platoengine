@@ -112,7 +112,7 @@ void ComputeVolume::operator()()
     // get local gradient
     auto& tVolumeGradient = *(mPlatoApp->getNodeField(mGradientName));
 
-    mPlatoApp->getMeshServices()->getCurrentVolume(tTopology, tVolumeValue, tVolumeGradient);
+    mPlatoApp->getMeshServices()->getCurrentVolume(tTopology, tVolumeValue, tVolumeGradient, mPenaltyModel);
 
     return;
 }
