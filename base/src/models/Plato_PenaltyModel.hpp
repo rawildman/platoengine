@@ -59,10 +59,10 @@ class InputData;
 
   class PenaltyModel {
     public:
-      PenaltyModel(){}
-      virtual ~PenaltyModel(){}
-      virtual double eval(double x)=0;
-      virtual double grad(double x)=0;
+      PenaltyModel() = default;
+      virtual ~PenaltyModel() = default;
+      virtual double eval(double x) const = 0;
+      virtual double grad(double x) const = 0;
 
       template<class Archive>
       void serialize(Archive & aArchive, const unsigned int version) {} 

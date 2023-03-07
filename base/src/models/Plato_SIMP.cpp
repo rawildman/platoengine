@@ -11,25 +11,21 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Plato::SIMP)
 
 namespace Plato {
 
-/******************************************************************************/
-SIMP::SIMP(const Plato::InputData& input)
-/******************************************************************************/
+SIMP::SIMP(const Plato::InputData& input) :
+  m_penaltyExponent(Get::Double(input,"PenaltyExponent")),
+  m_minimumValue(Get::Double(input,"MinimumValue"))
 {
-  m_penaltyExponent = Get::Double(input,"PenaltyExponent");
-  m_minimumValue    = Get::Double(input,"MinimumValue");
 }
 
-/******************************************************************************/
-double SIMP::eval(double x)
-/******************************************************************************/
+double SIMP::eval(double x) const
 {
   return m_minimumValue + (1.0 - m_minimumValue)*pow(x, m_penaltyExponent);
 }
 
-/******************************************************************************/
-double SIMP::grad(double x)
-/******************************************************************************/
+double SIMP::grad(const double x) const
 {
-  return (1.0 - m_minimumValue)*m_penaltyExponent*pow(x,m_penaltyExponent - 1.0);
+  return m_penaltyExponent == 0 ? 
+    0 : 
+   (1.0 - m_minimumValue)*m_penaltyExponent*pow(x,m_penaltyExponent - 1.0);
 }
 }
