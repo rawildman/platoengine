@@ -155,10 +155,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_SromObjective.hpp
                         Plato_SromStatistics.hpp
                         Plato_SromLoadUtils.hpp
-                        # Plato_SromXMLGenLoad.hpp
-                        # Plato_SromXMLGenMaterial.hpp
-                        # Plato_SromXMLGenTools.hpp
-                        # Plato_SromXMLGenHelpers.hpp
                         Plato_SromMaterialUtils.hpp
                         Plato_SromMetadata.hpp
                         Plato_SromProbDataStruct.hpp
@@ -176,26 +172,21 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_DeviceOptimalityCriteriaUpdate.hpp
                         Plato_SolveUncertaintyProblem.hpp
                         Plato_DistributionFactory.hpp
+			Plato_ROLInterface.hpp
+			Plato_StochasticROLInterface.hpp
+			Plato_ROLSPGInterface.hpp
+			Plato_SerialEpetraVectorROL.hpp
+			Plato_DistributedVectorROL.hpp
+			Plato_ReducedConstraintROL.hpp
+			Plato_ReducedObjectiveROL.hpp
+			Plato_ReducedStochasticObjectiveROL.hpp
+			Plato_ConstraintSimOptROL.hpp
+			Plato_ObjectiveSimOptROL.hpp
+			Plato_ProxyComplianceROL.hpp
+			Plato_SerialVectorROL.hpp
+			Plato_ProxyVolumeROL.hpp
                         )
                         
-IF( ENABLE_ROL )
-SET(${LIB_NAME}_HEADERS ${${LIB_NAME}_HEADERS}
-  Plato_ROLInterface.hpp
-  Plato_StochasticROLInterface.hpp
-  Plato_ROLSPGInterface.hpp
-  Plato_SerialEpetraVectorROL.hpp
-  Plato_DistributedVectorROL.hpp
-  Plato_ReducedConstraintROL.hpp
-  Plato_ReducedObjectiveROL.hpp
-  Plato_ReducedStochasticObjectiveROL.hpp
-  Plato_ConstraintSimOptROL.hpp
-  Plato_ObjectiveSimOptROL.hpp
-  Plato_ProxyComplianceROL.hpp
-  Plato_SerialVectorROL.hpp
-  Plato_ProxyVolumeROL.hpp
-  )
-ENDIF()
-
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
 FOREACH(PLATO_LIB ${LIB_NAMES})

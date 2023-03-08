@@ -56,11 +56,6 @@ MESSAGE("   Trilinos_DIR = ${Trilinos_DIR}")
 MESSAGE("   Trilinos_VERSION = ${Trilinos_VERSION}")
 MESSAGE("End of Trilinos details\n")
 
-
-if( ENABLE_ROL )
-  add_definitions(-DENABLE_ROL)
-endif()
-
 ###########################  Compiler setup ###################################
 ######################## (pre 'project()' command) ############################
 ## Compilers cannot be changed after the 'project()' command below:
