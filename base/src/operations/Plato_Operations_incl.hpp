@@ -78,10 +78,3 @@
 #include "Plato_NormalizeObjectiveGradient.hpp"
 #include "Plato_OutputNodalFieldSharedData.hpp"
 #include "Plato_ReciprocateObjectiveGradient.hpp"
-
-#ifdef GEOMETRY
-#include "Plato_MapMLSField.hpp"
-#include "Plato_MetaDataMLS.hpp"
-#include "Plato_ComputeMLSField.hpp"
-#include "Plato_InitializeMLSPoints.hpp"
-#endif

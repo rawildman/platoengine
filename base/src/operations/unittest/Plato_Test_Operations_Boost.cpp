@@ -59,6 +59,7 @@
 
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_Aggregator.hpp"
+#include "Plato_ChainRule.hpp"
 #include "Plato_DesignVolume.hpp"
 #include "Plato_Reinitialize.hpp"
 #include "Plato_EnforceBounds.hpp"
@@ -497,4 +498,21 @@ TEST(BoostSerialization, EnforceBounds)
     Plato::system("rm -rf out.xml");
 
     EXPECT_TRUE(serializeEquals(tOperation,tOperation2));
+}
+
+
+TEST(BoostSerialization, ChainRule)
+{
+    Plato::ChainRule tChainRule("Chainy McChain Face",
+                                "DFDX",
+                                {"Some", "arbitrary", "strings"},
+                                42);
+    Plato::ChainRule tChainRule2;
+    EXPECT_FALSE(serializeEquals(tChainRule,tChainRule2));
+
+    save<boost::archive::xml_oarchive>(tChainRule,"out.xml");
+    load<boost::archive::xml_iarchive>(tChainRule2,"out.xml");
+    Plato::system("rm -rf out.xml");
+
+    EXPECT_TRUE(serializeEquals(tChainRule, tChainRule2));
 }

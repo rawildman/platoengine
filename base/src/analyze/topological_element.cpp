@@ -44,10 +44,6 @@
 #include "exception_handling.hpp"
 #include "types.hpp"
 #include <math.h>
-#ifdef GEOMETRY
-#include <Intrepid2_HGRAD_HEX_Cn_FEM.hpp>
-#include <core/Cogent_IntegratorFactory.hpp>
-#endif
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_XMLParameterListHelpers.hpp>
 
@@ -132,89 +128,6 @@ CustomIntegration::CustomIntegration(pugi::xml_node& node, int myDim )
   }
 }
 
-#ifdef GEOMETRY
-/*****************************************************************************/
-CogentIntegration::CogentIntegration( pugi::xml_node& node, 
-                                      Teuchos::RCP<shards::CellTopology> blockTopology ) :
-  ElementIntegration(/*uniform=*/ false)
-/*****************************************************************************/
-{
-  // parse and create Cogent cubature
-  Teuchos::ParameterList geomSpec("Geometry");
-  std::string xmlFileName = Plato::Parse::getString( node, "geometry" );
-  Teuchos::updateParametersFromXmlFile(xmlFileName, Teuchos::ptrFromRef(geomSpec));
-
-  if ( !(geomSpec.isType<int>("Projection Order")) ) {
-    int defaultProjectionOrder = 2;
-    p0cout << "!!! 'Projection Order' not specified in " << xmlFileName << "." << endl;
-    p0cout << "!!! Setting 'Projection Order' to " << defaultProjectionOrder << "." << endl;
-    geomSpec.set<int>("Projection Order", defaultProjectionOrder);
-  }
-
-  if ( !(geomSpec.isType<Teuchos::Array<double>>("Shape Parameter Values")) ) {
-    throw ParsingException("'Shape Parameter Values' missing from geometry definition." );
-  }
-
-  mNumNodes = blockTopology->getNodeCount();
-
-  Teuchos::RCP<Intrepid2::Basis<Kokkos::Serial, Real> > intrepidBasis;
-  if( blockTopology->getBaseName() == shards::getCellTopologyData< shards::Hexahedron<8> >()->name ){
-    intrepidBasis = Teuchos::rcp(new Intrepid2::Basis_HGRAD_HEX_C1_FEM<Kokkos::Serial, Real, Real>() );
-  } else 
-  if( blockTopology->getBaseName() == shards::getCellTopologyData< shards::Tetrahedron<4> >()->name ){
-    intrepidBasis = Teuchos::rcp(new Intrepid2::Basis_HGRAD_TET_C1_FEM<Kokkos::Serial, Real, Real>() );
-  } else {
-    std::stringstream err;
-    err << "Cogent doesn't support requested cell topology: " << blockTopology->getBaseName();
-    throw ParsingException(err.str());
-  }
-
-  Cogent::IntegratorFactory iFactory;
-  mCubature = iFactory.create(blockTopology, intrepidBasis, geomSpec);
-
-  
-  Kokkos::DynRankView<Real, Kokkos::Serial> points("points", 0, 0);
-  mCubature->getStandardPoints(points);
-
-  mNumDims = points.extent(1);
-  mNumPts = points.extent(0);
-
-  cubPoints = new Intrepid::FieldContainer<double>(mNumPts, mNumDims);
-  cubWeights = new Intrepid::FieldContainer<double>(mNumPts);
-
-  auto& p = *cubPoints;
-  auto& w = *cubWeights;
-
-  for(int iPt=0; iPt<mNumPts; iPt++) {
-    w(iPt) = 0.0;
-    for(int iDim=0; iDim<mNumDims; iDim++) {
-      p(iPt, iDim) = points(iPt, iDim);
-    }
-  }
-
-  // create containers
-  mCoordVals = Kokkos::DynRankView<Real, Kokkos::Serial>("coords", mNumNodes, mNumDims);
-  mWeights   = Kokkos::DynRankView<Real, Kokkos::Serial>("coords", mNumPts);
-  
-}
-/*****************************************************************************/
-void CogentIntegration::getCubatureWeights(Intrepid::FieldContainer<double>& weights, 
-                                     const Intrepid::FieldContainer<double>& nodes)
-/*****************************************************************************/
-{
-  
-  for( int inode=0; inode<mNumNodes; inode++) {
-    for( int idim=0; idim<mNumDims; idim++) {
-      mCoordVals(inode, idim) = nodes(0, inode, idim);
-    }
-  }
-  mCubature->getCubatureWeights(mWeights, mCoordVals);
-  for( int ipt=0; ipt<mNumPts; ipt++) {
-    weights(ipt) = mWeights(ipt);
-  }
-}
-#endif // GEOMETRY
-
 /*****************************************************************************/
 Element::~Element()
 /*****************************************************************************/
@@ -238,12 +151,6 @@ void Element::setIntegrationMethod(pugi::xml_node& node)
   if( intgType == "custom" ){
     elementIntegration = new CustomIntegration( node, myDim );
   } 
-#ifdef GEOMETRY
-  else
-  if( intgType == "cogent" ){
-    elementIntegration = new CogentIntegration( node, blockTopology );
-  }
-#endif
 }
 
 /*****************************************************************************/

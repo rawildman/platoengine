@@ -80,40 +80,6 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
         mLightMp = new LightMP(tInputFile);
         mInputTree = mLightMp->getInput();
     }
-
-    // parse/create the MLS PointArrays
-    auto tPointArrayInputs = mInputfileData.getByName<Plato::InputData>("PointArray");
-    for(auto tPointArrayInput=tPointArrayInputs.begin(); tPointArrayInput!=tPointArrayInputs.end(); ++tPointArrayInput)
-    {
-#ifdef GEOMETRY
-        auto tPointArrayName = Plato::Get::String(*tPointArrayInput,"Name");
-        auto tPointArrayDims = Plato::Get::Int(*tPointArrayInput,"Dimensions");
-        if( mMLS.count(tPointArrayName) != 0 )
-        {
-            throw Plato::ParsingException("PointArray names must be unique.");
-        }
-        else
-        {
-            if( tPointArrayDims == 1 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<1,double>(*tPointArrayInput)),1}));
-            }
-            else if( tPointArrayDims == 2 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<2,double>(*tPointArrayInput)),2}));
-            }
-            else if( tPointArrayDims == 3 )
-            {
-                mMLS[tPointArrayName] = std::make_shared<Plato::MLSstruct>(Plato::MLSstruct(
-                    {   Plato::any(Plato::Geometry::MovingLeastSquares<3,double>(*tPointArrayInput)),3}));
-            }
-        }
-#else
-        throw ParsingException("PlatoApp was not compiled with PointArray support.  Turn on 'GEOMETRY' option and rebuild.");
-#endif
-    }
 }
 
 PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp_XML_File, MPI_Comm& aLocalComm) :
@@ -412,78 +378,6 @@ void PlatoApp::initialize( bool initializeTimers )
                 mOperationMap[tStrName] = new Plato::Filter(this, tNode);
                 this->createLocalData(mOperationMap[tStrName]);
                 continue;
-            }
-
-            tFunctions.push_back("ComputeMLSField");
-            if(tStrFunction == tFunctions.back())
-            {
-#ifdef GEOMETRY
-                auto tMLSName = Plato::Get::String(tNode,"MLSName");
-                if( mMLS.count(tMLSName) == 0 )
-                {   throw ParsingException("PlatoApp::ComputeMLSField: Requested a PointArray that isn't defined.");}
-
-                auto tMLS = mMLS[tMLSName];
-                if( tMLS->dimension == 3 )
-                {   mOperationMap[tStrName] = new Plato::ComputeMLSField<3>(this, tNode);}
-                else
-                if( tMLS->dimension == 2 )
-                {   mOperationMap[tStrName] = new Plato::ComputeMLSField<2>(this, tNode);}
-                else
-                if( tMLS->dimension == 1 )
-                {   mOperationMap[tStrName] = new Plato::ComputeMLSField<1>(this, tNode);}
-                this->createLocalData(mOperationMap[tStrName]);
-                continue;
-#else
-                throw ParsingException("PlatoApp was not compiled with ComputeMLSField enabled.  Turn on 'GEOMETRY' option and rebuild.");
-#endif // GEOMETRY
-            }
-
-            tFunctions.push_back("InitializeMLSPoints");
-            if(tStrFunction == tFunctions.back())
-            {
-#ifdef GEOMETRY
-                auto tMLSName = Plato::Get::String(tNode,"MLSName");
-                if( mMLS.count(tMLSName) == 0 )
-                {   throw ParsingException("PlatoApp::InitializeMLSPoints: Requested a PointArray that isn't defined.");}
-
-                auto tMLS = mMLS[tMLSName];
-                if( tMLS->dimension == 3 )
-                {   mOperationMap[tStrName] = new Plato::InitializeMLSPoints<3>(this, tNode);}
-                else
-                if( tMLS->dimension == 2 )
-                {   mOperationMap[tStrName] = new Plato::InitializeMLSPoints<2>(this, tNode);}
-                else
-                if( tMLS->dimension == 1 )
-                {   mOperationMap[tStrName] = new Plato::InitializeMLSPoints<1>(this, tNode);}
-                this->createLocalData(mOperationMap[tStrName]);
-                continue;
-#else
-                throw ParsingException("PlatoApp was not compiled with InitializeMLSPoints enabled.  Turn on 'GEOMETRY' option and rebuild.");
-#endif // GEOMETRY
-            }
-
-            tFunctions.push_back("MapMLSField");
-            if(tStrFunction == tFunctions.back())
-            {
-#ifdef GEOMETRY
-                auto tMLSName = Plato::Get::String(tNode,"MLSName");
-                if( mMLS.count(tMLSName) == 0 )
-                {   throw ParsingException("PlatoApp::MapMLSField: Requested a PointArray that isn't defined.");}
-
-                auto tMLS = mMLS[tMLSName];
-                if( tMLS->dimension == 3 )
-                {   mOperationMap[tStrName] = new Plato::MapMLSField<3>(this, tNode);}
-                else
-                if( tMLS->dimension == 2 )
-                {   mOperationMap[tStrName] = new Plato::MapMLSField<2>(this, tNode);}
-                else
-                if( tMLS->dimension == 1 )
-                {   mOperationMap[tStrName] = new Plato::MapMLSField<1>(this, tNode);}
-                this->createLocalData(mOperationMap[tStrName]);
-                continue;
-#else
-                throw ParsingException("PlatoApp was not compiled with MapMLSField enabled.  Turn on 'GEOMETRY' option and rebuild.");
-#endif // GEOMETRY
             }
 
             tFunctions.push_back("ComputeRoughness");

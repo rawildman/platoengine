@@ -74,23 +74,6 @@ if( ENABLE_ISO )
   add_definitions(-DENABLE_ISO)
 endif()
 
-if( GEOMETRY )
-                        
-set(${LIB_NAME}_SOURCES ${${LIB_NAME}_SOURCES}
-                        Plato_MapMLSField.cpp
-                        Plato_ComputeMLSField.cpp
-                        Plato_InitializeMLSPoints.cpp
-                        )
-
-set(${LIB_NAME}_HEADERS ${${LIB_NAME}_HEADERS}
-                        Plato_MapMLSField.hpp
-                        Plato_MetaDataMLS.hpp
-                        Plato_ComputeMLSField.hpp
-                        Plato_InitializeMLSPoints.hpp
-                        )
-                        
-endif()
-
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES} ${CMAKE_SOURCE_DIR}/apps/services
                                       ${CMAKE_SOURCE_DIR}/base/src/iso/main)
 

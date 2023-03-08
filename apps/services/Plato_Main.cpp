@@ -49,10 +49,6 @@
 
 #include "communicator.hpp"
 
-#ifdef GEOMETRY
-#include <Kokkos_Core.hpp>
-#endif
-
 #include <iostream>
 #include <sstream>
 
@@ -94,19 +90,12 @@ int main(int aArgc, char *aArgv[])
 
     MPI_Init(&aArgc, (char***) &aArgv);
 
-#if defined(GEOMETRY) || defined(AMFILTER_ENABLED)
-    Kokkos::initialize(aArgc, aArgv);
-#endif
-
     Plato::Interface* tPlatoInterface = nullptr;
     PlatoApp *tPlatoApp = nullptr;
 
     auto safeExit = [&]() {
         delete tPlatoInterface;
         delete tPlatoApp;
-#if defined(GEOMETRY) || defined(AMFILTER_ENABLED)
-        Kokkos::finalize();
-#endif
         MPI_Finalize();
         exit(0);
     };
