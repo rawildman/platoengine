@@ -21,7 +21,8 @@ TEST(PlatoTestXMLGenerator, SDOperationsFile_append_internal_energy_gradient_ope
     auto tReadData = XMLGen::read_data_from_file("xml.txt");
     std::string tGoldString = std::string("<?xmlversion=\"1.0\"?><Operation><Function>") +
         std::string("ComputeCriterionGradient</Function><Name>") +
-        std::string("ComputeGradient</Name></Operation>");
+        std::string("ComputeGradient</Name><Output><ArgumentName>DFDX") +
+        std::string("</ArgumentName></Output></Operation>");
 
     ASSERT_STREQ(tGoldString.c_str(), tReadData.str().c_str());
     Plato::system("rm xml.txt");

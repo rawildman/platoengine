@@ -2063,8 +2063,8 @@ TEST(PlatoTestXMLGenerator, AppendCriteriaSharedData_SO_aflr_workflow)
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 
     tSharedData = tSharedData.next_sibling("SharedData");
-    tKeys = {"Name", "Type", "Layout", "Size", "OwnerName", "UserName"};
-    tValues = {"Criterion Gradient - criterion_3_service_2_scenario_14", "Scalar", "Global", "4", "plato_analyze_2", "platomain_1"};
+    tKeys = {"Name", "Type", "Layout", "Dynamic", "OwnerName", "UserName"};
+    tValues = {"Criterion GradientX - criterion_3_service_2_scenario_14", "Scalar", "Global", "true", "plato_analyze_2", "platomain_1"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tSharedData);
 }
 

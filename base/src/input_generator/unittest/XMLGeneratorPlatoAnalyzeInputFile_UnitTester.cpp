@@ -2527,8 +2527,9 @@ TEST(PlatoTestXMLGenerator, AppendSpatialModelToPlatoAnalyzeInputDeck_TwoBlocksO
     tMaterialModel = tElementBlock.next_sibling("Parameter");
     PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Material Model", "string", "carbonadium"}, tMaterialModel);
 
-    auto tFixedControl = tMaterialModel.next_sibling("Parameter");
-    PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tFixedControl);
+    // Uncomment when 'Fixed Blocks' parameter is fixed in PA
+    // auto tFixedControl = tMaterialModel.next_sibling("Parameter");
+    // PlatoTestXMLGenerator::test_attributes({"name", "type", "value"}, {"Fixed Control", "bool", "true"}, tFixedControl);
 }
 
 TEST(PlatoTestXMLGenerator, AppendMaterialModelToPlatoAnalyzeInputDeck_Empty_MaterialIsNotFromAnalyzePerformer)
