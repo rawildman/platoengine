@@ -57,12 +57,8 @@ TEST(PlatoTestXMLGenerator, TF_WriteOperationsFile)
         std::string("<includefilename=\"defines.xml\"/>") + 
         std::string("<Operation><Name>ComputeCriterion</Name>") + 
         std::string("<OutputValue><Name>Criterion</Name></OutputValue></Operation>") + 
-        std::string("<Operation><Name>ComputeCriterionGradient</Name>") + 
-        std::string("<OutputGradient><Name>CriterionGradient</Name></OutputGradient></Operation>") + 
-        std::string("<Operation><Name>ComputeCriterionGradientwrtCADParameters</Name>") + 
-        std::string("<Forvar=\"I\"in=\"Parameters\"><Input><ArgumentName>ParameterSensitivity{I}") +
-        std::string("</ArgumentName></Input></For><Output><ArgumentName>CriterionGradientwrtCADParameters") +
-        std::string("</ArgumentName></Output></Operation>");
+        std::string("<Operation><Name>ComputeCriterionGradient</Name><Output>") +
+        std::string("<ArgumentName>DFDX</ArgumentName></Output></Operation>");
 
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     Plato::system("rm -f sierra_tf_1_operations.xml");

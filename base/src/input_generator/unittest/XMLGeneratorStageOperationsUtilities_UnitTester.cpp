@@ -110,6 +110,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     XMLGen::InputData tMetaData;
     XMLGen::OptimizationParameters tOptimizationParameters;
     tOptimizationParameters.append("esp_workflow", "unknown_workflow");
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
     tMetaData.set(tOptimizationParameters);
     XMLGen::Service tService;
     tService.id("1");
