@@ -360,19 +360,16 @@ void append_chain_rule_operation_to_plato_main_operation
 {
     if(aXMLMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
-        if(aXMLMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
-        {
-            auto tOperationNode = aDocument.append_child("Operation");
-            XMLGen::append_children({"Name","Function"}, {"Chain Rule","ChainRule"}, tOperationNode);
-            auto tForNode = tOperationNode.append_child("For");
-            XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
-            auto tInputNode = tForNode.append_child("Input");
-            XMLGen::append_children({"ArgumentName"}, {"Parameter Sensitivity {I}"}, tInputNode);
-            tInputNode = tOperationNode.append_child("Input");
-            XMLGen::append_children({"ArgumentName"}, {"DFDX"}, tInputNode);
-            auto tOutputNode = tOperationNode.append_child("Output");
-            XMLGen::append_children({"ArgumentName"}, {"Full Gradient"}, tOutputNode);
-        }
+        auto tOperationNode = aDocument.append_child("Operation");
+        XMLGen::append_children({"Name","Function"}, {"Chain Rule","ChainRule"}, tOperationNode);
+        auto tForNode = tOperationNode.append_child("For");
+        XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
+        auto tInputNode = tForNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"Parameter Sensitivity {I}"}, tInputNode);
+        tInputNode = tOperationNode.append_child("Input");
+        XMLGen::append_children({"ArgumentName"}, {"DFDX"}, tInputNode);
+        auto tOutputNode = tOperationNode.append_child("Output");
+        XMLGen::append_children({"ArgumentName"}, {"Full Gradient"}, tOutputNode);
     }
 }
 // function append_chain_rule_operation_to_plato_main_operation

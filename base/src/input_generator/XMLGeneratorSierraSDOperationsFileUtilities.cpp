@@ -147,11 +147,8 @@ void append_internal_energy_gradient_operation_shape
 {
     auto tOperationNode = aDocument.append_child("Operation");
     append_children({"Function", "Name"}, {"Compute Criterion Gradient", "Compute Gradient"}, tOperationNode);
-    if(aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3")
-    {
-        auto tOutputNode = tOperationNode.append_child("Output");
-        append_children({"ArgumentName"}, {"DFDX"}, tOutputNode);
-    }
+    auto tOutputNode = tOperationNode.append_child("Output");
+    append_children({"ArgumentName"}, {"DFDX"}, tOutputNode);
 }
 /**************************************************************************/
 void append_internal_energy_hessian_operation
@@ -267,10 +264,6 @@ void add_operations_gradient_based_problem
     else if (aMetaData.optimization_parameters().optimizationType() == OT_SHAPE) 
     {
         append_internal_energy_gradient_operation_shape(aMetaData, aDocument);
-        if (aMetaData.optimization_parameters().esp_workflow() == "aflr4_aflr3") 
-        {
-            append_compute_objective_gradient_operation_for_shape_problem(aScenario, aDocument);
-        }
     }
     append_internal_energy_hessian_operation(aMetaData, aScenario, aDocument);
 }
