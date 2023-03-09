@@ -911,6 +911,15 @@ void append_compute_objective_sensitivity_operation
  const std::string &aIdentifierString,
  pugi::xml_node &aParentNode)
 {
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3" &&
+       aMetaData.optimization_parameters().esp_workflow() != "egads_tetgen" &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr4_tetgen" &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr2")
+    {
+        THROWERR("Unknown esp workflow.")
+    }
+
     std::string tCode = aService.code();
     std::string tPerformer = aService.performer();
     std::string tOperationName;
