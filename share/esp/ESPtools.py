@@ -407,50 +407,8 @@ def updateModelAflr2Exodus(modelName, paramVals):
 
   subprocess.call(['mv', modedName, modelName])
 
-##############################################################################
-## define function for running aflr4_aflr3 meshing workflow
-##############################################################################
-#def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
-
-#  aflr(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
-
-  ## get capsGroup map
-#  groupAttrs = []
-#  f_in = open('aflr4_aflr3.console')
-#  for line in f_in:
-#    tokens = line.split(' ')
-#    tokens = list(filter(None, tokens)) ## filter out empty strings
-#    if tokens[0] == "Mapping" and tokens[1] == "capsGroup" and tokens[2] == "attributes":
-#      numberLine = f_in.readline()
-#      tokens = numberLine.split(' = ')
-#      tokens = list(filter(None, tokens)) ## filter out empty strings
-#      if tokens[0].strip() == "Number of unique capsGroup attributes":
-#        numLines = int(tokens[1].strip())
-#        for iEntry in range(numLines):
-#          nextLine = f_in.readline()
-#          defs = nextLine.split(', ')
-#          defs = list(filter(None, defs)) ## filter out empty strings
-#          groupName = defs[0].split(' = ')[1].strip()
-#          groupIndex = defs[1].split(' = ')[1].strip()
-#          groupAttrs.append({"name": groupName, "index": groupIndex})
-#  
-#  with redirected('toExo.console'):
-#    toExo(meshName, groupAttrs)
 
 def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
-
-  #problem = capsProblem()
-  #model = problem.loadCAPS(modelNameOut)
-  #aflr4 = problem.loadAIM(aim         = "aflr4AIM",
-  #                    altName     = "aflr4",
-  #                    analysisDir = ".")
-  #aflr4.setAnalysisVal("Proj_Name", "ESP_Mesh")
-  #aflr4.setAnalysisVal("Mesh_Format", "ETO")
-  #aflr4.setAnalysisVal("Mesh_Length_Factor", .2)
-  #aflr4.setAnalysisVal("min_scale", 1)
-  #aflr4.setAnalysisVal("max_scale", 1)
-  #aflr4.preAnalysis()
-  #aflr4.postAnalysis()
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
@@ -461,18 +419,13 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   aflr4.input.Mesh_Length_Factor = .2 
   aflr4.input.min_scale =  1
   aflr4.input.max_scale = 1
+  aflr4.input.Multiple_Mesh = 'MultiDomain'
   aflr4.runAnalysis()
 
   aflr3 = problem.analysis.create(aim='aflr3AIM', name='aflr3')
   aflr3.input["Surface_Mesh"].link(aflr4.output["Surface_Mesh"])
+  aflr3.input.Multiple_Mesh = 'MultiDomain'
   aflr3.runAnalysis()
-
-  #aflr3 = problem.loadAIM(aim         = "aflr3AIM",
-  #                          analysisDir = ".",
-  #                          parents     = aflr4.aimName)
-
-  #aflr3.preAnalysis()
-  #aflr3.postAnalysis()
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr3.output["Volume_Mesh"])
@@ -483,11 +436,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   tokens.pop()
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
-#  cntr=0
-#  for file in os.listdir('./ESP_Mesh/Scratch/aflr4'):
-#    if fnmatch.fnmatch(file, 'aflr4_*.eto'):
-#      subprocess.call(['mv', './ESP_Mesh/Scratch/aflr4/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-#      cntr += 1
+
   num_tess_files=0
   for file in os.listdir('./ESP_Mesh/Scratch/plato'):
     if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
