@@ -1,10 +1,10 @@
-stages: [setup-spack, build-dependencies, build-install, test, unit-test, clean-up]
+stages: [setup-spack, build-dependencies, build-install, test, unit-test, coverage, clean-up]
 
 variables:
   SPACK_REPO: https://github.com/platoengine/spack.git
   SPACK_MIRROR_DIR: /home/gitlab-runner/spack-mirror
   RUNNER_HOME: /home/gitlab-runner
-  
+
 include:
   local: ci-templates.yml
 
@@ -49,7 +49,7 @@ test-platoengine:
 unit-test-platoengine:
   parallel:
     matrix:
-      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoXMLGenerator_UnitTester, Plato_Operations_UnitTester, PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
+      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoXMLGenerator_UnitTester,  Plato_Operations_UnitTester,  PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
   extends: .unit-test-platoengine
   variables:
     SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
@@ -57,6 +57,23 @@ unit-test-platoengine:
   tags:
     - ${CONFIGURATION}
   needs: ["build-install-platoengine"]
+
+coverage-platoengine:
+  parallel:
+    matrix:
+      - PLATO_ENGINE_FOLDER_PATTERN: [platoengine, analyze, data_layer, Filters, input_generator, interface, iso, models, operations, optimize, services, PlatoSubproblemLibrary, proxy, Su2Exodus, tools ]
+  extends: .coverage-platoengine
+  variables:
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+    PLATO_ENGINE_UNIT_TESTER: PlatoMainUnitTester  PlatoXMLGenerator_UnitTester  Plato_Operations_UnitTester  PlatoSu2ToExodus_UnitTester PlatoTools_UnitTester
+  tags:
+    - ${CONFIGURATION}
+  rules:
+    - if: $TRIGGER_KCOV == "false"
+      when: never
+    - when: always
+  needs: ["unit-test-platoengine"]
 
 clean-build-cache:
   stage: clean-up
