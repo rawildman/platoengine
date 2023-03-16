@@ -1,3 +1,6 @@
+#include "Plato_InputData.hpp"
+#include "Plato_Parser.hpp"
+#include "Plato_PenaltyModel.hpp"
 #include "Plato_SIMP.hpp"
 
 #include <gtest/gtest.h>
@@ -56,4 +59,28 @@ TEST(SIMP, Quadratic)
   EXPECT_EQ(tSimp.grad(0.5), 1.0);
   EXPECT_EQ(tSimp.grad(1.0), 2.0);
 }
+
+TEST(SIMP, QuadraticViaFactory)
+{
+  // Repeats quadratic test but uses PenaltyModelFactory
+  Plato::InputData tData("PenaltyModel");
+  tData.add<std::string>("PenaltyModel", "SIMP");
+  Plato::InputData tSIMPData("SIMP");
+  tSIMPData.set<std::string>("PenaltyExponent", "2.0");
+  tSIMPData.set<std::string>("MinimumValue", "0.5");
+  tData.add<Plato::InputData>("SIMP", tSIMPData);
+
+  auto tSimp = Plato::PenaltyModelFactory::create(tData);
+  ASSERT_NE(tSimp, nullptr);
+  ASSERT_NE(dynamic_cast<Plato::SIMP*>(tSimp.get()), nullptr);
+
+  EXPECT_EQ(tSimp->eval(0.0), 0.5);
+  EXPECT_EQ(tSimp->eval(0.5), 0.625);
+  EXPECT_EQ(tSimp->eval(1.0), 1.0);
+
+  EXPECT_EQ(tSimp->grad(0.0), 0.0);
+  EXPECT_EQ(tSimp->grad(0.5), 0.5);
+  EXPECT_EQ(tSimp->grad(1.0), 1.0);
+}
+
 }
