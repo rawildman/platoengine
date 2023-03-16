@@ -53,6 +53,8 @@
 #ifndef SRC_PENALTYMODEL_HPP_
 #define SRC_PENALTYMODEL_HPP_
 
+#include <memory>
+
 namespace Plato {
 
 class InputData;
@@ -68,10 +70,9 @@ class InputData;
       void serialize(Archive & aArchive, const unsigned int version) {} 
   };
 
-  class PenaltyModelFactory {
-    public:
-      PenaltyModel* create(Plato::InputData& input);
-  };
+namespace PenaltyModelFactory {
+  std::unique_ptr<PenaltyModel> create(Plato::InputData& input);
+}
 
 } /* namespace Plato */
 

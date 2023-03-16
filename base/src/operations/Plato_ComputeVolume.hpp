@@ -51,6 +51,8 @@
 #include "Plato_LocalOperation.hpp"
 #include "Plato_PenaltyModel.hpp"
 
+#include <boost/serialization/unique_ptr.hpp>
+
 class PlatoApp;
 
 namespace Plato
@@ -68,7 +70,7 @@ public:
     ComputeVolume() = default;
     ComputeVolume(const std::string& aVolumeName,
                   const std::string& aGradientName,
-                  Plato::PenaltyModel* aPenaltyModel,
+                  std::unique_ptr<Plato::PenaltyModel> aPenaltyModel,
                   const std::string& aTopologyName);
     /******************************************************************************//**
      * @brief Constructor
@@ -76,11 +78,6 @@ public:
      * @param [in] aNode input XML data
     **********************************************************************************/
     ComputeVolume(PlatoApp* aPlatoApp, Plato::InputData& aNode);
-
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~ComputeVolume();
 
     /******************************************************************************//**
      * @brief perform local operation - compute structural volume
@@ -109,7 +106,7 @@ private:
     std::string mTopologyName = "density"; /*!< topology field argument name */
     std::string mVolumeName;  /*!< volume argument name */
     std::string mGradientName; /*!< volume gradient argument name */
-    Plato::PenaltyModel* mPenaltyModel = nullptr; /*!< material penalty model, e.g. SIMP */
+    std::unique_ptr<Plato::PenaltyModel> mPenaltyModel; /*!< material penalty model, e.g. SIMP */
 };
 // class ComputeVolume
 

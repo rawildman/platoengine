@@ -58,21 +58,19 @@
 namespace Plato
 {
 
-/******************************************************************************/
-PenaltyModel* PenaltyModelFactory::create(Plato::InputData& aInputData)
-/******************************************************************************/
+namespace PenaltyModelFactory {
+std::unique_ptr<PenaltyModel> create(Plato::InputData& aInputData)
 {
-  std::string strModel = Get::String(aInputData,"PenaltyModel");
+  const std::string strModel = Get::String(aInputData,"PenaltyModel");
 
-  auto tInputData = Get::InputData(aInputData, strModel);
-
-  PenaltyModel* pModel = nullptr;
+  const auto tInputData = Get::InputData(aInputData, strModel);
+  std::unique_ptr<PenaltyModel> pModel;
 
   if(strModel == "SIMP"){
-    pModel = new SIMP(tInputData);
+    pModel = std::make_unique<SIMP>(tInputData);
   }
 
   return pModel;
 }
-
+}
 } /* namespace Plato */
