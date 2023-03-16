@@ -1,4 +1,4 @@
-stages: [setup-spack, build-dependencies, build-install, test, unit-test, coverage, clean-up]
+stages: [setup-spack, build-dependencies, build-install, test, unit-test, coverage, report, clean-up]
 
 variables:
   SPACK_REPO: https://github.com/platoengine/spack.git
@@ -75,6 +75,34 @@ coverage-platoengine:
     - when: always
   needs: ["unit-test-platoengine"]
 
+coverage-report:
+  stage: report
+  resource_group: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+  variables:
+    SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
+    SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
+  tags:
+    - ${CONFIGURATION}
+  rules:
+    - if: $TRIGGER_KCOV == "false"
+      when: never
+    - when: always
+  needs: ["coverage-platoengine"]
+  script:
+    - cd ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_platoengine/
+    - grep -oP 'coverage line-rate="[0-9].[0-9]*"' ${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_platoengine/kcov-merged/cobertura.xml | grep -oP '[0-9].[0-9]*' > grepcov.txt
+    - perl -e 'print '`cat grepcov.txt`'*100' > prcnt
+    - echo 'Percentage Covered '`cat prcnt`
+  coverage: '/Percentage Covered \d+\.\d+/'
+  artifacts:
+    when: always
+    paths:
+      - "${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_platoengine"
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: "${CI_PROJECT_DIR}/jobs_scratch_dir/coverage_platoengine/kcov-merged/cobertura.xml"
+        
 clean-build-cache:
   stage: clean-up
   extends: .clean-temporary-build-cache

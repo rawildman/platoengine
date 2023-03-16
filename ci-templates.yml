@@ -144,7 +144,6 @@ variables:
         perl -e 'print '`cat grepcov.txt`'*100' > prcnt
         echo ${PLATO_ENGINE_FOLDER_PATTERN}' Percentage Covered '`cat prcnt`
       fi
-  coverage: '/Percentage Covered \d+\.\d+/'
   artifacts:
     when: always
     paths:
