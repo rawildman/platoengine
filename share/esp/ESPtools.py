@@ -189,27 +189,20 @@ def toExo(meshName, groupAttrs):
 ## define function that converts su2 mesh to exo mesh
 ##############################################################################
 def updateModelAflr4Aflr3Exodus(modelName, paramVals):
-
-
-  #
-  # Add requisite body and face attributes for meshing
-  #
-
   # find mesh size attribute 'MeshLength'
   #
   response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
-
-  ## is 'MeshLength' in the csm file?
   if response == "":
     raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
 
-  ## is 'MeshLength' in the csm file only once?
   tokens = response.rstrip().split("\n")
   if len(tokens) > 1:
     raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
 
   MeshLength = str(response)
 
+  # append necessary lines to csm file
+  #
   modedName = modelName + ".tmp"
 
   f_in = open(modelName)
@@ -218,23 +211,21 @@ def updateModelAflr4Aflr3Exodus(modelName, paramVals):
   for line in f_in:
     if line.strip().lower() == 'end':
       f_out.write("select body\n")
-      f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM\n")
-      f_out.write("attribute capsGroup $solid_group\n")
+      f_out.write("attribute _name $block_1\n")
+      f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM\n")
       f_out.write("attribute capsMeshLength " + MeshLength + "\n")
+      f_out.write("attribute capsGroup $solid_group\n")
 
       f_out.write("select face\n")
       f_out.write("attribute capsGroup $solid_group\n")
-      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
+      # f_out.write("attribute capsMeshLength " + MeshLength + "\n")
 
     f_out.write(line)
 
   f_out.close()
 
-
-  #
   # If paramVals were provided, set them in the model file
   #
-
   for ip in range(len(paramVals)):
     p = paramVals[ip]
     print("param: " + str(p))
@@ -655,8 +646,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   subprocess.call(['cp', modelNameIn, modelNameOut])
 
   if workflow == "aflr4_aflr3":
-    updateModelXXXTetgenExodus(modelNameOut, paramVals)
-    #updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
+    updateModelAflr4Aflr3Exodus(modelNameOut, paramVals)
   elif workflow == "egads_tetgen":
     updateModelXXXTetgenExodus(modelNameOut, paramVals)
   elif workflow == "aflr4_tetgen":
