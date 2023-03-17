@@ -54,22 +54,6 @@ public:
                            const std::string& aXMLLoopVectorName);
 };
 
-class OperationWait : public Operation
-{
-private:
-    std::string mCommand; 
-    
-public:
-    OperationWait(const std::string& aName,
-                              const std::string& aFile,
-                              std::shared_ptr<Performer> aPerformer,
-                              int aConcurrentEvaluations);
-    void write_definition(pugi::xml_document& aDocument, 
-                          std::string aEvaluationString = "") override;
-    void write_interface(pugi::xml_node& aNode, 
-                         std::string aEvaluationString = "") override;
-};
-
 class OperationGemmaMPISystemCall : public Operation
 {
 private:

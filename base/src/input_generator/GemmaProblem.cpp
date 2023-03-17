@@ -67,17 +67,15 @@ GemmaProblem::GemmaProblem(const XMLGen::InputData& aMetaData) : Problem()
     // this->initializeOperations();
     std::shared_ptr<director::OperationAprepro> tAprepro = std::make_shared<director::OperationAprepro>(tGemmaInputFile , tDescriptors, tInputSharedData, mPerformer, tEvaluations );
     std::shared_ptr<director::OperationGemmaMPISystemCall> tGemma = std::make_shared<director::OperationGemmaMPISystemCall>(tGemmaInputFile, tGemmaPath, tNumRanks, mPerformer, tEvaluations);
-    std::shared_ptr<director::OperationWait> tWait = std::make_shared<director::OperationWait>("wait", tDataFile, mPerformer, tEvaluations);
     std::shared_ptr<director::OperationHarvestDataFunction> tHarvestData = std::make_shared<director::OperationHarvestDataFunction>(tDataFile, tMathOperation, tDataColumn, tOutputSharedData, mPerformer, tEvaluations);
 
     mOperations.push_back(tAprepro);
     mOperations.push_back(tGemma);
-    mOperations.push_back(tWait);
     mOperations.push_back(tHarvestData);
 
     // this->initializeStages();
     director::Stage tInitializeStage("Initialize Input",{tAprepro},tInputSharedData,nullptr);
-    director::Stage tCriterionStage("Compute Criterion 0 Value",{tGemma,tWait,tHarvestData},nullptr,tOutputSharedData);
+    director::Stage tCriterionStage("Compute Criterion 0 Value",{tGemma,tHarvestData},nullptr,tOutputSharedData);
 
     mStages.push_back(tInitializeStage);
     mStages.push_back(tCriterionStage);
