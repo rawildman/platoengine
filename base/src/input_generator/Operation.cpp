@@ -51,38 +51,6 @@ pugi::xml_node Operation::forNode
     }
 }
 
-OperationWait::OperationWait
-(const std::string& aName,
- const std::string& aFile,
- std::shared_ptr<Performer> aPerformer,
- int aConcurrentEvaluations) :
- Operation(aName, "SystemCall",aPerformer, aConcurrentEvaluations)
-{
-    mCommand = std::string("while lsof -u `id -u -n` | grep ./") + aFile + "; do sleep 1; done";
-    mOnChange = false;    
-}
-
-void OperationWait::write_definition
-(pugi::xml_document& aDocument, 
- std::string aEvaluationString)
-{
-    auto tOperationNode = aDocument.append_child("Operation");
-    appendCommonChildren(tOperationNode,aEvaluationString);
-    addChild(tOperationNode, "Command", mCommand);
-    if(mChDir)
-        addChild(tOperationNode, "ChDir", std::string("evaluations_") + tag(aEvaluationString));
-    addChild(tOperationNode, "OnChange", (mOnChange ? "true" : "false"));
-}
-
-void OperationWait::write_interface
-(pugi::xml_node& aNode, 
- std::string aEvaluationString)
-{
-    auto tOperationNode = aNode.append_child("Operation");
-    addChild(tOperationNode, "Name", name(aEvaluationString));
-    addChild(tOperationNode, "PerformerName", mPerformer->name(aEvaluationString));
-}
-
 OperationGemmaMPISystemCall::OperationGemmaMPISystemCall
 (const std::string& aInputDeck, 
  const std::string& aPath,

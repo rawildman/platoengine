@@ -250,30 +250,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoMainOperationsFile)
         "false"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
-    // WAIT OPERATIONS
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    tKeys = {"Function",
-        "Name", 
-        "Command", 
-        "ChDir",
-        "OnChange"};
-    tValues = {"SystemCall", 
-        "wait_0", 
-        "while lsof -u `id -u -n` | grep ./matched_power_balance.dat; do sleep 1; done", 
-        "evaluations_0",
-        "false"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    tValues = {"SystemCall", 
-        "wait_1", 
-        "while lsof -u `id -u -n` | grep ./matched_power_balance.dat; do sleep 1; done", 
-        "evaluations_1",
-        "false"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    
     // HARVEST DATA OPERATIONS
     tOperation = tOperation.next_sibling("Operation");
     ASSERT_FALSE(tOperation.empty());
@@ -489,20 +465,6 @@ TEST(PlatoTestXMLGenerator, WriteGemmaPlatoInterfaceFile)
     ASSERT_FALSE(tOperation.empty());
     tKeys = {"Name", "PerformerName"};
     tValues = {"gemma_{E}", "plato_services_{E}"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_TRUE(tOperation.empty());
-
-    tOuterOperation = tOuterOperation.next_sibling("Operation");
-    ASSERT_FALSE(tOuterOperation.empty());
-    tForNode = tOuterOperation.child("For");
-    ASSERT_FALSE(tForNode.empty());
-    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"E", "Parameters"}, tForNode);
-    tOperation = tForNode.child("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    tKeys = {"Name", "PerformerName"};
-    tValues = {"wait_{E}", "plato_services_{E}"};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
 
     tOperation = tOperation.next_sibling("Operation");
