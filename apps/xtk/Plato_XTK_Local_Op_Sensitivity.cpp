@@ -77,7 +77,8 @@ void Sensitivity::operator()()
         moris::Cell<moris::Matrix<moris::DDRMat>*> tdCriteriadPDV(1);
 
         // background mesh
-        xtk::Background_Mesh const & tBackgroundMesh = mXTKApp->mCurrentXTK->get_background_mesh();
+        moris::mtk::Interpolation_Mesh& tInterpolationMesh = mXTKApp->mCurrentXTK->get_background_mesh();
+        xtk::Background_Mesh tBackgroundMesh(&tInterpolationMesh);
 
         // number of ig nodes
         moris::uint tNumNodes = tBackgroundMesh.get_num_entities(EntityRank::NODE);
@@ -118,7 +119,7 @@ void Sensitivity::operator()()
 
         for(uint i = 0; i < tNumNodes; i++)
         {   
-            if(tBackgroundMesh.is_interface_node((moris_index)i,tDesignGeomIndex) && !mXTKApp->mCurrentXTK->is_vertex_fixed_to_bulk_phase(i))
+            if(tBackgroundMesh.is_interface_node(static_cast<moris_index>(i), tDesignGeomIndex) /*&& !mXTKApp->mCurrentXTK->is_vertex_fixed_to_bulk_phase(i)*/)
             {
 
                 (*tdCriteriadPDV(0))(i,0) = (*tdQI_dx)(i);

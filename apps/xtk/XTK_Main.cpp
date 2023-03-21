@@ -115,7 +115,7 @@ int main(int aArgc, char *aArgv[])
 
     try
     {
-         tPlatoInterface->registerPerformer(tXTKApp);
+         tPlatoInterface->registerApplication(tXTKApp);
     }
     catch(...)
     {

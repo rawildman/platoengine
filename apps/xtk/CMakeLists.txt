@@ -1,5 +1,7 @@
+message( STATUS "Compiling with XTK at path ${XTK_INSTALL}\n")
 
 set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE INTERNAL "No dev warnings")
+set(TRILINOS_FOUND_ONCE true)
 
 SET(CMAKE_PREFIX_PATH "$ENV{XTK_INSTALL}/share/ALG/" ${CMAKE_PREFIX_PATH})    
 SET(CMAKE_PREFIX_PATH "$ENV{XTK_INSTALL}/share/COM/" ${CMAKE_PREFIX_PATH})
@@ -30,27 +32,23 @@ SET(CMAKE_PREFIX_PATH "$ENV{XTK_INSTALL}/share/TOL/" ${CMAKE_PREFIX_PATH})
 SET(CMAKE_PREFIX_PATH "$ENV{XTK_INSTALL}/share/WRK/" ${CMAKE_PREFIX_PATH})
 SET(CMAKE_PREFIX_PATH "$ENV{XTK_INSTALL}/share/XTK/" ${CMAKE_PREFIX_PATH})
 
-find_package( COM REQUIRED HINTS $ENV{XTK_INSTALL}/share/COM/)
+find_package( COM REQUIRED HINTS ${XTK_INSTALL}/share/COM/)
+find_package( MSI REQUIRED HINTS ${XTK_INSTALL}/share/FEM/MSI)
+find_package( VIS REQUIRED HINTS ${XTK_INSTALL}/share/FEM/VIS)
 find_package( MTK REQUIRED )
-find_package( INT REQUIRED )
-find_package( MSI REQUIRED )
-find_package( VIS REQUIRED )
+find_package( INT REQUIRED HINTS ${XTK_INSTALL}/share/FEM/INT)
+find_package( MDL REQUIRED HINTS ${XTK_INSTALL}/share/FEM/MDL)
 find_package( XTK REQUIRED )
-find_package( GEN_CORE REQUIRED )
-find_package( GEN_MAIN REQUIRED )
+find_package( GEN_CORE REQUIRED HINTS ${XTK_INSTALL}/share/GEN/)
+find_package( GEN_MAIN REQUIRED HINTS ${XTK_INSTALL}/share/GEN/)
 find_package( PRM REQUIRED )
+
+message(STATUS "Moris libs: ${ALL_MRS_LIBS}")
 
 # find_package(PETSc)
 set(moris_DEFINITIONS "-DF77ADD_;-DMORIS_PERFORM_CHECK;-DUSE_XTK;-DXTK_USE_MORIS;-DMORIS_USE_32BIT;-DMORIS_USE_ARMA;-DARMA_NO_DEBUG;-DDEBUG")
 
 add_definitions(${moris_DEFINITIONS})
-
-set(XTK_Libs)
-list(APPEND	XTK_Libs /home/doble/Codes/spack_plato/install/moris/lib/XTK/libXTK.a )
-
-set(LIB_NAMES)
-set(LIB_NAME XTK)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 
 ###############################################################################
 # Sources:
@@ -76,16 +74,19 @@ set(XTKMAIN_HEADERS  Plato_XTK_Application.hpp
 include_directories(SYSTEM ${PLATO_INCLUDES} ${XTK_INCLUDES})
 
 # actual target:
+set(REQUIRED_MORIS_LIBS 
+	XTK-lib
+	MDL-lib
+	INT-lib
+	MTK-lib
+	VIS-lib
+	MSI-lib )
+
 set(XTKMAIN_LIBS  
-    ${PLATO_LIBRARIES} 
-    ${PLATO_LIBRARIES} # NOTE: PLATO_LIBRARIES needs to be linked against twice
-    ${PETSc_Libs}
-    ${MTK_LIBRARIES}
-    ${ALL_MRS_LIBS}
-    ${ALL_MRS_LIBS}
+    ${PLATO_LIBRARIES}
+	${REQUIRED_MORIS_LIBS}
     Trilinos::all_selected_libs
     ${Plato_EXTRA_LINK_FLAGS})
-
 
 set(MORIS_INCLUDES)
 foreach(MRSLIB  ${ALL_MRS_LIBS})
@@ -97,8 +98,9 @@ endforeach()
 add_executable(XTKMain ${XTKMAIN_SOURCES} XTK_Main.cpp)
 set_target_properties(XTKMain PROPERTIES NO_SYSTEM_FROM_IMPORTED true )
 target_link_libraries(XTKMain ${XTKMAIN_LIBS})
-add_library(PlatoXTK     ${XTKMAIN_SOURCES}     ${XTKMAIN_HEADERS}     )
-target_link_libraries(XTKMain ${XTKMAIN_LIBS})
+
+add_library(PlatoXTK ${XTKMAIN_SOURCES} ${XTKMAIN_HEADERS} )
+target_link_libraries(PlatoXTK ${XTKMAIN_LIBS})
 target_include_directories(PlatoXTK PUBLIC ${MORIS_INCLUDES})
 
 add_executable(XTK ${XTKMAIN_SOURCES} XTK_Main_Standalone.cpp)

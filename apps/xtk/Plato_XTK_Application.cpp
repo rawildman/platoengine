@@ -468,8 +468,8 @@ namespace Plato
         mXTKParameters(0)(0).set("print_enriched_ig_mesh", false);
         mXTKParameters(0)(0).set("exodus_output_XTK_ig_mesh", true);
         mXTKParameters(0)(0).set("triangulate_all", false);
-        mXTKParameters(0)(0).set("fixed_blocks", Plato::Get::String(tXTKNode, "fixed_blocks"));
-        mXTKParameters(0)(0).set("fixed_block_phase", Plato::Get::String(tXTKNode, "fixed_block_phase"));
+        mXTKParameters(0)(0).insert("fixed_blocks", Plato::Get::String(tXTKNode, "fixed_blocks"));
+        mXTKParameters(0)(0).insert("fixed_block_phase", Plato::Get::String(tXTKNode, "fixed_block_phase"));
 
         if (mVerbose)
         {
@@ -581,13 +581,19 @@ namespace Plato
                     // initialize swiss cheese geometry
                     mGENParameters(1).push_back(prm::create_swiss_cheese_slice_parameter_list());
 
-                    mGENParameters(1)(tGeoCount).set("lower_bounds", Plato::Get::String(tGeom, "lower_bounds"));                               // Left-most hole center
-                    mGENParameters(1)(tGeoCount).set("upper_bounds", Plato::Get::String(tGeom, "upper_bounds"));                               // Right-most hole center
-                    mGENParameters(1)(tGeoCount).set("semidiameters", Plato::Get::String(tGeom, "semidiameters"));                             // Superellipse semi-diameter in the x direction
-                    mGENParameters(1)(tGeoCount).set("num_holes", Plato::Get::String(tGeom, "num_holes"));                                     // Superellipse semi-diameter in the x direction
-                    mGENParameters(1)(tGeoCount).set("superellipse_exponent", Plato::Get::Double(tGeom, "superellipse_exponent"));             // Superellipse exponent
-                    mGENParameters(1)(tGeoCount).set("superellipse_scaling", Plato::Get::Double(tGeom, "superellipse_scaling"));               // Superellipse exponent
-                    mGENParameters(1)(tGeoCount).set("superellipse_regularization", Plato::Get::Double(tGeom, "superellipse_regularization")); // Superellipse exponent 1/tFinWidth/tFinHeight
+                    mGENParameters(1)(tGeoCount).set("left_bound", Plato::Get::Double(tGeom, "left_bound"));
+                    mGENParameters(1)(tGeoCount).set("right_bound", Plato::Get::Double(tGeom, "right_bound"));
+                    mGENParameters(1)(tGeoCount).set("bottom_bound", Plato::Get::Double(tGeom, "bottom_bound"));
+                    mGENParameters(1)(tGeoCount).set("top_bound", Plato::Get::Double(tGeom, "top_bound"));
+                    mGENParameters(1)(tGeoCount).set("hole_x_semidiameter", Plato::Get::Double(tGeom, "hole_x_semidiameter"));
+                    mGENParameters(1)(tGeoCount).set("hole_y_semidiameter", Plato::Get::Double(tGeom, "hole_y_semidiameter"));
+                    mGENParameters(1)(tGeoCount).insert("hole_z_semidiameter", Plato::Get::Double(tGeom, "hole_z_semidiameter"));
+                    mGENParameters(1)(tGeoCount).set("number_of_x_holes", Plato::Get::Int(tGeom, "number_of_x_holes"));
+                    mGENParameters(1)(tGeoCount).set("number_of_y_holes", Plato::Get::Int(tGeom, "number_of_y_holes"));
+                    mGENParameters(1)(tGeoCount).insert("number_of_z_holes", Plato::Get::Int(tGeom, "number_of_z_holes"));
+                    mGENParameters(1)(tGeoCount).set("superellipse_exponent", Plato::Get::Double(tGeom, "superellipse_exponent"));
+                    mGENParameters(1)(tGeoCount).set("superellipse_scaling", Plato::Get::Double(tGeom, "superellipse_scaling"));
+                    mGENParameters(1)(tGeoCount).set("superellipse_regularization", Plato::Get::Double(tGeom, "superellipse_regularization"));
                 }
                 else
                 {

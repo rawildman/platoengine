@@ -24,8 +24,16 @@
      <type>swiss_cheese_slice</type>
      <lower_bounds>0.5,-1.5,-0.25</lower_bounds>
      <upper_bounds>2.0,1.5,0.25</upper_bounds>
-     <semidiameters>0.211,0.211,4.11</semidiameters>
-     <num_holes>3,3,2</num_holes>
+     <left_bound>0.5</left_bound>
+     <right_bound>2.0</right_bound>
+     <bottom_bound>-1.5</bottom_bound>
+     <top_bound>1.5</top_bound>
+     <hole_x_semidiameter>0.211</hole_x_semidiameter>
+     <hole_y_semidiameter>0.211</hole_y_semidiameter>
+     <hole_z_semidiameter>4.11</hole_z_semidiameter>
+     <number_of_x_holes>3</number_of_x_holes>
+     <number_of_y_holes>3</number_of_y_holes>
+     <number_of_z_holes>2</number_of_z_holes>
      <superellipse_exponent>4</superellipse_exponent>
      <superellipse_scaling>0.25</superellipse_scaling>
      <superellipse_regularization>0.0</superellipse_regularization>
