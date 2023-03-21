@@ -21,10 +21,8 @@ INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 set(PlatoXTK_UnitTester_LIBS 
     GTest::GTest 
     ${PLATO_LIBRARIES} 
-    ${PLATO_LIBRARIES} # NOTE: PLATO_LIBRARIES needs to be linked against twice
-    ${PETSc_Libs}
-    ${XTK_LIBRARIES}
     ${PLATOXTK}
+    ${REQUIRED_MORIS_LIBS}
     Trilinos::all_selected_libs
     ${Plato_EXTRA_LINK_FLAGS} )
 

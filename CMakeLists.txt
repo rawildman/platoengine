@@ -225,6 +225,8 @@ if( PLATOMAIN )
   add_subdirectory(apps/services)
 endif()
 
+
+
 if(XTK_ENABLED)
     message( "-- Compiling xtk " )
     add_subdirectory(apps/xtk)
@@ -275,12 +277,5 @@ if( REGRESSION )
   endif()
 endif()
 
-if( XTK_ENABLED )
-   message( "\n-- Compiling with XTK \n" ) 
-    find_package(XTK REQUIRED NAMES)
-    find_library(XTK_COM_Libs NAMES libCOM.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES COM)
-    find_library(XTK_MTK_Libs NAMES libMTK.a HINTS $ENV{XTK_LIBS} PATH_SUFFIXES MTK)
-    set(XTK_Libs ${XTK_COM_Libs} ${XTK_MTK_Libs} CACHE FILEPATH "List of library paths." )
-endif()
 
 add_subdirectory(share)
