@@ -60,8 +60,8 @@ class InputData;
       }
       SIMP(const Plato::InputData& input);
 
-      double eval(double x) override;
-      double grad(double x) override;
+      double eval(double x) const override;
+      double grad(double x) const override;
 
       template<class Archive>
       void serialize(Archive & aArchive, const unsigned int version)

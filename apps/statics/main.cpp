@@ -295,9 +295,8 @@ void LocalApp::initialize()
     }
 
     // get penalty model
-    Plato::PenaltyModelFactory pmFactory;
     auto tNode = Plato::Get::InputData(m_inputData, "Operation");
-    m_penaltyModel = pmFactory.create(tNode);
+    m_penaltyModel = Plato::PenaltyModelFactory::create(tNode).release();
 
     // create local storage for arguments
 

@@ -40,40 +40,22 @@
 //@HEADER
 */
 
-/*
- * Plato_PenaltyModel.hpp
- *
- *  Created on: April 19, 2017
- *
- *
- *  NOTE: This class is a placeholder till the TopOpt source is pulled in.
- *
- */
+#include <gtest/gtest.h>
+#include <mpi.h>
+#include <Kokkos_Core.hpp>
 
-#ifndef SRC_PENALTYMODEL_HPP_
-#define SRC_PENALTYMODEL_HPP_
+int main(int argc, char **argv)
+{
+    MPI_Init(&argc, &argv);
 
-#include <memory>
+    Kokkos::initialize(argc, argv);
 
-namespace Plato {
+    testing::InitGoogleTest(&argc, argv);
+    int returnVal = RUN_ALL_TESTS();
 
-class InputData;
+    Kokkos::finalize();
+    
+    MPI_Finalize();
 
-  class PenaltyModel {
-    public:
-      PenaltyModel() = default;
-      virtual ~PenaltyModel() = default;
-      virtual double eval(double x) const = 0;
-      virtual double grad(double x) const = 0;
-
-      template<class Archive>
-      void serialize(Archive & aArchive, const unsigned int version) {} 
-  };
-
-namespace PenaltyModelFactory {
-  std::unique_ptr<PenaltyModel> create(Plato::InputData& input);
+    return returnVal;
 }
-
-} /* namespace Plato */
-
-#endif /* SRC_PENALTYMODEL_HPP_ */

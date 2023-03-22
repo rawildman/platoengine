@@ -49,7 +49,7 @@ test-platoengine:
 unit-test-platoengine:
   parallel:
     matrix:
-      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoXMLGenerator_UnitTester,  Plato_Operations_UnitTester,  PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester]
+      - PLATO_ENGINE_UNIT_TESTER: [PlatoMainUnitTester, PlatoXMLGenerator_UnitTester,  Plato_Operations_UnitTester,  PlatoSu2ToExodus_UnitTester, PlatoTools_UnitTester, PlatoModels_UnitTester]
   extends: .unit-test-platoengine
   variables:
     SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
@@ -66,7 +66,7 @@ coverage-platoengine:
   variables:
     SPACK_DIR: ${RUNNER_HOME}/${TRIGGER_SPACK_DIR}
     SPACK_RESOURCE: ${TRIGGER_SPACK_DIR}_${CONFIGURATION}
-    PLATO_ENGINE_UNIT_TESTER: PlatoMainUnitTester  PlatoXMLGenerator_UnitTester  Plato_Operations_UnitTester  PlatoSu2ToExodus_UnitTester PlatoTools_UnitTester
+    PLATO_ENGINE_UNIT_TESTER: PlatoMainUnitTester  PlatoXMLGenerator_UnitTester  Plato_Operations_UnitTester  PlatoSu2ToExodus_UnitTester PlatoTools_UnitTester PlatoModels_UnitTester
   tags:
     - ${CONFIGURATION}
   rules:

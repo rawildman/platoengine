@@ -255,10 +255,9 @@ TEST(BoostSerialization, Aggregator)
 
 TEST(BoostSerialization, ComputeVolume)
 {
-    Plato::PenaltyModel* tPenaltyModel = new Plato::SIMP(2,0.4);
     Plato::ComputeVolume tOperation("Volume",
                                     "Volume Gradient",
-                                    tPenaltyModel,
+                                    std::make_unique<SIMP>(2, 0.25),
                                     "Topology");
     Plato::ComputeVolume tOperation2;
     EXPECT_FALSE(serializeEquals(tOperation,tOperation2));
@@ -395,10 +394,9 @@ TEST(BoostSerialization, OperationsMap)
                                       false,
                                       true);
 
-    Plato::PenaltyModel* tPenaltyModel = new Plato::SIMP(2,0.4);
     tOM.mOperationMap["Compute Volume"] = std::make_unique<Plato::ComputeVolume>("Volume",
                                     "Volume Gradient",
-                                    tPenaltyModel,
+                                    std::make_unique<SIMP>(2, 0.25),
                                     "Topology");
 
     Plato::AggStruct tAggStruct;

@@ -60,15 +60,14 @@ namespace Plato
 
 ComputeVolume::ComputeVolume(const std::string& aVolumeName,
                              const std::string& aGradientName,
-                             Plato::PenaltyModel* aPenaltyModel,
+                             std::unique_ptr<PenaltyModel> aPenaltyModel,
                              const std::string& aTopologyName):
                              mTopologyName(aTopologyName),
                              mVolumeName(aVolumeName),
                              mGradientName(aGradientName),
-                             mPenaltyModel(aPenaltyModel)
+                             mPenaltyModel(std::move(aPenaltyModel))
 {
 }
-
 
 ComputeVolume::ComputeVolume(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         Plato::LocalOp(aPlatoApp),
@@ -77,17 +76,7 @@ ComputeVolume::ComputeVolume(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
         mGradientName("Volume Gradient"),
         mPenaltyModel(nullptr)
 {
-    Plato::PenaltyModelFactory tPenaltyModelFactory;
-    mPenaltyModel = tPenaltyModelFactory.create(aNode);
-}
-
-ComputeVolume::~ComputeVolume()
-{
-    if(mPenaltyModel)
-    {
-        delete mPenaltyModel;
-        mPenaltyModel = nullptr;
-    } 
+    mPenaltyModel = PenaltyModelFactory::create(aNode);
 }
 
 void ComputeVolume::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
@@ -112,7 +101,7 @@ void ComputeVolume::operator()()
     // get local gradient
     auto& tVolumeGradient = *(mPlatoApp->getNodeField(mGradientName));
 
-    mPlatoApp->getMeshServices()->getCurrentVolume(tTopology, tVolumeValue, tVolumeGradient);
+    mPlatoApp->getMeshServices()->getCurrentVolume(tTopology, tVolumeValue, tVolumeGradient, mPenaltyModel.get());
 
     return;
 }
