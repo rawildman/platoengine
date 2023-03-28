@@ -40,37 +40,12 @@
 //@HEADER
 */
 
-/*
- * Plato_Macros.hpp
- *
- *  Created on: Jun 21, 2019
- */
+#include "PlatoPythonApp.hpp"
+#include "Plato_TemplateMain.hpp"
 
-#pragma once
-
-#include <stdexcept>
-#include <string>
-
-namespace Plato
+/******************************************************************************/
+int main(int aArgc, char *aArgv[])
+/******************************************************************************/
 {
-
-#define PRINTERR(msg) \
-        std::cout << std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg;
-
-#define THROWERR(msg) \
-        throw std::runtime_error(std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg);
-
-#define ERRMSG(msg) \
-        std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg
-
+    Plato::Main<PlatoPythonApp>(aArgc, aArgv, false);
 }
-// namespace Plato

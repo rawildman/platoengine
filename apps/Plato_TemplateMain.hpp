@@ -58,12 +58,13 @@ namespace Plato {
 /******************************************************************************/
 
 template <typename AppType>
-int Main(int aArgc, char *aArgv[])
+int Main(int aArgc, char *aArgv[], bool aEnableDebugExceptions = true)
 /******************************************************************************/
 {
 #ifndef NDEBUG
     feclearexcept(FE_ALL_EXCEPT);
-    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+    if ( aEnableDebugExceptions )
+        feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
     MPI_Init(&aArgc, (char***) &aArgv);

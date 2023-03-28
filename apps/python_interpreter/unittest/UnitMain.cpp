@@ -40,37 +40,24 @@
 //@HEADER
 */
 
-/*
- * Plato_Macros.hpp
- *
- *  Created on: Jun 21, 2019
- */
+#include <gtest/gtest.h>
 
-#pragma once
+#include <mpi.h>
 
-#include <stdexcept>
-#include <string>
+#include "Plato_KokkosTypes.hpp"
 
-namespace Plato
+int main(int argc, char **argv)
 {
+    MPI_Init(&argc, &argv);
 
-#define PRINTERR(msg) \
-        std::cout << std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg;
+    Kokkos::initialize( argc , argv );
 
-#define THROWERR(msg) \
-        throw std::runtime_error(std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg);
+    testing::InitGoogleTest(&argc, argv);
+    int returnVal = RUN_ALL_TESTS();
 
-#define ERRMSG(msg) \
-        std::string("\nFILE: ") + __FILE__ \
-        + std::string("\nFUNCTION: ") + __PRETTY_FUNCTION__ \
-        + std::string("\nLINE:") + std::to_string(__LINE__) \
-        + std::string("\nMESSAGE: ") + msg
+    Kokkos::finalize();
 
+    MPI_Finalize();
+
+    return returnVal;
 }
-// namespace Plato
