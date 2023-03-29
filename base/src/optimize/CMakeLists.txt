@@ -80,14 +80,12 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_KelleySachsAugmentedLagrangianInterface.hpp
                         Plato_KelleySachsAugmentedLagrangianLightInterface.hpp
                         Plato_KelleySachsStepMng.hpp
-                        Plato_LineSearch.hpp
                         Plato_LinearOperator.hpp
                         Plato_LinearOperatorList.hpp
                         Plato_MultiVectorList.hpp
                         Plato_Preconditioner.hpp
                         Plato_PrimalProblemStageMng.hpp
                         Plato_ProjectedSteihaugTointPcg.hpp
-                        Plato_QuadraticLineSearch.hpp
                         Plato_Radius.hpp
                         Plato_Rosenbrock.hpp
                         Plato_CcsaTestObjective.hpp
@@ -95,7 +93,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_AnalyticalHessian.hpp
                         Plato_AnalyticalGradient.hpp
                         Plato_AugmentedLagrangianStageMng.hpp
-                        Plato_CubicLineSearch.hpp
                         Plato_ConservativeConvexSeparableAppxDataMng.hpp
                         Plato_ConservativeConvexSeparableAppxStageMng.hpp
                         Plato_ConservativeConvexSeparableApproximation.hpp
