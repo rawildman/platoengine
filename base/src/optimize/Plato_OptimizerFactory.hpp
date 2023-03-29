@@ -61,6 +61,8 @@
 #include "Plato_ROLInterface.hpp"
 #include "Plato_StochasticROLInterface.hpp"
 
+#include <memory>
+
 namespace Plato
 {
 
@@ -72,7 +74,6 @@ class OptimizerFactory final
 {
 public:
     OptimizerFactory() = default;
-
     OptimizerFactory(const Plato::OptimizerFactory<ScalarType, OrdinalType>&) = delete;
     Plato::OptimizerFactory<ScalarType, OrdinalType> & operator=(const Plato::OptimizerFactory<ScalarType, OrdinalType>&) = delete;
     OptimizerFactory(Plato::OptimizerFactory<ScalarType, OrdinalType>&&) = delete;
@@ -85,14 +86,14 @@ public:
      * \param [in] aOptimizerIndex the index of a specific optimizer block
      * \return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
-    Plato::OptimizerInterface<ScalarType, OrdinalType>*
+    std::unique_ptr<Plato::OptimizerInterface<ScalarType, OrdinalType>>
     create(Plato::Interface* aInterface,
            MPI_Comm aLocalComm,
            std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
            )
     {
-      Plato::OptimizerInterface<ScalarType, OrdinalType>* tOptimizer = nullptr;
 
+      std::unique_ptr<Plato::OptimizerInterface<ScalarType, OrdinalType>> tOptimizer;
       try
       {
         Plato::InputData tOptimizerNode;
@@ -171,52 +172,52 @@ public:
         if( tOptPackage == "OC" )
         {
           try {
-            tOptimizer = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+            tOptimizer = std::make_unique<Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "KSUC" )
         {
           try {
             Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-            tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+            tOptimizer = std::make_unique<Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm, tType);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "KSBC" )
         {
           try {
             Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-            tOptimizer = new Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+            tOptimizer = std::make_unique<Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm, tType);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "KSAL" )
         {
           try {
-            tOptimizer = new Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+            tOptimizer = std::make_unique<Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "BCPSO" )
         {
           try {
-            tOptimizer = new Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "ALPSO" )
         {
           try {
-            tOptimizer = new Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>(aInterface, aLocalComm);
+            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
         else if( tOptPackage == "SOParameterStudies" )
         {
           try {
-            tOptimizer = new Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
+            tOptimizer = std::make_unique<Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
        else if( tOptPackage == "ROL AugmentedLagrangian" )
        {
          try {
           Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN;
-           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           tOptimizer = std::make_unique<Plato::ROLInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm,tType);
            
          } catch(...){aInterface->Catch();}
        }
@@ -224,7 +225,7 @@ public:
        {
          try {
            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED;
-           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           tOptimizer = std::make_unique<Plato::ROLInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm,tType);
            
          } catch(...){aInterface->Catch();}
        }
@@ -232,19 +233,18 @@ public:
        {
          try {
            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
-           tOptimizer = new Plato::ROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm,tType);
+           tOptimizer = std::make_unique<Plato::ROLInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm,tType);
          } catch(...){aInterface->Catch();}
        }
        else if( tOptPackage == "ROL Stochastic" )
        {
          try {
-          // todo: Need to set up linear constraint vs. bound vs. nonlinear?
            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT;
-           tOptimizer = new Plato::StochasticROLInterface<ScalarType, OrdinalType>(aInterface, aLocalComm, tType);
+           tOptimizer = std::make_unique<Plato::StochasticROLInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm, tType);
          } catch(...){aInterface->Catch();}
        }
-        else
-        {
+       else
+       {
           std::stringstream tStringStream;
           tStringStream
             << "Plato::OptimizerFactory: "
@@ -292,7 +292,7 @@ public:
         // objective to manage addtional optimizers.
         tOptimizer->setOptimizerIndex( aOptimizerIndex );
 
-        size_t nNestedOptimizers =
+        const size_t nNestedOptimizers =
           tOptimizerNode.size<Plato::InputData>("Optimizer");
 
         tOptimizer->setHasInnerLoop(nNestedOptimizers > 0);
@@ -315,7 +315,6 @@ public:
         // Exception handling cannot be done because of the serial /
         // recursive nature of the optimizers so finalize (terminate).
         aInterface->finalize();
-        tOptimizer = nullptr;
       }
 
       return tOptimizer;
