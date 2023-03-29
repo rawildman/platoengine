@@ -56,10 +56,8 @@
 #include "Plato_ParticleSwarmEngineALPSO.hpp"
 #include "Plato_SOParameterStudiesInterface.hpp"
 #include "Plato_OptimalityCriteriaInterface.hpp"
-#include "Plato_MethodMovingAsymptotesEngine.hpp"
 #include "Plato_KelleySachsBoundConstrainedInterface.hpp"
 #include "Plato_KelleySachsAugmentedLagrangianInterface.hpp"
-#include "Plato_GloballyConvergentMethodMovingAsymptotesInterface.hpp"
 #include "Plato_ROLInterface.hpp"
 #include "Plato_StochasticROLInterface.hpp"
 
@@ -176,18 +174,6 @@ public:
             tOptimizer = new Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
-        else if( tOptPackage == "GCMMA" )
-        {
-          try {
-            tOptimizer = new Plato::GloballyConvergentMethodMovingAsymptotesInterface<ScalarType, OrdinalType>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "MMA" )
-        {
-          try {
-            tOptimizer = new Plato::MethodMovingAsymptotesEngine<ScalarType, OrdinalType>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
         else if( tOptPackage == "KSUC" )
         {
           try {
@@ -265,8 +251,6 @@ public:
             << tOptPackage << " Unknown." << std::endl
             << "Valid options are\n"
             << "\t OC ... Optimality Criteria\n"
-            << "\t GCMMA ... Globally Convergent Method of Moving Asymptotes\n"
-            << "\t MMA ... Method of Moving Asymptotes\n"
             << "\t KSUC ... Kelley Sachs Unconstrained\n"
             << "\t KSBC ... Kelley Sachs Bound Constrained\n"
             << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
@@ -334,7 +318,7 @@ public:
         tOptimizer = nullptr;
       }
 
-      return (tOptimizer);
+      return tOptimizer;
     }
 
 private:

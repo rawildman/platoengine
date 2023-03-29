@@ -63,7 +63,6 @@
 #include "Plato_StandardVectorReductionOperations.hpp"
 #include "Plato_ConservativeConvexSeparableAppxDataMng.hpp"
 #include "Plato_ConservativeConvexSeparableAppxAlgorithm.hpp"
-#include "Plato_GloballyConvergentMethodMovingAsymptotes.hpp"
 
 namespace PlatoTest
 {
