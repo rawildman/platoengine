@@ -2844,57 +2844,6 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOC_Options)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConvergenceNode);
 }
 
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmMMA_Options)
-{
-    // 1) TEST CASE WHERE ONLY A FEW PARAMETERS ARE DEFINED
-    pugi::xml_document tDocument1;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("max_iterations", "11");
-    tOptimizationParameters.append("mma_move_limit", "0.2");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument1.append_child("Optimizer");
-    XMLGen::append_method_moving_asymptotes_options(tXMLMetaData, tOptimizerNode);
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Options"};
-    std::vector<std::string> tGoldValues = {""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tOptionsNode = tOptimizerNode.child("Options");
-    tGoldKeys = {"MaxNumOuterIterations", "MoveLimit"};
-    tGoldValues = {"11", "0.2"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
-
-    // 2) TEST CASE WHERE ALL THE PARAMETERS ARE DEFINED
-    pugi::xml_document tDocument2;
-    tOptimizationParameters.append("mma_asymptote_expansion", "2");
-    tOptimizationParameters.append("mma_asymptote_contraction", "0.75");
-    tOptimizationParameters.append("mma_max_sub_problem_iterations", "50");
-    tOptimizationParameters.append("mma_control_stagnation_tolerance", "1e-3");
-    tOptimizationParameters.append("mma_objective_stagnation_tolerance", "1e-8");
-    tOptimizationParameters.append("mma_output_subproblem_diagnostics", "true");
-    tOptimizationParameters.append("mma_sub_problem_initial_penalty", "0.001");
-    tOptimizationParameters.append("mma_sub_problem_penalty_multiplier", "1.1");
-    tOptimizationParameters.append("mma_sub_problem_feasibility_tolerance", "1e-6");
-    tOptimizationParameters.append("mma_use_ipopt_sub_problem_solver", "false");
-    tXMLMetaData.set(tOptimizationParameters);
-    tOptimizerNode = tDocument2.append_child("Optimizer");
-    XMLGen::append_method_moving_asymptotes_options(tXMLMetaData, tOptimizerNode);
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    tGoldKeys = {"Options"};
-    tGoldValues = {""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    tOptionsNode = tOptimizerNode.child("Options");
-    tGoldKeys = {"MaxNumOuterIterations", "MoveLimit", "AsymptoteExpansion", "AsymptoteContraction",
-        "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance", "OutputSubProblemDiagnostics", 
-        "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", "SubProblemFeasibilityTolerance", "UseIpoptForMMASubproblem"};
-    tGoldValues = { "11", "0.2", "2", "0.75", "50", "1e-3", "1e-8", "true", "0.001", "1.1", "1e-6", "false"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
-}
-
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptions_ErrorOptimizerNotSupported)
 {
     pugi::xml_document tDocument;
@@ -2930,29 +2879,6 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsKSBC)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
 }
 
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsMMA)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("max_iterations", "11");
-    tOptimizationParameters.append("mma_move_limit", "0.2");
-    tOptimizationParameters.append("optimization_algorithm", "MmA");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Options"};
-    std::vector<std::string> tGoldValues = {""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tOptionsNode = tOptimizerNode.child("Options");
-    tGoldKeys = {"MaxNumOuterIterations", "MoveLimit"};
-    tGoldValues = {"11", "0.2"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
-}
-
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsOC)
 {
     // CALL FUNCTION
@@ -2985,27 +2911,6 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_ErrorOptimizerNotS
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     ASSERT_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode), std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("max_iterations", "12");
-    tOptimizationParameters.append("optimization_algorithm", "mma");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_options(tXMLMetaData, tOptimizerNode));
-
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Package", "Options"};
-    std::vector<std::string> tGoldValues = {"MMA", ""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tOptionsNode = tOptimizerNode.child("Options");
-    tGoldKeys = {"MaxNumOuterIterations"};
-    tGoldValues = {"12"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
 }
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationOutputOptions)

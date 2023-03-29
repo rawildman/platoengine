@@ -16,9 +16,7 @@ namespace director
 class OptimizationAlgorithmFactory
 {
 public:
-    OptimizationAlgorithmFactory();
     std::shared_ptr<OptimizationAlgorithm> create(const XMLGen::InputData& aMetaData);
-
 };
 
 

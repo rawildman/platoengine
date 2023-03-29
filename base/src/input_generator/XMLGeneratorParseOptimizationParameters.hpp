@@ -159,13 +159,6 @@ private:
     void checkROLHessianType(XMLGen::OptimizationParameters &aMetadata);
 
     /******************************************************************************//**
-     * \fn setMMAStagnationDefaultsForShapeOptimizationProblems
-     * \brief Set MMA stagnation tolerance defaults for shape optimization problems
-     * \param [in] aMetadata optimization parameters metadata
-    **********************************************************************************/
-    void setMMAStagnationDefaultsForShapeOptimizationProblems(XMLGen::OptimizationParameters &aMetadata);
-
-    /******************************************************************************//**
      * \fn setOptimizationType
      * \brief Set the optimization type for this problem
      * \param [in] aMetadata optimization parameters metadata

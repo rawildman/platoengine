@@ -54,16 +54,6 @@ void append_optimality_criteria_options
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
- * \fn append_method_moving_asymptotes_options
- * \brief Append Method of Moving Asymptotes (MMA) options to interface xml file.
- * \param [in]  aMetaData Plato problem input data
- * \param [out] aParentNode  parent node to append data to
-**********************************************************************************/
-void append_method_moving_asymptotes_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
  * \fn append_trust_region_kelley_sachs_options
  * \brief Append trust region Kelley-Sachs options to interface xml file.
  * \param [in]  aMetaData Plato problem input data

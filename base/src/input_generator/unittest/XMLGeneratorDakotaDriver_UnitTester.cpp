@@ -105,28 +105,6 @@ TEST(PlatoTestXMLGenerator, InsertDakotaInputs)
     }
 }
 
-TEST(PlatoTestXMLGenerator, InsertMmaInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_plato_mma_input_options(tTags);
-    EXPECT_EQ(11u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"mma_move_limit","0.5"}, {"mma_asymptote_expansion","1.2"}, 
-        {"mma_asymptote_contraction", "0.7"}, {"mma_max_sub_problem_iterations", "50"}, {"mma_sub_problem_initial_penalty", "0.0015"},
-        {"mma_sub_problem_penalty_multiplier", "1.025"}, {"mma_use_ipopt_sub_problem_solver", "false"},{"mma_control_stagnation_tolerance", "1e-6"}, 
-        {"mma_objective_stagnation_tolerance", "1e-8"}, {"mma_sub_problem_feasibility_tolerance", "1e-8"}, {"mma_output_subproblem_diagnostics", "false"} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, InsertLevelsetBasedShapeOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
