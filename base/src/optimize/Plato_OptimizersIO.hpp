@@ -62,26 +62,6 @@
 
 namespace Plato
 {
-
-/******************************************************************************//**
- * @brief Diagnostic data for the Method of Moving Asymptotes (MMA) algorithm.
-**********************************************************************************/
-template<typename ScalarType, typename OrdinalType = size_t>
-struct OutputDataCCSA
-{
-    OrdinalType mNumIter;  /*!< number of outer iterations */
-    OrdinalType mObjFuncCount;  /*!< number of objective function evaluations */
-
-    ScalarType mKKTMeasure;  /*!< measures inexactness in first-order optimality conditions */
-    ScalarType mObjFuncValue;  /*!< objective function value */
-    ScalarType mNormObjFuncGrad;  /*!< norm of the objective function gradient */
-    ScalarType mStationarityMeasure;  /*!< norm of the descent direction */
-    ScalarType mControlStagnationMeasure;  /*!< norm of the difference between two subsequent control fields */
-    ScalarType mObjectiveStagnationMeasure;  /*!< measures stagnation in two subsequent objective function evaluations */
-    std::vector<ScalarType> mConstraints;  /*!< residual value for each constraint */
-};
-// struct OutputDataCCSA
-
 /******************************************************************************//**
  * @brief Diagnostic data for Optimality Criteria (OC) algorithm
 **********************************************************************************/
@@ -207,100 +187,6 @@ void print_ksbc_diagnostics_header(const Plato::OutputDataKSBC<ScalarType, Ordin
     aOutputFile << "TR-Iter" << std::setw(10) << "LS-Iter" << std::setw(14) << "TR-Radius" << std::setw(12) << "ARed"
                 << std::setw(17) << "TR-Ratio" << std::setw(13) << "PCG-Iter" << std::setw(13) << "abs(dX)" << std::setw(15)
                 << "abs(dF)" << "\n" << std::flush;
-}
-
-/******************************************************************************//**
- * @brief Check for errors in CCSA algorithm diagnostics
- * @param [in] aData diagnostic data for ccsa algorithm
- * @param [in] aOutputFile output file
-**********************************************************************************/
-template<typename ScalarType, typename OrdinalType>
-void check_for_ccsa_diagnostics_errors(const Plato::OutputDataCCSA<ScalarType, OrdinalType>& aData,
-                                       const std::ofstream& aOutputFile)
-{
-    try
-    {
-        Plato::error::is_file_open(aOutputFile);
-        Plato::error::is_vector_empty(aData.mConstraints);
-    }
-    catch(const std::invalid_argument& tError)
-    {
-        throw tError;
-    }
-}
-
-/******************************************************************************//**
- * @brief Print header for CCSA diagnostics file
- * @param [in] aData diagnostic data for ccsa algorithm
- * @param [in,out] aOutputFile output file
-**********************************************************************************/
-template<typename ScalarType, typename OrdinalType>
-void print_ccsa_diagnostics_header(const Plato::OutputDataCCSA<ScalarType, OrdinalType>& aData,
-                                   std::ofstream& aOutputFile)
-{
-    try
-    {
-        Plato::check_for_ccsa_diagnostics_errors(aData, aOutputFile);
-    }
-    catch(const std::invalid_argument& tErrorMsg)
-    {
-        THROWERR(tErrorMsg.what())
-    }
-    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
-
-    aOutputFile << std::scientific << std::setprecision(6) << std::right << "Iter" << std::setw(10) << "F-count"
-            << std::setw(14) << "F(X)" << std::setw(16) << "Norm(F')" << std::setw(10);
-
-    const OrdinalType tNumConstraints = aData.mConstraints.size();
-    for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
-    {
-        if(tIndex != static_cast<OrdinalType>(0))
-        {
-            aOutputFile << "H" << tIndex + static_cast<OrdinalType>(1) << "(X)" << std::setw(13);
-        }
-        else
-        {
-            const OrdinalType tWidth = tNumConstraints > static_cast<OrdinalType>(1) ? 11 : 13;
-            aOutputFile << "H" << tIndex + static_cast<OrdinalType>(1) << "(X)" << std::setw(tWidth);
-        }
-    }
-
-    aOutputFile << "KKT" << std::setw(18) << "Norm(S)" << std::setw(15) << "abs(dX)" << std::setw(15) << "abs(dF)"
-            << "\n" << std::flush;
-}
-
-/******************************************************************************//**
- * @brief Print diagnostics for CCSA algorithm
- * @param [in] aData diagnostic data for ccsa algorithm
- * @param [in,out] aOutputFile output file
-**********************************************************************************/
-template<typename ScalarType, typename OrdinalType>
-void print_ccsa_diagnostics(const Plato::OutputDataCCSA<ScalarType, OrdinalType>& aData,
-                            std::ofstream& aOutputFile)
-{
-    try
-    {
-        Plato::check_for_ccsa_diagnostics_errors(aData, aOutputFile);
-    }
-    catch(const std::invalid_argument& tErrorMsg)
-    {
-        THROWERR(tErrorMsg.what())
-    }
-    //assert(aData.mConstraints.size() > static_cast<OrdinalType>(0));
-
-    aOutputFile << std::scientific << std::setprecision(6) << std::right << aData.mNumIter << std::setw(10)
-            << aData.mObjFuncCount << std::setw(20) << aData.mObjFuncValue << std::setw(15) << aData.mNormObjFuncGrad
-            << std::setw(15);
-
-    const OrdinalType tNumConstraints = aData.mConstraints.size();
-    for(OrdinalType tIndex = 0; tIndex < tNumConstraints; tIndex++)
-    {
-        aOutputFile << aData.mConstraints[tIndex] << std::setw(15);
-    }
-
-    aOutputFile << aData.mKKTMeasure << std::setw(15) << aData.mStationarityMeasure << std::setw(15)
-            << aData.mControlStagnationMeasure << std::setw(15) << aData.mObjectiveStagnationMeasure << "\n"
-            << std::flush;
 }
 
 /******************************************************************************//**
