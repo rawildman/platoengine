@@ -2,6 +2,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 #############################################################################
 
+set (CMAKE_CXX_STANDARD 17)
+
 include( ${CMAKE_SOURCE_DIR}/base/config/tools.cmake )
 Plato_no_src_build()
 

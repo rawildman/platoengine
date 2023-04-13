@@ -49,6 +49,8 @@
 #include <cstdlib>
 #include <sstream>
 #include <unistd.h>
+#include <iomanip>
+#include <math.h>
 
 #include "Plato_Utils.hpp"
 #include "Plato_Macros.hpp"

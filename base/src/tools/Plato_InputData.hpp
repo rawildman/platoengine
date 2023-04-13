@@ -48,22 +48,12 @@
 #include <vector>
 #include "Plato_SerializationHeaders.hpp"
 
-#ifdef USE_CXX_14
-#include <experimental/any>
+#include <any>
 namespace Plato {
-  using any = std::experimental::any;
+  using any = std::any;
   template <typename T>
-  T any_cast(any anyVal){return std::experimental::any_cast<T>(anyVal);}
+  T any_cast(any anyVal){return std::any_cast<T>(anyVal);}
 }
-#else
-#include <Teuchos_any.hpp>
-#include <iostream>
-namespace Plato {
-  using any = Teuchos::any;
-  template <typename T>
-  T any_cast(any anyVal){return Teuchos::any_cast<T>(anyVal);}
-}
-#endif
 
 namespace Plato {
 
