@@ -53,6 +53,7 @@
 #include <fstream>
 #include <cassert>
 #include <iostream>
+#include <iomanip>
 
 #include "Plato_Macros.hpp"
 #include "Plato_Vector.hpp"

@@ -46,6 +46,7 @@
  *  Created on: Feb 27, 2018
  */
 
+#include <math.h>
 #include <gtest/gtest.h>
 #include "Plato_InputData.hpp"
 #include "Plato_Parser.hpp"

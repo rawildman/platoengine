@@ -185,7 +185,7 @@ void ChainRule::operator()()
             if(tGlobalNodeID <= tLargestAllowableDFDXGlobalNodeID)
             {
                 unsigned int tGlobalIndex = (tLocalToGlobalNodeIDMap[tIndex]-1)*mSpatialDims;
-                for(int tSpatialDim = 0; tSpatialDim < mSpatialDims; tSpatialDim++)
+                for(unsigned tSpatialDim = 0; tSpatialDim < mSpatialDims; tSpatialDim++)
                 {
                     tValue += tCurDXDP[tLocalIndex+tSpatialDim]*tDFDX[tGlobalIndex+tSpatialDim];
                 }

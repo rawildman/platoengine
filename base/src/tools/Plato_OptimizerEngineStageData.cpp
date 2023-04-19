@@ -47,6 +47,7 @@
  */
 
 #include <cassert>
+#include <iostream>
 
 #include "Plato_OptimizerEngineStageData.hpp"
 

@@ -61,6 +61,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <cstddef>
+#include <iomanip>
 
 #include "Plato_Parser.hpp"
 #include "Plato_Exceptions.hpp"
