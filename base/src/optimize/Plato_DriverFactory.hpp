@@ -66,19 +66,7 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class DriverFactory
 {
 public:
-    /******************************************************************************//**
-     * \brief Constructor
-    **********************************************************************************/
-    DriverFactory()
-    {
-    }
-
-    /******************************************************************************//**
-     * \brief Destructuor
-    **********************************************************************************/
-    ~DriverFactory()
-    {
-    }
+    DriverFactory() = default;
 
     /******************************************************************************//**
      * \brief Construct interface to optimization algorithm
@@ -87,7 +75,7 @@ public:
      * \param [in] aOptimizerIndex the index of a specific driver block
      * \return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
-    Plato::DriverInterface<ScalarType, OrdinalType>*
+    std::unique_ptr<Plato::DriverInterface<ScalarType, OrdinalType>>
     create(Plato::Interface* aInterface,
            MPI_Comm aLocalComm,
            std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
@@ -129,11 +117,6 @@ public:
 
       return nullptr;
     }
-
-private:
-    DriverFactory(const Plato::DriverFactory<ScalarType, OrdinalType>&);
-
-    Plato::DriverFactory<ScalarType, OrdinalType> & operator=(const Plato::DriverFactory<ScalarType, OrdinalType>&);
 };
 // class DriverFactory
 

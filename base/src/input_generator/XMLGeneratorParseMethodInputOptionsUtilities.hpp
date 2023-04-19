@@ -75,15 +75,6 @@ void insert_derivative_checker_input_options(XMLGen::MetaDataTags &aTags);
 void insert_optimality_criteria_input_options(XMLGen::MetaDataTags &aTags);
 
 /******************************************************************************//**
- * \fn insert_plato_mma_input_options
- * \brief Insert input options and corresponding defaults for Plato's Method \n
-          of Moving Asymptotes (MMA) algorithm into the map from the plato input \n
-          deck keyword to the input value and default value pairs.
- * \param [in] aTags Plato input deck key-value map
-**********************************************************************************/
-void insert_plato_mma_input_options(XMLGen::MetaDataTags &aTags);
-
-/******************************************************************************//**
  * \fn insert_general_dakota_input_options
  * \brief Insert input options and corresponding default values for Dakota's \n
           Driver problems into the map from the plato input deck \n

@@ -90,7 +90,7 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         tOptimizerIndex.push_back(0);
 
         // Create the first inner loop optimizer.
-        Plato::OptimizerInterface<ScalarType, OrdinalType>*
+        std::unique_ptr<Plato::OptimizerInterface<ScalarType, OrdinalType>>
             tOptimizer = tOptimizerFactory.create(mInterface, tLocalComm,
                                                   tOptimizerIndex );
 
@@ -98,9 +98,6 @@ value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
         while( tOptimizer != nullptr )
         {
             tOptimizer->run();
-
-            // Delete the current optimizer.
-            delete tOptimizer;
 
             // Check for another serial optimizer block. Note the
             // index does not need to passed as the factory stores the

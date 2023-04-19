@@ -39,7 +39,7 @@ void append_grad_based_optimizer_options
  pugi::xml_node& aParentNode)
 {
     std::unordered_map<std::string, std::string> tValidOptimizers =
-        { {"oc", "OC"}, {"mma", "MMA"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
+        { {"oc", "OC"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
         {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"} };
 
     auto tLower = Plato::tolower(aMetaData.optimization_parameters().optimization_algorithm());
@@ -79,10 +79,6 @@ void append_grad_based_optimizer_parameters
     else if(tLower.compare("oc") == 0)
     {
         XMLGen::append_optimality_criteria_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("mma") == 0)
-    {
-        XMLGen::append_method_moving_asymptotes_options(aMetaData, aParentNode);
     }
     else if(tLower.compare("ksbc") == 0)
     {
@@ -126,27 +122,6 @@ void append_optimality_criteria_options
     XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);
 }
 // function append_optimality_criteria_options
-/******************************************************************************/
-
-/******************************************************************************/
-void append_method_moving_asymptotes_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode)
-{
-    std::vector<std::string> tKeys = { "MaxNumOuterIterations", "MoveLimit", "AsymptoteExpansion", "AsymptoteContraction",
-         "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance", "OutputSubProblemDiagnostics", 
-         "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", "SubProblemFeasibilityTolerance", 
-         "UpdateFrequency", "UseIpoptForMMASubproblem"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().max_iterations(), aMetaData.optimization_parameters().mma_move_limit(), aMetaData.optimization_parameters().mma_asymptote_expansion(),
-        aMetaData.optimization_parameters().mma_asymptote_contraction(), aMetaData.optimization_parameters().mma_max_sub_problem_iterations(), aMetaData.optimization_parameters().mma_control_stagnation_tolerance(),
-        aMetaData.optimization_parameters().mma_objective_stagnation_tolerance(), aMetaData.optimization_parameters().mma_output_subproblem_diagnostics(), aMetaData.optimization_parameters().mma_sub_problem_initial_penalty(),
-        aMetaData.optimization_parameters().mma_sub_problem_penalty_multiplier(), aMetaData.optimization_parameters().mma_sub_problem_feasibility_tolerance(),
-        aMetaData.optimization_parameters().problem_update_frequency(), aMetaData.optimization_parameters().mma_use_ipopt_sub_problem_solver() };
-    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.append_child("Options");
-    XMLGen::append_children(tKeys, tValues, tOptionsNode);
-}
-// function append_method_moving_asymptotes_options
 /******************************************************************************/
 
 /******************************************************************************/

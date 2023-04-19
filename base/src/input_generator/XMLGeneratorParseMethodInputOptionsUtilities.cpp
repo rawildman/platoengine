@@ -96,25 +96,6 @@ void insert_optimality_criteria_input_options(XMLGen::MetaDataTags &aTags)
 /******************************************************************************/
 
 /******************************************************************************/
-void insert_plato_mma_input_options(XMLGen::MetaDataTags &aTags)
-{
-
-    aTags.insert({ "mma_move_limit", { { {"mma_move_limit"}, ""}, "0.5" } });
-    aTags.insert({ "mma_asymptote_expansion", { { {"mma_asymptote_expansion"}, ""}, "1.2" } });
-    aTags.insert({ "mma_asymptote_contraction", { { {"mma_asymptote_contraction"}, ""}, "0.7" } });
-    aTags.insert({ "mma_max_sub_problem_iterations", { { {"mma_max_sub_problem_iterations"}, ""}, "50" } });
-    aTags.insert({ "mma_sub_problem_initial_penalty", { { {"mma_sub_problem_initial_penalty"}, ""}, "0.0015" } });
-    aTags.insert({ "mma_output_subproblem_diagnostics", { { {"mma_output_subproblem_diagnostics"}, ""}, "false" } });
-    aTags.insert({ "mma_sub_problem_penalty_multiplier", { { {"mma_sub_problem_penalty_multiplier"}, ""}, "1.025" } });
-    aTags.insert({ "mma_use_ipopt_sub_problem_solver", { { {"mma_use_ipopt_sub_problem_solver"}, ""}, "false" } });
-    aTags.insert({ "mma_control_stagnation_tolerance", { { {"mma_control_stagnation_tolerance"}, ""}, "1e-6" } });
-    aTags.insert({ "mma_objective_stagnation_tolerance", { { {"mma_objective_stagnation_tolerance"}, ""}, "1e-8" } });
-    aTags.insert({ "mma_sub_problem_feasibility_tolerance", { { {"mma_sub_problem_feasibility_tolerance"}, ""}, "1e-8" } });
-}
-// function insert_plato_mma_input_options
-/******************************************************************************/
-
-/******************************************************************************/
 void insert_amgx_input_options(XMLGen::MetaDataTags &aTags)
 {
     aTags.insert({ "amgx_solver_type", { { {"amgx_solver_type"}, ""}, "pbicgstab" } });

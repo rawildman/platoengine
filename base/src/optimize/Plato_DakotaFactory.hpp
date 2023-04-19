@@ -55,6 +55,8 @@
   #include "Plato_DakotaDriver.hpp"
 #endif
 
+#include <memory>
+
 namespace Plato
 {
 
@@ -66,27 +68,13 @@ class DakotaFactory
 {
 public:
     /******************************************************************************//**
-     * \brief Constructor
-    **********************************************************************************/
-    DakotaFactory()
-    {
-    }
-
-    /******************************************************************************//**
-     * \brief Destructuor
-    **********************************************************************************/
-    ~DakotaFactory()
-    {
-    }
-
-    /******************************************************************************//**
      * \brief Construct interface to optimization algorithm
      * \param [in] aInterface PLATO Engine interface
      * \param [in] aLocalComm local MPI communicator
      * \param [in] aOptimizerIndex the index of a specific driver block
      * \return non-const pointer to the optimization algorithm's interface
     **********************************************************************************/
-    Plato::DriverInterface<ScalarType, OrdinalType>*
+    std::unique_ptr<Plato::DriverInterface<ScalarType, OrdinalType>>
     create(Plato::Interface* aInterface,
            MPI_Comm aLocalComm,
            std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
@@ -102,7 +90,7 @@ public:
         aInterface->registerException(tDakotaNotBuiltException);
 #endif
 
-        int nBlocks = aInterface->getInputData().size<Plato::InputData>("DakotaDriver");
+        const int nBlocks = aInterface->getInputData().size<Plato::InputData>("DakotaDriver");
 
         if( nBlocks == 0 )
         {
@@ -114,7 +102,6 @@ public:
             Plato::ParsingException tParsingException(tStringStream.str());
             aInterface->registerException(tParsingException);
         }
-
         else if( nBlocks > 1 )
         {
             std::stringstream tStringStream;
@@ -126,21 +113,19 @@ public:
             Plato::ParsingException tParsingException(tStringStream.str());
             aInterface->registerException(tParsingException);
         }
-
         else if( nBlocks == 1 )
         {
-          Plato::DriverInterface<ScalarType, OrdinalType>* tDriver = nullptr;
+          std::unique_ptr<Plato::DriverInterface<ScalarType, OrdinalType>> tDriver;
 
 #ifdef DAKOTADRIVER
           try
           {
-              tDriver = new Plato::DakotaDriver<ScalarType, OrdinalType>(aInterface, aLocalComm);
+              tDriver = std::make_unique<Plato::DakotaDriver<ScalarType, OrdinalType>>(aInterface, aLocalComm);
               feclearexcept(FE_ALL_EXCEPT);
           }
           catch(...)
           {
               aInterface->Catch();
-              tDriver = nullptr;
           }
 #endif
           return tDriver;
@@ -148,11 +133,6 @@ public:
 
       return nullptr;
     }
-
-private:
-    DakotaFactory(const Plato::DakotaFactory<ScalarType, OrdinalType>&);
-
-    Plato::DakotaFactory<ScalarType, OrdinalType> & operator=(const Plato::DakotaFactory<ScalarType, OrdinalType>&);
 };
 // class DakotaFactory
 

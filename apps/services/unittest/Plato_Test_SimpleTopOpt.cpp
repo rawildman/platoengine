@@ -65,7 +65,6 @@
 
 #include "Plato_OptimalityCriteriaLightInterface.hpp"
 #include "Plato_KelleySachsAugmentedLagrangianLightInterface.hpp"
-#include "Plato_GloballyConvergentMethodMovingAsymptotesLightInterface.hpp"
 
 #include "Plato_StructuralTopologyOptimizationProxyGoldResults.hpp"
 
@@ -515,69 +514,6 @@ TEST(PlatoTest, PERF_SolveStrucTopoOptimalityCriteriaLightInterface)
     EXPECT_NEAR(5.8759036524747e-6, (*tOutputs.mConstraints)[0], tTolerance);
     EXPECT_STREQ("\n\n****** Optimization stopping due to objective stagnation. ******\n\n", tOutputs.mStopCriterion.c_str());
     std::vector<double> tGoldControl = TopoProxy::get_gold_control_optimality_criteria_test();
-    for(size_t tIndex = 0; tIndex < tGoldControl.size(); tIndex++)
-    {
-        EXPECT_NEAR(tGoldControl[tIndex], (*tOutputs.mSolution)(0 /* vector index */, tIndex), tTolerance);
-    }
-}
-
-TEST(PlatoTest, PERF_SolveStrucTopoGloballyConvergentMethodMovingAsymptotesLightInterface)
-{
-    // ************** ALLOCATE SIMPLE STRUCTURAL TOPOLOGY OPTIMIZATION SOLVER **************
-    const double tPoissonRatio = 0.3;
-    const double tElasticModulus = 1;
-    const int tNumElementsXdirection = 30;
-    const int tNumElementsYdirection = 10;
-    std::shared_ptr<Plato::StructuralTopologyOptimization> tPDE;
-    tPDE = std::make_shared<Plato::StructuralTopologyOptimization>(tPoissonRatio, tElasticModulus, tNumElementsXdirection, tNumElementsYdirection);
-
-    // ************** SET FORCE VECTOR **************
-    const int tGlobalNumDofs = tPDE->getGlobalNumDofs();
-    Epetra_SerialDenseVector tForce(tGlobalNumDofs);
-    const int tDOFsIndex = 1;
-    tForce[tDOFsIndex] = -1;
-    tPDE->setForceVector(tForce);
-
-    // ************** SET FIXED DEGREES OF FREEDOM (DOFs) VECTOR **************
-    std::vector<double> tDofs = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 681};
-    Epetra_SerialDenseVector tFixedDOFs(Epetra_DataAccess::Copy, tDofs.data(), tDofs.size());
-    tPDE->setFixedDOFs(tFixedDOFs);
-
-    // ************** ALLOCATE VOLUME AND COMPLIANCE CRITERION **************
-    std::shared_ptr<Plato::ProxyVolume<double>> tVolume = std::make_shared<Plato::ProxyVolume<double>>(tPDE);
-    std::shared_ptr<Plato::ProxyCompliance<double>> tCompliance = std::make_shared<Plato::ProxyCompliance<double>>(tPDE);
-    tCompliance->disableFilter();
-    std::shared_ptr<Plato::CriterionList<double>> tConstraints = std::make_shared<Plato::CriterionList<double>>();
-    tConstraints->add(tVolume);
-
-    // ********* ALLOCATE CORE DATA STRUCTURES *********
-    const size_t tNumDuals = 1;
-    const size_t tNumVectors = 1;
-    const size_t tNumControls = tPDE->getNumDesignVariables();
-    Plato::AlgorithmInputsGCMMA<double> tInputs;
-    tInputs.mDual = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumDuals);
-    const double tValue = tPDE->getVolumeFraction();
-    tInputs.mInitialGuess = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, tValue);
-    tInputs.mUpperBounds = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, 1.0 /* base value */);
-    tInputs.mLowerBounds = std::make_shared<Plato::EpetraSerialDenseMultiVector<double>>(tNumVectors, tNumControls, 1e-3 /* base value */);
-
-    // ********* SOLVE OPTIMIZATION PROBLEM *********
-    Plato::AlgorithmOutputsGCMMA<double> tOutputs;
-    Plato::solve_gcmma<double, size_t>(tCompliance, tConstraints, tInputs, tOutputs);
-
-    const double tTolerance = 1e-6;
-    EXPECT_EQ(53u, tOutputs.mNumOuterIter);
-    EXPECT_EQ(73u, tOutputs.mNumObjFuncEval);
-    EXPECT_EQ(54u, tOutputs.mNumObjGradEval);
-    EXPECT_NEAR(0.16109558219749864, tOutputs.mObjFuncValue, tTolerance);
-    EXPECT_NEAR(9.5895893763577866e-5, tOutputs.mKKTMeasure, tTolerance);
-    EXPECT_NEAR(1.6164828039268269e-5, tOutputs.mNormObjFuncGrad, tTolerance);
-    EXPECT_NEAR(-0.079382575722866944, (*tOutputs.mConstraints)[0], tTolerance);
-    EXPECT_NEAR(0.004849448411780428, tOutputs.mStationarityMeasure, tTolerance);
-    EXPECT_NEAR(0.003579306576219354, tOutputs.mControlStagnationMeasure, tTolerance);
-    EXPECT_NEAR(2.5417816987283182e-7, tOutputs.mObjectiveStagnationMeasure, tTolerance);
-    EXPECT_STREQ("\n\n****** Optimization stopping due to objective stagnation. ******\n\n", tOutputs.mStopCriterion.c_str());
-    std::vector<double> tGoldControl = TopoProxy::get_gold_control_gcmma_test();
     for(size_t tIndex = 0; tIndex < tGoldControl.size(); tIndex++)
     {
         EXPECT_NEAR(tGoldControl[tIndex], (*tOutputs.mSolution)(0 /* vector index */, tIndex), tTolerance);

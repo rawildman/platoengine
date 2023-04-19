@@ -45,7 +45,6 @@ void ParseOptimizationParameters::allocate()
     XMLGen::insert_rol_input_options(mTags);
     XMLGen::insert_amgx_input_options(mTags);
     XMLGen::insert_restart_input_options(mTags);
-    XMLGen::insert_plato_mma_input_options(mTags);
     XMLGen::insert_dakota_moga_input_options(mTags);
     XMLGen::insert_plato_filter_input_options(mTags);
     XMLGen::insert_fixed_blocks_input_options(mTags);
@@ -187,7 +186,6 @@ void ParseOptimizationParameters::setMetaData(XMLGen::OptimizationParameters &aM
     this->checkROLSubProblemModel(aMetadata);
     this->checkROLHessianType(aMetadata);
     this->setSymmetryPlaneLocationNames(aMetadata);
-    this->setMMAStagnationDefaultsForShapeOptimizationProblems(aMetadata);
 }
 
 void ParseOptimizationParameters::checkROLSubProblemModel(XMLGen::OptimizationParameters &aMetadata)
@@ -591,42 +589,6 @@ void ParseOptimizationParameters::setCSMParameters(XMLGen::OptimizationParameter
         }
     }
 }
-
-void ParseOptimizationParameters::setMMAStagnationDefaultsForShapeOptimizationProblems(XMLGen::OptimizationParameters &aMetadata)
-{
-    // If this is a shape optimization problem using mma and the user has not specified values for 
-    // the objective and control stagnation tolerance parameters we will set them to -1
-    // so that the optimizer will not exit on these stopping criteria. This helps it not 
-    // exit early for the wrong reason.
-    auto tAlgorithm = aMetadata.optimization_algorithm();
-    if(tAlgorithm == "mma")
-    {
-        if(aMetadata.optimizationType() == OT_SHAPE)
-        {
-            auto tItr = mTags.find("mma_control_stagnation_tolerance");
-            if (tItr != mTags.end())
-            {
-                std::string tValue = tItr->second.first.second;
-                if (tValue.empty())
-                {
-                    aMetadata.append("mma_control_stagnation_tolerance", "-1", false);
-                    std::cout << "INFO: Setting the mma_control_stagnation_tolerance parameter to -1. Explicitly set this value to something else if desired." << std::endl; 
-                }
-            }
-            tItr = mTags.find("mma_objective_stagnation_tolerance");
-            if (tItr != mTags.end())
-            {
-                std::string tValue = tItr->second.first.second;
-                if (tValue.empty())
-                {
-                    aMetadata.append("mma_objective_stagnation_tolerance", "-1", false);
-                    std::cout << "INFO: Setting the mma_objective_stagnation_tolerance parameter to -1. Explicitly set this value to something else if desired." << std::endl; 
-                }
-            }
-        }
-    }
-}
-
 
 }
 // namespace XMLGen

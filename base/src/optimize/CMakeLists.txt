@@ -34,27 +34,12 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_ParticleSwarmInterfaceBCPSO.hpp
                         Plato_ParticleSwarmInterfaceALPSO.hpp
                         Plato_GradFreeCriteriaList.hpp
-                        Plato_MethodMovingAsymptotes.hpp
-                        Plato_MethodMovingAsymptotesIO.hpp
-                        Plato_MethodMovingAsymptotesEngine.hpp
-                        Plato_MethodMovingAsymptotesParser.hpp
-                        Plato_MethodMovingAsymptotesIO_Data.hpp
-                        Plato_MethodMovingAsymptotesDataMng.hpp
-                        Plato_MethodMovingAsymptotesCriterion.hpp
-                        Plato_MethodMovingAsymptotesInterface.hpp
-                        Plato_MethodMovingAsymptotesOperations.hpp
                         Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
                         Plato_DriverFactory.hpp
                         Plato_OptimizersIO_Utilities.hpp
                         Plato_AugmentedLagrangian.hpp
                         Plato_TrustRegionUtilities.hpp
-                        Plato_HostDualProbElementWise.hpp
-                        Plato_HostPrimalProbElementWise.hpp
-                        Plato_DeviceDualProbElementWise.hpp
-                        Plato_DevicePrimalProbElementWise.hpp
-                        Plato_DualProbElementWiseFunctions.hpp
-                        Plato_PrimalProbElementWiseFunctions.hpp
                         Plato_CommWrapper.hpp
                         Plato_Types.hpp
                         Plato_Circle.hpp
@@ -72,8 +57,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_EngineObjective.hpp
                         Plato_EngineConstraint.hpp
                         Plato_SteihaugTointSolver.hpp
-                        Plato_DualProblemSolver.hpp
-                        Plato_DualProblemStageMng.hpp
                         Plato_GradientOperator.hpp
                         Plato_GradientOperatorList.hpp
                         Plato_IdentityHessian.hpp
@@ -89,29 +72,16 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_KelleySachsAugmentedLagrangianInterface.hpp
                         Plato_KelleySachsAugmentedLagrangianLightInterface.hpp
                         Plato_KelleySachsStepMng.hpp
-                        Plato_LineSearch.hpp
                         Plato_LinearOperator.hpp
                         Plato_LinearOperatorList.hpp
                         Plato_MultiVectorList.hpp
                         Plato_Preconditioner.hpp
-                        Plato_PrimalProblemStageMng.hpp
                         Plato_ProjectedSteihaugTointPcg.hpp
-                        Plato_QuadraticLineSearch.hpp
                         Plato_Radius.hpp
                         Plato_Rosenbrock.hpp
-                        Plato_GloballyConvergentMethodMovingAsymptotes.hpp
-                        Plato_GloballyConvergentMethodMovingAsymptotesInterface.hpp
-                        Plato_GloballyConvergentMethodMovingAsymptotesLightInterface.hpp
-                        Plato_CcsaTestObjective.hpp
-                        Plato_CcsaTestInequality.hpp
                         Plato_AnalyticalHessian.hpp
                         Plato_AnalyticalGradient.hpp
                         Plato_AugmentedLagrangianStageMng.hpp
-                        Plato_CubicLineSearch.hpp
-                        Plato_ConservativeConvexSeparableAppxDataMng.hpp
-                        Plato_ConservativeConvexSeparableAppxStageMng.hpp
-                        Plato_ConservativeConvexSeparableApproximation.hpp
-                        Plato_ConservativeConvexSeparableAppxAlgorithm.hpp
                         Plato_Criterion.hpp
                         Plato_CriterionList.hpp
                         Plato_DataFactory.hpp
@@ -172,21 +142,21 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_DeviceOptimalityCriteriaUpdate.hpp
                         Plato_SolveUncertaintyProblem.hpp
                         Plato_DistributionFactory.hpp
-			Plato_ROLInterface.hpp
-			Plato_StochasticROLInterface.hpp
-			Plato_ROLSPGInterface.hpp
-			Plato_SerialEpetraVectorROL.hpp
-			Plato_DistributedVectorROL.hpp
-			Plato_ReducedConstraintROL.hpp
-			Plato_ReducedObjectiveROL.hpp
-			Plato_ReducedStochasticObjectiveROL.hpp
-			Plato_ConstraintSimOptROL.hpp
-			Plato_ObjectiveSimOptROL.hpp
-			Plato_ProxyComplianceROL.hpp
-			Plato_SerialVectorROL.hpp
-			Plato_ProxyVolumeROL.hpp
+                        Plato_ROLInterface.hpp
+                        Plato_StochasticROLInterface.hpp
+                        Plato_ROLSPGInterface.hpp
+                        Plato_SerialEpetraVectorROL.hpp
+                        Plato_DistributedVectorROL.hpp
+                        Plato_ReducedConstraintROL.hpp
+                        Plato_ReducedObjectiveROL.hpp
+                        Plato_ReducedStochasticObjectiveROL.hpp
+                        Plato_ConstraintSimOptROL.hpp
+                        Plato_ObjectiveSimOptROL.hpp
+                        Plato_ProxyComplianceROL.hpp
+                        Plato_SerialVectorROL.hpp
+                        Plato_ProxyVolumeROL.hpp
                         )
-                        
+
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
 FOREACH(PLATO_LIB ${LIB_NAMES})

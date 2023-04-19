@@ -184,7 +184,7 @@ int main(int aArgc, char *aArgv[])
         // driver blocks that are serial. Nested driver blocks
         // are processed recursively via the EngineObjective.
         Plato::DriverFactory<double> tDriverFactory;
-        Plato::DriverInterface<double>* tDriver = nullptr;
+        std::unique_ptr<Plato::DriverInterface<double>> tDriver;
 
         // Note: When first called, the factory will look for the
         // first driver block. Subsequent calls will look for the
@@ -209,8 +209,6 @@ int main(int aArgc, char *aArgv[])
             {
                 tDriver->finalize();
             }
-
-            delete tDriver;
         }
     }
     catch(...)

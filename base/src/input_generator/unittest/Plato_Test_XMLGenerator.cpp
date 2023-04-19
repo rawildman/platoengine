@@ -2303,7 +2303,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2360,89 +2360,6 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
 
     auto tTrash = std::system("rm -rf *.xml amgx.json mpirun.source");
     Plato::Utils::ignore_unused(tTrash);
-}
-
-TEST(PlatoTestXMLGenerator, appendMMAOptions_topology)
-{
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    // material_box
-    stringInput = "begin optimization_parameters\n"
-            "optimization_algorithm mma\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_move_limit(), "0.5");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_asymptote_expansion(), "1.2");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_asymptote_contraction(), "0.7");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_max_sub_problem_iterations(), "50");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_control_stagnation_tolerance(), "1e-6");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_objective_stagnation_tolerance(), "1e-8");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_feasibility_tolerance(), "1e-8");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_use_ipopt_sub_problem_solver(), "false");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_output_subproblem_diagnostics(), "false");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_penalty_multiplier(), "1.025");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_initial_penalty(), "0.0015");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().problem_update_frequency(), "5");
-
-    pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_method_moving_asymptotes_options(*(tester.exposeInputData()), tDocument));
-    auto tOptionsNode = tDocument.child("Options");
-    std::vector<std::string> tKeys = {"MoveLimit", "AsymptoteExpansion", "AsymptoteContraction", 
-                   "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance",
-                   "OutputSubProblemDiagnostics", "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", 
-                   "SubProblemFeasibilityTolerance", "UpdateFrequency", "UseIpoptForMMASubproblem"};
-    std::vector<std::string> tValues = {"0.5", "1.2", "0.7", "50", "1e-6", "1e-8", "false", "0.0015",
-                                        "1.025", "1e-8", "5", "false"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptionsNode);
-}
-
-TEST(PlatoTestXMLGenerator, appendMMAOptions_shape)
-{
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    // material_box
-    stringInput = "begin optimization_parameters\n"
-            "optimization_algorithm mma\n"
-            "optimization_type shape\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_move_limit(), "0.5");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_asymptote_expansion(), "1.2");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_asymptote_contraction(), "0.7");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_max_sub_problem_iterations(), "50");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_control_stagnation_tolerance(), "-1");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_objective_stagnation_tolerance(), "-1");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_feasibility_tolerance(), "1e-8");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_use_ipopt_sub_problem_solver(), "false");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_output_subproblem_diagnostics(), "false");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_penalty_multiplier(), "1.025");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().mma_sub_problem_initial_penalty(), "0.0015");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().problem_update_frequency(), "5");
-
-    pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_method_moving_asymptotes_options(*(tester.exposeInputData()), tDocument));
-    auto tOptionsNode = tDocument.child("Options");
-    std::vector<std::string> tKeys = {"MoveLimit", "AsymptoteExpansion", "AsymptoteContraction", 
-                   "MaxNumSubProblemIter", "ControlStagnationTolerance", "ObjectiveStagnationTolerance",
-                   "OutputSubProblemDiagnostics", "SubProblemInitialPenalty", "SubProblemPenaltyMultiplier", 
-                   "SubProblemFeasibilityTolerance", "UpdateFrequency", "UseIpoptForMMASubproblem"};
-    std::vector<std::string> tValues = {"0.5", "1.2", "0.7", "50", "-1", "-1", "false", "0.0015",
-                                        "1.025", "1e-8", "5", "false"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptionsNode);
 }
 
 TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
@@ -2541,7 +2458,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2692,7 +2609,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2836,7 +2753,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -3007,7 +2924,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumUndefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -3151,7 +3068,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -3302,7 +3219,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm mma\n"
+        "  optimization_algorithm ksal\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"

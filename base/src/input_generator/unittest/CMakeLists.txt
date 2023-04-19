@@ -25,6 +25,7 @@ SET(PlatoXMLGenerator_UnitTester_SRCS XMLGenerator_UnitMain.cpp
                                       XMLGeneratorStageOperationsUtilities_UnitTester.cpp
                                       XMLGeneratorUtilities_UnitTester.cpp
                                       XMLGeneratorXTKOperationFile_UnitTester.cpp
+                                      XMLGeneratorOptimizationParametersInput_UnitTester.cpp
                                       FileObject_UnitTester.cpp
                                       Performer_UnitTester.cpp
                                       SharedData_UnitTester.cpp

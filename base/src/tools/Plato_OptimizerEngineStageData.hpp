@@ -119,30 +119,6 @@ public:
     void setInitialGuess(const std::vector<double> & aInput);
     void setInitialGuess(const std::vector<std::string> & aInput);
 
-    double getInitialMovingAsymptoteScaleFactor() const;
-    void setInitialMovingAsymptoteScaleFactor(const double & aInput);
-
-    double getGCMMAInnerKKTTolerance() const;
-    void setGCMMAInnerKKTTolerance(const double & aInput);
-
-    int getGCMMAMaxInnerIterations() const;
-    void setGCMMAMaxInnerIterations(const int & aInput);
-
-    double getGCMMAInnerControlStagnationTolerance() const;
-    void setGCMMAInnerControlStagnationTolerance(const double & aInput);
-
-    double getCCSAOuterKKTTolerance() const;
-    void setCCSAOuterKKTTolerance(const double & aInput);
-
-    double getCCSAOuterControlStagnationTolerance() const;
-    void setCCSAOuterControlStagnationTolerance(const double & aInput);
-
-    double getCCSAOuterObjectiveStagnationTolerance() const;
-    void setCCSAOuterObjectiveStagnationTolerance(const double & aInput);
-
-    double getCCSAOuterStationarityTolerance() const;
-    void setCCSAOuterStationarityTolerance(const double & aInput);
-
     double getKSTrustRegionExpansionFactor() const;
     void setKSTrustRegionExpansionFactor(const double & aInput);
 
@@ -530,7 +506,6 @@ public:
       aArchive & boost::serialization::make_nvp("LimitedMemoryStorage",mLimitedMemoryStorage);
       aArchive & boost::serialization::make_nvp("ProblemUpdateFrequency",mProblemUpdateFrequency);
 
-      aArchive & boost::serialization::make_nvp("GCMMAMaxInnerIterations",mGCMMAMaxInnerIterations);
       aArchive & boost::serialization::make_nvp("KSMaxTrustRegionIterations",mKSMaxTrustRegionIterations);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSteps",mROLCheckGradientSteps);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSeed",mROLCheckGradientSeed);
@@ -539,13 +514,6 @@ public:
       aArchive & boost::serialization::make_nvp("ROLStochasticNumberOfSamples",mROLStochasticNumberOfSamples);
       aArchive & boost::serialization::make_nvp("ROLStochasticSamplerSeed",mROLStochasticSamplerSeed);
 
-      aArchive & boost::serialization::make_nvp("InitialMovingAsymptoteScaleFactor",mInitialMovingAsymptoteScaleFactor);
-      aArchive & boost::serialization::make_nvp("GCMMAInnerKKTTolerance",mGCMMAInnerKKTTolerance);
-      aArchive & boost::serialization::make_nvp("CCSAOuterKKTTolerance",mCCSAOuterKKTTolerance);
-      aArchive & boost::serialization::make_nvp("CCSAOuterControlStagnationTolerance",mCCSAOuterControlStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("GCMMAInnerControlStagnationTolerance",mGCMMAInnerControlStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("CCSAOuterObjectiveStagnationTolerance",mCCSAOuterObjectiveStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("CCSAOuterStationarityTolerance",mCCSAOuterStationarityTolerance);
       aArchive & boost::serialization::make_nvp("KSTrustRegionExpansionFactor",mKSTrustRegionExpansionFactor);
       aArchive & boost::serialization::make_nvp("KSTrustRegionContractionFactor",mKSTrustRegionContractionFactor);
       aArchive & boost::serialization::make_nvp("KSOuterGradientTolerance",mKSOuterGradientTolerance);
@@ -631,7 +599,6 @@ private:
     size_t mLimitedMemoryStorage;
     size_t mProblemUpdateFrequency;
 
-    int mGCMMAMaxInnerIterations;
     int mKSMaxTrustRegionIterations;
     int mROLCheckGradientSteps;
     int mROLCheckGradientSeed;
@@ -639,13 +606,6 @@ private:
     int mROLStochasticNumberOfSamples = 3;
     int mROLStochasticSamplerSeed = 42;
 
-    double mInitialMovingAsymptoteScaleFactor;
-    double mGCMMAInnerKKTTolerance;
-    double mCCSAOuterKKTTolerance;
-    double mCCSAOuterControlStagnationTolerance;
-    double mGCMMAInnerControlStagnationTolerance;
-    double mCCSAOuterObjectiveStagnationTolerance;
-    double mCCSAOuterStationarityTolerance;
     double mKSTrustRegionExpansionFactor;
     double mKSTrustRegionContractionFactor;
     double mKSOuterGradientTolerance;
