@@ -211,14 +211,13 @@ def updateModelAflr4Aflr3Exodus(modelName, paramVals):
   for line in f_in:
     if line.strip().lower() == 'end':
       f_out.write("select body\n")
-      f_out.write("attribute _name $block_1\n")
       f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM\n")
       f_out.write("attribute capsMeshLength " + MeshLength + "\n")
       f_out.write("attribute capsGroup $solid_group\n")
 
       f_out.write("select face\n")
       f_out.write("attribute capsGroup $solid_group\n")
-      # f_out.write("attribute capsMeshLength " + MeshLength + "\n")
+      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
 
     f_out.write(line)
 
