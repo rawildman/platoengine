@@ -72,6 +72,8 @@
 
 #include <cstdlib>
 
+#include <Kokkos_Core.hpp>
+
 const auto kInterfaceXMLFileName = Plato::XMLFileName{"save_main_interface.xml"};
 const auto kInterfaceXMLNodeName = Plato::XMLNodeName{"Interface"};
 const auto kAppXMLFileName = Plato::XMLFileName{"save_main_app.xml"};
@@ -89,6 +91,7 @@ int main(int aArgc, char *aArgv[])
 #endif
 
     MPI_Init(&aArgc, (char***) &aArgv);
+    Kokkos::initialize(aArgc, aArgv);
 
     Plato::Interface* tPlatoInterface = nullptr;
     PlatoApp *tPlatoApp = nullptr;
@@ -96,6 +99,7 @@ int main(int aArgc, char *aArgv[])
     auto safeExit = [&]() {
         delete tPlatoInterface;
         delete tPlatoApp;
+        Kokkos::finalize();
         MPI_Finalize();
         exit(0);
     };
