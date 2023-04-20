@@ -240,5 +240,132 @@ TEST(PlatoTestXMLGenerator, SD_deckWithManySections)
     EXPECT_EQ(strcmp(oDeck.str().c_str(),expected_output),0);
 }
 
+TEST(PlatoTestXMLGenerator, SD_writeInverseMethodObjectiveForModalMatching)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("modal_matching");
+
+    std::stringstream tBlock;
+    XMLGen::write_inverse_method_objective(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  inverse_method_objective = eigen-inverse\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseMethodObjectiveForModalProjectionError)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("modal_projection_error");
+
+    std::stringstream tBlock;
+    XMLGen::write_inverse_method_objective(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  inverse_method_objective = eigen-inverse\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseMethodObjectiveForFRFMismatch)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.type("frf_mismatch");
+
+    std::stringstream tBlock;
+    XMLGen::write_inverse_method_objective(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  inverse_method_objective = directfrf-inverse\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseMatchNodesets_NoInput)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("modal_projection_error");
+
+    std::stringstream tBlock;
+    XMLGen::write_match_nodesets(tCriterion, tBlock);
+
+    std::string expected_output =
+    "";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseMatchNodesets_NodesetsGiven)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("modal_projection_error");
+    std::vector<std::string> tMatchNodesets = {"77", "86"};
+    tCriterion.setMatchNodesetIDs(tMatchNodesets);
+
+    std::stringstream tBlock;
+    XMLGen::write_match_nodesets(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  match_nodesets 77 86\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseModesToExclude_NoInput)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("modal_projection_error");
+
+    std::stringstream tBlock;
+    XMLGen::write_modes_to_exclude(tCriterion, tBlock);
+
+    std::string expected_output =
+    "";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseModesToExclude_ModesGiven)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("modal_projection_error");
+    std::vector<std::string> tModesToExclude = {"1", "71", "21"};
+    tCriterion.modesToExclude(tModesToExclude);
+
+    std::stringstream tBlock;
+    XMLGen::write_modes_to_exclude(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  modes_to_exclude 1 71 21\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
+
+TEST(PlatoTestXMLGenerator, SD_writeInverseMethodsBlock)
+{
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("modal_projection_error");
+    std::vector<std::string> tMatchNodesets = {"77", "86"};
+    tCriterion.setMatchNodesetIDs(tMatchNodesets);
+    std::vector<std::string> tModesToExclude = {"1", "17", "21"};
+    tCriterion.modesToExclude(tModesToExclude);
+
+    std::stringstream tBlock;
+    XMLGen::write_inverse_methods_block(tCriterion, tBlock);
+
+    std::string expected_output =
+    "  inverse_method_objective = eigen-inverse\n"
+    "  ref_data_file \n"
+    "  match_nodesets 77 86\n"
+    "  modes_to_exclude 1 17 21\n";
+
+    EXPECT_EQ(tBlock.str(), expected_output);
+}
 
 } // namespace PlatoTestXMLGenerator

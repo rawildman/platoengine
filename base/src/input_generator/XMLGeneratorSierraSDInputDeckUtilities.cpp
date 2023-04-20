@@ -10,6 +10,7 @@
 #include <sstream>
 #include <sys/stat.h>
 
+#include "XMLGeneratorSierraSDInputDeckUtilities.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorSierraSDUtilities.hpp"
 #include "XMLGeneratorCriterionMetadata.hpp"
@@ -638,14 +639,56 @@ void append_stress_parameters
     }
 }
 
-void writeInverseMethodObjective(const std::string &tDiscretization, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
-    if (isFrfMismatch(aCriterion)) {
+void write_inverse_methods_block
+(const XMLGen::Criterion & aCriterion,
+ std::ostream &outfile)
+{
+    write_inverse_method_objective(aCriterion, outfile);
+
+    outfile << "  ref_data_file " << aCriterion.ref_data_file() << std::endl;
+    
+    write_match_nodesets(aCriterion, outfile);
+
+    write_modes_to_exclude(aCriterion, outfile);
+}
+
+void write_inverse_method_objective(const XMLGen::Criterion &aCriterion, std::ostream &outfile) 
+{
+    if (isFrfMismatch(aCriterion)) 
+    {
         outfile << "  inverse_method_objective = directfrf-inverse" << std::endl;
     }
-    else if (isModalCriterion(aCriterion)) {
+    else if (isModalCriterion(aCriterion)) 
+    {
         outfile << "  inverse_method_objective = eigen-inverse" << std::endl;
     }
 }
+
+void write_match_nodesets(const XMLGen::Criterion &aCriterion, std::ostream &outfile)
+{
+    if(aCriterion.matchNodesetIDs().size() > 0)
+    {
+        outfile << "  match_nodesets";
+        for(auto tNodesetID : aCriterion.matchNodesetIDs())
+        {
+            outfile << " " << tNodesetID;
+        }
+        outfile << std::endl;
+    }
+}
+
+void write_modes_to_exclude(const XMLGen::Criterion &aCriterion, std::ostream &outfile)
+{
+    if (aCriterion.modesToExclude().size() > 0) 
+    {
+        outfile << "  modes_to_exclude";
+        for(auto tModeID : aCriterion.modesToExclude()) {
+            outfile << " " << tModeID;
+        }
+        outfile << std::endl;
+    }
+}
+
 /**************************************************************************/
 void append_case_dakota_problem
 (const XMLGen::Criterion &aCriterion,
@@ -653,11 +696,12 @@ void append_case_dakota_problem
 {
     outfile << "  case = compute_criterion" << std::endl;
     outfile << "  criterion = " << aCriterion.type() << std::endl;
+    if ( aCriterion.type() == "modal_projection_error" )
+        write_inverse_methods_block(aCriterion, outfile);
 }
 /**************************************************************************/
 void append_case_gradient_based_problem
-(const XMLGen::InputData& aMetaData,
- const XMLGen::Criterion &aCriterion,
+(const XMLGen::Criterion &aCriterion,
  const XMLGen::Scenario &aScenario,
  std::ostream &outfile)
 {
@@ -689,26 +733,7 @@ void append_case_gradient_based_problem
     {
         outfile << "  case = inverse_methods" << std::endl;
 
-        std::string tDiscretization = aMetaData.optimization_parameters().discretization();
-        writeInverseMethodObjective(tDiscretization, aCriterion, outfile);
-
-        outfile << "  ref_data_file " << aCriterion.ref_data_file() << std::endl;
-        if(aCriterion.matchNodesetIDs().size() > 0)
-        {
-            outfile << "  match_nodesets";
-            for(auto tNodesetID : aCriterion.matchNodesetIDs())
-            {
-                outfile << " " << tNodesetID;
-            }
-            outfile << std::endl;
-        }
-        if (aCriterion.modesToExclude().size() > 0) {
-            outfile << "  modes_to_exclude";
-            for(auto tModeID : aCriterion.modesToExclude()) {
-                outfile << " " << tModeID;
-            }
-            outfile << std::endl;
-        }
+        write_inverse_methods_block(aCriterion, outfile);
 
         if (isFrfMismatch(aCriterion)) {
             if (aScenario.complex_error_measure().length() > 0)
@@ -726,7 +751,7 @@ void append_case
     if (aMetaData.optimization_parameters().optimizationType() == OT_TOPOLOGY ||
         aMetaData.optimization_parameters().optimizationType() == OT_SHAPE)
     {
-        append_case_gradient_based_problem(aMetaData, aCriterion, aScenario, outfile);
+        append_case_gradient_based_problem(aCriterion, aScenario, outfile);
     }
     else if (aMetaData.optimization_parameters().optimizationType() == OT_DAKOTA)
     {
