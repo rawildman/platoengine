@@ -1,7 +1,7 @@
 stages: [setup-spack, build-dependencies, build-install, test, unit-test, coverage, report, clean-up]
 
 variables:
-  SPACK_REPO: https://github.com/platoengine/spack.git
+  SPACK_REPO: https://gitlab-ci-token:${CI_JOB_TOKEN}@cee-gitlab.sandia.gov/plato/spack.git
   SPACK_MIRROR_DIR: /home/gitlab-runner/spack-mirror
   RUNNER_HOME: /home/gitlab-runner
 
