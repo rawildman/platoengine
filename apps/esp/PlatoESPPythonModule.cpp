@@ -252,7 +252,10 @@ PlatoESP_dealloc(PlatoESP* self)
     self->m_numInstances--;
     if(self->m_numInstances == 0)
     {
-        Kokkos::finalize();
+        if(Kokkos::is_initialized())
+        {
+            Kokkos::finalize();
+        }
         int isFinalized;
         MPI_Finalized(&isFinalized);
         if( !isFinalized ) MPI_Finalize();
