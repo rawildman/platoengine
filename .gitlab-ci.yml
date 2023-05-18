@@ -1,51 +1,18 @@
 stages: [plato-build-test]
 
-variables:
-  GIT_SUBMODULE_STRATEGY: normal
-  CLEAN_CACHE: "true"
-  PLATO_ENGINE_OPTIONS: "+esp+expy+iso+platoproxy+platostatics+prune+stk+unit_testing"
-  THIRD_PARTY_GPU_OPTIONS: "^trilinos~mumps+rol~pardiso cuda_arch=70 ^openmpi@4.1.3 ^esp@120Lin"
-  THIRD_PARTY_CPU_OPTIONS: "^trilinos~mumps+rol~pardiso ^openmpi@4.1.3 ^esp@120Lin"
-  SPACK_DIR_FOR_PE: spack_pe_cache_${CI_PROJECT_ID}
-  SPACK_DIR_FOR_PE_DEBUG: spack_pe_cache_debug_${CI_PROJECT_ID}
-  
-trigger-cpu:
+trigger-super:
   stage: plato-build-test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        PARENT_BRANCH: ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    - if: $CI_PIPELINE_SOURCE == "web"
+      variables:
+        PARENT_BRANCH: ${CI_COMMIT_BRANCH}
   variables:
-    TRIGGER_PLATO_ENGINE_OPTIONS: ${PLATO_ENGINE_OPTIONS} 
-    TRIGGER_THIRD_PARTY_OPTIONS: ${THIRD_PARTY_CPU_OPTIONS}
-    TRIGGER_SPACK_DIR: ${SPACK_DIR_FOR_PE}
-    CONFIGURATION: "cpu"
-    TRIGGER_KCOV: "false"
+    PARENT_SOURCE: ${CI_PIPELINE_SOURCE}
   trigger:
-    include: ci-pipeline.yml
+    project: plato/super-plato
     strategy: depend
   needs: []
-
-trigger-gpu:
-  stage: plato-build-test
-  variables:
-    TRIGGER_PLATO_ENGINE_OPTIONS: ${PLATO_ENGINE_OPTIONS} 
-    TRIGGER_THIRD_PARTY_OPTIONS: ${THIRD_PARTY_GPU_OPTIONS}
-    TRIGGER_SPACK_DIR: ${SPACK_DIR_FOR_PE}
-    CONFIGURATION: "gpu"
-    TRIGGER_KCOV: "false"
-  trigger:
-    include: ci-pipeline.yml
-    strategy: depend
-  needs: []
-  
-trigger-cpu-debug:
-  stage: plato-build-test
-  variables:
-    TRIGGER_PLATO_ENGINE_OPTIONS: "${PLATO_ENGINE_OPTIONS} build_type=Debug"
-    TRIGGER_THIRD_PARTY_OPTIONS: ${THIRD_PARTY_CPU_OPTIONS}
-    TRIGGER_SPACK_DIR: ${SPACK_DIR_FOR_PE_DEBUG}
-    CONFIGURATION: "cpu"
-    TRIGGER_KCOV: "true"
-  trigger:
-    include: ci-pipeline.yml
-    strategy: depend
-  needs: []
-
 

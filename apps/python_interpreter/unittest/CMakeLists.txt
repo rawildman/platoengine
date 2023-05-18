@@ -41,4 +41,6 @@ configure_file(  ${CMAKE_SOURCE_DIR}/apps/python_interpreter/unittest/numpy_func
 
 if( CMAKE_INSTALL_PREFIX )
   install( TARGETS PythonAppUnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+  file( GLOB PYTHON_FILES *.py )
+  install( FILES ${PYTHON_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
 endif()
