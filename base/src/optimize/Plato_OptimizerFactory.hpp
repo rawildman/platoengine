@@ -52,8 +52,6 @@
 #include <mpi.h>
 
 #include "Plato_OptimizerInterface.hpp"
-#include "Plato_ParticleSwarmEngineBCPSO.hpp"
-#include "Plato_ParticleSwarmEngineALPSO.hpp"
 #include "Plato_SOParameterStudiesInterface.hpp"
 #include "Plato_OptimalityCriteriaInterface.hpp"
 #include "Plato_KelleySachsBoundConstrainedInterface.hpp"
@@ -195,18 +193,6 @@ public:
             tOptimizer = std::make_unique<Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
           } catch(...){aInterface->Catch();}
         }
-        else if( tOptPackage == "BCPSO" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "ALPSO" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
         else if( tOptPackage == "SOParameterStudies" )
         {
           try {
@@ -254,8 +240,6 @@ public:
             << "\t KSUC ... Kelley Sachs Unconstrained\n"
             << "\t KSBC ... Kelley Sachs Bound Constrained\n"
             << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
-            << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
-            << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
             << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
             << "\t ROL AugmentedLagrangian... Rapid Optimization Library Augmented Lagrangian\n"
             << "\t ROL BoundConstrained... Rapid Optimization Library Bound Constrained\n"

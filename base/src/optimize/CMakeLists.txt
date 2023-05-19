@@ -17,23 +17,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_GradFreeShiftedEllipse.hpp
                         Plato_GradFreeEngineCriterion.hpp
                         Plato_RestartFileUtilities.hpp
-                        Plato_ParticleSwarmTypes.hpp
-                        Plato_ParticleSwarmParser.hpp
-                        Plato_ParticleSwarmDataMng.hpp
-                        Plato_ParticleSwarmStageMng.hpp
-                        Plato_ParticleSwarmIO_BCPSO.hpp
-                        Plato_ParticleSwarmIO_ALPSO.hpp
-                        Plato_ParticleSwarmOperations.hpp
-                        Plato_ParticleSwarmEngineBCPSO.hpp
-                        Plato_ParticleSwarmEngineALPSO.hpp
-                        Plato_ParticleSwarmIO_Utilities.hpp
-                        Plato_ParticleSwarmStageMngBCPSO.hpp
-                        Plato_ParticleSwarmStageMngALPSO.hpp
-                        Plato_ParticleSwarmAlgorithmBCPSO.hpp
-                        Plato_ParticleSwarmAlgorithmALPSO.hpp
-                        Plato_ParticleSwarmInterfaceBCPSO.hpp
-                        Plato_ParticleSwarmInterfaceALPSO.hpp
-                        Plato_GradFreeCriteriaList.hpp
                         Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
                         Plato_DriverFactory.hpp

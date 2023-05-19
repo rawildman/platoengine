@@ -59,6 +59,7 @@
 #include "Plato_DataFactory.hpp"
 #include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
+#include "Plato_LinearAlgebra.hpp"
 
 namespace Plato
 {
