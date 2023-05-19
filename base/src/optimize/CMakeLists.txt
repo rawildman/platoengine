@@ -21,8 +21,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_OptimizerParser.hpp
                         Plato_DriverFactory.hpp
                         Plato_OptimizersIO_Utilities.hpp
-                        Plato_AugmentedLagrangian.hpp
-                        Plato_TrustRegionUtilities.hpp
                         Plato_CommWrapper.hpp
                         Plato_Types.hpp
                         Plato_Circle.hpp
@@ -39,32 +37,19 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_AlgebraFactory.hpp
                         Plato_EngineObjective.hpp
                         Plato_EngineConstraint.hpp
-                        Plato_SteihaugTointSolver.hpp
                         Plato_GradientOperator.hpp
                         Plato_GradientOperatorList.hpp
                         Plato_IdentityHessian.hpp
                         Plato_IdentityPreconditioner.hpp
-                        Plato_KelleySachsAlgorithm.hpp
-                        Plato_TrustRegionStageMng.hpp
-                        Plato_TrustRegionStepMng.hpp
-                        Plato_TrustRegionAlgorithmDataMng.hpp
-                        Plato_KelleySachsBoundConstrained.hpp
                         Plato_ReducedSpaceTrustRegionStageMng.hpp
-                        Plato_KelleySachsBoundLightInterface.hpp
-                        Plato_KelleySachsBoundConstrainedInterface.hpp
-                        Plato_KelleySachsAugmentedLagrangianInterface.hpp
-                        Plato_KelleySachsAugmentedLagrangianLightInterface.hpp
-                        Plato_KelleySachsStepMng.hpp
                         Plato_LinearOperator.hpp
                         Plato_LinearOperatorList.hpp
                         Plato_MultiVectorList.hpp
                         Plato_Preconditioner.hpp
-                        Plato_ProjectedSteihaugTointPcg.hpp
                         Plato_Radius.hpp
                         Plato_Rosenbrock.hpp
                         Plato_AnalyticalHessian.hpp
                         Plato_AnalyticalGradient.hpp
-                        Plato_AugmentedLagrangianStageMng.hpp
                         Plato_Criterion.hpp
                         Plato_CriterionList.hpp
                         Plato_DataFactory.hpp
@@ -97,23 +82,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_SOParameterStudiesInterface.hpp
                         Plato_OptimalityCriteriaInterface.hpp
                         Plato_EpetraSerialDenseMultiVector.hpp
-                        Plato_BetaDistribution.hpp
-                        Plato_Distribution.hpp
-                        Plato_NormalDistribution.hpp
-                        Plato_UniformDistribution.hpp
-                        Plato_SromSolve.hpp
-                        Plato_SromUtilis.hpp
-                        Plato_SromHelpers.hpp
-                        Plato_SromConstraint.hpp
-                        Plato_SromObjective.hpp
-                        Plato_SromStatistics.hpp
-                        Plato_SromLoadUtils.hpp
-                        Plato_SromMaterialUtils.hpp
-                        Plato_SromMetadata.hpp
-                        Plato_SromProbDataStruct.hpp
-                        Plato_StatisticsUtils.hpp
-                        Plato_RandomLoadMetadata.hpp
-                        Plato_RandomMaterialMetadata.hpp
                         Plato_LinearCriterionHessian.hpp
                         Plato_CentralDifferenceHessian.hpp
                         Plato_DakotaFactory.hpp
@@ -123,8 +91,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_KokkosVector.hpp
                         Plato_KokkosReductionOperations.hpp
                         Plato_DeviceOptimalityCriteriaUpdate.hpp
-                        Plato_SolveUncertaintyProblem.hpp
-                        Plato_DistributionFactory.hpp
                         Plato_ROLInterface.hpp
                         Plato_StochasticROLInterface.hpp
                         Plato_ROLSPGInterface.hpp

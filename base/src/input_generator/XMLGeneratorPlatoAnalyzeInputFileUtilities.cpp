@@ -16,6 +16,8 @@
 #include "XMLGeneratorAnalyzeEssentialBCFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeEssentialBCTagFunctionInterface.hpp"
 #include "XMLGeneratorAnalyzeAssemblyFunctionInterface.hpp"
+
+#include <cmath>
 #include <string>
 
 namespace XMLGen

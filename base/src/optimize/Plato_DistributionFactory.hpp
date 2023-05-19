@@ -51,7 +51,6 @@
 
 #include "Plato_Macros.hpp"
 #include "Plato_BetaDistribution.hpp"
-#include "Plato_SromProbDataStruct.hpp"
 #include "Plato_NormalDistribution.hpp"
 #include "Plato_UniformDistribution.hpp"
 

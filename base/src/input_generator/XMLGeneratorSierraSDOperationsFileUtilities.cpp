@@ -157,9 +157,7 @@ void append_internal_energy_hessian_operation
  pugi::xml_document& aDocument)
 {
     auto tAlgorithm = aMetaData.optimization_parameters().optimization_algorithm();
-    if(tAlgorithm =="ksbc" ||
-       tAlgorithm == "ksal" ||
-       tAlgorithm == "rol ksal" ||
+    if(tAlgorithm == "rol ksal" ||
        tAlgorithm == "rol ksbc")
     {
         auto tOperationNode = aDocument.append_child("Operation");

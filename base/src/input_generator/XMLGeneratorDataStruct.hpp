@@ -12,7 +12,6 @@
 #include <map>
 #include <set>
 
-#include "Plato_SromHelpers.hpp"
 #include "XMLGeneratorOutputMetadata.hpp"
 #include "XMLGeneratorRandomMetadata.hpp"
 #include "XMLGeneratorBoundaryMetadata.hpp"

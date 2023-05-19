@@ -9,6 +9,8 @@
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 
+#include <cmath>
+
 namespace XMLGen
 {
 
@@ -39,7 +41,7 @@ void append_grad_based_optimizer_options
  pugi::xml_node& aParentNode)
 {
     std::unordered_map<std::string, std::string> tValidOptimizers =
-        { {"oc", "OC"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
+        { {"oc", "OC"}, {"rol_bound_constrained", "ROL BoundConstrained"}, 
         {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"} };
 
     auto tLower = Plato::tolower(aMetaData.optimization_parameters().optimization_algorithm());
@@ -79,15 +81,6 @@ void append_grad_based_optimizer_parameters
     else if(tLower.compare("oc") == 0)
     {
         XMLGen::append_optimality_criteria_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksbc") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksal") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-        XMLGen::append_augmented_lagrangian_options(aMetaData, aParentNode);
     }
     else
     {

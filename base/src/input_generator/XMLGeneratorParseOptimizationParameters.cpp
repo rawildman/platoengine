@@ -286,9 +286,7 @@ void ParseOptimizationParameters::setNormalizeInAggregator(XMLGen::OptimizationP
     {
         std::cout << "INFO: Auto-determining whether to normalize in aggregator because normalize_in_aggregator parameter was not set." << std::endl;
         std::string tOptAlg = aMetadata.optimization_algorithm();
-        if(tOptAlg == "ksal" ||
-           tOptAlg == "ksbc" ||
-           tOptAlg == "oc")
+        if(tOptAlg == "oc")
         {
             tValue = true;
             std::cout << "INFO: Auto-determined to normalize in aggregator." << std::endl;

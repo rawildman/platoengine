@@ -17,18 +17,13 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
                              Plato_Test_OptimizersIO.cpp
                              Plato_Test_OptimalityCriteria.cpp
                              Plato_Test_DataFactory.cpp
-                             Plato_Test_KelleySachsBounds.cpp
                              Plato_Test_AugmentedLagrangian.cpp
                              Plato_Test_Bounds.cpp
                              Plato_Test_SimpleTopOpt.cpp
-                             Plato_Test_Statistics.cpp
                              Plato_Test_OptimizationTestFunctions.cpp
                              Plato_Test_Vector3DVariations.cpp
                              Plato_Test_UniqueCounter.cpp
                              Plato_Test_SimpleRocketOptimization.cpp
-                             Plato_Test_UncertainLoadGeneratorXML.cpp
-                             Plato_Test_UncertainMaterial.cpp
-                             Plato_Test_Srom.cpp
                              Plato_Test_LocalStatisticsOperations.cpp
                              Plato_Test_WriteParameterStudyData.cpp
                              Plato_Test_FreeFunctions.cpp
