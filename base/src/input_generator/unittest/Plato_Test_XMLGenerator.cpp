@@ -1817,7 +1817,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -1876,7 +1876,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
     Plato::Utils::ignore_unused(tTrash);
 }
 
-TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
+TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_variables_good_1)
 {
     // POSE INPUT DATA
     std::istringstream tIss;
@@ -1972,7 +1972,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2027,7 +2027,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
     ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
 }
 
-TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
+TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_variables_good_2)
 {
     // POSE INPUT DATA
     std::istringstream tIss;
@@ -2123,7 +2123,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2267,7 +2267,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2438,7 +2438,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumUndefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2582,7 +2582,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2733,7 +2733,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
