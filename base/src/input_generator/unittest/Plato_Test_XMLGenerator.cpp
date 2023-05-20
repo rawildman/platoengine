@@ -1273,14 +1273,14 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     tester.clearInputData();
     ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
     stringInput = "begin optimization_parameters\n"
-            "optimization_algorithm ksbc\n"
+            "optimization_algorithm rol_bound_constrained\n"
             "end optimization_parameters\n";
     iss.str(stringInput);
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getAlgorithm(), "ksbc");
+    EXPECT_EQ(tester.getAlgorithm(), "rol_bound_constrained");
 
     // discretization
     stringInput = "begin optimization_parameters\n"
