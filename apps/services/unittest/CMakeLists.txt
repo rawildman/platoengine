@@ -13,8 +13,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
                              Plato_Test_KokkosAlgebra.cpp
                              Plato_Test_InputData.cpp
                              Plato_Test_LinearAlgebra.cpp
-                             Plato_Test_OptimizersIO.cpp
-                             Plato_Test_OptimalityCriteria.cpp
                              Plato_Test_DataFactory.cpp
                              Plato_Test_AugmentedLagrangian.cpp
                              Plato_Test_Bounds.cpp

@@ -53,7 +53,6 @@
 
 #include "Plato_OptimizerInterface.hpp"
 #include "Plato_SOParameterStudiesInterface.hpp"
-#include "Plato_OptimalityCriteriaInterface.hpp"
 #include "Plato_ROLInterface.hpp"
 #include "Plato_StochasticROLInterface.hpp"
 
@@ -165,13 +164,7 @@ public:
         // optimizer.
         std::string tOptPackage = Plato::Get::String(tOptimizerNode, "Package");
 
-        if( tOptPackage == "OC" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "SOParameterStudies" )
+        if( tOptPackage == "SOParameterStudies" )
         {
           try {
             tOptimizer = std::make_unique<Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
@@ -214,7 +207,6 @@ public:
             << "Plato::OptimizerFactory: "
             << tOptPackage << " Unknown." << std::endl
             << "Valid options are\n"
-            << "\t OC ... Optimality Criteria\n"
             << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
             << "\t ROL AugmentedLagrangian... Rapid Optimization Library Augmented Lagrangian\n"
             << "\t ROL BoundConstrained... Rapid Optimization Library Bound Constrained\n"

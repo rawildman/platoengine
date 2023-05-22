@@ -52,7 +52,6 @@
 
 #include "Plato_KokkosVector.hpp"
 #include "Plato_KokkosReductionOperations.hpp"
-#include "Plato_DeviceOptimalityCriteriaUpdate.hpp"
 
 namespace PlatoTest
 {
@@ -186,48 +185,6 @@ TEST(PlatoTest, KokkosReductionOperations)
     tGoldValue = 1;
     tMin = tReductionCopy->min(tVector);
     EXPECT_NEAR(tMin, tGoldValue, tTolerance);
-}
-
-TEST(PlatoTest, KokkosNonlinearProgrammingUpdate)
-{
-    // ********* Allocate Data for Unit Test *********
-    const size_t tNumControls = 10;
-    Plato::KokkosVector<double> tControl(tNumControls);
-
-    double tValue = 0.25;
-    Plato::KokkosVector<double> tPrevControl(tNumControls, tValue);
-
-    tValue = 1e-3;
-    Plato::KokkosVector<double> tLowerBounds(tNumControls, tValue);
-
-    tValue = 1;
-    Plato::KokkosVector<double> tUpperBounds(tNumControls, tValue);
-
-    tValue = 1e-5;
-    Plato::KokkosVector<double> tObjGradient(tNumControls, tValue);
-
-    tValue = 5e-6;
-    Plato::KokkosVector<double> tObjInequality(tNumControls, tValue);
-
-    const double tTrialDual = 0.5;
-
-    // ********* Allocate Update Functor *********
-    double tMoveLimit = 1e-1;
-    double tScaleFactor = 0.01;
-    double tDampingPower = 0.5;
-    Plato::DeviceOptimalityCriteriaUpdate<double> tUpdate(tMoveLimit, tScaleFactor, tDampingPower);
-
-    // ********* Call Update Functor *********
-    tUpdate.update(tTrialDual, tLowerBounds, tUpperBounds, tPrevControl, tObjGradient, tObjInequality, tControl);
-
-    // ********* Test Results *********
-    tValue = 0.15;
-    Plato::KokkosVector<double> tControlGold(tNumControls, tValue);
-
-    // ********* Bring Data from Device to Host *********
-    tControl.host();
-    tControlGold.host();
-    PlatoTest::checkVectorData(tControl, tControlGold);
 }
 
 } // namespace PlatoTest
