@@ -7,7 +7,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
                              Plato_PlatoProxyApp.cpp
                              Plato_PhysicsProxyApp.cpp
                              Plato_StructuralTopologyOptimizationProxyGoldResults.cpp
-                             Plato_Test_GradFreeCriteria.cpp
                              Plato_Test_Proxy.cpp
                              Plato_Test_Hessian.cpp
                              Plato_Test_SimpleRocket.cpp

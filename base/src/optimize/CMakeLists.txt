@@ -7,15 +7,6 @@ set(${LIB_NAME}_SOURCES Plato_OptimizersIO_Utilities.cpp
                         )
                         
 set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
-                        Plato_GradFreeCircle.hpp
-                        Plato_GradFreeRadius.hpp
-                        Plato_GradFreeCriterion.hpp
-                        Plato_GradFreeRosenbrock.hpp
-                        Plato_GradFreeHimmelblau.hpp
-                        Plato_GradFreeRocketObjFunc.hpp
-                        Plato_GradFreeGoldsteinPrice.hpp
-                        Plato_GradFreeShiftedEllipse.hpp
-                        Plato_GradFreeEngineCriterion.hpp
                         Plato_RestartFileUtilities.hpp
                         Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
@@ -40,8 +31,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_GradientOperator.hpp
                         Plato_GradientOperatorList.hpp
                         Plato_IdentityHessian.hpp
-                        Plato_IdentityPreconditioner.hpp
-                        Plato_ReducedSpaceTrustRegionStageMng.hpp
                         Plato_LinearOperator.hpp
                         Plato_LinearOperatorList.hpp
                         Plato_MultiVectorList.hpp

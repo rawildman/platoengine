@@ -63,7 +63,6 @@
 #include "Plato_GradientOperatorList.hpp"
 #include "Plato_LinearCriterionHessian.hpp"
 #include "Plato_CentralDifferenceHessian.hpp"
-#include "Plato_IdentityPreconditioner.hpp"
 
 namespace PlatoTest
 {
@@ -254,27 +253,6 @@ TEST(PlatoTest, AnalyticalHessian)
     tGoldVector(tVectorIndex, 0) = 2.;
     tGoldVector(tVectorIndex, 1) = -8.;
     PlatoTest::checkMultiVectorData(tHessianTimesVector, tGoldVector);
-}
-
-TEST(PlatoTest, Preconditioner)
-{
-    Plato::IdentityPreconditioner<double> tPreconditioner;
-
-    const double tValue = 1;
-    const size_t tNumVectors = 1;
-    const size_t tNumControls = 2;
-    const size_t tVectorIndex = 0;
-    Plato::StandardMultiVector<double> tOutput(tNumVectors, tNumControls);
-    Plato::StandardMultiVector<double> tVector(tNumVectors, tNumControls, tValue);
-    tVector(tVectorIndex, 1) = -2.;
-    Plato::StandardMultiVector<double> tControl(tNumVectors, tNumControls, tValue);
-
-    // TEST APPLY PRECONDITIONER AND APPLY INVERSE PRECONDITIONER FUNCTIONS
-    tPreconditioner.applyInvPreconditioner(tControl, tVector, tOutput);
-    PlatoTest::checkMultiVectorData(tOutput, tVector);
-    Plato::fill(0., tOutput);
-    tPreconditioner.applyPreconditioner(tControl, tVector, tOutput);
-    PlatoTest::checkMultiVectorData(tOutput, tVector);
 }
 
 TEST(PlatoTest, CriterionList)
