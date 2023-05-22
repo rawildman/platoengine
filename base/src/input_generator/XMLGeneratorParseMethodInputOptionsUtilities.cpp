@@ -43,6 +43,8 @@ void insert_general_optimization_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "optimization_algorithm", { { {"optimization_algorithm"}, ""}, "oc" } });
     aTags.insert({ "normalize_in_aggregator", { { {"normalize_in_aggregator"}, ""}, "" } });
     aTags.insert({ "problem_update_frequency", { { {"problem_update_frequency"}, ""}, "5" } });
+    aTags.insert({ "hessian_type", { { {"hessian_type"}, ""}, "" } });
+    aTags.insert({ "limited_memory_storage", { { {"limited_memory_storage"}, ""}, "8" } });
 
     // this parameter should be in the objective block. it represents the multiplier applied to the 
     // standard deviation term in robust optimization problems, where the objective is defined as 
@@ -83,16 +85,6 @@ void insert_derivative_checker_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "check_gradient", { { {"check_gradient"}, ""}, "false" } });
 }
 // function insert_derivative_checker_input_options
-/******************************************************************************/
-
-/******************************************************************************/
-void insert_optimality_criteria_input_options(XMLGen::MetaDataTags &aTags)
-{
-    aTags.insert({ "oc_gradient_tolerance", { { {"oc_gradient_tolerance"}, ""}, "1e-8" } });
-    aTags.insert({ "oc_control_stagnation_tolerance", { { {"oc_control_stagnation_tolerance"}, ""}, "1e-2" } });
-    aTags.insert({ "oc_objective_stagnation_tolerance", { { {"oc_objective_stagnation_tolerance"}, ""}, "1e-5" } });
-}
-// function insert_optimality_criteria_input_options
 /******************************************************************************/
 
 /******************************************************************************/
@@ -225,37 +217,6 @@ void insert_plato_levelset_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "levelset_initialization_method", { { {"levelset_initialization_method"}, ""}, "" } });
 }
 // function insert_plato_levelset_input_options
-/******************************************************************************/
-
-/******************************************************************************/
-void insert_plato_kelley_sachs_trust_region_input_options(XMLGen::MetaDataTags &aTags)
-{
-    aTags.insert({ "ks_max_radius_scale", { { {"ks_max_radius_scale"}, ""}, "" } });
-    aTags.insert({ "ks_initial_radius_scale", { { {"ks_initial_radius_scale"}, ""}, "" } });
-    aTags.insert({ "ks_trust_region_ratio_low", { { {"ks_trust_region_ratio_low"}, ""}, "" } });
-    aTags.insert({ "ks_trust_region_ratio_mid", { { {"ks_trust_region_ratio_mid"}, ""}, "" } });
-    aTags.insert({ "ks_min_trust_region_radius", { { {"ks_min_trust_region_radius"}, ""}, "" } });
-    aTags.insert({ "ks_trust_region_ratio_high", { { {"ks_trust_region_ratio_high"}, ""}, "" } });
-    aTags.insert({ "ks_disable_post_smoothing", { { {"ks_disable_post_smoothing"}, ""}, "true" } });
-    aTags.insert({ "ks_outer_gradient_tolerance", { { {"ks_outer_gradient_tolerance"}, ""}, "" } });
-    aTags.insert({ "ks_outer_stagnation_tolerance", { { {"ks_outer_stagnation_tolerance"}, ""}, "" } });
-    aTags.insert({ "ks_max_trust_region_iterations", { { {"ks_max_trust_region_iterations"}, ""}, "5" } });
-    aTags.insert({ "ks_outer_stationarity_tolerance", { { {"ks_outer_stationarity_tolerance"}, ""}, "" } });
-    aTags.insert({ "ks_trust_region_expansion_factor", { { {"ks_trust_region_expansion_factor"}, ""}, "" } });
-    aTags.insert({ "ks_trust_region_contraction_factor", { { {"ks_trust_region_contraction_factor"}, ""}, "" } });
-    aTags.insert({ "ks_outer_actual_reduction_tolerance", { { {"ks_outer_actual_reduction_tolerance"}, ""}, "" } });
-    aTags.insert({ "ks_outer_control_stagnation_tolerance", { { {"ks_outer_control_stagnation_tolerance"}, ""}, "" } });
-
-    aTags.insert({ "hessian_type", { { {"hessian_type"}, ""}, "" } });
-    aTags.insert({ "use_mean_norm", { { {"use_mean_norm"}, ""}, "" } });
-    aTags.insert({ "al_penalty_parameter", { { {"al_penalty_parameter"}, ""}, "" } });
-    aTags.insert({ "feasibility_tolerance", { { {"feasibility_tolerance"}, ""}, "" } });
-    aTags.insert({ "limited_memory_storage", { { {"limited_memory_storage"}, ""}, "8" } });
-    aTags.insert({ "max_trust_region_radius", { { {"max_trust_region_radius"}, ""}, "" } });
-    aTags.insert({ "al_penalty_scale_factor", { { {"al_penalty_scale_factor"}, ""}, "" } });
-    aTags.insert({ "al_max_subproblem_iterations", { { {"al_max_subproblem_iterations"}, ""}, "" } });
-}
-// function insert_plato_kelley_sachs_trust_region_input_options
 /******************************************************************************/
 
 }

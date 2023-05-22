@@ -44,32 +44,13 @@ void append_grad_based_optimizer_parameters
  pugi::xml_node& aParentNode);
 
 /******************************************************************************//**
- * \fn append_optimality_criteria_options
- * \brief Append optimality criteria options to interface xml file.
+ * \fn append_optimizer_options
+ * \brief Append optimizer options (such as Hessian type, num iterations, and update frequency) 
+ *   to interface xml file.
  * \param [in]  aMetaData Plato problem input data
  * \param [out] aParentNode  parent node to append data to
 **********************************************************************************/
-void append_optimality_criteria_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
- * \fn append_trust_region_kelley_sachs_options
- * \brief Append trust region Kelley-Sachs options to interface xml file.
- * \param [in]  aMetaData Plato problem input data
- * \param [out] aParentNode  parent node to append data to
-**********************************************************************************/
-void append_trust_region_kelley_sachs_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode);
-
-/******************************************************************************//**
- * \fn append_augmented_lagrangian_options
- * \brief Append augmented Lagrangian options to interface xml file.
- * \param [in]  aMetaData Plato problem input data
- * \param [out] aParentNode  parent node to append data to
-**********************************************************************************/
-void append_augmented_lagrangian_options
+void append_optimizer_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode);
 

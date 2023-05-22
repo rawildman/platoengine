@@ -95,9 +95,6 @@ void OptimizationAlgorithm::appendBoundsData
 OptimizationAlgorithmPlatoOC::OptimizationAlgorithmPlatoOC(const XMLGen::OptimizationParameters& aParameters)
 : OptimizationAlgorithm(aParameters)
 {
-    mControlStagnationTolerance = aParameters.oc_control_stagnation_tolerance();
-    mObjectiveStagnationTolerance = aParameters.oc_objective_stagnation_tolerance();
-    mGradientTolerance = aParameters.oc_gradient_tolerance();
     mProblemUpdateFrequency = aParameters.problem_update_frequency();
 }
 void OptimizationAlgorithmPlatoOC::writeInterface
@@ -114,9 +111,6 @@ void OptimizationAlgorithmPlatoOC::writeInterface
     addChild(tOptimizer, "Package","OC");
     
     auto tOptions = tOptimizer.append_child("Options");    
-    addChildCheckEmpty(tOptions, "OCControlStagnationTolerance",mControlStagnationTolerance);
-    addChildCheckEmpty(tOptions, "OCObjectiveStagnationTolerance",mObjectiveStagnationTolerance);
-    addChildCheckEmpty(tOptions, "OCGradientTolerance",mGradientTolerance);
     addChildCheckEmpty(tOptions, "ProblemUpdateFrequency",mProblemUpdateFrequency);
 
     auto tConvergence = tOptimizer.append_child("Convergence");

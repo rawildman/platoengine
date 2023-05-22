@@ -430,26 +430,9 @@ public:
     std::vector<std::string> fixed_block_boundary_values() const {return mFixedBlockBoundaryValues;}
     std::vector<std::string> fixed_block_material_states() const {return mFixedBlockMaterialStates;}
     std::vector<std::string> symmetry_plane_location_names() const {return mSymmetryPlaneLocationNames;}
-    std::string ks_trust_region_expansion_factor() const {return value("ks_trust_region_expansion_factor");}
-    std::string ks_trust_region_contraction_factor() const {return value("ks_trust_region_contraction_factor");}
-    std::string ks_max_trust_region_iterations() const {return value("ks_max_trust_region_iterations");}
-    std::string ks_initial_radius_scale() const {return value("ks_initial_radius_scale");}
-    std::string ks_max_radius_scale() const {return value("ks_max_radius_scale");}
     std::string hessian_type() const {return value("hessian_type");}
-    std::string ks_min_trust_region_radius() const {return value("ks_min_trust_region_radius");}
     std::string limited_memory_storage() const {return value("limited_memory_storage");}
-    std::string ks_outer_gradient_tolerance() const {return value("ks_outer_gradient_tolerance");}
-    std::string ks_outer_stationarity_tolerance() const {return value("ks_outer_stationarity_tolerance");}
-    std::string ks_outer_stagnation_tolerance() const {return value("ks_outer_stagnation_tolerance");}
-    std::string ks_outer_control_stagnation_tolerance() const {return value("ks_outer_control_stagnation_tolerance");}
-    std::string ks_outer_actual_reduction_tolerance() const {return value("ks_outer_actual_reduction_tolerance");}
     std::string problem_update_frequency() const {return value("problem_update_frequency");}
-    std::string ks_disable_post_smoothing() const {return value("ks_disable_post_smoothing");}
-    std::string ks_trust_region_ratio_low() const {return value("ks_trust_region_ratio_low");}
-    std::string ks_trust_region_ratio_mid() const {return value("ks_trust_region_ratio_mid");}
-    std::string ks_trust_region_ratio_high() const {return value("ks_trust_region_ratio_high");}
-    std::string al_penalty_parameter() const {return value("al_penalty_parameter");}
-    std::string al_penalty_scale_factor() const {return value("al_penalty_scale_factor");}
     std::string objective_number_standard_deviations() const {return value("objective_number_standard_deviations");}
     std::string filter_radius_scale() const {return value("filter_radius_scale");}
     std::string filter_radius_absolute() const {return value("filter_radius_absolute");}
@@ -472,9 +455,6 @@ public:
     std::string csm_tesselation_file() const {return value("csm_tesselation_file");}
     std::string csm_opt_file() const {return value("csm_opt_file");}
     std::string enforce_bounds() const {return value("enforce_bounds");}
-    std::string oc_control_stagnation_tolerance() const {return value("oc_control_stagnation_tolerance");}
-    std::string oc_objective_stagnation_tolerance() const {return value("oc_objective_stagnation_tolerance");}
-    std::string oc_gradient_tolerance() const {return value("oc_gradient_tolerance");}
     std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
     std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}

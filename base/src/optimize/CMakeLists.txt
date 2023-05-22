@@ -5,7 +5,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
                         Plato_DriverFactory.hpp
-                        Plato_OptimizersIO_Utilities.hpp
                         Plato_CommWrapper.hpp
                         Plato_Types.hpp
                         Plato_Circle.hpp
@@ -13,9 +12,7 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_Himmelblau.hpp
                         Plato_KokkosTypes.hpp
                         Plato_ErrorChecks.hpp
-                        Plato_HessianLBFGS.hpp
                         Plato_DeviceBounds.hpp
-                        Plato_OptimizersIO.hpp
                         Plato_GoldsteinPrice.hpp
                         Plato_StateData.hpp
                         Plato_StateManager.hpp

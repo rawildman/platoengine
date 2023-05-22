@@ -41,14 +41,8 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
     std::vector<std::string> tKeys = {
-        "OCControlStagnationTolerance",
-        "OCObjectiveStagnationTolerance",
-        "OCGradientTolerance",
         "ProblemUpdateFrequency"};
     std::vector<std::string> tValues = {
-        "IGNORE",
-        "IGNORE",
-        "IGNORE",
         "IGNORE"
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
@@ -102,14 +96,8 @@ TEST(PlatoTestXMLGenerator, OptimizationAlgorithmFactoryGeneratePlatoOC_CheckOpt
     auto tOptions = tOptimizer.child("Options");
     ASSERT_FALSE(tOptions.empty());
     std::vector<std::string> tKeys = {
-        "OCControlStagnationTolerance",
-        "OCObjectiveStagnationTolerance",
-        "OCGradientTolerance",
         "ProblemUpdateFrequency"};
     std::vector<std::string> tValues = {
-        "1e-2",
-        "1e-5",
-        "1e-8",
         "5"
         };
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOptions);
