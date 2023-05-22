@@ -263,7 +263,6 @@ void add_operations_gradient_based_problem
     {
         append_internal_energy_gradient_operation_shape(aMetaData, aDocument);
     }
-    append_internal_energy_hessian_operation(aMetaData, aScenario, aDocument);
 }
 /**************************************************************************/
 void add_operations_dakota_problem

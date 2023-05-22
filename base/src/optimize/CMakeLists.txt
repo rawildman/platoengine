@@ -2,36 +2,21 @@ set(LIB_NAMES)
 
 set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_RestartFileUtilities.hpp
-                        Plato_NullConstraint.hpp
                         Plato_OptimizerParser.hpp
                         Plato_DriverFactory.hpp
                         Plato_CommWrapper.hpp
-                        Plato_Types.hpp
-                        Plato_Circle.hpp
                         Plato_HostBounds.hpp
                         Plato_Himmelblau.hpp
                         Plato_KokkosTypes.hpp
                         Plato_ErrorChecks.hpp
                         Plato_DeviceBounds.hpp
                         Plato_GoldsteinPrice.hpp
-                        Plato_StateData.hpp
-                        Plato_StateManager.hpp
                         Plato_AlgebraFactory.hpp
                         Plato_EngineObjective.hpp
                         Plato_EngineConstraint.hpp
-                        Plato_GradientOperator.hpp
-                        Plato_GradientOperatorList.hpp
-                        Plato_IdentityHessian.hpp
-                        Plato_LinearOperator.hpp
-                        Plato_LinearOperatorList.hpp
-                        Plato_MultiVectorList.hpp
-                        Plato_Preconditioner.hpp
                         Plato_Radius.hpp
                         Plato_Rosenbrock.hpp
-                        Plato_AnalyticalHessian.hpp
-                        Plato_AnalyticalGradient.hpp
                         Plato_Criterion.hpp
-                        Plato_CriterionList.hpp
                         Plato_DataFactory.hpp
                         Plato_DistributedReductionOperations.hpp
                         Plato_LinearAlgebra.hpp
@@ -46,9 +31,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_DistributedVector.hpp
                         Plato_EpetraSerialDenseVector.hpp
                         Plato_SOParameterStudiesInterface.hpp
-                        Plato_EpetraSerialDenseMultiVector.hpp
-                        Plato_LinearCriterionHessian.hpp
-                        Plato_CentralDifferenceHessian.hpp
                         Plato_DakotaFactory.hpp
                         Plato_OptimizerFactory.hpp
                         Plato_OptimizerInterface.hpp

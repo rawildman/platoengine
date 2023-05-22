@@ -61,8 +61,6 @@ struct optimizer
 {
     enum algorithm_t
     {
-        OPTIMALITY_CRITERIA = 1,
-        STOCHASTIC_REDUCED_ORDER_MODEL = 10,
         SO_PARAMETER_STUDIES = 13,
         ROL_LINEAR_CONSTRAINT = 14,
         ROL_BOUND_CONSTRAINED = 15,
