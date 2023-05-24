@@ -356,6 +356,36 @@ def updateModelAflr2Exodus(modelName, paramVals):
   subprocess.call(['mv', modedName, modelName])
 
 
+##############################################################################
+## Moves ESP generated mesh files to files used by plato
+##############################################################################
+def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
+  dirName = './ESP_Mesh/Scratch/plato/'
+  platoCapsBaseName = 'plato_CAPS'
+
+  def fullEtoFileName(baseName, index):
+    return baseName + '_' + str(index) + '.eto'
+
+  num_tess_files=0
+  for file in os.listdir(dirName):
+    if fnmatch.fnmatch(file, fullEtoFileName(platoCapsBaseName, '*')):
+      num_tess_files += 1
+
+  if num_tess_files == 0:
+    raise Exception(f"Error in {nameForError}. No tessellation file was found in plato analysis directory.")
+
+  if num_tess_files == 1:
+    subprocess.call(['mv', dirName + fullEtoFileName(platoCapsBaseName, 1), './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in sorted(os.listdir(dirName)):
+      if fnmatch.fnmatch(file, fullEtoFileName(platoCapsBaseName, '*')):
+        subprocess.call(['mv', dirName + file, './' + fullEtoFileName(etoBaseName, cntr)])
+        cntr += 1
+ 
+##############################################################################
+## define function for running aflr4_aflr3 meshing workflow
+##############################################################################
 def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
@@ -385,23 +415,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
 
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
-
-  if num_tess_files == 0:
-    raise Exception("Error in aflr4_aflr3_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
-
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'aflr4_aflr3_meshing')
 
 ##############################################################################
 ## define function for running egads_tetgen meshing workflow
@@ -447,22 +461,8 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
   tokens.pop()
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
 
-  if num_tess_files == 0:
-    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'egads_tetgen_meshing')
 
 ##############################################################################
 ## define function for running aflr4_tetgen meshing workflow
@@ -522,7 +522,7 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
     subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + '.eto'])
   else:
     cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
+    for file in sorted(os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM')):
       if fnmatch.fnmatch(file, 'aflr4_*.eto'):
         subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
         cntr += 1
@@ -548,22 +548,8 @@ def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, 
   tokens.pop()
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
 
-  if num_tess_files == 0:
-    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'aflr2_meshing')
 
 ##############################################################################
 ## define function that generates exodus mesh from csm file
