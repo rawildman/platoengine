@@ -48,15 +48,12 @@
 
 #include "gtest/gtest.h"
 
-#include "Plato_GradFreeRocketObjective.hpp"
-
 #include "Plato_StandardVector.hpp"
 #include "Plato_StandardMultiVector.hpp"
 #include "Plato_GradBasedRocketObjective.hpp"
 
 #include "PSL_Random.hpp"
 #include "PSL_AbstractAuthority.hpp"
-#include "PSL_IterativeSelection.hpp"
 
 namespace PlatoTest
 {
@@ -98,97 +95,6 @@ std::vector<double> get_target_thrust_profile()
 }
 // function get_target_thrust_profile
 
-TEST(PlatoTest, GradBasedRocketObjectiveGradFree)
-{
-    // allocate problem inputs - use default parameters
-    Plato::AlgebraicRocketInputs<double> tRocketInputs;
-    std::shared_ptr<Plato::GeometryModel<double>> tGeomModel =
-            std::make_shared<Plato::Cylinder<double>>(tRocketInputs.mChamberRadius, tRocketInputs.mChamberLength);
-
-    // domain dimension = 10x10=100
-    std::vector<int> tNumEvaluationsPerDim = {100, 100};
-
-    /* {chamber_radius_lb, ref_burn_rate_lb},  {chamber_radius_ub, ref_burn_rate_ub} */
-    std::pair<std::vector<double>, std::vector<double>> tBounds =
-            std::make_pair<std::vector<double>, std::vector<double>>({0.07, 0.004},{0.08, 0.006});
-    Plato::GradFreeRocketObjective tObjective(tRocketInputs, tGeomModel);
-    tObjective.setOptimizationInputs(tNumEvaluationsPerDim, tBounds);
-
-    std::vector<double> tTargetThrustProfile = PlatoTest::get_target_thrust_profile();
-    tObjective.initialize(tTargetThrustProfile);
-
-    /* {chamber_radius, ref_burn_rate} */
-    std::vector<double> tControls = {0.075, 0.005};
-    double tValue = tObjective.evaluate(tControls);
-
-    // test objective function evaluation
-    double tGold = 0;
-    double tTolerance = 1e-6;
-    EXPECT_NEAR(tValue, tGold, tTolerance);
-
-    // test inputs for gradient-free algorithm
-    std::vector<double> tLowerBounds;
-    std::vector<double> tUpperBounds;
-    std::vector<int> tEvaluationsPerDim;
-    tObjective.get_domain(tLowerBounds, tUpperBounds, tEvaluationsPerDim);
-
-    for(size_t tIndex = 0; tIndex < tNumEvaluationsPerDim.size(); tIndex++)
-    {
-        ASSERT_DOUBLE_EQ(tLowerBounds[tIndex], tBounds.first[tIndex]);
-        ASSERT_DOUBLE_EQ(tUpperBounds[tIndex], tBounds.second[tIndex]);
-        EXPECT_EQ(tEvaluationsPerDim[tIndex], tNumEvaluationsPerDim[tIndex]);
-    }
-}
-
-TEST(PlatoTest, GradBasedRocketObjective)
-{
-    // allocate problem inputs - use default parameters
-    Plato::AlgebraicRocketInputs<double> tRocketInputs;
-    std::shared_ptr<Plato::GeometryModel<double>> tGeomModel =
-            std::make_shared<Plato::Cylinder<double>>(tRocketInputs.mChamberRadius, tRocketInputs.mChamberLength);
-
-    // set normalization constants
-    std::vector<double> tTargetThrustProfile = PlatoTest::get_target_thrust_profile();
-    Plato::GradBasedRocketObjective<double> tObjective(tTargetThrustProfile, tRocketInputs, tGeomModel);
-    tObjective.disableObjectiveNormalization();
-    std::vector<double> tUpperBounds = {0.09, 0.007};  /* {chamber_radius_ub, ref_burn_rate_ub} */
-    tObjective.setNormalizationConstants(tUpperBounds);
-
-    // evaluate criterion
-    const size_t tNumVectors = 1;
-    const size_t tNumControls = 2;
-    Plato::StandardMultiVector<double> tControl(tNumVectors, tNumControls);
-    // set control multi-vector
-    const size_t tVECTOR_INDEX = 0;
-    tControl(tVECTOR_INDEX, 0) = static_cast<double>(0.075) / tUpperBounds[0];
-    tControl(tVECTOR_INDEX, 1) = static_cast<double>(0.005) / tUpperBounds[1];
-    const double tObjValue = tObjective.value(tControl);
-
-    // test objective function evaluation
-    double tGold = 0;
-    double tTolerance = 1e-6;
-    EXPECT_NEAR(tObjValue, tGold, tTolerance);
-
-    // evaluate gradient
-    Plato::StandardMultiVector<double> tGradient(tNumVectors, tNumControls);
-    tControl(tVECTOR_INDEX, 0) = static_cast<double>(0.085) / tUpperBounds[0];
-    tControl(tVECTOR_INDEX, 1) = static_cast<double>(0.004) / tUpperBounds[1];
-    tObjective.setPerturbationParameter(1e-4);
-    tObjective.gradient(tControl, tGradient);
-    // test gradient evaluation
-    EXPECT_NEAR(tGradient(tVECTOR_INDEX,0), -0.002968542979588974, tTolerance);
-    EXPECT_NEAR(tGradient(tVECTOR_INDEX,1), -0.0046250072151658734, tTolerance);
-
-    // evaluate hessian
-    double tValue = 1;
-    Plato::StandardMultiVector<double> tHessian(tNumVectors, tNumControls);
-    Plato::StandardMultiVector<double> tVector(tNumVectors, tNumControls, tValue);
-    tObjective.hessian(tControl, tVector, tHessian);
-    // test hessian evaluation
-    EXPECT_NEAR(tHessian(tVECTOR_INDEX,0), 1., tTolerance);
-    EXPECT_NEAR(tHessian(tVECTOR_INDEX,1), 1., tTolerance);
-}
-
 TEST(PlatoTest, Cylinder)
 {
     // allocate problem inputs - use default parameters
@@ -222,46 +128,6 @@ TEST(PlatoTest, Cylinder)
     tCylinder.update(tParam);
     tArea = tCylinder.area();
     EXPECT_NEAR(tArea, 37.699111843077520, tTolerance);
-}
-
-TEST(PlatoTest, PERF_GradFreeSimpleRocketOptimization)
-{
-    // define objective
-    Plato::AlgebraicRocketInputs<double> tRocketInputs;
-    std::shared_ptr<Plato::GeometryModel<double>> tGeomModel =
-    std::make_shared<Plato::Cylinder<double>>(tRocketInputs.mChamberRadius, tRocketInputs.mChamberLength);
-    Plato::GradFreeRocketObjective tObjective(tRocketInputs, tGeomModel);
-
-    std::vector<double> tTargetThrustProfile = PlatoTest::get_target_thrust_profile();
-    tObjective.initialize(tTargetThrustProfile);
-
-    // set inputs for optimization problem
-    std::vector<int> tNumEvaluationsPerDim = {100, 100}; // domain dimension = 100x100=10000
-    /* {chamber_radius_lb, ref_burn_rate_lb},  {chamber_radius_ub, ref_burn_rate_ub} */
-    std::pair<std::vector<double>, std::vector<double>> aBounds =
-    std::make_pair<std::vector<double>, std::vector<double>>( {0.07, 0.004}, {0.08, 0.006});
-    tObjective.setOptimizationInputs(tNumEvaluationsPerDim, aBounds);
-
-    // define searcher
-    PlatoSubproblemLibrary::AbstractAuthority tAuthority;
-    PlatoSubproblemLibrary::IterativeSelection tSearcher(&tAuthority);
-    tSearcher.set_objective(&tObjective);
-
-    // find a minimum
-    std::vector<double> tBestParameters;
-    PlatoSubproblemLibrary::set_rand_seed();
-    const double tBestObjectiveValue = tSearcher.find_min(tBestParameters);
-    std::cout << "BestObjectiveValue = " << tBestObjectiveValue << "\n";
-    std::cout << "NumFunctionEvaluations = " << tSearcher.get_number_of_evaluations() << "\n";
-    std::cout << "Best1: " << tBestParameters[0] << ", Best2: " << tBestParameters[1] << std::endl;
-
-    // equal by determinism of objective
-    double tTolerance = 1e-2;
-    EXPECT_NEAR(0.075, tBestParameters[0], tTolerance); // radius
-    EXPECT_NEAR(0.005, tBestParameters[1], tTolerance); // burn rate
-    tTolerance = 1e-4;
-    EXPECT_NEAR(0., tBestObjectiveValue, tTolerance);
-    EXPECT_FLOAT_EQ(tBestObjectiveValue, tObjective.evaluate(tBestParameters));
 }
 
 } // namespace PlatoTest

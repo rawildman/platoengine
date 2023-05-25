@@ -50,7 +50,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
                              PSL_Test_BoundingBoxSearches.cpp
                              PSL_Test_BoundingBoxMortonHierarchy.cpp
                              PSL_Test_BoundingBox.cpp
-                             PSL_Test_BasicDiscreteObjective.cpp
                              PSL_Test_BasicDenseVectorOperations.cpp
                              PSL_Test_AbstractAuthority.cpp
                              PSL_Test_Point.cpp
@@ -96,7 +95,6 @@ set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/apps/services
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DataLossFunction
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DataOrganizer
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DecisionMetric
-                       ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DiscreteGlobalOptimization
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DistanceVoting
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Eigen
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Example
