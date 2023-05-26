@@ -186,45 +186,42 @@ def toExo(meshName, groupAttrs):
     exit(return_code)
 
 ##############################################################################
-## define function that converts su2 mesh to exo mesh
+## define function that updates the "_opt.csm" file
 ##############################################################################
 def updateModelAflr4Aflr3Exodus(modelName, paramVals):
-  # find mesh size attribute 'MeshLength'
-  #
+
   response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
+
+  ## is 'MeshLength' in the csm file?
   if response == "":
     raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
 
+  ## is 'MeshLength' in the csm file only once?
   tokens = response.rstrip().split("\n")
   if len(tokens) > 1:
     raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
 
   MeshLength = str(response)
 
-  # append necessary lines to csm file
-  #
   modedName = modelName + ".tmp"
 
+  # Put global body attributes at the top of the file
   f_in = open(modelName)
   f_out = open(modedName, 'w')
-
+  # put these two at the beginning
+  f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM\n")
+  f_out.write("attribute capsMeshLength " + MeshLength + "\n")
   for line in f_in:
     if line.strip().lower() == 'end':
-      f_out.write("select body\n")
-      f_out.write("attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM\n")
-      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
-      f_out.write("attribute capsGroup $solid_group\n")
-
-      f_out.write("select face\n")
-      f_out.write("attribute capsGroup $solid_group\n")
-      f_out.write("attribute capsMeshLength " + MeshLength + "\n")
-
+      # put this at the end to name bodies sequentially
+      f_out.write("patbeg i @stack.size\n")
+      f_out.write("  select body @stack[i]\n")
+      f_out.write("  attribute _name $block_+val2str(i,0)\n")
+      f_out.write("patend\n")
     f_out.write(line)
-
   f_out.close()
 
   # If paramVals were provided, set them in the model file
-  #
   for ip in range(len(paramVals)):
     p = paramVals[ip]
     print("param: " + str(p))
@@ -235,45 +232,6 @@ def updateModelAflr4Aflr3Exodus(modelName, paramVals):
     subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
     f.close()
     subprocess.call(['mv', tmp_string, modedName])
-
-  subprocess.call(['mv', modedName, modelName])
-
-  #
-  # find any face attribute assignments and copy them to the end of the file
-  #
-
-  f_in = open(modelName)
-  f_out = open(modedName, 'w')
-
-  faceAttrs = []
-
-  bodyLine = ""
-  faceLine = ""
-  for line in f_in:
-    if line.strip().lower() == 'end':
-      for faceAttr in faceAttrs:
-        for attrLine in faceAttr:
-          f_out.write(attrLine)
-    else:
-      tokens = line.split(' ')
-      tokens = list(filter(None, tokens)) ## filter out empty strings
-      if bodyLine != "" and faceLine != "":
-        if tokens[0] == "attribute" and tokens[1] == "capsGroup":
-          faceAttrs.append([bodyLine, faceLine, line])
-          bodyLine = ""
-          faceLine = ""
-      elif bodyLine != "":
-        if tokens[0] == "select" and tokens[1] == "face":
-          faceLine = line
-        else:
-          bodyLine = ""
-      else:
-        if tokens[0] == "select" and tokens[1] == "body":
-          bodyLine = line
-
-    f_out.write(line)
-
-  f_out.close()
 
   subprocess.call(['mv', modedName, modelName])
 
@@ -398,6 +356,36 @@ def updateModelAflr2Exodus(modelName, paramVals):
   subprocess.call(['mv', modedName, modelName])
 
 
+##############################################################################
+## Moves ESP generated mesh files to files used by plato
+##############################################################################
+def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
+  dirName = './ESP_Mesh/Scratch/plato/'
+  platoCapsBaseName = 'plato_CAPS'
+
+  def fullEtoFileName(baseName, index):
+    return baseName + '_' + str(index) + '.eto'
+
+  num_tess_files=0
+  for file in os.listdir(dirName):
+    if fnmatch.fnmatch(file, fullEtoFileName(platoCapsBaseName, '*')):
+      num_tess_files += 1
+
+  if num_tess_files == 0:
+    raise Exception(f"Error in {nameForError}. No tessellation file was found in plato analysis directory.")
+
+  if num_tess_files == 1:
+    subprocess.call(['mv', dirName + fullEtoFileName(platoCapsBaseName, 1), './' + etoBaseName + '.eto'])
+  else:
+    cntr=0
+    for file in sorted(os.listdir(dirName)):
+      if fnmatch.fnmatch(file, fullEtoFileName(platoCapsBaseName, '*')):
+        subprocess.call(['mv', dirName + file, './' + fullEtoFileName(etoBaseName, cntr)])
+        cntr += 1
+ 
+##############################################################################
+## define function for running aflr4_aflr3 meshing workflow
+##############################################################################
 def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
@@ -427,23 +415,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
 
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
-
-  if num_tess_files == 0:
-    raise Exception("Error in aflr4_aflr3_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
-
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'aflr4_aflr3_meshing')
 
 ##############################################################################
 ## define function for running egads_tetgen meshing workflow
@@ -489,22 +461,8 @@ def egads_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
   tokens.pop()
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
 
-  if num_tess_files == 0:
-    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'egads_tetgen_meshing')
 
 ##############################################################################
 ## define function for running aflr4_tetgen meshing workflow
@@ -564,7 +522,7 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
     subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + '.eto'])
   else:
     cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM'):
+    for file in sorted(os.listdir('./ESP_Mesh/Scratch/aflr4_aflr4AIM')):
       if fnmatch.fnmatch(file, 'aflr4_*.eto'):
         subprocess.call(['cp', './ESP_Mesh/Scratch/aflr4_aflr4AIM/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
         cntr += 1
@@ -590,22 +548,8 @@ def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, 
   tokens.pop()
   etoBaseName = '.'.join(tokens)
   subprocess.call(['cp', './ESP_Mesh/Scratch/plato/plato_CAPS.exo', meshName])
-  num_tess_files=0
-  for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-    if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-      num_tess_files += 1
 
-  if num_tess_files == 0:
-    raise Exception("Error in egads_tetgen_meshing. No tessellation file was found in plato analysis directory.")
-
-  if num_tess_files == 1:
-    subprocess.call(['mv', './ESP_Mesh/Scratch/plato/plato_CAPS_1.eto', './' + etoBaseName + '.eto'])
-  else:
-    cntr=0
-    for file in os.listdir('./ESP_Mesh/Scratch/plato'):
-      if fnmatch.fnmatch(file, 'plato_CAPS_*.eto'):
-        subprocess.call(['mv', './ESP_Mesh/Scratch/plato/' + file, './' + etoBaseName + "_" + str(cntr) + '.eto'])
-        cntr += 1
+  move_and_rename_plato_caps_eto_files(etoBaseName, 'aflr2_meshing')
 
 ##############################################################################
 ## define function that generates exodus mesh from csm file
