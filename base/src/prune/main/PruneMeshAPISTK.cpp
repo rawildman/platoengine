@@ -829,7 +829,11 @@ bool PruneMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fiel
   }
 
   if(time_step == -1)
+#ifdef BUILD_IN_SIERRA
+    time_step = mIoBroker->get_input_ioss_region().get()->get_property("state_count").get_int();
+#else
     time_step = mIoBroker->get_input_io_region().get()->get_property("state_count").get_int();
+#endif
   mIoBroker->read_defined_input_fields(time_step);
 
   return true;
