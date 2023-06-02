@@ -70,18 +70,18 @@ class EngineObjective : public Plato::Criterion<ScalarType, OrdinalType>
 public:
     /******************************************************************************//**
      * @brief Constructor
-     * @param [in] aDataFactory PLATO data factory
+     * @param [in] aNumControls Number of control variables
      * @param [in] aInputData PLATO Engine input data
      * @param [in] aInterface PLATO Engine interface
     **********************************************************************************/
-    explicit EngineObjective(const Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
+    explicit EngineObjective(const OrdinalType aNumControls,
                              const Plato::OptimizerEngineStageData & aInputData,
                              Plato::Interface* aInterface,
                              Plato::OptimizerInterface< ScalarType, OrdinalType > * aOptInterface) :
-            mVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mControl(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mGradient(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mHessianTimesVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
+            mVector(std::vector<ScalarType>(aNumControls)),
+            mControl(std::vector<ScalarType>(aNumControls)),
+            mGradient(std::vector<ScalarType>(aNumControls)),
+            mHessianTimesVector(std::vector<ScalarType>(aNumControls)),
             mInterface(aInterface),
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())

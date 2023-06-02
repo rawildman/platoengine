@@ -181,10 +181,9 @@ private:
                                 Plato::SOParameterStudies<ScalarType, OrdinalType> & aParameterStudies)
     /******************************************************************************/
     {
-      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory, this->mInputData, this->mInterface, this);
+      Plato::EngineObjective<ScalarType, OrdinalType> tObjective(aDataFactory.getNumControls(), this->mInputData, this->mInterface, this);
         this->parseConstraintReferenceValues();
-        //std::string tMyName = this->mInputData.getConstraintValueName(0);
-        Plato::EngineConstraint<ScalarType, OrdinalType> tConstraint(0, aDataFactory, this->mInputData, this->mInterface);
+        Plato::EngineConstraint<ScalarType, OrdinalType> tConstraint(0, aDataFactory.getNumControls(), this->mInputData, this->mInterface);
         aParameterStudies.doParameterStudies(tObjective, tConstraint, aInitialGuess);
     }
     /******************************************************************************/

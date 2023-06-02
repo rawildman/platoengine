@@ -52,7 +52,6 @@
 
 #include "Plato_HostBounds.hpp"
 #include "Plato_ErrorChecks.hpp"
-#include "Plato_DeviceBounds.hpp"
 #include "Plato_KokkosVector.hpp"
 #include "Plato_LinearAlgebra.hpp"
 #include "Plato_StandardVector.hpp"
@@ -60,90 +59,6 @@
 
 namespace PlatoTest
 {
-
-TEST(PlatoTest, DeviceProject)
-{
-    // ********* Allocate Input Data *********
-    const size_t tNumVectors = 8;
-    std::vector<double> tVectorGold = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    Plato::KokkosVector<double> tVector(tVectorGold);
-
-    Plato::StandardMultiVector<double> tData(tNumVectors, tVector);
-    for(size_t tVectorIndex = 0; tVectorIndex < tNumVectors; tVectorIndex++)
-    {
-        tData[tVectorIndex].update(1., tVector, 0.);
-    }
-
-    // ********* Allocate Lower & Upper Bounds *********
-    Plato::StandardMultiVector<double> tLowerBounds(tNumVectors, tVector);
-    const double tLowerBoundValue = 2;
-    Plato::fill(tLowerBoundValue, tLowerBounds);
-
-    Plato::StandardMultiVector<double> tUpperBounds(tNumVectors, tVector);
-    const double tUpperBoundValue = 7;
-    Plato::fill(tUpperBoundValue, tUpperBounds);
-
-    // ********* Call Project *********
-    Plato::DeviceBounds<double> tBounds;
-    tBounds.project(tLowerBounds, tUpperBounds, tData);
-
-    // ********* Check Results *********
-    std::vector<double> tVectorBoundsGold = { 2, 2, 3, 4, 5, 6, 7, 7, 7, 7 };
-    Plato::KokkosVector<double> tBoundVector(tVectorBoundsGold);
-    Plato::StandardMultiVector<double> tGoldData(tNumVectors, tBoundVector);
-    for(size_t tVectorIndex = 0; tVectorIndex < tNumVectors; tVectorIndex++)
-    {
-        tGoldData[tVectorIndex].update(1., tBoundVector, 0.);
-    }
-    PlatoTest::checkMultiVectorData(tData, tGoldData);
-}
-
-
-TEST(PlatoTest, DeviceComputeActiveAndInactiveSet)
-{
-    // ********* Allocate Input Data *********
-    const size_t tNumVectors = 4;
-    std::vector<double> tVectorGold = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    Plato::KokkosVector<double> tVector(tVectorGold);
-    // Default for second template typename is OrdinalType = size_t
-    Plato::StandardMultiVector<double> tControl(tNumVectors, tVector);
-    for(size_t tVectorIndex = 0; tVectorIndex < tNumVectors; tVectorIndex++)
-    {
-        tControl[tVectorIndex].update(1., tVector, 0.);
-    }
-
-    // ********* Allocate Lower & Upper Bounds *********
-    Plato::StandardMultiVector<double> tLowerBounds(tNumVectors, tVector);
-    const double tLowerBoundValue = 2;
-    Plato::fill(tLowerBoundValue, tLowerBounds);
-
-    Plato::StandardMultiVector<double> tUpperBounds(tNumVectors, tVector);
-    const double tUpperBoundValue = 7;
-    Plato::fill(tUpperBoundValue, tUpperBounds);
-
-    // ********* Allocate Active & Inactive Sets *********
-    Plato::StandardMultiVector<double> tActiveSet(tNumVectors, tVector);
-    Plato::StandardMultiVector<double> tInactiveSet(tNumVectors, tVector);
-
-    // ********* Compute Active & Inactive Sets *********
-    Plato::DeviceBounds<double> tBounds;
-    tBounds.project(tLowerBounds, tUpperBounds, tControl);
-    tBounds.computeActiveAndInactiveSets(tControl, tLowerBounds, tUpperBounds, tActiveSet, tInactiveSet);
-
-    std::vector<double> tActiveSetGoldData = { 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };
-    std::vector<double> tInactiveSetGoldData = { 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 };
-    Plato::KokkosVector<double> tActiveSetGoldVec(tActiveSetGoldData);
-    Plato::KokkosVector<double> tInactiveSetGoldVec(tInactiveSetGoldData);
-    Plato::StandardMultiVector<double> tActiveSetGoldMV(tNumVectors, tActiveSetGoldVec);
-    Plato::StandardMultiVector<double> tInactiveSetGoldMV(tNumVectors, tInactiveSetGoldVec);
-    for(size_t tVectorIndex = 0; tVectorIndex < tNumVectors; tVectorIndex++)
-    {
-        tActiveSetGoldMV[tVectorIndex].update(1., tActiveSetGoldVec, 0.);
-        tInactiveSetGoldMV[tVectorIndex].update(1., tInactiveSetGoldVec, 0.);
-    }
-    PlatoTest::checkMultiVectorData(tActiveSet, tActiveSetGoldMV);
-    PlatoTest::checkMultiVectorData(tInactiveSet, tInactiveSetGoldMV);
-}
 
 TEST(PlatoTest, HostProject)
 {

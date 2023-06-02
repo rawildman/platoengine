@@ -71,19 +71,19 @@ public:
     /******************************************************************************//**
      * @brief Constructor
      * @param [in] aConstraintID constraint identifier
-     * @param [in] aDataFactory PLATO data factory
+     * @param [in] aNumControls Number of control variables
      * @param [in] aInputData PLATO Engine input data
      * @param [in] aInterface PLATO Engine interface
     **********************************************************************************/
-    explicit EngineConstraint(const OrdinalType & aConstraintID,
-                              const  Plato::DataFactory<ScalarType, OrdinalType> & aDataFactory,
+    explicit EngineConstraint(const OrdinalType aConstraintID,
+                              const OrdinalType aNumControls,
                               const Plato::OptimizerEngineStageData & aInputData,
                               Plato::Interface* aInterface) :
             mMyConstraintID(aConstraintID),
-            mVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mControl(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mGradient(std::vector<ScalarType>(aDataFactory.getNumControls())),
-            mHessianTimesVector(std::vector<ScalarType>(aDataFactory.getNumControls())),
+            mVector(std::vector<ScalarType>(aNumControls)),
+            mControl(std::vector<ScalarType>(aNumControls)),
+            mGradient(std::vector<ScalarType>(aNumControls)),
+            mHessianTimesVector(std::vector<ScalarType>(aNumControls)),
             mInterface(aInterface),
             mEngineInputData(aInputData),
             mParameterList(std::make_shared<Teuchos::ParameterList>())
