@@ -67,9 +67,7 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mProblemUpdateFrequency(0),
         mROLCheckGradientSteps(12),
         mROLCheckGradientSeed(0),
-        mAugLagPenaltyScaleParameter(1.2),
         mROLPerturbationScale(1),
-        mAlgebra(),
         mStateName(),
         mHessianType("disabled"),
         mInputFileName(),
@@ -325,18 +323,6 @@ void OptimizerEngineStageData::setROLStochasticSamplerSeed(const int aInput)
 }
 
 /******************************************************************************/
-double OptimizerEngineStageData::getAugLagPenaltyScaleParameter() const
-{
-    return (mAugLagPenaltyScaleParameter);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setAugLagPenaltyScaleParameter(const double & aInput)
-{
-    mAugLagPenaltyScaleParameter = aInput;
-}
-
-/******************************************************************************/
 std::string OptimizerEngineStageData::getStateName() const
 {
     assert(mStateName.empty() == false);
@@ -510,20 +496,6 @@ void OptimizerEngineStageData::setDescentDirectionNames(const std::vector<std::s
 {
     assert(aInput.empty() == false);
     mDescentDirectionNames = aInput;
-}
-
-/******************************************************************************/
-std::string OptimizerEngineStageData::getAlgebra() const
-/******************************************************************************/
-{
-    return (mAlgebra);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setAlgebra(const std::string & aInput)
-/******************************************************************************/
-{
-    mAlgebra = aInput;
 }
 
 /******************************************************************************/

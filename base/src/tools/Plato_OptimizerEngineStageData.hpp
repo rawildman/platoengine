@@ -167,9 +167,6 @@ public:
     void addDescentDirectionName(const std::string & aInput);
     void setDescentDirectionNames(const std::vector<std::string> & aInput);
 
-    std::string getAlgebra() const;
-    void setAlgebra(const std::string & aInput);
-
     std::string getOutputStageName() const;
     void setOutputStageName(const std::string & aInput);
 
@@ -385,10 +382,8 @@ public:
       aArchive & boost::serialization::make_nvp("ROLStochasticNumberOfSamples",mROLStochasticNumberOfSamples);
       aArchive & boost::serialization::make_nvp("ROLStochasticSamplerSeed",mROLStochasticSamplerSeed);
 
-      aArchive & boost::serialization::make_nvp("AugLagPenaltyScaleParameter",mAugLagPenaltyScaleParameter);
       aArchive & boost::serialization::make_nvp("ROLPerturbationScale",mROLPerturbationScale);
       
-      aArchive & boost::serialization::make_nvp("Algebra",mAlgebra);
       aArchive & boost::serialization::make_nvp("StateName",mStateName);
       aArchive & boost::serialization::make_nvp("HessianType",mHessianType);
       aArchive & boost::serialization::make_nvp("InputFileName",mInputFileName);
@@ -454,10 +449,8 @@ private:
     int mROLStochasticNumberOfSamples = 3;
     int mROLStochasticSamplerSeed = 42;
 
-    double mAugLagPenaltyScaleParameter;
     double mROLPerturbationScale;
 
-    std::string mAlgebra;
     std::string mStateName;
     std::string mHessianType;
     std::string mInputFileName;

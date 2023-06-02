@@ -1458,12 +1458,6 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             aOptimizerEngineStageData.setInputFileName(tInputFileName);
         }
 
-        if( tOptionsNode.size<std::string>("Algebra") )
-        {
-            std::string tAlgebraType = tOptionsNode.get<std::string>("Algebra");
-            aOptimizerEngineStageData.setAlgebra(tAlgebraType);
-        }
-
         if(tOptionsNode.size<std::string>("ProblemUpdateFrequency"))
         {
             int tProblemUpdateFrequency = Plato::Get::Int(tOptionsNode, "ProblemUpdateFrequency");
