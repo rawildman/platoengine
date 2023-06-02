@@ -11,20 +11,15 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_ErrorChecks.hpp
                         Plato_DeviceBounds.hpp
                         Plato_GoldsteinPrice.hpp
-                        Plato_AlgebraFactory.hpp
                         Plato_EngineObjective.hpp
                         Plato_EngineConstraint.hpp
                         Plato_Radius.hpp
                         Plato_Rosenbrock.hpp
                         Plato_Criterion.hpp
-                        Plato_DataFactory.hpp
-                        Plato_DistributedReductionOperations.hpp
                         Plato_LinearAlgebra.hpp
                         Plato_MultiVector.hpp
-                        Plato_ReductionOperations.hpp
                         Plato_StandardMultiVector.hpp
                         Plato_StandardVector.hpp
-                        Plato_StandardVectorReductionOperations.hpp
                         Plato_Vector.hpp
                         Plato_DriverInterface.hpp
                         Plato_SOParameterStudies.hpp
@@ -35,8 +30,6 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_OptimizerFactory.hpp
                         Plato_OptimizerInterface.hpp
                         Plato_OptimizerUtilities.hpp
-                        Plato_KokkosVector.hpp
-                        Plato_KokkosReductionOperations.hpp
                         Plato_ROLInterface.hpp
                         Plato_StochasticROLInterface.hpp
                         Plato_SerialEpetraVectorROL.hpp

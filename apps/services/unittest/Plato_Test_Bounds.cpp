@@ -52,7 +52,6 @@
 
 #include "Plato_HostBounds.hpp"
 #include "Plato_ErrorChecks.hpp"
-#include "Plato_KokkosVector.hpp"
 #include "Plato_LinearAlgebra.hpp"
 #include "Plato_StandardVector.hpp"
 #include "Plato_StandardMultiVector.hpp"

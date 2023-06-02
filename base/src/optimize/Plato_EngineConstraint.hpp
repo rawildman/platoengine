@@ -56,7 +56,6 @@
 #include "Plato_Interface.hpp"
 #include "Plato_Criterion.hpp"
 #include "Plato_MultiVector.hpp"
-#include "Plato_DataFactory.hpp"
 #include "Plato_DistributedVector.hpp"
 #include "Plato_OptimizerEngineStageData.hpp"
 #include "Plato_LinearAlgebra.hpp"
