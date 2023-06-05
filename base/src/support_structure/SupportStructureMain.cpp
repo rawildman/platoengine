@@ -22,11 +22,15 @@ using namespace support_structure;
 
 int main(int argc,  char **argv)
 {
+    Kokkos::initialize(argc, argv);
+
     SupportStructure support_structure_generator;
     if(support_structure_generator.createMeshAPIsStandAlone(argc, argv))
     {
         support_structure_generator.run();
     }
+
+    Kokkos::finalize();
 
     return 0;
 }
