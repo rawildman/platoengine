@@ -49,94 +49,10 @@ public:
 class OptimizationAlgorithmPlatoOC : public OptimizationAlgorithm
 {
 private:
-    std::string mControlStagnationTolerance;
-    std::string mObjectiveStagnationTolerance;
-    std::string mGradientTolerance;
     std::string mProblemUpdateFrequency;
 
 public:
     OptimizationAlgorithmPlatoOC(const XMLGen::OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode,
-                        StagePtr aInitialization = nullptr,
-                        StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr,
-                        StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr,
-                        StagePtr aConstraintValue = nullptr,
-                        StagePtr aConstraintGradient = nullptr) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
-
-class OptimizationAlgorithmPlatoKSBC : public OptimizationAlgorithm
-{
-private:
-    std::string mMaxNumOuterIterations;
-    std::string mTrustRegionExpansionFactor;
-    std::string mTrustRegionContractionFactor;
-    std::string mMaxTrustRegionIterations;
-
-    std::string mInitialRadiusScale;
-    std::string mMaxRadiusScale;
-    std::string mHessianType;
-    std::string mMinTrustRegionRadius;
-    std::string mLimitedMemoryStorage;
-    
-    std::string mOuterGradientTolerance;
-    std::string mOuterStationarityTolerance;
-    std::string mOuterStagnationTolerance;
-    std::string mOuterControlStagnationTolerance;
-    std::string mOuterActualReductionTolerance;
-    
-    std::string mProblemUpdateFrequency;
-    std::string mDisablePostSmoothing;
-    std::string mTrustRegionRatioLow;
-    std::string mTrustRegionRatioMid;
-    std::string mTrustRegionRatioUpper;
-      
-public:
-    OptimizationAlgorithmPlatoKSBC(const XMLGen::OptimizationParameters& aParameters);
-    void writeInterface(pugi::xml_node& aNode,
-                        StagePtr aInitialization = nullptr,
-                        StagePtr aUpperBound = nullptr,
-                        StagePtr aLowerBound = nullptr,
-                        StagePtr aObjectiveValue = nullptr,
-                        StagePtr aObjectiveGradient = nullptr,
-                        StagePtr aConstraintValue = nullptr,
-                        StagePtr aConstraintGradient = nullptr) override;
-    void writeAuxiliaryFiles(pugi::xml_node& aNode) override;
-};
-
-class OptimizationAlgorithmPlatoKSAL : public OptimizationAlgorithm
-{
-private:
-    std::string mMaxNumOuterIterations;
-    std::string mTrustRegionExpansionFactor;
-    std::string mTrustRegionContractionFactor;
-    std::string mMaxTrustRegionIterations;
-
-    std::string mInitialRadiusScale;
-    std::string mMaxRadiusScale;
-    std::string mHessianType;
-    std::string mMinTrustRegionRadius;
-    std::string mLimitedMemoryStorage;
-    
-    std::string mOuterGradientTolerance;
-    std::string mOuterStationarityTolerance;
-    std::string mOuterStagnationTolerance;
-    std::string mOuterControlStagnationTolerance;
-    std::string mOuterActualReductionTolerance;
-    
-    std::string mProblemUpdateFrequency;
-    std::string mDisablePostSmoothing;
-    std::string mTrustRegionRatioLow;
-    std::string mTrustRegionRatioMid;
-    std::string mTrustRegionRatioUpper;
-
-    std::string mPenaltyParam;
-    std::string mPenaltyParamScaleFactor;
-
-public:
-    OptimizationAlgorithmPlatoKSAL(const XMLGen::OptimizationParameters& aParameters);
     void writeInterface(pugi::xml_node& aNode,
                         StagePtr aInitialization = nullptr,
                         StagePtr aUpperBound = nullptr,

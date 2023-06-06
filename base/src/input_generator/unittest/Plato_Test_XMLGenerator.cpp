@@ -691,228 +691,6 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     EXPECT_EQ(tester.getRestartFieldName(), "topology");
     EXPECT_EQ(tester.getRestartMeshFilename(), "file.gen");
 
-    // ks max trust region iterations
-    stringInput = "begin optimization_parameters\n"
-            "ks_max_trust_region_iterations\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_max_trust_region_iterations 10\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSMaxTrustIterations(), "10");
-
-    // ks trust region ratio low/mid/upper
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_ratio_low\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_ratio_mid\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_ratio_high\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_ratio_low 1.1\n"
-            "ks_trust_region_ratio_mid 2.1\n"
-            "ks_trust_region_ratio_high 3.1\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().ks_trust_region_ratio_low(), "1.1");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().ks_trust_region_ratio_mid(), "2.1");
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().ks_trust_region_ratio_high(), "3.1");
-
-    // ks disable post smoothing
-    stringInput = "begin optimization_parameters\n"
-            "ks_disable_post_smoothing\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "end optimization_parameters\n";
-    stringInput = "begin optimization_parameters\n"
-            "ks_disable_post_smoothing fALse\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().ks_disable_post_smoothing(), "false");
-    stringInput = "begin optimization_parameters\n"
-            "ks_disable_post_smoothing tRuE\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.exposeInputData()->optimization_parameters().ks_disable_post_smoothing(), "true");
-
-
-    // ks trust region expansion factor
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_expansion_factor\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_expansion_factor .5\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSExpansionFactor(), ".5");
-
-    // ks trust region contraction factor
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_contraction_factor\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_trust_region_contraction_factor .2\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSContractionFactor(), ".2");
-
-    // ks outer gradient tolerance
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_gradient_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_gradient_tolerance .001\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSOuterGradientTolerance(), ".001");
-
-    // ks outer stationarity tolerance
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_stationarity_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_stationarity_tolerance .00001\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSOuterStationarityTolerance(), ".00001");
-
-    // ks outer stagnation tolerance
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_stagnation_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_stagnation_tolerance 2.3\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSOuterStagnationTolerance(), "2.3");
-
-    // ks outer control stagnation tolerance
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_control_stagnation_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_control_stagnation_tolerance 1e-8\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSOuterControlStagnationTolerance(), "1e-8");
-
-    // ks outer actual reduction tolerance
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_actual_reduction_tolerance\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
-    stringInput = "begin optimization_parameters\n"
-            "ks_outer_actual_reduction_tolerance 1e-7\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getKSOuterActualReductionTolerance(), "1e-7");
-
     // levelset sphere packing factor
     stringInput = "begin optimization_parameters\n"
             "levelset_sphere_packing_factor\n"
@@ -1273,14 +1051,14 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     tester.clearInputData();
     ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
     stringInput = "begin optimization_parameters\n"
-            "optimization_algorithm ksbc\n"
+            "optimization_algorithm rol_bound_constrained\n"
             "end optimization_parameters\n";
     iss.str(stringInput);
     iss.clear();
     iss.seekg (0);
     tester.clearInputData();
     EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getAlgorithm(), "ksbc");
+    EXPECT_EQ(tester.getAlgorithm(), "rol_bound_constrained");
 
     // discretization
     stringInput = "begin optimization_parameters\n"
@@ -1726,492 +1504,6 @@ TEST(PlatoTestXMLGenerator, parseCriteria)
     EXPECT_EQ(tester.getCriterionBlock("7"), "31");
 }
 
-TEST(PlatoTestXMLGenerator, SROM_SolveSromProblem_ReadSampleProbPairsFromFile)
-{
-    // POSE PROBLEM
-    XMLGenerator_UnitTester tTester;
-    std::istringstream iss;
-    std::string stringInput =
-      "begin service 1\n"
-      "  code platomain\n"
-      "  number_processors 1\n"
-      "end service\n"
-      "begin service 2\n"
-      "  code plato_analyze\n"
-      "  number_processors 1\n"
-      "end service\n"
-      "begin criterion 1\n"
-      "  type mechanical_compliance\n"
-      "end criterion\n"
-      "begin scenario 1\n"
-      "  physics steady_state_mechanics\n"
-      "  dimensions 3\n"
-      "  loads 10\n"
-      "  boundary_conditions 1 2 3\n"
-      "  material 1\n"
-      "end scenario\n"
-      "begin objective\n"
-      "  scenarios 1\n"
-      "  criteria 1\n"
-      "  services 2\n"
-      "  type weighted_sum\n"
-      "  weights 1\n"
-      "end objective\n"
-      "begin boundary_condition 1\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispx\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 2\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispy\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 3\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispz\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin load 10\n"
-      "  type traction\n"
-      "  location_type sideset\n"
-      "  location_name ss_2\n"
-      "  value 0 -5e4 0\n"
-      "end load\n"
-      "begin block 1\n"
-      "  material 1\n"
-      "end block\n"
-      "begin material 1\n"
-      "  material_model isotropic_linear_elastic\n"
-      "  poissons_ratio 0.33\n"
-      "  youngs_modulus 1e6\n"
-      "end material\n"
-      "begin uncertainty\n"
-      "  category load\n"
-      "  tag angle_variation\n"
-      "  load_id 10\n"
-      "  attribute X\n"
-      "  filename test.csv\n"
-      "end uncertainty\n"
-      "begin optimization_parameters\n"
-      "end optimization_parameters\n";
-
-    // WRITE SAMPLE-PROBABILITY PAIRS TO FILE
-    int tPrecision = 64;
-    std::string tFilename("test.csv");
-    std::vector<Plato::srom::DataPairs> tGoldDataSet;
-    tGoldDataSet.push_back( { "Samples", std::vector<double>{} } );
-    tGoldDataSet[0].second =
-        {-18.124227441680492489695097901858389377593994140625, 15.69452170045176586654633865691721439361572265625};
-    tGoldDataSet.push_back( { "Probabilities", std::vector<double>{} } );
-    tGoldDataSet[1].second =
-        {0.361124680672662068392497758395620621740818023681640625, 0.638872868975587149265038533485494554042816162109375};
-    Plato::srom::write_data(tFilename, tGoldDataSet, tPrecision);
-
-    // PARSE INPUTS AND RUN THE PROBLEM
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseObjective(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseServices(iss));
-    iss.clear();
-    iss.seekg(0);
-    tTester.publicParseCriteria(iss);
-    iss.clear();
-    iss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseLoads(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseBCs(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseUncertainties(iss));
-    iss.clear();
-    iss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseBlocks(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseScenarios(iss));
-
-    auto tXMLGenMetadata = tTester.getInputData();
-    EXPECT_EQ(tTester.publicRunSROMForUncertainVariables(tXMLGenMetadata), true);
-
-    auto tNumSamples = tXMLGenMetadata.mRandomMetaData.numSamples();
-    auto tNumPerformers = tXMLGenMetadata.m_UncertaintyMetaData.numPerformers;
-    EXPECT_EQ(tNumSamples,2u);
-    EXPECT_EQ(tNumPerformers,1u);
-
-    // TEST SAMPLES
-    std::vector<std::string> tGoldLoadCaseProbabilities = { "0.36112468067266207", "0.63887286897558715" };
-    std::vector<std::vector<std::string>> tGoldValues =
-      {
-        { "0.000000000000000000000e+00", "-4.751921387767659325618e+04", "1.555391630579348566243e+04" },
-        { "0.000000000000000000000e+00", "-4.813588076578034088016e+04", "-1.352541987897522631101e+04"}
-      };
-
-    const double tTolerance = 1e-10;
-    auto tSamples = tXMLGenMetadata.mRandomMetaData.samples();
-    for(auto& tSample : tSamples)
-    {
-        auto tSampleIndex = &tSample - &tSamples[0];
-        ASSERT_NEAR(std::stod(tGoldLoadCaseProbabilities[tSampleIndex]), std::stod(tSample.probability()), tTolerance);
-
-        for(auto& tLoad : tSample.loadcase().loads)
-        {
-            ASSERT_STREQ("traction", tLoad.type().c_str());
-            for(auto& tValue : tLoad.load_values())
-            {
-                auto tComponent = &tValue - &tLoad.load_values()[0];
-                ASSERT_NEAR(std::stod(tValue), std::stod(tGoldValues[tSampleIndex][tComponent]), tTolerance);
-            }
-        }
-    }
-
-    Plato::system("rm -f test.csv");
-}
-
-TEST(PlatoTestXMLGenerator, uncertainty_analyzeNewWorkflow)
-{
-    // POSE PROBLEM
-  XMLGenerator_UnitTester tTester;
-  std::istringstream iss;
-  std::string stringInput =
-      "begin service 1\n"
-      "  code platomain\n"
-      "  number_processors 1\n"
-      "end service\n"
-      "begin service 2\n"
-      "  code plato_analyze\n"
-      "  number_processors 1\n"
-      "end service\n"
-      "begin criterion 1\n"
-      "  type mechanical_compliance\n"
-      "end criterion\n"
-      "begin scenario 1\n"
-      "  physics steady_state_mechanics\n"
-      "  dimensions 3\n"
-      "  loads 10\n"
-      "  boundary_conditions 1 2 3\n"
-      "  material 1\n"
-      "end scenario\n"
-      "begin objective\n"
-      "  scenarios 1\n"
-      "  criteria 1\n"
-      "  services 2\n"
-      "  type weighted_sum\n"
-      "  weights 1\n"
-      "end objective\n"
-      "begin boundary_condition 1\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispx\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 2\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispy\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 3\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispz\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin load 10\n"
-      "  type traction\n"
-      "  location_type sideset\n"
-      "  location_name ss_2\n"
-      "  value 0 -5e4 0\n"
-      "end load\n"
-      "begin block 1\n"
-      "  material 1\n"
-      "end block\n"
-      "begin material 1\n"
-      "  material_model isotropic_linear_elastic\n"
-      "  poissons_ratio 0.33\n"
-      "  youngs_modulus 1e6\n"
-      "end material\n"
-      "begin uncertainty\n"
-      "  category load\n"
-      "  tag angle_variation\n"
-      "  load_id 10\n"
-      "  attribute X\n"
-      "  distribution beta\n"
-      "  mean 0.0\n"
-      "  upper_bound 45.0\n"
-      "  lower_bound -45.0\n"
-      "  standard_deviation 22.5\n"
-      "  number_samples 2\n"
-      "  initial_guess uniform\n"
-      "end uncertainty\n"
-      "begin optimization_parameters\n"
-      "end optimization_parameters\n";
-  // do parse
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseObjective(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseServices(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCriteria(iss));
-    iss.clear();
-    iss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseLoads(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseBCs(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseUncertainties(iss));
-    iss.clear();
-    iss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseBlocks(iss));
-    iss.clear();
-    iss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseScenarios(iss));
-
-  auto tXMLGenMetadata = tTester.getInputData();
-  EXPECT_EQ(tTester.publicRunSROMForUncertainVariables(tXMLGenMetadata), true);
-
-  auto tNumSamples = tXMLGenMetadata.mRandomMetaData.numSamples();
-  size_t tNumPerformers = tXMLGenMetadata.m_UncertaintyMetaData.numPerformers;
-  EXPECT_EQ(tNumSamples,2u);
-  EXPECT_EQ(tNumPerformers,1u);
-
-  // TEST SAMPLES
-  std::vector<std::string> tGoldLoadCaseProbabilities = { "0.36112074847743636", "0.6388796023915212" };
-  std::vector<std::vector<std::string>> tGoldValues =
-      {
-        { "0.000000000000000000000e+00", "-47518.476388930852", "15556.169248070713" },
-        { "0.000000000000000000000e+00", "-4.813588076578034088016e+04", "-1.352541987897522631101e+04"}
-      };
-
-  const double tTolerance = 1e-6;
-  auto tSamples = tXMLGenMetadata.mRandomMetaData.samples();
-  for(auto& tSample : tSamples)
-  {
-      auto tSampleIndex = &tSample - &tSamples[0];
-      ASSERT_NEAR(std::stod(tGoldLoadCaseProbabilities[tSampleIndex]), std::stod(tSample.probability()), tTolerance);
-
-      for(auto& tLoad : tSample.loadcase().loads)
-      {
-          ASSERT_STREQ("traction", tLoad.type().c_str());
-          for(auto& tValue : tLoad.load_values())
-          {
-              auto tComponent = &tValue - &tLoad.load_values()[0];
-              ASSERT_NEAR(std::stod(tValue), std::stod(tGoldValues[tSampleIndex][tComponent]), tTolerance);
-          }
-      }
-  }
-
-  Plato::system("rm -f plato_cdf_output.txt");
-  Plato::system("rm -f plato_srom_diagnostics.txt");
-  Plato::system("rm -f plato_ksal_algorithm_diagnostics.txt");
-}
-
-TEST(PlatoTestXMLGenerator,uncertainty_analyzeNewWorkflow_randomPlusDeterministic)
-{
-    // POSE INPUT DATA
-    XMLGenerator_UnitTester tTester;
-    std::istringstream tIss;
-    std::string tStringInput =
-      "begin service 1\n"
-      "  code platomain\n"
-      "  number_processors 1\n"
-      "end service\n"
-      "begin service 2\n"
-      "  code plato_analyze\n"
-      "  number_processors 5\n"
-      "end service\n"
-      "begin criterion 1\n"
-      "  type mechanical_compliance\n"
-      "end criterion\n"
-      "begin scenario 1\n"
-      "  physics steady_state_mechanics\n"
-      "  dimensions 3\n"
-      "  loads 10 1\n"
-      "  boundary_conditions 1 2 3\n"
-      "  material 1\n"
-      "end scenario\n"
-      "begin objective\n"
-      "  scenarios 1\n"
-      "  criteria 1\n"
-      "  services 2\n"
-      "  type weighted_sum\n"
-      "  weights 1\n"
-      "end objective\n"
-      "begin boundary_condition 1\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispx\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 2\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispy\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin boundary_condition 3\n"
-      "  type fixed_value\n"
-      "  location_type nodeset\n"
-      "  location_name ns_1\n"
-      "  degree_of_freedom dispz\n"
-      "  value 0\n"
-      "end boundary_condition\n"
-      "begin load 10\n"
-      "  type traction\n"
-      "  location_type sideset\n"
-      "  location_name ss_2\n"
-      "  value 0 -5e4 0\n"
-      "end load\n"
-      "begin load 1\n"
-      "  type traction\n"
-      "  location_type sideset\n"
-      "  location_name ss_3\n"
-      "  value 0 -5e4 0\n"
-      "end load\n"
-      "begin block 1\n"
-      "  material 1\n"
-      "end block\n"
-      "begin material 1\n"
-      "  material_model isotropic_linear_elastic\n"
-      "  poissons_ratio 0.33\n"
-      "  youngs_modulus 1e6\n"
-      "end material\n"
-      "begin uncertainty\n"
-      "  category load\n"
-      "  tag angle_variation\n"
-      "  load_id 10\n"
-      "  attribute X\n"
-      "  distribution beta\n"
-      "  mean 0.0\n"
-      "  upper_bound 45.0\n"
-      "  lower_bound -45.0\n"
-      "  standard_deviation 22.5\n"
-      "  number_samples 10\n"
-      "  initial_guess uniform\n"
-      "end uncertainty\n"
-      "begin optimization_parameters\n"
-      "end optimization_parameters\n";
-  // do parse
-    tIss.str(tStringInput);
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseObjective(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseServices(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseCriteria(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseLoads(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseBCs(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseUncertainties(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    EXPECT_TRUE(tTester.publicParseBlocks(tIss));
-    tIss.clear();
-    tIss.seekg(0);
-    ASSERT_NO_THROW(tTester.publicParseScenarios(tIss));
-
-    auto tXMLGenMetadata = tTester.getInputData();
-    EXPECT_EQ(tTester.publicRunSROMForUncertainVariables(tXMLGenMetadata), true);
-
-    // TEST DATA
-    auto tNumSamples = tXMLGenMetadata.mRandomMetaData.numSamples();
-    EXPECT_EQ(tNumSamples,10u);
-    size_t tNumPerformers = tXMLGenMetadata.m_UncertaintyMetaData.numPerformers;
-    EXPECT_EQ(tNumPerformers,5u);
-
-    // POSE GOLD VALUES
-    std::vector<std::string> tGoldLoadCaseProbabilities =
-        {"0.094129618760905517", "0.096090610891147593", "0.099662653884575278", "0.10449800813241415" , "0.10567878404136007",
-         "0.10579431139496034" , "0.10488572142307051" , "0.099762429835208791", "0.095650141042446082", "0.093863777827277631"};
-
-    std::vector<std::vector<std::vector<std::string>>> tGoldLoadValues =
-      {
-        { { "0.000000000000000000000e+00", "-40080.529655427614", "29892.325813499148" },
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-44109.29605382467", "23545.063211553443" },
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-47042.380137430053", "16941.501438937652" },
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-48948.627509715574", "10199.601213533577" },
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-49884.894530613543", "3390.7665312673744" },
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-49882.875644480926", "-3420.338789835318"},
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-48947.942158115213", "-10202.889712518099"},
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-47060.949467672071", "-16889.850064497783"},
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-44182.941372529094", "-23406.57368500689"},
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } },
-
-        { { "0.000000000000000000000e+00", "-40257.154550975094", "-29654.030206009185"},
-          { "0.000000000000000000000e+00", "-5.000000000000000000000e+04", "0.000000000000000000000e+00" } }
-      };
-
-    // TEST SAMPLES
-    constexpr double tTolerance = 1e-6;
-    auto tSamples = tXMLGenMetadata.mRandomMetaData.samples();
-    for (auto &tSample : tSamples)
-    {
-        auto tSampleIndex = &tSample - &tSamples[0];
-        ASSERT_NEAR(std::stod(tGoldLoadCaseProbabilities[tSampleIndex]), std::stod(tSample.probability()), tTolerance);
-
-        auto tLoadCase = tSample.loadcase();
-        for (auto &tLoad : tLoadCase.loads)
-        {
-            auto tLoadIndex = &tLoad - &tLoadCase.loads[0];
-            ASSERT_STREQ("traction", tLoad.type().c_str());
-            for (auto &tValue : tLoad.load_values())
-            {
-                auto tComponent = &tValue - &tLoad.load_values()[0];
-                ASSERT_NEAR(std::stod(tValue), std::stod(tGoldLoadValues[tSampleIndex][tLoadIndex][tComponent]), tTolerance);
-            }
-        }
-    }
-
-    Plato::system("rm -f plato_cdf_output.txt");
-    Plato::system("rm -f plato_srom_diagnostics.txt");
-    Plato::system("rm -f plato_ksal_algorithm_diagnostics.txt");
-}
-
 TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
 {
     // POSE INPUT DATA
@@ -2303,7 +1595,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2362,7 +1654,7 @@ TEST(PlatoTestXMLGenerator, IncompressibleFluidsWorkFlow)
     Plato::Utils::ignore_unused(tTrash);
 }
 
-TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
+TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_variables_good_1)
 {
     // POSE INPUT DATA
     std::istringstream tIss;
@@ -2458,7 +1750,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2513,7 +1805,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_1)
     ASSERT_NO_THROW(tTester.generate(tXMLGenMetadata));
 }
 
-TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
+TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_variables_good_2)
 {
     // POSE INPUT DATA
     std::istringstream tIss;
@@ -2609,7 +1901,7 @@ TEST(PlatoTestXMLGenerator, ShapeOptimization_num_shape_design_varibles_good_2)
         "  impermeability_number 100\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2753,7 +2045,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumDefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -2924,7 +2216,7 @@ TEST(PlatoTestXMLGenerator, ForcedConvectionWorkFlow_DarcyNumUndefined)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -3068,7 +2360,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"
@@ -3219,7 +2511,7 @@ TEST(PlatoTestXMLGenerator, NaturalConvectionWorkFlow_WithThermalFlux)
         "  rayleigh_number 0 1e3\n"
         "end material\n"
         "begin optimization_parameters\n"
-        "  optimization_algorithm ksal\n"
+        "  optimization_algorithm rol_augmented_lagrangian\n"
         "  discretization density\n"
         "  max_iterations 50\n"
         "  filter_radius_scale 1.75\n"

@@ -52,12 +52,7 @@
 #include <mpi.h>
 
 #include "Plato_OptimizerInterface.hpp"
-#include "Plato_ParticleSwarmEngineBCPSO.hpp"
-#include "Plato_ParticleSwarmEngineALPSO.hpp"
 #include "Plato_SOParameterStudiesInterface.hpp"
-#include "Plato_OptimalityCriteriaInterface.hpp"
-#include "Plato_KelleySachsBoundConstrainedInterface.hpp"
-#include "Plato_KelleySachsAugmentedLagrangianInterface.hpp"
 #include "Plato_ROLInterface.hpp"
 #include "Plato_StochasticROLInterface.hpp"
 
@@ -169,45 +164,7 @@ public:
         // optimizer.
         std::string tOptPackage = Plato::Get::String(tOptimizerNode, "Package");
 
-        if( tOptPackage == "OC" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::OptimalityCriteriaInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "KSUC" )
-        {
-          try {
-            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-            tOptimizer = std::make_unique<Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm, tType);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "KSBC" )
-        {
-          try {
-            Plato::optimizer::algorithm_t tType = Plato::optimizer::algorithm_t::KELLEY_SACHS_BOUND_CONSTRAINED;
-            tOptimizer = std::make_unique<Plato::KelleySachsBoundConstrainedInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm, tType);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "KSAL" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::KelleySachsAugmentedLagrangianInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "BCPSO" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineBCPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "ALPSO" )
-        {
-          try {
-            tOptimizer = std::make_unique<Plato::ParticleSwarmEngineALPSO<ScalarType, OrdinalType>>(aInterface, aLocalComm);
-          } catch(...){aInterface->Catch();}
-        }
-        else if( tOptPackage == "SOParameterStudies" )
+        if( tOptPackage == "SOParameterStudies" )
         {
           try {
             tOptimizer = std::make_unique<Plato::SOParameterStudiesInterface<ScalarType, OrdinalType>>(aInterface, aLocalComm);
@@ -250,12 +207,6 @@ public:
             << "Plato::OptimizerFactory: "
             << tOptPackage << " Unknown." << std::endl
             << "Valid options are\n"
-            << "\t OC ... Optimality Criteria\n"
-            << "\t KSUC ... Kelley Sachs Unconstrained\n"
-            << "\t KSBC ... Kelley Sachs Bound Constrained\n"
-            << "\t KSAL ... Kelley Sachs Augmented Lagrangian\n"
-            << "\t BCPSO ... Bound Constrained Particle Swarm Optimization\n"
-            << "\t ALPSO ... Augmented Lagrangian Particle Swarm Optimization\n"
             << "\t SOParameterStudies ... Shape Optimization Parameter Study Toolkit\n"
             << "\t ROL AugmentedLagrangian... Rapid Optimization Library Augmented Lagrangian\n"
             << "\t ROL BoundConstrained... Rapid Optimization Library Bound Constrained\n"

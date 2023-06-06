@@ -1452,163 +1452,16 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             aOptimizerEngineStageData.setHessianType(tHessianType);
         }
 
-        if( tOptionsNode.size<std::string>("LimitedMemoryStorage") )
-        {
-            int tLimitedMemoryStorage = Plato::Get::Int(tOptionsNode, "LimitedMemoryStorage");
-            assert(tLimitedMemoryStorage > 0);
-            aOptimizerEngineStageData.setLimitedMemoryStorage(tLimitedMemoryStorage);
-        }
-
-        if( tOptionsNode.size<std::string>("UseMeanNorm") )
-        {
-            bool tMeanNorm = Plato::Get::Bool(tOptionsNode, "UseMeanNorm");
-            aOptimizerEngineStageData.setMeanNorm(tMeanNorm);
-        }
-
-        if(tOptionsNode.size<std::string>("DisablePostSmoothing"))
-        {
-            bool tDisablePostSmoothing = Plato::Get::Bool(tOptionsNode, "DisablePostSmoothing");
-            aOptimizerEngineStageData.setDisablePostSmoothing(tDisablePostSmoothing);
-        }
-
         if( tOptionsNode.size<std::string>("InputFileName") )
         {
             std::string tInputFileName = tOptionsNode.get<std::string>("InputFileName");
             aOptimizerEngineStageData.setInputFileName(tInputFileName);
         }
 
-        if( tOptionsNode.size<std::string>("Algebra") )
-        {
-            std::string tAlgebraType = tOptionsNode.get<std::string>("Algebra");
-            aOptimizerEngineStageData.setAlgebra(tAlgebraType);
-        }
-
-        if( tOptionsNode.size<std::string>("KSTrustRegionExpansionFactor") )
-        {
-            double tKSTrustRegionExpansionFactor = Plato::Get::Double(tOptionsNode, "KSTrustRegionExpansionFactor");
-            if( tKSTrustRegionExpansionFactor <= 1.0 )
-            {
-                throw Plato::ParsingException("KSTrustRegionExpansionFactor <= 1.0. Please select a value that is greater than 1.0");
-            }
-            aOptimizerEngineStageData.setKSTrustRegionExpansionFactor(tKSTrustRegionExpansionFactor);
-        }
-        if( tOptionsNode.size<std::string>("KSTrustRegionContractionFactor") )
-        {
-            double tKSTrustRegionContractionFactor = Plato::Get::Double(tOptionsNode, "KSTrustRegionContractionFactor");
-            if( tKSTrustRegionContractionFactor >= 1.0 )
-            {
-                throw Plato::ParsingException("KSTrustRegionContractionFactor >= 1.0. Please select a value greater than 0 and less than one");
-            }
-            if( tKSTrustRegionContractionFactor <= 0.0 )
-            {
-                throw Plato::ParsingException("KSTrustRegionContractionFactor <= 0.0. Please select a value greater than 0 and less than one");
-            }
-            aOptimizerEngineStageData.setKSTrustRegionContractionFactor(tKSTrustRegionContractionFactor);
-        }
-        if( tOptionsNode.size<std::string>("KSMaxTrustRegionIterations") )
-        {
-            int tKSMaxTrustRegionIterations = Plato::Get::Double(tOptionsNode, "KSMaxTrustRegionIterations");
-            aOptimizerEngineStageData.setKSMaxTrustRegionIterations(tKSMaxTrustRegionIterations);
-        }
-        if( tOptionsNode.size<std::string>("KSOuterGradientTolerance") )
-        {
-            double tKSOuterGradientTolerance = Plato::Get::Double(tOptionsNode, "KSOuterGradientTolerance");
-            aOptimizerEngineStageData.setKSOuterGradientTolerance(tKSOuterGradientTolerance);
-        }
-        if( tOptionsNode.size<std::string>("KSOuterStationarityTolerance") )
-        {
-            double tKSOuterStationarityTolerance = Plato::Get::Double(tOptionsNode, "KSOuterStationarityTolerance");
-            aOptimizerEngineStageData.setKSOuterStationarityTolerance(tKSOuterStationarityTolerance);
-        }
-        if( tOptionsNode.size<std::string>("KSOuterStagnationTolerance") )
-        {
-            double tKSOuterStagnationTolerance = Plato::Get::Double(tOptionsNode, "KSOuterStagnationTolerance");
-            aOptimizerEngineStageData.setKSOuterStagnationTolerance(tKSOuterStagnationTolerance);
-        }
-        if( tOptionsNode.size<std::string>("KSOuterControlStagnationTolerance") )
-        {
-            double tKSOuterControlStagnationTolerance = Plato::Get::Double(tOptionsNode, "KSOuterControlStagnationTolerance");
-            aOptimizerEngineStageData.setKSOuterControlStagnationTolerance(tKSOuterControlStagnationTolerance);
-        }
-        if( tOptionsNode.size<std::string>("KSOuterActualReductionTolerance") )
-        {
-            double tKSOuterActualReductionTolerance = Plato::Get::Double(tOptionsNode, "KSOuterActualReductionTolerance");
-            aOptimizerEngineStageData.setKSOuterActualReductionTolerance(tKSOuterActualReductionTolerance);
-        }
-        if(tOptionsNode.size<std::string>("KSInitialRadiusScale"))
-        {
-            double tKSInitialRadiusScale = Plato::Get::Double(tOptionsNode, "KSInitialRadiusScale");
-            aOptimizerEngineStageData.setKSInitialRadiusScale(tKSInitialRadiusScale);
-        }
-        if(tOptionsNode.size<std::string>("KSMaxRadiusScale"))
-        {
-            double tKSMaxRadiusScale = Plato::Get::Double(tOptionsNode, "KSMaxRadiusScale");
-            aOptimizerEngineStageData.setKSMaxRadiusScale(tKSMaxRadiusScale);
-        }
-        if(tOptionsNode.size<std::string>("KSTrustRegionRatioLow"))
-        {
-            double tKSTrustRegionRatioLow = Plato::Get::Double(tOptionsNode, "KSTrustRegionRatioLow");
-            aOptimizerEngineStageData.setKSTrustRegionRatioLow(tKSTrustRegionRatioLow);
-        }
-        if(tOptionsNode.size<std::string>("KSTrustRegionRatioMid"))
-        {
-            double tKSTrustRegionRatioMid = Plato::Get::Double(tOptionsNode, "KSTrustRegionRatioMid");
-            aOptimizerEngineStageData.setKSTrustRegionRatioMid(tKSTrustRegionRatioMid);
-        }
-        if(tOptionsNode.size<std::string>("KSTrustRegionRatioUpper"))
-        {
-            double tKSTrustRegionRatioUpper = Plato::Get::Double(tOptionsNode, "KSTrustRegionRatioUpper");
-            aOptimizerEngineStageData.setKSTrustRegionRatioUpper(tKSTrustRegionRatioUpper);
-        }
         if(tOptionsNode.size<std::string>("ProblemUpdateFrequency"))
         {
             int tProblemUpdateFrequency = Plato::Get::Int(tOptionsNode, "ProblemUpdateFrequency");
             aOptimizerEngineStageData.setProblemUpdateFrequency(tProblemUpdateFrequency);
-        }
-        if(tOptionsNode.size<std::string>("MaxNumAugLagSubProbIter"))
-        {
-            int tMaxNumAugLagSubProbIter = Plato::Get::Int(tOptionsNode, "MaxNumAugLagSubProbIter");
-            aOptimizerEngineStageData.setMaxNumAugLagSubProbIter(tMaxNumAugLagSubProbIter);
-        }
-        if(tOptionsNode.size<std::string>("FeasibilityTolerance"))
-        {
-            double tFeasibilityTolerance = Plato::Get::Double(tOptionsNode, "FeasibilityTolerance");
-            aOptimizerEngineStageData.setFeasibilityTolerance(tFeasibilityTolerance);
-        }
-        if(tOptionsNode.size<std::string>("MinTrustRegionRadius"))
-        {
-            double tMinTrustRegionRadius = Plato::Get::Double(tOptionsNode, "MinTrustRegionRadius");
-            aOptimizerEngineStageData.setMinTrustRegionRadius(tMinTrustRegionRadius);
-        }
-        if(tOptionsNode.size<std::string>("MaxTrustRegionRadius"))
-        {
-            double tMaxTrustRegionRadius = Plato::Get::Double(tOptionsNode, "MaxTrustRegionRadius");
-            aOptimizerEngineStageData.setMaxTrustRegionRadius(tMaxTrustRegionRadius);
-        }
-        if(tOptionsNode.size<std::string>("AugLagPenaltyParam"))
-        {
-            double tAugLagPenaltyParameter = Plato::Get::Double(tOptionsNode, "AugLagPenaltyParam");
-            aOptimizerEngineStageData.setAugLagPenaltyParameter(tAugLagPenaltyParameter);
-        }
-        if(tOptionsNode.size<std::string>("AugLagPenaltyParamScaleFactor"))
-        {
-            double tAugLagPenaltyScaleParameter = Plato::Get::Double(tOptionsNode, "AugLagPenaltyParamScaleFactor");
-            aOptimizerEngineStageData.setAugLagPenaltyScaleParameter(tAugLagPenaltyScaleParameter);
-        }
-        if(tOptionsNode.size<std::string>("OCControlStagnationTolerance"))
-        {
-            double tOCControlStagnationTolerance = Plato::Get::Double(tOptionsNode, "OCControlStagnationTolerance");
-            aOptimizerEngineStageData.setOCControlStagnationTolerance(tOCControlStagnationTolerance);
-        }
-        if(tOptionsNode.size<std::string>("OCObjectiveStagnationTolerance"))
-        {
-            double tOCObjectiveStagnationTolerance = Plato::Get::Double(tOptionsNode, "OCObjectiveStagnationTolerance");
-            aOptimizerEngineStageData.setOCObjectiveStagnationTolerance(tOCObjectiveStagnationTolerance);
-        }
-        if(tOptionsNode.size<std::string>("OCGradientTolerance"))
-        {
-            double tOCGradientTolerance = Plato::Get::Double(tOptionsNode, "OCGradientTolerance");
-            aOptimizerEngineStageData.setOCGradientTolerance(tOCGradientTolerance);
         }
         if(tOptionsNode.size<std::string>("ResetAlgorithmOnUpdate"))
         {

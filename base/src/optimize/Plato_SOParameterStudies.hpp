@@ -174,23 +174,12 @@ public:
         double tStep = aVariableStep[0];
         FILE *fp = fopen("diag.txt", "w");
         fclose(fp);
-        std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>> tObjGradient = aControl.create();
-        std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>> tConGradient = aControl.create();
         while(tCur <= (tEnd + .00001))
         {
             aControl[0][aVariableIndices[0]] = tCur;
-            // Objective/Gradient
             double tObjValue = aObjective.value(aControl);
-            aObjective.cacheData();
-            aObjective.gradient(aControl, *tObjGradient);
-            // Constraint/Gradient
-            double tConValue = aConstraint.value(aControl);
-            aConstraint.cacheData();
-            aConstraint.gradient(aControl, *tConGradient);
-
             fp = fopen("diag.txt", "a");
-            fprintf(fp, "%.10e %.10e %.10e %.10e %.10e\n", tCur, tObjValue, tConValue, 
-                                       (*tObjGradient)[0][0], (*tConGradient)[0][0]); 
+            fprintf(fp, "%.10e %.10e\n", tCur, tObjValue); 
             fclose(fp);
             tCur += tStep;
         }

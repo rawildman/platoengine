@@ -50,7 +50,6 @@
 #ifndef PLATO_ESP_HPP_
 #define PLATO_ESP_HPP_
 
-#include <Kokkos_Core.hpp>
 #include <string>
 #include <vector>
 #include <array>

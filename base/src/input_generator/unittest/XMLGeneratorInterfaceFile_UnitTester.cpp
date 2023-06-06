@@ -3314,28 +3314,6 @@ TEST(PlatoTestXMLGenerator, AppendUpperBoundStageForShapeOptimization)
     ASSERT_TRUE(tOutput.empty());
 }
 
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOC_Options)
-{
-    // CALL FUNCTION
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("max_iterations", "11");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument.append_child("Optimizer");
-    XMLGen::append_optimality_criteria_options(tXMLMetaData, tOptimizerNode);
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Options", "Convergence"};
-    std::vector<std::string> tGoldValues = {"",""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tConvergenceNode = tOptimizerNode.child("Convergence");
-    tGoldKeys = {"MaxIterations"};
-    tGoldValues = {"11"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tConvergenceNode);
-}
-
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptions_ErrorOptimizerNotSupported)
 {
     pugi::xml_document tDocument;
@@ -3345,53 +3323,6 @@ TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptions_ErrorOptimizerNot
     tXMLMetaData.set(tOptimizationParameters);
     auto tOptimizerNode = tDocument.append_child("Optimizer");
     ASSERT_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode), std::runtime_error);
-}
-
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsKSBC)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("ks_trust_region_contraction_factor", "0.5");
-    tOptimizationParameters.append("ks_trust_region_expansion_factor", "4.0");
-    tOptimizationParameters.append("ks_disable_post_smoothing", "false");
-    tOptimizationParameters.append("optimization_algorithm", "KSbc");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Options","Convergence"};
-    std::vector<std::string> tGoldValues = {"",""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tOptionsNode = tOptimizerNode.child("Options");
-    tGoldKeys = {"KSTrustRegionExpansionFactor", "KSTrustRegionContractionFactor", "DisablePostSmoothing"};
-    tGoldValues = {"4.0", "0.5", "false"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptionsNode);
-}
-
-TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOptionsOC)
-{
-    // CALL FUNCTION
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("max_iterations", "11");
-    tOptimizationParameters.append("optimization_algorithm", "Oc");
-    tXMLMetaData.set(tOptimizationParameters);
-    auto tOptimizerNode = tDocument.append_child("Optimizer");
-    ASSERT_NO_THROW(XMLGen::append_grad_based_optimizer_parameters(tXMLMetaData, tOptimizerNode));
-    ASSERT_FALSE(tOptimizerNode.empty());
-
-    // ****** TEST RESULTS AGAINST OPTIMIZER NODE GOLD VALUES ******
-    std::vector<std::string> tGoldKeys = {"Options", "Convergence"};
-    std::vector<std::string> tGoldValues = {"",""};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptimizerNode);
-    auto tCovergenceNode = tOptimizerNode.child("Convergence");
-    tGoldKeys = {"MaxIterations"};
-    tGoldValues = {"11"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tCovergenceNode);
 }
 
 TEST(PlatoTestXMLGenerator, AppendOptimizationAlgorithmOption_ErrorOptimizerNotSupported)

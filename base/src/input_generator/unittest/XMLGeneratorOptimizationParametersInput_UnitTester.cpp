@@ -26,32 +26,6 @@ TEST(PlatoTestXMLGenerator, InsertLevelsetBasedShapeOptimizationInputs)
     }
 }
 
-TEST(PlatoTestXMLGenerator, InsertKelleySachsTrustRegionInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_plato_kelley_sachs_trust_region_input_options(tTags);
-    EXPECT_EQ(23u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"ks_max_radius_scale",""}, 
-        {"ks_initial_radius_scale",""}, {"ks_trust_region_ratio_low", ""}, {"ks_trust_region_ratio_mid", ""}, 
-        {"ks_min_trust_region_radius", ""}, {"ks_trust_region_ratio_high", ""}, {"ks_disable_post_smoothing", "true"}, 
-        {"ks_outer_gradient_tolerance", ""}, {"ks_outer_stagnation_tolerance", ""}, {"ks_max_trust_region_iterations", "5"}, 
-        {"ks_outer_stationarity_tolerance", ""}, {"ks_trust_region_expansion_factor", ""}, {"ks_trust_region_contraction_factor", ""}, 
-        {"ks_outer_actual_reduction_tolerance", ""}, {"ks_outer_control_stagnation_tolerance", ""}, {"use_mean_norm", ""}, 
-        {"al_penalty_parameter", ""}, {"feasibility_tolerance", ""}, {"max_trust_region_radius", ""}, {"al_penalty_scale_factor", ""}, 
-        {"al_max_subproblem_iterations", ""}, {"hessian_type", ""}, {"limited_memory_storage", "8"} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, InsertProjectionFilterInputs)
 {
     XMLGen::MetaDataTags tTags;
@@ -158,26 +132,6 @@ TEST(PlatoTestXMLGenerator, InsertPruneAndRefineInputs)
     }
 }
 
-TEST(PlatoTestXMLGenerator, InsertOptimalityCriteriaInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_optimality_criteria_input_options(tTags);
-    EXPECT_EQ(3u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"oc_gradient_tolerance","1e-8"}, 
-        {"oc_control_stagnation_tolerance", "1e-2"}, {"oc_objective_stagnation_tolerance", "1e-5"} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, InsertRestartInputs)
 {
     XMLGen::MetaDataTags tTags;
@@ -246,12 +200,12 @@ TEST(PlatoTestXMLGenerator, InsertGeneralOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_general_optimization_input_options(tTags);
-    EXPECT_EQ(12u, tTags.size());
+    EXPECT_EQ(14u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"max_iterations",""}, {"verbose", "false"}, {"output_method", "epu"},
         {"output_frequency", "5"}, {"optimization_type", "topology"}, {"optimization_algorithm", "oc"}, 
         {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""},
-        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""} };
+        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""}, {"hessian_type", ""}, {"limited_memory_storage", "8"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS

@@ -133,23 +133,6 @@ TEST(PlatoTestXMLGenerator, AppendWriteOuputOperation_Deterministic)
     PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOutput);
 }
 
-TEST(PlatoTestXMLGenerator, AppendTrustRegionKelleySachsOptions)
-{
-    pugi::xml_document tDocument;
-    XMLGen::InputData tXMLMetaData;
-    XMLGen::OptimizationParameters tOptimizationParameters;
-    tOptimizationParameters.append("problem_update_frequency", "5");
-    tOptimizationParameters.append("ks_max_trust_region_iterations", "10");
-    tOptimizationParameters.append("ks_disable_post_smoothing", "false");
-    tXMLMetaData.set(tOptimizationParameters);
-    ASSERT_NO_THROW(XMLGen::append_trust_region_kelley_sachs_options(tXMLMetaData, tDocument));
-    auto tOptions = tDocument.child("Options");
-    ASSERT_FALSE(tOptions.empty());
-    std::vector<std::string> tGoldKeys = {"KSMaxTrustRegionIterations", "ProblemUpdateFrequency", "DisablePostSmoothing"};
-    std::vector<std::string> tGoldValues = {"10", "5", "false"};
-    PlatoTestXMLGenerator::test_children(tGoldKeys, tGoldValues, tOptions);
-}
-
 TEST(PlatoTestXMLGenerator, AppendPlatoMainOutputStage_EmptyStage_OutputDisabled)
 {
     pugi::xml_document tDocument;

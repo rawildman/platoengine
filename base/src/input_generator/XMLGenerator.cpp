@@ -13,8 +13,6 @@
 
 #include "XMLGenerator.hpp"
 
-#include "Plato_SromXML.hpp"
-#include "Plato_SromXMLGenTools.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorParserUtilities.hpp"
 #include "XMLG_Macros.hpp"
@@ -119,12 +117,6 @@ namespace XMLGen
     {
         this->parseInputFile();
         this->finalize(m_InputData);
-
-        if (!this->runSROMForUncertainVariables(m_InputData))
-        {
-            PRINTERR("Failed to expand uncertainties in input file generation.")
-        }
-
         this->preProcessInputMetaData(m_InputData);
         this->checkForProblemSetupErrors(m_InputData);
         this->writeInputFiles(m_InputData);
@@ -135,10 +127,6 @@ namespace XMLGen
     /******************************************************************************/
     {
         this->finalize(aInputData);
-        if (!this->runSROMForUncertainVariables(aInputData))
-        {
-            PRINTERR("Failed to expand uncertainties in input file generation.")
-        }
         this->preProcessInputMetaData(aInputData);
         this->checkForProblemSetupErrors(m_InputData);
         this->writeInputFiles(aInputData);
@@ -659,19 +647,6 @@ namespace XMLGen
         this->removeDuplicateTuplesFromConstraintList(tObjectiveScenarioServiceTuples, tConstraintScenarioServiceTuples);
         this->createInputDataCopiesForObjectivePerformers(aInputData, tObjectiveScenarioServiceTuples);
         this->createInputDataCopiesForConstraintPerformers(aInputData, tConstraintScenarioServiceTuples);
-    }
-
-    /******************************************************************************/
-    bool XMLGenerator::runSROMForUncertainVariables(XMLGen::InputData &aInputData)
-    /******************************************************************************/
-    {
-        if (aInputData.uncertainties.size() > 0)
-        {
-            Plato::srom::solve(aInputData);
-            this->setNumPerformers(aInputData);
-        }
-
-        return true;
     }
 
     /******************************************************************************/

@@ -14,7 +14,6 @@ set(PLATO_INCLUDES ${PLATO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/base/src/EngineInterfaceToPlatoSubproblemLibrary
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Agent
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/BoundedSupportFunction
-  ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DiscreteGlobalOptimization
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Example
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Filter
   ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Geometry

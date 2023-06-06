@@ -8,6 +8,8 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorPlatoMainOperationFileUtilities.hpp"
 #include <regex>
+#include <fstream>
+
 using namespace XMLGen;
 namespace director
 {

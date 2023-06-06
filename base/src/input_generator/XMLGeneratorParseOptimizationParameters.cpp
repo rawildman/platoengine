@@ -53,13 +53,11 @@ void ParseOptimizationParameters::allocate()
     XMLGen::insert_prune_and_refine_input_options(mTags);
     XMLGen::insert_shape_optimization_input_options(mTags);
     XMLGen::insert_derivative_checker_input_options(mTags);
-    XMLGen::insert_optimality_criteria_input_options(mTags);
     XMLGen::insert_general_optimization_input_options(mTags);
     XMLGen::insert_topology_optimization_input_options(mTags);
     XMLGen::insert_plato_symmetry_filter_input_options(mTags);
     XMLGen::insert_plato_projection_filter_input_options(mTags);
     XMLGen::insert_dakota_multidim_param_study_input_options(mTags);
-    XMLGen::insert_plato_kelley_sachs_trust_region_input_options(mTags);
 }
 
 std::vector<XMLGen::OptimizationParameters> ParseOptimizationParameters::data() const 
@@ -286,9 +284,7 @@ void ParseOptimizationParameters::setNormalizeInAggregator(XMLGen::OptimizationP
     {
         std::cout << "INFO: Auto-determining whether to normalize in aggregator because normalize_in_aggregator parameter was not set." << std::endl;
         std::string tOptAlg = aMetadata.optimization_algorithm();
-        if(tOptAlg == "ksal" ||
-           tOptAlg == "ksbc" ||
-           tOptAlg == "oc")
+        if(tOptAlg == "oc")
         {
             tValue = true;
             std::cout << "INFO: Auto-determined to normalize in aggregator." << std::endl;

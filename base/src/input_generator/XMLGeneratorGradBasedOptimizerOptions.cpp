@@ -9,6 +9,8 @@
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 
+#include <cmath>
+
 namespace XMLGen
 {
 
@@ -38,9 +40,10 @@ void append_grad_based_optimizer_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
 {
-    std::unordered_map<std::string, std::string> tValidOptimizers =
-        { {"oc", "OC"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
-        {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"} };
+    const std::unordered_map<std::string, std::string> tValidOptimizers =
+        { {"rol_bound_constrained", "ROL BoundConstrained"}, 
+          {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, 
+          {"rol_linear_constraint", "ROL LinearConstraint"} };
 
     auto tLower = Plato::tolower(aMetaData.optimization_parameters().optimization_algorithm());
     auto tOptimizerItr = tValidOptimizers.find(tLower);
@@ -71,23 +74,10 @@ void append_grad_based_optimizer_parameters
             XMLGen::append_rol_gradient_check_flags(aMetaData, aParentNode);
             XMLGen::append_rol_gradient_check_options(aMetaData, aParentNode);
         }
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
+        XMLGen::append_optimizer_options(aMetaData, aParentNode);
         XMLGen::append_reset_algorithm_on_update_option(aMetaData, aParentNode);
         XMLGen::generate_rol_input_file(aMetaData);
         XMLGen::append_rol_input_file(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("oc") == 0)
-    {
-        XMLGen::append_optimality_criteria_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksbc") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksal") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-        XMLGen::append_augmented_lagrangian_options(aMetaData, aParentNode);
     }
     else
     {
@@ -99,17 +89,15 @@ void append_grad_based_optimizer_parameters
 /******************************************************************************/
 
 /******************************************************************************/
-void append_optimality_criteria_options
+void append_optimizer_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
 {
-    std::vector<std::string> tKeys = {"OCControlStagnationTolerance", 
-                                      "OCObjectiveStagnationTolerance",
-                                      "OCGradientTolerance",
+    std::vector<std::string> tKeys = {"MaxNumOuterIterations",
+                                      "HessianType", 
                                       "ProblemUpdateFrequency"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().oc_control_stagnation_tolerance(), 
-                                        aMetaData.optimization_parameters().oc_objective_stagnation_tolerance(),
-                                        aMetaData.optimization_parameters().oc_gradient_tolerance(),
+    std::vector<std::string> tValues = {aMetaData.optimization_parameters().max_iterations(),
+                                        aMetaData.optimization_parameters().hessian_type(), 
                                         aMetaData.optimization_parameters().problem_update_frequency()};
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
     auto tOptionsNode = aParentNode.child("Options");
@@ -121,83 +109,7 @@ void append_optimality_criteria_options
     auto tConvergenceNode = aParentNode.append_child("Convergence");
     XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);
 }
-// function append_optimality_criteria_options
-/******************************************************************************/
-
-/******************************************************************************/
-void append_trust_region_kelley_sachs_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode)
-{
-    std::vector<std::string> tKeys = {"MaxNumOuterIterations",
-                                      "KSTrustRegionExpansionFactor", 
-                                      "KSTrustRegionContractionFactor", 
-                                      "KSMaxTrustRegionIterations", 
-                                      "KSInitialRadiusScale",
-                                      "KSMaxRadiusScale", 
-                                      "HessianType", 
-                                      "MinTrustRegionRadius", 
-                                      "LimitedMemoryStorage", 
-                                      "KSOuterGradientTolerance", 
-                                      "KSOuterStationarityTolerance",
-                                      "KSOuterStagnationTolerance", 
-                                      "KSOuterControlStagnationTolerance", 
-                                      "KSOuterActualReductionTolerance", 
-                                      "ProblemUpdateFrequency", 
-                                      "DisablePostSmoothing",
-                                      "KSTrustRegionRatioLow",       
-                                      "KSTrustRegionRatioMid", 
-                                      "KSTrustRegionRatioUpper"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().max_iterations(),
-                                        aMetaData.optimization_parameters().ks_trust_region_expansion_factor(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_contraction_factor(), 
-                                        aMetaData.optimization_parameters().ks_max_trust_region_iterations(),
-                                        aMetaData.optimization_parameters().ks_initial_radius_scale(), 
-                                        aMetaData.optimization_parameters().ks_max_radius_scale(), 
-                                        aMetaData.optimization_parameters().hessian_type(), 
-                                        aMetaData.optimization_parameters().ks_min_trust_region_radius(), 
-                                        aMetaData.optimization_parameters().limited_memory_storage(),
-                                        aMetaData.optimization_parameters().ks_outer_gradient_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_stationarity_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_stagnation_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_control_stagnation_tolerance(),
-                                        aMetaData.optimization_parameters().ks_outer_actual_reduction_tolerance(), 
-                                        aMetaData.optimization_parameters().problem_update_frequency(), 
-                                        aMetaData.optimization_parameters().ks_disable_post_smoothing(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_low(),
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_mid(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_high()};
-    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.child("Options");
-    if(tOptionsNode.empty())
-    {
-        tOptionsNode = aParentNode.append_child("Options");
-    }
-    XMLGen::append_children(tKeys, tValues, tOptionsNode);
-    auto tConvergenceNode = aParentNode.append_child("Convergence");
-    XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);
-}
-// function append_trust_region_kelley_sachs_options
-/******************************************************************************/
-
-/******************************************************************************/
-void append_augmented_lagrangian_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode)
-{
-    std::vector<std::string> tKeys = {"AugLagPenaltyParam", 
-                                      "AugLagPenaltyParamScaleFactor"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().al_penalty_parameter(), 
-                                        aMetaData.optimization_parameters().al_penalty_scale_factor()};
-    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.child("Options");
-    if(tOptionsNode.empty())
-    {
-        tOptionsNode = aParentNode.append_child("Options");
-    }
-    XMLGen::append_children(tKeys, tValues, tOptionsNode);
-}
-// function append_augmented_lagrangian_options
+// function append_optimizer_options
 /******************************************************************************/
 
 /******************************************************************************/
