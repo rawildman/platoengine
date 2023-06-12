@@ -1406,6 +1406,59 @@ TEST(PlatoTestXMLGenerator, AppendComputeConstraintGradientToPlatoAnalyzeOperati
     PlatoTestXMLGenerator::test_children({"Argument", "ArgumentName"}, {"Gradient", "Constraint Gradient 1"}, tOutput);
 }
 
+TEST(PlatoTestXMLGenerator, AppendComputeConstraintGradientOperationForShapeProblem)
+{
+    XMLGen::InputData tMetaData;
+
+    XMLGen::Criterion tCriterion;
+    tCriterion.id("1");
+    tCriterion.type("volume");
+    tMetaData.append(tCriterion);
+
+    XMLGen::Service tService;
+    tService.id("1");
+    tService.code("plato_analyze");
+    tService.cacheState("false");
+    tService.updateProblem("true");
+    tMetaData.append(tService);
+
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("1");
+    tConstraint.service("1");
+    tConstraint.criterion("1");
+    tMetaData.constraints.push_back(tConstraint);
+
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_compute_constraint_gradient_operation_for_shape_problem(tMetaData, tDocument);
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", "Criterion", "Output"};
+    std::vector<std::string> tValues = {"ComputeCriterionGradientX", "Compute Constraint Gradient 1", "my_volume_criterion_id_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tOutput = tOperation.child("Output");
+    PlatoTestXMLGenerator::test_children({"ArgumentName", "Argument"}, {"DGDX", "Gradient"}, tOutput);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    tKeys = {"Name", "Function", "Criterion", "For", "Output"};
+    tValues = {"Compute Constraint Sensitivity", "MapCriterionGradientX", "my_volume_criterion_id_1","",""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+
+    auto tFor = tOperation.child("For");
+    PlatoTestXMLGenerator::test_attributes({"var", "in"}, {"I", "Parameters"}, tFor);
+    auto tInputs = tFor.child("Input");
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Parameter Sensitivity {I}"}, tInputs);
+
+    tOutput = tFor.next_sibling("Output");
+    PlatoTestXMLGenerator::test_children({"ArgumentName"}, {"Criterion Sensitivity"}, tOutput);
+}
+
 TEST(PlatoTestXMLGenerator, AppendComputeSolutionToPlatoAnalyzeOperation)
 {
     pugi::xml_document tDocument;

@@ -382,11 +382,13 @@ void append_filter_criterion_gradient_operation
  * \brief Append constaint gradient operation for shape optimization problems.
  * \param [in]  aConstraint input constraint metadata
  * \param [in]  aPerformer  name of performer calculating the constraint gradient
+ * \param [in]  aIdentifierString  string identifying the constraint criterion being evaluated
  * \param [out] aParentNode parent xml node
 **********************************************************************************/
 void append_compute_constraint_gradient_operation
 (const XMLGen::Constraint &aConstraint,
  const std::string &aPerformer,
+ const std::string &aIdentifierString,
  pugi::xml_node &aParentNode);
 
 /******************************************************************************//**
@@ -396,18 +398,6 @@ void append_compute_constraint_gradient_operation
 **********************************************************************************/
 void append_compute_shape_sensitivity_on_change_operation
 (pugi::xml_node &aParentNode);
-
-/******************************************************************************//**
- * \fn append_compute_constraint_sensitivity_operation
- * \brief Append constraint sensitivity operation for shape optimization problems.
- * \param [in]  aPerformer Name of current performer
- * \param [in]  aSharedDataName Name of shared data to store result
- * \param [out] aParentNode  parent xml node
-**********************************************************************************/
-void append_compute_constraint_sensitivity_operation
-(const std::string &aPerformer,
- const std::string &aSharedDataName,
- pugi::xml_node &aParentNode);
 
 /******************************************************************************//**
  * \fn append_aggregate_objective_value_operation
@@ -440,14 +430,14 @@ void append_aggregate_objective_value_operation_for_non_multi_load_case
  pugi::xml_node &aParentNode);
 
 /******************************************************************************//**
- * \fn append_compute_objective_sensitivity_operation
- * \brief Append objective sensitivity operation for shape optimization problem
+ * \fn append_compute_criterion_sensitivity_operation
+ * \brief Append criterion sensitivity operation for shape optimization problem
  * \param [in]  aMetaData  Plato problem input data
  * \param [in]  aService Current service
  * \param [in]  aSharedDataName Criterion identifier string
  * \param [out] aParentNode parent xml node
 **********************************************************************************/
-void append_compute_objective_sensitivity_operation
+void append_compute_criterion_sensitivity_operation
 (const XMLGen::InputData& aMetaData,
  const XMLGen::Service &aService,
  const std::string &aIdentifierString,

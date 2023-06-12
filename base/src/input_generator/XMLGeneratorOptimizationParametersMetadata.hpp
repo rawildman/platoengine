@@ -458,6 +458,11 @@ public:
     std::string reset_algorithm_on_update() const {return value("reset_algorithm_on_update");}
     std::string rol_subproblem_model() const {return value("rol_subproblem_model");}
     std::string rol_lin_more_cauchy_initial_step_size() const {return value("rol_lin_more_cauchy_initial_step_size");}
+    std::string rol_initial_trust_region_radius() const {return value("rol_initial_trust_region_radius");}
+    std::string rol_gradient_tolerance() const {return value("rol_gradient_tolerance");}
+    std::string rol_constraint_tolerance() const {return value("rol_constraint_tolerance");}
+    std::string rol_step_tolerance() const {return value("rol_step_tolerance");}
+
     std::string dakota_workflow() const {return value("dakota_workflow");}
     std::string concurrent_evaluations() const {return value("concurrent_evaluations");}
     

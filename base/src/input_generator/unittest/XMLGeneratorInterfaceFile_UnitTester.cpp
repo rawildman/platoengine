@@ -3593,5 +3593,31 @@ TEST(PlatoTestXMLGenerator, WriteInterfaceXmlFile_ErrorMultipleObjectives)
     ASSERT_THROW(XMLGen::write_interface_xml_file(tXMLMetaData), std::runtime_error);
 }
 
+TEST(PlatoTestXMLGenerator, AppendComputeConstraintGradientOperation)
+{
+    XMLGen::Constraint tConstraint;
+    tConstraint.id("1");
+
+    pugi::xml_document tDocument;
+
+    ASSERT_NO_THROW(XMLGen::append_compute_constraint_gradient_operation(tConstraint, 
+                        "plato_analyze_1", "criterion_1_service_2", tDocument));
+
+    auto tNode = tDocument.child("Operation");
+    ASSERT_FALSE(tNode.empty());
+    ASSERT_STREQ("Operation", tNode.name());
+    std::vector<std::string> tKeys = {"Name", "PerformerName", "Output"};
+    std::vector<std::string> tValues = {"Compute Constraint Gradient 1", "plato_analyze_1", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+
+    tNode = tNode.child("Output");
+    ASSERT_FALSE(tNode.empty());
+    ASSERT_STREQ("Output", tNode.name());
+    tKeys = {"ArgumentName", "SharedDataName"};
+    tValues = {"DGDX", "Criterion GradientX - criterion_1_service_2"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tNode);
+}
+
+
 }
 // namespace PlatoTestXMLGenerator

@@ -534,9 +534,9 @@ void append_constraint_gradient_stage_for_shape_problem
         XMLGen::append_update_geometry_on_change_operation(tFirstPlatoMainPerformer, tStageNode);
         XMLGen::append_reinitialize_on_change_operation(tService.performer(), tStageNode);
         auto tOuterOperationNode = tStageNode.append_child("Operation");
-        XMLGen::append_compute_constraint_gradient_operation(tConstraint, tService.performer(), tOuterOperationNode);
+        XMLGen::append_compute_constraint_gradient_operation(tConstraint, tService.performer(), tIdentifierString, tOuterOperationNode);
         XMLGen::append_compute_shape_sensitivity_on_change_operation(tOuterOperationNode);
-        XMLGen::append_compute_constraint_sensitivity_operation(tService.performer(), tSharedDataName, tStageNode);
+        XMLGen::append_compute_criterion_sensitivity_operation(aMetaData, tService, tIdentifierString, tStageNode);
         XMLGen::append_copy_value_operation(tFirstPlatoMainPerformer, tSharedDataName, tStageOutputName, tStageNode);
         auto tOutputNode = tStageNode.append_child("Output");
         XMLGen::append_children({"SharedDataName"}, {"Constraint Gradient " + tConstraint.id()}, tOutputNode);
@@ -920,7 +920,7 @@ void append_objective_gradient_stage_for_shape_problem
             XMLGen::Service tService = aMetaData.service(tServiceID); 
             ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
             auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
-            XMLGen::append_compute_objective_sensitivity_operation(aMetaData, tService, tIdentifierString, tOuterOperationNode);
+            XMLGen::append_compute_criterion_sensitivity_operation(aMetaData, tService, tIdentifierString, tOuterOperationNode);
         }
         if(aMetaData.needToAggregate())
         {
