@@ -169,10 +169,10 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
                                                                  {"rol_gradient_check_perturbation_scale", "1.0"} ,
                                                                  {"rol_gradient_check_steps", "12"},
                                                                  {"rol_gradient_check_random_seed", ""},
-                                                                 {"rol_initial_trust_region_radius", "0.5"},
-                                                                 {"rol_gradient_tolerance", "1e-6"},
-                                                                 {"rol_constraint_tolerance", "1e-6"},
-                                                                 {"rol_step_tolerance", "1e-6"}
+                                                                 {"rol_initial_trust_region_radius", "1.5e1"},
+                                                                 {"rol_gradient_tolerance", "1e-10"},
+                                                                 {"rol_constraint_tolerance", "1e-10"},
+                                                                 {"rol_step_tolerance", "1e-14"}
                                                                  };
     for(auto& tPair : tTags)
     {
