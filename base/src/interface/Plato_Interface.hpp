@@ -139,7 +139,6 @@ public:
     /// This ctor initializes Interface from the saved state in the XML file with name
     /// @a aFileName, and assumes the data with XML tag @a aNodeName.
     Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
-    Interface(const int & aCommID, const std::string & a_XML_String, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
     ~Interface();
 
     void registerApplication(Plato::Application* aApplication);
@@ -168,6 +167,11 @@ public:
     // accessors
     Plato::InputData getInputData() const;
     std::string getLocalPerformerName(){return mLocalPerformerName;}
+
+    // settors
+    void setDataLayer
+    (const Plato::SharedDataInfo & aSharedDataInfo, 
+     const Plato::CommunicationData & aCommData);
 
     // error handling
     void Catch();
@@ -253,7 +257,7 @@ private:
     std::vector<SharedDataSerializedInfo> mAllSharedDataInfo;
 
     // Internal state
-    Plato::DataLayer* mDataLayer = nullptr;
+    std::unique_ptr<Plato::DataLayer> mDataLayer;
 
     std::shared_ptr<Plato::Performer> mPerformer;
     std::vector<std::unique_ptr<Plato::Stage>> mStages;

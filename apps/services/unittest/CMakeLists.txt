@@ -2,7 +2,6 @@
 # Sources:
 ###############################################################################
 SET(PlatoMainUnitTester_SRCS UnitMain.cpp
-                             parse_unit_test.cpp
                              Plato_StkMeshUtils.cpp
                              Plato_PlatoProxyApp.cpp
                              Plato_PhysicsProxyApp.cpp

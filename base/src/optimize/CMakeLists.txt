@@ -42,6 +42,7 @@ set(${LIB_NAME}_HEADERS Plato_BoundsBase.hpp
                         Plato_ProxyComplianceROL.hpp
                         Plato_SerialVectorROL.hpp
                         Plato_ProxyVolumeROL.hpp
+                        GradientCheckUtilities.hpp
                         )
 
 INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
@@ -60,4 +61,8 @@ if( CMAKE_INSTALL_PREFIX )
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
   install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
  ENDFOREACH()
+endif()
+
+if( UNIT_TESTING )
+  add_subdirectory(./unittest)
 endif()

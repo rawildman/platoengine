@@ -50,6 +50,7 @@
 #include <limits>
 #include <vector>
 #include <string>
+#include <memory>
 #include <cstdlib>
 #include <stdlib.h>
 #include <fstream>
@@ -113,24 +114,6 @@ Interface::Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName,
 }
 
 /******************************************************************************/
-Interface::Interface(const int & aCommID, const std::string & aXML_String, MPI_Comm aGlobalComm) :
-        mLocalCommID(aCommID),
-        mInputData(inputDataFromPugiParsedFile(getenv("PLATO_INTERFACE_FILE"))),
-        mGlobalComm(aGlobalComm)
-/******************************************************************************/
-{
-    // The local program's communicator id (in argument aCommID) is specified as an 
-    // argument to mpirun.
-    // TODO: Add validation, not sure what valid is here
-    // if(comm_id is valid) 
-    //else
-    // throw
-
-    createPerformers();
-    initializeConsole();
-}
-
-/******************************************************************************/
 void Interface::getLocalComm(MPI_Comm& aLocalComm)
 /******************************************************************************/
 {
@@ -142,6 +125,15 @@ Plato::InputData Interface::getInputData() const
 /******************************************************************************/
 {
     return mInputData;
+}
+
+/******************************************************************************/
+void Interface::setDataLayer
+(const Plato::SharedDataInfo & aSharedDataInfo, 
+ const Plato::CommunicationData & aCommData)
+/******************************************************************************/
+{
+    mDataLayer = std::make_unique<Plato::DataLayer>(aSharedDataInfo, aCommData);
 }
 
 /******************************************************************************/
@@ -577,11 +569,7 @@ void Interface::createSharedData(Plato::Application* const aApplication)
     CommunicationData tCommunicationData;
     getSharedDataAndCommunicationInfo(aApplication, tSharedDataInfo, tCommunicationData);
 
-    if(mDataLayer)
-    {
-        delete mDataLayer;
-    }
-    mDataLayer = new Plato::DataLayer(tSharedDataInfo, tCommunicationData);
+    this->setDataLayer(tSharedDataInfo, tCommunicationData);
 }
 
 /******************************************************************************/
@@ -897,11 +885,6 @@ bool Interface::isDone()
 Interface::~Interface()
 /******************************************************************************/
 {
-    if(mDataLayer)
-    {
-        delete mDataLayer;
-        mDataLayer = nullptr;
-    }
     if(mExceptionHandler)
     {
         delete mExceptionHandler;
