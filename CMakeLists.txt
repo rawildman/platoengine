@@ -165,6 +165,7 @@ if( AMFILTER_ENABLED )
 endif()
 
 add_subdirectory(base/src)
+add_subdirectory(base/src/test_utilities)
 add_subdirectory(base/src/tools)
 add_subdirectory(base/src/analyze)
 add_subdirectory(base/src/data_layer)

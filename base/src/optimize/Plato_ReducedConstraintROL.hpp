@@ -56,6 +56,7 @@
 
 #include "ROL_Constraint.hpp"
 
+#include "types.hpp"
 #include "Plato_Interface.hpp"
 #include "Plato_SerialVectorROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
