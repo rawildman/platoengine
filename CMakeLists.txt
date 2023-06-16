@@ -10,6 +10,15 @@ Plato_no_src_build()
 # Advertise that we support shared libs (cmake squawks otherwise)
 SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 
+# Add ccache if available
+find_program(CCACHE_FOUND ccache)
+if( CCACHE_FOUND )
+  # Spack is able to use ccache, however, using ccache with nvcc_wrapper does not seem to work
+  # properly through spack.
+  message( STATUS "Found ccache" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER ccache )
+endif()
+
 ##################################################################
 ## Load config.cmake                                            ##
 ##################################################################
