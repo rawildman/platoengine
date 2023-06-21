@@ -213,9 +213,7 @@ void generate_rol_input_file(const XMLGen::InputData& aMetaData)
 
     n2 = n1.append_child("ParameterList");
     n2.append_attribute("name") = "Status Test";
-    addNTVParameter(n2, "Gradient Tolerance", "double", "1e-10");
-    addNTVParameter(n2, "Constraint Tolerance", "double", "1e-10");
-    addNTVParameter(n2, "Step Tolerance", "double", "1e-14");
+    XMLGen::append_rol_tolerances(aMetaData, n2);
 
     if(aMetaData.optimization_parameters().reset_algorithm_on_update() == "true")
     {
@@ -246,6 +244,26 @@ void append_rol_input_file
     XMLGen::append_children(tKeys, tValues, tOptionsNode);
 }
 // function append_rol_input_file
+/******************************************************************************/
+
+/******************************************************************************/
+void append_rol_tolerances(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent)
+{
+    addNTVParameter(aParent, "Gradient Tolerance", "double", aMetaData.optimization_parameters().rol_gradient_tolerance());
+    addNTVParameter(aParent, "Constraint Tolerance", "double", aMetaData.optimization_parameters().rol_constraint_tolerance());
+    addNTVParameter(aParent, "Step Tolerance", "double", aMetaData.optimization_parameters().rol_step_tolerance());
+}
+// function append_rol_tolerances
+/******************************************************************************/
+
+/******************************************************************************/
+void append_initial_trust_region_radius(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent)
+{
+    addNTVParameter(aParent, "Initial Radius", "double", aMetaData.optimization_parameters().rol_initial_trust_region_radius());
+}
+// function append_initial_trust_region_radius
 /******************************************************************************/
 
 /******************************************************************************/
@@ -298,7 +316,7 @@ void append_rol_step_block(const XMLGen::InputData& aMetaData,
     addNTVParameter(n3, "Subproblem Solver", "string", "Truncated CG");
     std::string tSubproblemModel = XMLGen::get_subproblem_model(aMetaData.optimization_parameters().rol_subproblem_model());
     addNTVParameter(n3, "Subproblem Model", "string", tSubproblemModel);
-    addNTVParameter(n3, "Initial Radius", "double", "1.5e1");
+    XMLGen::append_initial_trust_region_radius(aMetaData, n3);
     addNTVParameter(n3, "Maximum Radius", "double", "1.0e8");
     addNTVParameter(n3, "Step Acceptance Threshold", "double", "1e-2");
     addNTVParameter(n3, "Radius Shrinking Threshold", "double", "0.05");

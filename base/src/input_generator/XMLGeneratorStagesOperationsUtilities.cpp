@@ -777,10 +777,14 @@ void append_filter_criterion_gradient_operation
 void append_compute_constraint_gradient_operation
 (const XMLGen::Constraint &aConstraint,
  const std::string &aPerformer,
+ const std::string &aIdentifierString,
  pugi::xml_node &aParentNode)
 {
     auto tOperationNode = aParentNode.append_child("Operation");
     XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient " + aConstraint.id(), aPerformer}, tOperationNode);
+    auto tOperationOutput = tOperationNode.append_child("Output");
+    auto tOutputSharedData = std::string("Criterion GradientX - ") + aIdentifierString;
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DGDX", tOutputSharedData}, tOperationOutput);
 }
 // function append_compute_constraint_gradient_operation
 /******************************************************************************/
@@ -804,21 +808,45 @@ void append_compute_shape_sensitivity_on_change_operation
 /******************************************************************************/
 
 /******************************************************************************/
-void append_compute_constraint_sensitivity_operation
-(const std::string &aPerformer,
- const std::string &aSharedDataName,
+void append_compute_criterion_sensitivity_operation
+(const XMLGen::InputData& aMetaData,
+ const XMLGen::Service &aService,
+ const std::string &aIdentifierString,
  pugi::xml_node &aParentNode)
 {
+    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3" &&
+       aMetaData.optimization_parameters().esp_workflow() != "egads_tetgen" &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr4_tetgen" &&
+       aMetaData.optimization_parameters().esp_workflow() != "aflr2")
+    {
+        THROWERR("Unknown esp workflow.")
+    }
+
+    std::string tPerformer = aService.performer();
+    std::string tOperationName;
+    std::string tOutputArgumentName;
+    tPerformer = aMetaData.getFirstPlatoMainPerformer();
+    tOperationName = "Chain Rule";
+    tOutputArgumentName = "Full Gradient";
+
     auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Sensitivity", aPerformer}, tOperationNode);
+    XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tPerformer}, tOperationNode);
+
     auto tForNode = tOperationNode.append_child("For");
     XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
     auto tInputNode = tForNode.append_child("Input");
     XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"}, tInputNode);
+
+    auto tDFDXSharedDataName = "Criterion GradientX - " + aIdentifierString;
+    tInputNode = tOperationNode.append_child("Input");
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DFDX", tDFDXSharedDataName}, tInputNode);
+
+    std::string tOutputSharedDataName = "Criterion Gradient - " + aIdentifierString;
     auto tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Criterion Sensitivity", aSharedDataName}, tOutputNode);
+    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {tOutputArgumentName, tOutputSharedDataName}, tOutputNode);
 }
-// function append_compute_constraint_sensitivity_operation
+// function append_compute_criterion_sensitivity_operation
 /******************************************************************************/
 
 /******************************************************************************/
@@ -902,49 +930,6 @@ void append_aggregate_objective_value_operation_for_non_multi_load_case
     }
 }
 // function append_aggregate_objective_value_operation_for_non_multi_load_case
-/******************************************************************************/
-
-/******************************************************************************/
-void append_compute_objective_sensitivity_operation
-(const XMLGen::InputData& aMetaData,
- const XMLGen::Service &aService,
- const std::string &aIdentifierString,
- pugi::xml_node &aParentNode)
-{
-    if(aMetaData.optimization_parameters().optimizationType() == OT_SHAPE &&
-       aMetaData.optimization_parameters().esp_workflow() != "aflr4_aflr3" &&
-       aMetaData.optimization_parameters().esp_workflow() != "egads_tetgen" &&
-       aMetaData.optimization_parameters().esp_workflow() != "aflr4_tetgen" &&
-       aMetaData.optimization_parameters().esp_workflow() != "aflr2")
-    {
-        THROWERR("Unknown esp workflow.")
-    }
-
-    std::string tCode = aService.code();
-    std::string tPerformer = aService.performer();
-    std::string tOperationName;
-    std::string tOutputArgumentName;
-    tPerformer = aMetaData.getFirstPlatoMainPerformer();
-    tOperationName = "Chain Rule";
-    tOutputArgumentName = "Full Gradient";
-
-    auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {tOperationName, tPerformer}, tOperationNode);
-
-    auto tForNode = tOperationNode.append_child("For");
-    XMLGen::append_attributes({"var", "in"}, {"I", "Parameters"}, tForNode);
-    auto tInputNode = tForNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Parameter Sensitivity {I}", "Parameter Sensitivity {I}"}, tInputNode);
-
-    auto tDFDXSharedDataName = "Criterion GradientX - " + aIdentifierString;
-    tInputNode = tOperationNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"DFDX", tDFDXSharedDataName}, tInputNode);
-
-    std::string tOutputSharedDataName = "Criterion Gradient - " + aIdentifierString;
-    auto tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {tOutputArgumentName, tOutputSharedDataName}, tOutputNode);
-}
-// function append_compute_objective_sensitivity_operation
 /******************************************************************************/
 
 /******************************************************************************/

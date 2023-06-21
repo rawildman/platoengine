@@ -1,7 +1,12 @@
 
 #include <gtest/gtest.h>
 
+#include "pugixml.hpp"
+#include "XMLGeneratorGradBasedOptimizerOptions.hpp"
+#include "XMLGeneratorDataStruct.hpp"
+#include "XMLGeneratorOptimizationParametersMetadata.hpp"
 #include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
+#include "XMLGenerator_UnitTester_Tools.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -156,14 +161,18 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_rol_input_options(tTags);
-    EXPECT_EQ(6u, tTags.size());
+    EXPECT_EQ(10u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"rol_subproblem_model", ""}, 
                                                                  {"reset_algorithm_on_update","false"}, 
                                                                  {"rol_lin_more_cauchy_initial_step_size", "3.0"} ,
                                                                  {"rol_gradient_check_perturbation_scale", "1.0"} ,
                                                                  {"rol_gradient_check_steps", "12"},
-                                                                 {"rol_gradient_check_random_seed", ""}
+                                                                 {"rol_gradient_check_random_seed", ""},
+                                                                 {"rol_initial_trust_region_radius", "1.5e1"},
+                                                                 {"rol_gradient_tolerance", "1e-10"},
+                                                                 {"rol_constraint_tolerance", "1e-10"},
+                                                                 {"rol_step_tolerance", "1e-14"}
                                                                  };
     for(auto& tPair : tTags)
     {
@@ -175,6 +184,61 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
         // TEST DEFAULT VALUES
         EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
     }
+}
+
+TEST(PlatoTestXMLGenerator, AppendROLInitialTrustRegionRadius)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_initial_trust_region_radius", "3e-2");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_initial_trust_region_radius(tMetaData, tDocument);
+
+    auto tNode = tDocument.child("Parameter");
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Initial Radius", "double", "3e-2"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+}
+
+TEST(PlatoTestXMLGenerator, TestROLInputMetadataGetters)
+{
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_initial_trust_region_radius", "3e-2");
+    tOptimizationParameters.append("rol_gradient_tolerance", "1.2e-3");
+    tOptimizationParameters.append("rol_constraint_tolerance", "4.7e-9");
+    tOptimizationParameters.append("rol_step_tolerance", "7.1e-14");
+    EXPECT_STREQ("3e-2", tOptimizationParameters.rol_initial_trust_region_radius().c_str());
+    EXPECT_STREQ("1.2e-3", tOptimizationParameters.rol_gradient_tolerance().c_str());
+    EXPECT_STREQ("4.7e-9", tOptimizationParameters.rol_constraint_tolerance().c_str());
+    EXPECT_STREQ("7.1e-14", tOptimizationParameters.rol_step_tolerance().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, AppendROLTolerances)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_gradient_tolerance", "1.2e-3");
+    tOptimizationParameters.append("rol_constraint_tolerance", "4.7e-9");
+    tOptimizationParameters.append("rol_step_tolerance", "7.1e-14");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_rol_tolerances(tMetaData, tDocument);
+
+    auto tNode = tDocument.child("Parameter");
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Gradient Tolerance", "double", "1.2e-3"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+
+    tNode = tNode.next_sibling("Parameter");
+    tValues = {"Constraint Tolerance", "double", "4.7e-9"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+
+    tNode = tNode.next_sibling("Parameter");
+    tValues = {"Step Tolerance", "double", "7.1e-14"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
 }
 
 TEST(PlatoTestXMLGenerator, InsertDerivativeCheckerInputs)

@@ -198,5 +198,23 @@ void generate_target_value_entries
  const XMLGen::Constraint &aConstraint,
  std::map<std::string, std::string> &aKeyToValueMap);
 
+/******************************************************************************//**
+ * \fn append_rol_tolerances
+ * \brief Append convergence tolerances to the rol input file.
+ * \param [in]  aMetaData   Plato problem input data
+ * \param [out] aParentNode Parent to add data to
+**********************************************************************************/
+void append_rol_tolerances(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent);
+
+/******************************************************************************//**
+ * \fn append_initial_trust_region_radius
+ * \brief Append initial trust region radius to the rol input file.
+ * \param [in]  aMetaData   Plato problem input data
+ * \param [out] aParentNode Parent to add data to
+**********************************************************************************/
+void append_initial_trust_region_radius(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent);
+
 }
 //  namespace XMLGen

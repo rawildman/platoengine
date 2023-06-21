@@ -60,9 +60,15 @@ void insert_rol_input_options(XMLGen::MetaDataTags &aTags)
     aTags.insert({ "rol_subproblem_model", { { {"rol_subproblem_model"}, ""}, "" } });
     aTags.insert({ "reset_algorithm_on_update", { { {"reset_algorithm_on_update"}, ""}, "false" } });
     aTags.insert({ "rol_lin_more_cauchy_initial_step_size", { { {"rol_lin_more_cauchy_initial_step_size"}, ""}, "3.0" } });
+    aTags.insert({ "rol_initial_trust_region_radius", { { {"rol_initial_trust_region_radius"}, ""}, "1.5e1" } });
+
     aTags.insert({ "rol_gradient_check_perturbation_scale", { { {"rol_gradient_check_perturbation_scale"}, ""}, "1.0" } });
     aTags.insert({ "rol_gradient_check_steps", { { {"rol_gradient_check_steps"}, ""}, "12" } });
     aTags.insert({ "rol_gradient_check_random_seed", { { {"rol_gradient_check_random_seed"}, ""}, "" } });
+    aTags.insert({ "rol_gradient_tolerance", { { {"rol_gradient_tolerance"}, ""}, "1e-10" } });
+    aTags.insert({ "rol_constraint_tolerance", { { {"rol_constraint_tolerance"}, ""}, "1e-10" } });
+    aTags.insert({ "rol_step_tolerance", { { {"rol_step_tolerance"}, ""}, "1e-14" } });
+
 }
 // function insert_rol_input_options
 /******************************************************************************/

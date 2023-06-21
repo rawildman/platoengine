@@ -379,5 +379,13 @@ void append_visualization_to_plato_analyze_operation
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode);
 
+/******************************************************************************//**
+ * \fn append_compute_map_criterion_gradient_operation_for_shape_problem
+ * \brief Append the operation for concatenating dF/dX and dX/dP in PA
+ * \param [in] aCriterionName  name of the current criterion
+ * \param [in/out] aDocument   pugi::xml_document
+**********************************************************************************/
+void append_compute_map_criterion_gradient_operation_for_shape_problem(const std::string &aCriterionName, 
+                                                                        pugi::xml_document &aDocument);
 }
 // namespace XMLGen
