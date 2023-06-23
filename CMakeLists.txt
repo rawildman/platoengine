@@ -5,6 +5,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 set (CMAKE_CXX_STANDARD 17)
 
 include( ${CMAKE_SOURCE_DIR}/base/config/tools.cmake )
+include( ${CMAKE_SOURCE_DIR}/base/config/prebuilt_binaries.cmake )
+
 Plato_no_src_build()
 
 # Advertise that we support shared libs (cmake squawks otherwise)
@@ -272,6 +274,7 @@ if( REGRESSION )
         add_subdirectory(integration_tests/prune_and_refine)
     endif()
     if( SIERRA_TESTS_ENABLED )
+      install_prebuilt_binaries()
       add_subdirectory(integration_tests/sierra)
     endif()
     if( SIERRA_TESTS_ENABLED AND DAKOTADRIVER )
