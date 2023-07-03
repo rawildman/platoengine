@@ -66,15 +66,6 @@ void insert_restart_input_options(XMLGen::MetaDataTags &aTags);
 void insert_derivative_checker_input_options(XMLGen::MetaDataTags &aTags);
 
 /******************************************************************************//**
- * \fn insert_optimality_criteria_input_options
- * \brief Insert input options and corresponding defaults for Plato's Optimality \n
-          Criteria (OC) algorithm into the map from the plato input deck keyword \n
-          to the input value and default value pairs.
- * \param [in] aTags Plato input deck key-value map
-**********************************************************************************/
-void insert_optimality_criteria_input_options(XMLGen::MetaDataTags &aTags);
-
-/******************************************************************************//**
  * \fn insert_general_dakota_input_options
  * \brief Insert input options and corresponding default values for Dakota's \n
           Driver problems into the map from the plato input deck \n
@@ -156,15 +147,6 @@ void insert_plato_projection_filter_input_options(XMLGen::MetaDataTags &aTags);
  * \param [in] aTags Plato input deck key-value map
 **********************************************************************************/
 void insert_plato_levelset_input_options(XMLGen::MetaDataTags &aTags);
-
-/******************************************************************************//**
- * \fn insert_plato_kelley_sachs_trust_region_input_options
- * \brief Insert input options and corresponding default values for Plato's \n
-          Kelley-Sachs trust region algorithms into the map from the plato \n
-          input deck keyword to the input value and default value pairs.
- * \param [in] aTags Plato input deck key-value map
-**********************************************************************************/
-void insert_plato_kelley_sachs_trust_region_input_options(XMLGen::MetaDataTags &aTags);
 
 /******************************************************************************//**
  * \fn insert_amgx_input_options

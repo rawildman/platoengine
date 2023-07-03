@@ -1,7 +1,12 @@
 
 #include <gtest/gtest.h>
 
+#include "pugixml.hpp"
+#include "XMLGeneratorGradBasedOptimizerOptions.hpp"
+#include "XMLGeneratorDataStruct.hpp"
+#include "XMLGeneratorOptimizationParametersMetadata.hpp"
 #include "XMLGeneratorParseMethodInputOptionsUtilities.hpp"
+#include "XMLGenerator_UnitTester_Tools.hpp"
 
 namespace PlatoTestXMLGenerator
 {
@@ -14,32 +19,6 @@ TEST(PlatoTestXMLGenerator, InsertLevelsetBasedShapeOptimizationInputs)
     std::unordered_map<std::string, std::string> tGoldValues = { {"levelset_nodesets",""}, {"levelset_sphere_radius",""}, 
         {"create_levelset_spheres", ""}, {"levelset_material_box_min", ""}, {"levelset_material_box_max", ""},
         {"levelset_sphere_packing_factor", ""}, {"levelset_initialization_method", ""} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
-TEST(PlatoTestXMLGenerator, InsertKelleySachsTrustRegionInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_plato_kelley_sachs_trust_region_input_options(tTags);
-    EXPECT_EQ(23u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"ks_max_radius_scale",""}, 
-        {"ks_initial_radius_scale",""}, {"ks_trust_region_ratio_low", ""}, {"ks_trust_region_ratio_mid", ""}, 
-        {"ks_min_trust_region_radius", ""}, {"ks_trust_region_ratio_high", ""}, {"ks_disable_post_smoothing", "true"}, 
-        {"ks_outer_gradient_tolerance", ""}, {"ks_outer_stagnation_tolerance", ""}, {"ks_max_trust_region_iterations", "5"}, 
-        {"ks_outer_stationarity_tolerance", ""}, {"ks_trust_region_expansion_factor", ""}, {"ks_trust_region_contraction_factor", ""}, 
-        {"ks_outer_actual_reduction_tolerance", ""}, {"ks_outer_control_stagnation_tolerance", ""}, {"use_mean_norm", ""}, 
-        {"al_penalty_parameter", ""}, {"feasibility_tolerance", ""}, {"max_trust_region_radius", ""}, {"al_penalty_scale_factor", ""}, 
-        {"al_max_subproblem_iterations", ""}, {"hessian_type", ""}, {"limited_memory_storage", "8"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
@@ -158,26 +137,6 @@ TEST(PlatoTestXMLGenerator, InsertPruneAndRefineInputs)
     }
 }
 
-TEST(PlatoTestXMLGenerator, InsertOptimalityCriteriaInputs)
-{
-    XMLGen::MetaDataTags tTags;
-    XMLGen::insert_optimality_criteria_input_options(tTags);
-    EXPECT_EQ(3u, tTags.size());
-
-    std::unordered_map<std::string, std::string> tGoldValues = { {"oc_gradient_tolerance","1e-8"}, 
-        {"oc_control_stagnation_tolerance", "1e-2"}, {"oc_objective_stagnation_tolerance", "1e-5"} };
-    for(auto& tPair : tTags)
-    {
-        // TEST INPUT KEYWORDS
-        auto tGoldItr = tGoldValues.find(tPair.first);
-        ASSERT_FALSE(tGoldItr == tGoldValues.end());
-        EXPECT_STREQ(tPair.first.c_str(), tGoldItr->first.c_str());
-
-        // TEST DEFAULT VALUES
-        EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
-    }
-}
-
 TEST(PlatoTestXMLGenerator, InsertRestartInputs)
 {
     XMLGen::MetaDataTags tTags;
@@ -202,14 +161,18 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_rol_input_options(tTags);
-    EXPECT_EQ(6u, tTags.size());
+    EXPECT_EQ(10u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"rol_subproblem_model", ""}, 
                                                                  {"reset_algorithm_on_update","false"}, 
                                                                  {"rol_lin_more_cauchy_initial_step_size", "3.0"} ,
                                                                  {"rol_gradient_check_perturbation_scale", "1.0"} ,
                                                                  {"rol_gradient_check_steps", "12"},
-                                                                 {"rol_gradient_check_random_seed", ""}
+                                                                 {"rol_gradient_check_random_seed", ""},
+                                                                 {"rol_initial_trust_region_radius", "1.5e1"},
+                                                                 {"rol_gradient_tolerance", "1e-10"},
+                                                                 {"rol_constraint_tolerance", "1e-10"},
+                                                                 {"rol_step_tolerance", "1e-14"}
                                                                  };
     for(auto& tPair : tTags)
     {
@@ -221,6 +184,61 @@ TEST(PlatoTestXMLGenerator, InsertRolInputs)
         // TEST DEFAULT VALUES
         EXPECT_STREQ(tPair.second.second.c_str(), tGoldItr->second.c_str());
     }
+}
+
+TEST(PlatoTestXMLGenerator, AppendROLInitialTrustRegionRadius)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_initial_trust_region_radius", "3e-2");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_initial_trust_region_radius(tMetaData, tDocument);
+
+    auto tNode = tDocument.child("Parameter");
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Initial Radius", "double", "3e-2"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+}
+
+TEST(PlatoTestXMLGenerator, TestROLInputMetadataGetters)
+{
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_initial_trust_region_radius", "3e-2");
+    tOptimizationParameters.append("rol_gradient_tolerance", "1.2e-3");
+    tOptimizationParameters.append("rol_constraint_tolerance", "4.7e-9");
+    tOptimizationParameters.append("rol_step_tolerance", "7.1e-14");
+    EXPECT_STREQ("3e-2", tOptimizationParameters.rol_initial_trust_region_radius().c_str());
+    EXPECT_STREQ("1.2e-3", tOptimizationParameters.rol_gradient_tolerance().c_str());
+    EXPECT_STREQ("4.7e-9", tOptimizationParameters.rol_constraint_tolerance().c_str());
+    EXPECT_STREQ("7.1e-14", tOptimizationParameters.rol_step_tolerance().c_str());
+}
+
+TEST(PlatoTestXMLGenerator, AppendROLTolerances)
+{
+    XMLGen::InputData tMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.append("rol_gradient_tolerance", "1.2e-3");
+    tOptimizationParameters.append("rol_constraint_tolerance", "4.7e-9");
+    tOptimizationParameters.append("rol_step_tolerance", "7.1e-14");
+    tMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    XMLGen::append_rol_tolerances(tMetaData, tDocument);
+
+    auto tNode = tDocument.child("Parameter");
+    std::vector<std::string> tKeys = {"name", "type", "value"};
+    std::vector<std::string> tValues = {"Gradient Tolerance", "double", "1.2e-3"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+
+    tNode = tNode.next_sibling("Parameter");
+    tValues = {"Constraint Tolerance", "double", "4.7e-9"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
+
+    tNode = tNode.next_sibling("Parameter");
+    tValues = {"Step Tolerance", "double", "7.1e-14"};
+    PlatoTestXMLGenerator::test_attributes(tKeys, tValues, tNode);
 }
 
 TEST(PlatoTestXMLGenerator, InsertDerivativeCheckerInputs)
@@ -246,12 +264,12 @@ TEST(PlatoTestXMLGenerator, InsertGeneralOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_general_optimization_input_options(tTags);
-    EXPECT_EQ(12u, tTags.size());
+    EXPECT_EQ(14u, tTags.size());
 
     std::unordered_map<std::string, std::string> tGoldValues = { {"max_iterations",""}, {"verbose", "false"}, {"output_method", "epu"},
         {"output_frequency", "5"}, {"optimization_type", "topology"}, {"optimization_algorithm", "oc"}, 
         {"normalize_in_aggregator", ""}, {"problem_update_frequency", "5"}, {"objective_number_standard_deviations", ""},
-        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""} };
+        {"descriptors", ""}, {"lower_bounds", ""}, {"upper_bounds", ""}, {"hessian_type", ""}, {"limited_memory_storage", "8"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS

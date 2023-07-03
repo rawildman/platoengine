@@ -14,10 +14,6 @@ std::shared_ptr<OptimizationAlgorithm> OptimizationAlgorithmFactory::create(cons
     {
         if(tOptimizationAlgorithm == "oc" )
             return std::make_shared<OptimizationAlgorithmPlatoOC>(aMetaData.optimization_parameters());
-        if(tOptimizationAlgorithm == "ksbc" )
-            return std::make_shared<OptimizationAlgorithmPlatoKSBC>(aMetaData.optimization_parameters());
-        if(tOptimizationAlgorithm == "ksal" )
-            return std::make_shared<OptimizationAlgorithmPlatoKSAL>(aMetaData.optimization_parameters());
     }
 
     return nullptr;

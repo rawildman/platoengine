@@ -63,30 +63,23 @@ class OptimizerEngineStageData : public Plato::InputData
 public:
     OptimizerEngineStageData();
 
-    void setCheckGradient(const bool & aInput);
-    void setCheckHessian(const bool & aInput);
-    void setUserInitialGuess(const bool & aInput);
-    void setOutputControlToFile(const bool & aInput);
-    void setOutputDiagnosticsToFile(const bool & aInput);
+    void setCheckGradient(const bool aInput);
+    void setCheckHessian(const bool aInput);
+    void setUserInitialGuess(const bool aInput);
+    void setOutputControlToFile(const bool aInput);
+    void setOutputDiagnosticsToFile(const bool aInput);
 
     /******************************************************************************//**
      * @brief Enable mean norm calculations, yes = true or no = false
      * @param [in] aInput flag
     ***********************************************************************************/
-    void setMeanNorm(const bool & aInput);
+    void setMeanNorm(const bool aInput);
 
     /******************************************************************************//**
      * @brief Return mean norm flag
      * @return yes = true or no = false
     ***********************************************************************************/
     bool getMeanNorm() const;
-
-    /******************************************************************************//**
-     * @brief Disable post-smoothing operation in Kelley-Sachs trust region algorithm, yes = true or no = false
-     * @param [in] aInput flag
-    ***********************************************************************************/
-    void setDisablePostSmoothing(const bool & aInput);
-
     bool getCheckGradient() const;
     bool getCheckHessian() const;
     bool getUserInitialGuess() const;
@@ -105,59 +98,26 @@ public:
     ***********************************************************************************/
     std::string getHessianType() const;
 
-    bool getDisablePostSmoothing() const;
-
     std::vector<double> getLowerBoundValues() const;
     std::vector<double> getUpperBoundValues() const;
     void setLowerBoundValues(const std::vector<double> & aInput);
     void setUpperBoundValues(const std::vector<double> & aInput);
 
     size_t getMaxNumIterations() const;
-    void setMaxNumIterations(const size_t & aInput);
+    void setMaxNumIterations(const size_t aInput);
 
     std::vector<double> getInitialGuess() const;
     void setInitialGuess(const std::vector<double> & aInput);
     void setInitialGuess(const std::vector<std::string> & aInput);
 
-    double getKSTrustRegionExpansionFactor() const;
-    void setKSTrustRegionExpansionFactor(const double & aInput);
-
-    double getKSTrustRegionContractionFactor() const;
-    void setKSTrustRegionContractionFactor(const double & aInput);
-
-    int getKSMaxTrustRegionIterations() const;
-    void setKSMaxTrustRegionIterations(const int & aInput);
-
-    double getKSOuterGradientTolerance() const;
-    void setKSOuterGradientTolerance(const double & aInput);
-
-    double getKSOuterStationarityTolerance() const;
-    void setKSOuterStationarityTolerance(const double & aInput);
-
-    double getKSOuterStagnationTolerance() const;
-    void setKSOuterStagnationTolerance(const double & aInput);
-
-    double getKSOuterControlStagnationTolerance() const;
-    void setKSOuterControlStagnationTolerance(const double & aInput);
-
-    double getKSOuterActualReductionTolerance() const;
-    void setKSOuterActualReductionTolerance(const double & aInput);
-
-    double getOCControlStagnationTolerance() const;
-    void setOCControlStagnationTolerance(const double & aInput);
-
-    double getOCObjectiveStagnationTolerance() const;
-    void setOCObjectiveStagnationTolerance(const double & aInput);
-
-    double getOCGradientTolerance() const;
-    void setOCGradientTolerance(const double & aInput);
-
     double getROLPerturbationScale() const;
-    void setROLPerturbationScale(const double & aInput);
+    void setROLPerturbationScale(const double aInput);
     int getROLCheckGradientSteps() const;
-    void setROLCheckGradientSteps(const int & aInput);
+    void setROLCheckGradientSteps(const int aInput);
+    int getROLCheckGradientStepSize() const;
+    void setROLCheckGradientStepSize(const int aInput);
     int getROLCheckGradientSeed() const;
-    void setROLCheckGradientSeed(const int & aInput);
+    void setROLCheckGradientSeed(const int aInput);
 
     const std::string& getROLStochasticDistributionsFile() const;
     void setROLStochasticDistributionsFile(std::string aInput);
@@ -165,42 +125,6 @@ public:
     void setROLStochasticNumberOfSamples(int aInput);
     int getROLStochasticSamplerSeed() const;
     void setROLStochasticSamplerSeed(int aInput);
-
-    /******************************************************************************//**
-     * @brief Return limited memory storage capacity for LBFG Hessian method
-     * @return limited memory storage capacity
-    ***********************************************************************************/
-    size_t getLimitedMemoryStorage() const;
-
-    /******************************************************************************//**
-     * @brief Set limited memory storage capacity for LBFG Hessian method
-     * @param [in] aInput limited memory storage capacity
-    ***********************************************************************************/
-    void setLimitedMemoryStorage(const size_t & aInput);
-
-    /******************************************************************************//**
-     * @brief Return maximum number of augmented Lagrangian sub problem iterations
-     * @return maximum number of augmented Lagrangian sub problem iterations
-    ***********************************************************************************/
-    size_t getMaxNumAugLagSubProbIter() const;
-
-    /******************************************************************************//**
-     * @brief Set maximum number of augmented Lagrangian sub problem iterations
-     * @param [in] aInput maximum number of augmented Lagrangian sub problem iterations
-    ***********************************************************************************/
-    void setMaxNumAugLagSubProbIter(const size_t & aInput);
-
-    /******************************************************************************//**
-     * @brief Return penalty parameter for augmented Lagrangian algorithm
-     * @return penalty parameter for augmented Lagrangian algorithm
-    ***********************************************************************************/
-    double getAugLagPenaltyParameter() const;
-
-    /******************************************************************************//**
-     * @brief Set penalty parameter for augmented Lagrangian algorithm
-     * @param [in] aInput penalty parameter for augmented Lagrangian algorithm
-    ***********************************************************************************/
-    void setAugLagPenaltyParameter(const double & aInput);
 
     /******************************************************************************//**
      * @brief Return scaling penalty parameter for augmented Lagrangian algorithm
@@ -212,43 +136,7 @@ public:
      * @brief Set scaling penalty parameter for augmented Lagrangian algorithm
      * @param [in] aInput scaling penalty parameter for augmented Lagrangian algorithm
     ***********************************************************************************/
-    void setAugLagPenaltyScaleParameter(const double & aInput);
-
-    /******************************************************************************//**
-     * @brief Return minimum trust region radius
-     * @return minimum trust region radius
-    ***********************************************************************************/
-    double getMinTrustRegionRadius() const;
-
-    /******************************************************************************//**
-     * @brief Set minimum trust region radius
-     * @param [in] aInput minimum trust region radius
-    ***********************************************************************************/
-    void setMinTrustRegionRadius(const double & aInput);
-
-    /******************************************************************************//**
-     * @brief Return maximum trust region radius
-     * @return maximum trust region radius
-    ***********************************************************************************/
-    double getMaxTrustRegionRadius() const;
-
-    /******************************************************************************//**
-     * @brief Set maximum trust region radius
-     * @param [in] aInput maximum trust region radius
-    ***********************************************************************************/
-    void setMaxTrustRegionRadius(const double & aInput);
-
-    /******************************************************************************//**
-     * @brief Return feasibility tolerance
-     * @return feasibility tolerance
-    ***********************************************************************************/
-    double getFeasibilityTolerance() const;
-
-    /******************************************************************************//**
-     * @brief Set feasibility tolerance
-     * @param [in] aInput feasibility tolerance
-    ***********************************************************************************/
-    void setFeasibilityTolerance(const double & aInput);
+    void setAugLagPenaltyScaleParameter(const double aInput);
 
     std::string getStateName() const;
     void setStateNames(const std::string & aInput);
@@ -258,12 +146,12 @@ public:
 
     size_t getNumControlVectors() const;
     std::vector<std::string> getControlNames() const;
-    std::string getControlName(const size_t & aIndex) const;
+    std::string getControlName(const size_t aIndex) const;
     void addControlName(const std::string & aInput);
     void setControlNames(const std::vector<std::string> & aInput);
 
     void addFilteredControlName(const std::string & aInput);
-    std::string getFilteredControlName(const size_t & aIndex) const;
+    std::string getFilteredControlName(const size_t aIndex) const;
 
     std::string getLowerBoundVectorName() const;
     std::string getLowerBoundValueName() const;
@@ -276,12 +164,9 @@ public:
     void setUpperBoundVectorName(const std::string & aInput);
 
     std::vector<std::string> getDescentDirectionNames() const;
-    std::string getDescentDirectionName(const size_t & aIndex) const;
+    std::string getDescentDirectionName(const size_t aIndex) const;
     void addDescentDirectionName(const std::string & aInput);
     void setDescentDirectionNames(const std::vector<std::string> & aInput);
-
-    std::string getAlgebra() const;
-    void setAlgebra(const std::string & aInput);
 
     std::string getOutputStageName() const;
     void setOutputStageName(const std::string & aInput);
@@ -353,7 +238,7 @@ public:
      * @param [in] aIndex constraint index
      * @return name assign to constraint shared value
     ***********************************************************************************/
-    std::string getConstraintValueName(const size_t & aIndex) const;
+    std::string getConstraintValueName(const size_t aIndex) const;
 
     /******************************************************************************//**
      * @brief Add constraint shared value name to list
@@ -367,30 +252,30 @@ public:
     ***********************************************************************************/
     void setConstraintValueNames(const std::vector<std::string> & aInput);
 
-    double getConstraintNormalizedTargetValue(const size_t & aIndex) const;
+    double getConstraintNormalizedTargetValue(const size_t aIndex) const;
     double getConstraintNormalizedTargetValue(const std::string & aValueName) const;
     void addConstraintNormalizedTargetValue(const std::string & aValueName, const double & aInput);
     bool constraintNormalizedTargetValueWasSet(const std::string & aValueName) const;
 
-    double getConstraintAbsoluteTargetValue(const size_t & aIndex) const;
+    double getConstraintAbsoluteTargetValue(const size_t aIndex) const;
     double getConstraintAbsoluteTargetValue(const std::string & aValueName) const;
     void addConstraintAbsoluteTargetValue(const std::string & aValueName, const double & aInput);
     bool constraintAbsoluteTargetValueWasSet(const std::string & aValueName) const;
 
-    double getConstraintReferenceValue(const size_t & aIndex) const;
+    double getConstraintReferenceValue(const size_t aIndex) const;
     double getConstraintReferenceValue(const std::string & aValueName) const;
     void addConstraintReferenceValue(const std::string & aValueName, const double & aInput);
     bool constraintReferenceValueWasSet(const std::string & aValueName) const;
 
-    std::string getConstraintReferenceValueName(const size_t & aIndex) const;
+    std::string getConstraintReferenceValueName(const size_t aIndex) const;
     std::string getConstraintReferenceValueName(const std::string & aValueName) const;
     void addConstraintReferenceValueName(const std::string & aValueName, const std::string & aReferenceValueName);
 
-    std::string getConstraintHessianName(const size_t & aIndex) const;
+    std::string getConstraintHessianName(const size_t aIndex) const;
     std::string getConstraintHessianName(const std::string & aValueName) const;
     void addConstraintHessianName(const std::string & aValueName, const std::string & aHessianName);
 
-    std::string getConstraintGradientName(const size_t & aIndex) const;
+    std::string getConstraintGradientName(const size_t aIndex) const;
     std::string getConstraintGradientName(const std::string & aValueName) const;
     void addConstraintGradientName(const std::string & aValueName, const std::string & aGradientName);
 
@@ -405,7 +290,7 @@ public:
      * @param [in] aIndex constraint index
      * @return name assign to constraint value stage
     ***********************************************************************************/
-    std::string getConstraintValueStageName(const size_t & aIndex) const;
+    std::string getConstraintValueStageName(const size_t aIndex) const;
 
     /******************************************************************************//**
      * @brief Add constraint value stage name to list
@@ -430,7 +315,7 @@ public:
      * @param [in] aIndex constraint index
      * @return name assign to constraint gradient stage
     ***********************************************************************************/
-    std::string getConstraintGradientStageName(const size_t & aIndex) const;
+    std::string getConstraintGradientStageName(const size_t aIndex) const;
 
     /******************************************************************************//**
      * @brief Add constraint gradient stage name to list
@@ -455,7 +340,7 @@ public:
      * @param [in] aIndex constraint index
      * @return name assign to constraint Hessian stage
     ***********************************************************************************/
-    std::string getConstraintHessianStageName(const size_t & aIndex) const;
+    std::string getConstraintHessianStageName(const size_t aIndex) const;
 
     /******************************************************************************//**
      * @brief Add constraint Hessian stage name to list
@@ -469,23 +354,11 @@ public:
     ***********************************************************************************/
     void setConstraintHessianStageNames(const std::vector<std::string> & aInput);
 
-    double getKSInitialRadiusScale() const;
-    void setKSInitialRadiusScale(const double& aInput);
-    double getKSMaxRadiusScale() const;
-    void setKSMaxRadiusScale(const double& aInput);
-
     size_t getProblemUpdateFrequency() const;
-    void setProblemUpdateFrequency(const size_t& aInput);
-
-    double getKSTrustRegionRatioLow() const;
-    void setKSTrustRegionRatioLow(const double& aInput);
-    double getKSTrustRegionRatioMid() const;
-    void setKSTrustRegionRatioMid(const double& aInput);
-    double getKSTrustRegionRatioUpper() const;
-    void setKSTrustRegionRatioUpper(const double& aInput);
+    void setProblemUpdateFrequency(const size_t aInput);
 
     bool getResetAlgorithmOnUpdate() const;
-    void setResetAlgorithmOnUpdate(const bool& aInput);
+    void setResetAlgorithmOnUpdate(const bool aInput);
 
     friend class boost::serialization::access;
     template<class Archive>
@@ -498,45 +371,21 @@ public:
       aArchive & boost::serialization::make_nvp("UserInitialGuess",mUserInitialGuess);
       aArchive & boost::serialization::make_nvp("OutputControlToFile",mOutputControlToFile);
       aArchive & boost::serialization::make_nvp("OutputDiagnosticsToFile",mOutputDiagnosticsToFile);
-      aArchive & boost::serialization::make_nvp("DisablePostSmoothing",mDisablePostSmoothing);
       aArchive & boost::serialization::make_nvp("ResetAlgorithmOnUpdate",mResetAlgorithmOnUpdate);
 
-      aArchive & boost::serialization::make_nvp("MaxNumAugLagSubProbIter",mMaxNumAugLagSubProbIter);
       aArchive & boost::serialization::make_nvp("MaxNumIterations",mMaxNumIterations);
-      aArchive & boost::serialization::make_nvp("LimitedMemoryStorage",mLimitedMemoryStorage);
       aArchive & boost::serialization::make_nvp("ProblemUpdateFrequency",mProblemUpdateFrequency);
 
-      aArchive & boost::serialization::make_nvp("KSMaxTrustRegionIterations",mKSMaxTrustRegionIterations);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSteps",mROLCheckGradientSteps);
+      aArchive & boost::serialization::make_nvp("ROLCheckGradientStepSize",mROLCheckGradientStepSize);
       aArchive & boost::serialization::make_nvp("ROLCheckGradientSeed",mROLCheckGradientSeed);
 
       aArchive & boost::serialization::make_nvp("ROLStochasticDistributionsFile",mROLStochasticDistributionsFile);
       aArchive & boost::serialization::make_nvp("ROLStochasticNumberOfSamples",mROLStochasticNumberOfSamples);
       aArchive & boost::serialization::make_nvp("ROLStochasticSamplerSeed",mROLStochasticSamplerSeed);
 
-      aArchive & boost::serialization::make_nvp("KSTrustRegionExpansionFactor",mKSTrustRegionExpansionFactor);
-      aArchive & boost::serialization::make_nvp("KSTrustRegionContractionFactor",mKSTrustRegionContractionFactor);
-      aArchive & boost::serialization::make_nvp("KSOuterGradientTolerance",mKSOuterGradientTolerance);
-      aArchive & boost::serialization::make_nvp("KSOuterStationarityTolerance",mKSOuterStationarityTolerance);
-      aArchive & boost::serialization::make_nvp("KSOuterStagnationTolerance",mKSOuterStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("KSOuterControlStagnationTolerance",mKSOuterControlStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("KSOuterActualReductionTolerance",mKSOuterActualReductionTolerance);
-      aArchive & boost::serialization::make_nvp("KSInitialRadiusScale",mKSInitialRadiusScale);
-      aArchive & boost::serialization::make_nvp("KSMaxRadiusScale",mKSMaxRadiusScale);
-      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioLow",mKSTrustRegionRatioLow);
-      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioMid",mKSTrustRegionRatioMid);
-      aArchive & boost::serialization::make_nvp("KSTrustRegionRatioUpper",mKSTrustRegionRatioUpper);
-      aArchive & boost::serialization::make_nvp("FeasibilityTolerance",mFeasibilityTolerance);
-      aArchive & boost::serialization::make_nvp("MinTrustRegionRadius",mMinTrustRegionRadius);
-      aArchive & boost::serialization::make_nvp("MaxTrustRegionRadius",mMaxTrustRegionRadius);
-      aArchive & boost::serialization::make_nvp("AugLagPenaltyParameter",mAugLagPenaltyParameter);
-      aArchive & boost::serialization::make_nvp("AugLagPenaltyScaleParameter",mAugLagPenaltyScaleParameter);
-      aArchive & boost::serialization::make_nvp("OCControlStagnationTolerance",mOCControlStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("OCObjectiveStagnationTolerance",mOCObjectiveStagnationTolerance);
-      aArchive & boost::serialization::make_nvp("OCGradientTolerance",mOCGradientTolerance);
       aArchive & boost::serialization::make_nvp("ROLPerturbationScale",mROLPerturbationScale);
       
-      aArchive & boost::serialization::make_nvp("Algebra",mAlgebra);
       aArchive & boost::serialization::make_nvp("StateName",mStateName);
       aArchive & boost::serialization::make_nvp("HessianType",mHessianType);
       aArchive & boost::serialization::make_nvp("InputFileName",mInputFileName);
@@ -591,45 +440,20 @@ private:
     bool mUserInitialGuess;
     bool mOutputControlToFile;
     bool mOutputDiagnosticsToFile;
-    bool mDisablePostSmoothing;
     bool mResetAlgorithmOnUpdate;
 
-    size_t mMaxNumAugLagSubProbIter;
     size_t mMaxNumIterations;
-    size_t mLimitedMemoryStorage;
     size_t mProblemUpdateFrequency;
 
-    int mKSMaxTrustRegionIterations;
     int mROLCheckGradientSteps;
+    int mROLCheckGradientStepSize;
     int mROLCheckGradientSeed;
     std::string mROLStochasticDistributionsFile = "distributions.xml";
     int mROLStochasticNumberOfSamples = 3;
     int mROLStochasticSamplerSeed = 42;
 
-    double mKSTrustRegionExpansionFactor;
-    double mKSTrustRegionContractionFactor;
-    double mKSOuterGradientTolerance;
-    double mKSOuterStationarityTolerance;
-    double mKSOuterStagnationTolerance;
-    double mKSOuterControlStagnationTolerance;
-    double mKSOuterActualReductionTolerance;
-    double mKSInitialRadiusScale;
-    double mKSMaxRadiusScale;
-    double mKSTrustRegionRatioLow;
-    double mKSTrustRegionRatioMid;
-    double mKSTrustRegionRatioUpper;
-    double mFeasibilityTolerance;
-    double mMinTrustRegionRadius;
-    double mMaxTrustRegionRadius;
-    double mAugLagPenaltyParameter;
-    double mAugLagPenaltyScaleParameter;
-    double mOCControlStagnationTolerance;
-    double mOCObjectiveStagnationTolerance;
-    double mOCGradientTolerance;
     double mROLPerturbationScale;
 
-
-    std::string mAlgebra;
     std::string mStateName;
     std::string mHessianType;
     std::string mInputFileName;

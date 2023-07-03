@@ -62,37 +62,13 @@ OptimizerEngineStageData::OptimizerEngineStageData() :
         mUserInitialGuess(false),
         mOutputControlToFile(false),
         mOutputDiagnosticsToFile(true),
-        mDisablePostSmoothing(false),
         mResetAlgorithmOnUpdate(false),
-        mMaxNumAugLagSubProbIter(5),
         mMaxNumIterations(500),
-        mLimitedMemoryStorage(8),
         mProblemUpdateFrequency(0),
-        mKSMaxTrustRegionIterations(25),
         mROLCheckGradientSteps(12),
+        mROLCheckGradientStepSize(10),
         mROLCheckGradientSeed(0),
-        mKSTrustRegionExpansionFactor(2.0),
-        mKSTrustRegionContractionFactor(0.75),
-        mKSOuterGradientTolerance(1e-4),
-        mKSOuterStationarityTolerance(1e-4),
-        mKSOuterStagnationTolerance(1e-6),
-        mKSOuterControlStagnationTolerance(1e-8),
-        mKSOuterActualReductionTolerance(1e-8),
-        mKSInitialRadiusScale(.1),
-        mKSMaxRadiusScale(.5),
-        mKSTrustRegionRatioLow(.1),
-        mKSTrustRegionRatioMid(.25),
-        mKSTrustRegionRatioUpper(.75),
-        mFeasibilityTolerance(1e-4),
-        mMinTrustRegionRadius(1e-6),
-        mMaxTrustRegionRadius(1e2),
-        mAugLagPenaltyParameter(0.05),
-        mAugLagPenaltyScaleParameter(1.2),
-        mOCControlStagnationTolerance(1e-2),
-        mOCObjectiveStagnationTolerance(1e-5),
-        mOCGradientTolerance(1e-8),
         mROLPerturbationScale(1),
-        mAlgebra(),
         mStateName(),
         mHessianType("disabled"),
         mInputFileName(),
@@ -165,20 +141,20 @@ void OptimizerEngineStageData::setUpperBoundValues(const std::vector<double> & a
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setOutputControlToFile(const bool & aInput)
+void OptimizerEngineStageData::setOutputControlToFile(const bool aInput)
 /******************************************************************************/
 {
     mOutputControlToFile = aInput;
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setOutputDiagnosticsToFile(const bool & aInput)
+void OptimizerEngineStageData::setOutputDiagnosticsToFile(const bool aInput)
 {
     mOutputDiagnosticsToFile = aInput;
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setMeanNorm(const bool & aInput)
+void OptimizerEngineStageData::setMeanNorm(const bool aInput)
 {
     mMeanNorm = aInput;
 }
@@ -190,26 +166,20 @@ void OptimizerEngineStageData::setHessianType(const std::string & aInput)
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setDisablePostSmoothing(const bool & aInput)
-{
-    mDisablePostSmoothing = aInput;
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setCheckGradient(const bool & aInput)
+void OptimizerEngineStageData::setCheckGradient(const bool aInput)
 {
     mCheckGradient = aInput;
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setCheckHessian(const bool & aInput)
+void OptimizerEngineStageData::setCheckHessian(const bool aInput)
 /******************************************************************************/
 {
     mCheckHessian = aInput;
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setUserInitialGuess(const bool & aInput)
+void OptimizerEngineStageData::setUserInitialGuess(const bool aInput)
 /******************************************************************************/
 {
     mUserInitialGuess = aInput;
@@ -241,12 +211,6 @@ std::string OptimizerEngineStageData::getHessianType() const
 }
 
 /******************************************************************************/
-bool OptimizerEngineStageData::getDisablePostSmoothing() const
-{
-    return mDisablePostSmoothing;
-}
-
-/******************************************************************************/
 bool OptimizerEngineStageData::getCheckGradient() const
 {
     return mCheckGradient;
@@ -273,7 +237,7 @@ size_t OptimizerEngineStageData::getMaxNumIterations() const
 }
 
 /******************************************************************************/
-void OptimizerEngineStageData::setMaxNumIterations(const size_t & aInput)
+void OptimizerEngineStageData::setMaxNumIterations(const size_t aInput)
 /******************************************************************************/
 {
     mMaxNumIterations = aInput;
@@ -304,171 +268,11 @@ void OptimizerEngineStageData::setInitialGuess(const std::vector<std::string> & 
     }
 }
 
-/******************************************************************************/
-double OptimizerEngineStageData::getKSTrustRegionExpansionFactor() const
-/******************************************************************************/
-{
-    return (mKSTrustRegionExpansionFactor);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSTrustRegionExpansionFactor(const double & aInput)
-/******************************************************************************/
-{
-    mKSTrustRegionExpansionFactor = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSTrustRegionContractionFactor() const
-/******************************************************************************/
-{
-    return (mKSTrustRegionContractionFactor);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSTrustRegionContractionFactor(const double & aInput)
-/******************************************************************************/
-{
-    mKSTrustRegionContractionFactor = aInput;
-}
-
-/******************************************************************************/
-int OptimizerEngineStageData::getKSMaxTrustRegionIterations() const
-/******************************************************************************/
-{
-    return (mKSMaxTrustRegionIterations);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSMaxTrustRegionIterations(const int & aInput)
-/******************************************************************************/
-{
-    mKSMaxTrustRegionIterations = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSOuterGradientTolerance() const
-/******************************************************************************/
-{
-    return (mKSOuterGradientTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSOuterGradientTolerance(const double & aInput)
-/******************************************************************************/
-{
-    mKSOuterGradientTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSOuterStationarityTolerance() const
-/******************************************************************************/
-{
-    return (mKSOuterStationarityTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSOuterStationarityTolerance(const double & aInput)
-/******************************************************************************/
-{
-    mKSOuterStationarityTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSOuterStagnationTolerance() const
-/******************************************************************************/
-{
-    return (mKSOuterStagnationTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSOuterStagnationTolerance(const double & aInput)
-/******************************************************************************/
-{
-    mKSOuterStagnationTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSOuterControlStagnationTolerance() const
-/******************************************************************************/
-{
-    return (mKSOuterControlStagnationTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSOuterControlStagnationTolerance(const double & aInput)
-/******************************************************************************/
-{
-    mKSOuterControlStagnationTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getKSOuterActualReductionTolerance() const
-/******************************************************************************/
-{
-    return (mKSOuterActualReductionTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setKSOuterActualReductionTolerance(const double & aInput)
-/******************************************************************************/
-{
-    mKSOuterActualReductionTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getAugLagPenaltyParameter() const
-{
-    return (mAugLagPenaltyParameter);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setAugLagPenaltyParameter(const double & aInput)
-{
-    mAugLagPenaltyParameter = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getOCControlStagnationTolerance() const
-{
-    return (mOCControlStagnationTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setOCControlStagnationTolerance(const double & aInput)
-{
-    mOCControlStagnationTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getOCObjectiveStagnationTolerance() const
-{
-    return (mOCObjectiveStagnationTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setOCObjectiveStagnationTolerance(const double & aInput)
-{
-    mOCObjectiveStagnationTolerance = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getOCGradientTolerance() const
-{
-    return (mOCGradientTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setOCGradientTolerance(const double & aInput)
-{
-    mOCGradientTolerance = aInput;
-}
-
 double OptimizerEngineStageData::getROLPerturbationScale() const
 {
     return mROLPerturbationScale;
 }
-void OptimizerEngineStageData::setROLPerturbationScale(const double & aInput)
+void OptimizerEngineStageData::setROLPerturbationScale(const double aInput)
 {
     mROLPerturbationScale = aInput;
 }
@@ -476,15 +280,23 @@ int OptimizerEngineStageData::getROLCheckGradientSteps() const
 {
     return mROLCheckGradientSteps;
 }
-void OptimizerEngineStageData::setROLCheckGradientSteps(const int & aInput)
+void OptimizerEngineStageData::setROLCheckGradientSteps(const int aInput)
 {
     mROLCheckGradientSteps = aInput;
+}
+int OptimizerEngineStageData::getROLCheckGradientStepSize() const
+{
+    return mROLCheckGradientStepSize;
+}
+void OptimizerEngineStageData::setROLCheckGradientStepSize(const int aInput)
+{
+    mROLCheckGradientStepSize = aInput;
 }
 int OptimizerEngineStageData::getROLCheckGradientSeed() const
 {
     return mROLCheckGradientSeed;
 }
-void OptimizerEngineStageData::setROLCheckGradientSeed(const int & aInput)
+void OptimizerEngineStageData::setROLCheckGradientSeed(const int aInput)
 {
     mROLCheckGradientSeed = aInput;
 }
@@ -517,78 +329,6 @@ int OptimizerEngineStageData::getROLStochasticSamplerSeed() const
 void OptimizerEngineStageData::setROLStochasticSamplerSeed(const int aInput)
 {
     mROLStochasticSamplerSeed = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getAugLagPenaltyScaleParameter() const
-{
-    return (mAugLagPenaltyScaleParameter);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setAugLagPenaltyScaleParameter(const double & aInput)
-{
-    mAugLagPenaltyScaleParameter = aInput;
-}
-
-/******************************************************************************/
-size_t OptimizerEngineStageData::getLimitedMemoryStorage() const
-{
-    return (mLimitedMemoryStorage);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setLimitedMemoryStorage(const size_t & aInput)
-{
-    mLimitedMemoryStorage = aInput;
-}
-
-/******************************************************************************/
-size_t OptimizerEngineStageData::getMaxNumAugLagSubProbIter() const
-{
-    return (mMaxNumAugLagSubProbIter);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setMaxNumAugLagSubProbIter(const size_t & aInput)
-{
-    mMaxNumAugLagSubProbIter = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getMinTrustRegionRadius() const
-{
-    return (mMinTrustRegionRadius);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setMinTrustRegionRadius(const double & aInput)
-{
-    mMinTrustRegionRadius = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getMaxTrustRegionRadius() const
-{
-    return (mMaxTrustRegionRadius);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setMaxTrustRegionRadius(const double & aInput)
-{
-    mMaxTrustRegionRadius = aInput;
-}
-
-/******************************************************************************/
-double OptimizerEngineStageData::getFeasibilityTolerance() const
-{
-    return (mFeasibilityTolerance);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setFeasibilityTolerance(const double & aInput)
-{
-    mFeasibilityTolerance = aInput;
 }
 
 /******************************************************************************/
@@ -695,7 +435,7 @@ std::vector<std::string> OptimizerEngineStageData::getControlNames() const
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getControlName(const size_t & aInput) const
+std::string OptimizerEngineStageData::getControlName(const size_t aInput) const
 /******************************************************************************/
 {
     assert(mControlNames.empty() == false);
@@ -720,7 +460,7 @@ void OptimizerEngineStageData::setControlNames(const std::vector<std::string> & 
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getFilteredControlName(const size_t & aInput) const
+std::string OptimizerEngineStageData::getFilteredControlName(const size_t aInput) const
 /******************************************************************************/
 {
     assert(mFilteredControlNames.empty() == false);
@@ -743,7 +483,7 @@ std::vector<std::string> OptimizerEngineStageData::getDescentDirectionNames() co
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getDescentDirectionName(const size_t & aInput) const
+std::string OptimizerEngineStageData::getDescentDirectionName(const size_t aInput) const
 /******************************************************************************/
 {
     assert(mDescentDirectionNames.empty() == false);
@@ -765,20 +505,6 @@ void OptimizerEngineStageData::setDescentDirectionNames(const std::vector<std::s
 {
     assert(aInput.empty() == false);
     mDescentDirectionNames = aInput;
-}
-
-/******************************************************************************/
-std::string OptimizerEngineStageData::getAlgebra() const
-/******************************************************************************/
-{
-    return (mAlgebra);
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setAlgebra(const std::string & aInput)
-/******************************************************************************/
-{
-    mAlgebra = aInput;
 }
 
 /******************************************************************************/
@@ -1068,7 +794,7 @@ size_t OptimizerEngineStageData::getNumConstraints() const
 }
 
 /******************************************************************************/
-double OptimizerEngineStageData::getConstraintNormalizedTargetValue(const size_t & aIndex) const
+double OptimizerEngineStageData::getConstraintNormalizedTargetValue(const size_t aIndex) const
 /******************************************************************************/
 {
     assert(mConstraintNormalizedTargetValues.empty() == false);
@@ -1116,7 +842,7 @@ bool OptimizerEngineStageData::constraintNormalizedTargetValueWasSet(const std::
 }
 
 /******************************************************************************/
-double OptimizerEngineStageData::getConstraintAbsoluteTargetValue(const size_t & aIndex) const
+double OptimizerEngineStageData::getConstraintAbsoluteTargetValue(const size_t aIndex) const
 /******************************************************************************/
 {
     assert(aIndex < static_cast<size_t>(mConstraintAbsoluteTargetValues.size()));
@@ -1167,7 +893,7 @@ bool OptimizerEngineStageData::constraintAbsoluteTargetValueWasSet(const std::st
 }
 
 /******************************************************************************/
-double OptimizerEngineStageData::getConstraintReferenceValue(const size_t & aIndex) const
+double OptimizerEngineStageData::getConstraintReferenceValue(const size_t aIndex) const
 /******************************************************************************/
 {
     assert(mConstraintReferenceValues.empty() == false);
@@ -1222,7 +948,7 @@ std::vector<std::string> OptimizerEngineStageData::getConstraintValueNames() con
 }
 
 /*************************************************************************************/
-std::string OptimizerEngineStageData::getConstraintValueName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintValueName(const size_t aIndex) const
 {
     assert(mConstraintValueNames.empty() == false);
     assert(aIndex < mConstraintValueNames.size());
@@ -1251,7 +977,7 @@ std::vector<std::string> OptimizerEngineStageData::getConstraintValueStageNames(
 }
 
 /*************************************************************************************/
-std::string OptimizerEngineStageData::getConstraintValueStageName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintValueStageName(const size_t aIndex) const
 {
     assert(mConstraintValueStageNames.empty() == false);
     assert(aIndex < mConstraintValueStageNames.size());
@@ -1273,7 +999,7 @@ void OptimizerEngineStageData::setConstraintValueStageNames(const std::vector<st
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getConstraintReferenceValueName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintReferenceValueName(const size_t aIndex) const
 /******************************************************************************/
 {
     if(mConstraintReferenceValueNames.empty() == true)
@@ -1316,7 +1042,7 @@ void OptimizerEngineStageData::addConstraintReferenceValueName(const std::string
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getConstraintHessianName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintHessianName(const size_t aIndex) const
 /******************************************************************************/
 {
     assert(mConstraintHessianNames.empty() == false);
@@ -1355,7 +1081,7 @@ void OptimizerEngineStageData::addConstraintHessianName(const std::string & aVal
 }
 
 /******************************************************************************/
-std::string OptimizerEngineStageData::getConstraintGradientName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintGradientName(const size_t aIndex) const
 /******************************************************************************/
 {
     assert(mConstraintGradientNames.empty() == false);
@@ -1401,7 +1127,7 @@ std::vector<std::string> OptimizerEngineStageData::getConstraintHessianStageName
 }
 
 /*************************************************************************************/
-std::string OptimizerEngineStageData::getConstraintHessianStageName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintHessianStageName(const size_t aIndex) const
 {
     assert(mConstraintHessianStageNames.empty() == false);
     assert(aIndex < mConstraintHessianStageNames.size());
@@ -1430,7 +1156,7 @@ std::vector<std::string> OptimizerEngineStageData::getConstraintGradientStageNam
 }
 
 /*************************************************************************************/
-std::string OptimizerEngineStageData::getConstraintGradientStageName(const size_t & aIndex) const
+std::string OptimizerEngineStageData::getConstraintGradientStageName(const size_t aIndex) const
 {
     assert(mConstraintGradientStageNames.empty() == false);
     assert(aIndex < mConstraintGradientStageNames.size());
@@ -1451,63 +1177,22 @@ void OptimizerEngineStageData::setConstraintGradientStageNames(const std::vector
     mConstraintGradientStageNames = aInput;
 }
 
-double OptimizerEngineStageData::getKSInitialRadiusScale() const
-{
-    return mKSInitialRadiusScale;
-}
-void OptimizerEngineStageData::setKSInitialRadiusScale(const double& aInput)
-{
-    mKSInitialRadiusScale = aInput;
-}
-
-double OptimizerEngineStageData::getKSMaxRadiusScale() const
-{
-    return mKSMaxRadiusScale;
-}
-void OptimizerEngineStageData::setKSMaxRadiusScale(const double& aInput)
-{
-    mKSMaxRadiusScale = aInput;
-}
-
 size_t OptimizerEngineStageData::getProblemUpdateFrequency() const
 {
     return mProblemUpdateFrequency;
 }
-void OptimizerEngineStageData::setProblemUpdateFrequency(const size_t& aInput)
+
+void OptimizerEngineStageData::setProblemUpdateFrequency(const size_t aInput)
 {
     mProblemUpdateFrequency = aInput;
-}
-
-double OptimizerEngineStageData::getKSTrustRegionRatioLow() const
-{
-    return mKSTrustRegionRatioLow;
-}
-void OptimizerEngineStageData::setKSTrustRegionRatioLow(const double& aInput)
-{
-    mKSTrustRegionRatioLow = aInput;
-}
-double OptimizerEngineStageData::getKSTrustRegionRatioMid() const
-{
-    return mKSTrustRegionRatioMid;
-}
-void OptimizerEngineStageData::setKSTrustRegionRatioMid(const double& aInput)
-{
-    mKSTrustRegionRatioMid = aInput;
-}
-double OptimizerEngineStageData::getKSTrustRegionRatioUpper() const
-{
-    return mKSTrustRegionRatioUpper;
-}
-void OptimizerEngineStageData::setKSTrustRegionRatioUpper(const double& aInput)
-{
-    mKSTrustRegionRatioUpper = aInput;
 }
 
 bool OptimizerEngineStageData::getResetAlgorithmOnUpdate() const
 {
     return mResetAlgorithmOnUpdate;
 }
-void OptimizerEngineStageData::setResetAlgorithmOnUpdate(const bool& aInput)
+
+void OptimizerEngineStageData::setResetAlgorithmOnUpdate(const bool aInput)
 {
     mResetAlgorithmOnUpdate = aInput;
 }

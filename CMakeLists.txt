@@ -5,10 +5,21 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 set (CMAKE_CXX_STANDARD 17)
 
 include( ${CMAKE_SOURCE_DIR}/base/config/tools.cmake )
+include( ${CMAKE_SOURCE_DIR}/base/config/prebuilt_binaries.cmake )
+
 Plato_no_src_build()
 
 # Advertise that we support shared libs (cmake squawks otherwise)
 SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+
+# Add ccache if available
+find_program(CCACHE_FOUND ccache)
+if( CCACHE_FOUND )
+  # Spack is able to use ccache, however, using ccache with nvcc_wrapper does not seem to work
+  # properly through spack.
+  message( STATUS "Found ccache" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER ccache )
+endif()
 
 ##################################################################
 ## Load config.cmake                                            ##
@@ -165,6 +176,7 @@ if( AMFILTER_ENABLED )
 endif()
 
 add_subdirectory(base/src)
+add_subdirectory(base/src/test_utilities)
 add_subdirectory(base/src/tools)
 add_subdirectory(base/src/analyze)
 add_subdirectory(base/src/data_layer)
@@ -178,7 +190,6 @@ add_subdirectory(base/src/PlatoSubproblemLibraryInterface)
 add_subdirectory(base/src/PlatoSubproblemLibrary/SpatialSearching)
 add_subdirectory(base/src/PlatoSubproblemLibrary/AbstractInterface)
 add_subdirectory(base/src/PlatoSubproblemLibrary/BoundedSupportFunction)
-add_subdirectory(base/src/PlatoSubproblemLibrary/DiscreteGlobalOptimization)
 add_subdirectory(base/src/PlatoSubproblemLibrary/Example)
 add_subdirectory(base/src/PlatoSubproblemLibrary/Filter)
 add_subdirectory(base/src/PlatoSubproblemLibrary/Geometry)
@@ -237,8 +248,6 @@ if( PLATOPROXY )
   add_subdirectory(apps/rocket)
   add_subdirectory(apps/ksal_proxy)
   add_subdirectory(apps/rosenbrock)
-  add_subdirectory(apps/alpso_proxy)
-  add_subdirectory(apps/bcpso_proxy)
 endif()
 
 if( PLATOSTATICS )
@@ -265,6 +274,7 @@ if( REGRESSION )
         add_subdirectory(integration_tests/prune_and_refine)
     endif()
     if( SIERRA_TESTS_ENABLED )
+      install_prebuilt_binaries()
       add_subdirectory(integration_tests/sierra)
     endif()
     if( SIERRA_TESTS_ENABLED AND DAKOTADRIVER )

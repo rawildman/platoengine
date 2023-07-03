@@ -2,34 +2,21 @@
 # Sources:
 ###############################################################################
 SET(PlatoMainUnitTester_SRCS UnitMain.cpp
-                             parse_unit_test.cpp
                              Plato_StkMeshUtils.cpp
                              Plato_PlatoProxyApp.cpp
                              Plato_PhysicsProxyApp.cpp
                              Plato_StructuralTopologyOptimizationProxyGoldResults.cpp
-                             Plato_Test_GradFreeCriteria.cpp
-                             Plato_Test_ParticleSwarm.cpp
                              Plato_Test_Proxy.cpp
-                             Plato_Test_Hessian.cpp
                              Plato_Test_SimpleRocket.cpp
-                             Plato_Test_KokkosAlgebra.cpp
                              Plato_Test_InputData.cpp
                              Plato_Test_LinearAlgebra.cpp
-                             Plato_Test_OptimizersIO.cpp
-                             Plato_Test_OptimalityCriteria.cpp
-                             Plato_Test_DataFactory.cpp
-                             Plato_Test_KelleySachsBounds.cpp
                              Plato_Test_AugmentedLagrangian.cpp
                              Plato_Test_Bounds.cpp
                              Plato_Test_SimpleTopOpt.cpp
-                             Plato_Test_Statistics.cpp
                              Plato_Test_OptimizationTestFunctions.cpp
                              Plato_Test_Vector3DVariations.cpp
                              Plato_Test_UniqueCounter.cpp
                              Plato_Test_SimpleRocketOptimization.cpp
-                             Plato_Test_UncertainLoadGeneratorXML.cpp
-                             Plato_Test_UncertainMaterial.cpp
-                             Plato_Test_Srom.cpp
                              Plato_Test_LocalStatisticsOperations.cpp
                              Plato_Test_WriteParameterStudyData.cpp
                              Plato_Test_FreeFunctions.cpp
@@ -60,7 +47,6 @@ SET(PlatoMainUnitTester_SRCS UnitMain.cpp
                              PSL_Test_BoundingBoxSearches.cpp
                              PSL_Test_BoundingBoxMortonHierarchy.cpp
                              PSL_Test_BoundingBox.cpp
-                             PSL_Test_BasicDiscreteObjective.cpp
                              PSL_Test_BasicDenseVectorOperations.cpp
                              PSL_Test_AbstractAuthority.cpp
                              PSL_Test_Point.cpp
@@ -106,7 +92,6 @@ set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/apps/services
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DataLossFunction
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DataOrganizer
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DecisionMetric
-                       ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DiscreteGlobalOptimization
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/DistanceVoting
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Eigen
                        ${CMAKE_SOURCE_DIR}/base/src/PlatoSubproblemLibrary/Example

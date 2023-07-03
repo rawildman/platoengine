@@ -264,6 +264,9 @@ namespace XMLGen
 
             auto tOperation = aDocument.append_child("Operation");
             XMLGen::append_children({"Function", "Name", "Criterion"}, {"ComputeCriterionGradientX", "Compute Constraint Gradient " + tConstraint.id(), tToken}, tOperation);
+            auto tNode = tOperation.append_child("Output");
+            addChild(tNode, "ArgumentName", "DGDX");
+            addChild(tNode, "Argument", "Gradient");
 
             if (XMLGen::is_robust_optimization_problem(aMetaData))
             {
@@ -271,18 +274,26 @@ namespace XMLGen
                 XMLGen::append_random_material_properties_to_plato_analyze_operation(aMetaData, tOperation);
             }
 
-            pugi::xml_node tmp_node = aDocument.append_child("Operation");
-            addChild(tmp_node, "Name", "Compute Constraint Sensitivity");
-            addChild(tmp_node, "Function", "MapCriterionGradientX");
-            addChild(tmp_node, "Criterion", tToken);
-            pugi::xml_node tForNode = tmp_node.append_child("For");
-            tForNode.append_attribute("var") = "I";
-            tForNode.append_attribute("in") = "Parameters";
-            pugi::xml_node tmp_node1 = tForNode.append_child("Input");
-            addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
-            tmp_node1 = tmp_node.append_child("Output");
-            addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
+            XMLGen::append_compute_map_criterion_gradient_operation_for_shape_problem(tToken, aDocument);
         }
+    }
+    /******************************************************************************/
+
+    /******************************************************************************/
+    void append_compute_map_criterion_gradient_operation_for_shape_problem(const std::string &aCriterionName, 
+                                                                        pugi::xml_document &aDocument)
+    {
+        pugi::xml_node tmp_node = aDocument.append_child("Operation");
+        addChild(tmp_node, "Name", "Compute Constraint Sensitivity");
+        addChild(tmp_node, "Function", "MapCriterionGradientX");
+        addChild(tmp_node, "Criterion", aCriterionName);
+        pugi::xml_node tForNode = tmp_node.append_child("For");
+        tForNode.append_attribute("var") = "I";
+        tForNode.append_attribute("in") = "Parameters";
+        pugi::xml_node tmp_node1 = tForNode.append_child("Input");
+        addChild(tmp_node1, "ArgumentName", "Parameter Sensitivity {I}");
+        tmp_node1 = tmp_node.append_child("Output");
+        addChild(tmp_node1, "ArgumentName", "Criterion Sensitivity");
     }
     /******************************************************************************/
 

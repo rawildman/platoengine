@@ -104,14 +104,6 @@ public:
     std::string getRestartIteration() {return m_InputData.optimization_parameters().restart_iteration();}
     std::string getRestartFieldName() {return m_InputData.optimization_parameters().initial_guess_field_name();}
     std::string getRestartMeshFilename() {return m_InputData.optimization_parameters().initial_guess_file_name();}
-    std::string getKSMaxTrustIterations() {return m_InputData.optimization_parameters().ks_max_trust_region_iterations();}
-    std::string getKSExpansionFactor() {return m_InputData.optimization_parameters().ks_trust_region_expansion_factor();}
-    std::string getKSContractionFactor() {return m_InputData.optimization_parameters().ks_trust_region_contraction_factor();}
-    std::string getKSOuterGradientTolerance() {return m_InputData.optimization_parameters().ks_outer_gradient_tolerance();}
-    std::string getKSOuterStationarityTolerance() {return m_InputData.optimization_parameters().ks_outer_stationarity_tolerance();}
-    std::string getKSOuterStagnationTolerance() {return m_InputData.optimization_parameters().ks_outer_stagnation_tolerance();}
-    std::string getKSOuterControlStagnationTolerance() {return m_InputData.optimization_parameters().ks_outer_control_stagnation_tolerance();}
-    std::string getKSOuterActualReductionTolerance() {return m_InputData.optimization_parameters().ks_outer_actual_reduction_tolerance();}
 
     std::string getLevelsetSpherePackingFactor() {return m_InputData.optimization_parameters().levelset_sphere_packing_factor();}
     std::string getLevelsetSphereRadius() {return m_InputData.optimization_parameters().levelset_sphere_radius();}

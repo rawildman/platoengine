@@ -62,17 +62,6 @@
 namespace Plato
 {
 
-/******************************************************************************//**
- *
- * @brief Print Plato license statement
- * @param [in,out] aOutputFile output file
- *
-**********************************************************************************/
-inline void print_plato_license(std::ofstream & aOutputFile)
-{
-    aOutputFile << "Plato Engine v.1.0: Copyright 2018, National Technology & Engineering Solutions of Sandia, LLC (NTESS).\n\n";
-}
-
 namespace error
 {
 

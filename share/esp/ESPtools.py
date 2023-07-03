@@ -291,6 +291,7 @@ def updateModelAflr2Exodus(modelName, paramVals):
     if line.strip().lower() == 'end':
       f_out.write("select body\n")
       f_out.write("attribute capsAIM $aflr2AIM;platoAIM\n")
+      f_out.write("attribute capsMeshLength 1.0 \n")
       f_out.write("attribute capsGroup $" + bodyName + "\n")
       f_out.write("attribute capsMesh $" + bodyName + "\n")
 

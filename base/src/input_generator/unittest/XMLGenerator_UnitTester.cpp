@@ -166,14 +166,6 @@ bool XMLGenerator_UnitTester::publicParseMesh(std::istream &sin)
 }
 
 /******************************************************************************/
-bool XMLGenerator_UnitTester::publicRunSROMForUncertainVariables
-(XMLGen::InputData& aInputData)
-/******************************************************************************/
-{
-    return runSROMForUncertainVariables(aInputData);
-}
-
-/******************************************************************************/
 bool XMLGenerator_UnitTester::publicParseOptimizationParameters(std::istream &sin)
 /******************************************************************************/
 {

@@ -40,7 +40,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_get_objective_gradient_operation_name
     ASSERT_TRUE(tString == "Compute Criterion Gradient");
 }
 
-TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF)
+TEST(PlatoTestXMLGenerator, StageOperation_append_compute_criterion_sensitivity_operation_SierraTF)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tMetaData;
@@ -54,7 +54,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     tService.id("2");
     tService.code("sierra_tf");
     tMetaData.append(tService);
-    XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
+    XMLGen::append_compute_criterion_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
     tDocument.save_file("xml.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("xml.txt");
@@ -72,7 +72,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     Plato::system("rm xml.txt");
 }
 
-TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF_egads_tetgen_workflow)
+TEST(PlatoTestXMLGenerator, StageOperation_append_compute_criterion_sensitivity_operation_SierraTF_egads_tetgen_workflow)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tMetaData;
@@ -86,7 +86,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     tService.id("2");
     tService.code("sierra_tf");
     tMetaData.append(tService);
-    XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
+    XMLGen::append_compute_criterion_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument);
     tDocument.save_file("xml.txt", " ");
 
     auto tReadData = XMLGen::read_data_from_file("xml.txt");
@@ -104,7 +104,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     Plato::system("rm xml.txt");
 }
 
-TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_operation_SierraTF_unknown_esp_workflow)
+TEST(PlatoTestXMLGenerator, StageOperation_append_compute_criterion_sensitivity_operation_SierraTF_unknown_esp_workflow)
 {
     pugi::xml_document tDocument;
     XMLGen::InputData tMetaData;
@@ -119,7 +119,7 @@ TEST(PlatoTestXMLGenerator, StageOperation_append_compute_objective_sensitivity_
     tService.id("2");
     tService.code("sierra_tf");
     tMetaData.append(tService);
-    EXPECT_THROW(XMLGen::append_compute_objective_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument), std::exception);
+    EXPECT_THROW(XMLGen::append_compute_criterion_sensitivity_operation(tMetaData, tService, "CriterionIdentifierString", tDocument), std::exception);
 }
 
 }

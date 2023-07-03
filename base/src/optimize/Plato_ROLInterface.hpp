@@ -52,6 +52,10 @@
 #include "Plato_ReducedConstraintROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
 
+#include "GradientCheckUtilities.hpp"
+
+#include <vector>
+
 #include <mpi.h>
 
 namespace Plato
@@ -114,7 +118,7 @@ public:
 
         if(this->mInputData.getCheckGradient())
         {
-            this->checkGradient(tOptimizationProblem);
+            auto tGradCheckOutput = this->checkGradient(tOptimizationProblem, this->mInputData);
             this->checkConstraint(tOptimizationProblem);
         }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
@@ -128,6 +132,33 @@ public:
         }
     
         this->finalize();
+    }
+
+    std::vector<std::vector<ScalarType>> checkGradient
+    (const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem,
+     const Plato::OptimizerEngineStageData & aInputData)
+    {
+        std::cout << "Checking gradient..." << std::endl;
+
+        const auto tPerturbationScale = aInputData.getROLPerturbationScale();
+        const auto tCheckGradientSeed = aInputData.getROLCheckGradientSeed();
+
+        auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
+        auto tPerturbation = Plato::GradientCheck::perturb_control(tControl, tPerturbationScale, tCheckGradientSeed);
+
+        std::ofstream tOutputFile;
+        tOutputFile.open("ROL_gradient_check_output.txt");
+
+        const auto tNumSteps = aInputData.getROLCheckGradientSteps();
+        const auto tStepSize = aInputData.getROLCheckGradientStepSize();
+        const std::vector<ScalarType> tSteps = Plato::GradientCheck::generate_steps<ScalarType>(tNumSteps, tStepSize);
+
+        auto tObjective = aOptimizationProblem->getObjective();
+	    auto tGradCheckOut = tObjective->checkGradient(*tControl, *tPerturbation, tSteps, true, tOutputFile);
+
+        tOutputFile.close();
+
+        return tGradCheckOut;
     }
 
 protected:
@@ -299,27 +330,6 @@ protected:
         return tParameterList;
     }
     
-    void checkGradient(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    {
-        std::cout<<"Checking gradient..."<<std::endl;
-        const auto tPerturbationScale = this->mInputData.getROLPerturbationScale();
-        const auto tCheckGradientSteps = this->mInputData.getROLCheckGradientSteps();
-        const auto tCheckGradientSeed = this->mInputData.getROLCheckGradientSeed();
-        if(tCheckGradientSeed !=0)
-        {
-            std::srand((unsigned int)tCheckGradientSeed);
-            std::cout<<"Setting seed to: "<<(unsigned int)tCheckGradientSeed<<std::endl;
-        }
-        std::ofstream tOutputFile;
-        tOutputFile.open("ROL_gradient_check_output.txt");
-        auto tObjective = aOptimizationProblem->getObjective();
-        auto tControl = aOptimizationProblem->getPrimalOptimizationVector();
-        auto tPerturbation = tControl->clone();
-        tPerturbation->randomize(-tPerturbationScale, tPerturbationScale);
-	    tObjective->checkGradient(*tControl, *tPerturbation,true,tOutputFile,tCheckGradientSteps);
-        tOutputFile.close();
-    }
-
     void checkConstraint(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     {
         std::cout<<"Checking constraint..."<<std::endl;

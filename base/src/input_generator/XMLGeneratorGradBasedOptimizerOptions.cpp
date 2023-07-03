@@ -9,6 +9,8 @@
 #include "XMLGeneratorServiceUtilities.hpp"
 #include "XMLGeneratorGradBasedOptimizerOptions.hpp"
 
+#include <cmath>
+
 namespace XMLGen
 {
 
@@ -38,9 +40,10 @@ void append_grad_based_optimizer_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
 {
-    std::unordered_map<std::string, std::string> tValidOptimizers =
-        { {"oc", "OC"}, {"ksbc", "KSBC"}, {"ksal", "KSAL"} , {"rol_bound_constrained", "ROL BoundConstrained"}, 
-        {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, {"rol_linear_constraint", "ROL LinearConstraint"} };
+    const std::unordered_map<std::string, std::string> tValidOptimizers =
+        { {"rol_bound_constrained", "ROL BoundConstrained"}, 
+          {"rol_augmented_lagrangian", "ROL AugmentedLagrangian"}, 
+          {"rol_linear_constraint", "ROL LinearConstraint"} };
 
     auto tLower = Plato::tolower(aMetaData.optimization_parameters().optimization_algorithm());
     auto tOptimizerItr = tValidOptimizers.find(tLower);
@@ -71,23 +74,10 @@ void append_grad_based_optimizer_parameters
             XMLGen::append_rol_gradient_check_flags(aMetaData, aParentNode);
             XMLGen::append_rol_gradient_check_options(aMetaData, aParentNode);
         }
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
+        XMLGen::append_optimizer_options(aMetaData, aParentNode);
         XMLGen::append_reset_algorithm_on_update_option(aMetaData, aParentNode);
         XMLGen::generate_rol_input_file(aMetaData);
         XMLGen::append_rol_input_file(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("oc") == 0)
-    {
-        XMLGen::append_optimality_criteria_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksbc") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-    }
-    else if(tLower.compare("ksal") == 0)
-    {
-        XMLGen::append_trust_region_kelley_sachs_options(aMetaData, aParentNode);
-        XMLGen::append_augmented_lagrangian_options(aMetaData, aParentNode);
     }
     else
     {
@@ -99,17 +89,15 @@ void append_grad_based_optimizer_parameters
 /******************************************************************************/
 
 /******************************************************************************/
-void append_optimality_criteria_options
+void append_optimizer_options
 (const XMLGen::InputData& aMetaData,
  pugi::xml_node& aParentNode)
 {
-    std::vector<std::string> tKeys = {"OCControlStagnationTolerance", 
-                                      "OCObjectiveStagnationTolerance",
-                                      "OCGradientTolerance",
+    std::vector<std::string> tKeys = {"MaxNumOuterIterations",
+                                      "HessianType", 
                                       "ProblemUpdateFrequency"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().oc_control_stagnation_tolerance(), 
-                                        aMetaData.optimization_parameters().oc_objective_stagnation_tolerance(),
-                                        aMetaData.optimization_parameters().oc_gradient_tolerance(),
+    std::vector<std::string> tValues = {aMetaData.optimization_parameters().max_iterations(),
+                                        aMetaData.optimization_parameters().hessian_type(), 
                                         aMetaData.optimization_parameters().problem_update_frequency()};
     XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
     auto tOptionsNode = aParentNode.child("Options");
@@ -121,83 +109,7 @@ void append_optimality_criteria_options
     auto tConvergenceNode = aParentNode.append_child("Convergence");
     XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);
 }
-// function append_optimality_criteria_options
-/******************************************************************************/
-
-/******************************************************************************/
-void append_trust_region_kelley_sachs_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode)
-{
-    std::vector<std::string> tKeys = {"MaxNumOuterIterations",
-                                      "KSTrustRegionExpansionFactor", 
-                                      "KSTrustRegionContractionFactor", 
-                                      "KSMaxTrustRegionIterations", 
-                                      "KSInitialRadiusScale",
-                                      "KSMaxRadiusScale", 
-                                      "HessianType", 
-                                      "MinTrustRegionRadius", 
-                                      "LimitedMemoryStorage", 
-                                      "KSOuterGradientTolerance", 
-                                      "KSOuterStationarityTolerance",
-                                      "KSOuterStagnationTolerance", 
-                                      "KSOuterControlStagnationTolerance", 
-                                      "KSOuterActualReductionTolerance", 
-                                      "ProblemUpdateFrequency", 
-                                      "DisablePostSmoothing",
-                                      "KSTrustRegionRatioLow",       
-                                      "KSTrustRegionRatioMid", 
-                                      "KSTrustRegionRatioUpper"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().max_iterations(),
-                                        aMetaData.optimization_parameters().ks_trust_region_expansion_factor(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_contraction_factor(), 
-                                        aMetaData.optimization_parameters().ks_max_trust_region_iterations(),
-                                        aMetaData.optimization_parameters().ks_initial_radius_scale(), 
-                                        aMetaData.optimization_parameters().ks_max_radius_scale(), 
-                                        aMetaData.optimization_parameters().hessian_type(), 
-                                        aMetaData.optimization_parameters().ks_min_trust_region_radius(), 
-                                        aMetaData.optimization_parameters().limited_memory_storage(),
-                                        aMetaData.optimization_parameters().ks_outer_gradient_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_stationarity_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_stagnation_tolerance(), 
-                                        aMetaData.optimization_parameters().ks_outer_control_stagnation_tolerance(),
-                                        aMetaData.optimization_parameters().ks_outer_actual_reduction_tolerance(), 
-                                        aMetaData.optimization_parameters().problem_update_frequency(), 
-                                        aMetaData.optimization_parameters().ks_disable_post_smoothing(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_low(),
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_mid(), 
-                                        aMetaData.optimization_parameters().ks_trust_region_ratio_high()};
-    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.child("Options");
-    if(tOptionsNode.empty())
-    {
-        tOptionsNode = aParentNode.append_child("Options");
-    }
-    XMLGen::append_children(tKeys, tValues, tOptionsNode);
-    auto tConvergenceNode = aParentNode.append_child("Convergence");
-    XMLGen::append_children({"MaxIterations"}, {aMetaData.optimization_parameters().max_iterations()}, tConvergenceNode);
-}
-// function append_trust_region_kelley_sachs_options
-/******************************************************************************/
-
-/******************************************************************************/
-void append_augmented_lagrangian_options
-(const XMLGen::InputData& aMetaData,
- pugi::xml_node& aParentNode)
-{
-    std::vector<std::string> tKeys = {"AugLagPenaltyParam", 
-                                      "AugLagPenaltyParamScaleFactor"};
-    std::vector<std::string> tValues = {aMetaData.optimization_parameters().al_penalty_parameter(), 
-                                        aMetaData.optimization_parameters().al_penalty_scale_factor()};
-    XMLGen::set_value_keyword_to_ignore_if_empty(tValues);
-    auto tOptionsNode = aParentNode.child("Options");
-    if(tOptionsNode.empty())
-    {
-        tOptionsNode = aParentNode.append_child("Options");
-    }
-    XMLGen::append_children(tKeys, tValues, tOptionsNode);
-}
-// function append_augmented_lagrangian_options
+// function append_optimizer_options
 /******************************************************************************/
 
 /******************************************************************************/
@@ -301,9 +213,7 @@ void generate_rol_input_file(const XMLGen::InputData& aMetaData)
 
     n2 = n1.append_child("ParameterList");
     n2.append_attribute("name") = "Status Test";
-    addNTVParameter(n2, "Gradient Tolerance", "double", "1e-10");
-    addNTVParameter(n2, "Constraint Tolerance", "double", "1e-10");
-    addNTVParameter(n2, "Step Tolerance", "double", "1e-14");
+    XMLGen::append_rol_tolerances(aMetaData, n2);
 
     if(aMetaData.optimization_parameters().reset_algorithm_on_update() == "true")
     {
@@ -334,6 +244,26 @@ void append_rol_input_file
     XMLGen::append_children(tKeys, tValues, tOptionsNode);
 }
 // function append_rol_input_file
+/******************************************************************************/
+
+/******************************************************************************/
+void append_rol_tolerances(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent)
+{
+    addNTVParameter(aParent, "Gradient Tolerance", "double", aMetaData.optimization_parameters().rol_gradient_tolerance());
+    addNTVParameter(aParent, "Constraint Tolerance", "double", aMetaData.optimization_parameters().rol_constraint_tolerance());
+    addNTVParameter(aParent, "Step Tolerance", "double", aMetaData.optimization_parameters().rol_step_tolerance());
+}
+// function append_rol_tolerances
+/******************************************************************************/
+
+/******************************************************************************/
+void append_initial_trust_region_radius(const XMLGen::InputData& aMetaData,
+                           pugi::xml_node &aParent)
+{
+    addNTVParameter(aParent, "Initial Radius", "double", aMetaData.optimization_parameters().rol_initial_trust_region_radius());
+}
+// function append_initial_trust_region_radius
 /******************************************************************************/
 
 /******************************************************************************/
@@ -386,7 +316,7 @@ void append_rol_step_block(const XMLGen::InputData& aMetaData,
     addNTVParameter(n3, "Subproblem Solver", "string", "Truncated CG");
     std::string tSubproblemModel = XMLGen::get_subproblem_model(aMetaData.optimization_parameters().rol_subproblem_model());
     addNTVParameter(n3, "Subproblem Model", "string", tSubproblemModel);
-    addNTVParameter(n3, "Initial Radius", "double", "1.5e1");
+    XMLGen::append_initial_trust_region_radius(aMetaData, n3);
     addNTVParameter(n3, "Maximum Radius", "double", "1.0e8");
     addNTVParameter(n3, "Step Acceptance Threshold", "double", "1e-2");
     addNTVParameter(n3, "Radius Shrinking Threshold", "double", "0.05");
