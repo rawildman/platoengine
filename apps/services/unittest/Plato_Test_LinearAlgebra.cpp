@@ -238,7 +238,6 @@ TEST(PlatoTest, MultiVector)
     }
 
     // Default for second template typename is OrdinalType = size_t
-    const double tGoldSum = 55;
     Plato::StandardMultiVector<double> tMultiVector2(tMultiVectorTemplate);
     for(size_t tVectorIndex = 0; tVectorIndex < tMultiVector2.getNumVectors(); tVectorIndex++)
     {
