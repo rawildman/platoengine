@@ -413,11 +413,17 @@ def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
 ##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
 ##############################################################################
-def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName, meshMorph):
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
                      outLevel=1)
+
+  if meshMorph:
+    initialValues = getInitialValues(modelNameOut)
+    currentValues = getCurrentValues(problem)
+    setDesignParameterValues(problem, initialValues)
+
   aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
 
   aflr4.input.Mesh_Format = "ETO"
@@ -434,8 +440,16 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr3.output["Volume_Mesh"])
+  plato.input.Mesh_Morph = meshMorph
+
   plato.preAnalysis()
   plato.postAnalysis()
+
+  if meshMorph:
+    plato.input["Mesh"].unlink()
+    setDesignParameterValues(problem, currentValues)
+    plato.preAnalysis()
+    plato.postAnalysis()
 
   tokens = meshName.split('.')
   tokens.pop()
@@ -581,7 +595,7 @@ def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, 
 ##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", meshMorph=False, parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -602,6 +616,12 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   if type(meshLengthFactor) == str:
     meshLengthFactor = float(meshLengthFactor)
+
+  if type(mesh) == str:
+    mesh = bool(mesh)
+
+  if type(meshMorph) == str:
+    meshMorph = bool(meshMorph)
 
   if type(precision) == str:
     precision = int(precision)
@@ -637,7 +657,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if mesh == True:
     if workflow == "aflr4_aflr3":
       with redirected('aflr4_aflr3.console'):
-        aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+        aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName, meshMorph)
 
     elif workflow == "egads_tetgen":
       with redirected('egads_tetgen.console'):
