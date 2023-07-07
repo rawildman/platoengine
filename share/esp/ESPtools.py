@@ -108,7 +108,7 @@ def aflr(modelName, meshName, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, 
 
 
 ##############################################################################
-## define function that converts su2 mesh to exo mesh
+## define function that extracts initial parameter values from csm file
 ##############################################################################
 def getInitialValues(modelName):
 
@@ -149,6 +149,33 @@ def getInitialValues(modelName):
   
   return initialValues
 
+##############################################################################
+## define function that extracts current despmtr values from CAPS problem
+##############################################################################
+def getCurrentValues(problem):
+  paramMap = problem.geometry.despmtr.items()
+  if len(paramMap) == 0:
+      raise Exception("Error: no 'despmtr' objects in the CAPS problem constructed with the given csm file." )
+  
+  params = []
+  for pair in paramMap:
+    params.append(pair[1].value)
+
+  return params
+
+##############################################################################
+## define function that sets despmtr values in CAPS problem
+##############################################################################
+def setDesignParameterValues(problem, values):
+  paramMap = problem.geometry.despmtr.items()
+
+  if len(paramMap) != len(values):
+      raise Exception("Error: Number of values provided does not equal the number of 'despmtr' objects in CAPS problem." )
+  
+  count = 0
+  for pair in paramMap:
+    pair[1].value = values[count]
+    count += 1
 
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh
