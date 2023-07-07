@@ -116,6 +116,9 @@ def getInitialValues(modelName):
   params = strVal.split('\n')
   params = list(filter(None, params)) ## filter out empty strings
 
+  if len(params) == 0:
+      raise Exception("Parsing error: no keyword 'despmtr' found in file '" + modelName + "'" )
+
   initialValues = []
   for param in params:
     tokens = param.split(' ')
@@ -129,14 +132,10 @@ def getInitialValues(modelName):
       print("got: " + param)
       raise Exception("Parsing error: reading initial values failed.")
 
-    ## first token should be 'despmtr'
-    if tokens[0] != 'despmtr':
-      raise Exception("unknown error: expected 'despmtr' token, got '" + tokens[0] + "'" )
-
     if len(tokens) == 9:
       ## eighth token should be 'initial'
       if tokens[7] != 'initial':
-        raise Exception("parsing error: expected 'initial' token, got '" + tokens[7] + "'" )
+        raise Exception("Parsing error: expected 'initial' token, got '" + tokens[7] + "'" )
 
       ## get current value
       initialValue = float(tokens[8])
