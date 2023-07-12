@@ -277,25 +277,38 @@ class Aflr4Aflr3Meshing(unittest.TestCase):
             "patend \n",
             "end"
         ])
+    
+    def generateMesh(self, csmName, meshName, meshMorph):
+        ESPtools.aflr4_aflr3_meshing(csmName, meshName, meshMorph)
+        mesh = exodus.ExodusDB()
+        mesh.read(meshName)
+        return mesh
 
-    def test_morphedMeshConnectivityMatchesInitialMesh(self):
-        etoName = "dummy_eto.eto"
-
+    def test_ConnectivityDoesNotMatchInitialWhenRemeshed(self):
         self.writeBoxMeshCsm(Lx=1.0, Ly=2.0, Lz=1.5)
         initialMeshName = "initial_mesh.exo"
-        ESPtools.aflr4_aflr3_meshing(csmFileName, initialMeshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
-        initialMesh = exodus.ExodusDB()
-        initialMesh.read(initialMeshName)
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
 
         self.writeBoxMeshCsm(Lx=1.1, Ly=2.0, Lz=1.5)
         perturbedMeshName = "perturbed_mesh.exo"
-        ESPtools.aflr4_aflr3_meshing(csmFileName, perturbedMeshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
-        perturbedMesh = exodus.ExodusDB()
-        perturbedMesh.read(perturbedMeshName)
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
 
         self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
         self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
         self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_ConnectivityMatchesInitialWhenMorphed(self):
+        self.writeBoxMeshCsm(Lx=1.0, Ly=2.0, Lz=1.5)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeBoxMeshCsm(Lx=1.1, Ly=2.0, Lz=1.5)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
 
 
 
