@@ -260,13 +260,13 @@ class parametersAreEqual(unittest.TestCase):
         self.assertTrue(paramsAreSame)
 
 class Aflr4Aflr3Meshing(unittest.TestCase):
-    def test_meshWithoutMorph(self):
+    def writeBoxMeshCsm(self, Lx, Ly, Lz):
         writeCsmFile([
             "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
             "attribute capsMeshLength 5.0 \n",
-            "despmtr Lx 1.1 lbound 0.5 ubound 3.0 initial 1.0 \n",
-            "despmtr Ly 2.0 lbound 1.0 ubound 5.0 initial 2.0 \n",
-            "despmtr Lz 1.5 lbound 1.0 ubound 8.0 initial 1.5 \n",
+            "despmtr Lx " + str(Lx) + " lbound 0.5 ubound 3.0 initial 1.0 \n",
+            "despmtr Ly " + str(Ly) + " lbound 1.0 ubound 5.0 initial 2.0 \n",
+            "despmtr Lz " + str(Lz) + " lbound 1.0 ubound 8.0 initial 1.5 \n",
             "box -Lx/2   -Ly/2   -Lz/2   Lx   Ly   Lz \n",
             "select body 1 \n",
             "select face \n",
@@ -278,20 +278,24 @@ class Aflr4Aflr3Meshing(unittest.TestCase):
             "end"
         ])
 
-        dot = "."
-        tokens = csmFileName.split(dot)
-        tokens.pop()
-        meshName = dot.join(tokens) + ".exo"
-        etoName = dot.join(tokens) + ".eto"
-        # meshName = "dummy_despmtrs.exo"
-        # etoName = "dummy_despmtrs.eto"
-        ESPtools.aflr4_aflr3_meshing(csmFileName, meshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
+    def test_morphedMeshConnectivityMatchesInitialMesh(self):
+        etoName = "dummy_eto.eto"
 
-        mesh = exodus.ExodusDB()
-        mesh.read(meshName)
+        self.writeBoxMeshCsm(Lx=1.0, Ly=2.0, Lz=1.5)
+        initialMeshName = "initial_mesh.exo"
+        ESPtools.aflr4_aflr3_meshing(csmFileName, initialMeshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
+        initialMesh = exodus.ExodusDB()
+        initialMesh.read(initialMeshName)
 
-        self.assertEqual(mesh.numNodes, 38)
-        self.assertEqual(mesh.numElements, 66)
+        self.writeBoxMeshCsm(Lx=1.1, Ly=2.0, Lz=1.5)
+        perturbedMeshName = "perturbed_mesh.exo"
+        ESPtools.aflr4_aflr3_meshing(csmFileName, perturbedMeshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
+        perturbedMesh = exodus.ExodusDB()
+        perturbedMesh.read(perturbedMeshName)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
 
 
 
