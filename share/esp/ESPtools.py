@@ -427,7 +427,7 @@ def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
 ##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
 ##############################################################################
-def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName, meshMorph):
+def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph):
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
@@ -675,7 +675,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if mesh == True:
     if workflow == "aflr4_aflr3":
       with redirected('aflr4_aflr3.console'):
-        aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName, meshMorph)
+        aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph)
 
     elif workflow == "egads_tetgen":
       with redirected('egads_tetgen.console'):
