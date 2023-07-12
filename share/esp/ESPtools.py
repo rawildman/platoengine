@@ -2,6 +2,7 @@ import os
 import sys
 import fnmatch
 import subprocess
+import math
 import pyCAPS
 from shutil import copyfile
 from pyCAPS import capsProblem
@@ -176,6 +177,19 @@ def setDesignParameterValues(problem, values):
   for pair in paramMap:
     pair[1].value = values[count]
     count += 1
+
+##############################################################################
+## check if 2 parameter sets are equal
+##############################################################################
+def parametersAreEqual(values1, values2):
+  if len(values1) != len(values2):
+    return False
+
+  for i in range(len(values1)):
+    if not math.isclose(values1[i], values2[i]):
+      return False
+
+  return True
 
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh
@@ -423,6 +437,10 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
     initialValues = getInitialValues(modelNameOut)
     currentValues = getCurrentValues(problem)
     setDesignParameterValues(problem, initialValues)
+    if parametersAreEqual(initialValues, currentValues):
+      meshMorph = False
+    else:
+      setDesignParameterValues(problem, initialValues)
 
   aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
 

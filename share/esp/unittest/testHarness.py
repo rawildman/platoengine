@@ -1,6 +1,7 @@
 import unittest
 import pyCAPS
 import ESPtools
+import exodus
 
 csmFileName = "dummy_despmtrs.csm"
 def writeCsmFile(contents):
@@ -190,6 +191,109 @@ class setDesignParameterValues(unittest.TestCase):
         self.assertEqual(params[0], 10.0)
         self.assertEqual(params[1], 9.0)
         self.assertEqual(params[2], 8.0)
+
+class parametersAreEqual(unittest.TestCase):
+    def test_parametersHaveDifferentLengths(self):
+        writeCsmFile([
+            "despmtr Lx 2.5 \n",
+            "despmtr Ly 39.5 \n",
+            "despmtr Lz 0.09"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+
+        initialParams = ESPtools.getInitialValues(csmFileName)
+
+        newVals = [2.5, 39.5, 0.09, 13.4]
+
+        paramsAreSame = ESPtools.parametersAreEqual(initialParams, newVals)
+        self.assertFalse(paramsAreSame)
+
+    def test_parametersAreNotEqual(self):
+        writeCsmFile([
+            "despmtr Lx 2.5 \n",
+            "despmtr Ly 39.5 \n",
+            "despmtr Lz 0.09"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+
+        initialParams = ESPtools.getInitialValues(csmFileName)
+
+        newVals = [10.0, 9.0, 8.0]
+        ESPtools.setDesignParameterValues(problem, newVals)
+        newParams = ESPtools.getCurrentValues(problem)
+
+        paramsAreSame = ESPtools.parametersAreEqual(initialParams, newParams)
+        self.assertFalse(paramsAreSame)
+
+    def test_parametersAreNotEqualWithinTolerance(self):
+        writeCsmFile([
+            "despmtr Lx 2.5 \n",
+            "despmtr Ly 39.5 \n",
+            "despmtr Lz 0.09"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+
+        initialParams = ESPtools.getInitialValues(csmFileName)
+
+        newVals = [2.5, 39.5000001, 0.09]
+        ESPtools.setDesignParameterValues(problem, newVals)
+        newParams = ESPtools.getCurrentValues(problem)
+
+        paramsAreSame = ESPtools.parametersAreEqual(initialParams, newParams)
+        self.assertFalse(paramsAreSame)
+
+    def test_parametersAreEqual(self):
+        writeCsmFile([
+            "despmtr Lx 2.5 \n",
+            "despmtr Ly 39.5 \n",
+            "despmtr Lz 0.09"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+
+        initialParams = ESPtools.getInitialValues(csmFileName)
+
+        newVals = [2.5, 39.5, 0.09]
+        ESPtools.setDesignParameterValues(problem, newVals)
+        newParams = ESPtools.getCurrentValues(problem)
+
+        paramsAreSame = ESPtools.parametersAreEqual(initialParams, newParams)
+        self.assertTrue(paramsAreSame)
+
+class Aflr4Aflr3Meshing(unittest.TestCase):
+    def test_meshWithoutMorph(self):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 5.0 \n",
+            "despmtr Lx 1.1 lbound 0.5 ubound 3.0 initial 1.0 \n",
+            "despmtr Ly 2.0 lbound 1.0 ubound 5.0 initial 2.0 \n",
+            "despmtr Lz 1.5 lbound 1.0 ubound 8.0 initial 1.5 \n",
+            "box -Lx/2   -Ly/2   -Lz/2   Lx   Ly   Lz \n",
+            "select body 1 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+        dot = "."
+        tokens = csmFileName.split(dot)
+        tokens.pop()
+        meshName = dot.join(tokens) + ".exo"
+        etoName = dot.join(tokens) + ".eto"
+        # meshName = "dummy_despmtrs.exo"
+        # etoName = "dummy_despmtrs.eto"
+        ESPtools.aflr4_aflr3_meshing(csmFileName, meshName, 0.2, 1.0, 1.0, etoName, meshMorph=False)
+
+        mesh = exodus.ExodusDB()
+        mesh.read(meshName)
+
+        self.assertEqual(mesh.numNodes, 38)
+        self.assertEqual(mesh.numElements, 66)
+
+
 
 if __name__ == '__main__':
     unittest.main()
