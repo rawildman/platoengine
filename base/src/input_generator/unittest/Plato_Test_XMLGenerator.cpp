@@ -1156,6 +1156,72 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     EXPECT_EQ(tester.getConcurrentEvaluations(), "3");
 } 
 
+TEST(PlatoTestParseOptimizationParameters, MeshMorph_ThrowIfNoValueProvided)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    stringInput = "begin optimization_parameters\n"
+            "mesh_morph\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
+}
+
+TEST(PlatoTestParseOptimizationParameters, MeshMorph_DefaultIsFalse)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    stringInput = "begin optimization_parameters\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
+    EXPECT_EQ(tester.getMeshMorph(), "false");
+}
+
+TEST(PlatoTestParseOptimizationParameters, MeshMorph_ValueSetToTrue)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    stringInput = "begin optimization_parameters\n"
+            "mesh_morph true\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
+    EXPECT_EQ(tester.getMeshMorph(), "true");
+}
+
+TEST(PlatoTestParseOptimizationParameters, MeshMorph_ValueSetToFalse)
+{
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
+
+    stringInput = "begin optimization_parameters\n"
+            "mesh_morph false\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
+    EXPECT_EQ(tester.getMeshMorph(), "false");
+}
+
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters_MeshMap)
 {
     XMLGenerator_UnitTester tester;
