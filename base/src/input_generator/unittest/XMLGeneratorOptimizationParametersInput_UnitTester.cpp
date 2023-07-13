@@ -286,9 +286,9 @@ TEST(PlatoTestXMLGenerator, InsertShapeOptimizationInputs)
 {
     XMLGen::MetaDataTags tTags;
     XMLGen::insert_shape_optimization_input_options(tTags);
-    EXPECT_EQ(3u, tTags.size());
+    EXPECT_EQ(4u, tTags.size());
 
-    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr4_aflr3"} };
+    std::unordered_map<std::string, std::string> tGoldValues = { {"csm_file", ""}, {"num_shape_design_variables", ""}, {"esp_workflow", "aflr4_aflr3"}, {"mesh_morph", "false"} };
     for(auto& tPair : tTags)
     {
         // TEST INPUT KEYWORDS
