@@ -2438,5 +2438,88 @@ TEST(PlatoTestXMLGenerator, AppendInitializeValuesToPlatoMainOperationForShapeOp
     ASSERT_TRUE(tOperation.empty());
 }
 
+TEST(PlatoTestPlatoMainOperationsFile, AppendUpdateGeometryOnChange)
+{
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
+    tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "5");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
+    tXMLMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(tXMLMetaData, tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", 
+        "Command", "OnChange", 
+        "Argument", "Argument", "Argument", 
+        "Argument", "Argument", "Argument", 
+        "AppendInput", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "Update Geometry on Change", 
+        "plato-cli geometry esp", "true", 
+        "--input rocker.csm", "--output-model rocker_opt.csm", "--output-mesh rocker.exo",
+        "--tesselation rocker.eto", "--workflow aflr4_aflr3", "--parameters",
+        "true", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "5"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
+TEST(PlatoTestPlatoMainOperationsFile, AppendUpdateGeometryOnChangeMeshMorph)
+{
+    XMLGen::InputData tXMLMetaData;
+    XMLGen::OptimizationParameters tOptimizationParameters;
+    tOptimizationParameters.optimizationType(XMLGen::OT_SHAPE);
+    tOptimizationParameters.append("csm_file", "rocker.csm");
+    tOptimizationParameters.append("csm_opt_file", "rocker_opt.csm");
+    tOptimizationParameters.append("csm_tesselation_file", "rocker.eto");
+    tOptimizationParameters.append("csm_exodus_file", "rocker.exo");
+    tOptimizationParameters.append("num_shape_design_variables", "5");
+    tOptimizationParameters.append("esp_workflow", "aflr4_aflr3");
+    tOptimizationParameters.append("mesh_morph", "true");
+    tXMLMetaData.set(tOptimizationParameters);
+
+    pugi::xml_document tDocument;
+    ASSERT_NO_THROW(XMLGen::append_update_geometry_on_change_operation_to_plato_main_operation(tXMLMetaData, tDocument));
+    ASSERT_FALSE(tDocument.empty());
+
+    auto tOperation = tDocument.child("Operation");
+    ASSERT_FALSE(tOperation.empty());
+    ASSERT_STREQ("Operation", tOperation.name());
+    std::vector<std::string> tKeys = {"Function", "Name", 
+        "Command", "OnChange", 
+        "Argument", "Argument", "Argument", 
+        "Argument", "Argument", "Argument", "Argument", 
+        "AppendInput", "Input"};
+    std::vector<std::string> tValues = {"SystemCall", "Update Geometry on Change", 
+        "plato-cli geometry esp", "true", 
+        "--input rocker.csm", "--output-model rocker_opt.csm", "--output-mesh rocker.exo",
+        "--tesselation rocker.eto", "--workflow aflr4_aflr3", "--morph true", "--parameters",
+        "true", ""};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
+    auto tInput = tOperation.child("Input");
+    ASSERT_FALSE(tInput.empty());
+    tKeys = {"ArgumentName", "Layout", "Size"};
+    tValues = {"Parameters", "scalar", "5"};
+    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
+
+    tOperation = tOperation.next_sibling("Operation");
+    ASSERT_TRUE(tOperation.empty());
+}
+
 }
 // namespace PlatoTestXMLGenerator
