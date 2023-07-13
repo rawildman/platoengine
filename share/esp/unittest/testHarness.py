@@ -259,7 +259,7 @@ class parametersAreEqual(unittest.TestCase):
         paramsAreSame = ESPtools.parametersAreEqual(initialParams, newParams)
         self.assertTrue(paramsAreSame)
 
-class Aflr4Aflr3Meshing(unittest.TestCase):
+class MeshMorphInAflr4Aflr3Workflow(unittest.TestCase):
     def writeBoxMeshCsm(self, Lx, Ly, Lz):
         writeCsmFile([
             "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
@@ -277,6 +277,114 @@ class Aflr4Aflr3Meshing(unittest.TestCase):
             "patend \n",
             "end"
         ])
+
+    def writeSphereMeshCsm(self, radius):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 5.0 \n",
+            "despmtr radius " + str(radius) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "sphere 0   0   0   radius \n",
+            "select body 1 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+    def writeCylinderMeshCsm(self, radius):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 5.0 \n",
+            "despmtr radius " + str(radius) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "cylinder 0   0   0   2   0   0   radius \n",
+            "select body 1 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+    def writeConeMeshCsm(self, radius):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 5.0 \n",
+            "despmtr radius " + str(radius) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "cone 4   0   0   1   0   0   radius \n",
+            "select body 1 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+    def writeExtrudedCubeMeshCsm(self, length):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 5.0 \n",
+            "despmtr length " + str(length) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "skbeg   -length/2   -length/2   0 \n",
+	            "linseg   -length/2   length/2   0 \n",
+	            "linseg   length/2   length/2   0 \n",
+	            "linseg   length/2   -length/2   0 \n",
+	            "linseg   -length/2   -length/2   0 \n",
+            "skend     0 \n",
+            "extrude 0 0 length \n",
+            "select body 7 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+    def writeCubeWithCylindricalHoleMeshCsm(self, radius):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 10.0 \n",
+            "conpmtr length 7.0 \n",
+            "despmtr radius " + str(radius) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "box -length/2   -length/2   -length/2   length   length   length \n",
+            "cylinder 0   0   -length/2   0   0   length/2   radius \n",
+            "subtract \n",
+            "select body 3 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
+
+    def writePlusSignMeshCsm(self, radius):
+        writeCsmFile([
+            "attribute capsAIM $aflr4AIM;aflr3AIM;platoAIM \n",
+            "attribute capsMeshLength 20.0 \n",
+            "conpmtr length 5.0 \n",
+            "despmtr radius " + str(radius) + " lbound 1.0 ubound 3.0 initial 2.0 \n",
+            "cylinder 0   0   -length   0   0   length   radius \n",
+            "cylinder -length   0   0   length   0   0   radius \n",
+            "union \n",
+            "select body 3 \n",
+            "select face \n",
+            "attribute capsGroup   $solid_group \n",
+            "patbeg i @stack.size \n",
+            "  select body @stack[i] \n", 
+            "  attribute _name $block_+val2str(i,0) \n",
+            "patend \n",
+            "end"
+        ])
     
     def generateMesh(self, csmName, meshName, meshMorph):
         ESPtools.aflr4_aflr3_meshing(csmName, meshName, meshMorph)
@@ -284,7 +392,7 @@ class Aflr4Aflr3Meshing(unittest.TestCase):
         mesh.read(meshName)
         return mesh
 
-    def test_ConnectivityDoesNotMatchInitialWhenRemeshed(self):
+    def test_BoxConnectivityDoesNotMatchInitialWhenRemeshed(self):
         self.writeBoxMeshCsm(Lx=1.0, Ly=2.0, Lz=1.5)
         initialMeshName = "initial_mesh.exo"
         initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
@@ -297,12 +405,168 @@ class Aflr4Aflr3Meshing(unittest.TestCase):
         self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
         self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
 
-    def test_ConnectivityMatchesInitialWhenMorphed(self):
+    def test_BoxConnectivityMatchesInitialWhenMorphed(self):
         self.writeBoxMeshCsm(Lx=1.0, Ly=2.0, Lz=1.5)
         initialMeshName = "initial_mesh.exo"
         initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
 
         self.writeBoxMeshCsm(Lx=1.1, Ly=2.0, Lz=1.5)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_SphereConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writeSphereMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeSphereMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_SphereConnectivityMatchesInitialWhenMorphed(self):
+        self.writeSphereMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeSphereMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_CylinderConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writeCylinderMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeCylinderMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_CylinderConnectivityMatchesInitialWhenMorphed(self):
+        self.writeCylinderMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeCylinderMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_ConeConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writeConeMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeConeMeshCsm(radius=2.2)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_ConeConnectivityMatchesInitialWhenMorphed(self):
+        self.writeConeMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeConeMeshCsm(radius=2.2)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_ExtrudedCubeConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writeExtrudedCubeMeshCsm(length=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeExtrudedCubeMeshCsm(length=2.5)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_ExtrudedCubeConnectivityMatchesInitialWhenMorphed(self):
+        self.writeExtrudedCubeMeshCsm(length=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeExtrudedCubeMeshCsm(length=2.5)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_CubeWithCylindricalHoleConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writeCubeWithCylindricalHoleMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeCubeWithCylindricalHoleMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_CubeWithCylindricalHoleConnectivityMatchesInitialWhenMorphed(self):
+        self.writeCubeWithCylindricalHoleMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writeCubeWithCylindricalHoleMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
+
+        self.assertEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_PlusSignConnectivityDoesNotMatchInitialWhenRemeshed(self):
+        self.writePlusSignMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writePlusSignMeshCsm(radius=2.1)
+        perturbedMeshName = "perturbed_mesh.exo"
+        perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=False)
+
+        self.assertNotEqual(initialMesh.numNodes, perturbedMesh.numNodes)
+        self.assertNotEqual(initialMesh.numElements, perturbedMesh.numElements)
+        self.assertNotEqual(initialMesh.elementBlocks[0].connectivity, perturbedMesh.elementBlocks[0].connectivity)
+
+    def test_PlusSignConnectivityMatchesInitialWhenMorphed(self):
+        self.writePlusSignMeshCsm(radius=2.0)
+        initialMeshName = "initial_mesh.exo"
+        initialMesh = self.generateMesh(csmFileName, initialMeshName, meshMorph=False)
+
+        self.writePlusSignMeshCsm(radius=2.1)
         perturbedMeshName = "perturbed_mesh.exo"
         perturbedMesh = self.generateMesh(csmFileName, perturbedMeshName, meshMorph=True)
 
