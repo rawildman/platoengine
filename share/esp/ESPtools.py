@@ -427,11 +427,11 @@ def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
 ##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
 ##############################################################################
-def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph):
-
+def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph, quiet=False):
+  outLevel = 0 if quiet else 1
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
-                     outLevel=1)
+                     outLevel=outLevel)
 
   if meshMorph:
     initialValues = getInitialValues(modelNameOut)
@@ -444,6 +444,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph):
 
   aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
 
+  aflr4.input.Mesh_Quiet_Flag = quiet
   aflr4.input.Mesh_Format = "ETO"
   aflr4.input.Mesh_Length_Factor = .2 
   aflr4.input.min_scale =  1
@@ -452,6 +453,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph):
   aflr4.runAnalysis()
 
   aflr3 = problem.analysis.create(aim='aflr3AIM', name='aflr3')
+  aflr3.input.Mesh_Quiet_Flag = quiet
   aflr3.input["Surface_Mesh"].link(aflr4.output["Surface_Mesh"])
   aflr3.input.Multiple_Mesh = 'MultiDomain'
   aflr3.runAnalysis()
