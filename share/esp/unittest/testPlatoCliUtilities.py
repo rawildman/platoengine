@@ -256,6 +256,35 @@ class parametersAreEqual(unittest.TestCase):
         paramsAreSame = ESPtools.parametersAreEqual(initialParams, newParams)
         self.assertTrue(paramsAreSame)
 
+class prepareGeometryForMeshMorph(unittest.TestCase):
+    def test_currentAndInitialValuesAreEquivalent(self):
+        writer.writeCsmFile([
+            "despmtr Lx 2.5 lbound 2.0 ubound 3.0 initial 2.5 \n",
+            "despmtr Ly 3.5 lbound 3.0 ubound 5.0 initial 3.5 \n",
+            "despmtr Lz 6.5 lbound 5.0 ubound 8.0 initial 6.5"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+        currentVals = ESPtools.getCurrentValues(problem)
+
+        meshMorph = ESPtools.prepareGeometryForMeshMorph(csmFileName, problem, currentVals)
+
+        self.assertEqual(meshMorph, False)
+
+    def test_currentAndInitialValuesAreDifferent(self):
+        writer.writeCsmFile([
+            "despmtr Lx 2.65 lbound 2.0 ubound 3.0 initial 2.5 \n",
+            "despmtr Ly 3.99 lbound 3.0 ubound 5.0 initial 3.5 \n",
+            "despmtr Lz 7.57 lbound 5.0 ubound 8.0 initial 6.5"
+        ])
+        problem = constructCAPSProblem(csmFileName)
+        currentVals = ESPtools.getCurrentValues(problem)
+
+        meshMorph = ESPtools.prepareGeometryForMeshMorph(csmFileName, problem, currentVals)
+        preparedVals = ESPtools.getCurrentValues(problem)
+
+        self.assertEqual(meshMorph, True)
+        self.assertEqual(preparedVals, [2.5, 3.5, 6.5])
+
 
 
 if __name__ == '__main__':

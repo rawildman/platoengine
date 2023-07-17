@@ -192,6 +192,26 @@ def parametersAreEqual(values1, values2):
   return True
 
 ##############################################################################
+## set up and check if mesh morphing is needed
+##############################################################################
+def prepareGeometryForMeshMorph(modelName, problem, currentValues):
+  initialValues = getInitialValues(modelName)
+  if parametersAreEqual(initialValues, currentValues):
+    return False
+  else:
+    setDesignParameterValues(problem, initialValues)
+    return True
+
+##############################################################################
+## perform mesh morph
+##############################################################################
+def performMeshMorph(plato, problem, currentValues):
+  plato.input["Mesh"].unlink()
+  setDesignParameterValues(problem, currentValues)
+  plato.preAnalysis()
+  plato.postAnalysis()
+
+##############################################################################
 ## define function that converts su2 mesh to exo mesh
 ##############################################################################
 def toExo(meshName, groupAttrs):
@@ -434,13 +454,8 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph, quiet=False):
                      outLevel=outLevel)
 
   if meshMorph:
-    initialValues = getInitialValues(modelNameOut)
     currentValues = getCurrentValues(problem)
-    setDesignParameterValues(problem, initialValues)
-    if parametersAreEqual(initialValues, currentValues):
-      meshMorph = False
-    else:
-      setDesignParameterValues(problem, initialValues)
+    meshMorph = prepareGeometryForMeshMorph(modelNameOut, problem, currentValues)
 
   aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
 
@@ -466,10 +481,7 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph, quiet=False):
   plato.postAnalysis()
 
   if meshMorph:
-    plato.input["Mesh"].unlink()
-    setDesignParameterValues(problem, currentValues)
-    plato.preAnalysis()
-    plato.postAnalysis()
+    performMeshMorph(plato, problem, currentValues)
 
   tokens = meshName.split('.')
   tokens.pop()
@@ -591,19 +603,30 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
 ##############################################################################
 ## define function for running aflr2 meshing workflow
 ##############################################################################
-def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+def aflr2_meshing(modelNameOut, meshName, meshMorph, quiet=False):
+  outLevel = 0 if quiet else 1
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
-                     outLevel=1)
+                     outLevel=outLevel)
+
+  if meshMorph:
+    currentValues = getCurrentValues(problem)
+    meshMorph = prepareGeometryForMeshMorph(modelNameOut, problem, currentValues)
 
   aflr2 = problem.analysis.create(aim='aflr2AIM', name='aflr2')
+  aflr2.input.Mesh_Quiet_Flag = quiet
   aflr2.input.Tess_Params = [problem.geometry.outpmtr.MeshLength, 1.0, 20.0]
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr2.output["Area_Mesh"])
+  plato.input.Mesh_Morph = meshMorph
+
   plato.preAnalysis()
   plato.postAnalysis()
+
+  if meshMorph:
+    performMeshMorph(plato, problem, currentValues)
 
   tokens = meshName.split('.')
   tokens.pop()
@@ -689,7 +712,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
     elif workflow == "aflr2":
       with redirected('aflr2.console'):
-        aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+        aflr2_meshing(modelNameOut, meshName, meshMorph)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])
