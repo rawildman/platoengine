@@ -228,7 +228,7 @@ bool MeshWrapper::read_exodus_mesh( std::string &aMeshFile, std::string &aFieldN
     }
 
     if(aTimeStep < 1)
-        aTimeStep = mIoBroker->get_input_io_region().get()->get_property("state_count").get_int();
+        aTimeStep = mIoBroker->get_input_ioss_region().get()->get_property("state_count").get_int();
     mIoBroker->read_defined_input_fields(aTimeStep);
 
     return true;
