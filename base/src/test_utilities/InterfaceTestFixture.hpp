@@ -10,6 +10,8 @@
 
 #include <gtest/gtest.h>
 
+namespace Plato
+{
 class InterfaceTestFixture : public ::testing::Test
 {
 protected:
@@ -44,3 +46,4 @@ protected:
     int mIDIsSet;
     std::unique_ptr<Plato::Interface> mInterface;
 };
+}

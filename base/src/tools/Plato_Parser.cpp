@@ -70,6 +70,67 @@
 namespace Plato
 {
 
+namespace
+{
+
+template<typename T>
+T get_with_error_message(const Plato::InputData& aInputData, const std::string_view aEntryName, const std::string_view aErrorMessage)
+{
+    T tValue;
+    try
+    {
+        tValue = aInputData.get<T>(std::string{aEntryName});
+    }
+    catch(int /*tErr*/)
+    {
+        const std::string tErrorMessage = 
+            "Error parsing input: " + std::string{aErrorMessage};
+        throw Plato::ParsingException(tErrorMessage);
+    }
+    return tValue;
+}
+
+std::vector<ParameterAndDistribution> parameter_and_distribution_from_input_data(const std::vector<Plato::InputData>& aInputs)
+{
+    std::vector<ParameterAndDistribution> tParameterAndDistributionNames;
+    std::transform(aInputs.cbegin(), aInputs.cend(), std::back_inserter(tParameterAndDistributionNames),
+    [](const Plato::InputData& aData)
+    {
+        return ParameterAndDistribution
+        {
+            /*.mParameterName = */ get_with_error_message<std::string>(
+                aData, "SharedDataName", "Expected SharedDataName entry in StochasticParameter"),
+            /*.mDistributionName = */ get_with_error_message<std::string>(
+                aData, "DistributionName", "Expected DistributionName entry in StochasticParameter")
+        };
+    });
+    return tParameterAndDistributionNames;
+}
+
+std::vector<StochasticSampleSharedDataNames> sample_shared_data_names_from_input_data(const std::vector<Plato::InputData>& aInputs)
+{
+    std::vector<StochasticSampleSharedDataNames> tStochasticSampleSharedDataNames;
+    std::transform(aInputs.cbegin(), aInputs.cend(), std::back_inserter(tStochasticSampleSharedDataNames),
+    [](const Plato::InputData& aData)
+    {
+        if(aData.size<Plato::InputData>("StochasticParameter") == 0)
+        {
+            throw Plato::ParsingException(
+                "Error parsing input: Expected StochasticParameter entry in StochasticSample");
+        }
+        return StochasticSampleSharedDataNames
+        {
+            /*.mOutputValueSharedDataName = */ get_with_error_message<std::string>(
+                aData, "OutputValueSharedDataName", "Expected OutputValueSharedDataName entry in StochasticSample"),
+            /*.mOutputGradientSharedDataName = */ get_with_error_message<std::string>(
+                aData, "OutputGradientSharedDataName", "Expected OutputGradientSharedDataName entry in StochasticSample"),
+            /*.mParameters = */ parameter_and_distribution_from_input_data(aData.getByName<Plato::InputData>("StochasticParameter"))
+        };
+    });
+    return tStochasticSampleSharedDataNames;
+}
+}
+
 void
 MathParser::addArrays(const decltype(mArrays)& aArrays)
 {
@@ -1207,8 +1268,9 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.addDescentDirectionName(tDescentDirectionName);
     }
-    aOptimizerEngineStageData.setStochasticParameterNames(
-        tOptimizationVariablesNode.getByName<std::string>("StochasticParameterName"));
+
+    const auto& tStochasticSamples = tOptimizationVariablesNode.getByName<Plato::InputData>("StochasticSample");
+    aOptimizerEngineStageData.setStochasticSampleSharedDataNames(sample_shared_data_names_from_input_data(tStochasticSamples));
 }
 
 /******************************************************************************/
@@ -1381,7 +1443,6 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
-    aOptimizerStageData.setObjectiveValueParametersOperationName(Plato::Get::String(aObjectiveNode, "ValueParametersOperationName"));
 
     std::string tOutputSharedDataGradientName = Plato::Get::String(aObjectiveNode, "GradientName");
     std::string tObjectiveGradientStageName = Plato::Get::String(aObjectiveNode, "GradientStageName");
@@ -1397,7 +1458,6 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
              << __LINE__ << ", MESSAGE: USER DID NOT DEFINE OBJECTIVE FUNCTION OUTPUT SHARED DATA OR ITS STAGE NAME. " << "**********\n\n";
         throw Plato::ParsingException(tMsg.str().c_str());
     }
-    aOptimizerStageData.setObjectiveGradientParametersOperationName(Plato::Get::String(aObjectiveNode, "GradientParametersOperationName"));
 
     std::string tOutputSharedDataHessianName = Plato::Get::String(aObjectiveNode, "HessianName");
     std::string tObjectiveHessianStageName = Plato::Get::String(aObjectiveNode, "HessianStageName");
@@ -1406,7 +1466,6 @@ void parseObjectiveStagesData(const Plato::InputData & aObjectiveNode, Plato::Op
         aOptimizerStageData.setObjectiveHessianStageName(tObjectiveHessianStageName);
         aOptimizerStageData.setObjectiveHessianOutputName(tOutputSharedDataHessianName);
     }
-    aOptimizerStageData.setObjectiveHessianParametersOperationName(Plato::Get::String(aObjectiveNode, "HessianParametersOperationName"));
 }
 
 /******************************************************************************/

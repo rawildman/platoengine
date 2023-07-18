@@ -73,7 +73,7 @@ class DistributedVectorROL : public ROL::Vector<ScalarType>
 {
 public:
     /******************************************************************************/
-    explicit DistributedVectorROL(const MPI_Comm & aComm, const std::vector<ScalarType> & aInput) :
+    DistributedVectorROL(const MPI_Comm & aComm, const std::vector<ScalarType> & aInput) :
             mComm(aComm),
             mGlobalDimension(0),
             mData(aInput)
@@ -82,19 +82,13 @@ public:
         this->initialize();
     }
     /******************************************************************************/
-    explicit DistributedVectorROL(const MPI_Comm & aComm, const size_t & aLocalNumElements, ScalarType aValue = 0) :
+    DistributedVectorROL(const MPI_Comm & aComm, const size_t & aLocalNumElements, ScalarType aValue = 0) :
             mComm(aComm),
             mGlobalDimension(0),
             mData(std::vector<ScalarType>(aLocalNumElements, aValue))
     /******************************************************************************/
     {
         this->initialize();
-    }
-
-    /******************************************************************************/
-    virtual ~DistributedVectorROL()
-    /******************************************************************************/
-    {
     }
 
     /******************************************************************************/

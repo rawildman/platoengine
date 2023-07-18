@@ -250,17 +250,10 @@ void Operation::setPerformer(std::shared_ptr<Performer> aPerformer)
 }
 
 /******************************************************************************/
-bool Operation::hasParameter(const std::string& aParamName)
+bool Operation::hasParameter(const std::string& aParamName) const
 /******************************************************************************/
 {
     return m_parameters.count(aParamName) > 0;
-}
-
-/******************************************************************************/
-void Operation::setParameterValue(const std::string& aParamName, const double aParamValue)
-/******************************************************************************/
-{
-    m_parameters.at(aParamName)->setData({aParamValue});
 }
 
 /******************************************************************************/

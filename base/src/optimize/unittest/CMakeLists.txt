@@ -2,7 +2,6 @@ SET(SRCS UnitMain.cpp
          Plato_Test_ROLGradientCheck.cpp
          Plato_Test_ParseInterfaceOptimizerOptions.cpp)
 
-
 add_executable(OptimizerInterfaceUnitTester ${SRCS})
 target_link_libraries(OptimizerInterfaceUnitTester GTest::GTest PlatoTestUtilities PlatoParser PlatoInterface)
 

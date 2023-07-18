@@ -12,6 +12,8 @@
 
 #include <stdlib.h>
 
+namespace Plato
+{
 void
 InterfaceTestFixture::SetUp()
 {
@@ -74,4 +76,5 @@ InterfaceTestFixture::constructOptimizerData()
     Plato::Parse::parseOptimizerOptions(tOptimizerNode, tEngineData);
 
     return tEngineData;
+}
 }

@@ -48,7 +48,6 @@
 #include "ROL_Solver.hpp"
 
 #include "Plato_ReducedObjectiveROL.hpp"
-#include "Plato_ReducedStochasticObjectiveROL.hpp"
 #include "Plato_ReducedConstraintROL.hpp"
 #include "Plato_DistributedVectorROL.hpp"
 

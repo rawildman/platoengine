@@ -55,64 +55,6 @@ namespace Plato
 {
 
 /******************************************************************************/
-OptimizerEngineStageData::OptimizerEngineStageData() :
-        mMeanNorm(false),
-        mCheckGradient(false),
-        mCheckHessian(false),
-        mUserInitialGuess(false),
-        mOutputControlToFile(false),
-        mOutputDiagnosticsToFile(true),
-        mResetAlgorithmOnUpdate(false),
-        mMaxNumIterations(500),
-        mProblemUpdateFrequency(0),
-        mROLCheckGradientSteps(12),
-        mROLCheckGradientStepSize(10),
-        mROLCheckGradientSeed(0),
-        mROLPerturbationScale(1),
-        mStateName(),
-        mHessianType("disabled"),
-        mInputFileName(),
-        mCacheStageName(),
-        mOutputStageName(),
-        mObjectiveValueOutputName(),
-        mObjectiveGradientOutputName(),
-        mObjectiveHessianOutputName(),
-        mInitializationStageName(),
-        mInitialControlDataName(),
-        mFinalizationStageName(),
-        mSetLowerBoundsStageName(),
-        mSetUpperBoundsStageName(),
-        mLowerBoundValueName(),
-        mLowerBoundVectorName(),
-        mUpperBoundValueName(),
-        mUpperBoundVectorName(),
-        mObjectiveValueStageName(),
-        mObjectiveGradientStageName(),
-        mObjectiveHessianStageName(),
-        mInitialGuess(std::vector<double>(1, 0.5)),
-        mLowerBoundValues(std::vector<double>(1, 0.)),
-        mUpperBoundValues(std::vector<double>(1, 1.)),
-        mConstraintNormalizedTargetValues(),
-        mConstraintAbsoluteTargetValues(),
-        mConstraintReferenceValues(),
-        mControlNames(),
-        mFilteredControlNames(),
-        mConstraintValueNames(),
-        mDescentDirectionNames(),
-        mConstraintValueStageNames(),
-        mConstraintGradientStageNames(),
-        mConstraintHessianStageNames(),
-        mUpdateProblemStageNames(),
-        mConstraintGradientNames(),
-        mConstraintHessianNames(),
-        mConstraintReferenceValueNames()
-        
-        
-/******************************************************************************/
-{
-}
-
-/******************************************************************************/
 std::vector<double> OptimizerEngineStageData::getLowerBoundValues() const
 /******************************************************************************/
 {
@@ -581,20 +523,6 @@ void OptimizerEngineStageData::setObjectiveValueStageName(const std::string & aI
 }
 
 /******************************************************************************/
-const std::string& OptimizerEngineStageData::getObjectiveValueParametersOperationName() const
-/******************************************************************************/
-{
-    return mObjectiveValueParametersOperationName;
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setObjectiveValueParametersOperationName(std::string aInput)
-/******************************************************************************/
-{
-    mObjectiveValueParametersOperationName = std::move(aInput);
-}
-
-/******************************************************************************/
 const std::string& OptimizerEngineStageData::getObjectiveHessianOutputName() const
 /******************************************************************************/
 {
@@ -627,20 +555,6 @@ void OptimizerEngineStageData::setObjectiveHessianStageName(const std::string & 
 }
 
 /******************************************************************************/
-const std::string& OptimizerEngineStageData::getObjectiveHessianParametersOperationName() const
-/******************************************************************************/
-{
-    return mObjectiveHessianParametersOperationName;
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setObjectiveHessianParametersOperationName(std::string aInput)
-/******************************************************************************/
-{
-    mObjectiveHessianParametersOperationName = std::move(aInput);
-}
-
-/******************************************************************************/
 const std::string& OptimizerEngineStageData::getObjectiveGradientOutputName() const
 /******************************************************************************/
 {
@@ -670,20 +584,6 @@ void OptimizerEngineStageData::setObjectiveGradientStageName(const std::string &
 {
     mObjectiveGradientStageName.clear();
     mObjectiveGradientStageName.assign(aInput.begin(), aInput.end());
-}
-
-/******************************************************************************/
-const std::string& OptimizerEngineStageData::getObjectiveGradientParametersOperationName() const
-/******************************************************************************/
-{
-    return mObjectiveGradientParametersOperationName;
-}
-
-/******************************************************************************/
-void OptimizerEngineStageData::setObjectiveGradientParametersOperationName(std::string aInput)
-/******************************************************************************/
-{
-    mObjectiveGradientParametersOperationName = std::move(aInput);
 }
 
 /******************************************************************************/
@@ -725,18 +625,15 @@ void OptimizerEngineStageData::setInitialControlDataName(const std::string & aIn
     mInitialControlDataName.assign(aInput.begin(), aInput.end());
 }
 
-/******************************************************************************/
-const std::vector<std::string>& OptimizerEngineStageData::getStochasticParameterNames() const
-/******************************************************************************/
+const std::vector<StochasticSampleSharedDataNames>& OptimizerEngineStageData::getStochasticSampleSharedDataNames() const
 {
-    return mStochasticParametersNames;
+    return mStochasticSampleSharedDataNames;
 }
 
-/******************************************************************************/
-void OptimizerEngineStageData::setStochasticParameterNames(std::vector<std::string> aInput)
-/******************************************************************************/
+void OptimizerEngineStageData::setStochasticSampleSharedDataNames(
+    std::vector<StochasticSampleSharedDataNames> aStochasticSampleSharedDataNames)
 {
-    mStochasticParametersNames = std::move(aInput);
+    mStochasticSampleSharedDataNames = std::move(aStochasticSampleSharedDataNames);
 }
 
 /******************************************************************************/

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Plato_Utils.hpp"
+#include "Plato_NamedType.hpp"
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>

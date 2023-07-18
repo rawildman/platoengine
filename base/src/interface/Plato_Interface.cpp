@@ -416,7 +416,11 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
     const std::vector<std::string> tStageInputDataNames = tStage->getInputDataNames();
     for(const std::string& tName : tStageInputDataNames)
     {
-        exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+        if(aArguments.isType<const double*>(tName)) {
+            exportData(aArguments.get<const double*>(tName), mDataLayer->getSharedData(tName));
+        } else {
+            exportData(aArguments.get<double*>(tName), mDataLayer->getSharedData(tName));
+        }
     }
 
     perform(*tStage);
@@ -431,7 +435,7 @@ void Interface::compute(const std::string & aStageName, Teuchos::ParameterList& 
 }
 
 /******************************************************************************/
-void Interface::exportData(double* aFrom, Plato::SharedData& aTo)
+void Interface::exportData(const double* const aFrom, Plato::SharedData& aTo)
 /******************************************************************************/
 {
     const int tMyLength = aTo.size();
@@ -441,7 +445,7 @@ void Interface::exportData(double* aFrom, Plato::SharedData& aTo)
 }
 
 /******************************************************************************/
-void Interface::importData(double* aTo, Plato::SharedData& aFrom)
+void Interface::importData(double* const aTo, const Plato::SharedData& aFrom)
 /******************************************************************************/
 {
     const int tMyLength = aFrom.size();
@@ -764,7 +768,7 @@ void Interface::initializePerformerMPI()
 
     mPerformer = std::make_shared<Plato::Performer>(mLocalPerformerName, mLocalCommID);
 
-    mExceptionHandler = new Plato::ExceptionHandler(mLocalPerformerName, mLocalComm, mGlobalComm);
+    mExceptionHandler = std::make_unique<Plato::ExceptionHandler>(mLocalPerformerName, mLocalComm, mGlobalComm);
 }
 
 /******************************************************************************/
@@ -784,9 +788,9 @@ void Interface::setPerformerOnStages()
 void Interface::initializeConsole()
 /******************************************************************************/
 {
-    if(mConsole == nullptr)
+    if(!mConsole)
     {
-        mConsole = new Console(mLocalPerformerName, mPerformerID, Plato::Get::InputData(mInputData,"Console"), mLocalComm);
+        mConsole = std::make_unique<Console>(mLocalPerformerName, mPerformerID, Plato::Get::InputData(mInputData,"Console"), mLocalComm);
     }
 }
 
@@ -881,22 +885,6 @@ bool Interface::isDone()
     return mIsDone;
 }
 
-/******************************************************************************/
-Interface::~Interface()
-/******************************************************************************/
-{
-    if(mExceptionHandler)
-    {
-        delete mExceptionHandler;
-        mExceptionHandler = nullptr;
-    }
-    if(mConsole)
-    {
-        delete mConsole;
-        mConsole = nullptr;
-    }
-}
-
 void Interface::checkAndSetApplication(Application* aApplication)
 {
     if(aApplication == nullptr)
@@ -909,34 +897,6 @@ void Interface::checkAndSetApplication(Application* aApplication)
     {
         mPerformer->setApplication(aApplication);
     }
-}
-
-bool Interface::hasStageOperationAndParameter(
-        const StageName& aStageName,
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName) const
-{
-    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
-    [&aStageName](const std::unique_ptr<Stage>& aStage){
-        return aStage->getName() == aStageName.mValue;
-    });
-    return tStageIter != mStages.end() ? (*tStageIter)->operationHasParameter(aOperationName, aParameterName) : false;
-}
-
-void Interface::setParameterOnOperation(
-        const StageName& aStageName,
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName,
-        const double aValue)
-{
-    const auto tStageIter = std::find_if(mStages.begin(), mStages.end(), 
-    [&aStageName](const std::unique_ptr<Stage>& aStage){
-        return aStage->getName() == aStageName.mValue;
-    });
-    if(tStageIter != mStages.end())
-    {
-        (*tStageIter)->setParameterOnOperation(aOperationName, aParameterName, aValue);
-    } 
 }
 
 bool Interface::parameterExists(const std::string& aParameterName) const
@@ -962,4 +922,15 @@ void Interface::validate()
     }
 }
 
+bool Interface::dataLayerHasParameter(const std::string& aParameterName) const
+{
+    return mDataLayer->hasSharedData(aParameterName) 
+        && mDataLayer->getSharedData(aParameterName).myLayout() == data::layout_t::SCALAR_PARAMETER;
+}
+
+void Interface::setParameterInDataLayer(const std::string& aParameterName, const double aValue)
+{
+    Plato::SharedData& tParameter = mDataLayer->getSharedData(aParameterName);
+    tParameter.setData({aValue});
+}
 } /* namespace Plato */

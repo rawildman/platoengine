@@ -41,8 +41,10 @@
 */
 
 #include <gtest/gtest.h>
+
 #include "Plato_InputData.hpp"
 #include "Plato_Parser.hpp"
+#include "Plato_Exceptions.hpp"
 
 namespace PlatoTestEngineDataParser
 {
@@ -59,8 +61,26 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerData)
   "  <UpperBoundVectorName>Upper Bound Vector</UpperBoundVectorName>\n"
   "  <SetLowerBoundsStage>Set Lower Bounds</SetLowerBoundsStage>\n"
   "  <SetUpperBoundsStage>Set Upper Bounds</SetUpperBoundsStage>\n"
-  "  <StochasticParameterName>Stochastic Parameter 0</StochasticParameterName>\n"
-  "  <StochasticParameterName>Stochastic Parameter 1</StochasticParameterName>\n"
+  "  <StochasticSample>\n"
+  "    <OutputValueSharedDataName>out_data_1</OutputValueSharedDataName>\n"
+  "    <OutputGradientSharedDataName>out_grad_1</OutputGradientSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_1_1</SharedDataName>\n"
+  "      <DistributionName>uniform_1</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_1_2</SharedDataName>\n"
+  "      <DistributionName>uniform_2</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
+  "  <StochasticSample>\n"
+  "    <OutputValueSharedDataName>out_data_2</OutputValueSharedDataName>\n"
+  "    <OutputGradientSharedDataName>out_grad_2</OutputGradientSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_2_1</SharedDataName>\n"
+  "      <DistributionName>uniform_1</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
   "</OptimizationVariables>\n";
 
   const Plato::PugiParser tParser;
@@ -79,9 +99,99 @@ TEST(PlatoTestEngineDataParser, ParseOptimizerData)
   EXPECT_EQ(tEngineData.getUpperBoundVectorName(), "Upper Bound Vector"); // UpperBoundVectorName
   EXPECT_EQ(tEngineData.getSetLowerBoundsStageName(), "Set Lower Bounds"); // SetLowerBoundsStage
   EXPECT_EQ(tEngineData.getSetUpperBoundsStageName(), "Set Upper Bounds"); // SetUpperBoundsStage
-  EXPECT_EQ(tEngineData.getStochasticParameterNames().size(), 2);
-  EXPECT_EQ(tEngineData.getStochasticParameterNames().front(), "Stochastic Parameter 0");
-  EXPECT_EQ(tEngineData.getStochasticParameterNames().back(), "Stochastic Parameter 1");
+
+  ASSERT_EQ(tEngineData.getStochasticSampleSharedDataNames().size(), 2);
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mOutputValueSharedDataName, "out_data_1");
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mOutputGradientSharedDataName, "out_grad_1");
+  ASSERT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mParameters.size(), 2);
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mParameters.at(0).mParameterName, "parameter_data_1_1");
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mParameters.at(0).mDistributionName, "uniform_1");
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mParameters.at(1).mParameterName, "parameter_data_1_2");
+  EXPECT_EQ(tEngineData.getStochasticSampleSharedDataNames().front().mParameters.at(1).mDistributionName, "uniform_2");
+}
+
+TEST(PlatoTestEngineDataParser, MalformedStochasticSamplesOutputValue)
+{
+  const std::string tInput =
+  "<OptimizationVariables>\n"
+  "  <StochasticSample>\n"
+  "    <OutputGradientSharedDataName>out_grad_1</OutputGradientSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_1_1</SharedDataName>\n"
+  "      <DistributionName>uniform_1</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
+  "</OptimizationVariables>\n";
+
+  const Plato::InputData tInputData = Plato::PugiParser{}.parseString(tInput);
+  Plato::OptimizerEngineStageData tEngineData;
+  EXPECT_THROW(Plato::Parse::parseOptimizationVariablesNames(tInputData, tEngineData), Plato::ParsingException);
+}
+
+TEST(PlatoTestEngineDataParser, MalformedStochasticSamplesOutputGradient)
+{
+  const std::string tInput =
+  "<OptimizationVariables>\n"
+  "  <StochasticSample>\n"
+  "    <OutputValueSharedDataName>out_data_1</OutputValueSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_1_1</SharedDataName>\n"
+  "      <DistributionName>uniform_1</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
+  "</OptimizationVariables>\n";
+
+  const Plato::InputData tInputData = Plato::PugiParser{}.parseString(tInput);
+  Plato::OptimizerEngineStageData tEngineData;
+  EXPECT_THROW(Plato::Parse::parseOptimizationVariablesNames(tInputData, tEngineData), Plato::ParsingException);
+}
+
+TEST(PlatoTestEngineDataParser, MalformedStochasticSamplesParameter)
+{
+  const std::string tInput =
+  "<OptimizationVariables>\n"
+  "  <StochasticSample>\n"
+  "    <OutputSharedDataName>out_data_1</OutputSharedDataName>\n"
+  "  </StochasticSample>\n"
+  "</OptimizationVariables>\n";
+
+  const Plato::InputData tInputData = Plato::PugiParser{}.parseString(tInput);
+  Plato::OptimizerEngineStageData tEngineData;
+  EXPECT_THROW(Plato::Parse::parseOptimizationVariablesNames(tInputData, tEngineData), Plato::ParsingException);
+}
+
+TEST(PlatoTestEngineDataParser, MalformedStochasticSamplesSharedData)
+{
+  const std::string tInput =
+  "<OptimizationVariables>\n"
+  "  <StochasticSample>\n"
+  "    <OutputSharedDataName>out_data_1</OutputSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <DistributionName>uniform_1</DistributionName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
+  "</OptimizationVariables>\n";
+
+  const Plato::InputData tInputData = Plato::PugiParser{}.parseString(tInput);
+  Plato::OptimizerEngineStageData tEngineData;
+  EXPECT_THROW(Plato::Parse::parseOptimizationVariablesNames(tInputData, tEngineData), Plato::ParsingException);
+}
+
+TEST(PlatoTestEngineDataParser, MalformedStochasticSamplesDistribution)
+{
+  const std::string tInput =
+  "<OptimizationVariables>\n"
+  "  <StochasticSample>\n"
+  "    <OutputSharedDataName>out_data_1</OutputSharedDataName>\n"
+  "    <StochasticParameter>\n"
+  "      <SharedDataName>parameter_data_1_1</SharedDataName>\n"
+  "    </StochasticParameter>\n"
+  "  </StochasticSample>\n"
+  "</OptimizationVariables>\n";
+
+  const Plato::InputData tInputData = Plato::PugiParser{}.parseString(tInput);
+  Plato::OptimizerEngineStageData tEngineData;
+  EXPECT_THROW(Plato::Parse::parseOptimizationVariablesNames(tInputData, tEngineData), Plato::ParsingException);
 }
 
 TEST(PlatoTestEngineDataParser, ParseObjectiveData)
@@ -90,15 +200,12 @@ TEST(PlatoTestEngineDataParser, ParseObjectiveData)
   "<Objective>\n"
   "  <GradientName>one fish</GradientName>\n"
   "  <GradientStageName>two fish</GradientStageName>\n"
-  "  <GradientParametersOperationName>red fish</GradientParametersOperationName>\n"
   
-  "  <ValueName>blue fish</ValueName>\n"
-  "  <ValueStageName>old fish</ValueStageName>\n"
-  "  <ValueParametersOperationName>new fish</ValueParametersOperationName>\n"
+  "  <ValueName>red fish</ValueName>\n"
+  "  <ValueStageName>blue fish</ValueStageName>\n"
 
   "  <HessianName>Some are fast</HessianName>\n"
   "  <HessianStageName>Some are slow</HessianStageName>\n"
-  "  <HessianParametersOperationName>Not one of them is like another</HessianParametersOperationName>\n"
   "</Objective>\n";
 
   const Plato::PugiParser tParser;
@@ -110,15 +217,12 @@ TEST(PlatoTestEngineDataParser, ParseObjectiveData)
 
   EXPECT_EQ(tEngineData.getObjectiveGradientOutputName(), "one fish");
   EXPECT_EQ(tEngineData.getObjectiveGradientStageName(), "two fish");
-  EXPECT_EQ(tEngineData.getObjectiveGradientParametersOperationName(), "red fish");
 
-  EXPECT_EQ(tEngineData.getObjectiveValueOutputName(), "blue fish");
-  EXPECT_EQ(tEngineData.getObjectiveValueStageName(), "old fish");
-  EXPECT_EQ(tEngineData.getObjectiveValueParametersOperationName(), "new fish");
+  EXPECT_EQ(tEngineData.getObjectiveValueOutputName(), "red fish");
+  EXPECT_EQ(tEngineData.getObjectiveValueStageName(), "blue fish");
 
   EXPECT_EQ(tEngineData.getObjectiveHessianOutputName(), "Some are fast");
   EXPECT_EQ(tEngineData.getObjectiveHessianStageName(), "Some are slow");
-  EXPECT_EQ(tEngineData.getObjectiveHessianParametersOperationName(), "Not one of them is like another");
 }
 
 TEST(PlatoTestEngineDataParser, ParseOptimizerOptions)

@@ -112,11 +112,6 @@ SET(SRCS XMLGenerator_UnitMain.cpp
 SET(HDRS XMLGenerator_UnitTester.hpp
          XMLGenerator_UnitTester_Tools.hpp)
 
-if(CMAKE_COMPILER_IS_GNUCC)
-  set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -Wno-unused-variable -Wno-write-strings")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-unused-variable -Wno-write-strings")
-endif()
-
 add_executable(PlatoXMLGenerator_UnitTester ${SRCS})
 target_include_directories(PlatoXMLGenerator_UnitTester PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
 target_link_libraries(PlatoXMLGenerator_UnitTester GTest::GTest PlatoParser PlatoAnalyze)

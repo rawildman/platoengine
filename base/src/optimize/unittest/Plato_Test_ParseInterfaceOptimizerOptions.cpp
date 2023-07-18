@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 
-class PlatoTestParseInterfaceOptimizerOptions : public InterfaceTestFixture
+class PlatoTestParseInterfaceOptimizerOptions : public Plato::InterfaceTestFixture
 {
 };
 

@@ -13,15 +13,8 @@ set(HEADERS Plato_BoundsBase.hpp
             Plato_Radius.hpp
             Plato_Rosenbrock.hpp
             Plato_Criterion.hpp
-            Plato_LinearAlgebra.hpp
-            Plato_MultiVector.hpp
-            Plato_StandardMultiVector.hpp
-            Plato_StandardVector.hpp
-            Plato_Vector.hpp
             Plato_DriverInterface.hpp
             Plato_SOParameterStudies.hpp
-            Plato_DistributedVector.hpp
-            Plato_EpetraSerialDenseVector.hpp
             Plato_SOParameterStudiesInterface.hpp
             Plato_DakotaFactory.hpp
             Plato_OptimizerFactory.hpp
@@ -29,22 +22,19 @@ set(HEADERS Plato_BoundsBase.hpp
             Plato_OptimizerUtilities.hpp
             Plato_ROLInterface.hpp
             Plato_StochasticROLInterface.hpp
-            Plato_SerialEpetraVectorROL.hpp
-            Plato_DistributedVectorROL.hpp
             Plato_ReducedConstraintROL.hpp
             Plato_ReducedObjectiveROL.hpp
             Plato_ReducedStochasticObjectiveROL.hpp
             Plato_ConstraintSimOptROL.hpp
             Plato_ObjectiveSimOptROL.hpp
             Plato_ProxyComplianceROL.hpp
-            Plato_SerialVectorROL.hpp
             Plato_ProxyVolumeROL.hpp
             GradientCheckUtilities.hpp
             )
 
 add_library(PlatoOptimize INTERFACE ${HEADERS} )
 target_include_directories(PlatoOptimize INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(PlatoOptimize INTERFACE PlatoAnalyze)
+target_link_libraries(PlatoOptimize INTERFACE PlatoAnalyze PlatoLinearAlgebra PlatoStochastic)
 if(DAKOTADRIVER)
   target_link_libraries(PlatoOptimize INTERFACE PlatoDakotaDriver)
 endif()

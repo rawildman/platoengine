@@ -54,6 +54,7 @@
 #include <vector>
 
 #include "Plato_InputData.hpp"
+#include "Plato_StochasticSampleSharedDataNames.hpp"
 
 namespace Plato
 {
@@ -61,8 +62,6 @@ namespace Plato
 class OptimizerEngineStageData : public Plato::InputData
 {
 public:
-    OptimizerEngineStageData();
-
     void setCheckGradient(const bool aInput);
     void setCheckHessian(const bool aInput);
     void setUserInitialGuess(const bool aInput);
@@ -126,18 +125,6 @@ public:
     int getROLStochasticSamplerSeed() const;
     void setROLStochasticSamplerSeed(int aInput);
 
-    /******************************************************************************//**
-     * @brief Return scaling penalty parameter for augmented Lagrangian algorithm
-     * @return scaling penalty parameter for augmented Lagrangian algorithm
-    ***********************************************************************************/
-    double getAugLagPenaltyScaleParameter() const;
-
-    /******************************************************************************//**
-     * @brief Set scaling penalty parameter for augmented Lagrangian algorithm
-     * @param [in] aInput scaling penalty parameter for augmented Lagrangian algorithm
-    ***********************************************************************************/
-    void setAugLagPenaltyScaleParameter(const double aInput);
-
     std::string getStateName() const;
     void setStateNames(const std::string & aInput);
 
@@ -181,22 +168,16 @@ public:
     void setObjectiveValueOutputName(const std::string & aInput);
     const std::string& getObjectiveValueStageName() const;
     void setObjectiveValueStageName(const std::string & aInput);
-    const std::string& getObjectiveValueParametersOperationName() const;
-    void setObjectiveValueParametersOperationName(std::string aInput);
 
     const std::string& getObjectiveHessianOutputName() const;
     void setObjectiveHessianOutputName(const std::string & aInput);
     const std::string& getObjectiveHessianStageName() const;
     void setObjectiveHessianStageName(const std::string & aInput);
-    const std::string& getObjectiveHessianParametersOperationName() const;
-    void setObjectiveHessianParametersOperationName(std::string aInput);
 
     const std::string& getObjectiveGradientOutputName() const;
     void setObjectiveGradientOutputName(const std::string & aInput);
     const std::string& getObjectiveGradientStageName() const;
     void setObjectiveGradientStageName(const std::string & aInput);
-    const std::string& getObjectiveGradientParametersOperationName() const;
-    void setObjectiveGradientParametersOperationName(std::string aInput);
 
     std::string getInitializationStageName() const;
     void setInitializationStageName(const std::string & aInput);
@@ -204,8 +185,8 @@ public:
     std::string getInitialControlDataName() const;
     void setInitialControlDataName(const std::string & aInput);
 
-    const std::vector<std::string>& getStochasticParameterNames() const;
-    void setStochasticParameterNames(std::vector<std::string> aInput);
+    const std::vector<StochasticSampleSharedDataNames>& getStochasticSampleSharedDataNames() const;
+    void setStochasticSampleSharedDataNames(std::vector<StochasticSampleSharedDataNames> aStochasticSampleSharedDataNames);
 
     /******************************************************************************//**
      * @brief Return finalization stage name: stage responsible for writing output files
@@ -406,10 +387,7 @@ public:
       aArchive & boost::serialization::make_nvp("ObjectiveValueStageName",mObjectiveValueStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveGradientStageName",mObjectiveGradientStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveHessianStageName",mObjectiveHessianStageName);
-      aArchive & boost::serialization::make_nvp("ObjectiveValueParametersOperationName",mObjectiveValueParametersOperationName);
-      aArchive & boost::serialization::make_nvp("ObjectiveGradientParametersOperationName",mObjectiveGradientParametersOperationName);
-      aArchive & boost::serialization::make_nvp("ObjectiveHessianParametersOperationName",mObjectiveHessianParametersOperationName);
-      aArchive & boost::serialization::make_nvp("StochasticParametersNames",mStochasticParametersNames);
+      aArchive & boost::serialization::make_nvp("StochasticSampleSharedDataNames",mStochasticSampleSharedDataNames);
       
       aArchive & boost::serialization::make_nvp("InitialGuess",mInitialGuess);
       aArchive & boost::serialization::make_nvp("LowerBoundValues",mLowerBoundValues);
@@ -434,28 +412,28 @@ public:
     }
 
 private:
-    bool mMeanNorm;
-    bool mCheckGradient;
-    bool mCheckHessian;
-    bool mUserInitialGuess;
-    bool mOutputControlToFile;
-    bool mOutputDiagnosticsToFile;
-    bool mResetAlgorithmOnUpdate;
+    bool mMeanNorm = false;
+    bool mCheckGradient = false;
+    bool mCheckHessian = false;
+    bool mUserInitialGuess = false;
+    bool mOutputControlToFile = false;
+    bool mOutputDiagnosticsToFile = true;
+    bool mResetAlgorithmOnUpdate = false;
 
-    size_t mMaxNumIterations;
-    size_t mProblemUpdateFrequency;
+    size_t mMaxNumIterations = 500;
+    size_t mProblemUpdateFrequency = 0;
 
-    int mROLCheckGradientSteps;
-    int mROLCheckGradientStepSize;
-    int mROLCheckGradientSeed;
+    int mROLCheckGradientSteps = 12;
+    int mROLCheckGradientStepSize = 10;
+    int mROLCheckGradientSeed = 0;
     std::string mROLStochasticDistributionsFile = "distributions.xml";
     int mROLStochasticNumberOfSamples = 3;
     int mROLStochasticSamplerSeed = 42;
 
-    double mROLPerturbationScale;
+    double mROLPerturbationScale = 1.0;
 
     std::string mStateName;
-    std::string mHessianType;
+    std::string mHessianType = "disabled";
     std::string mInputFileName;
     std::string mCacheStageName;
     std::string mOutputStageName;
@@ -474,14 +452,12 @@ private:
     std::string mObjectiveValueStageName;
     std::string mObjectiveGradientStageName;
     std::string mObjectiveHessianStageName;
-    std::string mObjectiveValueParametersOperationName;
-    std::string mObjectiveGradientParametersOperationName;
-    std::string mObjectiveHessianParametersOperationName;
-    std::vector<std::string> mStochasticParametersNames;
+    
+    std::vector<StochasticSampleSharedDataNames> mStochasticSampleSharedDataNames;
 
-    std::vector<double> mInitialGuess;
-    std::vector<double> mLowerBoundValues;
-    std::vector<double> mUpperBoundValues;
+    std::vector<double> mInitialGuess = {0.5};
+    std::vector<double> mLowerBoundValues = {0.0};
+    std::vector<double> mUpperBoundValues = {1.0};
 
     std::map<std::string, double> mConstraintNormalizedTargetValues;
     std::map<std::string, double> mConstraintAbsoluteTargetValues;
@@ -499,8 +475,6 @@ private:
     std::map<std::string, std::string> mConstraintGradientNames;
     std::map<std::string, std::string> mConstraintHessianNames;
     std::map<std::string, std::string> mConstraintReferenceValueNames;
-
-    // USING DEFAULT COPY AND ASSIGNMENT CONSTRUCTORS
 };
 
 } // namespace Plato
