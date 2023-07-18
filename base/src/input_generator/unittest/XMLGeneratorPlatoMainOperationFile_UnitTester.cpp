@@ -2502,13 +2502,13 @@ TEST(PlatoTestPlatoMainOperationsFile, AppendUpdateGeometryOnChangeMeshMorph)
     ASSERT_STREQ("Operation", tOperation.name());
     std::vector<std::string> tKeys = {"Function", "Name", 
         "Command", "OnChange", 
-        "Argument", "Argument", "Argument", 
+        "Argument", "Argument", "Argument", "Argument",
         "Argument", "Argument", "Argument", "Argument", 
         "AppendInput", "Input"};
     std::vector<std::string> tValues = {"SystemCall", "Update Geometry on Change", 
         "plato-cli geometry esp", "true", 
-        "--input rocker.csm", "--output-model rocker_opt.csm", "--output-mesh rocker.exo",
-        "--tesselation rocker.eto", "--workflow aflr4_aflr3", "--morph true", "--parameters",
+        "--input rocker.csm", "--output-model rocker_opt.csm", "--output-mesh rocker.exo", "--tesselation rocker.eto",
+        "--workflow aflr4_aflr3", "--morph true", "--precision 16", "--parameters",
         "true", ""};
     PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
     auto tInput = tOperation.child("Input");
