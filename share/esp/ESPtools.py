@@ -184,12 +184,8 @@ def setDesignParameterValues(problem, values):
 def parametersAreEqual(values1, values2):
   if len(values1) != len(values2):
     return False
-
-  for i in range(len(values1)):
-    if not math.isclose(values1[i], values2[i]):
-      return False
-
-  return True
+  
+  return all(math.isclose(val1, val2) for val1, val2 in zip(values1, values2))
 
 ##############################################################################
 ## set up and check if mesh morphing is needed
