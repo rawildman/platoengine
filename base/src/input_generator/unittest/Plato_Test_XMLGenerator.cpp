@@ -45,13 +45,6 @@
  *
  *  Created on: Feb 27, 2018
  */
-
-#include <gtest/gtest.h>
-
-#include <map>
-#include <cmath>
-#include <numeric>
-
 #include "XML_GoldValues.hpp"
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGenerator_UnitTester.hpp"
@@ -64,10 +57,29 @@
 #include "Plato_Utils.hpp"
 #include "XMLG_Macros.hpp"
 
+#include <map>
+#include <string>
+#include <cmath>
+#include <numeric>
+
+#include <gtest/gtest.h>
+
 const int MAX_CHARS_PER_LINE = 512;
 
 namespace PlatoTestXMLGenerator
 {
+
+class TestXMLGeneratorParsing : public ::testing::Test
+{
+protected:
+    void
+    setStringStream(const std::string & aInput) {mStream.str(aInput);}
+
+protected:
+    XMLGenerator_UnitTester mTester;
+    std::istringstream mStream;
+
+};
 
 TEST(PlatoTestXMLGenerator, ComputeGreatestDivisor)
 {
@@ -459,61 +471,61 @@ TEST(PlatoTestXMLGenerator, parseCommentTokens)
 
 TEST(PlatoTestXMLGenerator, parseOptimizationParametersDakotaVectorEntries)
 {
-        XMLGenerator_UnitTester tester;
-        std::istringstream iss;
-        std::string stringInput;
+    XMLGenerator_UnitTester tester;
+    std::istringstream iss;
+    std::string stringInput;
 
-        // descriptors
-        stringInput = "begin optimization_parameters\n"
-                "descriptors lower mid upper\n"
-                "end optimization_parameters\n";
-        iss.str(stringInput);
-        iss.clear();
-        iss.seekg (0);
-        tester.clearInputData();
-        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-        EXPECT_EQ(tester.getDescriptors()[0], "lower");
-        EXPECT_EQ(tester.getDescriptors()[1], "mid");
-        EXPECT_EQ(tester.getDescriptors()[2], "upper");
+    // descriptors
+    stringInput = "begin optimization_parameters\n"
+            "descriptors lower mid upper\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    EXPECT_EQ(tester.getDescriptors()[0], "lower");
+    EXPECT_EQ(tester.getDescriptors()[1], "mid");
+    EXPECT_EQ(tester.getDescriptors()[2], "upper");
 
-        // lower bounds
-        stringInput = "begin optimization_parameters\n"
-                "lower_bounds 1 2 3\n"
-                "end optimization_parameters\n";
-        iss.str(stringInput);
-        iss.clear();
-        iss.seekg (0);
-        tester.clearInputData();
-        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-        EXPECT_EQ(tester.getLowerBounds()[0], "1");
-        EXPECT_EQ(tester.getLowerBounds()[1], "2");
-        EXPECT_EQ(tester.getLowerBounds()[2], "3");
+    // lower bounds
+    stringInput = "begin optimization_parameters\n"
+            "lower_bounds 1 2 3\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    EXPECT_EQ(tester.getLowerBounds()[0], "1");
+    EXPECT_EQ(tester.getLowerBounds()[1], "2");
+    EXPECT_EQ(tester.getLowerBounds()[2], "3");
 
-        // upper bounds
-        stringInput = "begin optimization_parameters\n"
-                "upper_bounds 5 6 7\n"
-                "end optimization_parameters\n";
-        iss.str(stringInput);
-        iss.clear();
-        iss.seekg (0);
-        tester.clearInputData();
-        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-        EXPECT_EQ(tester.getUpperBounds()[0], "5");
-        EXPECT_EQ(tester.getUpperBounds()[1], "6");
-        EXPECT_EQ(tester.getUpperBounds()[2], "7");
+    // upper bounds
+    stringInput = "begin optimization_parameters\n"
+            "upper_bounds 5 6 7\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    EXPECT_EQ(tester.getUpperBounds()[0], "5");
+    EXPECT_EQ(tester.getUpperBounds()[1], "6");
+    EXPECT_EQ(tester.getUpperBounds()[2], "7");
 
-        // lower bounds
-        stringInput = "begin optimization_parameters\n"
-                "mdps_partitions 1 2 3\n"
-                "end optimization_parameters\n";
-        iss.str(stringInput);
-        iss.clear();
-        iss.seekg (0);
-        tester.clearInputData();
-        ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
-        EXPECT_EQ(tester.getMDPSPartitions()[0], "1");
-        EXPECT_EQ(tester.getMDPSPartitions()[1], "2");
-        EXPECT_EQ(tester.getMDPSPartitions()[2], "3");
+    // lower bounds
+    stringInput = "begin optimization_parameters\n"
+            "mdps_partitions 1 2 3\n"
+            "end optimization_parameters\n";
+    iss.str(stringInput);
+    iss.clear();
+    iss.seekg (0);
+    tester.clearInputData();
+    ASSERT_NO_THROW(tester.publicParseOptimizationParameters(iss));
+    EXPECT_EQ(tester.getMDPSPartitions()[0], "1");
+    EXPECT_EQ(tester.getMDPSPartitions()[1], "2");
+    EXPECT_EQ(tester.getMDPSPartitions()[2], "3");
 
 }
 
@@ -1156,70 +1168,46 @@ TEST(PlatoTestXMLGenerator, parseOptimizationParameters)
     EXPECT_EQ(tester.getConcurrentEvaluations(), "3");
 } 
 
-TEST(PlatoTestParseOptimizationParameters, MeshMorph_ThrowIfNoValueProvided)
+TEST_F(TestXMLGeneratorParsing, MeshMorph_ThrowIfNoValueProvided)
 {
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    stringInput = "begin optimization_parameters\n"
+    setStringStream( 
+            "begin optimization_parameters\n"
             "mesh_morph\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    ASSERT_THROW(tester.publicParseOptimizationParameters(iss), std::runtime_error);
+            "end optimization_parameters\n");
+    
+    ASSERT_THROW(mTester.publicParseOptimizationParameters(mStream), std::runtime_error);
 }
 
-TEST(PlatoTestParseOptimizationParameters, MeshMorph_DefaultIsFalse)
+TEST_F(TestXMLGeneratorParsing, MeshMorph_DefaultIsFalse)
 {
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
+    setStringStream( 
+            "begin optimization_parameters\n"
+            "end optimization_parameters\n");
 
-    stringInput = "begin optimization_parameters\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getMeshMorph(), "false");
+    EXPECT_EQ(mTester.publicParseOptimizationParameters(mStream), true);
+    EXPECT_EQ(mTester.getMeshMorph(), "false");
 }
 
-TEST(PlatoTestParseOptimizationParameters, MeshMorph_ValueSetToTrue)
+TEST_F(TestXMLGeneratorParsing, MeshMorph_ValueSetToTrue)
 {
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    stringInput = "begin optimization_parameters\n"
+    setStringStream( 
+            "begin optimization_parameters\n"
             "mesh_morph true\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getMeshMorph(), "true");
+            "end optimization_parameters\n");
+
+    EXPECT_EQ(mTester.publicParseOptimizationParameters(mStream), true);
+    EXPECT_EQ(mTester.getMeshMorph(), "true");
 }
 
-TEST(PlatoTestParseOptimizationParameters, MeshMorph_ValueSetToFalse)
+TEST_F(TestXMLGeneratorParsing, MeshMorph_ValueSetToFalse)
 {
-    XMLGenerator_UnitTester tester;
-    std::istringstream iss;
-    std::string stringInput;
-
-    stringInput = "begin optimization_parameters\n"
+    setStringStream( 
+            "begin optimization_parameters\n"
             "mesh_morph false\n"
-            "end optimization_parameters\n";
-    iss.str(stringInput);
-    iss.clear();
-    iss.seekg (0);
-    tester.clearInputData();
-    EXPECT_EQ(tester.publicParseOptimizationParameters(iss), true);
-    EXPECT_EQ(tester.getMeshMorph(), "false");
+            "end optimization_parameters\n");
+    
+    EXPECT_EQ(mTester.publicParseOptimizationParameters(mStream), true);
+    EXPECT_EQ(mTester.getMeshMorph(), "false");
 }
 
 TEST(PlatoTestXMLGenerator, parseOptimizationParameters_MeshMap)

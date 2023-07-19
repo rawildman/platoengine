@@ -46,6 +46,7 @@
  *  Created on: Sep 26, 2019
  */
 
+#include <string>
 
 namespace PlatoTestXMLGenerator
 {
