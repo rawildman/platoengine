@@ -2,12 +2,14 @@
 
 #include <string>
 #include <filesystem>
+#include <boost/filesystem.hpp>
 
 #include "MassPropertyHelper.hpp"
 
 namespace Plato::Sierra::Test {
 TEST(Sierra, MassPropertySaveAndLoad) {
-  const std::string tFilename = "out.xml";
+  boost::filesystem::path temp = boost::filesystem::unique_path();
+  const std::string tFilename    = temp.native();
   constexpr Plato::Sierra::MassPropertyHelper tSave{
   /*.mVolume =*/ 1,
   /*.mMass =*/ 2,
