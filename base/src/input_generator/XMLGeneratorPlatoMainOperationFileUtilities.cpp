@@ -1166,6 +1166,11 @@ void append_update_geometry_on_change_operation_commands
     addChild(aParentNode, "Argument", std::string("--output-mesh ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),aTag));
     addChild(aParentNode, "Argument", std::string("--tesselation ") + XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_tesselation_file(),aTag));
     addChild(aParentNode, "Argument", std::string("--workflow ") + aXMLMetaData.optimization_parameters().esp_workflow());
+    if (Plato::tolower(aXMLMetaData.optimization_parameters().mesh_morph()) == "true")
+    {
+        addChild(aParentNode, "Argument", std::string("--morph true"));
+        addChild(aParentNode, "Argument", std::string("--precision 16"));
+    }
     addChild(aParentNode, "Argument", "--parameters");
     addChild(aParentNode, "AppendInput", "true");
     pugi::xml_node aInputNode = aParentNode.append_child("Input");

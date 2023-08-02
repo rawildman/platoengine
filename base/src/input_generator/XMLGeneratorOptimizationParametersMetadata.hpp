@@ -483,6 +483,7 @@ public:
     std::string rol_gradient_check_random_seed() const {return value("rol_gradient_check_random_seed");}
 
     std::string esp_workflow() const {return value("esp_workflow");}
+    std::string mesh_morph() const {return value("mesh_morph");}
 
 };
 // struct OptimizationParameters

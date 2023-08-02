@@ -2,6 +2,7 @@ import os
 import sys
 import fnmatch
 import subprocess
+import math
 import pyCAPS
 from shutil import copyfile
 from pyCAPS import capsProblem
@@ -108,13 +109,16 @@ def aflr(modelName, meshName, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, 
 
 
 ##############################################################################
-## define function that converts su2 mesh to exo mesh
+## define function that extracts initial parameter values from csm file
 ##############################################################################
 def getInitialValues(modelName):
 
   strVal = subprocess.check_output(['awk', '/despmtr/{print $0}', modelName]).decode(sys.stdout.encoding)
   params = strVal.split('\n')
   params = list(filter(None, params)) ## filter out empty strings
+
+  if len(params) == 0:
+      raise Exception("Parsing error: no keyword 'despmtr' found in file '" + modelName + "'" )
 
   initialValues = []
   for param in params:
@@ -129,14 +133,10 @@ def getInitialValues(modelName):
       print("got: " + param)
       raise Exception("Parsing error: reading initial values failed.")
 
-    ## first token should be 'despmtr'
-    if tokens[0] != 'despmtr':
-      raise Exception("unknown error: expected 'despmtr' token, got '" + tokens[0] + "'" )
-
     if len(tokens) == 9:
       ## eighth token should be 'initial'
       if tokens[7] != 'initial':
-        raise Exception("parsing error: expected 'initial' token, got '" + tokens[7] + "'" )
+        raise Exception("Parsing error: expected 'initial' token, got '" + tokens[7] + "'" )
 
       ## get current value
       initialValue = float(tokens[8])
@@ -150,6 +150,62 @@ def getInitialValues(modelName):
   
   return initialValues
 
+##############################################################################
+## define function that extracts current despmtr values from CAPS problem
+##############################################################################
+def getCurrentValues(problem):
+  paramMap = problem.geometry.despmtr.items()
+  if len(paramMap) == 0:
+      raise Exception("Error: no 'despmtr' objects in the CAPS problem constructed with the given csm file." )
+  
+  params = []
+  for pair in paramMap:
+    params.append(pair[1].value)
+
+  return params
+
+##############################################################################
+## define function that sets despmtr values in CAPS problem
+##############################################################################
+def setDesignParameterValues(problem, values):
+  paramMap = problem.geometry.despmtr.items()
+
+  if len(paramMap) != len(values):
+      raise Exception("Error: Number of values provided does not equal the number of 'despmtr' objects in CAPS problem." )
+  
+  count = 0
+  for pair in paramMap:
+    pair[1].value = values[count]
+    count += 1
+
+##############################################################################
+## check if 2 parameter sets are equal
+##############################################################################
+def parametersAreEqual(values1, values2):
+  if len(values1) != len(values2):
+    return False
+  
+  return all(math.isclose(val1, val2) for val1, val2 in zip(values1, values2))
+
+##############################################################################
+## set up and check if mesh morphing is needed
+##############################################################################
+def prepareGeometryForMeshMorph(modelName, problem, currentValues):
+  initialValues = getInitialValues(modelName)
+  if parametersAreEqual(initialValues, currentValues):
+    return False
+  else:
+    setDesignParameterValues(problem, initialValues)
+    return True
+
+##############################################################################
+## perform mesh morph
+##############################################################################
+def performMeshMorph(plato, problem, currentValues):
+  plato.input["Mesh"].unlink()
+  setDesignParameterValues(problem, currentValues)
+  plato.preAnalysis()
+  plato.postAnalysis()
 
 ##############################################################################
 ## define function that converts su2 mesh to exo mesh
@@ -387,13 +443,19 @@ def move_and_rename_plato_caps_eto_files(etoBaseName, nameForError):
 ##############################################################################
 ## define function for running aflr4_aflr3 meshing workflow
 ##############################################################################
-def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
-
+def aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph, quiet=False):
+  outLevel = 0 if quiet else 1
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
-                     outLevel=1)
+                     outLevel=outLevel)
+
+  if meshMorph:
+    currentValues = getCurrentValues(problem)
+    meshMorph = prepareGeometryForMeshMorph(modelNameOut, problem, currentValues)
+
   aflr4 = problem.analysis.create(aim='aflr4AIM', name='aflr4')
 
+  aflr4.input.Mesh_Quiet_Flag = quiet
   aflr4.input.Mesh_Format = "ETO"
   aflr4.input.Mesh_Length_Factor = .2 
   aflr4.input.min_scale =  1
@@ -402,14 +464,20 @@ def aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFa
   aflr4.runAnalysis()
 
   aflr3 = problem.analysis.create(aim='aflr3AIM', name='aflr3')
+  aflr3.input.Mesh_Quiet_Flag = quiet
   aflr3.input["Surface_Mesh"].link(aflr4.output["Surface_Mesh"])
   aflr3.input.Multiple_Mesh = 'MultiDomain'
   aflr3.runAnalysis()
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr3.output["Volume_Mesh"])
+  plato.input.Mesh_Morph = meshMorph
+
   plato.preAnalysis()
   plato.postAnalysis()
+
+  if meshMorph:
+    performMeshMorph(plato, problem, currentValues)
 
   tokens = meshName.split('.')
   tokens.pop()
@@ -531,19 +599,30 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
 ##############################################################################
 ## define function for running aflr2 meshing workflow
 ##############################################################################
-def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName):
+def aflr2_meshing(modelNameOut, meshName, meshMorph, quiet=False):
+  outLevel = 0 if quiet else 1
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
                      capsFile=modelNameOut,
-                     outLevel=1)
+                     outLevel=outLevel)
+
+  if meshMorph:
+    currentValues = getCurrentValues(problem)
+    meshMorph = prepareGeometryForMeshMorph(modelNameOut, problem, currentValues)
 
   aflr2 = problem.analysis.create(aim='aflr2AIM', name='aflr2')
+  aflr2.input.Mesh_Quiet_Flag = quiet
   aflr2.input.Tess_Params = [problem.geometry.outpmtr.MeshLength, 1.0, 20.0]
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr2.output["Area_Mesh"])
+  plato.input.Mesh_Morph = meshMorph
+
   plato.preAnalysis()
   plato.postAnalysis()
+
+  if meshMorph:
+    performMeshMorph(plato, problem, currentValues)
 
   tokens = meshName.split('.')
   tokens.pop()
@@ -555,7 +634,7 @@ def aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, 
 ##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", meshMorph=False, parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -576,6 +655,12 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
   if type(meshLengthFactor) == str:
     meshLengthFactor = float(meshLengthFactor)
+
+  if type(mesh) == str:
+    mesh = bool(mesh)
+
+  if type(meshMorph) == str:
+    meshMorph = bool(meshMorph)
 
   if type(precision) == str:
     precision = int(precision)
@@ -611,7 +696,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
   if mesh == True:
     if workflow == "aflr4_aflr3":
       with redirected('aflr4_aflr3.console'):
-        aflr4_aflr3_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+        aflr4_aflr3_meshing(modelNameOut, meshName, meshMorph)
 
     elif workflow == "egads_tetgen":
       with redirected('egads_tetgen.console'):
@@ -623,7 +708,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
     elif workflow == "aflr2":
       with redirected('aflr2.console'):
-        aflr2_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthFactor, etoName)
+        aflr2_meshing(modelNameOut, meshName, meshMorph)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])

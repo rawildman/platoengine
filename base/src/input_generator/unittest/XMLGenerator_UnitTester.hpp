@@ -119,6 +119,7 @@ public:
     std::string getDiscretization() {return m_InputData.optimization_parameters().discretization();}
     std::string getCheckGradient() {return m_InputData.optimization_parameters().check_gradient();}
     std::string getCheckHessian() {return m_InputData.optimization_parameters().check_hessian();}
+    std::string getMeshMorph() {return m_InputData.optimization_parameters().mesh_morph();}
     XMLGen::OptimizationType getOptimizationType() {return m_InputData.optimization_parameters().optimizationType();}
     std::vector<std::string> getDescriptors() {return m_InputData.optimization_parameters().descriptors();}
     std::vector<std::string> getLowerBounds() {return m_InputData.optimization_parameters().lower_bounds();}
