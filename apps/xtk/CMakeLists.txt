@@ -85,7 +85,7 @@ set(REQUIRED_MORIS_LIBS
 set(XTKMAIN_LIBS  
     ${PLATO_LIBRARIES}
 	${REQUIRED_MORIS_LIBS}
-    Trilinos::all_selected_libs
+    Trilinos::all_libs
     ${Plato_EXTRA_LINK_FLAGS})
 
 set(MORIS_INCLUDES)
