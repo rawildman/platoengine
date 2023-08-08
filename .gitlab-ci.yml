@@ -12,7 +12,7 @@ trigger-super:
   variables:
     PARENT_SOURCE: ${CI_PIPELINE_SOURCE}
   trigger:
-    project: plato/super-plato
+    project: 1540-compsim/plato/super-plato
     strategy: depend
   needs: []
 
