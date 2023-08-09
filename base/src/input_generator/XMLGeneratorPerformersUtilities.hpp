@@ -8,7 +8,7 @@
 
 #include "pugixml.hpp"
 
-#include <XMLGeneratorDataStruct.hpp>
+#include "XMLGeneratorDataStruct.hpp"
 
 namespace XMLGen
 {

@@ -1,23 +1,8 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(ExeName TopoProxy)
 
-SET(${ExeName}_SRCS StructuralTopologyOptimizationProxyMain.cpp)
-SET(${ExeName}_HDRS )
+SET(SRCS StructuralTopologyOptimizationProxyMain.cpp)
+SET(HDRS )
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_executable(TopoProxy ${SRCS})
+target_link_libraries(TopoProxy PUBLIC PlatoProxy PlatoInterface)
 
-# actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
-    Trilinos::all_selected_libs ${Plato_EXTRA_LINK_FLAGS})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS})
-set(TOPOPROXY_BINARY ${CMAKE_BINARY_DIR}/apps/proxy/${ExeName} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
-            
+install( TARGETS TopoProxy EXPORT PlatoEngine DESTINATION bin )

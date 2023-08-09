@@ -1,50 +1,24 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(PlatoMain_SRCS Plato_Main.cpp PlatoApp.cpp)
-
-SET(PlatoMain_HDRS PlatoApp.hpp)
-
-include_directories(${PLATO_INCLUDES})
 
 add_compile_definitions(${Dakota_DEFINES})
 
-# actual target:
-set(PLATOMAIN_LIBS  ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}  
-     Trilinos::all_selected_libs
-     ${Plato_EXTRA_LINK_FLAGS} Boost::serialization)
-add_executable(PlatoMain ${PlatoMain_SRCS})
-target_link_libraries(PlatoMain ${PLATOMAIN_LIBS})
+add_executable(PlatoMain Plato_Main.cpp PlatoApp.cpp PlatoApp.hpp)
+target_link_libraries(PlatoMain PUBLIC PlatoInterface PlatoFilters PlatoPenaltyModels PlatoAnalyze PlatoOptimize Boost::serialization)
 
-set(PLATOMAIN_BINARY ${CMAKE_BINARY_DIR}/apps/services/PlatoMain PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS PlatoMain DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
+install( TARGETS PlatoMain EXPORT PlatoEngine DESTINATION bin )
 
 if( ENABLE_PLATO_SERVICES )
-    SET(PlatoEngineServices_SRCS Plato_Services.cpp PlatoApp.cpp)
-    add_executable(PlatoEngineServices ${PlatoEngineServices_SRCS})
-  target_link_libraries(PlatoEngineServices ${PLATOMAIN_LIBS})
-  set(SERVICES_BINARY ${CMAKE_BINARY_DIR}/apps/services/PlatoEngineServices PARENT_SCOPE)
-  if( CMAKE_INSTALL_PREFIX )
-      install( TARGETS PlatoEngineServices DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-  endif()
+  add_executable(PlatoEngineServices Plato_Services.cpp PlatoApp.cpp PlatoApp.hpp)
+  target_link_libraries(PlatoEngineServices PlatoInterface PlatoFilters PlatoPenaltyModels PlatoAnalyze)
+  install( TARGETS PlatoEngineServices EXPORT PlatoEngine DESTINATION bin )
 endif()
 
 if (PLATO_ENABLE_SERVICES_PYTHON)
-    find_package(Python3 COMPONENTS Development Interpreter)
-    add_library( PlatoServices SHARED PlatoApp.cpp ServicesPythonModule.cpp )
-    target_include_directories(PlatoServices SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
-    target_link_libraries( PlatoServices ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} Trilinos::all_selected_libs
-                           ${Python3_LIBRARIES} Boost::serialization)
-    set_target_properties( PlatoServices PROPERTIES PREFIX "" )
-    target_compile_options( PlatoServices PRIVATE "-lmpi" )
-
-    if( CMAKE_INSTALL_PREFIX )
-      install( TARGETS PlatoServices DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
-    endif()
-
+  find_package(Python3 COMPONENTS Development Interpreter)
+  add_library( PlatoServices SHARED ServicesPythonModule.cpp PlatoApp.cpp PlatoApp.hpp)
+  target_include_directories(PlatoServices SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
+  target_link_libraries( PlatoServices PlatoInterface PlatoFilters PlatoPenaltyModels PlatoAnalyze ${Python3_LIBRARIES} Boost::serialization)
+  set_target_properties( PlatoServices PROPERTIES PREFIX "" )
+  install( TARGETS PlatoServices EXPORT PlatoEngine DESTINATION lib )
 endif()
 
 
@@ -52,9 +26,11 @@ endif()
 ###############################################################################
 
 add_library(PlatoApp PlatoApp.cpp)
-target_link_libraries(PlatoApp Trilinos::all_selected_libs)
+target_include_directories(PlatoApp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoApp PUBLIC PlatoAnalyze PlatoInterface PRIVATE PlatoFilters PlatoPenaltyModels)
+install(TARGETS PlatoApp EXPORT PlatoEngine DESTINATION lib)
 
 if( UNIT_TESTING )
   message( "-- Enabling unit testing " )
-add_subdirectory(./unittest)
+  add_subdirectory(./unittest)
 endif()

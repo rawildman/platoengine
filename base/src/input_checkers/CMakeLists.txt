@@ -1,20 +1,8 @@
-###############################################################################
-# Sources:
-###############################################################################
 SET(InputXMLChecker_SRCS InputXMLChecker_Main.cpp InputXMLChecker.cpp)
 SET(InputXMLChecker_HDRS InputXMLChecker.hpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-
-set(PLATOMAIN_LIBS ${PLATO_LIBRARIES}
-    Trilinos::all_selected_libs
-    ${Plato_EXTRA_LINK_FLAGS})
 add_executable(InputXMLChecker ${InputXMLChecker_SRCS})
-target_link_libraries(InputXMLChecker ${PLATOMAIN_LIBS})
+target_link_libraries(InputXMLChecker PUBLIC PlatoParser)
 
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS InputXMLChecker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
+install( TARGETS InputXMLChecker EXPORT PlatoEngine DESTINATION bin )
 

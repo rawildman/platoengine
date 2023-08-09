@@ -1,24 +1,8 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(ExeName KsalProxy)
 
-SET(${ExeName}_SRCS KsalProxyMain.cpp)
-SET(${ExeName}_HDRS Plato_KsalProxyApp.hpp)
+SET(SRCS KsalProxyMain.cpp)
+SET(HDRS Plato_KsalProxyApp.hpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_executable(KsalProxy ${SRCS} ${HDRS})
+target_link_libraries(KsalProxy PUBLIC PlatoOptimize PlatoInterface)
 
-# actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
-    Trilinos::all_selected_libs
-    ${Plato_EXTRA_LINK_FLAGS})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS})
-set(KSALPROXY_BINARY ${CMAKE_BINARY_DIR}/apps/ksal_proxy/${ExeName} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
-            
+install( TARGETS KsalProxy EXPORT PlatoEngine DESTINATION bin )

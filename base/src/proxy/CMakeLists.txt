@@ -1,12 +1,8 @@
-set(LIB_NAMES)
+set(SOURCES Plato_StructuralTopologyOptimization.cpp
+            Plato_StructuralTopologyOptimizationProxyApp.cpp
+            )
 
-set(LIB_NAME Proxy)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_StructuralTopologyOptimization.cpp
-                        Plato_StructuralTopologyOptimizationProxyApp.cpp
-                        )
-
-set(${LIB_NAME}_HEADERS Plato_ProxyVolume.hpp
+set(HEADERS Plato_ProxyVolume.hpp
 						Plato_Cylinder.hpp
 						Plato_GeometryModel.hpp
 						Plato_ProxyCompliance.hpp
@@ -16,21 +12,13 @@ set(${LIB_NAME}_HEADERS Plato_ProxyVolume.hpp
 						Plato_StructuralTopologyOptimizationProxyApp.hpp
 						)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_library(PlatoProxy ${SOURCES} ${HEADERS})
+target_include_directories(PlatoProxy PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoProxy PRIVATE PlatoInterface PlatoDataLayer Epetra::epetra)
 
-FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB}     ${${PLATO_LIB}_SOURCES}     ${${PLATO_LIB}_HEADERS}     )
-  target_link_libraries(Plato${PLATO_LIB} Trilinos::all_selected_libs)
-  set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-ENDFOREACH()
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
+install( TARGETS PlatoProxy EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)
 
-if( CMAKE_INSTALL_PREFIX )
- FOREACH(PLATO_LIB ${LIB_NAMES})
-  install( TARGETS Plato${PLATO_LIB} EXPORT Plato${PLATO_LIB}
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- ENDFOREACH()
-endif()
+target_include_directories(PlatoProxy PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${HEADERS} DESTINATION include)

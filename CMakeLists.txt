@@ -89,8 +89,6 @@ if( DAKOTADRIVER )
 endif()
 find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
 
-set(PLATO_INCLUDES ${CMAKE_SOURCE_DIR}/apps)
-
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
@@ -100,17 +98,6 @@ set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -Werror")
 set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-  # Clang specific flags
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  # gnu specific flags
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lgfortran")
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-  # intel specific flags
-else()
-  message(WARNING "Unknown compiler type: ${CMAKE_CXX_COMPILER_ID}. Using default flags.")
-endif()
 
 
 ############################## gtest Setup ####################################
@@ -175,92 +162,16 @@ if( AMFILTER_ENABLED )
     set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
-add_subdirectory(base/src)
-add_subdirectory(base/src/tools)
-add_subdirectory(base/src/analyze)
-add_subdirectory(base/src/data_layer)
-add_subdirectory(base/src/Filters)
-add_subdirectory(base/src/interface)
-add_subdirectory(base/src/models)
-add_subdirectory(base/src/optimize)
-add_subdirectory(base/src/proxy)
-add_subdirectory(base/src/PlatoSubproblemLibrary/Agent)
-add_subdirectory(base/src/PlatoSubproblemLibraryInterface)
-add_subdirectory(base/src/PlatoSubproblemLibrary/SpatialSearching)
-add_subdirectory(base/src/PlatoSubproblemLibrary/AbstractInterface)
-add_subdirectory(base/src/PlatoSubproblemLibrary/BoundedSupportFunction)
-add_subdirectory(base/src/PlatoSubproblemLibrary/Example)
-add_subdirectory(base/src/PlatoSubproblemLibrary/Filter)
-add_subdirectory(base/src/PlatoSubproblemLibrary/Geometry)
-add_subdirectory(base/src/PlatoSubproblemLibrary/Helper)
-add_subdirectory(base/src/PlatoSubproblemLibrary/ParameterData)
-add_subdirectory(base/src/input_checkers)
-add_subdirectory(base/src/input_generator)
-add_subdirectory(base/src/operations)
-add_subdirectory(base/src/Su2ToExodus)
-add_subdirectory(base/src/MarkFaces)
-if( UNIT_TESTING )
-  add_subdirectory(base/src/test_utilities)
-endif()
+add_subdirectory(base)
+add_subdirectory(apps)
 
-if( ENABLE_ISO )
-  add_subdirectory(base/src/iso)
-endif()
-
-if( ENABLE_PRUNE )
-  add_subdirectory(base/src/prune/main)
-  add_subdirectory(base/src/prune)
-endif()
-
-if( ESP_ENABLED )
-  add_subdirectory(base/src/geometry/ESP)
-  add_subdirectory(apps/esp)
-endif()
-
-if( DAKOTADRIVER )
-  add_subdirectory(base/src/dakota)
-endif()
-
-if( STK_ENABLED )
-  add_subdirectory(base/src/support_structure)
-  add_subdirectory(base/src/support_structure/main)
-  add_subdirectory(base/src/DecomposeMesh)
-endif()
-
-if( PLATOMAIN )
-  message( "-- Compiling PlatoMain " )
-  add_subdirectory(apps/services)
-endif()
+include(CMakePackageConfigHelpers)
+install(EXPORT PlatoEngine NAMESPACE PlatoEngine FILE PlatoEngineTargets.cmake DESTINATION cmake)
+configure_package_config_file(PlatoEngineConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/PlatoEngineConfig.cmake INSTALL_DESTINATION cmake)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/PlatoEngineConfig.cmake DESTINATION cmake)
 
 
-
-if(XTK_ENABLED)
-    message( "-- Compiling xtk " )
-    add_subdirectory(apps/xtk)
-endif()
-
-if(PYTHON_INTERPRETER_APP)
-    message( "-- Compiling python interpreter app " )
-    add_subdirectory(apps/python_interpreter)
-endif()
-
-if( PLATOPROXY )
-  message( "-- Compiling PlatoProxy " )
-  add_subdirectory(apps/proxy)
-  add_subdirectory(apps/rocket)
-  add_subdirectory(apps/ksal_proxy)
-  add_subdirectory(apps/rosenbrock)
-endif()
-
-if( PLATOSTATICS )
-  message( "-- Compiling Statics " )
-  add_subdirectory(apps/statics)
-endif()
-
-if(EXPY)
-  message( "-- Compiling Expy " )
-  add_subdirectory(apps/services/python)
-endif()
+install(EXPORT PlatoEngine NAMESPACE PlatoEngine:: FILE PlatoEngineTargets.cmake DESTINATION cmake)
 
 if( REGRESSION )
   if( PLATOMAIN )

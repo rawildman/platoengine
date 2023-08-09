@@ -1,19 +1,16 @@
-set(PLATO_INCLUDES ${PLATO_INCLUDES} 
-  ${CMAKE_SOURCE_DIR}/base/src/iso/main
-  PARENT_SCOPE )
 
 add_subdirectory(main)
 
-set(extract_iso_sources ExtractMain.cpp)
-set(extract_iso_headers main/IsoVolumeExtractionTool.hpp
-                       main/IVEMeshAPI.hpp
-                       main/IVEMeshAPISTK.hpp
-                       main/STKExtract.hpp
-                       main/IsoVector.hpp)
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-add_executable(extract_iso ${extract_iso_sources} ${extract_iso_headers})
+set(sources ExtractMain.cpp)
+set(headers main/IsoVolumeExtractionTool.hpp
+            main/IVEMeshAPI.hpp
+            main/IVEMeshAPISTK.hpp
+            main/STKExtract.hpp
+            main/IsoVector.hpp)
 
-target_link_libraries(extract_iso Trilinos::all_selected_libs IsoExtract ${PLATO_LIBRARIES})
+add_executable(extract_iso ${sources} ${headers})
 
-install( TARGETS extract_iso EXPORT extract_iso
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+target_link_libraries(extract_iso PUBLIC IsoExtract IsoExtract)
+
+install( TARGETS extract_iso EXPORT PlatoEngine
+         RUNTIME DESTINATION bin)

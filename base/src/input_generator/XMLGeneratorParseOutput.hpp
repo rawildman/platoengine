@@ -8,7 +8,7 @@
 
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorParseMetadata.hpp"
-#include <XMLGeneratorParserUtilities.hpp>
+#include "XMLGeneratorParserUtilities.hpp"
 
 namespace XMLGen
 {

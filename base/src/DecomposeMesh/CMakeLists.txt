@@ -1,22 +1,13 @@
-set(PLATO_INCLUDES ${PLATO_INCLUDES} 
-  ${CMAKE_SOURCE_DIR}/base/src/DecomposeMesh
-  PARENT_SCOPE )
 
-set(DecomposeMesh_sources Plato_DecomposeMesh.cpp)
-set(DecomposeMesh_headers Plato_DecomposeMesh.hpp)
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-add_library(PlatoDecomposeMesh     ${DecomposeMesh_sources}     ${DecomposeMesh_headers}     )
+set(SOURCES Plato_DecomposeMesh.cpp)
+set(HEADERS Plato_DecomposeMesh.hpp)
 
-target_link_libraries(PlatoDecomposeMesh Trilinos::all_selected_libs )
-set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} PlatoDecomposeMesh)
+add_library(PlatoDecomposeMesh ${SOURCES} ${HEADERS})
+target_include_directories(PlatoDecomposeMesh PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoDecomposeMesh PRIVATE STKIO::stk_io)
 
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} )
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS PlatoDecomposeMesh EXPORT PlatoDecomposeMesh
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${DecomposeMesh_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-endif()
+install( TARGETS PlatoDecomposeMesh EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)
+target_include_directories(PlatoDecomposeMesh PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${HEADERS} DESTINATION include)

@@ -1,28 +1,19 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(PlatoSu2ToExodus_UnitTester_SRCS Su2ToExodus_UnitMain.cpp
-                                      Plato_Test_Su2ToExodus.cpp
-                                      Su2ToExodus_UnitTester.cpp
-                                      ../Su2ToExodus.cpp)
-
-#SET(PlatoXMLGenerator_UnitTester_HDRS XMLGenerator_UnitTester.hpp)
+SET(SRCS Su2ToExodus_UnitMain.cpp
+         Plato_Test_Su2ToExodus.cpp
+         Su2ToExodus_UnitTester.cpp
+         ../Su2ToExodus.cpp)
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -Wno-unused-variable -Wno-write-strings")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-unused-variable -Wno-write-strings")
 endif()
 
-set(PLATOUNIT_INCLUDES ${CMAKE_SOURCE_DIR}/base/src/tools ..)
-INCLUDE_DIRECTORIES(${PLATOUNIT_INCLUDES})
 
+add_executable(PlatoSu2ToExodus_UnitTester ${SRCS})
+target_link_libraries(PlatoSu2ToExodus_UnitTester SEACASExodus::exodus GTest::GTest)
+target_include_directories(PlatoSu2ToExodus_UnitTester PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
 
-set(PlatoSu2ToExodus_UnitTester_LIBS GTest::GTest)
-add_executable(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_SRCS})
-target_link_libraries(PlatoSu2ToExodus_UnitTester ${PlatoSu2ToExodus_UnitTester_LIBS} Trilinos::all_selected_libs)
-add_test(NAME PlatoSu2ToExodus_UnitTester COMMAND ${CMAKE_BINARY_DIR}/base/src/Su2ToExodus/unittest/PlatoSu2ToExodus_UnitTester)
+add_test(NAME PlatoSu2ToExodus_UnitTester COMMAND PlatoSu2ToExodus_UnitTester)
 set_property(TEST PlatoSu2ToExodus_UnitTester PROPERTY LABELS "small")
 
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS PlatoSu2ToExodus_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
+install( TARGETS PlatoSu2ToExodus_UnitTester EXPORT PlatoEngine DESTINATION bin )

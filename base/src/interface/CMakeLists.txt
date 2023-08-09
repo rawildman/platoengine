@@ -1,40 +1,27 @@
-set(LIB_NAMES)
+set(SOURCES Plato_Interface.cpp
+            Plato_Operation.cpp
+            Plato_MultiOperation.cpp
+            Plato_SingleOperation.cpp
+            Plato_OperationFactory.cpp
+            Plato_Stage.cpp
+            Plato_Performer.cpp)
+set(HEADERS Plato_Application.hpp
+            Plato_Interface.hpp
+            Plato_Operation.hpp
+            Plato_MultiOperation.hpp
+            Plato_SingleOperation.hpp
+            Plato_OperationFactory.hpp
+            Plato_Stage.hpp
+            Plato_Performer.hpp
+            Plato_InterfaceTypes.hpp)
 
-set(LIB_NAME Interface)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_Interface.cpp
-                        Plato_Operation.cpp
-                        Plato_MultiOperation.cpp
-                        Plato_SingleOperation.cpp
-                        Plato_OperationFactory.cpp
-                        Plato_Stage.cpp
-                        Plato_Performer.cpp)
-set(${LIB_NAME}_HEADERS Plato_Application.hpp
-                        Plato_Interface.hpp
-                        Plato_Operation.hpp
-                        Plato_MultiOperation.hpp
-                        Plato_SingleOperation.hpp
-                        Plato_OperationFactory.hpp
-                        Plato_Stage.hpp
-                        Plato_Performer.hpp
-                        Plato_InterfaceTypes.hpp)
+add_library(PlatoInterface ${SOURCES} ${HEADERS})
+target_link_libraries(PlatoInterface PUBLIC PlatoDataLayer PlatoParser TeuchosParameterList::teuchosparameterlist PRIVATE PlatoConsole Boost::serialization)
+target_include_directories(PlatoInterface PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-
-FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
-  set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-  target_link_libraries(Plato${PLATO_LIB} LINK_PUBLIC ${PLATO_LIBRARIES} Trilinos::all_selected_libs Boost::serialization)
-ENDFOREACH()
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
- FOREACH(PLATO_LIB ${LIB_NAMES})
-  install( TARGETS Plato${PLATO_LIB} EXPORT Plato${PLATO_LIB}
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- ENDFOREACH()
-endif()
+install( TARGETS PlatoInterface EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)
+target_include_directories(PlatoInterface PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${HEADERS} DESTINATION include)
 
