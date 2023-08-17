@@ -3,56 +3,39 @@ set(LIB_NAMES)
 set(LIB_NAME GeometryESP)
 set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 
-set(${LIB_NAME}_SOURCES
+set(ESP_SOURCES
        Plato_ESP.cpp
    )
 
-set(${LIB_NAME}_HEADERS
+set(ESP_HEADERS
        Plato_ESP.hpp
    )
 
-set(${LIB_NAME}_TYPE STATIC)
+add_library(PlatoGeometryESP ${ESP_SOURCES} ${ESP_HEADERS})
+target_include_directories(PlatoGeometryESP PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoGeometryESP PRIVATE PlatoOptimize)
 
-set(LIB_NAME GeometryESPImpl)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-
-set(${LIB_NAME}_SOURCES
+set(ESPI_SOURCES
        Plato_ESP_Impl.cpp
        bodyTess.c
    )
 
-set(${LIB_NAME}_HEADERS
+set(ESPI_HEADERS
        bodyTess.h
        Plato_ESP.hpp
    )
 
-set(${LIB_NAME}_TYPE SHARED)
+add_library(PlatoGeometryESPImpl SHARED ${ESPI_SOURCES} ${ESPI_HEADERS})
+target_include_directories(PlatoGeometryESPImpl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoGeometryESPImpl PRIVATE PlatoGeometryESP PlatoOptimize PlatoExceptions ${OCSM_LIB} ${ESP_LIB})
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-
-FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB} ${${PLATO_LIB}_TYPE} ${${PLATO_LIB}_SOURCES} ${${PLATO_LIB}_HEADERS})
-  target_link_libraries(Plato${PLATO_LIB} Trilinos::all_selected_libs)
-  if(${${PLATO_LIB}_TYPE} STREQUAL "STATIC")
-    set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-  else()
-    target_link_libraries(Plato${PLATO_LIB} PlatoGeometryESP PlatoExceptions ${OCSM_LIB} ${ESP_LIB})
-  endif()
-ENDFOREACH()
-
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES})
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
- FOREACH(PLATO_LIB ${LIB_NAMES})
-  install( TARGETS Plato${PLATO_LIB} EXPORT Plato${PLATO_LIB}
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- ENDFOREACH()
- install( FILES ${LIBLESS_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-endif()
+install( TARGETS PlatoGeometryESP PlatoGeometryESPImpl EXPORT PlatoEngine
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib
+           )
+target_include_directories(PlatoGeometryESP PUBLIC $<INSTALL_INTERFACE:include>)
+target_include_directories(PlatoGeometryESPImpl PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${ESP_HEADERS} ${ESPI_HEADERS} DESTINATION include)
 
 #if( UNIT_TESTING )
 #  add_subdirectory(./unittest)

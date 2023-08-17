@@ -1,24 +1,19 @@
-set(PLATO_INCLUDES ${PLATO_INCLUDES} 
-  ${CMAKE_SOURCE_DIR}/base/src/iso/main
-  PARENT_SCOPE )
 
-
-set(IsoExtract_SOURCES IsoVolumeExtractionTool.cpp
+set(SOURCES IsoVolumeExtractionTool.cpp
                         IVEMeshAPISTK.cpp
                         STKExtract.cpp
                         IsoVector.cpp)
-set(IsoExtract_HEADERS IsoVolumeExtractionTool.hpp
+set(HEADERS IsoVolumeExtractionTool.hpp
                        IVEMeshAPI.hpp
                        IVEMeshAPISTK.hpp
                        STKExtract.hpp
                        IsoVector.hpp)
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-add_library(IsoExtract ${IsoExtract_SOURCES} ${IsoExtract_HEADERS})
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} IsoExtract PARENT_SCOPE)
 
-target_link_libraries(IsoExtract Trilinos::all_selected_libs)
+add_library(IsoExtract ${SOURCES} ${HEADERS})
+target_include_directories(IsoExtract PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(IsoExtract PRIVATE PlatoParser PUBLIC STKIO::stk_io STKMesh::stk_mesh_base SEACASIoss::Ioss)
 
-install( TARGETS IsoExtract EXPORT IsoExtract
-         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install( TARGETS IsoExtract EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)
+         

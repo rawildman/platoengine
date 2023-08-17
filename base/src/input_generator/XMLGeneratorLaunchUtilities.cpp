@@ -7,6 +7,7 @@
 #include "XMLGeneratorPostOptimizationRunFileUtilities.hpp"
 #include <iostream>
 #include <fstream>
+#include <mpi.h>
 
 namespace XMLGen
 {
@@ -108,7 +109,7 @@ namespace XMLGen
 
   void determine_mpi_env_and_separation_strings(std::string& envString, std::string& separationString)
   {
-#ifndef USING_OPEN_MPI
+#ifndef OMPI_MAJOR_VERSION
     envString = "-env";
     separationString = " ";
 #else
@@ -127,7 +128,7 @@ namespace XMLGen
     else
     {
       aLaunchString = "mpiexec";
-#ifdef USING_OPEN_MPI
+#ifdef OMPI_MAJOR_VERSION
       aLaunchString += " --oversubscribe";
 #endif
       aNumProcsString = "-np";

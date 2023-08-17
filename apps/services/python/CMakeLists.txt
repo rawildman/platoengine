@@ -4,15 +4,8 @@
 find_package(Python3 COMPONENTS Development Interpreter)
 
 ###################################################################
-## Exodus setup                                                  ##
-###################################################################
-Plato_find_lib( EXODUS_LIB_PATH ON exodus ${SEACAS_PATH}/lib )
-
-
-###################################################################
 ## Expy setup                                                    ##
 ###################################################################
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 # Sources:
 SET(library_SRCS expy/expymodule.c)
@@ -34,11 +27,9 @@ add_library( expy SHARED ${library_SRCS} )
 set_target_properties( expy PROPERTIES PREFIX "" )
 
 #add libraries:
-target_link_libraries( expy ${Python3_LIBRARIES} ${EXODUS_LIB_PATH} )
+target_link_libraries( expy ${Python3_LIBRARIES} SEACASExodus::exodus)
 target_include_directories(expy PRIVATE ${Python3_INCLUDE_DIRS} )
 
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS expy DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
-  install( FILES exodus.py DESTINATION ${CMAKE_INSTALL_PREFIX}/etc )
-endif()
+install( TARGETS expy DESTINATION lib )
+install( FILES exodus.py DESTINATION etc )
 

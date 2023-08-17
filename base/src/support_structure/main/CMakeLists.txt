@@ -1,19 +1,13 @@
-set(PLATO_INCLUDES ${PLATO_INCLUDES} 
-  ${CMAKE_SOURCE_DIR}/base/src/support_structure/main
-  PARENT_SCOPE )
+set(SOURCES MeshWrapper.cpp
+            SupportStructure.cpp)
+set(HEADERS MeshWrapper.hpp
+            SupportStructure.hpp)
 
+add_library(SupportStructureLib ${SOURCES} ${HEADERS})
+target_include_directories(SupportStructureLib PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-set(SupportStructureLib_SOURCES MeshWrapper.cpp
-                        SupportStructure.cpp)
-set(SupportStructureLib_HEADERS MeshWrapper.hpp
-                       SupportStructure.hpp)
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-add_library(SupportStructureLib ${SupportStructureLib_SOURCES} ${SupportStructureLib_HEADERS})
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} SupportStructureLib PARENT_SCOPE)
+target_link_libraries(SupportStructureLib PUBLIC STKIO::stk_io STKMesh::stk_mesh_base SEACASIoss::Ioss)
 
-target_link_libraries(SupportStructureLib Trilinos::all_selected_libs)
-
-install( TARGETS SupportStructureLib EXPORT SupportStructureLib
-         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install( TARGETS SupportStructureLib EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)

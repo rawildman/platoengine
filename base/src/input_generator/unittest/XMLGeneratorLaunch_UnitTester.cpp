@@ -7,6 +7,7 @@
 #include "XMLGeneratorUtilities.hpp"
 #include "XMLGeneratorDataStruct.hpp"
 #include "XMLGeneratorLaunchUtilities.hpp"
+#include <mpi.h>
 
 namespace PlatoTestXMLGenerator
 {
@@ -91,7 +92,7 @@ TEST(PlatoTestXMLGenerator, determineMPIEnvAndSeparationStrings)
   std::string envString, separationString;
   XMLGen::determine_mpi_env_and_separation_strings(envString, separationString);
 
-#ifndef USING_OPEN_MPI
+#ifndef OMPI_MAJOR_VERSION
   EXPECT_STREQ("-env", envString.c_str());
   EXPECT_STREQ(" ", separationString.c_str());
 #else
@@ -118,7 +119,7 @@ TEST(PlatoTestXMLGenerator, determineMPILaunchStrings_dontUseLaunch)
   std::string tLaunchString, tNumProcsString;
   XMLGen::determine_mpi_launch_strings(tInputData, tLaunchString, tNumProcsString);
 
-#ifdef USING_OPEN_MPI
+#ifdef OMPI_MAJOR_VERSION
   const std::string goldLaunchString("mpiexec --oversubscribe");
 #else
   const std::string goldLaunchString("mpiexec");

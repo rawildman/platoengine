@@ -1,77 +1,67 @@
-set(LIB_NAMES)
+set(Parser_SOURCES Plato_Parser.cpp
+            Plato_InputData.cpp
+            Plato_OptimizerEngineStageData.cpp
+            Plato_OperationInputDataMng.cpp
+            Plato_StageInputDataMng.cpp
+            math_parser/tinyexpr.c
+            pugixml.cpp
+            Plato_UniqueCounter.cpp
+            Plato_FreeFunctions.cpp
+            Plato_TimersTree.cpp
+            Plato_Vector3DVariations.cpp
+            Plato_AppErrorChecks.cpp
+            Plato_ParseCSMUtilities.cpp
+            Plato_OperationTypes.cpp
+            )
+set(Parser_HEADERS Plato_Parser.hpp
+            Plato_Macros.hpp
+            Plato_InputData.hpp
+            Plato_OptimizerEngineStageData.hpp
+            Plato_OperationInputDataMng.hpp
+            Plato_StageInputDataMng.hpp
+            pugixml.hpp
+            pugiconfig.hpp
+            Plato_UniqueCounter.hpp
+            Plato_FreeFunctions.hpp
+            Plato_TimersTree.hpp
+            Plato_AppErrorChecks.hpp
+            Plato_Vector3DVariations.hpp
+            Plato_ParseCSMUtilities.hpp
+            Plato_OperationTypes.hpp
+            Plato_EnumTable.hpp
+            Plato_Utils.hpp
+            Plato_SerializationHeaders.hpp
+            Plato_SerializationLoadSave.hpp
+            )
 
-set(LIB_NAME Parser)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_Parser.cpp
-                        Plato_InputData.cpp
-                        Plato_OptimizerEngineStageData.cpp
-                        Plato_OperationInputDataMng.cpp
-                        Plato_StageInputDataMng.cpp
-                        math_parser/tinyexpr.c
-                        pugixml.cpp
-                        Plato_UniqueCounter.cpp
-                        Plato_FreeFunctions.cpp
-                        Plato_TimersTree.cpp
-                        Plato_Vector3DVariations.cpp
-                        Plato_AppErrorChecks.cpp
-                        Plato_ParseCSMUtilities.cpp
-                        Plato_OperationTypes.cpp
-                        )
-set(${LIB_NAME}_HEADERS Plato_Parser.hpp
-                        Plato_Macros.hpp
-                        Plato_InputData.hpp
-                        Plato_OptimizerEngineStageData.hpp
-                        Plato_OperationInputDataMng.hpp
-                        Plato_StageInputDataMng.hpp
-                        pugixml.hpp
-                        pugiconfig.hpp
-                        Plato_UniqueCounter.hpp
-                        Plato_FreeFunctions.hpp
-                        Plato_TimersTree.hpp
-                        Plato_AppErrorChecks.hpp
-                        Plato_Vector3DVariations.hpp
-                        Plato_ParseCSMUtilities.hpp
-                        Plato_OperationTypes.hpp
-                        Plato_EnumTable.hpp
-                        Plato_Utils.hpp
-                        Plato_SerializationHeaders.hpp
-                        Plato_SerializationLoadSave.hpp
-                        )
+set(Exceptions_SOURCES Plato_Exceptions.cpp)
+set(Exceptions_HEADERS Plato_Exceptions.hpp)
 
-set(LIB_NAME Exceptions)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_Exceptions.cpp)
-set(${LIB_NAME}_HEADERS Plato_Exceptions.hpp)
-
-set(LIB_NAME Console)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_Console.cpp)
-set(${LIB_NAME}_HEADERS Plato_Console.hpp)
+set(Console_SOURCES Plato_Console.cpp)
+set(Console_HEADERS Plato_Console.hpp)
 
 set(LIBLESS_HEADERS
   Plato_Communication.hpp
 )
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
 
-FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB}     ${${PLATO_LIB}_SOURCES}     ${${PLATO_LIB}_HEADERS}     )
-  target_link_libraries(Plato${PLATO_LIB} Trilinos::all_selected_libs Boost::serialization)
-  set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-ENDFOREACH()
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
+add_library(PlatoExceptions ${Exceptions_SOURCES} ${Parser_HEADERS}     )
+target_link_libraries(PlatoExceptions PRIVATE PlatoInterface Boost::serialization)
 
-if( CMAKE_INSTALL_PREFIX )
- FOREACH(PLATO_LIB ${LIB_NAMES})
-  install( TARGETS Plato${PLATO_LIB} EXPORT Plato${PLATO_LIB}
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- ENDFOREACH()
- install( FILES ${LIBLESS_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- install( FILES math_parser/tinyexpr.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math_parser)
-endif()
+add_library(PlatoConsole ${Console_SOURCES} ${Parser_HEADERS}     )
+target_link_libraries(PlatoConsole PRIVATE Boost::serialization)
+
+add_library(PlatoParser ${Parser_SOURCES} ${Parser_HEADERS}     )
+target_include_directories(PlatoParser PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(PlatoParser PRIVATE PlatoDataLayer PlatoExceptions Boost::serialization)
+
+
+install( TARGETS PlatoParser PlatoExceptions PlatoConsole EXPORT PlatoEngine
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib)
+target_include_directories(PlatoParser PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${LIBLESS_HEADERS} ${Parser_HEADERS} ${Exceptions_HEADERS} ${Console_HEADERS} DESTINATION include)
+install( FILES math_parser/tinyexpr.h DESTINATION include/math_parser)
 
 if( UNIT_TESTING )
   add_subdirectory(./unittest)

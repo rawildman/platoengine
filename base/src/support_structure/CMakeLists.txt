@@ -1,24 +1,13 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(SupportStructure_SRCS SupportStructureMain.cpp)
-SET(SupportStructureEval_SRCS SupportStructureEvalMain.cpp)
+SET(SRCS SupportStructureMain.cpp)
+SET(EVAL_SRCS SupportStructureEvalMain.cpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES} ./main)
+add_executable(create_support_structure ${SRCS})
+add_executable(support_structure_eval ${EVAL_SRCS})
+target_link_libraries(create_support_structure PUBLIC SupportStructureLib)
+target_link_libraries(support_structure_eval PUBLIC STKIO::stk_io STKMesh::stk_mesh_base SEACASIoss::Ioss)
 
-# actual target:
-set(PLATOMAIN_LIBS ${PLATO_LIBRARIES} ${Plato_EXTRA_LINK_FLAGS})
-add_executable(create_support_structure ${SupportStructure_SRCS})
-add_executable(support_structure_eval ${SupportStructureEval_SRCS})
-target_link_libraries(create_support_structure SupportStructureLib ${PLATOMAIN_LIBS} Trilinos::all_selected_libs)
-target_link_libraries(support_structure_eval ${PLATOMAIN_LIBS} Trilinos::all_selected_libs )
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS create_support_structure DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-  install( TARGETS support_structure_eval DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
+install( TARGETS create_support_structure EXPORT PlatoEngine DESTINATION bin )
+install( TARGETS support_structure_eval EXPORT PlatoEngine DESTINATION bin )
 
 if( UNIT_TESTING )
 #  add_subdirectory(./unittest)

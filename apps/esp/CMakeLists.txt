@@ -1,37 +1,19 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(PlatoESP_SRCS PlatoESP_main.cpp PlatoESPApp.cpp)
+SET(SRCS PlatoESP_main.cpp PlatoESPApp.cpp)
 
-SET(PlatoESP_HDRS PlatoESPApp.hpp)
+SET(HDRS PlatoESPApp.hpp)
 
-include_directories(${PLATO_INCLUDES})
+add_executable(PlatoESP ${SRCS})
+target_link_libraries(PlatoESP PUBLIC PlatoInterface PlatoGeometryESP PlatoOperations)
 
-# actual target:
-set(PLATOESP_LIBS  ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}  
-     Trilinos::all_selected_libs
-     ${Plato_EXTRA_LINK_FLAGS})
-add_executable(PlatoESP ${PlatoESP_SRCS})
-target_link_libraries(PlatoESP ${PLATOESP_LIBS})
-set(PLATOESP_BINARY ${CMAKE_BINARY_DIR}/apps/esp/PlatoESP PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS PlatoESP DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
+install( TARGETS PlatoESP EXPORT PlatoEngine DESTINATION bin )
 
 if (PLATO_ENABLE_SERVICES_PYTHON)
     find_package(Python3 COMPONENTS Development Interpreter)
     add_library( PythonPlatoESP SHARED PlatoESPApp.cpp PlatoESPPythonModule.cpp )
     target_include_directories(PythonPlatoESP SYSTEM PRIVATE ${Python3_INCLUDE_DIRS} )
-    target_link_libraries( PythonPlatoESP ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
-                           Trilinos::all_selected_libs ${Python3_LIBRARIES} )
+    target_link_libraries( PythonPlatoESP PlatoInterface PlatoGeometryESP PlatoOperations ${Python3_LIBRARIES} )
     set_target_properties( PythonPlatoESP PROPERTIES PREFIX "" )
-    target_compile_options( PythonPlatoESP PRIVATE "-lmpi" )
 
-    if( CMAKE_INSTALL_PREFIX )
-      install( TARGETS PythonPlatoESP DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
-    endif()
+    install( TARGETS PythonPlatoESP EXPORT PlatoEngine DESTINATION lib )
 
 endif()
-###############################################################################
-###############################################################################

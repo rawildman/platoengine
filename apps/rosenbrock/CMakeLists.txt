@@ -1,40 +1,18 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(ExeName RosenbrockProxy)
 
-SET(${ExeName}_SRCS RosenbrockMain.cpp)
-SET(${ExeName}_HDRS Plato_RosenbrockApp.hpp)
+SET(SRCS RosenbrockMain.cpp)
+SET(HDRS Plato_RosenbrockApp.hpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_executable(RosenbrockProxy ${SRCS})
+target_link_libraries(RosenbrockProxy PlatoInterface PlatoDataLayer PlatoOptimize Boost::serialization)
 
-# actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${NLOPT_LIBRARY} 
-    Trilinos::all_selected_libs ${PYTHON_LIBRARY} 
-    ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS} Boost::serialization)
-set(ROSENBROCKPROXY_BINARY ${CMAKE_BINARY_DIR}/apps/rosenbrock/${ExeName} PARENT_SCOPE)
+install( TARGETS RosenbrockProxy EXPORT PlatoEngine DESTINATION bin )
 
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
-SET(ExeName LinearOperationProxy)
-
-SET(${ExeName}_SRCS LinearOperationMain.cpp Plato_LinearOperationApp.cpp)
-SET(${ExeName}_HDRS Plato_LinearOperationApp.hpp)
-
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+SET(SRCS LinearOperationMain.cpp Plato_LinearOperationApp.cpp)
+SET(HDRS Plato_LinearOperationApp.hpp)
 
 # actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS} Boost::serialization)
-set(LINEAROPERATIONPROXY_BINARY ${CMAKE_BINARY_DIR}/apps/rosenbrock/${ExeName} PARENT_SCOPE)
+add_executable(LinearOperationProxy ${SRCS})
+target_link_libraries(LinearOperationProxy PlatoInterface PlatoDataLayer PlatoOptimize Boost::serialization)
 
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
+install( TARGETS LinearOperationProxy EXPORT PlatoEngine DESTINATION bin )
  

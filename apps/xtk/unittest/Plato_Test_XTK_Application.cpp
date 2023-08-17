@@ -50,7 +50,6 @@
 #include <typedefs.hpp>
 #include "Plato_XTK_Application.hpp"
 #include "Plato_XTK_SharedData.hpp"
-#include "XMLGeneratorUtilities.hpp"
 
 // MORIS XTK INCLUDES
 #include <cl_Param_List.hpp>

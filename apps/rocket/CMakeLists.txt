@@ -1,26 +1,11 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(ExeName RocketDesign)
 
-SET(${ExeName}_SRCS RocketDesignMain.cpp
+SET(SRCS RocketDesignMain.cpp
                     Plato_RocketDesignApp.cpp
                     )
-SET(${ExeName}_HDRS Plato_RocketDesignApp.hpp)
+SET(HDRS Plato_RocketDesignApp.hpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_executable(RocketDesign ${SRCS})
+target_link_libraries(RocketDesign PlatoOptimize PlatoProxy PlatoInterface)
 
-# actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES}
-    Trilinos::all_selected_libs
-    ${Plato_EXTRA_LINK_FLAGS})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS})
-set(PLATOROCEKTDESIGN_BINARY ${CMAKE_BINARY_DIR}/apps/rocket/${ExeName} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
+install( TARGETS RocketDesign EXPORT PlatoEngine DESTINATION bin )
             

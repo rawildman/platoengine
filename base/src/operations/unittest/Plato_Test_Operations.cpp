@@ -45,8 +45,8 @@
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_HarvestDataFromFile.hpp"
 #include "Plato_OperationsUtilities.hpp"
-#include "Plato_UnitTestUtils.hpp"
 
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace PlatoTestOperations

@@ -2,27 +2,18 @@ set(LIB_NAMES)
 
 set(LIB_NAME PenaltyModels)
 set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
-set(${LIB_NAME}_SOURCES Plato_PenaltyModel.cpp Plato_SIMP.cpp)
-set(${LIB_NAME}_HEADERS Plato_PenaltyModel.hpp Plato_SIMP.hpp)
+set(SOURCES Plato_PenaltyModel.cpp Plato_SIMP.cpp)
+set(HEADERS Plato_PenaltyModel.hpp Plato_SIMP.hpp)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
+add_library(PlatoPenaltyModels ${SOURCES} ${HEADERS})
+target_link_libraries(PlatoPenaltyModels PRIVATE PlatoParser Boost::serialization)
+target_include_directories(PlatoPenaltyModels PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-FOREACH(PLATO_LIB ${LIB_NAMES})
-  add_library(Plato${PLATO_LIB}     ${${PLATO_LIB}_SOURCES}     ${${PLATO_LIB}_HEADERS}     )
-  target_link_libraries(Plato${PLATO_LIB} Boost::serialization Trilinos::all_selected_libs)
-  set(ADD_PLATO_LIBRARIES ${ADD_PLATO_LIBRARIES} Plato${PLATO_LIB})
-ENDFOREACH()
-set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ${ADD_PLATO_LIBRARIES} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
- FOREACH(PLATO_LIB ${LIB_NAMES})
-  install( TARGETS Plato${PLATO_LIB} EXPORT Plato${PLATO_LIB}
-           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-  install( FILES ${${PLATO_LIB}_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
- ENDFOREACH()
-endif()
+install( TARGETS PlatoPenaltyModels EXPORT PlatoEngine
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib)
+target_include_directories(PlatoPenaltyModels PUBLIC $<INSTALL_INTERFACE:include>)
+install( FILES ${HEADERS} DESTINATION include)
 
 if( UNIT_TESTING )
   add_subdirectory(./unittest)

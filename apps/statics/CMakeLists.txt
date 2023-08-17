@@ -1,23 +1,5 @@
-###############################################################################
-# Sources:
-###############################################################################
-SET(ExeName PlatoStatics)
 
-SET(${ExeName}_SRCS main.cpp)
-SET(${ExeName}_HDRS )
+add_executable(PlatoStatics main.cpp)
+target_link_libraries(PlatoStatics PlatoInterface PlatoPenaltyModels PlatoAnalyze)
 
-INCLUDE_DIRECTORIES(${PLATO_INCLUDES})
-
-# actual target:
-set(${ExeName}_LIBS ${PLATO_LIBRARIES} ${PLATO_LIBRARIES} ${NLOPT_LIBRARY} 
-    Trilinos::all_selected_libs ${PYTHON_LIBRARY} 
-    ${PYTHON_LINK_LIBS} ${Plato_EXTRA_LINK_FLAGS})
-add_executable(${ExeName} ${${ExeName}_SRCS})
-target_link_libraries(${ExeName} ${${ExeName}_LIBS})
-set(PLATOSTATICS_BINARY ${CMAKE_BINARY_DIR}/apps/statics/${ExeName} PARENT_SCOPE)
-
-if( CMAKE_INSTALL_PREFIX )
-  install( TARGETS ${ExeName} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif()
-###############################################################################
-###############################################################################
+install( TARGETS PlatoStatics EXPORT PlatoEngine DESTINATION bin )
