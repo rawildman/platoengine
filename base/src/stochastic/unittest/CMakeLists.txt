@@ -12,7 +12,7 @@ set(LIBS PlatoStochastic
 add_executable(Plato_Stochastic_UnitTester ${SRCS})
 target_link_libraries(Plato_Stochastic_UnitTester PRIVATE ${LIBS})
 
-add_test(NAME Plato_Stochastic_UnitTester COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Plato_Stochastic_UnitTester)
+add_test(NAME Plato_Stochastic_UnitTester COMMAND Plato_Stochastic_UnitTester)
 set_property(TEST Plato_Stochastic_UnitTester PROPERTY LABELS "small")
 
 install(TARGETS Plato_Stochastic_UnitTester DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

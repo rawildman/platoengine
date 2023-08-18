@@ -13,7 +13,7 @@ set(HEADERS Plato_BatchSampleEvaluator.hpp
 
 add_library(PlatoStochastic ${SOURCES} ${HEADERS})
 target_include_directories(PlatoStochastic PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(PlatoStochastic PUBLIC PlatoInterface PlatoParser PlatoUtilities PlatoLinearAlgebra)
+target_link_libraries(PlatoStochastic PUBLIC PlatoInterface PlatoUtilities PlatoLinearAlgebra PRIVATE PlatoParser)
 
 install( TARGETS PlatoStochastic EXPORT PlatoEngine
          LIBRARY DESTINATION lib

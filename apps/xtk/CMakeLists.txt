@@ -30,7 +30,7 @@ set(XTKMAIN_HEADERS  Plato_XTK_Application.hpp
 					 Plato_XTK_Local_Op_Generate_Model.hpp
 					 )
 
-include_directories(SYSTEM ${PLATO_INCLUDES} ${XTK_INCLUDES})
+include_directories(SYSTEM ${XTK_INCLUDES})
 
 # actual target:
 set(REQUIRED_MORIS_LIBS 
