@@ -13,7 +13,7 @@ set( HEADERS
                         
 
 add_library( PlatoDakotaDriver ${SOURCES} ${HEADERS} )
-target_link_libraries(PlatoDakotaDriver PRIVATE PlatoParser PlatoInterface ${Dakota_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(PlatoDakotaDriver PRIVATE PlatoParser PlatoInterface ${Dakota_LIBRARIES})
 target_include_directories(PlatoDakotaDriver PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_include_directories(PlatoDakotaDriver SYSTEM PUBLIC $<BUILD_INTERFACE:${Dakota_INCLUDE_DIRS}>)
 target_compile_definitions(PlatoDakotaDriver PRIVATE ${Dakota_DEFINES})
