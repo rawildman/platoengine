@@ -159,7 +159,6 @@ if( AMFILTER_ENABLED )
     add_definitions(-DAMFILTER_ENABLED)
     find_package(ArborX REQUIRED)
     set(PLATO_LIBRARIES ${PLATO_LIBRARIES} ArborX::ArborX)
-    set(PLATO_INCLUDES ${PLATO_INCLUDES} ${ARBORX_INCLUDE_DIR} ${ARBORX_INCLUDE_DIR}/details)
 endif()
 
 add_subdirectory(base)

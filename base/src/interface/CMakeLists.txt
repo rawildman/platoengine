@@ -12,8 +12,7 @@ set(HEADERS Plato_Application.hpp
             Plato_SingleOperation.hpp
             Plato_OperationFactory.hpp
             Plato_Stage.hpp
-            Plato_Performer.hpp
-            Plato_InterfaceTypes.hpp)
+            Plato_Performer.hpp)
 
 add_library(PlatoInterface ${SOURCES} ${HEADERS})
 target_link_libraries(PlatoInterface PUBLIC PlatoDataLayer PlatoParser TeuchosParameterList::teuchosparameterlist PRIVATE PlatoConsole Boost::serialization)

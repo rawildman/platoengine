@@ -123,6 +123,11 @@ DataLayer::DataLayer(const Plato::SharedDataInfo & aSharedDataInfo, const Plato:
     }
 }
 
+bool DataLayer::hasSharedData(const std::string& aName) const
+{
+    return mSharedDataMap.find(aName) != mSharedDataMap.end();
+}
+
 /******************************************************************************/
 SharedData& DataLayer::getSharedData(const std::string & aName) const
 /******************************************************************************/

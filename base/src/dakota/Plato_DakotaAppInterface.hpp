@@ -79,12 +79,7 @@ public:
      * \param [in] aProblemDataBase Dakota problem metadata.
      * \param [in] aInterface PE interface metadata.
     **********************************************************************************/
-    explicit DakotaAppInterface(const Dakota::ProblemDescDB &aProblemDataBase, Plato::Interface *aInterface);
-
-    /******************************************************************************//**
-     * \brief Main class destructor.
-    **********************************************************************************/
-    ~DakotaAppInterface(){}
+    DakotaAppInterface(const Dakota::ProblemDescDB &aProblemDataBase, Plato::Interface *aInterface);
 
     /******************************************************************************//**
      * \brief Execute the input filter portion of a direct evaluation invocation.

@@ -94,10 +94,7 @@ public:
     std::vector<std::string> getInputDataNames() const;
     std::vector<std::string> getOutputDataNames() const;
 
-    bool hasParameter(const std::string& aParamName);
-    /// @pre Must have a Parameter with name @a aParamName
-    /// @throw std::out_of_range if Parameter with name @a aParamName does not exist.
-    void setParameterValue(const std::string& aParamName, double aParamValue);
+    bool hasParameter(const std::string& aParamName) const;
     void setPerformer(std::shared_ptr<Performer> aPerformer);
 
     template<class Archive>

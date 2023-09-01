@@ -94,13 +94,7 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
     {
         const std::string tPerformerName =
           aOperationDataMng.getPerformerName(tSubOperationIndex);
-
-        if(aPerformer->myName() != tPerformerName)
-        {
-             continue;
-        }
-
-        m_operationName = aOperationDataMng.getOperationName(tPerformerName);
+        const std::string& tOperationName = aOperationDataMng.getOperationName(tPerformerName);
 
         auto tAllParamsData = aOperationDataMng.get<Plato::InputData>("Parameters");
         if( tAllParamsData.size<Plato::InputData>(tPerformerName) )
@@ -110,7 +104,15 @@ initialize(const Plato::OperationInputDataMng & aOperationDataMng,
             {
                 auto tArgName  = Plato::Get::String(tParamData,"ArgumentName");
                 auto tArgValue = Plato::Get::Double(tParamData,"ArgumentValue");
-                m_parameters.insert({tArgName, std::make_unique<Parameter>(tArgName, m_operationName, tArgValue)});
+                if(std::shared_ptr<Plato::SharedData> tSharedData = Utils::byName(aSharedData, tArgName); tSharedData != nullptr)
+                {
+                    tSharedData->setMyContext(tOperationName);
+                    m_parameters.emplace(std::move(tArgName), std::move(tSharedData));
+                }
+                else if(tPerformerName == aPerformer->myName())
+                {
+                    m_parameters.emplace(std::move(tArgName), std::make_shared<Parameter>(tArgName, tOperationName, tArgValue));
+                }
             }
         }
     }

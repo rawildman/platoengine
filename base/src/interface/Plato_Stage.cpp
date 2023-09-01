@@ -237,30 +237,4 @@ bool Stage::hasParameter(const std::string& aParameterName) const
     });
 }
 
-bool Stage::operationHasParameter(
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName) const
-{
-    const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
-    [&aOperationName](const std::unique_ptr<Operation>& aOperation){
-        return aOperation->getOperationName() == aOperationName.mValue;
-    });
-    return tOperationIter != m_operations.end() ? (*tOperationIter)->hasParameter(aParameterName.mValue) : false;
-}
-
-void Stage::setParameterOnOperation(
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName,
-        const double aValue) const
-{
-    const auto tOperationIter = std::find_if(m_operations.begin(), m_operations.end(), 
-    [&aOperationName](const std::unique_ptr<Operation>& aOperation){
-        return aOperation->getOperationName() == aOperationName.mValue;
-    });
-    if(tOperationIter != m_operations.end() && (*tOperationIter)->hasParameter(aParameterName.mValue))
-    {
-        (*tOperationIter)->setParameterValue(aParameterName.mValue, aValue);
-    } 
-}
-
 } // End namespace Plato

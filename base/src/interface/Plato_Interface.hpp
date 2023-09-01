@@ -62,7 +62,6 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_Console.hpp"
-#include "Plato_InterfaceTypes.hpp"
 #include "Plato_Stage.hpp"
 
 #include "Plato_SerializationHeaders.hpp"
@@ -139,7 +138,6 @@ public:
     /// This ctor initializes Interface from the saved state in the XML file with name
     /// @a aFileName, and assumes the data with XML tag @a aNodeName.
     Interface(const XMLFileName& aFileName, const XMLNodeName& aNodeName, MPI_Comm aGlobalComm = MPI_COMM_WORLD);
-    ~Interface();
 
     void registerApplication(Plato::Application* aApplication);
 
@@ -158,8 +156,8 @@ public:
 
     // data motion
     int size(const std::string & aName) const;
-    void exportData(double* aFrom, Plato::SharedData& aTo);
-    void importData(double* aTo, Plato::SharedData& aFrom);
+    void exportData(const double* aFrom, Plato::SharedData& aTo);
+    void importData(double* aTo, const Plato::SharedData& aFrom);
 
     // local communicator functionality
     void getLocalComm(MPI_Comm& aLocalComm);
@@ -207,20 +205,10 @@ public:
     template<typename F>
     void tryFCatchInterfaceExceptions(const F& aF);
 
-    /// @return `true` if a stage with name @a aStage name exists that holds an operation with name @a aOperation,
-    ///  that holds a parameter with name @a aParameterName. 
-    bool hasStageOperationAndParameter(
-        const StageName& aStageName,
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName) const;
+    bool dataLayerHasParameter(const std::string& aParameterName) const;
 
-    /// Attempts to assign @a aValue to the parameter with name @a aParameter name held by operation
-    /// with name @a aOperationName on stage with name @a aStageName.
-    /// @pre stageHasOperationWithParameter returns `true`. Otherwise, nothing is set.
-    void setParameterOnOperation(
-        const StageName& aStageName,
-        const OperationName& aOperationName, 
-        const ParameterName& aParameterName,
+    void setParameterInDataLayer(
+        const std::string& aParameterName,
         double aValue);
 
 private:
@@ -262,9 +250,9 @@ private:
     std::shared_ptr<Plato::Performer> mPerformer;
     std::vector<std::unique_ptr<Plato::Stage>> mStages;
 
-    Plato::ExceptionHandler* mExceptionHandler = nullptr;
+    std::unique_ptr<Plato::ExceptionHandler> mExceptionHandler;
 
-    Plato::Console* mConsole = nullptr;
+    std::unique_ptr<Plato::Console> mConsole;
 
     int mLocalCommID = -1;
     int mPerformerID = -1;

@@ -45,7 +45,7 @@ public:
     }
 };
 
-class PlatoTestROLGradientCheck : public InterfaceTestFixture
+class PlatoTestROLGradientCheck : public Plato::InterfaceTestFixture
 {
 protected:
     template<typename RealType>

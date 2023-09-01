@@ -83,6 +83,7 @@ public:
     Plato::DataLayer & operator=(Plato::DataLayer && aRhs) = delete;
 
     // accessors
+    bool hasSharedData(const std::string& aName) const;
     SharedData& getSharedData(const std::string & aName) const;
     const std::vector<std::shared_ptr<SharedData>> & getSharedData() const;
 
