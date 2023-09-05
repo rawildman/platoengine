@@ -129,7 +129,7 @@ void Default_MatrixNormalizationAgent::normalize_block_row(PointCloud* kernel_po
 
 void Default_MatrixNormalizationAgent::normalizeBlockRow_bySolveClassicalRowNormalization(AbstractInterface::SparseMatrix* local_kernel_matrix,
                                                                                           std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
-                                                                                          std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices)
+                                                                                          std::vector<AbstractInterface::SparseMatrix*>& /*parallel_block_column_kernel_matrices*/)
 {
     // get local contribution
     const size_t num_rows = local_kernel_matrix->getNumColumns();
@@ -181,7 +181,7 @@ void Default_MatrixNormalizationAgent::normalizeBlockRow_bySetupReproducingCondi
                                                                                       std::vector<PointCloud*>& nonlocal_kernel_points,
                                                                                       AbstractInterface::SparseMatrix* local_kernel_matrix,
                                                                                       std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
-                                                                                      std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices)
+                                                                                      std::vector<AbstractInterface::SparseMatrix*>& /*parallel_block_column_kernel_matrices*/)
 {
     const size_t mpi_size = m_authority->mpi_wrapper->get_size();
 

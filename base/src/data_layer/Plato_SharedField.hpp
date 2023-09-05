@@ -94,7 +94,7 @@ public:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("SharedData", boost::serialization::base_object<SharedData>(*this));
         aArchive & boost::serialization::make_nvp("SharedFieldName",mMyName);

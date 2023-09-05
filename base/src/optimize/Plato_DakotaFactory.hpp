@@ -76,8 +76,8 @@ public:
     **********************************************************************************/
     std::unique_ptr<Plato::DriverInterface<ScalarType, OrdinalType>>
     create(Plato::Interface* aInterface,
-           MPI_Comm aLocalComm,
-           std::vector< size_t > aOptimizerIndex = std::vector< size_t >()
+           MPI_Comm /*aLocalComm*/,
+           std::vector< size_t > /*aOptimizerIndex*/ = std::vector< size_t >()
            )
     {
 #ifndef DAKOTADRIVER

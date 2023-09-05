@@ -70,17 +70,17 @@ public:
   DataMesh();
   virtual ~DataMesh();
 
-  virtual bool parseMesh(pugi::xml_node& mesh_spec) { return false; }
+  virtual bool parseMesh(pugi::xml_node& /*mesh_spec*/) { return false; }
 
   virtual bool
   createMesh(
-    std::string aFormat,
-    std::string aFileName,
-    bool aIgnoreNodeMap,
-    bool aIgnoreElemMap
+    std::string /*aFormat*/,
+    std::string /*aFileName*/,
+    bool /*aIgnoreNodeMap*/,
+    bool /*aIgnoreElemMap*/
   ) { return false; }
 
-  virtual void createBlocks(pugi::xml_node& meshspec){}
+  virtual void createBlocks(pugi::xml_node& /*meshspec*/){}
 
   virtual void Connect(int* node_gid_list, int block_index, int nlid_in_blk);
 
@@ -134,7 +134,7 @@ public:
   virtual Real* getZ0();
   virtual void getCoords(Real** X);
 
-  virtual bool isExplicit(int global_element_id){ return true; }
+  virtual bool isExplicit(int /*global_element_id*/){ return true; }
 
 public: //!data
   int *nodeGlobalIds;

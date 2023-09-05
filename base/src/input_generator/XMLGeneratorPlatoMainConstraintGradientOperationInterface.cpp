@@ -66,29 +66,11 @@ void append_compute_constraint_gradient_operation_platoanalyze
 }
 
 void append_compute_constraint_gradient_operation_sierra_sd
-(const XMLGen::Constraint& aConstraint,
- const std::string &aPerformer,
- const std::string &aDesignVariableName,
- pugi::xml_node& aParentNode)
+(const XMLGen::Constraint& /*aConstraint*/,
+ const std::string &/*aPerformer*/,
+ const std::string &/*aDesignVariableName*/,
+ pugi::xml_node& /*aParentNode*/)
 {
-/*
-    auto tOperationNode = aParentNode.append_child("Operation");
-    XMLGen::append_children({"Name", "PerformerName"}, {"Compute Constraint Gradient " + aConstraint.id(), aPerformer}, tOperationNode);
-
-    auto tInputNode = tOperationNode.append_child("Input");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Topology", aDesignVariableName}, tInputNode);
-
-    std::string tCriterionID = aConstraint.criterion();
-    std::string tServiceID = aConstraint.service();
-    std::string tScenarioID = aConstraint.scenario();
-    ConcretizedCriterion tConcretizedCriterion(tCriterionID,tServiceID,tScenarioID);
-    auto tIdentifierString = XMLGen::get_concretized_criterion_identifier_string(tConcretizedCriterion);
-
-    auto tSharedDataName = std::string("Criterion Gradient - ") + tIdentifierString;
-
-    auto tOutputNode = tOperationNode.append_child("Output");
-    XMLGen::append_children({"ArgumentName", "SharedDataName"}, {"Constraint Gradient", tSharedDataName}, tOutputNode);
-*/
 }
 
 }

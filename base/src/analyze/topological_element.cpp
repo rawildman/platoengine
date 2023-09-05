@@ -743,8 +743,8 @@ void Element::zeroset()
   blockBasis = nullptr;
 }
 
-void NullElement::CurrentCoordinates(int* node_gid_list, Real** X,
-                              Real* curcoor) { assert(-1); }
+void NullElement::CurrentCoordinates(int* /*node_gid_list*/, Real** /*X*/,
+                              Real* /*curcoor*/) { assert(-1); }
 
 void
 NullElement::registerData()

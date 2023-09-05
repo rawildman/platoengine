@@ -23,7 +23,7 @@ struct MassPropertyHelper {
   std::array<double, 3> mCG = {0, 0, 0};
   std::array<double, 6> mInertia = {0, 0, 0, 0, 0, 0};
   template <class Archive>
-  void serialize(Archive& aArchive, const unsigned int version) {
+  void serialize(Archive& aArchive, const unsigned int /*version*/) {
     aArchive& boost::serialization::make_nvp("Volume", mVolume);
     aArchive& boost::serialization::make_nvp("Mass", mMass);
     aArchive& boost::serialization::make_nvp("CenterOfGravity_X", mCG[X]);

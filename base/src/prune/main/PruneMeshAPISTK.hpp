@@ -36,8 +36,8 @@ struct NewNodeData
   NewNodeData(stk::mesh::BulkData& oldBulkData, 
               stk::mesh::BulkData& newBulkData, 
               stk::mesh::EntityId nodeA, 
-              stk::mesh::EntityId nodeB, 
-              stk::mesh::Entity **entity_place_holder=NULL)
+              stk::mesh::EntityId nodeB,
+              [[maybe_unused]] stk::mesh::Entity ** entity_place_holder=NULL)
               : m_node1(0), 
                 m_node2(0), 
                 m_sharing_procs(), 

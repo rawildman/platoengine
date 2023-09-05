@@ -170,7 +170,7 @@ public:
      * @param [in/out] aExportData data
     **********************************************************************************/
     template<typename SharedDataT>
-    void exportDataT(const std::string& aArgumentName, SharedDataT& aExportData)
+    void exportDataT(const std::string& /*aArgumentName*/, SharedDataT& aExportData)
     {
         if(aExportData.myLayout() == Plato::data::layout_t::SCALAR)
         {

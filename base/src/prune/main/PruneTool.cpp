@@ -130,19 +130,14 @@ void PruneTool::grow_smallest_group(
                        PruneMeshAPISTK *mesh_api,
                        std::map<stk::mesh::EntityId, int> &node_vals,
                        std::map<stk::mesh::EntityId, int> &elem_vals,
-                       std::vector<proc_node_map> &procs,
+                       std::vector<proc_node_map> &/*procs*/,
                        std::set<stk::mesh::EntityId> &unique_group_ids)
 {
   // First we need to decide what the smallest group is
   int num_unique_ids = unique_group_ids.size();
-  int global_array[num_unique_ids];
-  int local_array[num_unique_ids];
+  std::vector<int> global_array(num_unique_ids, 0);
+  std::vector<int> local_array(num_unique_ids, 0);
 
-  for(int i=0; i<num_unique_ids; ++i)
-  {
-    global_array[i] = 0;
-    local_array[i] = 0;
-  }
   int cntr=0;
   std::set<stk::mesh::EntityId>::iterator it = unique_group_ids.begin();
   while(it != unique_group_ids.end())
@@ -168,8 +163,8 @@ void PruneTool::grow_smallest_group(
     ++it;
   }
   
-  MPI_Allreduce(local_array,
-                global_array, num_unique_ids,
+  MPI_Allreduce(local_array.data(),
+                global_array.data(), num_unique_ids,
                 sierra::MPI::Datatype<int>::type(),
                 MPI_SUM, mesh_api->bulk_data()->parallel()); 
 
@@ -410,13 +405,8 @@ void PruneTool::get_global_equiv_info(
   // Determine how much info each processor will send.
   int num_procs = mesh_api->bulk_data()->parallel_size();
   int my_rank = mesh_api->bulk_data()->parallel_rank();
-  int global_counts [num_procs];
-  int local_counts[num_procs];
-  for(int i=0; i<num_procs; ++i)
-  {
-    global_counts[i] = 0;
-    local_counts[i] = 0;
-  }
+  std::vector<int> global_counts(num_procs, 0);
+  std::vector<int> local_counts(num_procs, 0);
   int cnt = 0;
   std::map<stk::mesh::EntityId,std::set<stk::mesh::EntityId> >::iterator it = local_equivs.begin();
   while(it != local_equivs.end())
@@ -427,8 +417,8 @@ void PruneTool::get_global_equiv_info(
 
   local_counts[my_rank] = cnt;
 
-  MPI_Allreduce(local_counts,
-                global_counts, num_procs,
+  MPI_Allreduce(local_counts.data(),
+                global_counts.data(), num_procs,
                 sierra::MPI::Datatype<int>::type(),
                 MPI_MAX, mesh_api->bulk_data()->parallel()); 
 
@@ -442,13 +432,8 @@ void PruneTool::get_global_equiv_info(
       my_start_index += global_counts[i]; 
   }
 
-  int global_equiv_pairs[total_num];
-  int local_equiv_pairs[total_num];
-  for(int i=0; i<total_num; ++i)
-  {
-    global_equiv_pairs[i] = 0;
-    local_equiv_pairs[i] = 0;
-  }
+  std::vector<int> global_equiv_pairs(total_num, 0);
+  std::vector<int> local_equiv_pairs(total_num, 0);
   it = local_equivs.begin();
   while(it != local_equivs.end())
   {
@@ -464,8 +449,8 @@ void PruneTool::get_global_equiv_info(
     ++it;
   }
 
-  MPI_Allreduce(local_equiv_pairs,
-                global_equiv_pairs, total_num,
+  MPI_Allreduce(local_equiv_pairs.data(),
+                global_equiv_pairs.data(), total_num,
                 sierra::MPI::Datatype<int>::type(),
                 MPI_MAX, mesh_api->bulk_data()->parallel()); 
 
@@ -512,7 +497,7 @@ void PruneTool::consolidate_groups(
               std::map<stk::mesh::EntityId, 
               std::set<stk::mesh::EntityId> > &global_equivs,
               std::vector<elem_group*> &groups,
-              PruneMeshAPISTK *mesh_api)
+              PruneMeshAPISTK * /*mesh_api*/)
 {
   std::vector<std::set<stk::mesh::EntityId> > unique_group_sets;
   while(!global_equivs.empty())
@@ -571,7 +556,7 @@ int PruneTool::number_of_groups(
                        std::vector<elem_group*> &groups,
                        const std::set<stk::mesh::EntityId> &elem_set,
                        PruneMeshAPISTK *mesh_api,
-                       std::map<stk::mesh::EntityId, int> &node_vals,
+                       std::map<stk::mesh::EntityId, int> &/*node_vals*/,
                        std::map<stk::mesh::EntityId, int> &elem_vals,
                        std::vector<proc_node_map> &procs,
                        std::set<stk::mesh::EntityId> &unique_group_ids)
@@ -597,19 +582,14 @@ int PruneTool::number_of_groups(
   // Communicate globally to determine how many total groups we have.
   
   // Determine how many group ids each processor will send.
-  int num_procs = mesh_api->bulk_data()->parallel_size();
-  int my_rank = mesh_api->bulk_data()->parallel_rank();
-  int global_group_counts [num_procs];
-  int local_group_counts[num_procs];
-  for(int i=0; i<num_procs; ++i)
-  {
-    global_group_counts[i] = 0;
-    local_group_counts[i] = 0;
-  }
+  const int num_procs = mesh_api->bulk_data()->parallel_size();
+  const int my_rank = mesh_api->bulk_data()->parallel_rank();
+  std::vector<int> global_group_counts(num_procs, 0);
+  std::vector<int> local_group_counts(num_procs, 0);
   local_group_counts[my_rank] = groups.size();
 
-  MPI_Allreduce(local_group_counts,
-                global_group_counts, num_procs ,
+  MPI_Allreduce(local_group_counts.data(),
+                global_group_counts.data(), num_procs ,
                 sierra::MPI::Datatype<int>::type(),
                 MPI_MAX, mesh_api->bulk_data()->parallel()); 
 
@@ -623,18 +603,13 @@ int PruneTool::number_of_groups(
       my_start_index += global_group_counts[i]; 
   }
 
-  int global_id_list[total_num_ids];
-  int local_id_list[total_num_ids];
-  for(int i=0; i<total_num_ids; ++i)
-  {
-    global_id_list[i] = 0;
-    local_id_list[i] = 0;
-  }
+  std::vector<int> global_id_list(total_num_ids, 0);
+  std::vector<int> local_id_list(total_num_ids, 0);
   for(size_t i=0; i<groups.size(); ++i)
     local_id_list[my_start_index+i] = groups[i]->id;
 
-  MPI_Allreduce(local_id_list,
-                global_id_list, total_num_ids,
+  MPI_Allreduce(local_id_list.data(),
+                global_id_list.data(), total_num_ids,
                 sierra::MPI::Datatype<int>::type(),
                 MPI_MAX, mesh_api->bulk_data()->parallel()); 
 

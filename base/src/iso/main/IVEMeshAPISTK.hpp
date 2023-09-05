@@ -79,7 +79,7 @@ struct NewNodeData
               stk::mesh::BulkData& newBulkData, 
               stk::mesh::EntityId nodeA, 
               stk::mesh::EntityId nodeB, 
-              stk::mesh::Entity **entity_place_holder=NULL)
+              [[maybe_unused]] stk::mesh::Entity **entity_place_holder=NULL)
               : m_node1(0), 
                 m_node2(0), 
                 m_sharing_procs(), 

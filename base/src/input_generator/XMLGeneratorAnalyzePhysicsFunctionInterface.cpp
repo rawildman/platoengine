@@ -143,7 +143,7 @@ void append_incompressible_cfd_conservation_equations_options(
 **********************************************************************************/
 void append_hyperbolic_incompressible_cfd_pde_to_analyze_input_deck(
     const XMLGen::Scenario &aScenario,
-    const std::vector<XMLGen::Output> &aOutput,
+    const std::vector<XMLGen::Output> &/*aOutput*/,
     pugi::xml_node &aParentNode)
 {
     XMLGen::Private::append_incompressible_cfd_conservation_equations_options(aScenario, aParentNode);

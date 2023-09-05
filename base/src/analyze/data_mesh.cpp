@@ -304,7 +304,7 @@ void
 DataMesh::setDataContainer(DataContainer* dc)
 {
   myData = dc;
-};
+}
 
 void
 UnsMesh::addElemBlk( Topological::Element* eb )
@@ -689,11 +689,11 @@ void StrMesh::zeroSet()
 {
   myMeshType = STR_DM;
   nodeLocationsExternal = false;
-};
+}
 
 
 //*********************************************************************
-int* StrMesh::getElemToNodeConnInBlk(int blk)
+int* StrMesh::getElemToNodeConnInBlk(int /*blk*/)
 //*********************************************************************
 {
   return NULL;
@@ -701,7 +701,7 @@ int* StrMesh::getElemToNodeConnInBlk(int blk)
 
 
 //*********************************************************************
-int StrMesh::getBlockIndex(int blk_id)
+int StrMesh::getBlockIndex(int /*blk_id*/)
 //*********************************************************************
 {
   return -1;
@@ -709,14 +709,14 @@ int StrMesh::getBlockIndex(int blk_id)
 
 
 //*********************************************************************
-int StrMesh::getBlockId(int blk)
+int StrMesh::getBlockId(int /*blk*/)
 //*********************************************************************
 {
   return 1;
 }
 
 //*********************************************************************
-std::string StrMesh::getBlockName(int blk)
+std::string StrMesh::getBlockName(int /*blk*/)
 //*********************************************************************
 {
   throw ParsingException("This function isn't implemented.");
@@ -724,21 +724,21 @@ std::string StrMesh::getBlockName(int blk)
 }
 
 //*********************************************************************
-std::vector<std::vector<int>> StrMesh::getFaceGraph(int blk)
+std::vector<std::vector<int>> StrMesh::getFaceGraph(int /*blk*/)
 //*********************************************************************
 {
   throw ParsingException("This function isn't implemented.");
 }
 
 //*********************************************************************
-bool StrMesh::readNodePlot(Real* data, std::string name, int time_step)
+bool StrMesh::readNodePlot(Real* /*data*/, std::string /*name*/, int /*time_step*/)
 //*********************************************************************
 {
     return false;
 }
 
 //*********************************************************************
-int StrMesh::getNumElemInBlk(int block)
+int StrMesh::getNumElemInBlk(int /*block*/)
 //*********************************************************************
 {
   return 1; // single block structured.
@@ -746,7 +746,7 @@ int StrMesh::getNumElemInBlk(int block)
 
 
 //*********************************************************************
-std::string StrMesh::getElemTypeInBlk(int blk)
+std::string StrMesh::getElemTypeInBlk(int /*blk*/)
 //*********************************************************************
 {
   return std::string("");
@@ -942,7 +942,7 @@ void
 UnsMesh::zeroSet()
 {
   myMeshType = UNS_DM;
-};
+}
 
 #if 0
 /******************************************************************************/

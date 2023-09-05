@@ -8,18 +8,18 @@ namespace PlatoTestEnumTable
 
 TEST(EnumTable, Conversion)
 {
-    enum class Test{
+    enum class TestEnum{
         kInky,
         kPinky,
         kBlinky,
         kClyde,
         kArbitraryEnumWithNoGhostlyRelation
     };
-    const Plato::EnumTable<Test> kTestTable = {
-        {Test::kInky, "Inky"}, 
-        {Test::kPinky, "Pinky"},
-        {Test::kBlinky, "Blinky"},
-        {Test::kClyde, "Clyde"}};
+    const Plato::EnumTable<TestEnum> kTestTable = {
+        {TestEnum::kInky, "Inky"}, 
+        {TestEnum::kPinky, "Pinky"},
+        {TestEnum::kBlinky, "Blinky"},
+        {TestEnum::kClyde, "Clyde"}};
 
     // String to enum
     ASSERT_TRUE(kTestTable.toEnum("Inky"));
@@ -27,27 +27,27 @@ TEST(EnumTable, Conversion)
     ASSERT_TRUE(kTestTable.toEnum("Pinky"));
     ASSERT_TRUE(kTestTable.toEnum("Clyde"));
 
-    EXPECT_EQ(*kTestTable.toEnum("Inky"), Test::kInky);
-    EXPECT_EQ(*kTestTable.toEnum("Blinky"), Test::kBlinky);
-    EXPECT_EQ(*kTestTable.toEnum("Pinky"), Test::kPinky);
-    EXPECT_EQ(*kTestTable.toEnum("Clyde"), Test::kClyde);
+    EXPECT_EQ(*kTestTable.toEnum("Inky"), TestEnum::kInky);
+    EXPECT_EQ(*kTestTable.toEnum("Blinky"), TestEnum::kBlinky);
+    EXPECT_EQ(*kTestTable.toEnum("Pinky"), TestEnum::kPinky);
+    EXPECT_EQ(*kTestTable.toEnum("Clyde"), TestEnum::kClyde);
 
     EXPECT_FALSE(kTestTable.toEnum("clyde"));
     EXPECT_FALSE(kTestTable.toEnum("Clyde "));
     EXPECT_FALSE(kTestTable.toEnum("arbitrary string that has no ghostly relation"));
 
     // Enum to string
-    ASSERT_TRUE(kTestTable.toString(Test::kInky));
-    ASSERT_TRUE(kTestTable.toString(Test::kBlinky));
-    ASSERT_TRUE(kTestTable.toString(Test::kPinky));
-    ASSERT_TRUE(kTestTable.toString(Test::kClyde));
+    ASSERT_TRUE(kTestTable.toString(TestEnum::kInky));
+    ASSERT_TRUE(kTestTable.toString(TestEnum::kBlinky));
+    ASSERT_TRUE(kTestTable.toString(TestEnum::kPinky));
+    ASSERT_TRUE(kTestTable.toString(TestEnum::kClyde));
 
-    EXPECT_EQ(*kTestTable.toString(Test::kInky), "Inky");
-    EXPECT_EQ(*kTestTable.toString(Test::kBlinky), "Blinky");
-    EXPECT_EQ(*kTestTable.toString(Test::kPinky), "Pinky");
-    EXPECT_EQ(*kTestTable.toString(Test::kClyde), "Clyde");
+    EXPECT_EQ(*kTestTable.toString(TestEnum::kInky), "Inky");
+    EXPECT_EQ(*kTestTable.toString(TestEnum::kBlinky), "Blinky");
+    EXPECT_EQ(*kTestTable.toString(TestEnum::kPinky), "Pinky");
+    EXPECT_EQ(*kTestTable.toString(TestEnum::kClyde), "Clyde");
 
-    EXPECT_FALSE(kTestTable.toString(Test::kArbitraryEnumWithNoGhostlyRelation));
+    EXPECT_FALSE(kTestTable.toString(TestEnum::kArbitraryEnumWithNoGhostlyRelation));
 }
 
 TEST(EnumTable, OperationType)

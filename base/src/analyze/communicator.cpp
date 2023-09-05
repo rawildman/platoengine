@@ -435,7 +435,6 @@ void Communicator::pAcout(const char* message)
 {
     ostringstream buffer;
     buffer << message;
-    const int rootPID = 0;
     int data = 0;
     if(mySize > 1)
     {
@@ -459,7 +458,6 @@ void
 Communicator::BeginProcStaging()
 {
   const int TAG_STAGE_PROCS = 1111;
-  const int rootPID = 0;
   int data = 0;
   if( mySize > 1 ) {
     if( myPID != rootPID )

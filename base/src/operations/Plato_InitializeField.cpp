@@ -151,7 +151,7 @@ InitializeField::InitializeField(PlatoApp* aPlatoApp, Plato::InputData & aNode) 
                 sprintf(tOutFilename, "platomain_restart.exo.%d.%d", tCommSize, tRankIndex);
             }
 
-            int tBufferSize = 1024;
+            constexpr int tBufferSize = 1024;
             char tBuffer[tBufferSize];
             FILE *tInFile, *tOutFile;
             size_t tNumRead;

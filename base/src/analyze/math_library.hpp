@@ -43,6 +43,7 @@
 #ifndef MATH_LIBRARY
 #define MATH_LIBRARY
 
+#include <array>
 #include <iostream>
 #include "types.hpp"
 
@@ -68,13 +69,12 @@ class Vector
     Vector(Real*);
     Vector();
 
-    const Real* getData() const { return data_; }
-    void extractData( Real*& d ) { d = data_; }
+    const Real* getData() const { return data_.data(); }
+    void extractData( Real*& d ) { d = data_.data(); }
     void copyData( Real* d ) { for(int i=0; i<3; i++) d[i] = data_[i]; }
 
     void zero(){data_[0]=0.0; data_[1]=0.0; data_[2]=0.0;}
 
-    void operator=(const Vector& v);
     void operator=(const Real& v);
     Real& operator[]( int index );
     Real operator()( int index ) const;
@@ -91,7 +91,7 @@ class Vector
     friend Real Norm(const Vector& v);
  
   private:
-    Real data_[VEC::NUM_TERMS];
+    std::array<Real, VEC::NUM_TERMS> data_;
 };
 
 /******************************************************************************/
@@ -103,11 +103,10 @@ class SymTensor
     SymTensor(Real*);
     SymTensor();
 
-    const Real* getData() const { return data_; }
-    void extractData( Real*& d ) { d = data_; }
+    const Real* getData() const { return data_.data(); }
+    void extractData( Real*& d ) { d = data_.data(); }
     void copyData( Real* d ) { for(int i=0; i<6; i++) d[i] = data_[i]; }
 
-    void operator=(const SymTensor& v);
     void operator=(const Vector& v);
     void operator=(const Real& v);
     Real& operator[]( int index );
@@ -131,7 +130,7 @@ class SymTensor
     friend SymTensor operator*( const Intrepid::FieldContainer<double>& C, const Real& s );
 
   private:
-    Real data_[SYM::NUM_TERMS];
+    std::array<Real, SYM::NUM_TERMS> data_;
 };
 
 /******************************************************************************/
@@ -145,13 +144,12 @@ class Tensor
     Tensor(Real*);
     Tensor();
 
-    const Real* getData() const { return data_; }
-    void extractData( Real*& d ) { d = data_; }
+    const Real* getData() const { return data_.data(); }
+    void extractData( Real*& d ) { d = data_.data(); }
     void copyData( Real* d ) { for(int i=0; i<9; i++) d[i] = data_[i]; }
     bool isOrthonormal() const;
 
     void operator=(const SymTensor& v);
-    void operator=(const Tensor& v);
     void operator=(const Real& v);
     Real& operator[]( int index );
     Real operator()( int index ) const;
@@ -162,7 +160,7 @@ class Tensor
 
     
   private:
-    Real data_[TENSOR::NUM_TERMS];
+    std::array<Real, TENSOR::NUM_TERMS> data_;
 };
 
 

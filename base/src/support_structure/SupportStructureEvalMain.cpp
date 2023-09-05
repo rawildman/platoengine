@@ -54,7 +54,7 @@ int main(int argc,  char **argv)
     {
         clp.parse( argc, argv );
     }
-    catch (std::exception exc)
+    catch (const std::exception& exc)
     {
         std::cout << "Failed to parse the command line arguments." << std::endl;
         return false;

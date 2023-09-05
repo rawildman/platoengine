@@ -93,7 +93,7 @@ public:
     //!}
     
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("PerformerName",mName);
         //aArchive & boost::serialization::make_nvp("Application",mApplication);

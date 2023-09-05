@@ -194,7 +194,7 @@ public:
     }
 
     /****************************************************************************************/
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
+    void exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/)
     /****************************************************************************************/
     {
         /************************************************************************************

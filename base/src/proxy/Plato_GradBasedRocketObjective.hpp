@@ -266,7 +266,7 @@ public:
      * @param [in] aVector descent direction
      * @param [in,out] application of vector to Hessian operator (Identity used for this example)
      **********************************************************************************/
-    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
     {

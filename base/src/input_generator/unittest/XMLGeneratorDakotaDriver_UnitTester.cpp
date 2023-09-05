@@ -3388,6 +3388,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoAnalyzeInputXmlFilesForDakotaDriver)
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
 
     // Remove dummy files
+    std::fclose(exo);
+    std::fclose(csm);
     Plato::system("rm -rf evaluations_0");
     Plato::system("rm -rf evaluations_1");
     Plato::system("rm -rf rocker.exo");
@@ -3490,6 +3492,8 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDInputXmlFilesForDakotaDriver)
     Plato::system("rm -rf evaluations_1");
 
     // Remove dummy files
+    std::fclose(exo);
+    std::fclose(csm);
     Plato::system("rm -rf rocker.exo");
     Plato::system("rm -rf rocker.csm");
 }
@@ -3629,6 +3633,8 @@ TEST(PlatoTestXMLGenerator, WriteSierraSDAndPlatoAnalyzeInputXmlFilesForDakotaDr
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
     
     // Remove dummy files
+    std::fclose(exo);
+    std::fclose(csm);
     Plato::system("rm -rf evaluations_0");
     Plato::system("rm -rf evaluations_1");
     Plato::system("rm -rf rocker.exo");
@@ -3698,6 +3704,8 @@ TEST(PlatoTestXMLGenerator, WritePlatoServicesInputXmlFilesForDakotaDriver)
     ASSERT_STREQ(tGold.c_str(), tReadData.str().c_str());
 
     // Remove dummy files
+    std::fclose(exo);
+    std::fclose(csm);
     Plato::system("rm -rf evaluations_0");
     Plato::system("rm -rf evaluations_1");
     Plato::system("rm -rf rocker.exo");

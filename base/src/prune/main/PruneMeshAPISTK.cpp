@@ -417,12 +417,12 @@ double PruneMeshAPISTK::calculate_average_edge_length(const std::vector<PruneHan
   return sqrt(global_ave_dist_squared);
 }
 
-void PruneMeshAPISTK::add_element_to_survivor_block(PruneHandle entity)
+void PruneMeshAPISTK::add_element_to_survivor_block(PruneHandle /*entity*/)
 {
 }
 
-PruneHandle PruneMeshAPISTK::new_tri(PruneHandle n1, PruneHandle n2, PruneHandle n3, bool is_fixed,
-                                 PruneHandle source_elem)
+PruneHandle PruneMeshAPISTK::new_tri(PruneHandle /*n1*/, PruneHandle /*n2*/, PruneHandle /*n3*/, bool /*is_fixed*/,
+                                 PruneHandle /*source_elem*/)
 {
   return 0;
 }
@@ -755,11 +755,11 @@ stk::mesh::EntityId PruneMeshAPISTK::get_next_entity_id(stk::topology::rank_t ra
   return 0;
 }
 
-void PruneMeshAPISTK::store_tri_to_tet_map_entry(const PruneHandle &tri, const PruneHandle &tet)
+void PruneMeshAPISTK::store_tri_to_tet_map_entry(const PruneHandle &/*tri*/, const PruneHandle &/*tet*/)
 {
 }
 
-void PruneMeshAPISTK::store_tet_to_tri_map_entry(const PruneHandle &tet, const PruneHandle &tri)
+void PruneMeshAPISTK::store_tet_to_tri_map_entry(const PruneHandle &/*tet*/, const PruneHandle &/*tri*/)
 {
 }
 
@@ -1010,7 +1010,7 @@ void PruneMeshAPISTK::prepare_new_block()
 {
 }
 
-void PruneMeshAPISTK::write_exodus_mesh( std::string &meshfile, int concatenate, int iso_only )
+void PruneMeshAPISTK::write_exodus_mesh( std::string &meshfile, int concatenate, int /*iso_only*/ )
 {
   if(mTimeStep > 0 && mBulkData->parallel_rank() == 0)
   {

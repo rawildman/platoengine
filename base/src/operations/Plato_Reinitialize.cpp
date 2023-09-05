@@ -58,7 +58,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Plato::Reinitialize)
 namespace Plato
 {
 
-Reinitialize::Reinitialize(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+Reinitialize::Reinitialize(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp)
 {
 }
@@ -67,7 +67,7 @@ Reinitialize::~Reinitialize()
 {
 }
 
-void Reinitialize::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+void Reinitialize::getArguments(std::vector<Plato::LocalArg>& /*aLocalArgs*/)
 {
 }
 

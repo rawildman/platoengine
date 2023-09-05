@@ -70,7 +70,7 @@ EnforceBounds::EnforceBounds(const std::string& aLowerBoundVectorFieldName,
 {
 }
 
-EnforceBounds::EnforceBounds(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+EnforceBounds::EnforceBounds(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp)
 {
     mLowerBoundVectorFieldName = "Lower Bound Vector";

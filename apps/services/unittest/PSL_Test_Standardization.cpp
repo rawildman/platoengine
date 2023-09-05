@@ -56,8 +56,8 @@ namespace TestingStandardization
 
 void confirm_solve_bipolar_normalize(const std::vector<double>& input,
                                      const std::vector<double>& expected_output,
-                                     const double& expected_min,
-                                     const double& expected_max)
+                                     const double& /*expected_min*/,
+                                     const double& /*expected_max*/)
 {
     // transform
     double computed_min = -5.;

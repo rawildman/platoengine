@@ -109,7 +109,7 @@ void plato_esp_problem
 
 void plato_gemma_problem
 (XMLGen::InputData& aMetaData,
- const std::vector<XMLGen::InputData>& aPreProcessedMetaData)
+ const std::vector<XMLGen::InputData>& /*aPreProcessedMetaData*/)
 {
 
     director::GemmaProblem tGemmaProblem(aMetaData);

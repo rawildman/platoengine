@@ -101,7 +101,7 @@ public:
      * \param [in] aTolerance objective function inexactness tolerance
      * \return objective function value
     **********************************************************************************/
-    void value(ROL::Vector<ScalarType> & aConstraints, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    void value(ROL::Vector<ScalarType> & aConstraints, const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/)
     {
         setViewToControlVector(aControl);
 
@@ -133,7 +133,7 @@ public:
     void applyJacobian(ROL::Vector<ScalarType> & aJacobianTimesDirection,
                        const ROL::Vector<ScalarType> & aDirection,
                        const ROL::Vector<ScalarType> & aControl,
-                       ScalarType & aTolerance)
+                       ScalarType & /*aTolerance*/)
     {
         assert(aControl.dimension() == aDirection.dimension());
         assert(aJacobianTimesDirection.dimension() == static_cast<int>(1));
@@ -170,7 +170,7 @@ public:
     void applyAdjointJacobian(ROL::Vector<ScalarType> & aAdjointJacobianTimesDirection,
                               const ROL::Vector<ScalarType> & aDual,
                               const ROL::Vector<ScalarType> & aControl,
-                              ScalarType & aTolerance)
+                              ScalarType & /*aTolerance*/)
     {
         assert(aDual.dimension() == static_cast<int>(1));
         assert(aAdjointJacobianTimesDirection.dimension() == aControl.dimension());

@@ -73,7 +73,7 @@ StructuralTopologyOptimizationProxyApp::StructuralTopologyOptimizationProxyApp()
 {
 }
 
-StructuralTopologyOptimizationProxyApp::StructuralTopologyOptimizationProxyApp(int aArgc, char **aArgv) :
+StructuralTopologyOptimizationProxyApp::StructuralTopologyOptimizationProxyApp(int /*aArgc*/, char ** /*aArgv*/) :
         mNormalizeObjFunc(true),
         mIsFirstObjFuncValueSet(false),
         mNumElemXDirection(30),

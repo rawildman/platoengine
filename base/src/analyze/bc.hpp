@@ -21,7 +21,7 @@ class BoundaryCondition {
     virtual ~BoundaryCondition(){}
 
     virtual Type Value(Real time = 0.0) = 0;
-    virtual void Print(std::ostream& fout) const {}
+    virtual void Print(std::ostream& /*fout*/) const {}
 
     void findNodeSet( const vector<DMNodeSet>& NodeSet );
     const DMNodeSet& getNodeSet(){ return nodeset; }
@@ -90,7 +90,7 @@ ConstantValueBC<Type>::ConstantValueBC(pugi::xml_node& bc_spec)
 
 /******************************************************************************/
 template <typename Type>
-Type ConstantValueBC<Type>::Value(Real time)
+Type ConstantValueBC<Type>::Value(Real /*time*/)
 /******************************************************************************/
 {
   return BoundaryCondition<Type>::scale*constantValue;

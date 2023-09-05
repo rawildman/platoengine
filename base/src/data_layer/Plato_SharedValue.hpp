@@ -89,7 +89,7 @@ public:
     void getData(std::vector<double> & aData) const;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("SharedData", boost::serialization::base_object<SharedData>(*this));
         aArchive & boost::serialization::make_nvp("SharedValueName",mMyName);

@@ -64,7 +64,7 @@ class InputData;
       double grad(double x) const override;
 
       template<class Archive>
-      void serialize(Archive & aArchive, const unsigned int version)
+      void serialize(Archive & aArchive, const unsigned int /*version*/)
       {
         aArchive & boost::serialization::make_nvp("PenaltyModel",boost::serialization::base_object<PenaltyModel>(*this));
         aArchive & boost::serialization::make_nvp("PenaltyExponent",m_penaltyExponent);

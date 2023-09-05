@@ -25,30 +25,30 @@ class AbstractData {
 
     // this is clunky, but the derived template only instantiates the correct accessor.
     // functions that aren't derived are superfluous, and should error out by default.
-    virtual void getData( int*& data     , StateIndex state=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
-    virtual void getData( int i, int*& data, StateIndex state=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
-    virtual void getData( int i, int& data , StateIndex state=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
-    virtual void setData( int i, int data  , StateIndex state=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
+    virtual void getData( int*& /*data*/     , StateIndex /*state*/=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
+    virtual void getData( int /*i*/, int*& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
+    virtual void getData( int /*i*/, int& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
+    virtual void setData( int /*i*/, int /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for integer from non-integer data" << endl; assert(0); }
 
-    virtual void getData( Real*& data     , StateIndex state=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
-    virtual void getData( int i, Real*& data, StateIndex state=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
-    virtual void getData( int i, Real& data , StateIndex state=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
-    virtual void setData( int i, Real data  , StateIndex state=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
+    virtual void getData( Real*& /*data*/     , StateIndex /*state*/=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Real*& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Real& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
+    virtual void setData( int /*i*/, Real /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Real from non-Real data" << endl; assert(0); }
 
-    virtual void getData( Vector*& data     , StateIndex state=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
-    virtual void getData( int i, Vector*& data, StateIndex state=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
-    virtual void getData( int i, Vector& data , StateIndex state) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
-    virtual void setData( int i, Vector data  , StateIndex state=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
+    virtual void getData( Vector*& /*data*/     , StateIndex /*state*/=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Vector*& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Vector& /*data*/, StateIndex /*state*/=CURRENT) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
+    virtual void setData( int /*i*/, Vector /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Vector from non-Vector data" << endl; assert(0); }
 
-    virtual void getData( Tensor*& data     , StateIndex state=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
-    virtual void getData( int i, Tensor*& data, StateIndex state=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
-    virtual void getData( int i, Tensor& data , StateIndex state=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
-    virtual void setData( int i, Tensor data  , StateIndex state=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
+    virtual void getData( Tensor*& /*data*/     , StateIndex /*state*/=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Tensor*& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
+    virtual void getData( int /*i*/, Tensor& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
+    virtual void setData( int /*i*/, Tensor /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for Tensor from non-Tensor data" << endl; assert(0); }
 
-    virtual void getData( SymTensor*& data     , StateIndex state=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
-    virtual void getData( int i, SymTensor*& data, StateIndex state=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
-    virtual void getData( int i, SymTensor& data , StateIndex state=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
-    virtual void setData( int i, SymTensor data  , StateIndex state=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
+    virtual void getData( SymTensor*& /*data*/     , StateIndex /*state*/=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
+    virtual void getData( int /*i*/, SymTensor*& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
+    virtual void getData( int /*i*/, SymTensor& /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
+    virtual void setData( int /*i*/, SymTensor /*data*/, StateIndex /*state*/=CURRENT ) { pXcout << "request for SymTensor from non-SymTensor data" << endl; assert(0); }
 
     void dump();
 

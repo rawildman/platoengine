@@ -175,7 +175,7 @@ public:
     
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("OptimizerName",mOptimizerName);
       aArchive & boost::serialization::make_nvp("OptimizerIndex",mOptimizerIndex);

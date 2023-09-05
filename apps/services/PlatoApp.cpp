@@ -82,7 +82,7 @@ PlatoApp::PlatoApp(int aArgc, char **aArgv, MPI_Comm& aLocalComm) :
     }
 }
 
-PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &aApp_XML_File, MPI_Comm& aLocalComm) :
+PlatoApp::PlatoApp(const std::string &aPhysics_XML_File, const std::string &/*aApp_XML_File*/, MPI_Comm& aLocalComm) :
         mLocalComm(aLocalComm),
         mAppfileData(Plato::inputDataFromPugiParsedFile(getenv("PLATO_APP_FILE"))),
         mInputfileData(Plato::inputDataFromPugiParsedFile(aPhysics_XML_File))

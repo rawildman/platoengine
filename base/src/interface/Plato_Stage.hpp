@@ -95,7 +95,7 @@ public:
     void setPerformerOnOperations(std::shared_ptr<Performer> aPerformer);
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("StageName",m_name);
         aArchive & boost::serialization::make_nvp("Operations",m_operations);

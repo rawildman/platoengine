@@ -58,7 +58,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Plato::CopyField)
 namespace Plato
 {
 
-CopyField::CopyField(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+CopyField::CopyField(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp),
         mInputName("InputField"),
         mOutputName("OutputField")

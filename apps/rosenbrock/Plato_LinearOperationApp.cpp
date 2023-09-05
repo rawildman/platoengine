@@ -12,10 +12,10 @@ constexpr int kNumCriteria = 1;
 constexpr int kNumControls = 2; // Hardcoded to match Rosenbrock
 }
 
-LinearOperationApp::LinearOperationApp(int aArgc, char *aArgv[], MPI_Comm& aLocalComm) :
+LinearOperationApp::LinearOperationApp(int aArgc, char *aArgv[], MPI_Comm& /*aLocalComm*/) :
     mWeights(kNumControls, 1.0),
-    mCriterionValue(kNumCriteria),
     mControls(kNumControls),
+    mCriterionValue(kNumCriteria),
     mGradient(kNumControls),
     mHessianTimesVector(kNumControls)
 {
@@ -75,7 +75,7 @@ void LinearOperationApp::importData(const std::string & aArgumentName, const Pla
     }
 }
 
-void LinearOperationApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) 
+void LinearOperationApp::exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/) 
 {
 }
 

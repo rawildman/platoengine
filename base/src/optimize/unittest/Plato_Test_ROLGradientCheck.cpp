@@ -28,7 +28,7 @@ public:
 
     Real value
     (const std::vector<Real> & x, 
-     Real & tol) final override 
+     Real & /*tol*/) final override 
     {
         return std::accumulate(x.cbegin(), x.cend(), 0.0, 
             [](const Real sum, const Real value)
@@ -38,7 +38,7 @@ public:
     void gradient
     (std::vector<Real> & g, 
      const std::vector<Real> & x, 
-     Real & tol) final override 
+     Real & /*tol*/) final override 
     {
         for (size_t i=0; i<x.size(); i++)
             g[i] = 2*x[i];
@@ -204,19 +204,19 @@ TEST_F(PlatoTestROLGradientCheck, GradientCheckSumOfSquaresObjective_BaseTen)
     ASSERT_EQ(tGradCheckOut[0].size(), 4);
 
     const std::vector<RealType> tStepsGold = {1.0, 1.0e-1, 1.0e-2, 1.0e-3};
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_EQ(tGradCheckOut[i][0], tStepsGold[i]);
     }
 
     const RealType tGradGold = 2.85330103377e-01;
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_NEAR(tGradCheckOut[i][1], tGradGold, 1.0e-12);
     }
 
     const std::vector<RealType> tFDGold = {2.96397395808e-01, 2.86436832621e-01, 2.85440776302e-01, 2.85341170670e-01};
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_NEAR(tGradCheckOut[i][2], tFDGold[i], 1.0e-12);
     }
@@ -259,19 +259,19 @@ TEST_F(PlatoTestROLGradientCheck, GradientCheckSumOfSquaresObjective_BaseTwo)
     ASSERT_EQ(tGradCheckOut[0].size(), 4);
 
     const std::vector<RealType> tStepsGold = {1.0, 0.5, 0.25, 0.125};
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_EQ(tGradCheckOut[i][0], tStepsGold[i]);
     }
 
     const RealType tGradGold = 2.85330103377e-01;
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_NEAR(tGradCheckOut[i][1], tGradGold, 1.0e-12);
     }
 
     const std::vector<RealType> tFDGold = {2.96397395808e-01, 2.90863749593e-01, 2.88096926485e-01, 2.86713514931e-01};
-    for(unsigned int i=0; i<tGradCheckSteps; i++)
+    for(int i=0; i<tGradCheckSteps; i++)
     {
         EXPECT_NEAR(tGradCheckOut[i][2], tFDGold[i], 1.0e-12);
     }

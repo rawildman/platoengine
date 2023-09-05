@@ -91,7 +91,7 @@ struct PerformerInfo
     int mId;
 
     template<typename Archive>
-    void serialize(Archive& aArchive, const unsigned int aVersion)
+    void serialize(Archive& aArchive, const unsigned int /*aVersion*/)
     {
         aArchive & boost::serialization::make_nvp("Names", mNames);
         aArchive & boost::serialization::make_nvp("Code", mCodeName);
@@ -109,7 +109,7 @@ struct SharedDataSerializedInfo
     std::vector<std::string> mReceiverNames;
 
     template<typename Archive>
-    void serialize(Archive& aArchive, const unsigned int aVersion)
+    void serialize(Archive& aArchive, const unsigned int /*aVersion*/)
     {
         aArchive & boost::serialization::make_nvp("Name", mName);
         aArchive & boost::serialization::make_nvp("Layout", mLayout);
@@ -183,7 +183,7 @@ public:
     bool isDone();
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("AllPerformers", mAllPerformersInfo);
         aArchive & boost::serialization::make_nvp("AllSharedData", mAllSharedDataInfo);

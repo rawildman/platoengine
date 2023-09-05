@@ -66,7 +66,7 @@ struct AggStruct
     std::vector<std::string> mInputNames; /*!< input argument name */
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("Layout",mLayout);
         aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
@@ -109,7 +109,7 @@ public:
     void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
     
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
         aArchive & boost::serialization::make_nvp("LimitWeight",mLimitWeight);

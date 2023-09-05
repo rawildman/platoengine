@@ -6,6 +6,7 @@
  */
 #include "PSL_Point.hpp"
 
+#include <array>
 #include <cstddef>
 #include <vector>
 #include <iostream>
@@ -34,7 +35,6 @@ public:
     void subtract(const Vector& aInputVector);
     void multiply(const double scalar);
 
-    Vector& operator =(const Vector& aVec);
     bool operator ==(const Vector& aVec) const;
 
     friend std::ostream & operator<< (std::ostream &out, const Vector &c);
@@ -44,7 +44,7 @@ public:
     double Z() const {return m_data[2];}
 
 private:
-    double m_data[3];
+    std::array<double, 3> m_data;
 };
 
 Vector cross_product(const Vector& aVec1, const Vector& aVec2);

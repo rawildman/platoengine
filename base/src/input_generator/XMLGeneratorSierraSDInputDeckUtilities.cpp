@@ -65,7 +65,7 @@ void append_solution_block(const XMLGen::InputData &aMetaData,
     outfile << "END" << std::endl;
 }
 /**************************************************************************/
-void append_solution_block_modal_analysis(const XMLGen::InputData &aMetaData,
+void append_solution_block_modal_analysis(const XMLGen::InputData &/*aMetaData*/,
                            const XMLGen::Criterion &aCriterion,
                            std::ostream &outfile) {
     outfile << "SOLUTION" << std::endl;
@@ -95,7 +95,7 @@ void append_parameters_block(const XMLGen::Scenario &aScenario,
     }
 }
 
-void append_camp_block(const XMLGen::Scenario &aScenario, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
+void append_camp_block(const XMLGen::Scenario &/*aScenario*/, const XMLGen::Criterion &aCriterion, std::ostream &outfile) {
     if (isModalCriterion(aCriterion)) {
         outfile << "CAMP" << std::endl;
         outfile << "  solver_tol " << aCriterion.camp_solver_tol() << std::endl;
@@ -273,7 +273,7 @@ void writeDummyModalFiles(const XMLGen::Scenario &aScenario, const XMLGen::Crite
     dummy.close();
 }
 
-void writeModalInverseBlocks(const XMLGen::InputData &aMetaData,
+void writeModalInverseBlocks(const XMLGen::InputData &/*aMetaData*/,
                              const XMLGen::Criterion &aCriterion,
                              const XMLGen::Scenario &aScenario,
                              std::ostream &outfile)
@@ -502,9 +502,9 @@ void append_block_blocks_modal_analysis
 }
 /**************************************************************************/
 void append_stress_parameters
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  const XMLGen::Criterion &aCriterion,
- const XMLGen::Scenario &aScenario,
+ const XMLGen::Scenario &/*aScenario*/,
  std::ostream &outfile)
 {
     if(aCriterion.type() == "stress_and_mass" ||
@@ -926,7 +926,7 @@ std::string convertDOF
 /**************************************************************************/
 void append_boundary_block
 (const XMLGen::InputData& aMetaData,
- const XMLGen::Criterion& aCriterion,
+ const XMLGen::Criterion& /*aCriterion*/,
  const XMLGen::Scenario& aScenario,
  std::ostream &outfile)
 {
@@ -966,7 +966,7 @@ void append_boundary_block
     outfile << "END" << std::endl;
 }
 
-void append_contact_block(const XMLGen::InputData& aMetaData,
+void append_contact_block(const XMLGen::InputData& /*aMetaData*/,
                           std::ostream &outfile)
 {
     outfile << "begin contact definition" << std::endl

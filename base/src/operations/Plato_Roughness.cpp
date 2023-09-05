@@ -68,7 +68,7 @@ Roughness::Roughness(const std::string& aTopologyName,
 {
 }
 
-Roughness::Roughness(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+Roughness::Roughness(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp),
         mTopologyName("Topology"),
         mRoughnessName("Roughness"),

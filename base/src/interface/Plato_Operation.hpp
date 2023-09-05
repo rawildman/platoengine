@@ -98,7 +98,7 @@ public:
     void setPerformer(std::shared_ptr<Performer> aPerformer);
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("OperationName", m_operationName);
         aArchive & boost::serialization::make_nvp("PerformerName", m_performerName);
@@ -128,7 +128,7 @@ public:
         void getData(std::vector<double> & aData) const override {aData[0] = m_value;}
 
         template<class Archive>
-        void serialize(Archive & aArchive, const unsigned int version)
+        void serialize(Archive & aArchive, const unsigned int /*version*/)
         {
             aArchive & boost::serialization::make_nvp("SharedData",
                 boost::serialization::base_object<SharedData>(*this));

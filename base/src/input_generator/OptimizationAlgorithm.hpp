@@ -35,6 +35,8 @@ protected:
 
 public:
     OptimizationAlgorithm(const XMLGen::OptimizationParameters& aParameters);
+    virtual ~OptimizationAlgorithm() = default;
+
     virtual void writeInterface(pugi::xml_node& aNode,
                                 StagePtr aInitialization = nullptr,
                                 StagePtr aUpperBound = nullptr,

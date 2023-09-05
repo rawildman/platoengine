@@ -106,47 +106,47 @@ void EssentialBoundaryConditionTag::insert()
     // temperature
     auto tFuncIndex = std::type_index(typeid(XMLGen::Private::return_temperature_bc_name));
     mMap.insert(std::make_pair("temperature",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_temperature_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_temperature_bc_name, tFuncIndex)));
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_temperature_bc_name));
     mMap.insert(std::make_pair("temp",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_temperature_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_temperature_bc_name, tFuncIndex)));
 
     // pressure
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_pressure_bc_name));
     mMap.insert(std::make_pair("pressure",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_pressure_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_pressure_bc_name, tFuncIndex)));
     mMap.insert(std::make_pair("press",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_pressure_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_pressure_bc_name, tFuncIndex)));
 
     // velocity
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_velocity_bc_name));
     mMap.insert(std::make_pair("velocity",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
     mMap.insert(std::make_pair("velx",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
     mMap.insert(std::make_pair("vely",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
     mMap.insert(std::make_pair("velz",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_velocity_bc_name, tFuncIndex)));
 
     // potential
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_potential_bc_name));
     mMap.insert(std::make_pair("potential",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_potential_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_potential_bc_name, tFuncIndex)));
 
     // displacement
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_displacement_bc_name));
     mMap.insert(std::make_pair("displacement",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_displacement_bc_name));
     mMap.insert(std::make_pair("dispx",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_displacement_bc_name));
     mMap.insert(std::make_pair("dispy",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_displacement_bc_name));
     mMap.insert(std::make_pair("dispz",
-      std::make_pair((XMLGen::Analyze::EssentialBCTagFunc)XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_displacement_bc_name, tFuncIndex)));
 }
 
 std::string EssentialBoundaryConditionTag::call(const XMLGen::EssentialBoundaryCondition& aBC) const

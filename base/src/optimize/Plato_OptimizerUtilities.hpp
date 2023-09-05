@@ -269,7 +269,7 @@ inline void getLowerBoundsInputData(const Plato::OptimizerEngineStageData & aInp
 
 /********************************************************************************/
 template<typename ScalarType>
-inline void getInitialGuessInputData(const std::string & aControlName,
+inline void getInitialGuessInputData(const std::string & /*aControlName*/,
                                      const Plato::OptimizerEngineStageData & aInputData,
                                      Plato::Interface* aInterface,
                                      std::vector<ScalarType> & aOutput)

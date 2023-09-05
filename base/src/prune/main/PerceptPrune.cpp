@@ -59,7 +59,7 @@ PerceptPrune::~PerceptPrune()
 {
 }
 
-bool PerceptPrune::import(int argc, char **argv,
+bool PerceptPrune::import(int /*argc*/, char ** /*argv*/,
                           std::string fieldName,
                           std::string outputFieldsString,
                           double minEdgeLength,

@@ -69,8 +69,8 @@ class ElementIntegration{
     virtual ~ElementIntegration();
     Intrepid::FieldContainer<Real>& getCubaturePoints() { return *cubPoints; }
     Intrepid::FieldContainer<Real>& getCubatureWeights() { return *cubWeights; }
-    virtual void getCubatureWeights(Intrepid::FieldContainer<double>& cubWeights, 
-                                    const Intrepid::FieldContainer<double>& nodes){}
+    virtual void getCubatureWeights(Intrepid::FieldContainer<double>& /*cubWeights*/, 
+                                    const Intrepid::FieldContainer<double>& /*nodes*/){}
     bool cubatureIsUniform(){ return uniformCubature; }
     int getNumIntPoints(){ return cubPoints->dimension(0); }
   protected:

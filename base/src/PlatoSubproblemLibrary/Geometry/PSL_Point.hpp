@@ -44,8 +44,6 @@ public:
 
     Point operator -(const Point& other) const;
 
-    Point& operator =(const Point& other);
-
 private:
     size_t m_index;
     std::vector<double> m_data;

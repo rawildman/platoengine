@@ -1459,7 +1459,7 @@ TEST(PlatoTestXMLGenerator, parseBlocks)
     EXPECT_EQ(tester.getBlockMaterialID(0), "1");
     auto tBoundingBox = tester.getBoundingBox(0);
     std::vector<double> tGoldBoundingBox = {-1, -2, -3, 1, 2, 3};
-    for (int iIndex = 0; iIndex < tBoundingBox.size(); iIndex++)
+    for (std::size_t iIndex = 0; iIndex < tBoundingBox.size(); iIndex++)
         EXPECT_EQ(tBoundingBox[iIndex], tGoldBoundingBox[iIndex]);
 }
 

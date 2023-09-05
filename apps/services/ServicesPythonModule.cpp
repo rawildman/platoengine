@@ -40,6 +40,16 @@
 //@HEADER
 */
 
+#pragma GCC diagnostic push
+// gcc warns on missing field initializers for a lot of the python structs used here.
+// Some of them have internal use only fields and so we don't need to initialize them.
+// https://docs.python.org/3/c-api/typeobj.html
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+// There are a few warnings for casts to functions with different signatures, but the
+// python documentation explicitly says to do this:
+// https://docs.python.org/3/c-api/structures.html#c.PyMethodDef.ml_meth
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
@@ -131,7 +141,7 @@ struct Services {
 int Services::m_numInstances=0;
 
 static PyObject *
-Services_initialize(Services* self)
+Services_initialize(Services* self, PyObject* /*args*/)
 {
     self->m_MPMD_App->initialize();
 
@@ -144,7 +154,7 @@ Services_initialize(Services* self)
 }
 
 static PyObject *
-Services_importData(Services *self, PyObject *args, PyObject *kwds)
+Services_importData(Services *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -187,7 +197,7 @@ Services_importData(Services *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-Services_compute(Services *self, PyObject *args, PyObject *kwds)
+Services_compute(Services *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -206,7 +216,7 @@ Services_compute(Services *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-Services_exportData(Services *self, PyObject *args, PyObject *kwds)
+Services_exportData(Services *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -251,17 +261,22 @@ Services_exportData(Services *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-Services_finalize(Services* self)
+Services_finalize(Services* self, PyObject* /*args*/)
 {
     self->m_MPMD_App->finalize();
     return Py_BuildValue("i", 1);
 }
 
 static PyModuleDef Plato_module = {
-    PyModuleDef_HEAD_INIT,
-    .m_name = "Plato Services",
-    .m_doc = "Plato services module",
-    .m_size = -1,
+    /*.m_base =*/ PyModuleDef_HEAD_INIT,
+    /*.m_name =*/ "Plato Services",
+    /*.m_doc =*/ "Plato services module",
+    /*.m_size*/ -1,
+    /*m_methods = */ NULL,
+    /*m_slots = */ NULL,
+    /*m_traverse = */ NULL,
+    /*m_clear = */ NULL,
+    /*m_free = */ NULL
 };
 
 static void
@@ -283,7 +298,7 @@ Services_dealloc(Services* self)
 }
 
 static PyObject *
-Services_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+Services_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     Services *self;
 
@@ -294,7 +309,7 @@ Services_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 
 static int
-Services_init(Services *self, PyObject *args, PyObject *kwds)
+Services_init(Services *self, PyObject *args, PyObject * /*kwds*/)
 {
 
     // parse incoming arguments 
@@ -360,7 +375,7 @@ static PyMemberDef Services_members[] = {
 };
 
 static PyObject *
-Services_name(Services* self)
+Services_name(Services* /*self*/, PyObject* /*args*/)
 {
     PyObject *result = Py_BuildValue("s", "PlatoServices");
 
@@ -483,3 +498,4 @@ PyObject* list_from_double_vector(std::vector<double> inVector)
 }
 
 
+#pragma GCC diagnostic pop

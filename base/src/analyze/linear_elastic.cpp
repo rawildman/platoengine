@@ -112,7 +112,7 @@ IsotropicElastic2D::IsotropicElastic2D(pugi::xml_node& node) : IsotropicElastic(
 
 
 /*****************************************************************************/
-bool IsotropicElastic2D::SetUp(DataContainer* dc, Tensor& R)
+bool IsotropicElastic2D::SetUp(DataContainer* /*dc*/, Tensor& /*R*/)
 /*****************************************************************************/
 { return true; }
 
@@ -161,7 +161,7 @@ IsotropicElastic2D::~IsotropicElastic2D() { }
 /*!  This function initializes the local data members.  It also initializes 
     the material state.  If the initial condition is given as a strain, then
     update the stress.  */
-bool IsotropicElastic3D::Initialize(int dataIndex, DataContainer* dc)
+bool IsotropicElastic3D::Initialize(int /*dataIndex*/, DataContainer* /*dc*/)
 /*****************************************************************************/
 { return true; }
 
@@ -169,13 +169,13 @@ bool IsotropicElastic3D::Initialize(int dataIndex, DataContainer* dc)
 /*!  This function initializes the local data members.  It also initializes 
     the material state.  If the initial condition is given as a strain, then
     update the stress.  */
-bool IsotropicElastic2D::Initialize(int dataIndex, DataContainer* dc)
+bool IsotropicElastic2D::Initialize(int /*dataIndex*/, DataContainer* /*dc*/)
 /*****************************************************************************/
 { return true; }
 
 /*****************************************************************************/
-bool IsotropicElastic2D::UpdateMaterialState( int dataIndex,
-                                            DataContainer* dc )
+bool IsotropicElastic2D::UpdateMaterialState( int /*dataIndex*/,
+                                            DataContainer* /*dc*/ )
 /*****************************************************************************/
 { return true; }
 
@@ -209,7 +209,7 @@ bool IsotropicElastic3D::UpdateMaterialState( int dataIndex,
 
 
 /*****************************************************************************/
-bool IsotropicElastic3D::Tangent(int dataIndex, DataContainer* dc, 
+bool IsotropicElastic3D::Tangent(int /*dataIndex*/, DataContainer* /*dc*/, 
                                  Intrepid::FieldContainer<double>*& s)
 /*****************************************************************************/
 {

@@ -138,8 +138,8 @@ IVEMeshAPISTK::IVEMeshAPISTK(stk::ParallelMachine* comm,
   initialize();
 
   mComm = comm;
-  mMetaData = std::shared_ptr<stk::mesh::MetaData>(meta_data,[](auto ptrWeWontDelete){});
-  mBulkData = std::shared_ptr<stk::mesh::BulkData>(bulk_data,[](auto ptrWeWontDelete){});
+  mMetaData = std::shared_ptr<stk::mesh::MetaData>(meta_data,[](auto /*ptrWeWontDelete*/){});
+  mBulkData = std::shared_ptr<stk::mesh::BulkData>(bulk_data,[](auto /*ptrWeWontDelete*/){});
   mCoordsField = mMetaData->get_field<double>(stk::topology::NODE_RANK, "coordinates");
 
   if(!mCoordsField)
@@ -389,7 +389,7 @@ void IVEMeshAPISTK::calculate_average_edge_length_and_bbox(const std::vector<IVE
 }
 
 IVEHandle IVEMeshAPISTK::new_tri(IVEHandle n1, IVEHandle n2, IVEHandle n3, bool is_fixed,
-                                 IVEHandle source_elem)
+                                 IVEHandle /*source_elem*/)
 {
  // stk::mesh::Entity stk_source_elem = get_stk_entity(source_elem);
  // IVEHandle source_global_id = mBulkData->identifier(stk_source_elem);
@@ -777,22 +777,12 @@ stk::mesh::EntityId IVEMeshAPISTK::get_next_entity_id(stk::topology::rank_t rank
   return 0;
 }
 
-void IVEMeshAPISTK::store_tri_to_tet_map_entry(const IVEHandle &tri, const IVEHandle &tet)
+void IVEMeshAPISTK::store_tri_to_tet_map_entry(const IVEHandle &/*tri*/, const IVEHandle &/*tet*/)
 {
-/*
-  CubitTri *ctri = CubitTri::find(tri);
-  CubitTet *ctet = CubitTet::find(tet);
-  IsoSurfaceTool::tri_to_tet_map[ctri] = ctet;
-*/
 }
 
-void IVEMeshAPISTK::store_tet_to_tri_map_entry(const IVEHandle &tet, const IVEHandle &tri)
+void IVEMeshAPISTK::store_tet_to_tri_map_entry(const IVEHandle &/*tet*/, const IVEHandle &/*tri*/)
 {
-/*
-  CubitTri *ctri = CubitTri::find(tri);
-  CubitTet *ctet = CubitTet::find(tet);
-  IsoSurfaceTool::tet_to_tri_map[ctet].push_back(ctri);
-*/
 }
 
 bool IVEMeshAPISTK::read_exodus_mesh( std::string &meshfile, std::string &fieldname,

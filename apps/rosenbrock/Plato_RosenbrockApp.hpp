@@ -155,7 +155,7 @@ public:
         }
     }
     /****************************************************************************************/
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
+    void exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/)
     /****************************************************************************************/
     {
         /************************************************************************************
@@ -220,7 +220,7 @@ public:
     }
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         // Don't serialize anything, since this class is only default constructed, and
         // otherwise can't be modified.

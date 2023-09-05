@@ -74,7 +74,7 @@ RocketDesignApp::RocketDesignApp() :
 /******************************************************************************//**
  * @brief Constructor
 **********************************************************************************/
-RocketDesignApp::RocketDesignApp(int aArgc, char **aArgv) :
+RocketDesignApp::RocketDesignApp(int /*aArgc*/, char ** /*aArgv*/) :
         mNumDesigVariables(2),
         mObjective(),
         mDefinedOperations(),
@@ -231,9 +231,9 @@ void RocketDesignApp::importData(const std::string & aArgumentName, const Plato:
  *                         TENSOR_FIELD, ELEMENT_FIELD, SCALAR_PARAMETER)
  * @param [out] aMyOwnedGlobalIDs my processor's global IDs
 **********************************************************************************/
-void RocketDesignApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
+void RocketDesignApp::exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/)
 {
-    // THIS IS NOT A DISTRIBUTED MEMORY EXAMPLE; HENCE, THE DISTRIBUTED MEMORY GRAPH IS NOT NEEDEDS
+    // THIS IS NOT A DISTRIBUTED MEMORY EXAMPLE; HENCE, THE DISTRIBUTED MEMORY GRAPH IS NOT NEEDED
     return;
 }
 

@@ -82,14 +82,14 @@ std::vector<double> MeshMonolithic::get_node_location(size_t node_index) const
     return m_node_locations[node_index];
 }
 
-size_t MeshMonolithic::get_index_helper(size_t x_index, size_t y_index, size_t z_index, size_t x_dimen, size_t y_dimen, size_t z_dimen) const
+size_t MeshMonolithic::get_index_helper(size_t x_index, size_t y_index, size_t z_index, size_t /*x_dimen*/, size_t y_dimen, size_t z_dimen) const
 {
     return x_index*(y_dimen*z_dimen)+y_index*(z_dimen)+z_index;
 }
 
 void MeshMonolithic::set_node_index_to_adjacent_elements_helper(size_t x_index, size_t y_index, size_t z_index,
                                                                 size_t x_dimen, size_t y_dimen, size_t z_dimen,
-                                                                double x_spacing, double y_spacing, double z_spacing)
+                                                                double /*x_spacing*/, double /*y_spacing*/, double /*z_spacing*/)
 {
     const size_t node_index = get_index_helper(x_index, y_index, z_index, x_dimen, y_dimen, z_dimen);
 
@@ -152,7 +152,7 @@ void MeshMonolithic::set_node_index_to_adjacent_elements_helper(size_t x_index, 
 
 void MeshMonolithic::set_element_index_to_adjacent_nodes_helper(size_t x_index, size_t y_index, size_t z_index,
                                                                 size_t x_dimen, size_t y_dimen, size_t z_dimen,
-                                                                double x_spacing, double y_spacing, double z_spacing)
+                                                                double /*x_spacing*/, double /*y_spacing*/, double /*z_spacing*/)
 {
     // if not on outside last, consider element
     if((x_index + 1 < x_dimen) && (y_index + 1 < y_dimen) && (z_index + 1 < z_dimen))

@@ -113,28 +113,6 @@ void Vector::subtract(const Vector& aInputVector)
     }
 }
 
-// Vector& Vector::operator =(const Vector& aInputVector)
-// {
-//     // add data
-//     for(size_t i = 0u; i < 3; i++)
-//     {
-//         this->set(i,aInputVector(i));
-//     }
-
-//     return *this;
-// }
-
-Vector& Vector::operator =(const Vector& aInputVector)
-{
-    // add data
-    for(size_t i = 0u; i < 3; i++)
-    {
-        this->set(i,aInputVector(i));
-    }
-
-    return *this;
-}
-
 bool Vector::operator ==(const Vector& aVec) const
 {
     if(aVec(0) == (*this)(0) && aVec(1) == (*this)(1) && aVec(2) == (*this)(2))

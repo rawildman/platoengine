@@ -541,7 +541,7 @@ void SolidStatics::computeExternalForces( DistributedVector& forcingVector,
 }
 /******************************************************************************/
 void SolidStatics::computeInternalForces( DistributedVector& forcingVector,
-                                          Real time )
+                                          Real /*time*/ )
 /******************************************************************************/
 {
 
@@ -716,7 +716,7 @@ void SolidStatics::lagrangianUpdate()
 }
 
 /******************************************************************************/
-void SolidStatics::updateMaterialState( Real time )
+void SolidStatics::updateMaterialState( Real /*time*/ )
 /******************************************************************************/
 {
 
@@ -841,7 +841,7 @@ void SolidStatics::updateMaterialState( Real time )
 
 void SolidStatics::updateDisplacement( DistributedVector& x,
                                        DistributedVector& B,
-                                       DistributedCrsMatrix& A, Real time )
+                                       DistributedCrsMatrix& A, Real /*time*/ )
 {
 
   // create problem and solver

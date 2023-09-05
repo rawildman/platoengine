@@ -83,8 +83,8 @@ public:
   bool Initialize(int, DataContainer*);
   bool UpdateMaterialState(int dataIndex,
                            DataContainer* dc);
-  bool Tangent(int dataIndex, DataContainer* dc,
-                  Intrepid::FieldContainer<double>*& C){return false;}
+  bool Tangent(int /*dataIndex*/, DataContainer* /*dc*/,
+                  Intrepid::FieldContainer<double>*& /*C*/){return false;}
 };
 
 class IsotropicElastic3D : public IsotropicElastic

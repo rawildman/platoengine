@@ -116,7 +116,7 @@ namespace XMLGen
     /******************************************************************************/
 
     /******************************************************************************/
-    void append_compute_objective_gradient_operation_for_topology_levelset_problem(const XMLGen::InputData &aMetaData,
+    void append_compute_objective_gradient_operation_for_topology_levelset_problem(const XMLGen::InputData &/*aMetaData*/,
                                                                                    pugi::xml_document &aDocument)
     {
 

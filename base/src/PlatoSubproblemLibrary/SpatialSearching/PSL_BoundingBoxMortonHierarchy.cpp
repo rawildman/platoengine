@@ -220,7 +220,7 @@ void BoundingBoxMortonHierarchy::util_advanced_indexes_because_of_two_nodes(cons
 }
 
 // assuming is_two_here is array of bool's of at least size 2^n
-void BoundingBoxMortonHierarchy::util_is_two_nodes_here(const int n,
+void BoundingBoxMortonHierarchy::util_is_two_nodes_here(const int /*n*/,
                                                         const int m,
                                                         const std::vector<int>& place_two_nodes,
                                                         std::vector<bool>& is_two_nodes_here) const

@@ -65,7 +65,7 @@ CopyValue::CopyValue(const std::string& aInputName,
 {
 }
 
-CopyValue::CopyValue(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+CopyValue::CopyValue(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp),
         mInputName("InputValue"),
         mOutputName("OutputValue")

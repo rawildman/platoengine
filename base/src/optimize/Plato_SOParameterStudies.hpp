@@ -161,12 +161,12 @@ public:
     }
 
     void outputSingleVariableData(Plato::Criterion<ScalarType, OrdinalType> & aObjective,
-                                       Plato::Criterion<ScalarType, OrdinalType> & aConstraint,
-                              Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                              std::vector<int> &aVariableIndices,
-                              std::vector<double> &aVariableRangeBegin,
-                              std::vector<double> &aVariableRangeEnd,
-                              std::vector<double> &aVariableStep)
+                                  Plato::Criterion<ScalarType, OrdinalType> & /*aConstraint*/,
+                                  Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+                                  std::vector<int> &aVariableIndices,
+                                  std::vector<double> &aVariableRangeBegin,
+                                  std::vector<double> &aVariableRangeEnd,
+                                  std::vector<double> &aVariableStep)
     {
         double tStart = aVariableRangeBegin[0];
         double tEnd = aVariableRangeEnd[0];
@@ -186,12 +186,12 @@ public:
     }
 
     void outputDoubleVariableData(Plato::Criterion<ScalarType, OrdinalType> & aObjective,
-                                  Plato::Criterion<ScalarType, OrdinalType> & aConstraint,
-                              Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                              std::vector<int> &aVariableIndices,
-                              std::vector<double> &aVariableRangeBegin,
-                              std::vector<double> &aVariableRangeEnd,
-                              std::vector<double> &aVariableStep)
+                                  Plato::Criterion<ScalarType, OrdinalType> & /*aConstraint*/,
+                                  Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+                                  std::vector<int> &aVariableIndices,
+                                  std::vector<double> &aVariableRangeBegin,
+                                  std::vector<double> &aVariableRangeEnd,
+                                  std::vector<double> &aVariableStep)
     {
         double tOuterStart = aVariableRangeBegin[0];
         double tInnerStart = aVariableRangeBegin[1];

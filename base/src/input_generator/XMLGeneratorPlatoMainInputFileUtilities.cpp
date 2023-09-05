@@ -79,7 +79,7 @@ void append_block_metadata_to_mesh_node
 }
 
 void append_output_metadata_to_plato_main_input_deck
-(const XMLGen::InputData &aInputData,
+(const XMLGen::InputData &/*aInputData*/,
  pugi::xml_node &aDocument)
 {
     auto tOutput = aDocument.append_child("output");
