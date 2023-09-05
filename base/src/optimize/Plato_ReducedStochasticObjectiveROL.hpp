@@ -68,7 +68,7 @@ ReducedStochasticObjectiveROL<ScalarType>::ReducedStochasticObjectiveROL(
 
 template<typename ScalarType>
 ScalarType ReducedStochasticObjectiveROL<ScalarType>::value(
-    const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/)
 {
     const Plato::DistributedVectorROL<ScalarType> & tControl =
           dynamic_cast<const Plato::DistributedVectorROL<ScalarType>&>(aControl);
@@ -77,7 +77,7 @@ ScalarType ReducedStochasticObjectiveROL<ScalarType>::value(
 
 template<typename ScalarType>
 void ReducedStochasticObjectiveROL<ScalarType>::gradient(
-    ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance)
+    ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/)
 {
     const Plato::DistributedVectorROL<ScalarType> & tControl =
           dynamic_cast<const Plato::DistributedVectorROL<ScalarType>&>(aControl);
