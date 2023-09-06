@@ -132,13 +132,13 @@ bool DakotaDataMap::isCriterionTag(const std::vector<std::string> &aTokens) cons
     return tReturn;
 }
 
-void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aTokens, const std::string &aTag) const
+void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aTokens, const std::string & aTag) const
 {
     char* p;
     std::strtol(aTokens[2].c_str(), &p, 10);
     const bool tIsInteger = *p == 0;
     if (!tIsInteger)
-        throw std::runtime_error(ERRMSG("Expected integer value after criterion, but got " + aTokens[2]));
+        throw std::runtime_error(ERRMSG("In stage tag \"" + aTag + "\" expected integer value after criterion, but got " + aTokens[2]));
 }
 
 void DakotaDataMap::parseStageInputs(Plato::InputData &aStageNode)

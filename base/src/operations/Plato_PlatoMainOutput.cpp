@@ -177,7 +177,7 @@ void PlatoMainOutput::buildIterationNumberString(const int &aCurIteration,
     aString += tCurIterationString;
 }
 
-void PlatoMainOutput::extractIsoSurface(int aIteration)
+void PlatoMainOutput::extractIsoSurface([[maybe_unused]] int aIteration)
 {
 #ifdef ENABLE_ISO
     std::string output_filename = "";
