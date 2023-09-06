@@ -68,19 +68,19 @@ DakotaAppInterface::DakotaAppInterface
 {
 }
 
-int DakotaAppInterface::derived_map_if(const Dakota::String &if_name)
+int DakotaAppInterface::derived_map_if(const Dakota::String &/*if_name*/)
 {
     THROWERR(std::string("derived_map_if is not supported with Plato Dakota Driver, Plato should always use wait_local_evaluations"))
     return 0; /* can be used the same way the updateProblem in Plato is used. */
 }
 
-int DakotaAppInterface::derived_map_ac(const Dakota::String &aAnalysisDriverName)
+int DakotaAppInterface::derived_map_ac(const Dakota::String &/*aAnalysisDriverName*/)
 {
     THROWERR(std::string("derived_map_ac is not supported with Plato Dakota Driver, Plato should always use wait_local_evaluations"))
     return 0;
 }
 
-int DakotaAppInterface::derived_map_of(const Dakota::String &of_name)
+int DakotaAppInterface::derived_map_of(const Dakota::String &/*of_name*/)
 {
     THROWERR(std::string("derived_map_of is not supported with Plato Dakota Driver, Plato should always use wait_local_evaluations"))
     return 0; /* can be used to call output functions in other apps. the function is called once per iteration */
@@ -93,12 +93,12 @@ void DakotaAppInterface::wait_local_evaluations(Dakota::PRPQueue &aParamResponse
     this->setDakotaOutputData(aParamResponsePairQueue);
 }
 
-void DakotaAppInterface::derived_map_asynch(const Dakota::ParamResponsePair& pair)
+void DakotaAppInterface::derived_map_asynch(const Dakota::ParamResponsePair& /*pair*/)
 {
   // virtual function overwritten to enable call to wait_local_evaluations
 }
 
-void DakotaAppInterface::set_communicators_checks(int max_eval_concurrency)
+void DakotaAppInterface::set_communicators_checks(int /*max_eval_concurrency*/)
 {
   // virtual function overwritten to enable call to wait_local_evaluations
 }
