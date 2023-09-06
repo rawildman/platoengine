@@ -75,13 +75,13 @@ public:
     /******************************************************************************//**
      * @brief Compute statistics
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Get input and output arguments associated with the local operation
      * @param [in/out] aLocalArgs local input and output arguments
     **********************************************************************************/
-    void getArguments(std::vector<LocalArg>& aLocalArgs);
+    void getArguments(std::vector<LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Return name used by the user to identify the function.

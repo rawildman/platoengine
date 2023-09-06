@@ -15,11 +15,11 @@ class Interface_ParallelVector : public AbstractInterface::ParallelVector
 {
 public:
     Interface_ParallelVector(std::vector<double> data = std::vector<double>(0));
-    virtual ~Interface_ParallelVector();
+    ~Interface_ParallelVector() override;
 
-    virtual size_t get_length();
-    virtual double get_value(size_t index);
-    virtual void set_value(size_t index, double value);
+    size_t get_length() override;
+    double get_value(size_t index) override;
+    void set_value(size_t index, double value) override;
 
     std::vector<double> m_data;
 

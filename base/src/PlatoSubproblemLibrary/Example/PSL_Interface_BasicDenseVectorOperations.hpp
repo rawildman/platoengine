@@ -15,11 +15,11 @@ public:
     Interface_BasicDenseVectorOperations();
     virtual ~Interface_BasicDenseVectorOperations();
 
-    virtual double dot(const std::vector<double>& x, const std::vector<double>& y);
-    virtual void axpy(double alpha, const std::vector<double>& x, std::vector<double>& y);
-    virtual void scale(double alpha, std::vector<double>& x);
-    virtual void multiply(const std::vector<double>& x, const std::vector<double>& y, std::vector<double>& z);
-    virtual void multiply(const std::vector<double>& x, std::vector<double>& y);
+    double dot(const std::vector<double>& x, const std::vector<double>& y) override;
+    void axpy(double alpha, const std::vector<double>& x, std::vector<double>& y) override;
+    void scale(double alpha, std::vector<double>& x) override;
+    void multiply(const std::vector<double>& x, const std::vector<double>& y, std::vector<double>& z) override;
+    void multiply(const std::vector<double>& x, std::vector<double>& y) override;
 
 protected:
 

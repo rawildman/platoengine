@@ -157,7 +157,7 @@ class DefaultMaterialContainer : public MaterialContainer
 {
   public:
     DefaultMaterialContainer(pugi::xml_node& xml_data);
-    void initializeMaterialTopology();
+    void initializeMaterialTopology() override;
   private:
     std::vector<int> blockToMaterialMap;
 };

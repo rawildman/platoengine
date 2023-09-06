@@ -91,11 +91,13 @@ find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_o
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
+set(GCC_ADDITIONAL_WARNINGS "-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wsuggest-override -pedantic")
+
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
 # set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -fopenmp")
 # set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -fopenmp")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -Werror")
-set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -Werror -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic")
+set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -Werror ${GCC_ADDITIONAL_WARNINGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 

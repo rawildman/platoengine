@@ -95,7 +95,7 @@ public:
     /******************************************************************************//**
      * @brief Safely cache application data after a trial control has been accepted.
     **********************************************************************************/
-    void cacheData()
+    void cacheData() override
     {
         return;
     }
@@ -104,7 +104,7 @@ public:
      * @brief Evaluate objective function.
      * @param [in] aControl optimization variables
     **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
 
@@ -121,7 +121,7 @@ public:
      * @param [in/out] aOutput gradient
     **********************************************************************************/
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
         assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
@@ -141,7 +141,7 @@ public:
     **********************************************************************************/
     void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
         assert(aVector.getNumVectors() > static_cast<OrdinalType>(0));

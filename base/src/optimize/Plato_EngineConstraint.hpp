@@ -141,7 +141,7 @@ public:
     /******************************************************************************//**
      * @brief Directive to third-party applications to cache app-based data
     **********************************************************************************/
-    void cacheData()
+    void cacheData() override
     {
         return;
     }
@@ -150,7 +150,7 @@ public:
      * @brief Evaluate one or multiple third-party application constraints
      * @param [in] aControl const reference to 2D container of optimization variables
     **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         // ********* Set view to each control vector entry ********* //
         const OrdinalType tControlVectorIndex = 0;
@@ -193,7 +193,7 @@ public:
      *                     optimization variables
     **********************************************************************************/
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         // ********* Set view to each control vector entry ********* //
         const OrdinalType tControlVectorIndex = 0;
@@ -232,7 +232,7 @@ public:
     **********************************************************************************/
     void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         // ********* Set view to each control and descent direction vector entry ********* //
         const OrdinalType tControlVectorIndex = 0;

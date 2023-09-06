@@ -67,11 +67,8 @@ public:
             m_step()
     {
     }
-    virtual ~simpleAccurateGradientCheck()
-    {
-    }
 
-    virtual void initialize()
+    void initialize() override
     {
         // set weights
         m_weights = { 1., 3., -4.2, .1};
@@ -85,7 +82,7 @@ public:
         m_step.resize(num_components);
         uniform_rand_double(-1e-3, 1e-3, m_step);
     }
-    virtual double gradient_dot_step()
+    double gradient_dot_step() override
     {
         // compute gradient
         std::vector<double> gradient;
@@ -94,7 +91,7 @@ public:
         // return dot
         return m_operations.dot(m_step, gradient);
     }
-    virtual double objective_of_minus_step()
+    double objective_of_minus_step() override
     {
         // compute shift
         std::vector<double> center_minus_step = m_center;
@@ -104,7 +101,7 @@ public:
         std::vector<double> gradient;
         return evaluate(center_minus_step, gradient);
     }
-    virtual double objective_of_plus_step()
+    double objective_of_plus_step() override
     {
         // compute shift
         std::vector<double> center_plus_step = m_center;

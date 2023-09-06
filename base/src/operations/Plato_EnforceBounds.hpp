@@ -78,13 +78,13 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - enforce lower and upper bounds
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Apply the bounds to the given vector of data.

@@ -85,13 +85,13 @@ public:
     /******************************************************************************//**
      * @brief Return true if the last driver
     **********************************************************************************/
-    virtual bool lastDriver() const { return lastOptimizer(); }
+    bool lastDriver() const override { return lastOptimizer(); }
 
     /******************************************************************************//**
      * @brief Return the driver type
      * \return driver type
     **********************************************************************************/
-    virtual Plato::driver_t driver() const
+    Plato::driver_t driver() const override
     {
         return (Plato::driver_t::PLATO_OPTIMIZER_DRIVER);
     }

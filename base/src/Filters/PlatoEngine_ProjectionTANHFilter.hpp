@@ -50,12 +50,10 @@ namespace Plato
 class ProjectionTANHFilter : public AbstractProjectionFilter
 {
 public:
-    ProjectionTANHFilter(){}
-    virtual ~ProjectionTANHFilter(){}
 
 private:
 
-    virtual void allocateFilter();
+    void allocateFilter() override;
 };
 
 }

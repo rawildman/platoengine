@@ -15,7 +15,7 @@ public:
     void computeCriterionValue() override = 0; 
     void computeCriterionGradient() override = 0;
     void computeCriterionHessianTimesVector() override = 0;
-    virtual std::vector<OperationType> supportedOperationTypes() const
+    std::vector<OperationType> supportedOperationTypes() const override
     { 
         return {OperationType::kCriterionValue, OperationType::kCriterionGradient, OperationType::kCriterionHessian};
     }

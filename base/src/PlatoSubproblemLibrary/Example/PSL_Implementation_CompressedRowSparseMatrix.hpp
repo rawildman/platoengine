@@ -26,22 +26,22 @@ public:
                               const std::vector<double>& data);
     virtual ~CompressedRowSparseMatrix();
 
-    virtual size_t getNumRows();
-    virtual size_t getNumColumns();
+    size_t getNumRows() override;
+    size_t getNumColumns() override;
 
-    virtual void matVec(const std::vector<double>& input, std::vector<double>& output, bool transpose = false);
-    virtual void matVecToReduced(const std::vector<double>& input, std::vector<double>& output, bool transpose = false);
+    void matVec(const std::vector<double>& input, std::vector<double>& output, bool transpose = false) override;
+    void matVecToReduced(const std::vector<double>& input, std::vector<double>& output, bool transpose = false) override;
 
-    virtual void rowNormalize(const std::vector<double>& rowNormalizationFactors);
-    virtual void columnNormalize(const std::vector<double>& columnNormalizationFactors);
+    void rowNormalize(const std::vector<double>& rowNormalizationFactors) override;
+    void columnNormalize(const std::vector<double>& columnNormalizationFactors) override;
 
-    virtual void getNonZeroSortedRows(std::vector<size_t>& nonZeroRows);
-    virtual size_t getNumNonZeroSortedRows();
-    virtual void getNonZeroSortedColumns(std::vector<size_t>& nonZeroColumns);
-    virtual size_t getNumNonZeroSortedColumns();
+    void getNonZeroSortedRows(std::vector<size_t>& nonZeroRows) override;
+    size_t getNumNonZeroSortedRows() override;
+    void getNonZeroSortedColumns(std::vector<size_t>& nonZeroColumns) override;
+    size_t getNumNonZeroSortedColumns() override;
 
-    virtual void getRow(size_t row, std::vector<double>& data, std::vector<size_t>& columns);
-    virtual void setRow(size_t row, const std::vector<double>& data);
+    void getRow(size_t row, std::vector<double>& data, std::vector<size_t>& columns) override;
+    void setRow(size_t row, const std::vector<double>& data) override;
 
     std::vector<size_t> m_matrix_row_bounds;
     std::vector<size_t> m_matrix_columns;

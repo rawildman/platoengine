@@ -13,13 +13,12 @@ class BoundingBoxBruteForce : public AbstractInterface::OverlapSearcher
 {
 public:
     BoundingBoxBruteForce();
-    virtual ~BoundingBoxBruteForce();
 
     using AbstractInterface::OverlapSearcher::build;
     // build searcher
-    virtual void build(const std::vector<AxisAlignedBoundingBox>& answer_boxes);
+    void build(const std::vector<AxisAlignedBoundingBox>& answer_boxes) override;
     // find overlaps
-    virtual void get_overlaps(AxisAlignedBoundingBox* query_box, std::vector<size_t>& neighbors_buffer, size_t& num_neighbors);
+    void get_overlaps(AxisAlignedBoundingBox* query_box, std::vector<size_t>& neighbors_buffer, size_t& num_neighbors) override;
 
 protected:
 

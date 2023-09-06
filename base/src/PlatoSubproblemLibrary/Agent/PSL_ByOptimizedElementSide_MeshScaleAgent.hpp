@@ -70,11 +70,10 @@ class ByOptimizedElementSide_MeshScaleAgent : public Abstract_MeshScaleAgent
 public:
     ByOptimizedElementSide_MeshScaleAgent(AbstractAuthority* authority,
                                           AbstractInterface::PointCloud* points);
-    virtual ~ByOptimizedElementSide_MeshScaleAgent();
 
-    virtual double get_mesh_minimum_scale();
-    virtual double get_mesh_average_scale();
-    virtual double get_mesh_maximum_scale();
+    double get_mesh_minimum_scale() override;
+    double get_mesh_average_scale() override;
+    double get_mesh_maximum_scale() override;
 
 protected:
     void calculate_mesh_scales();

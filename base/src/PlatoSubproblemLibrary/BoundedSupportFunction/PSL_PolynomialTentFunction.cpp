@@ -60,10 +60,6 @@ PolynomialTentFunction::PolynomialTentFunction() :
 {
 }
 
-PolynomialTentFunction::~PolynomialTentFunction()
-{
-}
-
 void PolynomialTentFunction::build(double support, ParameterData* input_data)
 {
     m_radius = support;

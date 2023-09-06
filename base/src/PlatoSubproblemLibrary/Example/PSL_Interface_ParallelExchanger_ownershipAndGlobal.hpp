@@ -21,14 +21,14 @@ class Interface_ParallelExchanger_ownershipAndGlobal : public Interface_Parallel
 {
 public:
     Interface_ParallelExchanger_ownershipAndGlobal(AbstractAuthority* authority);
-    virtual ~Interface_ParallelExchanger_ownershipAndGlobal();
+    ~Interface_ParallelExchanger_ownershipAndGlobal() override;
 
     // put ownership
     void put_is_owned(const std::vector<bool>& is_owned);
 
 protected:
 
-    virtual void build_node_ownership(std::vector<int>& node_ownership);
+    void build_node_ownership(std::vector<int>& node_ownership) override;
 
     // received data
     std::vector<bool> m_is_owned;

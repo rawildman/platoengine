@@ -75,13 +75,13 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - set all design variables to the same initial value
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs) override;
 
     double getValue(int aIndex){return mValues[aIndex];}
     double getValueUpperBound(int aIndex){return mUpperBounds[aIndex];}

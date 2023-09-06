@@ -17,10 +17,10 @@ class Interface_Kernel_StructParameterDataBuilder : public AbstractInterface::Pa
 public:
 
     Interface_Kernel_StructParameterDataBuilder();
-    virtual ~Interface_Kernel_StructParameterDataBuilder();
+    ~Interface_Kernel_StructParameterDataBuilder() override;
 
     void set_data(example::Kernel_StructParameterData* data);
-    virtual ParameterData* build();
+    ParameterData* build() override;
 
 private:
 

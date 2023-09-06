@@ -154,7 +154,7 @@ public:
     /******************************************************************************//**
      * @brief Directive to third-party applications to cache app-based data
     **********************************************************************************/
-    void cacheData()
+    void cacheData() override
     {
         assert(mInterface != nullptr);
 
@@ -181,7 +181,7 @@ public:
      * @brief Enable third-party applications to perform continuation on app-based data
      * @param [in] aControl const reference to 2D container of optimization variables
     **********************************************************************************/
-    void updateProblem(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    void updateProblem(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         assert(mInterface != nullptr);
 
@@ -205,15 +205,15 @@ public:
 
      * Because of this circular dependency it is necessary to break
      * from the traditional template class definition where everything
-     * is defined as part of the class definition ina single header
+     * is defined as part of the class definition in a single header
      * file. Instead the EngineObjective::value method (which calls
-     * the OptimizerFactory) is defined SEPARTELY and AFTER the
+     * the OptimizerFactory) is defined SEPARATELY and AFTER the
      * OptimizerFactory class has been defined. As such, the
      * definition of EngineObjective::value is in a separate file,
      * Plato_EngineObjective.tcc and is included in
      * Plato_DriverFactory.hpp
     **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl);
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override;
 
     /******************************************************************************//**
      * @brief Compute the gradient of one or multiple third-party application objectives
@@ -222,7 +222,7 @@ public:
      *                     optimization variables
     **********************************************************************************/
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(mInterface != nullptr);
         // ********* Set view to each control vector entry ********* //
@@ -252,7 +252,7 @@ public:
     **********************************************************************************/
     void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(mInterface != nullptr);
         // ********* Set view to each control and descent direction vector entry ********* //

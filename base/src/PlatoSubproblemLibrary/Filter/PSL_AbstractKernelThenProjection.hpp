@@ -29,12 +29,12 @@ public:
                                  ParameterData* data,
                                  AbstractInterface::PointCloud* points,
                                  AbstractInterface::ParallelExchanger* exchanger);
-    virtual ~AbstractKernelThenProjection();
+    ~AbstractKernelThenProjection() override;
 
     // Filter operations
-    virtual void build();
-    virtual void advance_continuation();
-    virtual void additive_advance_continuation();
+    void build() override;
+    void advance_continuation() override;
+    void additive_advance_continuation() override;
 
 private:
 
@@ -51,8 +51,8 @@ private:
 
     void check_input_data();
 
-    virtual void internal_apply(AbstractInterface::ParallelVector* field);
-    virtual void internal_gradient(AbstractInterface::ParallelVector* const field, AbstractInterface::ParallelVector* gradient) const;
+    void internal_apply(AbstractInterface::ParallelVector* field) override;
+    void internal_gradient(AbstractInterface::ParallelVector* const field, AbstractInterface::ParallelVector* gradient) const override;
 
     virtual void projection_apply(const double& beta, AbstractInterface::ParallelVector* field) const = 0;
     virtual void projection_gradient(const double& beta, AbstractInterface::ParallelVector* const field, AbstractInterface::ParallelVector* gradient) const = 0;

@@ -16,10 +16,10 @@ class Interface_NeuralNetwork_StructParameterDataBuilder : public AbstractInterf
 public:
 
     Interface_NeuralNetwork_StructParameterDataBuilder();
-    virtual ~Interface_NeuralNetwork_StructParameterDataBuilder();
+    ~Interface_NeuralNetwork_StructParameterDataBuilder() override;
 
     void set_data(example::NeuralNetwork_StructParameterData* data);
-    virtual ParameterData* build();
+    ParameterData* build() override;
 
 private:
 

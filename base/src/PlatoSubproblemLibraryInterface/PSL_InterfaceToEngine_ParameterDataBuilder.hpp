@@ -15,9 +15,9 @@ class InterfaceToEngine_ParameterDataBuilder : public PlatoSubproblemLibrary::Ab
 {
 public:
     InterfaceToEngine_ParameterDataBuilder(InputData interface);
-    virtual ~InterfaceToEngine_ParameterDataBuilder();
+    ~InterfaceToEngine_ParameterDataBuilder() override;
 
-    virtual PlatoSubproblemLibrary::ParameterData* build();
+    PlatoSubproblemLibrary::ParameterData* build() override;
 
 private:
     Plato::InputData m_inputData;

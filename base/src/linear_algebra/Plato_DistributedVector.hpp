@@ -75,12 +75,9 @@ public:
             mData(std::vector<ScalarType>(aNumElements, aValue))
     {
     }
-    virtual ~DistributedVector()
-    {
-    }
 
     //! Scales a Vector by a ScalarType constant.
-    void scale(const ScalarType & aInput)
+    void scale(const ScalarType & aInput) override
     {
         OrdinalType tLength = this->size();
         for(OrdinalType tIndex = 0; tIndex < tLength; tIndex++)
@@ -89,7 +86,7 @@ public:
         }
     }
     //! Entry-Wise product of two vectors.
-    void entryWiseProduct(const Plato::Vector<ScalarType, OrdinalType> & aInput)
+    void entryWiseProduct(const Plato::Vector<ScalarType, OrdinalType> & aInput) override
     {
         OrdinalType tMyDataSize = mData.size();
         assert(aInput.size() == tMyDataSize);
@@ -100,7 +97,7 @@ public:
         }
     }
     //! Update vector values with scaled values of A, this = beta*this + alpha*A.
-    void update(const ScalarType & aAlpha, const Plato::Vector<ScalarType, OrdinalType> & aInputVector, const ScalarType & aBeta)
+    void update(const ScalarType & aAlpha, const Plato::Vector<ScalarType, OrdinalType> & aInputVector, const ScalarType & aBeta) override
     {
         OrdinalType tMyDataSize = mData.size();
         assert(aInputVector.size() == tMyDataSize);
@@ -110,7 +107,7 @@ public:
         }
     }
     //! Computes the absolute value of each element in the container.
-    void modulus()
+    void modulus() override
     {
         OrdinalType tLength = this->size();
         for(OrdinalType tIndex = 0; tIndex < tLength; tIndex++)
@@ -119,7 +116,7 @@ public:
         }
     }
     //! Returns the inner product of two vectors.
-    ScalarType dot(const Plato::Vector<ScalarType, OrdinalType> & aInputVector) const
+    ScalarType dot(const Plato::Vector<ScalarType, OrdinalType> & aInputVector) const override
     {
         assert(aInputVector.size() == static_cast<OrdinalType>(mData.size()));
 
@@ -135,18 +132,18 @@ public:
         return (tGlobalInnerProduct);
     }
     //! Assigns new contents to the Vector, replacing its current contents, and not modifying its size.
-    void fill(const ScalarType & aValue)
+    void fill(const ScalarType & aValue) override
     {
         std::fill(mData.begin(), mData.end(), aValue);
     }
     //! Returns the number of local elements in the Vector.
-    OrdinalType size() const
+    OrdinalType size() const override
     {
         OrdinalType tOutput = mData.size();
         return (tOutput);
     }
     //! Creates an object of type Plato::Vector
-    std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> create() const
+    std::shared_ptr<Plato::Vector<ScalarType, OrdinalType>> create() const override
     {
         const ScalarType tBaseValue = 0;
         const OrdinalType tNumElements = this->size();
@@ -155,26 +152,26 @@ public:
         return (tOutput);
     }
     //! Operator overloads the square bracket operator
-    ScalarType & operator [](const OrdinalType & aIndex)
+    ScalarType & operator [](const OrdinalType & aIndex) override
     {
         assert(aIndex < this->size());
 
         return (mData[aIndex]);
     }
     //! Operator overloads the square bracket operator
-    const ScalarType & operator [](const OrdinalType & aIndex) const
+    const ScalarType & operator [](const OrdinalType & aIndex) const override
     {
         assert(aIndex < this->size());
 
         return (mData[aIndex]);
     }
     //! Returns a direct pointer to the memory array used internally by the vector to store its owned elements.
-    ScalarType* data()
+    ScalarType* data() override
     {
         return (mData.data());
     }
     //! Returns a direct const pointer to the memory array used internally by the vector to store its owned elements.
-    const ScalarType* data() const
+    const ScalarType* data() const override
     {
         return (mData.data());
     }

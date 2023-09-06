@@ -17,10 +17,6 @@ BruteForceFixedRadiusNearestNeighbors::BruteForceFixedRadiusNearestNeighbors() :
 {
 }
 
-BruteForceFixedRadiusNearestNeighbors::~BruteForceFixedRadiusNearestNeighbors()
-{
-}
-
 // save answer points
 void BruteForceFixedRadiusNearestNeighbors::build(PlatoSubproblemLibrary::PointCloud* answer_points, double radius)
 {

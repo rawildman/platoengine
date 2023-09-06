@@ -68,10 +68,6 @@ ByNarrowClone_SymmetryPlaneAgent::ByNarrowClone_SymmetryPlaneAgent(AbstractAutho
 {
 }
 
-ByNarrowClone_SymmetryPlaneAgent::~ByNarrowClone_SymmetryPlaneAgent()
-{
-}
-
 PointCloud* ByNarrowClone_SymmetryPlaneAgent::build_kernel_points(double support_distance,
                                                                   double point_resolution_tolerance,
                                                                   ParameterData* input_data,

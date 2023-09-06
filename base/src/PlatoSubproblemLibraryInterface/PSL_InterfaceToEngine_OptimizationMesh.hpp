@@ -17,16 +17,16 @@ class InterfaceToEngine_OptimizationMesh : public PlatoSubproblemLibrary::Abstra
 {
 public:
     InterfaceToEngine_OptimizationMesh(DataMesh* mesh);
-    virtual ~InterfaceToEngine_OptimizationMesh();
+    ~InterfaceToEngine_OptimizationMesh() override;
 
-    virtual PlatoSubproblemLibrary::Point get_point(const size_t& index);
-    virtual size_t get_num_points();
+    PlatoSubproblemLibrary::Point get_point(const size_t& index) override;
+    size_t get_num_points() override;
 
-    virtual size_t get_num_blocks();
-    virtual size_t get_num_elements(size_t block_index);
-    virtual std::vector<size_t> get_nodes_from_element(size_t block_index, size_t element_index);
+    size_t get_num_blocks() override;
+    size_t get_num_elements(size_t block_index) override;
+    std::vector<size_t> get_nodes_from_element(size_t block_index, size_t element_index) override;
 
-    virtual bool is_block_optimizable(size_t block_index);
+    bool is_block_optimizable(size_t block_index) override;
 
 private:
     DataMesh* m_mesh;

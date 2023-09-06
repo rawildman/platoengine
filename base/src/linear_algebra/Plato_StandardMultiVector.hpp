@@ -133,7 +133,7 @@ public:
         mData.push_back(aInput->create());
     }
     //! Creates a copy of type MultiVector
-    std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>> create() const
+    std::shared_ptr<Plato::MultiVector<ScalarType, OrdinalType>> create() const override
     {
         const OrdinalType tVectorIndex = 0;
         const OrdinalType tNumVectors = this->getNumVectors();
@@ -143,13 +143,13 @@ public:
         return (tOutput);
     }
     //! Number of vectors
-    OrdinalType getNumVectors() const
+    OrdinalType getNumVectors() const override
     {
         OrdinalType tNumVectors = mData.size();
         return (tNumVectors);
     }
     //! Operator overloads the square bracket operator
-    virtual Plato::Vector<ScalarType, OrdinalType> & operator [](const OrdinalType & aVectorIndex)
+    Plato::Vector<ScalarType, OrdinalType> & operator [](const OrdinalType & aVectorIndex) override
     {
         assert(mData.empty() == false);
         assert(aVectorIndex < this->getNumVectors());
@@ -157,7 +157,7 @@ public:
         return (mData[aVectorIndex].operator *());
     }
     //! Operator overloads the square bracket operator
-    virtual const Plato::Vector<ScalarType, OrdinalType> & operator [](const OrdinalType & aVectorIndex) const
+    const Plato::Vector<ScalarType, OrdinalType> & operator [](const OrdinalType & aVectorIndex) const override
     {
         assert(mData.empty() == false);
         assert(mData[aVectorIndex].get() != nullptr);
@@ -166,7 +166,7 @@ public:
         return (mData[aVectorIndex].operator *());
     }
     //! Operator overloads the square bracket operator
-    virtual ScalarType & operator ()(const OrdinalType & aVectorIndex, const OrdinalType & aElementIndex)
+    ScalarType & operator ()(const OrdinalType & aVectorIndex, const OrdinalType & aElementIndex) override
     {
         assert(aVectorIndex < this->getNumVectors());
         assert(aElementIndex < mData[aVectorIndex]->size());
@@ -174,7 +174,7 @@ public:
         return (mData[aVectorIndex].operator *().operator [](aElementIndex));
     }
     //! Operator overloads the square bracket operator
-    virtual const ScalarType & operator ()(const OrdinalType & aVectorIndex, const OrdinalType & aElementIndex) const
+    const ScalarType & operator ()(const OrdinalType & aVectorIndex, const OrdinalType & aElementIndex) const override
     {
         assert(aVectorIndex < this->getNumVectors());
         assert(aElementIndex < mData[aVectorIndex]->size());

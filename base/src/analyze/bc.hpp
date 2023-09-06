@@ -40,9 +40,9 @@ template <typename Type>
 class ConstantValueBC : public BoundaryCondition<Type> {
   public:
     ConstantValueBC(pugi::xml_node& bc_spec);
-    virtual Type Value(Real time = 0.0);
+    Type Value(Real time = 0.0) override;
     void setValue(Type value){ constantValue = value; }
-    virtual void Print(std::ostream& fout) const {
+    void Print(std::ostream& fout) const override {
       fout << std::setw(30) << std::left << "  Constant value: "
            << std::setw(30) << std::right << constantValue << endl;
     }

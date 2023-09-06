@@ -122,7 +122,7 @@ class DataEntity : public AbstractData {
           initialState[i] = data[map[i]];
       }
 
-    virtual ~DataEntity() {
+    ~DataEntity() override {
         if( !varExternal ){
           for(int i=0; i<varNumStates; i++) 
             delete [] varPntr[i];
@@ -137,7 +137,7 @@ class DataEntity : public AbstractData {
         }
     }
 
-    void advanceState() {
+    void advanceState() override {
       if( varNumStates == 1 ) return;
       if( varNumStates == 2 ) {
         std::copy_n(varPntr[UPDATED], varLength, varPntr[CURRENT]);
@@ -155,10 +155,10 @@ class DataEntity : public AbstractData {
 
     using AbstractData::getData;
     using AbstractData::setData;
-    void getData( dataType*& data       , StateIndex state=CURRENT){ data = varPntr[state]; }
-    void getData( int i, dataType*& data, StateIndex state=CURRENT){ data = varPntr[state]+i; }
-    void getData( int i, dataType& data , StateIndex state=CURRENT){ data = varPntr[state][i]; }
-    void setData( int i, dataType data  , StateIndex state=CURRENT){ varPntr[state][i] = data; }
+    void getData( dataType*& data       , StateIndex state=CURRENT) override { data = varPntr[state]; }
+    void getData( int i, dataType*& data, StateIndex state=CURRENT) override { data = varPntr[state]+i; }
+    void getData( int i, dataType& data , StateIndex state=CURRENT) override { data = varPntr[state][i]; }
+    void setData( int i, dataType data  , StateIndex state=CURRENT) override { varPntr[state][i] = data; }
 
   private:
     void zeroset(){ varExternal = false; varPntr = NULL; varMap = NULL; varExtData = NULL; }
@@ -176,16 +176,16 @@ class ExternalVector : public AbstractData {
   public:
     ExternalVector( Real** data, string name, int numData,      DataCentering cntr, int numStates, bool plot );
     ExternalVector( Real** data, string name, vector<int>& map, DataCentering cntr, int numStates, bool plot );
-    virtual ~ExternalVector();
+    ~ExternalVector() override;
 
     using AbstractData::getData;
     using AbstractData::setData;
-    virtual void getData( Vector*& data       , StateIndex state=CURRENT);
-    virtual void getData( int i, Vector*& data, StateIndex state=CURRENT);
-    virtual void getData( int i, Vector& data , StateIndex state=CURRENT);
-    virtual void setData( int i, Vector data  , StateIndex state=CURRENT);
+    void getData( Vector*& data       , StateIndex state=CURRENT) override;
+    void getData( int i, Vector*& data, StateIndex state=CURRENT) override;
+    void getData( int i, Vector& data , StateIndex state=CURRENT) override;
+    void setData( int i, Vector data  , StateIndex state=CURRENT) override;
 
-    virtual void advanceState();
+    void advanceState() override;
 
   private:
     Real* varPntr[3];
@@ -196,16 +196,16 @@ class ExternalTensor : public AbstractData {
   public:
     ExternalTensor( Real** data, string name, int numData,      DataCentering cntr, int numStates, bool plot );
     ExternalTensor( Real** data, string name, vector<int>& map, DataCentering cntr, int numStates, bool plot );
-    virtual ~ExternalTensor();
+    ~ExternalTensor() override;
 
     using AbstractData::getData;
     using AbstractData::setData;
-    virtual void getData( Tensor*& data       , StateIndex state=CURRENT);
-    virtual void getData( int i, Tensor*& data, StateIndex state=CURRENT);
-    virtual void getData( int i, Tensor& data , StateIndex state=CURRENT);
-    virtual void setData( int i, Tensor data  , StateIndex state=CURRENT);
+    void getData( Tensor*& data       , StateIndex state=CURRENT) override;
+    void getData( int i, Tensor*& data, StateIndex state=CURRENT) override;
+    void getData( int i, Tensor& data , StateIndex state=CURRENT) override;
+    void setData( int i, Tensor data  , StateIndex state=CURRENT) override;
 
-    virtual void advanceState();
+    void advanceState() override;
 
   private:
     Real* varPntr[9];
@@ -216,16 +216,16 @@ class ExternalSymTensor : public AbstractData {
   public:
     ExternalSymTensor(Real** data, string name, int numData, DataCentering cntr, int numStates, bool plot);
     ExternalSymTensor(Real** data, string name, vector<int>& map, DataCentering cntr, int numStates, bool plot);
-    virtual ~ExternalSymTensor();
+    ~ExternalSymTensor() override;
 
     using AbstractData::getData;
     using AbstractData::setData;
-    virtual void getData(SymTensor*& data, StateIndex state = CURRENT);
-    virtual void getData(int i, SymTensor*& data, StateIndex state = CURRENT);
-    virtual void getData(int i, SymTensor& data, StateIndex state = CURRENT);
-    virtual void setData(int i, SymTensor data, StateIndex state = CURRENT);
+    void getData(SymTensor*& data, StateIndex state = CURRENT) override;
+    void getData(int i, SymTensor*& data, StateIndex state = CURRENT) override;
+    void getData(int i, SymTensor& data, StateIndex state = CURRENT) override;
+    void setData(int i, SymTensor data, StateIndex state = CURRENT) override;
 
-    virtual void advanceState();
+    void advanceState() override;
 
   private:
     Real* varPntr[6];

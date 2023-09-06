@@ -268,42 +268,42 @@ public:
   IVEMeshAPISTK(stk::ParallelMachine* comm);
 
   // Destructor
-  virtual ~IVEMeshAPISTK();
+  ~IVEMeshAPISTK() override;
 
   // functions from base class
-  virtual void transfer_output_fields(IVEHandle n1, IVEHandle n2, IVEHandle new_node,
-                   double mu, IVEMeshAPI *output_mesh_api);
-  virtual void copy_node_output_fields(IVEHandle n1, IVEHandle new_node, IVEMeshAPI *output_mesh_api);
-  virtual void copy_element_output_fields(IVEHandle e1, IVEHandle e2, IVEMeshAPI *output_mesh_api);
-  virtual IVEHandle new_node( IsoVector &coordinates );
-  virtual void get_fixed_block_nodes(std::vector<IVEHandle> &fixed_block_nodes);
-  virtual IVEHandle get_new_node_id();
-  virtual IVEHandle new_tri( IVEHandle n1, IVEHandle n2, IVEHandle n3, bool is_fixed, IVEHandle source_elem );
-  virtual int element_nodes(IVEHandle elem, IVEHandle nodes[8]) const;
-  virtual void hex_nodes(IVEHandle hex, IVEHandle nodes[8]) const;
-  virtual void tet_nodes(IVEHandle tet, IVEHandle nodes[4]) const;
-  virtual void hex_quad_nodes(IVEHandle hex, int index, IVEHandle nodes[4]) const;
-  virtual IVEHandle get_connected_hex(IVEHandle hex, IVEHandle n1, IVEHandle n2, IVEHandle n3, IVEHandle n4) const;
-  virtual IVEHandle get_connected_tet(IVEHandle tet, IVEHandle n1, IVEHandle n2, IVEHandle n3) const;
-  virtual IsoVector node_coordinates( IVEHandle node ) const;
-  virtual double get_nodal_iso_field_variable(IVEHandle node) const;
-  virtual void store_tri_to_tet_map_entry(const IVEHandle &tri, const IVEHandle &tet);
-  virtual void store_tet_to_tri_map_entry(const IVEHandle &tet, const IVEHandle &tri);
-  virtual void get_shared_boundary_nodes(std::set<IVEHandle> &shared_boundary_nodes);
-  virtual void get_attached_elements(const std::set<IVEHandle> &nodes,
-                                     std::vector<IVEHandle> &attached_elements);
-  virtual void batch_create_edge_boundary_nodes(std::vector<BoundaryNodeInfo> &boundary_info,
-                                          IVEMeshAPI *existing_mesh);
-  virtual void batch_create_duplicate_nodes(std::vector<DuplicateNodeInfo> &dup_node_infos, 
-                                            IVEMeshAPI *existing_mesh);
-  virtual void print_boundary_node_info(std::vector<BoundaryNodeInfo> &bni);
-  virtual void reserve_new_node_ids(uint64_t num_requested);
-  virtual void reserve_new_tri_ids(uint64_t num_requested);
-  virtual void calculate_average_edge_length_and_bbox(const std::vector<IVEHandle> &elem_list,
-          double &minx, double &miny, double &minz, double &maxx, double &maxy, double &maxz, double &ave_length);
-  virtual void set_min_node_id(BoundaryNodeInfo &bni, const IVEHandle &n);
-  virtual void set_max_node_id(BoundaryNodeInfo &bni, const IVEHandle &n);
-  virtual void set_existing_node_id(DuplicateNodeInfo &dni, const IVEHandle &n);
+  void transfer_output_fields(IVEHandle n1, IVEHandle n2, IVEHandle new_node,
+                   double mu, IVEMeshAPI *output_mesh_api) override;
+  void copy_node_output_fields(IVEHandle n1, IVEHandle new_node, IVEMeshAPI *output_mesh_api) override;
+  void copy_element_output_fields(IVEHandle e1, IVEHandle e2, IVEMeshAPI *output_mesh_api) override;
+  IVEHandle new_node( IsoVector &coordinates ) override;
+  void get_fixed_block_nodes(std::vector<IVEHandle> &fixed_block_nodes) override;
+  IVEHandle get_new_node_id() override;
+  IVEHandle new_tri( IVEHandle n1, IVEHandle n2, IVEHandle n3, bool is_fixed, IVEHandle source_elem ) override;
+  int element_nodes(IVEHandle elem, IVEHandle nodes[8]) const override;
+  void hex_nodes(IVEHandle hex, IVEHandle nodes[8]) const override;
+  void tet_nodes(IVEHandle tet, IVEHandle nodes[4]) const override;
+  void hex_quad_nodes(IVEHandle hex, int index, IVEHandle nodes[4]) const override;
+  IVEHandle get_connected_hex(IVEHandle hex, IVEHandle n1, IVEHandle n2, IVEHandle n3, IVEHandle n4) const override;
+  IVEHandle get_connected_tet(IVEHandle tet, IVEHandle n1, IVEHandle n2, IVEHandle n3) const override;
+  IsoVector node_coordinates( IVEHandle node ) const override;
+  double get_nodal_iso_field_variable(IVEHandle node) const override;
+  void store_tri_to_tet_map_entry(const IVEHandle &tri, const IVEHandle &tet) override;
+  void store_tet_to_tri_map_entry(const IVEHandle &tet, const IVEHandle &tri) override;
+  void get_shared_boundary_nodes(std::set<IVEHandle> &shared_boundary_nodes) override;
+  void get_attached_elements(const std::set<IVEHandle> &nodes,
+                                     std::vector<IVEHandle> &attached_elements) override;
+  void batch_create_edge_boundary_nodes(std::vector<BoundaryNodeInfo> &boundary_info,
+                                          IVEMeshAPI *existing_mesh) override;
+  void batch_create_duplicate_nodes(std::vector<DuplicateNodeInfo> &dup_node_infos, 
+                                            IVEMeshAPI *existing_mesh) override;
+  void print_boundary_node_info(std::vector<BoundaryNodeInfo> &bni) override;
+  void reserve_new_node_ids(uint64_t num_requested) override;
+  void reserve_new_tri_ids(uint64_t num_requested) override;
+  void calculate_average_edge_length_and_bbox(const std::vector<IVEHandle> &elem_list,
+          double &minx, double &miny, double &minz, double &maxx, double &maxy, double &maxz, double &ave_length) override;
+  void set_min_node_id(BoundaryNodeInfo &bni, const IVEHandle &n) override;
+  void set_max_node_id(BoundaryNodeInfo &bni, const IVEHandle &n) override;
+  void set_existing_node_id(DuplicateNodeInfo &dni, const IVEHandle &n) override;
   
   // functions local to this derived class
   void get_element_buckets(stk::mesh::Selector& sel,

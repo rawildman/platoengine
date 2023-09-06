@@ -75,18 +75,18 @@ public:
     /******************************************************************************//**
      * @brief Destructor
     **********************************************************************************/
-    virtual ~MeanPlusVarianceGradient();
+    ~MeanPlusVarianceGradient() override;
 
     /******************************************************************************//**
      * @brief Perform local operation - compute mean plus standard deviation measure's gradient
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Get the input and output arguments associated with the local operation
      * @param [in/out] aLocalArgs local input and output arguments
     **********************************************************************************/
-    void getArguments(std::vector<LocalArg>& aLocalArgs);
+    void getArguments(std::vector<LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Return name used by the user to identify the function.

@@ -21,12 +21,12 @@ class Interface_ParallelExchanger_global : public Interface_ParallelExchanger_lo
 {
 public:
     Interface_ParallelExchanger_global(AbstractAuthority* authority);
-    virtual ~Interface_ParallelExchanger_global();
+    ~Interface_ParallelExchanger_global() override;
 
     // put global identifiers for local indexes
     void put_globals(const std::vector<size_t>& globals);
 
-    virtual void build();
+    void build() override;
 
 protected:
 

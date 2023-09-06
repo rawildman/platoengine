@@ -81,19 +81,19 @@ public:
     void disableObjectiveNormalization();
 
     // ************* DELLOCATE APPLICATION MEMORY *************
-    void finalize();
+    void finalize() override;
     // ************* ALLOCATE APPLICATION MEMORY *************
-    void initialize();
+    void initialize() override;
     // ************* REALLOCATE APPLICATION MEMORY *************
-    void reinitialize();
+    void reinitialize() override;
     // ************* PERFORM OPERATION *************
-    void compute(const std::string & aOperationName);
+    void compute(const std::string & aOperationName) override;
     // ************* EXPORT DATA FROM APPLICATION *************
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) override;
     // ************* IMPORT DATA FROM APPLICATION *************
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override;
     // ************* EXPORT OWNED DATA MAP (I.E. GRAPH) *************
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
 private:
     void makeGraph();

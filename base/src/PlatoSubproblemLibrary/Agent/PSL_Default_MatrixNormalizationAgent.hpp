@@ -67,15 +67,14 @@ class Default_MatrixNormalizationAgent : public Abstract_MatrixNormalizationAgen
 {
 public:
     Default_MatrixNormalizationAgent(AbstractAuthority* authority, ParameterData* data);
-    virtual ~Default_MatrixNormalizationAgent();
 
-    virtual void normalize(PointCloud* kernel_points,
-                           std::vector<PointCloud*>& nonlocal_kernel_points,
-                           AbstractInterface::SparseMatrix* local_kernel_matrix,
-                           std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
-                           std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices,
-                           std::vector<size_t>& processor_neighbors_below,
-                           std::vector<size_t>& processor_neighbors_above);
+    void normalize(PointCloud* kernel_points,
+                   std::vector<PointCloud*>& nonlocal_kernel_points,
+                   AbstractInterface::SparseMatrix* local_kernel_matrix,
+                   std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
+                   std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices,
+                   std::vector<size_t>& processor_neighbors_below,
+                   std::vector<size_t>& processor_neighbors_above) override;
 
 protected:
 

@@ -73,10 +73,6 @@ Default_MatrixNormalizationAgent::Default_MatrixNormalizationAgent(AbstractAutho
 {
 }
 
-Default_MatrixNormalizationAgent::~Default_MatrixNormalizationAgent()
-{
-}
-
 void Default_MatrixNormalizationAgent::normalize(PointCloud* kernel_points,
                                                  std::vector<PointCloud*>& nonlocal_kernel_points,
                                                  AbstractInterface::SparseMatrix* local_kernel_matrix,

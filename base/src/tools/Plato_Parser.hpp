@@ -109,7 +109,7 @@ class PugiParser : public Parser {
       public:
         ForWalker( const std::map<std::string,std::vector<std::string>>& aVarMap, int& aNumMods ) : 
             mVarMap(aVarMap), mNumMods(aNumMods) { mNumMods = 0; }
-        virtual bool for_each(pugi::xml_node& node);
+        bool for_each(pugi::xml_node& node) override;
     };
 
     class MathWalker : public pugi::xml_tree_walker
@@ -118,7 +118,7 @@ class PugiParser : public Parser {
 
       public:
         MathWalker(std::shared_ptr<Plato::MathParser> aMathParser) : mMathParser(aMathParser) {}
-        virtual bool for_each(pugi::xml_node& node);
+        bool for_each(pugi::xml_node& node) override;
       private:
         std::string evalExpr(std::string);
         void evalSubExpr(std::string&, size_t);

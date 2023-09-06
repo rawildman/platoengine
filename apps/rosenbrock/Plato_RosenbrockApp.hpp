@@ -83,19 +83,19 @@ public:
     }
 
     /****************************************************************************************/
-    void finalize()
+    void finalize() override
     /****************************************************************************************/
     {
         // NO MEMORY DEALLOCATION NEEDED
     }
     /****************************************************************************************/
-    void initialize()
+    void initialize() override
     /****************************************************************************************/
     {
         // NO MEMORY ALLOCATION NEEDED
     }
     /****************************************************************************************/
-    void compute(const std::string & aOperationName)
+    void compute(const std::string & aOperationName) override
     /****************************************************************************************/
     {
         std::ostringstream tErrorMsg;
@@ -105,7 +105,7 @@ public:
         std::perror(tErrorMsg.str().c_str());
     }
     /****************************************************************************************/
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData)
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) override
     /****************************************************************************************/
     {
         switch(aExportData.myLayout())
@@ -130,7 +130,7 @@ public:
         }
     }
     /****************************************************************************************/
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData)
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override
     /****************************************************************************************/
     {
         switch(aImportData.myLayout())
@@ -155,7 +155,7 @@ public:
         }
     }
     /****************************************************************************************/
-    void exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/)
+    void exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & /*aMyOwnedGlobalIDs*/) override
     /****************************************************************************************/
     {
         /************************************************************************************

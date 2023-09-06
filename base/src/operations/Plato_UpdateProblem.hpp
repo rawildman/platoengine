@@ -79,13 +79,13 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - update problem
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs) override;
 
     friend class boost::serialization::access;
     template<class Archive>

@@ -71,10 +71,6 @@ ByOptimizedElementSide_MeshScaleAgent::ByOptimizedElementSide_MeshScaleAgent(Abs
 {
 }
 
-ByOptimizedElementSide_MeshScaleAgent::~ByOptimizedElementSide_MeshScaleAgent()
-{
-}
-
 double ByOptimizedElementSide_MeshScaleAgent::get_mesh_minimum_scale()
 {
     if(!m_calculated_mesh_scales)

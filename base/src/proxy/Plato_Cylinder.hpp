@@ -80,16 +80,9 @@ public:
     }
 
     /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~Cylinder()
-    {
-    }
-
-    /******************************************************************************//**
      * @brief compute the area of the side of a cylinder.
     **********************************************************************************/
-    ScalarType area()
+    ScalarType area() override
     {
         const ScalarType tArea = static_cast<ScalarType>(2) * M_PI * mRadius * mLength;
         return (tArea);
@@ -99,7 +92,7 @@ public:
      * @brief compute the gradient of a cylinder with respect to parameters that define geometry.
      * @param aOutput gradient with respect to the parameters that defined a geometry
     **********************************************************************************/
-    void gradient(std::vector<ScalarType>& aOutput)
+    void gradient(std::vector<ScalarType>& aOutput) override
     {
         assert(aOutput.size() == static_cast<size_t>(2));
         aOutput[0] = static_cast<ScalarType>(2) * M_PI * mLength;
@@ -110,7 +103,7 @@ public:
      * @brief update parameters that define a cylinder.
      * @param aParam parameters that define a cylinder
     **********************************************************************************/
-    void update(const std::map<std::string, ScalarType>& aParam)
+    void update(const std::map<std::string, ScalarType>& aParam) override
     {
         assert(aParam.find("Configuration") != aParam.end());
         Plato::Configuration::type_t tConfiguration =

@@ -50,12 +50,10 @@ namespace Plato
 class KernelThenTANHFilter : public AbstractKernelThenFilter
 {
 public:
-    KernelThenTANHFilter(){}
-    virtual ~KernelThenTANHFilter(){}
 
 private:
 
-    virtual void allocateFilter();
+    void allocateFilter() override;
 };
 
 }

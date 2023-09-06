@@ -59,11 +59,10 @@ class PolynomialTentFunction : public Abstract_BoundedSupportFunction
 {
 public:
     PolynomialTentFunction();
-    virtual ~PolynomialTentFunction();
 
-    virtual void build(double support, ParameterData* input_data);
-    virtual double evaluate(Point* center, Point* other);
-    virtual double get_support();
+    void build(double support, ParameterData* input_data) override;
+    double evaluate(Point* center, Point* other) override;
+    double get_support() override;
 
 protected:
     double m_radius;

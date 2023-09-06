@@ -50,12 +50,10 @@ namespace Plato
 class KernelThenHeavisideFilter : public AbstractKernelThenFilter
 {
 public:
-    KernelThenHeavisideFilter(){}
-    virtual ~KernelThenHeavisideFilter(){}
 
 private:
 
-    virtual void allocateFilter();
+    void allocateFilter() override;
 };
 
 }

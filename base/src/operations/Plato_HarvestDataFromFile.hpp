@@ -58,21 +58,16 @@ public:
     HarvestDataFromFile(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
     /******************************************************************************//**
-     * \brief class destructor
-    **********************************************************************************/
-    virtual ~HarvestDataFromFile(){}
-
-    /******************************************************************************//**
      * \brief perform local operation
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * \fn getArguments 
      * \brief Return local operation's argument list
      * \param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * \fn name

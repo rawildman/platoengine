@@ -37,12 +37,10 @@ public:
 {
 }
 
-    virtual ~ProjectionTANHFilter(){}
-
 private:
 
-    double projection_apply(const double& beta, const double& input);
-    double projection_gradient(const double& beta, const double& input);
+    double projection_apply(const double& beta, const double& input) override;
+    double projection_gradient(const double& beta, const double& input) override;
 
 };
 

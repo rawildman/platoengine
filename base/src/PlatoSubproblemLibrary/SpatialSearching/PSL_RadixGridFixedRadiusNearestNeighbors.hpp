@@ -16,14 +16,14 @@ class RadixGridFixedRadiusNearestNeighbors : public AbstractInterface::FixedRadi
 {
 public:
     RadixGridFixedRadiusNearestNeighbors();
-    virtual ~RadixGridFixedRadiusNearestNeighbors();
+    ~RadixGridFixedRadiusNearestNeighbors() override;
 
     // build searcher
-    virtual void build(PlatoSubproblemLibrary::PointCloud* answer_points, double radius);
+    void build(PlatoSubproblemLibrary::PointCloud* answer_points, double radius) override;
     // find neighbors within radius
-    virtual void get_neighbors(PlatoSubproblemLibrary::Point* query_point,
+    void get_neighbors(PlatoSubproblemLibrary::Point* query_point,
                                std::vector<size_t>& neighbors_buffer,
-                               size_t& num_neighbors);
+                               size_t& num_neighbors) override;
 
 protected:
     PlatoSubproblemLibrary::PointCloud* m_answer_points;

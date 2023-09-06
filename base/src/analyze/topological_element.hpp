@@ -184,9 +184,9 @@ class Beam : public Element
 public:
     Beam( int number, int nattr=0 ): Element( number, nattr ){ init(); }
     Beam( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-    virtual ~Beam();
-    virtual void registerData();
-    virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+    ~Beam() override;
+    void registerData() override;
+    void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
     void init();
@@ -199,9 +199,9 @@ class Tri3 : public Element
 public:
   Tri3( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Tri3( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Tri3();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Tri3() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -214,9 +214,9 @@ class Quad4 : public Element
 public:
   Quad4( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Quad4( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Quad4();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Quad4() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -229,9 +229,9 @@ class Quad8 : public Element
 public:
   Quad8( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Quad8( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Quad8();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Quad8() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -244,9 +244,9 @@ class Hex8 : public Element
 public:
   Hex8( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Hex8( int number, pugi::xml_node& node ): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Hex8();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Hex8() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -259,9 +259,9 @@ class Hex20 : public Element
 public:
   Hex20( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Hex20( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Hex20();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Hex20() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -274,9 +274,9 @@ class Hex27 : public Element
 public:
   Hex27( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Hex27( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Hex27();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Hex27() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -289,9 +289,9 @@ class Tet4 : public Element
 public:
   Tet4( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Tet4( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Tet4();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Tet4() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -304,9 +304,9 @@ class Tet10 : public Element
 public:
   Tet10( int number, int nattr=0 ): Element( number, nattr ){ init(); }
   Tet10( int number, pugi::xml_node& node): Element( number ){ init(); setIntegrationMethod(node); }
-  virtual ~Tet10();
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  ~Tet10() override;
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 
 private:
   void init();
@@ -319,9 +319,8 @@ class NullElement : public Element
 public:
   NullElement( int number, int nattr=0 ): Element( number, nattr ){ zeroset(); }
   NullElement( int number, pugi::xml_node& node): Element( number ){ zeroset(); setIntegrationMethod(node); }
-  virtual ~NullElement(){};
-  virtual void registerData();
-  virtual void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor);
+  void registerData() override;
+  void CurrentCoordinates(int* node_gid_list, Real** X, Real* curcoor) override;
 private:
   NullElement(const NullElement&);
   NullElement& operator=(const NullElement&);
