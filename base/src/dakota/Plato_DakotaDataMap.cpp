@@ -136,8 +136,9 @@ void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aToken
 {
     char* p;
     std::strtol(aTokens[2].c_str(), &p, 10);
-    if (*p)
-        throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + aTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
+    const bool tIsInteger = *p == 0;
+    if (!tIsInteger)
+        throw std::runtime_error(ERRMSG("Expected integer value after criterion, but got " + aTokens[2]));
 }
 
 void DakotaDataMap::parseStageInputs(Plato::InputData &aStageNode)
