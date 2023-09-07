@@ -85,24 +85,22 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class DakotaDriver : public Plato::DriverInterface<ScalarType, OrdinalType>
 {
 public:
-    explicit DakotaDriver(Plato::Interface *aInterface, const MPI_Comm &aComm) : 
+    DakotaDriver(Plato::Interface *aInterface, const MPI_Comm &aComm) : 
       mComm(aComm),
       mInterface(aInterface)
-  {
-  }
-
-    ~DakotaDriver(){ return; }
+    {
+    }
 
     /******************************************************************************//**
      * @brief Return true if the last driver
     **********************************************************************************/
-    virtual bool lastDriver() const { return true; }
+    bool lastDriver() const override { return true; }
 
     /******************************************************************************//**
      * \brief Return the driver type
      * \return driver type
      **********************************************************************************/
-    Plato::driver_t driver() const
+    Plato::driver_t driver() const override
     {
         return (Plato::driver_t::PLATO_DAKOTA_DRIVER);
     }
