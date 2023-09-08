@@ -4,5 +4,7 @@
 //
 // This file should be included at the bottom of any file using boost and 
 // Plato_SuppressNvccWarnings.hpp should be included at the top of the file.
-#pragma nv_diag_default 20011
-#pragma nv_diag_default 20012
+#if defined __CUDACC__
+  #pragma nv_diag_default 20011
+  #pragma nv_diag_default 20012
+#endif
