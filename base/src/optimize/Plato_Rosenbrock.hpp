@@ -68,11 +68,8 @@ public:
         mDivisor(1.)
     {
     }
-    virtual ~Rosenbrock()
-    {
-    }
 
-    void cacheData()
+    void cacheData() override
     {
         return;
     }
@@ -83,7 +80,7 @@ public:
      * Evaluate Rosenbrock function:
      *      f(\mathbf{x}) = 100 * \left(x_2 - x_1^2\right)^2 + \left(1 - x_1\right)^2
      * */
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         assert(aControl.getNumVectors() == static_cast<OrdinalType>(1));
 
@@ -104,7 +101,7 @@ public:
      *      \frac{\partial{f}}{\partial x_2} = 200 * \left(x_2 - x_1^2\right)
      * */
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() == static_cast<OrdinalType>(1));
         assert(aControl.getNumVectors() == static_cast<OrdinalType>(1));
@@ -125,7 +122,7 @@ public:
      * */
     void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() == static_cast<OrdinalType>(1));
         assert(aVector.getNumVectors() == static_cast<OrdinalType>(1));

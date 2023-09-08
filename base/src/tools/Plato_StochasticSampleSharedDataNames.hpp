@@ -13,7 +13,7 @@ struct ParameterAndDistribution
     std::string mDistributionName;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("ParameterName", mParameterName);
       aArchive & boost::serialization::make_nvp("DistributionName", mDistributionName);
@@ -27,7 +27,7 @@ struct StochasticSampleSharedDataNames
     std::vector<ParameterAndDistribution> mParameters;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("OutputValueSharedDataName", mOutputValueSharedDataName);
       aArchive & boost::serialization::make_nvp("OutputGradientSharedDataName", mOutputGradientSharedDataName);

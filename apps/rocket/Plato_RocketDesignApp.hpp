@@ -82,37 +82,37 @@ public:
     /******************************************************************************//**
      * @brief Deallocate memory
     **********************************************************************************/
-    void finalize();
+    void finalize() override;
 
     /******************************************************************************//**
      * @brief Allocate memory
     **********************************************************************************/
-    void initialize();
+    void initialize() override;
 
     /******************************************************************************//**
      * @brief Reallocate memory
     **********************************************************************************/
-    void reinitialize();
+    void reinitialize() override;
 
     /******************************************************************************//**
      * @brief Perform an operation, e.g. evaluate objective function
      * @param [in] aOperationName name of operation
     **********************************************************************************/
-    void compute(const std::string & aOperationName);
+    void compute(const std::string & aOperationName) override;
 
     /******************************************************************************//**
      * @brief Export data from user's application
      * @param [in] aArgumentName name of export data (e.g. objective gradient)
      * @param [out] aExportData container used to store output data
     **********************************************************************************/
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) override;
 
     /******************************************************************************//**
      * @brief Import data from Plato to user's application
      * @param [in] aArgumentName name of import data (e.g. design variables)
      * @param [in] aImportData container with import data
     **********************************************************************************/
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override;
 
     /******************************************************************************//**
      * @brief Export distributed memory graph
@@ -120,7 +120,7 @@ public:
      *                         TENSOR_FIELD, ELEMENT_FIELD, SCALAR_PARAMETER)
      * @param [out] aMyOwnedGlobalIDs my processor's global IDs
     **********************************************************************************/
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
 private:
     /******************************************************************************//**

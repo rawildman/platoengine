@@ -50,6 +50,8 @@
 #include "Plato_Parser.hpp"
 #include "Plato_DakotaDataMap.hpp"
 
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace Plato
 {
 
@@ -130,12 +132,13 @@ bool DakotaDataMap::isCriterionTag(const std::vector<std::string> &aTokens) cons
     return tReturn;
 }
 
-void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aTokens, const std::string &aTag) const
+void DakotaDataMap::checkValidCriterionId(const std::vector<std::string> &aTokens, const std::string & aTag) const
 {
     char* p;
-    long converted = std::strtol(aTokens[2].c_str(), &p, 10);
-    if (*p)
-        throw std::runtime_error(ERRMSG("Unexpected stage tag \"" + aTag + "\" in DakotaDriver block. Options are: 'criterion_value_#', 'criterion_gradient_#, 'initialize', or 'finalize'"));
+    std::strtol(aTokens[2].c_str(), &p, 10);
+    const bool tIsInteger = *p == 0;
+    if (!tIsInteger)
+        throw std::runtime_error(ERRMSG("In stage tag \"" + aTag + "\" expected integer value after criterion, but got " + aTokens[2]));
 }
 
 void DakotaDataMap::parseStageInputs(Plato::InputData &aStageNode)
@@ -274,7 +277,7 @@ void DakotaDataMap::setContinuousVarsSharedData(const std::string &aSharedDataNa
     if(mMapFromSharedDataNameToContinuousVars[aSharedDataName].size() < aNumValues)
         throw std::out_of_range(ERRMSG("Number of stored continuous variables smaller than requested size"));
 
-    if(aData.length() < aNumValues)
+    if(boost::numeric_cast<size_t>(aData.length()) < aNumValues)
         throw std::out_of_range(ERRMSG("Expected number of stored variables is larger than input vector size"));
 
     for (size_t tIndex = 0; tIndex < aNumValues; tIndex++)
@@ -298,7 +301,7 @@ void DakotaDataMap::setDiscreteRealVarsSharedData(const std::string &aSharedData
     if(mMapFromSharedDataNameToDiscreteRealVars[aSharedDataName].size() < aNumValues)
         throw std::out_of_range(ERRMSG("Number of stored discrete real variables smaller than requested size"));
 
-    if(aData.length() < aNumValues)
+    if(boost::numeric_cast<size_t>(aData.length()) < aNumValues)
         throw std::out_of_range(ERRMSG("Expected number of stored variables is larger than input vector size"));
 
     for (size_t tIndex = 0; tIndex < aNumValues; tIndex++)
@@ -322,7 +325,7 @@ void DakotaDataMap::setDiscreteIntegerVarsSharedData(const std::string &aSharedD
     if(mMapFromSharedDataNameToDiscreteIntegerVars[aSharedDataName].size() < aNumValues)
         throw std::out_of_range(ERRMSG("Number of stored discrete integer variables smaller than requested size"));
 
-    if(aData.length() < aNumValues)
+    if(boost::numeric_cast<size_t>(aData.length()) < aNumValues)
         throw std::out_of_range(ERRMSG("Expected number of stored variables is larger than input vector size"));
 
     for (size_t tIndex = 0; tIndex < aNumValues; tIndex++)

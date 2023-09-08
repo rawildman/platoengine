@@ -231,7 +231,7 @@ void generate_rol_input_file(const XMLGen::InputData& aMetaData)
 
 /******************************************************************************/
 void append_rol_input_file
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_node& aParentNode)
 {
     std::vector<std::string> tKeys = {"InputFileName"};
@@ -563,7 +563,7 @@ void append_grad_based_optimizer_variables_options
 
 /******************************************************************************/
 void append_grad_based_optimizer_objective_options
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_node& aParentNode)
 {
     std::map<std::string, std::string> tKeyToValueMap =

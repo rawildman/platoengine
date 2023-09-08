@@ -63,24 +63,8 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class ShiftedEllipse : public Plato::Criterion<ScalarType, OrdinalType>
 {
 public:
-    /******************************************************************************//**
-     * @brief Constructor
-    **********************************************************************************/
-    ShiftedEllipse() :
-            mXCenter(0.),
-            mXRadius(1.),
-            mYCenter(0.),
-            mYRadius(1.),
-            mUpperBound(1)
-    {
-    }
 
-    /******************************************************************************//**
-     * @brief Destructor
-    **********************************************************************************/
-    virtual ~ShiftedEllipse()
-    {
-    }
+    ShiftedEllipse() = default;
 
     /******************************************************************************//**
      * @brief Define criterion parameters
@@ -100,7 +84,7 @@ public:
     /******************************************************************************//**
      * @brief Safely cache application data after a trial control has been accepted.
     **********************************************************************************/
-    void cacheData()
+    void cacheData() override
     {
         return;
     }
@@ -109,7 +93,7 @@ public:
      * @brief Evaluate objective function.
      * @param [in] aControl optimization variables
     **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
 
@@ -126,7 +110,7 @@ public:
      * @param [in/out] aOutput gradient
     **********************************************************************************/
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
         assert(aControl.getNumVectors() > static_cast<OrdinalType>(0));
@@ -144,9 +128,9 @@ public:
      * @param [in] aVector descent direction
      * @param [in/out] aOutput application of input vector to Hessian
     **********************************************************************************/
-    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() > static_cast<OrdinalType>(0));
         assert(aVector.getNumVectors() > static_cast<OrdinalType>(0));
@@ -158,11 +142,11 @@ public:
     }
 
 private:
-    ScalarType mXCenter; /*!< ellipse center's x-coordinate */
-    ScalarType mXRadius; /*!< ellipse radius in x-direction */
-    ScalarType mYCenter; /*!< ellipse center's y-coordinate */
-    ScalarType mYRadius; /*!< ellipse radius in y-direction */
-    ScalarType mUpperBound; /*!< constraint upper bound */
+    ScalarType mXCenter = 0.0; /*!< ellipse center's x-coordinate */
+    ScalarType mXRadius = 1.0; /*!< ellipse radius in x-direction */
+    ScalarType mYCenter = 0.0; /*!< ellipse center's y-coordinate */
+    ScalarType mYRadius = 1.0; /*!< ellipse radius in y-direction */
+    ScalarType mUpperBound = 1.0; /*!< constraint upper bound */
 
 private:
     ShiftedEllipse(const Plato::ShiftedEllipse<ScalarType, OrdinalType> & aRhs);

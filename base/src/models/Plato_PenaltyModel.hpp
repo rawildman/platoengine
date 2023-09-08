@@ -67,7 +67,7 @@ class InputData;
       virtual double grad(double x) const = 0;
 
       template<class Archive>
-      void serialize(Archive & aArchive, const unsigned int version) {} 
+      void serialize(Archive & /*aArchive*/, const unsigned int /*version*/) {} 
   };
 
 namespace PenaltyModelFactory {

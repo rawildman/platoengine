@@ -312,13 +312,13 @@ public:
             m_input_data()
     {
     }
-    virtual ~OFGradientCheck()
+    ~OFGradientCheck() override
     {
         safe_free(m_filter);
         safe_free(m_exchanger);
     }
 
-    virtual void initialize()
+    void initialize() override
     {
         const size_t mpi_rank = m_authority->mpi_wrapper->get_rank();
         const size_t mpi_size = m_authority->mpi_wrapper->get_size();
@@ -388,7 +388,7 @@ public:
         m_filter = new OverhangFilter(m_authority, &m_input_data, &m_modular_interface, m_exchanger);
         m_filter->build();
     }
-    virtual double gradient_dot_step()
+    double gradient_dot_step() override
     {
         // build control
         example::Interface_ParallelVector parallelControl(m_center);
@@ -417,7 +417,7 @@ public:
         m_authority->mpi_wrapper->all_reduce_sum(local_gradDotStep, global_gradDotStep);
         return global_gradDotStep;
     }
-    virtual double objective_of_minus_step()
+    double objective_of_minus_step() override
     {
         // build control
         std::vector<double> center_plus_step = m_center;
@@ -430,7 +430,7 @@ public:
 
         return evaluate_objective(center_plus_step);
     }
-    virtual double objective_of_plus_step()
+    double objective_of_plus_step() override
     {
         // build control
         std::vector<double> center_plus_step = m_center;

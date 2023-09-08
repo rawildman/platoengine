@@ -21,13 +21,13 @@ class Interface_ParallelExchanger_localAndNonlocal : public AbstractInterface::P
 {
 public:
     Interface_ParallelExchanger_localAndNonlocal(AbstractAuthority* authority);
-    virtual ~Interface_ParallelExchanger_localAndNonlocal();
+    ~Interface_ParallelExchanger_localAndNonlocal() override;
 
     // put local and nonlocal shared pairs
     void put_shared_pairs(std::vector<std::vector<std::pair<size_t, size_t> > >& shared_local_and_nonlocal_pairs);
     void put_num_local_locations(size_t num_locations);
 
-    virtual void build();
+    void build() override;
 
 protected:
 

@@ -280,7 +280,7 @@ double StructuralTopologyOptimization::computeCompliance(const Epetra_SerialDens
     return (tCompliance);
 }
 
-void StructuralTopologyOptimization::computeVolumeGradient(const Epetra_SerialDenseVector & aControl,
+void StructuralTopologyOptimization::computeVolumeGradient([[maybe_unused]] const Epetra_SerialDenseVector & aControl,
                                                            Epetra_SerialDenseVector & aOutput)
 {
     assert(aOutput.Length() == aControl.Length());

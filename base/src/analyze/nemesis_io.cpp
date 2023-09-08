@@ -288,9 +288,9 @@ NemesisIO::writeParallelData()
                               my_pid);
 
   // create tmp vars to offset node numbering
-  int tmpInternalNodes[myMesh->num_internal_nodes];
-  int tmpBorderNodes[myMesh->num_border_nodes];
-  int tmpExternalNodes[myMesh->num_external_nodes];
+  std::vector<int> tmpInternalNodes(myMesh->num_internal_nodes);
+  std::vector<int> tmpBorderNodes(myMesh->num_border_nodes);
+  std::vector<int> tmpExternalNodes(myMesh->num_external_nodes);
 
   for(int i=0;i<myMesh->num_internal_nodes;i++)
     tmpInternalNodes[i] = myMesh->internalNodes[i] + 1;
@@ -300,9 +300,9 @@ NemesisIO::writeParallelData()
     tmpExternalNodes[i] = myMesh->externalNodes[i] + 1;
 
   err += ne_put_node_map(myFileID,
-                         tmpInternalNodes,
-                         tmpBorderNodes,
-                         tmpExternalNodes,
+                         tmpInternalNodes.data(),
+                         tmpBorderNodes.data(),
+                         tmpExternalNodes.data(),
                          my_pid);
   err += ne_put_elem_map(myFileID,
                          myMesh->internalElems,
@@ -323,12 +323,12 @@ NemesisIO::writeParallelData()
 
     for(int j = 0; j < num_node_comm_maps; j++)
     {
-      int tmpCommNodeIds[myMesh->nodeCmapNodeCnts[j]];
+      std::vector<int> tmpCommNodeIds(myMesh->nodeCmapNodeCnts[j]);
       for(int i=0; i<myMesh->nodeCmapNodeCnts[j]; i++) //zero based local-node numbering
         tmpCommNodeIds[i] = myMesh->commNodeIds[j][i]+1;
       err += ne_put_node_cmap(myFileID,
                               (myMesh->nodeCmapIds)[j],
-                              tmpCommNodeIds,
+                              tmpCommNodeIds.data(),
                               (myMesh->commNodeProcIds)[j],
                               my_pid);
     }

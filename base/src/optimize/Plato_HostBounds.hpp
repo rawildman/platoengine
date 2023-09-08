@@ -63,16 +63,11 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class HostBounds : public Plato::BoundsBase<ScalarType, OrdinalType>
 {
 public:
-    HostBounds()
-    {
-    }
-    virtual ~HostBounds()
-    {
-    }
+    HostBounds() = default;
 
     void project(const Plato::MultiVector<ScalarType, OrdinalType> & aLowerBound,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aUpperBound,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aInput) const
+                 Plato::MultiVector<ScalarType, OrdinalType> & aInput) const override
     {
         assert(aInput.getNumVectors() == aUpperBound.getNumVectors());
         assert(aLowerBound.getNumVectors() == aUpperBound.getNumVectors());
@@ -100,7 +95,7 @@ public:
                                       const Plato::MultiVector<ScalarType, OrdinalType> & aLowerBound,
                                       const Plato::MultiVector<ScalarType, OrdinalType> & aUpperBound,
                                       Plato::MultiVector<ScalarType, OrdinalType> & aActiveSet,
-                                      Plato::MultiVector<ScalarType, OrdinalType> & aInactiveSet) const
+                                      Plato::MultiVector<ScalarType, OrdinalType> & aInactiveSet) const override
     {
         assert(aInput.getNumVectors() == aLowerBound.getNumVectors());
         assert(aInput.getNumVectors() == aInactiveSet.getNumVectors());

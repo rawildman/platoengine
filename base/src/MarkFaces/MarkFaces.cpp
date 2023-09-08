@@ -90,7 +90,7 @@ bool MarkFaces::updateMarksInCSMFile(const std::string &aCSMFile)
         size_t tPos = tLine.find("#named_face mark");
         if(tPos != std::string::npos)
         {
-            size_t tPos = tLine.find("sideset");
+            tPos = tLine.find("sideset");
             if(tPos != std::string::npos)
             {
                 tPos += 8; 
@@ -109,7 +109,7 @@ bool MarkFaces::updateMarksInCSMFile(const std::string &aCSMFile)
                     tNewCSMFile << "#named_face mark " << tNewValue << " nodeset " << tName << std::endl;
                 }
             }
-	}
+        }
         else
         {
             tNewCSMFile << tLine << std::endl;

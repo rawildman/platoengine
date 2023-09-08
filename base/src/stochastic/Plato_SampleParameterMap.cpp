@@ -42,9 +42,9 @@ std::vector<Plato::SampleParameterMap> shared_data_parameter_maps_for_value(
 {
     std::vector<Plato::SampleParameterMap> tParameterMaps;
     std::transform(aSampleSharedData.cbegin(), aSampleSharedData.cend(), std::back_inserter(tParameterMaps),
-    [&aDistributionMap](const Plato::StochasticSampleSharedDataNames& aSampleSharedData)
+    [&aDistributionMap](const Plato::StochasticSampleSharedDataNames& aSampleSharedDataNames)
     {
-        return shared_data_parameter_map_for_value(aSampleSharedData, aDistributionMap);
+        return shared_data_parameter_map_for_value(aSampleSharedDataNames, aDistributionMap);
     });
     return tParameterMaps;
 }
@@ -65,9 +65,9 @@ std::vector<Plato::SampleParameterMap> shared_data_parameter_maps_for_gradient(
 {
     std::vector<Plato::SampleParameterMap> tParameterMaps;
     std::transform(aSampleSharedData.cbegin(), aSampleSharedData.cend(), std::back_inserter(tParameterMaps),
-    [&aDistributionMap](const Plato::StochasticSampleSharedDataNames& aSampleSharedData)
+    [&aDistributionMap](const Plato::StochasticSampleSharedDataNames& aSampleSharedDataNames)
     {
-        return shared_data_parameter_map_for_gradient(aSampleSharedData, aDistributionMap);
+        return shared_data_parameter_map_for_gradient(aSampleSharedDataNames, aDistributionMap);
     });
     return tParameterMaps;
 }

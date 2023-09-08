@@ -72,13 +72,13 @@ typedef MaterialModel* (*NewModelFP)(pugi::xml_node& node);
 /******************************************************************************/
 class MaterialModel {
 public:
-  MaterialModel(pugi::xml_node& node){}
+  MaterialModel(pugi::xml_node& /*node*/){}
   virtual ~MaterialModel(){}
-  virtual bool SetUp(DataContainer*, Tensor& basis){return false;}
+  virtual bool SetUp(DataContainer*, Tensor& /*basis*/){return false;}
   virtual bool Initialize(int dataIndex, DataContainer*) = 0;
 
-  virtual bool Tangent(int dataIndex, DataContainer* mc,
-                       Intrepid::FieldContainer<double>*& C){return false;}
+  virtual bool Tangent(int /*dataIndex*/, DataContainer* /*mc*/,
+                       Intrepid::FieldContainer<double>*& /*C*/){return false;}
 
   virtual bool UpdateMaterialState( int dataIndex,
                                    DataContainer* dc) = 0;
@@ -157,7 +157,7 @@ class DefaultMaterialContainer : public MaterialContainer
 {
   public:
     DefaultMaterialContainer(pugi::xml_node& xml_data);
-    void initializeMaterialTopology();
+    void initializeMaterialTopology() override;
   private:
     std::vector<int> blockToMaterialMap;
 };

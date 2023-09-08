@@ -17,8 +17,8 @@ public:
     Interface_BasicGlobalUtilities();
     virtual ~Interface_BasicGlobalUtilities();
 
-    virtual void print(const std::string& message);
-    virtual void fatal_error(const std::string& message);
+    void print(const std::string& message) override;
+    void fatal_error(const std::string& message) override;
 
     void set_never_abort(bool never_abort);
     bool get_ignored_abort() const;

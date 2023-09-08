@@ -74,15 +74,14 @@ class ByNarrowClone_SymmetryPlaneAgent : public Abstract_SymmetryPlaneAgent
 {
 public:
     ByNarrowClone_SymmetryPlaneAgent(AbstractAuthority* authority);
-    virtual ~ByNarrowClone_SymmetryPlaneAgent();
 
-    virtual PointCloud* build_kernel_points(double support_distance,
-                                            double point_resolution_tolerance,
-                                            ParameterData* input_data,
-                                            AbstractInterface::PointCloud* all_points,
-                                            const std::vector<size_t>& indexes_of_local_points);
-    virtual std::vector<double> expand_with_symmetry_points(const std::vector<double>& contracted_data_vector);
-    virtual std::vector<double> contract_by_symmetry_points(const std::vector<double>& expanded_data_vector);
+    PointCloud* build_kernel_points(double support_distance,
+                                    double point_resolution_tolerance,
+                                    ParameterData* input_data,
+                                    AbstractInterface::PointCloud* all_points,
+                                    const std::vector<size_t>& indexes_of_local_points) override;
+    std::vector<double> expand_with_symmetry_points(const std::vector<double>& contracted_data_vector) override;
+    std::vector<double> contract_by_symmetry_points(const std::vector<double>& expanded_data_vector) override;
 
 protected:
     void read_input_data(ParameterData* input_data);

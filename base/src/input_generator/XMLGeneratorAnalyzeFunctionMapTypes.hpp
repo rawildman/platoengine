@@ -11,6 +11,8 @@
 
 namespace XMLGen
 {
+class EssentialBoundaryCondition;
+class Load;
 
 namespace Analyze
 {
@@ -37,10 +39,10 @@ typedef void (*EssentialBCFunc)(void);
 typedef void (*AssemblyFunc)(void);
 
 /*!< define load tag function pointer type */
-typedef std::string (*LoadTagFunc)(void);
+typedef std::string (*LoadTagFunc)(const XMLGen::Load&);
 
 /*!< define essential boundary condition tag function pointer type */
-typedef std::string (*EssentialBCTagFunc)(void);
+typedef std::string (*EssentialBCTagFunc)(const XMLGen::EssentialBoundaryCondition&);
 
 /*!< map from physics category to physics function used to append PDE and respective \n
  * parameters, i.e. map<physics_category, physics_function> */

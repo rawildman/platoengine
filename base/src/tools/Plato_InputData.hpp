@@ -202,7 +202,7 @@ class InputData {
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("Name",m_name);
       //aArchive & boost::serialization::make_nvp("Parameters",m_parameters);

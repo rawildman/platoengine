@@ -17,12 +17,12 @@ class Interface_ParallelExchanger_ownershipFlag : public AbstractInterface::Para
 {
 public:
     Interface_ParallelExchanger_ownershipFlag(AbstractAuthority* authority);
-    virtual ~Interface_ParallelExchanger_ownershipFlag();
+    ~Interface_ParallelExchanger_ownershipFlag() override;
 
     // put ownership
     void put_is_owned(const std::vector<bool>& is_owned);
 
-    virtual void build();
+    void build() override;
 
 protected:
 

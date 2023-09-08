@@ -67,15 +67,15 @@ class PhysicsProxyApp : public Plato::Application
 {
 public:
     PhysicsProxyApp(const std::string & aInputMeshFile, const MPI_Comm & aAppComm);
-    virtual ~PhysicsProxyApp();
+    ~PhysicsProxyApp() override;
 
-    void finalize();
-    void initialize();
-    void reinitialize();
-    void compute(const std::string & aOperationName);
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void finalize() override;
+    void initialize() override;
+    void reinitialize() override;
+    void compute(const std::string & aOperationName) override;
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) override;
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override;
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
     int getLocalNumNodes() const;
     int getLocalNumElements() const;

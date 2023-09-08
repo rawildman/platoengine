@@ -58,7 +58,7 @@ namespace Plato {
 /******************************************************************************/
 
 template <typename AppType>
-int Main(int aArgc, char *aArgv[], bool aEnableDebugExceptions = true)
+int Main(int aArgc, char *aArgv[], [[maybe_unused]] bool aEnableDebugExceptions = true)
 /******************************************************************************/
 {
 #ifndef NDEBUG

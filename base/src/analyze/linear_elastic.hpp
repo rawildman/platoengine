@@ -78,13 +78,13 @@ class IsotropicElastic2D : public IsotropicElastic
 {
 public:
   IsotropicElastic2D(pugi::xml_node& node);
-  ~IsotropicElastic2D();
-  bool SetUp(DataContainer*, Tensor& R);
-  bool Initialize(int, DataContainer*);
+  ~IsotropicElastic2D() override;
+  bool SetUp(DataContainer*, Tensor& R) override;
+  bool Initialize(int, DataContainer*) override;
   bool UpdateMaterialState(int dataIndex,
-                           DataContainer* dc);
-  bool Tangent(int dataIndex, DataContainer* dc,
-                  Intrepid::FieldContainer<double>*& C){return false;}
+                           DataContainer* dc) override;
+  bool Tangent(int /*dataIndex*/, DataContainer* /*dc*/,
+                  Intrepid::FieldContainer<double>*& /*C*/) override {return false;}
 };
 
 class IsotropicElastic3D : public IsotropicElastic
@@ -92,12 +92,12 @@ class IsotropicElastic3D : public IsotropicElastic
 public:
   IsotropicElastic3D(pugi::xml_node& node);
   ~IsotropicElastic3D();
-  bool SetUp(DataContainer*, Tensor& R);
-  bool Initialize(int, DataContainer*);
+  bool SetUp(DataContainer*, Tensor& R) override;
+  bool Initialize(int, DataContainer*) override;
   bool UpdateMaterialState(int dataIndex,
-                           DataContainer* dc);
+                           DataContainer* dc) override;
   bool Tangent(int dataIndex, DataContainer* dc,
-                  Intrepid::FieldContainer<double>*& C);
+                  Intrepid::FieldContainer<double>*& C) override;
 };
 MaterialModel* NewIsotropicElastic3D(pugi::xml_node& node);
 MaterialModel* NewIsotropicElastic2D(pugi::xml_node& node);

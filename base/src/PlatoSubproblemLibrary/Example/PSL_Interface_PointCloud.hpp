@@ -16,13 +16,13 @@ class Interface_PointCloud : public AbstractInterface::PointCloud
 {
 public:
     Interface_PointCloud();
-    virtual ~Interface_PointCloud();
+    ~Interface_PointCloud() override;
 
     void set_num_points(size_t num_points);
     void set_point_data(size_t point_index, const std::vector<double>& data);
 
-    virtual Point get_point(const size_t& index);
-    virtual size_t get_num_points();
+    Point get_point(const size_t& index) override;
+    size_t get_num_points() override;
 
 protected:
     std::vector<std::vector<double> > m_point_data;

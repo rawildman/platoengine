@@ -400,7 +400,7 @@ void ParseOptimizationParameters::checkHeavisideFilterParams(XMLGen::Optimizatio
     }
 }
 
-void ParseOptimizationParameters::setMaterialBoxExtents(XMLGen::OptimizationParameters &aMetadata)
+void ParseOptimizationParameters::setMaterialBoxExtents(XMLGen::OptimizationParameters &/*aMetadata*/)
 {
     auto tMinItr = mTags.find("levelset_material_box_min");
     auto tMaxItr = mTags.find("levelset_material_box_max");

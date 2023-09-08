@@ -142,7 +142,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
         for (int j=0; j<tNvert; j++)
         {
             if (tVtags[j].ptype != 0) continue;
-            auto tStatus = ocsmGetTessVel(model, ibody, OCSM_NODE, tVtags[j].pindex, &tPcsens);
+            tStatus = ocsmGetTessVel(model, ibody, OCSM_NODE, tVtags[j].pindex, &tPcsens);
             if (tStatus != EGADS_SUCCESS)
             {
                 EG_free(tTris);
@@ -162,7 +162,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
         int tIndex;
         for (int j=1; j<=tNedge; j++)
         {
-            auto tStatus = ocsmGetTessVel(model, ibody, OCSM_EDGE, j, &tPcsens);
+            tStatus = ocsmGetTessVel(model, ibody, OCSM_EDGE, j, &tPcsens);
             if (tStatus != EGADS_SUCCESS)
             {
                 EG_free(tTris);
@@ -185,7 +185,7 @@ ScalarType ESPImpl<ScalarType,ScalarVectorType>::computeSensitivity(VectorType& 
             
         /* do all of the faces */
         for (int j=1; j<=tNface; j++) {
-            auto tStatus = ocsmGetTessVel(model, ibody, OCSM_FACE, j, &tPcsens);
+            tStatus = ocsmGetTessVel(model, ibody, OCSM_FACE, j, &tPcsens);
             if (tStatus != EGADS_SUCCESS) {
             EG_free(tTris);
             EG_free(tVtags);

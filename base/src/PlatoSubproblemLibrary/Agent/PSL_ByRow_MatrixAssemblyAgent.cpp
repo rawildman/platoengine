@@ -75,10 +75,6 @@ ByRow_MatrixAssemblyAgent::ByRow_MatrixAssemblyAgent(AbstractAuthority* authorit
 {
 }
 
-ByRow_MatrixAssemblyAgent::~ByRow_MatrixAssemblyAgent()
-{
-}
-
 void ByRow_MatrixAssemblyAgent::build(Abstract_BoundedSupportFunction* bounded_support_function,
                                       PointCloud* local_kernel_points,
                                       std::vector<PointCloud*>& nonlocal_kernel_points,

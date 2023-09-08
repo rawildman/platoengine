@@ -176,20 +176,7 @@ void Tensor::operator=( const Real& T )
   data_[TENSOR::ZX] = T;
   data_[TENSOR::YX] = T;
 }
-/******************************************************************************/
-void Tensor::operator=( const Tensor& T )
-/******************************************************************************/
-{
-  data_[TENSOR::XX] = T(TENSOR::XX);
-  data_[TENSOR::YY] = T(TENSOR::YY);
-  data_[TENSOR::ZZ] = T(TENSOR::ZZ);
-  data_[TENSOR::YZ] = T(TENSOR::YZ);
-  data_[TENSOR::XZ] = T(TENSOR::XZ);
-  data_[TENSOR::XY] = T(TENSOR::XY);
-  data_[TENSOR::ZY] = T(TENSOR::ZY);
-  data_[TENSOR::ZX] = T(TENSOR::ZX);
-  data_[TENSOR::YX] = T(TENSOR::YX);
-}
+
 /******************************************************************************/
 void Tensor::operator=( const SymTensor& T )
 /******************************************************************************/
@@ -215,18 +202,6 @@ void SymTensor::operator=( const Real& T )
   data_[SYM::YZ] = T;
   data_[SYM::XZ] = T;
   data_[SYM::XY] = T;
-}
-
-/******************************************************************************/
-void SymTensor::operator=( const SymTensor& T )
-/******************************************************************************/
-{
-  data_[SYM::XX] = T(SYM::XX);
-  data_[SYM::YY] = T(SYM::YY);
-  data_[SYM::ZZ] = T(SYM::ZZ);
-  data_[SYM::YZ] = T(SYM::YZ);
-  data_[SYM::XZ] = T(SYM::XZ);
-  data_[SYM::XY] = T(SYM::XY);
 }
 
 /******************************************************************************/
@@ -358,16 +333,6 @@ void Vector::operator=( const Real& v )
   data_[VEC::Y] = v;
   data_[VEC::Z] = v;
 }
-
-/******************************************************************************/
-void Vector::operator=( const Vector& v )
-/******************************************************************************/
-{
-  data_[VEC::X] = v(VEC::X);
-  data_[VEC::Y] = v(VEC::Y);
-  data_[VEC::Z] = v(VEC::Z);
-}
-
 
 /******************************************************************************/
 Vector::Vector(Real x, Real y, Real z)

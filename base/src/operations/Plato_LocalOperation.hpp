@@ -81,7 +81,7 @@ struct LocalArg
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("Layout",mLayout);
         aArchive & boost::serialization::make_nvp("Name",mName);
@@ -137,7 +137,7 @@ public:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & /*aArchive*/, const unsigned int /*version*/)
     {
     } 
 protected:

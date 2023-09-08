@@ -57,14 +57,10 @@ template<typename ScalarType, typename OrdinalType = size_t>
 class Himmelblau : public Plato::Criterion<ScalarType, OrdinalType>
 {
 public:
-    Himmelblau()
-    {
-    }
-    virtual ~Himmelblau()
-    {
-    }
 
-    void cacheData()
+    Himmelblau() = default;
+
+    void cacheData() override
     {
         return;
     }
@@ -72,7 +68,7 @@ public:
      * Evaluate Himmelblau function:
      *      f(x,y) = (x^2+y-11)^2+(y^2+x-7)^2
      * */
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         assert(aControl.getNumVectors() == static_cast<OrdinalType>(1));
 
@@ -90,7 +86,7 @@ public:
      *      f_y = 4*y^3+(4*x-26)*y+2*x^2-22
      * */
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() == static_cast<OrdinalType>(1));
         assert(aControl.getNumVectors() == static_cast<OrdinalType>(1));
@@ -112,7 +108,7 @@ public:
      * */
     void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         assert(aOutput.getNumVectors() == static_cast<OrdinalType>(1));
         assert(aVector.getNumVectors() == static_cast<OrdinalType>(1));

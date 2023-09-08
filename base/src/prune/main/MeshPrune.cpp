@@ -13,7 +13,7 @@
 
     }
 
-    void MeshPrune::prune_mesh(MeshManager &tMeshManager,int argc, char *argv[],int tLastPrune)
+    void MeshPrune::prune_mesh(MeshManager &tMeshManager,int argc, char *argv[],int /*tLastPrune*/)
     {
         tMeshManager.define_iso_fields();
 

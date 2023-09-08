@@ -48,6 +48,8 @@
 
 #include "Plato_DakotaAppInterfaceUtilities.hpp"
 
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace Plato
 {
 
@@ -181,7 +183,7 @@ void setValueOutputs(const size_t aCriterionIndex, const size_t aPrpIndex, Dakot
 {
     std::string tStageTag = "criterion_value_" + std::to_string(aCriterionIndex);
 
-    if(aDakotaVals.length() <= aCriterionIndex)
+    if(boost::numeric_cast<size_t>(aDakotaVals.length()) <= aCriterionIndex)
         throw std::out_of_range(ERRMSG("In setValueOutputs: Criterion index out of range of dakota function values"));
 
     aDakotaVals[aCriterionIndex] = aDataMap.getOutputVarsSharedData(tStageTag,aPrpIndex).mValues.front();
@@ -191,10 +193,10 @@ void setGradientOutputs(const size_t aCriterionIndex, const size_t aPrpIndex, Da
 {
     std::string tStageTag = "criterion_gradient_" + std::to_string(aCriterionIndex);
 
-    if(aDakotaGrads.numRows() <= aCriterionIndex)
+    if(boost::numeric_cast<size_t>(aDakotaGrads.numRows()) <= aCriterionIndex)
         throw std::out_of_range(ERRMSG("In setGradientOutputs: Criterion index out of range of dakota gradient values"));
 
-    if(aDakotaGrads.numCols() < aGradientLength)
+    if(boost::numeric_cast<size_t>(aDakotaGrads.numCols()) < aGradientLength)
         throw std::out_of_range(ERRMSG("In setGradientOutputs: Requested gradient length larger than allocated dakota gradient length"));
 
     auto tValues = aDataMap.getOutputVarsSharedData(tStageTag,aPrpIndex).mValues;

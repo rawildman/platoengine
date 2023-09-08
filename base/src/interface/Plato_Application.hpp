@@ -90,7 +90,7 @@ public:
     //!@}
     //
     template<typename Archive>
-    void serialize(Archive& aArchive, const unsigned int version){}
+    void serialize(Archive& /*aArchive*/, const unsigned int /*version*/){}
 };
 
 } // End namespace Plato

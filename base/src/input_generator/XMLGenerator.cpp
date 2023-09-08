@@ -278,7 +278,7 @@ namespace XMLGen
     /******************************************************************************/
     void XMLGenerator::loadMaterialData(XMLGen::InputData &aNewInputData,
                                         const XMLGen::InputData &aOriginalInputData,
-                                        const std::string &aScenarioID)
+                                        const std::string &/*aScenarioID*/)
     /******************************************************************************/
     {
         for (auto &tMaterial : aOriginalInputData.materials)

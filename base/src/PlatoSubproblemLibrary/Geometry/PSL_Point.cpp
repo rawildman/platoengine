@@ -136,15 +136,6 @@ Point Point::operator -(const Point& other) const
     return Point(0u, combined_data);
 }
 
-Point& Point::operator =(const Point& other)
-{
-    std::vector<double> data;
-    other.get_data(data);
-    this->set(other.get_index(), data);
-
-    return *this;
-}
-
 Point operator *(const double scalar, const Point& P)
 {
     // get data

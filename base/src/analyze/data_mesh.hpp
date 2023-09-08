@@ -70,17 +70,17 @@ public:
   DataMesh();
   virtual ~DataMesh();
 
-  virtual bool parseMesh(pugi::xml_node& mesh_spec) { return false; }
+  virtual bool parseMesh(pugi::xml_node& /*mesh_spec*/) { return false; }
 
   virtual bool
   createMesh(
-    std::string aFormat,
-    std::string aFileName,
-    bool aIgnoreNodeMap,
-    bool aIgnoreElemMap
+    std::string /*aFormat*/,
+    std::string /*aFileName*/,
+    bool /*aIgnoreNodeMap*/,
+    bool /*aIgnoreElemMap*/
   ) { return false; }
 
-  virtual void createBlocks(pugi::xml_node& meshspec){}
+  virtual void createBlocks(pugi::xml_node& /*meshspec*/){}
 
   virtual void Connect(int* node_gid_list, int block_index, int nlid_in_blk);
 
@@ -134,7 +134,7 @@ public:
   virtual Real* getZ0();
   virtual void getCoords(Real** X);
 
-  virtual bool isExplicit(int global_element_id){ return true; }
+  virtual bool isExplicit(int /*global_element_id*/){ return true; }
 
 public: //!data
   int *nodeGlobalIds;
@@ -206,9 +206,9 @@ class UnsMesh : public DataMesh
 public:
   UnsMesh(){ zeroSet(); }
   UnsMesh(DataContainer* dc){ zeroSet(); myData = dc; }
-  virtual ~UnsMesh();
+  ~UnsMesh() override;
 
-  virtual bool parseMesh(pugi::xml_node& mesh_spec);
+  bool parseMesh(pugi::xml_node& mesh_spec) override;
 
   bool
   createMesh(
@@ -216,21 +216,21 @@ public:
     std::string aFileName,
     bool aIgnoreNodeMap,
     bool aIgnoreElemMap
-  );
+  ) override;
 
   void createBlocks(pugi::xml_node& meshspec) override;
 
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
-  virtual std::string getElemTypeInBlk(int blk);
-  virtual int  getNumElemBlks();
-  virtual int  getBlockId(int blk);
-  virtual int  getBlockIndex(int blk);
-  virtual std::string getBlockName(int blk);
-  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
-  virtual int* getElemToNodeConnInBlk(int blk);
-  virtual void addElemBlk(Topological::Element*);
-  virtual bool readNodePlot(Real*, std::string, int time_step=-1) override;
+  std::string getElemTypeInBlk(int blk) override;
+  int  getNumElemBlks() override;
+  int  getBlockId(int blk) override;
+  int  getBlockIndex(int blk) override;
+  std::string getBlockName(int blk) override;
+  std::vector<std::vector<int>> getFaceGraph(int blk) override;
+  int* getElemToNodeConnInBlk(int blk) override;
+  void addElemBlk(Topological::Element*) override;
+  bool readNodePlot(Real*, std::string, int time_step=-1) override;
 
 protected: //!data
 
@@ -251,18 +251,18 @@ public:
   StrMesh(DataContainer* dc){ zeroSet(); myData = dc; }
   virtual ~StrMesh(){}
 
-  virtual bool parseMesh(pugi::xml_node& mesh_spec);
+  bool parseMesh(pugi::xml_node& mesh_spec) override;
 
   int getNumElemInBlk(int);
   int getNnpeInBlk(int blk);
-  virtual std::string getElemTypeInBlk(int blk);
-  virtual int  getNumElemBlks();
-  virtual int  getBlockId(int blk);
-  virtual int  getBlockIndex(int blk);
-  virtual std::string getBlockName(int blk);
-  virtual std::vector<std::vector<int>> getFaceGraph(int blk);
-  virtual int* getElemToNodeConnInBlk(int blk);
-  virtual bool readNodePlot(Real*, std::string, int time_step=-1) override;
+  std::string getElemTypeInBlk(int blk) override;
+  int  getNumElemBlks() override;
+  int  getBlockId(int blk) override;
+  int  getBlockIndex(int blk) override;
+  std::string getBlockName(int blk) override;
+  std::vector<std::vector<int>> getFaceGraph(int blk) override;
+  int* getElemToNodeConnInBlk(int blk) override;
+  bool readNodePlot(Real*, std::string, int time_step=-1) override;
 
 protected: //!data
 

@@ -207,7 +207,7 @@ void KernelFilter::apply(AbstractInterface::ParallelVector* field)
     internal_apply(field, false);
 }
 
-void KernelFilter::apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient)
+void KernelFilter::apply(AbstractInterface::ParallelVector* /*base_field*/, AbstractInterface::ParallelVector* gradient)
 {
     internal_apply(gradient, true);
 }

@@ -18,6 +18,8 @@ class PlatoPythonOperation
 public:
     PlatoPythonOperation(const Plato::InputData & aOperationNode);
 
+    virtual ~PlatoPythonOperation() = default;
+
     virtual void
     runPythonFunction(const boost::python::object & aObject) = 0;
 

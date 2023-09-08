@@ -72,7 +72,7 @@ std::vector<size_t> InterfaceToEngine_OptimizationMesh::get_nodes_from_element(s
     return result;
 }
 
-bool InterfaceToEngine_OptimizationMesh::is_block_optimizable(size_t block_index)
+bool InterfaceToEngine_OptimizationMesh::is_block_optimizable(size_t /*block_index*/)
 {
     // TODO: when is this true? when is this false?
     return true;

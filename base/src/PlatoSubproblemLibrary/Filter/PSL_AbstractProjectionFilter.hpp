@@ -28,7 +28,7 @@ public:
                               ParameterData* data,
                               AbstractInterface::PointCloud* points,
                               AbstractInterface::ParallelExchanger* exchanger);
-    virtual ~AbstractProjectionFilter();
+    ~AbstractProjectionFilter() override;
 
     void set_authority(AbstractAuthority* authority);
     void set_input_data(ParameterData* data);
@@ -36,11 +36,11 @@ public:
     void set_parallel_exchanger(AbstractInterface::ParallelExchanger* exchanger);
 
     // Filter operations
-    virtual void build();
-    virtual void apply(AbstractInterface::ParallelVector* field);
-    virtual void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient);
-    virtual void advance_continuation();
-    virtual void additive_advance_continuation();
+    void build() override;
+    void apply(AbstractInterface::ParallelVector* field) override;
+    void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient) override;
+    void advance_continuation() override;
+    void additive_advance_continuation() override;
 
 private:
 

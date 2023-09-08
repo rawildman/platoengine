@@ -50,12 +50,10 @@ namespace Plato
 class ProjectionHeavisideFilter : public AbstractProjectionFilter
 {
 public:
-    ProjectionHeavisideFilter(){}
-    virtual ~ProjectionHeavisideFilter(){}
 
 private:
 
-    virtual void allocateFilter();
+    void allocateFilter() override;
 };
 
 }

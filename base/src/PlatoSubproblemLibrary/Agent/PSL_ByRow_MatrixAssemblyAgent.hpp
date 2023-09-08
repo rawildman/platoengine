@@ -70,16 +70,15 @@ class ByRow_MatrixAssemblyAgent : public Abstract_MatrixAssemblyAgent
 public:
     ByRow_MatrixAssemblyAgent(AbstractAuthority* authority,
                               ParameterData* input_data);
-    virtual ~ByRow_MatrixAssemblyAgent();
 
-    virtual void build(Abstract_BoundedSupportFunction* bounded_support_function,
-                       PointCloud* local_kernel_points,
-                       std::vector<PointCloud*>& nonlocal_kernel_points,
-                       const std::vector<size_t>& processor_neighbors_below,
-                       const std::vector<size_t>& processor_neighbors_above,
-                       AbstractInterface::SparseMatrix** local_kernel_matrix,
-                       std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
-                       std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices);
+    void build(Abstract_BoundedSupportFunction* bounded_support_function,
+               PointCloud* local_kernel_points,
+               std::vector<PointCloud*>& nonlocal_kernel_points,
+               const std::vector<size_t>& processor_neighbors_below,
+               const std::vector<size_t>& processor_neighbors_above,
+               AbstractInterface::SparseMatrix** local_kernel_matrix,
+               std::vector<AbstractInterface::SparseMatrix*>& parallel_block_row_kernel_matrices,
+               std::vector<AbstractInterface::SparseMatrix*>& parallel_block_column_kernel_matrices) override;
 
 protected:
 

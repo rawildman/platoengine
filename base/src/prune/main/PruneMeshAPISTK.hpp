@@ -36,8 +36,8 @@ struct NewNodeData
   NewNodeData(stk::mesh::BulkData& oldBulkData, 
               stk::mesh::BulkData& newBulkData, 
               stk::mesh::EntityId nodeA, 
-              stk::mesh::EntityId nodeB, 
-              stk::mesh::Entity **entity_place_holder=NULL)
+              stk::mesh::EntityId nodeB,
+              [[maybe_unused]] stk::mesh::Entity ** entity_place_holder=NULL)
               : m_node1(0), 
                 m_node2(0), 
                 m_sharing_procs(), 
@@ -224,42 +224,42 @@ public:
   PruneMeshAPISTK(stk::ParallelMachine* comm);
 
   // Destructor
-  virtual ~PruneMeshAPISTK();
+  ~PruneMeshAPISTK() override;
 
   // functions from base class
-  virtual void transfer_output_fields(PruneHandle n1, PruneHandle n2, PruneHandle new_node,
-                   double mu, PruneMeshAPI *output_mesh_api);
-  virtual void copy_node_output_fields(PruneHandle n1, PruneHandle new_node, PruneMeshAPI *output_mesh_api);
-  virtual void copy_element_output_fields(PruneHandle e1, PruneHandle e2, PruneMeshAPI *output_mesh_api);
-  virtual PruneHandle new_node( double &x, double &y, double &z );
-  virtual void get_fixed_block_nodes(std::vector<PruneHandle> &fixed_block_nodes);
-  virtual PruneHandle get_new_node_id();
-  virtual PruneHandle new_tri( PruneHandle n1, PruneHandle n2, PruneHandle n3, bool is_fixed, PruneHandle source_elem );
-  virtual int element_nodes(PruneHandle elem, PruneHandle nodes[8]) const;
-  virtual void hex_nodes(PruneHandle hex, PruneHandle nodes[8]) const;
-  virtual void tet_nodes(PruneHandle tet, PruneHandle nodes[4]) const;
-  virtual void hex_quad_nodes(PruneHandle hex, int index, PruneHandle nodes[4]) const;
-  virtual PruneHandle get_connected_hex(PruneHandle hex, PruneHandle n1, PruneHandle n2, PruneHandle n3, PruneHandle n4) const;
-  virtual PruneHandle get_connected_tet(PruneHandle tet, PruneHandle n1, PruneHandle n2, PruneHandle n3) const;
-  virtual void node_coordinates( PruneHandle node, double &x, double &y, double &z );
-  virtual double get_max_nodal_iso_field_variable(PruneHandle node) const;
-  virtual void store_tri_to_tet_map_entry(const PruneHandle &tri, const PruneHandle &tet);
-  virtual void store_tet_to_tri_map_entry(const PruneHandle &tet, const PruneHandle &tri);
-  virtual void get_shared_boundary_nodes(std::set<PruneHandle> &shared_boundary_nodes);
-  virtual void get_attached_elements(const std::set<PruneHandle> &nodes,
-                                     std::vector<PruneHandle> &attached_elements);
-  virtual void batch_create_edge_boundary_nodes(std::vector<BoundaryNodeInfo> &boundary_info,
-                                          PruneMeshAPI *existing_mesh);
-  virtual void batch_create_duplicate_nodes(std::vector<DuplicateNodeInfo> &dup_node_infos, 
-                                            PruneMeshAPI *existing_mesh);
-  virtual void print_boundary_node_info(std::vector<BoundaryNodeInfo> &bni);
-  virtual void reserve_new_node_ids(uint64_t num_requested);
-  virtual void reserve_new_tri_ids(uint64_t num_requested);
-  virtual double calculate_average_edge_length(const std::vector<PruneHandle> &elem_list);
-  virtual void set_min_node_id(BoundaryNodeInfo &bni, const PruneHandle &n);
-  virtual void set_max_node_id(BoundaryNodeInfo &bni, const PruneHandle &n);
-  virtual void set_existing_node_id(DuplicateNodeInfo &dni, const PruneHandle &n);
-  virtual void add_element_to_survivor_block(PruneHandle entity);
+  void transfer_output_fields(PruneHandle n1, PruneHandle n2, PruneHandle new_node,
+                   double mu, PruneMeshAPI *output_mesh_api) override;
+  void copy_node_output_fields(PruneHandle n1, PruneHandle new_node, PruneMeshAPI *output_mesh_api) override;
+  void copy_element_output_fields(PruneHandle e1, PruneHandle e2, PruneMeshAPI *output_mesh_api) override;
+  PruneHandle new_node( double &x, double &y, double &z ) override;
+  void get_fixed_block_nodes(std::vector<PruneHandle> &fixed_block_nodes) override;
+  PruneHandle get_new_node_id() override;
+  PruneHandle new_tri( PruneHandle n1, PruneHandle n2, PruneHandle n3, bool is_fixed, PruneHandle source_elem ) override;
+  int element_nodes(PruneHandle elem, PruneHandle nodes[8]) const override;
+  void hex_nodes(PruneHandle hex, PruneHandle nodes[8]) const override;
+  void tet_nodes(PruneHandle tet, PruneHandle nodes[4]) const override;
+  void hex_quad_nodes(PruneHandle hex, int index, PruneHandle nodes[4]) const override;
+  PruneHandle get_connected_hex(PruneHandle hex, PruneHandle n1, PruneHandle n2, PruneHandle n3, PruneHandle n4) const override;
+  PruneHandle get_connected_tet(PruneHandle tet, PruneHandle n1, PruneHandle n2, PruneHandle n3) const override;
+  void node_coordinates( PruneHandle node, double &x, double &y, double &z ) override;
+  double get_max_nodal_iso_field_variable(PruneHandle node) const override;
+  void store_tri_to_tet_map_entry(const PruneHandle &tri, const PruneHandle &tet) override;
+  void store_tet_to_tri_map_entry(const PruneHandle &tet, const PruneHandle &tri) override;
+  void get_shared_boundary_nodes(std::set<PruneHandle> &shared_boundary_nodes) override;
+  void get_attached_elements(const std::set<PruneHandle> &nodes,
+                                     std::vector<PruneHandle> &attached_elements) override;
+  void batch_create_edge_boundary_nodes(std::vector<BoundaryNodeInfo> &boundary_info,
+                                          PruneMeshAPI *existing_mesh) override;
+  void batch_create_duplicate_nodes(std::vector<DuplicateNodeInfo> &dup_node_infos, 
+                                            PruneMeshAPI *existing_mesh) override;
+  void print_boundary_node_info(std::vector<BoundaryNodeInfo> &bni) override;
+  void reserve_new_node_ids(uint64_t num_requested) override;
+  void reserve_new_tri_ids(uint64_t num_requested) override;
+  double calculate_average_edge_length(const std::vector<PruneHandle> &elem_list) override;
+  void set_min_node_id(BoundaryNodeInfo &bni, const PruneHandle &n) override;
+  void set_max_node_id(BoundaryNodeInfo &bni, const PruneHandle &n) override;
+  void set_existing_node_id(DuplicateNodeInfo &dni, const PruneHandle &n) override;
+  void add_element_to_survivor_block(PruneHandle entity) override;
   
   // functions local to this derived class
   int get_connected_elem(stk::mesh::Entity elem, 

@@ -140,7 +140,7 @@ public:
         return Teuchos::rcp(new Plato::SerialEpetraVectorROL<ScalarType>(tLength));
     }
 
-    Teuchos::RCP<ROL::Vector<ScalarType> > basis( const int i ) const
+    Teuchos::RCP<ROL::Vector<ScalarType> > basis( const int i ) const override
     {
         const size_t tLength = mData.Length();
         Teuchos::RCP<Plato::SerialEpetraVectorROL<ScalarType>> e = Teuchos::rcp(new Plato::SerialEpetraVectorROL<ScalarType>(tLength));
@@ -186,7 +186,7 @@ public:
         return (tOutput);
     }
 
-    void applyUnary(const ROL::Elementwise::UnaryFunction<double> & aFunction)
+    void applyUnary(const ROL::Elementwise::UnaryFunction<double> & aFunction) override
     {
         int tLength = mData.Length();
         for(int tIndex = 0; tIndex < tLength; tIndex++)
@@ -195,7 +195,7 @@ public:
         }
     }
 
-    void applyBinary(const ROL::Elementwise::BinaryFunction<ScalarType> & aFunction, const ROL::Vector<ScalarType> & aInput)
+    void applyBinary(const ROL::Elementwise::BinaryFunction<ScalarType> & aFunction, const ROL::Vector<ScalarType> & aInput) override
     {
         assert(this->dimension() == aInput.dimension());
         const Plato::SerialEpetraVectorROL<ScalarType>& tInput = dynamic_cast<const Plato::SerialEpetraVectorROL<ScalarType>&>(aInput);

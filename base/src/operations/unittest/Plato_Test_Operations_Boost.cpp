@@ -142,7 +142,7 @@ public:
     std::map<std::string, std::unique_ptr<Plato::LocalOp>> mOperationMap;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive &  boost::serialization::make_nvp("OperationMap",mOperationMap);
     }

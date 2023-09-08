@@ -87,18 +87,18 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - output data
      **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs) override;
 
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("OutputData",mOutputData);

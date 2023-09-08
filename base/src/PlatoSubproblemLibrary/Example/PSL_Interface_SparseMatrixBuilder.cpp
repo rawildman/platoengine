@@ -83,7 +83,7 @@ bool SparseMatrixBuilder::needs_value_this_pass()
     return false;
 }
 
-void SparseMatrixBuilder::specify_nonzero(size_t row, size_t column)
+void SparseMatrixBuilder::specify_nonzero(size_t row, size_t /*column*/)
 {
     switch(m_pass)
     {

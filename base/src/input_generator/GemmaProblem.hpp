@@ -38,6 +38,8 @@ protected:
 
 public:
     Problem();
+    virtual ~Problem() = default;
+    
     virtual void write_plato_main_operations(pugi::xml_document& aDocument) = 0;
     virtual void write_plato_main_input(pugi::xml_document& aDocument) = 0;
     virtual void write_interface(pugi::xml_document& aDocument) = 0;

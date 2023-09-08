@@ -103,44 +103,44 @@ public:
     /******************************************************************************//**
      * @brief Safely deallocate local memory
     **********************************************************************************/
-    void finalize();
+    void finalize() override;
 
     /******************************************************************************//**
      * @brief Safely allocate local memory
     **********************************************************************************/
-    void initialize();
+    void initialize() override;
 
     /******************************************************************************//**
      * @brief reinitialize
     **********************************************************************************/
-    void reinitialize();
+    void reinitialize() override;
 
     /******************************************************************************//**
      * @brief Perform local operation
      * @param [in] aOperationName local operation name
     **********************************************************************************/
-    void compute(const std::string & aOperationName);
+    void compute(const std::string & aOperationName) override;
 
     /******************************************************************************//**
      * @brief Import data
      * @param [in] aArgumentName argument name used to identify import data
      * @param [in] aImportData data
     **********************************************************************************/
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override;
 
     /******************************************************************************//**
      * @brief Export local data
      * @param [in] aArgumentName argument name used to identify export data
      * @param [in] aImportData data
     **********************************************************************************/
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aImportData);
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aImportData) override;
 
     /******************************************************************************//**
      * @brief Export parallel graph
      * @param [in] aDataLayout data layout
      * @param [in] aMyOwnedGlobalIDs local rank owned identifiers
     **********************************************************************************/
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
     /******************************************************************************//**
      * @brief Return pointer to application-specific services
@@ -361,7 +361,7 @@ public:
     }
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("Application", boost::serialization::base_object<Application>(*this));
         aArchive & boost::serialization::make_nvp("OperationMap", mOperationMap);

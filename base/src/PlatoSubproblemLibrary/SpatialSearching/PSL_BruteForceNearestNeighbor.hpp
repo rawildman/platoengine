@@ -14,12 +14,12 @@ class BruteForceNearestNeighbor : public AbstractInterface::NearestNeighborSearc
 {
 public:
     BruteForceNearestNeighbor();
-    virtual ~BruteForceNearestNeighbor();
+    ~BruteForceNearestNeighbor() override;
 
     // build searcher
-    virtual void build(PlatoSubproblemLibrary::PointCloud* answer_points);
+    void build(PlatoSubproblemLibrary::PointCloud* answer_points) override;
     // find nearest neighbor
-    virtual size_t get_neighbor(PlatoSubproblemLibrary::Point* query_point);
+    size_t get_neighbor(PlatoSubproblemLibrary::Point* query_point) override;
 
 protected:
 

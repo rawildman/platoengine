@@ -75,18 +75,18 @@ public:
     /******************************************************************************//**
      * @brief Destructor
     **********************************************************************************/
-    virtual ~MeanPlusVarianceGradient();
+    ~MeanPlusVarianceGradient() override;
 
     /******************************************************************************//**
      * @brief Perform local operation - compute mean plus standard deviation measure's gradient
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Get the input and output arguments associated with the local operation
      * @param [in/out] aLocalArgs local input and output arguments
     **********************************************************************************/
-    void getArguments(std::vector<LocalArg>& aLocalArgs);
+    void getArguments(std::vector<LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Return name used by the user to identify the function.
@@ -332,7 +332,7 @@ private:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("OperationName",mOperationName);

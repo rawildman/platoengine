@@ -100,7 +100,7 @@ void append_simp_penalty_function
  **********************************************************************************/
 template<typename MetaData>
 void append_no_penalty_function
-(const MetaData& aMetadata,
+(const MetaData& /*aMetadata*/,
  pugi::xml_node& aParentNode)
 {
     auto tPenaltyFunction = aParentNode.append_child("ParameterList");

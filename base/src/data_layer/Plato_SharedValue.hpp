@@ -77,19 +77,19 @@ public:
     SharedValue(SharedValue&& aRhs) = delete;
     SharedValue& operator=(SharedValue&& aRhs) = delete;
 
-    int size() const;
-    std::string myName() const;
-    Plato::data::layout_t myLayout() const;
+    int size() const override;
+    std::string myName() const override;
+    Plato::data::layout_t myLayout() const override;
 
     std::string myContext() const override;
     void setMyContext(std::string aContext) override;
 
-    void transmitData();
-    void setData(const std::vector<double> & aData);
-    void getData(std::vector<double> & aData) const;
+    void transmitData() override;
+    void setData(const std::vector<double> & aData) override;
+    void getData(std::vector<double> & aData) const override;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("SharedData", boost::serialization::base_object<SharedData>(*this));
         aArchive & boost::serialization::make_nvp("SharedValueName",mMyName);

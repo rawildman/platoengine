@@ -34,7 +34,7 @@ public:
                    ParameterData* data,
                    AbstractInterface::PointCloud* points,
                    AbstractInterface::ParallelExchanger* exchanger);
-    virtual ~OverhangFilter();
+    ~OverhangFilter() override;
 
     void set_authority(AbstractAuthority* authority);
     void set_input_data(ParameterData* data);
@@ -43,10 +43,10 @@ public:
     void announce_radius();
 
     // Filter operations
-    virtual void build();
-    virtual void apply(AbstractInterface::ParallelVector* field);
-    virtual void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient);
-    virtual void advance_continuation();
+    void build() override;
+    void apply(AbstractInterface::ParallelVector* field) override;
+    void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient) override;
+    void advance_continuation() override;
 
 private:
 

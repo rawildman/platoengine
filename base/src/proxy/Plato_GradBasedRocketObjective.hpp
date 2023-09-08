@@ -183,7 +183,7 @@ public:
     /******************************************************************************//**
      * @brief Cache current thrust profile solution
      **********************************************************************************/
-    void cacheData()
+    void cacheData() override
     {
         mCachedThrustProfile = mRocketModel.getThrustProfile();
     }
@@ -193,7 +193,7 @@ public:
      * @param [in] aControl controls (i.e. design variables)
      * @return criterion evaluation
      **********************************************************************************/
-    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl)
+    ScalarType value(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) override
     {
         mNumFuncEvaluations++;
 
@@ -229,7 +229,7 @@ public:
      * @param [in,out] aOutput gradient
      **********************************************************************************/
     void gradient(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         const OrdinalType tVECTOR_INDEX = 0;
         const OrdinalType tNumControls = aControl[tVECTOR_INDEX].size();
@@ -266,9 +266,9 @@ public:
      * @param [in] aVector descent direction
      * @param [in,out] application of vector to Hessian operator (Identity used for this example)
      **********************************************************************************/
-    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
+    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/,
                  const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
-                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
+                 Plato::MultiVector<ScalarType, OrdinalType> & aOutput) override
     {
         Plato::update(static_cast<ScalarType>(1), aVector, static_cast<ScalarType>(0), aOutput);
     }

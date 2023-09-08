@@ -126,27 +126,27 @@ class ExodusIO : public MeshIO {
   
 public:
   ExodusIO();
-  virtual ~ExodusIO();
+  ~ExodusIO() override;
   
-  virtual bool openMeshIO();
-  virtual bool readMeshIO();
-  virtual bool writePrologue();
-  virtual bool writeTitle();
-  virtual bool writeQA();
-  virtual bool writeTime(int,Real);
+  bool openMeshIO() override;
+  bool readMeshIO() override;
+  bool writePrologue() override;
+  bool writeTitle() override;
+  bool writeQA() override;
+  bool writeTime(int,Real) override;
 
-  virtual int getNumSteps();
+  int getNumSteps() override;
 
-  virtual std::vector<std::string> getNodeVarNames();
+  std::vector<std::string> getNodeVarNames() override;
 
-  virtual bool writeNodePlot(Real*, int, int);
-  virtual bool readNodePlot(Real*, string, int time_step=-1 );
-  virtual bool readElemPlot(double* data, string name);
-  virtual bool writeElemPlot(Real*, int, int);
-  virtual bool closeMeshIO();
-  virtual bool initVars(DataCentering, 
+  bool writeNodePlot(Real*, int, int) override;
+  bool readNodePlot(Real*, string, int time_step=-1 ) override;
+  bool readElemPlot(double* data, string name) override;
+  bool writeElemPlot(Real*, int, int) override;
+  bool closeMeshIO() override;
+  bool initVars(DataCentering, 
                         int,
-                        vector<string>);
+                        vector<string>) override;
 
 protected:
   virtual int  testFile(const char *file_name);
@@ -173,14 +173,14 @@ private: //!no copy allowed
 class NemesisIO : public ExodusIO {
 public:
   NemesisIO();
-  virtual ~NemesisIO();
+  ~NemesisIO() override;
 
-  virtual bool openMeshIO();
-  virtual bool readMeshIO();
-  virtual bool closeMeshIO();
+  bool openMeshIO() override;
+  bool readMeshIO() override;
+  bool closeMeshIO() override;
 
 protected:
-  virtual bool writeHeader();
+  bool writeHeader() override;
 
 private: //functions
   bool readParallelData();

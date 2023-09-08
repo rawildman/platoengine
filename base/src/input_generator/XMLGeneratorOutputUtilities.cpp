@@ -79,7 +79,7 @@ void append_default_qoi_to_output_operation_in_interface_file
 
 /******************************************************************************/
 void append_objective_gradient_qoi_to_output_operation
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_node& aParentNode)
 {
     auto tInput = aParentNode.append_child("Input");

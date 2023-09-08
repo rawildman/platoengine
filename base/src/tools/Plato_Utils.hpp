@@ -94,7 +94,7 @@ T Plato::Utils::byName(const std::vector<T> & aArgumentVector, const std::string
 
 /************* ignore_unused **************/
 template<typename Type>
-void Plato::Utils::ignore_unused(Type& aInput)
+void Plato::Utils::ignore_unused(Type& /*aInput*/)
 { return; }
 /************** ignore_unused **************/
 

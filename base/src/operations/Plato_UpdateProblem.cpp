@@ -58,7 +58,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Plato::UpdateProblem)
 namespace Plato
 {
 
-UpdateProblem::UpdateProblem(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+UpdateProblem::UpdateProblem(PlatoApp* aPlatoApp, Plato::InputData& /*aNode*/) :
         Plato::LocalOp(aPlatoApp)
 {
 }
@@ -79,7 +79,7 @@ void UpdateProblem::operator()()
     // update other portions of the problem here (if necessary)
 }
 
-void UpdateProblem::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+void UpdateProblem::getArguments(std::vector<Plato::LocalArg>& /*aLocalArgs*/)
 {
 }
 

@@ -40,6 +40,16 @@
 //@HEADER
 */
 
+#pragma GCC diagnostic push
+// gcc warns on missing field initializers for a lot of the python structs used here.
+// Some of them have internal use only fields and so we don't need to initialize them.
+// https://docs.python.org/3/c-api/typeobj.html
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+// There are a few warnings for casts to functions with different signatures, but the
+// python documentation explicitly says to do this:
+// https://docs.python.org/3/c-api/structures.html#c.PyMethodDef.ml_meth
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
@@ -136,7 +146,7 @@ struct PlatoESP {
 int PlatoESP::m_numInstances=0;
 
 static PyObject *
-PlatoESP_initialize(PlatoESP* self)
+PlatoESP_initialize(PlatoESP* self, PyObject* /*args*/)
 {
     self->m_MPMD_App->initialize();
 
@@ -149,7 +159,7 @@ PlatoESP_initialize(PlatoESP* self)
 }
 
 static PyObject *
-PlatoESP_importData(PlatoESP *self, PyObject *args, PyObject *kwds)
+PlatoESP_importData(PlatoESP *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -185,7 +195,7 @@ PlatoESP_importData(PlatoESP *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-PlatoESP_compute(PlatoESP *self, PyObject *args, PyObject *kwds)
+PlatoESP_compute(PlatoESP *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -204,7 +214,7 @@ PlatoESP_compute(PlatoESP *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-PlatoESP_exportData(PlatoESP *self, PyObject *args, PyObject *kwds)
+PlatoESP_exportData(PlatoESP *self, PyObject *args, PyObject * /*kwds*/)
 {
     // parse incoming arguments 
     //
@@ -233,17 +243,22 @@ PlatoESP_exportData(PlatoESP *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-PlatoESP_finalize(PlatoESP* self)
+PlatoESP_finalize(PlatoESP* self, PyObject* /*args*/)
 {
     self->m_MPMD_App->finalize();
     return Py_BuildValue("i", 1);
 }
 
 static PyModuleDef Plato_module = {
-    PyModuleDef_HEAD_INIT,
-    .m_name = "PlatoESP Services",
-    .m_doc = "PlatoESP services module",
-    .m_size = -1,
+    /*.m_base =*/ PyModuleDef_HEAD_INIT,
+    /*.m_name =*/ "PlatoESP Services",
+    /*.m_doc =*/ "PlatoESP services module",
+    /*.m_size =*/ -1,
+    /*m_methods = */ NULL,
+    /*m_slots = */ NULL,
+    /*m_traverse = */ NULL,
+    /*m_clear = */ NULL,
+    /*m_free = */ NULL
 };
 
 static void
@@ -265,7 +280,7 @@ PlatoESP_dealloc(PlatoESP* self)
 }
 
 static PyObject *
-PlatoESP_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+PlatoESP_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     PlatoESP *self;
 
@@ -276,7 +291,7 @@ PlatoESP_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 
 static int
-PlatoESP_init(PlatoESP *self, PyObject *args, PyObject *kwds)
+PlatoESP_init(PlatoESP *self, PyObject *args, PyObject * /*kwds*/)
 {
 
     // parse incoming arguments 
@@ -340,7 +355,7 @@ static PyMemberDef PlatoESP_members[] = {
 };
 
 static PyObject *
-PlatoESP_name(PlatoESP* self)
+PlatoESP_name(PlatoESP* self, PyObject* /*args*/)
 {
     PyObject *result = Py_BuildValue("s", self->m_instanceName.c_str());
 
@@ -462,4 +477,4 @@ PyObject* list_from_double_vector(std::vector<double> inVector)
   return newlist;
 }
 
-
+#pragma GCC diagnostic pop

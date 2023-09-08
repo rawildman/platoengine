@@ -75,13 +75,13 @@ public:
     /******************************************************************************//**
      * @brief Compute statistics
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Get input and output arguments associated with the local operation
      * @param [in/out] aLocalArgs local input and output arguments
     **********************************************************************************/
-    void getArguments(std::vector<LocalArg>& aLocalArgs);
+    void getArguments(std::vector<LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Return name used by the user to identify the function.
@@ -133,7 +133,7 @@ public:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("OperationName",mOperationName);

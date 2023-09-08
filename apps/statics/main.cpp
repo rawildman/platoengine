@@ -60,12 +60,12 @@ public:
     LocalApp(int aArgc, char **aArgv);
     virtual ~LocalApp();
 
-    void initialize();
-    void finalize() {};
-    void compute(const std::string & aOperationName);
-    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData);
-    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData);
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void initialize() override;
+    void finalize() override {};
+    void compute(const std::string & aOperationName) override;
+    void importData(const std::string & aArgumentName, const Plato::SharedData & aImportData) override;
+    void exportData(const std::string & aArgumentName, Plato::SharedData & aExportData) override;
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
 private:
     // functions

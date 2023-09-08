@@ -75,13 +75,13 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - set all design variables to the same initial value
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs) override;
 
     double getValue(int aIndex){return mValues[aIndex];}
     double getValueUpperBound(int aIndex){return mUpperBounds[aIndex];}
@@ -90,7 +90,7 @@ public:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("ValueNames",mValuesName);

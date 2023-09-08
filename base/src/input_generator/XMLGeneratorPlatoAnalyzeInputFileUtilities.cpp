@@ -344,7 +344,7 @@ void append_criteria_list_to_plato_analyze_input_deck
 
 /**********************************************************************************/
 void append_weighted_sum_objective_to_plato_problem
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_node& aParentNode)
 {
     XMLGen::append_attributes({"name"}, {"My Objective"}, aParentNode);
@@ -357,7 +357,7 @@ void append_weighted_sum_objective_to_plato_problem
 
 /**********************************************************************************/
 void append_functions_to_weighted_sum_objective
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  const std::vector<std::string> &aObjectiveFunctions,
  pugi::xml_node& aParentNode)
 {
@@ -474,7 +474,7 @@ pugi::xml_node append_constraint_criteria_to_plato_problem
 
 /**********************************************************************************/
 void append_weighted_sum_constraint_to_plato_problem
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_node& aParentNode)
 {
     XMLGen::append_attributes({"name"}, {"My Constraint"}, aParentNode);
@@ -487,7 +487,7 @@ void append_weighted_sum_constraint_to_plato_problem
 
 /**********************************************************************************/
 void append_functions_to_weighted_sum_constraint
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  const std::vector<std::string> &aConstraintFunctions,
  pugi::xml_node& aParentNode)
 {
@@ -568,7 +568,7 @@ void append_physics_to_plato_analyze_input_deck
 void append_spatial_model_to_plato_problem
 (const XMLGen::InputData& aXMLMetaData,
  pugi::xml_node& aParentNode,
- bool aIsHelmholtz)
+ bool /*aIsHelmholtz*/)
 {
     if(aXMLMetaData.blocks.empty())
     {

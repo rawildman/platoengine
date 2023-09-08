@@ -73,9 +73,6 @@ ByNarrowShare_PointGhostingAgent::ByNarrowShare_PointGhostingAgent(AbstractAutho
         m_support_distance(-1.)
 {
 }
-ByNarrowShare_PointGhostingAgent::~ByNarrowShare_PointGhostingAgent()
-{
-}
 
 void ByNarrowShare_PointGhostingAgent::share(double support_distance,
                                              PointCloud* local_kernel_points,

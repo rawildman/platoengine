@@ -62,7 +62,7 @@ void append_cache_state_operation
 }
 /**************************************************************************/
 void append_update_problem_operation
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");
@@ -113,7 +113,7 @@ void append_internal_energy_operation
 }
 /******************************************************************************/
 void append_compute_objective_gradient_operation_for_shape_problem
-(const XMLGen::Scenario& aScenario,
+(const XMLGen::Scenario& /*aScenario*/,
  pugi::xml_document& aDocument)
 {
     pugi::xml_node tmp_node = aDocument.append_child("Operation");
@@ -142,7 +142,7 @@ void append_internal_energy_gradient_operation_topology
 }
 /**************************************************************************/
 void append_internal_energy_gradient_operation_shape
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");

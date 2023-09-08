@@ -291,13 +291,13 @@ Point* ElementBlock::get_global_point(size_t index)
     return NULL;
 }
 
-size_t ElementBlock::get_index_helper(size_t x_index, size_t y_index, size_t z_index, size_t x_dimen, size_t y_dimen, size_t z_dimen) const
+size_t ElementBlock::get_index_helper(size_t x_index, size_t y_index, size_t z_index, size_t /*x_dimen*/, size_t y_dimen, size_t z_dimen) const
 {
     return x_index*(y_dimen*z_dimen)+y_index*(z_dimen)+z_index;
 }
 
 void ElementBlock::get_xyz_helper(size_t single_index,
-                                  size_t x_dimen, size_t y_dimen, size_t z_dimen,
+                                  size_t /*x_dimen*/, size_t y_dimen, size_t z_dimen,
                                   size_t& x_index, size_t& y_index, size_t& z_index) const
 {
     z_index = single_index % z_dimen;
@@ -354,7 +354,7 @@ void ElementBlock::set_nodes_helper(size_t x_index, size_t y_index, size_t z_ind
 
 void ElementBlock::set_elements_helper(size_t x_index, size_t y_index, size_t z_index,
                                        size_t x_dimen, size_t y_dimen, size_t z_dimen,
-                                       double x_spacing, double y_spacing, double z_spacing)
+                                       double /*x_spacing*/, double /*y_spacing*/, double /*z_spacing*/)
 {
     // if not on outside last, consider element
     if((x_index + 1 < x_dimen) && (y_index + 1 < y_dimen) && (z_index + 1 < z_dimen))
@@ -385,7 +385,7 @@ void ElementBlock::set_elements_helper(size_t x_index, size_t y_index, size_t z_
 }
 
 void ElementBlock::add_shared_nodes_helper(size_t x_dimen, size_t y_dimen, size_t z_dimen,
-                                           int rank, size_t num_processors,  size_t parallel_cube_dimension,
+                                           int /*rank*/, size_t num_processors,  size_t parallel_cube_dimension,
                                            int change_processor_x, int change_processor_y, int change_processor_z,
                                            size_t x_processor_index, size_t y_processor_index, size_t z_processor_index)
 {

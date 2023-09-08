@@ -66,7 +66,7 @@ struct AggStruct
     std::vector<std::string> mInputNames; /*!< input argument name */
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("Layout",mLayout);
         aArchive & boost::serialization::make_nvp("OutputName",mOutputName);
@@ -100,16 +100,16 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - aggregate values
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs) override;
     
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
         aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
         aArchive & boost::serialization::make_nvp("LimitWeight",mLimitWeight);

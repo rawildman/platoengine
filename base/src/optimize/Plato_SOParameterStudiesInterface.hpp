@@ -92,14 +92,14 @@ public:
     virtual ~SOParameterStudiesInterface() = default;
 
     /******************************************************************************/
-    Plato::optimizer::algorithm_t algorithm() const
+    Plato::optimizer::algorithm_t algorithm() const override
     /******************************************************************************/
     {
         return (Plato::optimizer::algorithm_t::SO_PARAMETER_STUDIES);
     }
 
     /******************************************************************************/
-    void run()
+    void run() override
     /******************************************************************************/
     {
         this->initialize();
@@ -141,7 +141,7 @@ public:
      * @brief All optimizing is done so do any optional final
      * stages. Called only once from the interface.
     **********************************************************************************/
-    void finalize()
+    void finalize() override
     /******************************************************************************/
     {
         this->mInterface->finalize();

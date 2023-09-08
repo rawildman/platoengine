@@ -138,9 +138,9 @@ public:
     virtual void getData(std::vector<double> & aData) const = 0;
 
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version){};
+    void serialize(Archive & /*aArchive*/, const unsigned int /*version*/){}
 
-    virtual void initializeMPI(const Plato::CommunicationData& aCommData){}
+    virtual void initializeMPI(const Plato::CommunicationData& /*aCommData*/){}
 };
 // class SharedData
 

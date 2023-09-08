@@ -154,7 +154,7 @@ MaterialContainer* MCFactory::create(pugi::xml_node& xml_data)
 /******************************************************************************/
 void MaterialContainer::setMaterialTopology( DataMesh* mesh,
                                              DataContainer* dc,
-                                             pugi::xml_node& node)
+                                             pugi::xml_node& /*node*/)
 /******************************************************************************/
 {
   dataContainer = dc;
@@ -255,7 +255,7 @@ Material::Material( pugi::xml_node& matspec, int id )
 {
   // add models here
   std::vector<ModelPair> models;
-  models.push_back( (ModelPair){"linear_elastic",            NewIsotropicElastic3D} );
+  models.push_back( {"linear_elastic", NewIsotropicElastic3D} );
 
   // parse crystal basis
   pugi::xml_node basisSpec = matspec.child( "crystal_basis" );

@@ -199,7 +199,7 @@ public:
     }
 
     /******************************************************************************/
-    void applyUnary(const ROL::Elementwise::UnaryFunction<double> & aFunction)
+    void applyUnary(const ROL::Elementwise::UnaryFunction<double> & aFunction) override
     /******************************************************************************/
     {
         size_t tLength = mData.size();
@@ -210,7 +210,7 @@ public:
     }
 
     /******************************************************************************/
-    void applyBinary(const ROL::Elementwise::BinaryFunction<ScalarType> & aFunction, const ROL::Vector<ScalarType> & aInput)
+    void applyBinary(const ROL::Elementwise::BinaryFunction<ScalarType> & aFunction, const ROL::Vector<ScalarType> & aInput) override
     /******************************************************************************/
     {
         assert(this->dimension() == aInput.dimension());

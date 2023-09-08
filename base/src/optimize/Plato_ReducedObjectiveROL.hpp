@@ -126,7 +126,7 @@ public:
      * \param [in] aIteration outer loop optimization iteration
     **********************************************************************************/
     using ROL::Objective<ScalarType>::update;
-    void update(const ROL::Vector<ScalarType> & aControl, ROL::UpdateType aUpdateType, int aIteration = -1) override
+    void update(const ROL::Vector<ScalarType> & /*aControl*/, ROL::UpdateType aUpdateType, int aIteration = -1) override
     {
         debugOutput("update() called with aUpdateType: " + updateType(aUpdateType) + " and aIteration: " + std::to_string(aIteration));
 
@@ -157,7 +157,7 @@ public:
      * \param [in] aTolerance inexactness tolerance
      * \return objective function value
     **********************************************************************************/
-    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
+    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/) override
     {
         debugOutput("value() called");
         if(!mStateComputed)
@@ -174,7 +174,7 @@ public:
      * \param [in] aControl design variables
      * \param [in] aTolerance inexactness tolerance
     **********************************************************************************/
-    void gradient(ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
+    void gradient(ROL::Vector<ScalarType> & aGradient, const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/) override
     {
         debugOutput("gradient() called");
         if(!mStateComputed)

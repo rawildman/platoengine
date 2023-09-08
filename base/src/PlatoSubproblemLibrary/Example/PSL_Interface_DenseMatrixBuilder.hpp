@@ -21,9 +21,9 @@ class Interface_DenseMatrixBuilder : public AbstractInterface::DenseMatrixBuilde
 {
 public:
     Interface_DenseMatrixBuilder(AbstractInterface::GlobalUtilities* utilities);
-    virtual ~Interface_DenseMatrixBuilder();
+    ~Interface_DenseMatrixBuilder() override;
 
-    virtual AbstractInterface::DenseMatrix* build_by_row_major(size_t num_rows, size_t num_columns, const std::vector<double>& in);
+    AbstractInterface::DenseMatrix* build_by_row_major(size_t num_rows, size_t num_columns, const std::vector<double>& in) override;
 protected:
 };
 

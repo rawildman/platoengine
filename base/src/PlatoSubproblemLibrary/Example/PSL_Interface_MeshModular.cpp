@@ -71,12 +71,12 @@ size_t Interface_MeshModular::get_num_blocks()
     return 1u;
 }
 
-size_t Interface_MeshModular::get_num_elements(size_t block_index)
+size_t Interface_MeshModular::get_num_elements(size_t /*block_index*/)
 {
     return m_mesh->get_num_elements();
 }
 
-std::vector<size_t> Interface_MeshModular::get_nodes_from_element(size_t block_index, size_t element_index)
+std::vector<size_t> Interface_MeshModular::get_nodes_from_element(size_t /*block_index*/, size_t element_index)
 {
     // adjacent nodes
     std::vector<Node*> adjacent_nodes = m_mesh->get_element(element_index)->get_adjacent_nodes();
@@ -92,7 +92,7 @@ std::vector<size_t> Interface_MeshModular::get_nodes_from_element(size_t block_i
     return adjacent_node_indexes;
 }
 
-bool Interface_MeshModular::is_block_optimizable(size_t block_index)
+bool Interface_MeshModular::is_block_optimizable(size_t /*block_index*/)
 {
     return true;
 }

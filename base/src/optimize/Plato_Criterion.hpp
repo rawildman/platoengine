@@ -80,7 +80,7 @@ public:
      * Perform continuation on parameters owned by the application.
      * @param [in] aControl: control, i.e. design, variables
     ***********************************************************************************/
-    virtual void updateProblem(const Plato::MultiVector<ScalarType, OrdinalType> & aControl) { return; }
+    virtual void updateProblem(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/) { return; }
 
     /******************************************************************************//**
      * Evaluate criterion function

@@ -211,8 +211,8 @@ PlatoPythonApp::importData
 
 void 
 PlatoPythonApp::exportDataMap
-(const Plato::data::layout_t & aDataLayout, 
- std::vector<int> & aMyOwnedGlobalIDs)
+(const Plato::data::layout_t & /*aDataLayout*/, 
+ std::vector<int> & /*aMyOwnedGlobalIDs*/)
 {
 }
 

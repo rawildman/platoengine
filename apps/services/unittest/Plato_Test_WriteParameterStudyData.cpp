@@ -458,8 +458,7 @@ TEST(PlatoTest, WriteParameterStudyData_Constructor)
     auto tGold = std::string("left_radius,right_radius,height,average_stress_value,volume_value,compliance_value,average_stress_gradient_wrt_left_radius,average_stress_gradient_wrt_right_radius,average_stress_gradient_wrt_height,volume_gradient_wrt_left_radius,volume_gradient_wrt_right_radius,volume_gradient_wrt_height,compliance_gradient_wrt_left_radius,compliance_gradient_wrt_right_radius,compliance_gradient_wrt_height");
     EXPECT_STREQ(tReadData.str().c_str(),tGold.c_str());
 
-    auto tTrash = std::system("rm plato_parameter_study.txt");
-    Plato::Utils::ignore_unused(tTrash);
+    [[maybe_unused]] auto tTrash = std::system("rm plato_parameter_study.txt");
 }
 
 }

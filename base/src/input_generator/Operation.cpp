@@ -769,7 +769,7 @@ void OperationWriteOutput::write_interface
 
 OperationAggregator::OperationAggregator
 (const std::string& aName,
- std::vector<std::shared_ptr<SharedData> > aOutputSharedData,
+ std::vector<std::shared_ptr<SharedData> > /*aOutputSharedData*/,
  std::shared_ptr<Performer> aPerformer):
 Operation(aName, "Aggregator", aPerformer, 0)
 {

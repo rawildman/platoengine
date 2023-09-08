@@ -57,7 +57,7 @@ void PlatoESPApp::exportData(const std::string & aArgumentName, Plato::SharedDat
     this->exportDataT(aArgumentName, aExportData);
 }
 
-void PlatoESPApp::exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs)
+void PlatoESPApp::exportDataMap(const Plato::data::layout_t & /*aDataLayout*/, std::vector<int> & aMyOwnedGlobalIDs)
 {
     aMyOwnedGlobalIDs.clear();
 }
@@ -91,7 +91,7 @@ void PlatoESPApp::reinitialize()
     mESP = nullptr;
 }
 
-void PlatoESPApp::compute(const std::string & aOperationName)
+void PlatoESPApp::compute(const std::string & /*aOperationName*/)
 {
     if(hasChanged())
     {

@@ -59,18 +59,18 @@ class ParallelExchanger_Managed : public AbstractInterface::ParallelExchanger
 {
 public:
     ParallelExchanger_Managed(AbstractAuthority* authority);
-    virtual ~ParallelExchanger_Managed();
+    ~ParallelExchanger_Managed() override;
 
     virtual void build() = 0;
 
     // get indexes of local points that are locally owned
-    virtual std::vector<size_t> get_local_contracted_indexes();
+    std::vector<size_t> get_local_contracted_indexes() override;
     // convert data vector in parallel format to vector of values for locally owned points
-    virtual std::vector<double> get_contraction_to_local_indexes(ParallelVector* input_data_vector);
+    std::vector<double> get_contraction_to_local_indexes(ParallelVector* input_data_vector) override;
     // communicate between processors to expand the locally owned data to parallel format with some values shared on processors
-    virtual void get_expansion_to_parallel_vector(const std::vector<double>& input_data_vector, ParallelVector* output_data_vector);
+    void get_expansion_to_parallel_vector(const std::vector<double>& input_data_vector, ParallelVector* output_data_vector) override;
     // determine maximum absolute parallel error
-    virtual double get_maximum_absolute_parallel_error(ParallelVector* input_data_vector);
+    double get_maximum_absolute_parallel_error(ParallelVector* input_data_vector) override;
 
 protected:
     // for contraction

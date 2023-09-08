@@ -107,27 +107,27 @@ void LoadTag::insert()
     // traction load
     auto tFuncIndex = std::type_index(typeid(XMLGen::Private::return_traction_load_name));
     mMap.insert(std::make_pair("traction",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_traction_load_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_traction_load_name, tFuncIndex)));
 
     // uniform pressure load
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_pressure_load_name));
     mMap.insert(std::make_pair("pressure",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_pressure_load_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_pressure_load_name, tFuncIndex)));
 
     // uniform surface potential
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_surface_potential_load_name));
     mMap.insert(std::make_pair("uniform_surface_potential",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_surface_potential_load_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_surface_potential_load_name, tFuncIndex)));
 
     // uniform surface flux
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_surface_flux_load_name));
     mMap.insert(std::make_pair("uniform_surface_flux",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_surface_flux_load_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_surface_flux_load_name, tFuncIndex)));
 
     // uniform source
     tFuncIndex = std::type_index(typeid(XMLGen::Private::return_uniform_thermal_source_load_name));
     mMap.insert(std::make_pair("uniform_thermal_source",
-      std::make_pair((XMLGen::Analyze::LoadTagFunc)XMLGen::Private::return_uniform_thermal_source_load_name, tFuncIndex)));
+      std::make_pair(XMLGen::Private::return_uniform_thermal_source_load_name, tFuncIndex)));
 }
 
 std::string LoadTag::call(const XMLGen::Load& aLoad) const

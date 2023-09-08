@@ -72,17 +72,17 @@ size_t Interface_MeshMonolithic::get_num_blocks()
     return 1u;
 }
 
-size_t Interface_MeshMonolithic::get_num_elements(size_t block_index)
+size_t Interface_MeshMonolithic::get_num_elements(size_t /*block_index*/)
 {
     return m_mesh->get_num_elements();
 }
 
-std::vector<size_t> Interface_MeshMonolithic::get_nodes_from_element(size_t block_index, size_t element_index)
+std::vector<size_t> Interface_MeshMonolithic::get_nodes_from_element(size_t /*block_index*/, size_t element_index)
 {
     return m_mesh->get_adjacent_nodes(element_index);
 }
 
-bool Interface_MeshMonolithic::is_block_optimizable(size_t block_index)
+bool Interface_MeshMonolithic::is_block_optimizable(size_t /*block_index*/)
 {
     return true;
 }

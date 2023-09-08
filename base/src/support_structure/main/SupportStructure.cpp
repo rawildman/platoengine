@@ -106,7 +106,7 @@ bool SupportStructure::run()
         else
             return_val = runPrivateVoxelBasedInefficientMemory();
     }
-    catch (std::exception exc)
+    catch (const std::exception& exc)
     {
         delete mSTKMeshIn;
         mSTKMeshIn = mSTKMeshOut = NULL;
@@ -366,9 +366,9 @@ int SupportStructure::getIntersectionInfoTet(stk::mesh::Entity const *aElementNo
             }
             if(index1 != -1)
             {
-                double distanceSquared1 = nodesUsedInTris[index1].distanceSquared(nodesUsedInTris[index2]);
-                double distanceSquared2 = nodesUsedInTris[index1].distanceSquared(nodesUsedInTris[index3]);
-                double distanceSquared3 = nodesUsedInTris[index2].distanceSquared(nodesUsedInTris[index3]);
+                distanceSquared1 = nodesUsedInTris[index1].distanceSquared(nodesUsedInTris[index2]);
+                distanceSquared2 = nodesUsedInTris[index1].distanceSquared(nodesUsedInTris[index3]);
+                distanceSquared3 = nodesUsedInTris[index2].distanceSquared(nodesUsedInTris[index3]);
                 if((distanceSquared1 > toleranceSquared) &&
                         (distanceSquared2 > toleranceSquared) &&
                         (distanceSquared3 > toleranceSquared))
@@ -385,8 +385,8 @@ int SupportStructure::getIntersectionInfoTet(stk::mesh::Entity const *aElementNo
                     aPlaneOrigin += nodesUsedInTris[index3];
 
                     Vector3D triNormal;
-                    Vector3D vec1 = nodesUsedInTris[index2] - nodesUsedInTris[index1];
-                    Vector3D vec2 = nodesUsedInTris[index3] - nodesUsedInTris[index1];
+                    vec1 = nodesUsedInTris[index2] - nodesUsedInTris[index1];
+                    vec2 = nodesUsedInTris[index3] - nodesUsedInTris[index1];
                     Vector3D cross = vec1 * vec2;
                     cross.normalize();
                     double dot = cross % materialToVoidDirection;
@@ -3496,15 +3496,15 @@ bool SupportStructure::runPrivateNodeBasedMaxDensityAboveTopDown()
                                     {
                                         maxDensity = curNeighborDensity;
                                         maxDot = nodeInterfaceAngles[curNeighborNode];
-                                        double supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
-                                                                                                      curNeighborDensity, maxDot, false);
+                                        supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
+                                                                                               curNeighborDensity, maxDot, false);
                                         mSTKMeshIn->setSupportStructureFieldValue(curNeighborNode.m_value, supportStructureValue);
                                     }
                                     else
                                     {
                                         inDesignRegion = false;
-                                        double supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
-                                                                                                      maxDensity, maxDot, true);
+                                        supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
+                                                                                               maxDensity, maxDot, true);
                                         mSTKMeshIn->setSupportStructureFieldValue(curNeighborNode.m_value, supportStructureValue);
                                     }
                                 }
@@ -3517,24 +3517,24 @@ bool SupportStructure::runPrivateNodeBasedMaxDensityAboveTopDown()
                                         maxIsDesign = true;
                                         maxDensity = curNeighborDensity;
                                         maxDot = nodeInterfaceAngles[curNeighborNode];
-                                        double supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
-                                                                                                      curNeighborDensity, maxDot, false);
+                                        supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
+                                                                                               curNeighborDensity, maxDot, false);
                                         mSTKMeshIn->setSupportStructureFieldValue(curNeighborNode.m_value, supportStructureValue);
                                     }
                                     else
                                     {
                                         if(maxIsDesign)
                                         {
-                                            double supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
-                                                                                                          maxDensity, maxDot, true);
+                                            supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
+                                                                                                   maxDensity, maxDot, true);
                                             mSTKMeshIn->setSupportStructureFieldValue(curNeighborNode.m_value, supportStructureValue);
                                         }
                                         else
                                         {
                                             if(curNeighborDensity > maxDensity)
                                                 maxDensity = curNeighborDensity;
-                                            double supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
-                                                                                                          maxDensity, maxDot, false);
+                                            supportStructureValue = calculateSupportStructureValue(curNeighborDensity,
+                                                                                                   maxDensity, maxDot, false);
                                             mSTKMeshIn->setSupportStructureFieldValue(curNeighborNode.m_value, supportStructureValue);
                                         }
                                     }
@@ -3792,11 +3792,11 @@ bool SupportStructure::runPrivateProjectTriangle()
 
                     while(elemsToCheck.size())
                     {
-                        stk::mesh::Entity curElem = *(elemsToCheck.begin());
+                        curElem = *(elemsToCheck.begin());
                         elemsToCheck.erase(elemsToCheck.begin());
 
-                        stk::mesh::Entity const *elemNodes = mSTKMeshIn->bulk_data()->begin_nodes(curElem);
-                        int numNodes = mSTKMeshIn->bulk_data()->num_nodes(curElem);
+                        elemNodes = mSTKMeshIn->bulk_data()->begin_nodes(curElem);
+                        numNodes = mSTKMeshIn->bulk_data()->num_nodes(curElem);
                         for(int j=0; j<numNodes; ++j)
                         {
                             stk::mesh::Entity curNode = elemNodes[j];
@@ -3966,16 +3966,11 @@ bool SupportStructure::runPrivateNodeBased()
         }
 
         // Get the counts of new support structure nodes from each processsor.
-        int globalNewSupportNodeCounts[numProcs];
-        int localNewSupportNodeCounts[numProcs];
-        for(int i=0; i<numProcs; ++i)
-        {
-            globalNewSupportNodeCounts[i] = 0;
-            localNewSupportNodeCounts[i] = 0;
-        }
+        std::vector<int> globalNewSupportNodeCounts(numProcs, 0);
+        std::vector<int> localNewSupportNodeCounts(numProcs, 0);
         localNewSupportNodeCounts[myRank] = myNewSupportMaterialNodes.size();
 
-        MPI_Allreduce(localNewSupportNodeCounts, globalNewSupportNodeCounts, numProcs,
+        MPI_Allreduce(localNewSupportNodeCounts.data(), globalNewSupportNodeCounts.data(), numProcs,
                       MPI_INT, MPI_SUM, mSTKMeshIn->bulk_data()->parallel());
 
         int d;
@@ -3994,24 +3989,14 @@ bool SupportStructure::runPrivateNodeBased()
         {
             // Now actually get the ids of the new support structure nodes from each processor
             // First allocate/initialize memory for ids from all the processors
-            int* localNewSupportNodeIds[numProcs];
-            int* globalNewSupportNodeIds[numProcs];
+            std::vector<std::vector<int>> localNewSupportNodeIds(numProcs);
+            std::vector<std::vector<int>> globalNewSupportNodeIds(numProcs);
             for(d=0; d<numProcs; ++d)
             {
                 if(globalNewSupportNodeCounts[d] > 0)
                 {
-                    localNewSupportNodeIds[d] = new int [globalNewSupportNodeCounts[d]];
-                    globalNewSupportNodeIds[d] = new int [globalNewSupportNodeCounts[d]];
-                    for(int e=0; e<globalNewSupportNodeCounts[d]; e++)
-                    {
-                        localNewSupportNodeIds[d][e] = 0;
-                        globalNewSupportNodeIds[d][e] = 0;
-                    }
-                }
-                else
-                {
-                    localNewSupportNodeIds[d] = NULL;
-                    globalNewSupportNodeIds[d] = NULL;
+                    localNewSupportNodeIds[d].resize(globalNewSupportNodeCounts[d], 0);
+                    globalNewSupportNodeIds[d].resize(globalNewSupportNodeCounts[d], 0);
                 }
             }
             // Initialize the node id values from my processor
@@ -4029,7 +4014,7 @@ bool SupportStructure::runPrivateNodeBased()
                 if(globalNewSupportNodeCounts[d] > 0)
                 {
                     // Only doing MPI_Reduce so proc 0 has all the data.
-                    MPI_Reduce(localNewSupportNodeIds[d], globalNewSupportNodeIds[d], globalNewSupportNodeCounts[d],
+                    MPI_Reduce(localNewSupportNodeIds[d].data(), globalNewSupportNodeIds[d].data(), globalNewSupportNodeCounts[d],
                                MPI_INT, MPI_SUM, 0, mSTKMeshIn->bulk_data()->parallel());
                 }
             }
@@ -4052,16 +4037,6 @@ bool SupportStructure::runPrivateNodeBased()
                     nodeIter++;
                 }
                 std::cout << std::endl;
-            }
-
-            // Now free all the data we dynamically allocated
-            for(d=0; d<numProcs; ++d)
-            {
-                if(globalNewSupportNodeCounts[d] > 0)
-                {
-                    delete [] localNewSupportNodeIds[d];
-                    delete [] globalNewSupportNodeIds[d];
-                }
             }
         }
 
@@ -4390,7 +4365,7 @@ bool SupportStructure::readCommandLine( int argc, char *argv[])
     {
         parseReturn = clp.parse( argc, argv );
     }
-    catch (std::exception exc)
+    catch (const std::exception& exc)
     {
         std::cout << "Failed to parse the command line arguments." << std::endl;
         return false;
@@ -4508,20 +4483,10 @@ Vector3D SupportStructure::findCentroid(std::vector<Vector3D> &points)
     return center;
 }
 
-void SupportStructure::sortVerticies(std::vector<Point2D> &points) 
+void SupportStructure::sortVerticies(std::vector<Point2D> &/*points*/) 
 {
     std::cout << "sortVertices not implemented" << std::endl;
     exit(1);
-    /*
-    // get centroid
-    Point center = findCentroid(points);
-    Collections.sort(points, (a, b) -> {
-        double a1 = (Math.toDegrees(Math.atan2(a.x - center.x, a.y - center.y)) + 360) % 360;
-        double a2 = (Math.toDegrees(Math.atan2(b.x - center.x, b.y - center.y)) + 360) % 360;
-        return (int) (a1 - a2);
-    });
-    return points;
-     */
 }
 
 Vector3D::Vector3D(double &x, double &y, double &z)

@@ -36,7 +36,7 @@ void append_criterion_gradient_wrt_CAD_parameters
 }
 /**************************************************************************/
 void append_criterion_gradient_operation
-(const XMLGen::InputData& aMetaData,
+(const XMLGen::InputData& /*aMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperationNode = aDocument.append_child("Operation");

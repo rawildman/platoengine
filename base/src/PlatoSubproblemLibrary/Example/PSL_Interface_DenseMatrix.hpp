@@ -22,31 +22,31 @@ class Interface_DenseMatrix : public AbstractInterface::DenseMatrix
 public:
     Interface_DenseMatrix(AbstractInterface::GlobalUtilities* global,
                           AbstractInterface::DenseMatrixBuilder* builder);
-    virtual ~Interface_DenseMatrix();
+    ~Interface_DenseMatrix() override;
 
     void receive(double** data, size_t num_rows, size_t num_columns);
 
-    virtual size_t get_num_rows();
-    virtual size_t get_num_columns();
-    virtual double get_value(size_t row, size_t column);
-    virtual void set_value(size_t row, size_t column, double value);
+    size_t get_num_rows() override;
+    size_t get_num_columns() override;
+    double get_value(size_t row, size_t column) override;
+    void set_value(size_t row, size_t column, double value) override;
 
-    virtual void matvec(const std::vector<double>& in, std::vector<double>& out, bool transpose);
-    virtual void fill(double alpha);
-    virtual void fill_by_row_major(const std::vector<double>& in);
-    virtual void set_to_identity();
-    virtual void copy(AbstractInterface::DenseMatrix* source);
-    virtual void aXpY(double alpha, AbstractInterface::DenseMatrix* X);
-    virtual void matrix_matrix_product(double alpha,
+    void matvec(const std::vector<double>& in, std::vector<double>& out, bool transpose) override;
+    void fill(double alpha) override;
+    void fill_by_row_major(const std::vector<double>& in) override;
+    void set_to_identity() override;
+    void copy(AbstractInterface::DenseMatrix* source) override;
+    void aXpY(double alpha, AbstractInterface::DenseMatrix* X) override;
+    void matrix_matrix_product(double alpha,
                                        AbstractInterface::DenseMatrix* X, bool X_transpose,
-                                       AbstractInterface::DenseMatrix* Y, bool Y_transpose);
-    virtual void scale(double alpha);
-    virtual double dot(AbstractInterface::DenseMatrix* other);
-    virtual void get_row(const int& row_index, std::vector<double>& row);
-    virtual void get_column(const int& column_index, std::vector<double>& column);
-    virtual void get_diagonal(std::vector<double>& diagonal);
-    virtual void permute_columns(const std::vector<int>& permutation);
-    virtual void scale_column(const int& column_index, const double& scale);
+                                       AbstractInterface::DenseMatrix* Y, bool Y_transpose) override;
+    void scale(double alpha) override;
+    double dot(AbstractInterface::DenseMatrix* other) override;
+    void get_row(const int& row_index, std::vector<double>& row) override;
+    void get_column(const int& column_index, std::vector<double>& column) override;
+    void get_diagonal(std::vector<double>& diagonal) override;
+    void permute_columns(const std::vector<int>& permutation) override;
+    void scale_column(const int& column_index, const double& scale) override;
 
     double** m_data;
 

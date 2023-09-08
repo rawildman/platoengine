@@ -62,16 +62,16 @@ class PlatoProxyApp : public Plato::Application
 {
 public:
     PlatoProxyApp(const std::string & aInputMeshFile, const MPI_Comm & aAppComm);
-    virtual ~PlatoProxyApp();
+    ~PlatoProxyApp() override;
 
-    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs);
+    void exportDataMap(const Plato::data::layout_t & aDataLayout, std::vector<int> & aMyOwnedGlobalIDs) override;
 
-    void finalize();
-    void initialize();
-    void reinitialize();
-    void compute(const std::string & aOperationName);
-    void exportData(const std::string & aArgumentName, Plato::SharedData& aExportData);
-    void importData(const std::string & aArgumentName, const Plato::SharedData& aImportData);
+    void finalize() override;
+    void initialize() override;
+    void reinitialize() override;
+    void compute(const std::string & aOperationName) override;
+    void exportData(const std::string & aArgumentName, Plato::SharedData& aExportData) override;
+    void importData(const std::string & aArgumentName, const Plato::SharedData& aImportData) override;
 
     void getSubDomainOwnedGlobalIDs(std::vector<int> & aInput) const;
     void getSubDomainOwnedAndSharedGlobalIDs(std::vector<int> & aInput) const;

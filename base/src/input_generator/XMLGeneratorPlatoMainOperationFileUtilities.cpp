@@ -392,7 +392,7 @@ void append_constraint_gradient_to_output_operation
 
 /******************************************************************************/
 void append_objective_gradient_to_output_operation
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_node &aParentNode)
 {
 /*
@@ -1738,7 +1738,7 @@ void append_set_lower_bounds_to_plato_main_operation
 
 /******************************************************************************/
 void append_copy_field_to_plato_main_operation
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperation = aDocument.append_child("Operation");
@@ -1756,7 +1756,7 @@ void append_copy_field_to_plato_main_operation
 
 /******************************************************************************/
 void append_copy_value_to_plato_main_operation
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperation = aDocument.append_child("Operation");
@@ -1774,7 +1774,7 @@ void append_copy_value_to_plato_main_operation
 
 /******************************************************************************/
 void append_negate_value_to_plato_main_operation
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperation = aDocument.append_child("Operation");
@@ -1798,7 +1798,7 @@ void append_negate_value_to_plato_main_operation
 
 /******************************************************************************/
 void append_negate_field_to_plato_main_operation
-(const XMLGen::InputData& aXMLMetaData,
+(const XMLGen::InputData& /*aXMLMetaData*/,
  pugi::xml_document& aDocument)
 {
     auto tOperation = aDocument.append_child("Operation");

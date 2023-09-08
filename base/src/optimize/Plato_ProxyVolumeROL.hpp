@@ -76,7 +76,7 @@ public:
     {
     }
 
-    void value(ROL::Vector<ScalarType> & aOutput, const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
+    void value(ROL::Vector<ScalarType> & aOutput, const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/) override
     {
         assert(aOutput.dimension() == static_cast<int>(1));
         assert(aControl.dimension() == mSolver->getNumDesignVariables());
@@ -93,7 +93,7 @@ public:
     void applyJacobian(ROL::Vector<ScalarType> & aOutput,
                        const ROL::Vector<ScalarType> & aDirection,
                        const ROL::Vector<ScalarType> & aControl,
-                       ScalarType & aTolerance) override
+                       ScalarType & /*aTolerance*/) override
     {
         assert(mWork.Length() == aControl.dimension());
         assert(aOutput.dimension() == static_cast<int>(1));
@@ -117,7 +117,7 @@ public:
     void applyAdjointJacobian(ROL::Vector<ScalarType> & aOutput,
                               const ROL::Vector<ScalarType> & aDirection,
                               const ROL::Vector<ScalarType> & aControl,
-                              ScalarType & aTolerance) override
+                              ScalarType & /*aTolerance*/) override
     {
         assert(mWork.Length() == aControl.dimension());
         assert(aOutput.dimension() == aControl.dimension());

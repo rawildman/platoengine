@@ -20,13 +20,13 @@ class Interface_CojugateGradient : public AbstractInterface::PositiveDefiniteLin
 public:
     Interface_CojugateGradient(AbstractInterface::GlobalUtilities* utilities,
                                AbstractInterface::DenseVectorOperations* operations);
-    virtual ~Interface_CojugateGradient();
+    ~Interface_CojugateGradient() override;
 
     void setTolerance(double tolerance_);
     void setVerbosity(bool verbose_);
 
     // true if success
-    virtual bool solve(AbstractInterface::DenseMatrix* matrix, const std::vector<double>& rhs, std::vector<double>& sol);
+    bool solve(AbstractInterface::DenseMatrix* matrix, const std::vector<double>& rhs, std::vector<double>& sol) override;
 
 protected:
     AbstractInterface::GlobalUtilities* m_utilities;

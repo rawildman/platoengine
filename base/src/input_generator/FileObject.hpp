@@ -26,7 +26,9 @@ private:
 public:
     FileObject(const std::string& aName,
                            int aConcurrentEvaluations = 0);
-    
+
+    virtual ~FileObject() = default;
+
     int evaluations(){return mConcurrentEvaluations;}
     std::string name(std::string aEvaluationString = "");
     std::string tag(std::string aEvaluationString = "");

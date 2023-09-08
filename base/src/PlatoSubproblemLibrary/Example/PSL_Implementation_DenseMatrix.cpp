@@ -211,7 +211,7 @@ void print(double** matrix_, size_t nrows_, size_t ncols_)
     }
 }
 
-void destroy(double** matrix_, size_t nrows_, size_t ncols_)
+void destroy(double** matrix_, size_t nrows_, size_t /*ncols_*/)
 {
     if(matrix_)
     {

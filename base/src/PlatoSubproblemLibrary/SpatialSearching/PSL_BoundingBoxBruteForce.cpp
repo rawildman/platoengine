@@ -15,10 +15,6 @@ BoundingBoxBruteForce::BoundingBoxBruteForce() :
 {
 }
 
-BoundingBoxBruteForce::~BoundingBoxBruteForce()
-{
-}
-
 // build searcher
 void BoundingBoxBruteForce::build(const std::vector<AxisAlignedBoundingBox>& answer_boxes)
 {

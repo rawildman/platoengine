@@ -88,7 +88,7 @@ public:
     const std::vector<std::shared_ptr<SharedData>> & getSharedData() const;
 
     template<typename Archive>
-    void serialize(Archive& aArchive, const unsigned int aVersion)
+    void serialize(Archive& aArchive, const unsigned int /*aVersion*/)
     {
         aArchive & boost::serialization::make_nvp("SharedDataVector", mSharedData);
         aArchive & boost::serialization::make_nvp("SharedDataMap", mSharedDataMap);

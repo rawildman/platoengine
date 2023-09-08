@@ -85,13 +85,13 @@ public:
     /******************************************************************************//**
      * @brief Return true if the last driver
     **********************************************************************************/
-    virtual bool lastDriver() const { return lastOptimizer(); }
+    bool lastDriver() const override { return lastOptimizer(); }
 
     /******************************************************************************//**
      * @brief Return the driver type
      * \return driver type
     **********************************************************************************/
-    virtual Plato::driver_t driver() const
+    Plato::driver_t driver() const override
     {
         return (Plato::driver_t::PLATO_OPTIMIZER_DRIVER);
     }
@@ -175,7 +175,7 @@ public:
     
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("OptimizerName",mOptimizerName);
       aArchive & boost::serialization::make_nvp("OptimizerIndex",mOptimizerIndex);

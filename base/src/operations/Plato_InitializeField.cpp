@@ -151,7 +151,7 @@ InitializeField::InitializeField(PlatoApp* aPlatoApp, Plato::InputData & aNode) 
                 sprintf(tOutFilename, "platomain_restart.exo.%d.%d", tCommSize, tRankIndex);
             }
 
-            int tBufferSize = 1024;
+            constexpr int tBufferSize = 1024;
             char tBuffer[tBufferSize];
             FILE *tInFile, *tOutFile;
             size_t tNumRead;
@@ -426,7 +426,8 @@ double InitializeField::evaluateSwissCheeseLevelSet(const double &aX,
 }
 
 /******************************************************************************/
-void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVector &field, std::vector<double> &aValues)
+void InitializeField::getInitialValuesForSwissCheeseLevelSet(
+    [[maybe_unused]] const DistributedVector &field, [[maybe_unused]] std::vector<double> &aValues)
 /******************************************************************************/
 {
 #ifdef STK_ENABLED
@@ -589,7 +590,8 @@ void InitializeField::getInitialValuesForSwissCheeseLevelSet(const DistributedVe
 }
 
 /******************************************************************************/
-void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVector &field, std::vector<double> &tValues)
+void InitializeField::getInitialValuesForPrimitivesLevelSet(
+    [[maybe_unused]] const DistributedVector &field, [[maybe_unused]] std::vector<double> &tValues)
 /******************************************************************************/
 {
 #ifdef STK_ENABLED
@@ -695,7 +697,8 @@ void InitializeField::getInitialValuesForPrimitivesLevelSet(const DistributedVec
 #endif // STK_ENABLED
 }
 
-void InitializeField::getInitialValuesForRestart(const DistributedVector &field, std::vector<double> &aValues)
+void InitializeField::getInitialValuesForRestart(
+    [[maybe_unused]] const DistributedVector &field, [[maybe_unused]] std::vector<double> &aValues)
 {
 #ifdef STK_ENABLED
     bool IsInputFileSpread = true;

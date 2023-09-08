@@ -57,7 +57,7 @@ public:
                  ParameterData* data,
                  AbstractInterface::PointCloud* points,
                  AbstractInterface::ParallelExchanger* exchanger);
-    virtual ~KernelFilter();
+    ~KernelFilter() override;
 
     // set required functionalities
     void set_authority(AbstractAuthority* authority);
@@ -69,9 +69,9 @@ public:
     void enable_maintain_kernel_points();
 
     // Filter operations
-    virtual void build();
-    virtual void apply(AbstractInterface::ParallelVector* field);
-    virtual void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient);
+    void build() override;
+    void apply(AbstractInterface::ParallelVector* field) override;
+    void apply(AbstractInterface::ParallelVector* base_field, AbstractInterface::ParallelVector* gradient) override;
     bool is_valid(AbstractInterface::ParallelVector* field);
 
     // to be used as utilities, use cautiously

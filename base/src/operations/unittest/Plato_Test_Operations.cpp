@@ -264,9 +264,9 @@ TEST(LocalOperation, SystemCall_constructor)
 
     auto tInputs = tSystemCall.inputNames();
     std::vector<std::string> tGoldInputs = {"Parameters_0"};
-    for(auto& tInput : tInputs)
+    for(auto& tCurInput : tInputs)
     {
-        auto tItr = std::find(tGoldInputs.begin(), tGoldInputs.end(), tInput);
+        auto tItr = std::find(tGoldInputs.begin(), tGoldInputs.end(), tCurInput);
         EXPECT_TRUE(tItr != tGoldInputs.end());
     }
 }

@@ -70,13 +70,12 @@ class ByNarrowShare_PointGhostingAgent : public Abstract_PointGhostingAgent
 {
 public:
     ByNarrowShare_PointGhostingAgent(AbstractAuthority* authority);
-    virtual ~ByNarrowShare_PointGhostingAgent();
 
-    virtual void share(double support_distance,
-                       PointCloud* local_kernel_points,
-                       std::vector<PointCloud*>& nonlocal_kernel_points,
-                       std::vector<size_t>& processor_neighbors_below,
-                       std::vector<size_t>& processor_neighbors_above);
+    void share(double support_distance,
+               PointCloud* local_kernel_points,
+               std::vector<PointCloud*>& nonlocal_kernel_points,
+               std::vector<size_t>& processor_neighbors_below,
+               std::vector<size_t>& processor_neighbors_above) override;
 
 protected:
     void determine_processor_bounds_and_neighbors(PointCloud* local_kernel_points,

@@ -156,7 +156,7 @@ MathParser::addVariable(std::string aVarName, std::string aVarValue)
     auto tNewName  = std::make_shared<std::string>(aVarName);
     mNames.push_back(tNewName);
 
-    te_variable newVar = {tNewName->c_str(), tNewDatum.get()};
+    te_variable newVar = {tNewName->c_str(), tNewDatum.get(), 0, nullptr};
 
     mVariables.push_back(newVar);
 }

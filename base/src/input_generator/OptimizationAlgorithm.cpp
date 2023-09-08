@@ -123,7 +123,7 @@ void OptimizationAlgorithmPlatoOC::writeInterface
     appendBoundsData(tOptimizer);
 }
 
-void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& aNode)
+void OptimizationAlgorithmPlatoOC::writeAuxiliaryFiles(pugi::xml_node& /*aNode*/)
 {
 
 }

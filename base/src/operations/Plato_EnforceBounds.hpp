@@ -78,13 +78,13 @@ public:
     /******************************************************************************//**
      * @brief perform local operation - enforce lower and upper bounds
     **********************************************************************************/
-    void operator()();
+    void operator()() override;
 
     /******************************************************************************//**
      * @brief Return local operation's argument list
      * @param [out] aLocalArgs argument list
     **********************************************************************************/
-    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs);
+    void getArguments(std::vector<Plato::LocalArg>& aLocalArgs) override;
 
     /******************************************************************************//**
      * @brief Apply the bounds to the given vector of data.
@@ -101,7 +101,7 @@ public:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & aArchive, const unsigned int version)
+    void serialize(Archive & aArchive, const unsigned int /*version*/)
     {
       aArchive & boost::serialization::make_nvp("LocalOp",boost::serialization::base_object<LocalOp>(*this));
       aArchive & boost::serialization::make_nvp("LowerBoundVectorFieldName",mLowerBoundVectorFieldName);

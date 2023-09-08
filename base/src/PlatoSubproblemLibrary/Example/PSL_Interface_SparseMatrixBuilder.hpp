@@ -20,22 +20,22 @@ class SparseMatrixBuilder : public AbstractInterface::SparseMatrixBuilder
 {
 public:
     SparseMatrixBuilder(AbstractInterface::MpiWrapper* mpi_wrapper);
-    virtual ~SparseMatrixBuilder();
+    ~SparseMatrixBuilder() override;
 
-    virtual size_t get_number_of_passes_over_all_nonzero_entries();
-    virtual void begin_build(size_t num_rows, size_t num_columns);
+    size_t get_number_of_passes_over_all_nonzero_entries() override;
+    void begin_build(size_t num_rows, size_t num_columns) override;
 
-    virtual bool needs_value_this_pass();
-    virtual void specify_nonzero(size_t row, size_t column);
-    virtual void specify_nonzero(size_t row, size_t column, double value);
-    virtual void advance_pass();
+    bool needs_value_this_pass() override;
+    void specify_nonzero(size_t row, size_t column) override;
+    void specify_nonzero(size_t row, size_t column, double value) override;
+    void advance_pass() override;
 
-    virtual AbstractInterface::SparseMatrix* end_build();
+    AbstractInterface::SparseMatrix* end_build() override;
 
-    virtual void send_matrix(size_t send_rank, AbstractInterface::SparseMatrix* matrix);
-    virtual AbstractInterface::SparseMatrix* receive_matrix(size_t recv_rank);
+    void send_matrix(size_t send_rank, AbstractInterface::SparseMatrix* matrix) override;
+    AbstractInterface::SparseMatrix* receive_matrix(size_t recv_rank) override;
 
-    virtual AbstractInterface::SparseMatrix* transpose(AbstractInterface::SparseMatrix* input);
+    AbstractInterface::SparseMatrix* transpose(AbstractInterface::SparseMatrix* input) override;
 
 protected:
     virtual void reset();

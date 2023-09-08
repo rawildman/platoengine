@@ -42,8 +42,8 @@ public:
 
 private:
 
-    void projection_apply(const double& beta, AbstractInterface::ParallelVector* field) const;
-    void projection_gradient(const double& beta, AbstractInterface::ParallelVector* const field, AbstractInterface::ParallelVector* gradient) const;
+    void projection_apply(const double& beta, AbstractInterface::ParallelVector* field) const override;
+    void projection_gradient(const double& beta, AbstractInterface::ParallelVector* const field, AbstractInterface::ParallelVector* gradient) const override;
 
 };
 

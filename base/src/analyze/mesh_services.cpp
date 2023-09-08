@@ -646,7 +646,7 @@ MeshServices::getRoughness(
   const DistributedVector& topologyField,
   double& roughness, 
   DistributedVector& gradientVector,
-  Plato::PenaltyModel* penaltyModel)
+  Plato::PenaltyModel* /*penaltyModel*/)
 /******************************************************************************/
 {
     DataContainer& dc = *(myDataMesh->getDataContainer());

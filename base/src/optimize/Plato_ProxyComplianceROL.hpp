@@ -83,7 +83,7 @@ public:
     {
         mIsFilterDisabled = true;
     }
-    void update(const ROL::Vector<ScalarType> & aControl, bool aFlag, int aIteration = -1) override
+    void update(const ROL::Vector<ScalarType> & /*aControl*/, bool /*aFlag*/, int /*aIteration*/ = -1) override
     {
         // TODO: UNDERSTAND HOW TO CACHE STATE AND ADJOINT DATA WITH ROL. I THINK THE OBJECTIVE FUNCTION EVALUATION IS OUT OF SYNC INTERNALLY.
         /*        assert(aControl.dimension() == static_cast<int>(mSolver->getNumDesignVariables()));
@@ -96,7 +96,7 @@ public:
         return;
     }
 
-    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & aTolerance) override
+    ScalarType value(const ROL::Vector<ScalarType> & aControl, ScalarType & /*aTolerance*/) override
     {
         assert(aControl.dimension() == static_cast<int>(mSolver->getNumDesignVariables()));
 
@@ -150,7 +150,7 @@ public:
     void hessVec(ROL::Vector<ScalarType> & aOutput,
                  const ROL::Vector<ScalarType> & aVector,
                  const ROL::Vector<ScalarType> & aControl,
-                 ScalarType & aTolerance) override
+                 ScalarType & /*aTolerance*/) override
     {
         assert(aOutput.dimension() == aVector.dimension());
         assert(aOutput.dimension() == aControl.dimension());
