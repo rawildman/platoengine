@@ -41,8 +41,10 @@ public:
     /// @todo: Change return to std::optional in c++17
     boost::optional<std::string> toString(const Enum aEnum) const;
 
+    typename MapType::left_map::const_iterator begin() const;
+    typename MapType::left_map::const_iterator end() const;
 private:
-    boost::bimap<Enum, std::string> mMap;
+    MapType mMap;
 };
 
 template<typename Enum>
@@ -82,6 +84,18 @@ boost::optional<std::string> EnumTable<Enum>::toString(const Enum aEnum) const
     {
        return boost::none;
     }
+}
+
+template<typename Enum>
+auto EnumTable<Enum>::begin() const -> typename EnumTable<Enum>::MapType::left_map::const_iterator
+{
+    return mMap.left.begin();
+}
+
+template<typename Enum>
+auto EnumTable<Enum>::end() const -> typename EnumTable<Enum>::MapType::left_map::const_iterator
+{
+    return mMap.left.end();
 }
 
 }
