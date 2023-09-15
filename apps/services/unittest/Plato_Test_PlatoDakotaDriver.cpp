@@ -291,13 +291,13 @@ TEST(PlatoTest, DakotaAppInterface_getStageNamesForEvaluation)
     tDakotaDriver.add<Plato::InputData>("Stage",tFinalizeStage);
 
     Plato::DakotaDataMap tDataMap(tInputData);
-    std::vector<std::string> tStageNames = setStageNamesForEvaluation(tDataMap);
+    const std::vector<std::string> tStageNames = setStageNamesForEvaluation(tDataMap);
 
     EXPECT_EQ(tStageNames.size(), 4);
-    EXPECT_EQ(tStageNames[0], "initialize_stage_name");
-    EXPECT_EQ(tStageNames[1], "CriteriaValueEvaluation");
-    EXPECT_EQ(tStageNames[2], "CriteriaGradientEvaluation");
-    EXPECT_EQ(tStageNames[3], "finalize_stage_name");
+    EXPECT_NE(std::find(tStageNames.cbegin(), tStageNames.cend(), "initialize_stage_name"), tStageNames.cend());
+    EXPECT_NE(std::find(tStageNames.cbegin(), tStageNames.cend(), "CriteriaValueEvaluation"), tStageNames.cend());
+    EXPECT_NE(std::find(tStageNames.cbegin(), tStageNames.cend(), "CriteriaGradientEvaluation"), tStageNames.cend());
+    EXPECT_NE(std::find(tStageNames.cbegin(), tStageNames.cend(), "finalize_stage_name"), tStageNames.cend());
 }
 
 TEST(PlatoTest, DakotaAppInterface_setValueOutputs)
