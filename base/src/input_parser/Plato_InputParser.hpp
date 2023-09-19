@@ -8,7 +8,6 @@
 #include <boost/phoenix/operator.hpp>
 #include <boost/phoenix/object.hpp>
 #include <boost/phoenix/fusion.hpp>
-#include <boost/phoenix/stl.hpp>
 
 #include <type_traits>
 
