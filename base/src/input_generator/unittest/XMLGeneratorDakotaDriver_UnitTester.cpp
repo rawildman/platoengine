@@ -5,6 +5,7 @@
  */
 
  #include <gtest/gtest.h>
+#include <stdexcept>
 
 #include "XMLGenerator_UnitTester_Tools.hpp"
 
@@ -1657,7 +1658,7 @@ TEST(PlatoTestXMLGenerator, AppendComputeCriterionValueToPlatoMainOperationsFile
     ASSERT_TRUE(tOperation.empty());
 }
 
-TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_ErrorMultipleDecopmsRequested)
+TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_ErrorMultipleDecompsRequested)
 {
     XMLGen::InputData tMetaData;
 
@@ -1782,36 +1783,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Mult
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument));
-    ASSERT_FALSE(tDocument.empty());
-
-    // TEST RESULTS AGAINST GOLD VALUES
-    auto tOperation = tDocument.child("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_0", "cd evaluations_0; decomp -p 10 rocker_0.exo", "true", ""};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    auto tInput = tOperation.child("Input");
-    ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"Parameters", "scalar", "41"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_33_1", "cd evaluations_1; decomp -p 10 rocker_1.exo", "true", ""};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    tInput = tOperation.child("Input");
-    ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"Parameters", "scalar", "41"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_TRUE(tOperation.empty());
+    ASSERT_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument),std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_SingleObjectiveSingleConstraint)
@@ -1870,36 +1842,7 @@ TEST(PlatoTestXMLGenerator, AppendDecompOperationsToPlatoMainOperationsFile_Sing
     tMetaData.set(tOptimizationParameters);
 
     pugi::xml_document tDocument;
-    ASSERT_NO_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument));
-    ASSERT_FALSE(tDocument.empty());
-
-    // TEST RESULTS AGAINST GOLD VALUES
-    auto tOperation = tDocument.child("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    ASSERT_STREQ("Operation", tOperation.name());
-    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
-    std::vector<std::string> tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_0", "cd evaluations_0; decomp -p 4 rocker_0.exo", "true", ""};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    auto tInput = tOperation.child("Input");
-    ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"Parameters", "scalar", "14"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_FALSE(tOperation.empty());
-    ASSERT_STREQ("Operation", tOperation.name());
-    tKeys = {"Function", "Name", "Command", "OnChange", "Input"};
-    tValues = {"SystemCall", "decomp_mesh_sierra_sd_6_1", "cd evaluations_1; decomp -p 4 rocker_1.exo", "true", ""};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tOperation);
-    tInput = tOperation.child("Input");
-    ASSERT_FALSE(tInput.empty());
-    tKeys = {"ArgumentName", "Layout", "Size"};
-    tValues = {"Parameters", "scalar", "14"};
-    PlatoTestXMLGenerator::test_children(tKeys, tValues, tInput);
-
-    tOperation = tOperation.next_sibling("Operation");
-    ASSERT_TRUE(tOperation.empty());
+    ASSERT_THROW(XMLGen::append_decomp_operations_for_physics_performers_to_plato_main_operation(tMetaData, tDocument),std::runtime_error);
 }
 
 TEST(PlatoTestXMLGenerator, AppendConcurrentEvaluationsToDefinesFile)

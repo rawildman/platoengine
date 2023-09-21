@@ -727,11 +727,7 @@ void InitializeField::getInitialValuesForRestart(
 
     if(mIteration == -1)
     {
-#ifdef BUILD_IN_SIERRA
         mIteration = tBroker->get_input_ioss_region().get()->get_property("state_count").get_int();
-#else
-        mIteration = tBroker->get_input_io_region().get()->get_property("state_count").get_int();
-#endif
     }
     tBroker->read_defined_input_fields(mIteration);
 

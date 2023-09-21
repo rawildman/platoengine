@@ -1607,25 +1607,12 @@ void append_decomp_operations_for_physics_performers_to_plato_main_operation
 
 /******************************************************************************/
 void append_decomp_operations
-(const XMLGen::InputData& aXMLMetaData,
- pugi::xml_document& aDocument,
- const XMLGen::Service& aService,
- int aEvaluation)
+(const XMLGen::InputData&,
+ pugi::xml_document&,
+ const XMLGen::Service&,
+ int)
 {
-    std::string tTag = std::string("_") + std::to_string(aEvaluation);
-    std::string tName = std::string("decomp_mesh_") + aService.performer() + tTag;
-    std::string num_procs = aService.numberProcessors();
-    std::string tMesh = XMLGen::append_concurrent_tag_to_file_string(aXMLMetaData.optimization_parameters().csm_exodus_file(),tTag);
-    std::string tDecompString = std::string("decomp -p ") + num_procs + std::string(" ") + tMesh;
-    std::string tCommand = std::string("cd evaluations") + tTag + std::string("; ") + tDecompString;
-
-    auto tOperation = aDocument.append_child("Operation");
-    std::vector<std::string> tKeys = {"Function", "Name", "Command", "OnChange"};
-    std::vector<std::string> tValues = {"SystemCall", tName, tCommand, "true"};
-    XMLGen::append_children(tKeys, tValues, tOperation);
-    auto tInputNode = tOperation.append_child("Input");
-    std::string tNumParameters = std::to_string(XMLGen::get_number_of_shape_parameters(aXMLMetaData));
-    XMLGen::append_children({"ArgumentName", "Layout", "Size"}, {"Parameters", "scalar", tNumParameters}, tInputNode);
+    THROWERR("Dakota with multiple CPUs per physics performer is not supported.");
 }
 // function append_decomp_operations
 /******************************************************************************/

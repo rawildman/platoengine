@@ -7,7 +7,8 @@
 
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
-#include <boost/phoenix/stl.hpp>
+#include <boost/phoenix/stl/algorithm.hpp>
+#include <boost/phoenix/stl/container.hpp>
 
 namespace{
 enum struct Pizza{kCheese, kSupreme, kPepperoni};
