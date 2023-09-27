@@ -25,12 +25,12 @@ endif()
 ###############################################################################
 ###############################################################################
 
-add_library(PlatoApp PlatoApp.cpp)
+add_library(PlatoApp PlatoApp.cpp PlatoApp.hpp)
 target_include_directories(PlatoApp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(PlatoApp PUBLIC PlatoAnalyze PlatoInterface PRIVATE PlatoFilters PlatoPenaltyModels)
 install(TARGETS PlatoApp EXPORT PlatoEngine DESTINATION lib)
+target_include_directories(PlatoApp PUBLIC $<INSTALL_INTERFACE:include>)
 
 if( UNIT_TESTING )
-  message( "-- Enabling unit testing " )
   add_subdirectory(./unittest)
 endif()

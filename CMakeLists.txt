@@ -56,6 +56,7 @@ endif()
 ###############################################################################
 ###############################################################################
 
+project(PlatoEngine LANGUAGES CXX C)
 
 ############################  Trilinos Setup  #################################
 ###############################################################################
@@ -70,8 +71,6 @@ MESSAGE("   Trilinos_VERSION = ${Trilinos_VERSION}")
 MESSAGE("End of Trilinos details\n")
 
 ###########################  Compiler setup ###################################
-######################## (pre 'project()' command) ############################
-## Compilers cannot be changed after the 'project()' command below:
 message("Trilinos_CXX_COMPILER     ${Trilinos_CXX_COMPILER}")
 message("Trilinos_C_COMPILER       ${Trilinos_C_COMPILER}")
 message("Trilinos_Fortran_COMPILER ${Trilinos_Fortran_COMPILER}")
@@ -80,7 +79,6 @@ set(CMAKE_C_COMPILER       ${Trilinos_C_COMPILER})
 set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 
 ###############################################################################
-project(PlatoEngine)
 ###############################################################################
 
 
