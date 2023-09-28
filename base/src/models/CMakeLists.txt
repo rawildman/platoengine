@@ -1,7 +1,3 @@
-set(LIB_NAMES)
-
-set(LIB_NAME PenaltyModels)
-set(LIB_NAMES ${LIB_NAMES} ${LIB_NAME})
 set(SOURCES Plato_PenaltyModel.cpp Plato_SIMP.cpp)
 set(HEADERS Plato_PenaltyModel.hpp Plato_SIMP.hpp)
 

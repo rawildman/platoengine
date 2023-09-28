@@ -69,7 +69,6 @@ target_link_libraries(PlatoOperations PUBLIC PlatoDataLayer PlatoParser PlatoPen
 target_include_directories(PlatoOperations PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 if( ENABLE_ISO )
-  message( "-- Compiling PlatoIso " )
   target_link_libraries(PlatoOperations PRIVATE IsoExtract)
   target_compile_definitions(PlatoOperations PRIVATE ENABLE_ISO)
 endif()
