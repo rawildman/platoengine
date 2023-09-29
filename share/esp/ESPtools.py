@@ -244,20 +244,39 @@ def toExo(meshName, groupAttrs):
 ##############################################################################
 ## define function that updates the "_opt.csm" file
 ##############################################################################
-def updateModelAflr4Aflr3Exodus(modelName, paramVals):
-
+def parseMeshLength(modelName):
   response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
 
   ## is 'MeshLength' in the csm file?
   if response == "":
-    raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
+    raise Exception("Error reading CSM file: required variable, 'MeshLength', not found.")
 
   ## is 'MeshLength' in the csm file only once?
   tokens = response.rstrip().split("\n")
   if len(tokens) > 1:
     raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
 
-  MeshLength = str(response)
+  return str(response)
+
+def insertCurrentParameterVals(modelName, paramVals):
+  # If paramVals were provided, set them in the model file
+  for ip in range(len(paramVals)):
+    p = paramVals[ip]
+    print("param: " + str(p))
+    tmp_string = modelName + '-tmp.file'
+    f = open(tmp_string, "w")
+    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
+    print("command: ", command)
+    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modelName], stdout=f)
+    f.close()
+    subprocess.call(['mv', tmp_string, modelName])
+
+##############################################################################
+## define function that updates the "_opt.csm" file
+##############################################################################
+def updateModelAflr4Aflr3Exodus(modelName, paramVals):
+
+  MeshLength = parseMeshLength(modelName)
 
   modedName = modelName + ".tmp"
 
@@ -276,18 +295,9 @@ def updateModelAflr4Aflr3Exodus(modelName, paramVals):
       f_out.write("patend\n")
     f_out.write(line)
   f_out.close()
+  f_in.close()
 
-  # If paramVals were provided, set them in the model file
-  for ip in range(len(paramVals)):
-    p = paramVals[ip]
-    print("param: " + str(p))
-    tmp_string = modelName + '-tmp.file'
-    f = open(tmp_string, "w")
-    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
-    print("command: ", command)
-    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
-    f.close()
-    subprocess.call(['mv', tmp_string, modedName])
+  insertCurrentParameterVals(modedName, paramVals)
 
   subprocess.call(['mv', modedName, modelName])
 
@@ -322,96 +332,24 @@ def updateModelXXXTetgenExodus(modelName, paramVals):
 ##############################################################################
 def updateModelAflr2Exodus(modelName, paramVals):
 
-  # find mesh size attribute 'MeshLength'
-  #
-  response = subprocess.check_output(['awk', '/set/{if ($2=="MeshLength") print $3}', modelName]).decode(sys.stdout.encoding)
-  if response == "":
-    raise Exception("Error reading CSM file: required variable, 'MeshLength', not found..")
+  parseMeshLength(modelName)
 
-  tokens = response.rstrip().split("\n")
-  if len(tokens) > 1:
-    raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
-
-  MeshLength = str(response)
-
-  # append necessary lines to csm file
-  #
   modedName = modelName + ".tmp"
 
-  f_in = open(modelName)
   f_out = open(modedName, 'w')
+  f_out.write("attribute capsAIM $aflr2AIM;platoAIM\n")
+  f_out.write("attribute capsMeshLength 1.0 \n")
 
-  bodyName = "solid_group"
-
+  f_in = open(modelName)
   for line in f_in:
-    if line.strip().lower() == 'end':
-      f_out.write("select body\n")
-      f_out.write("attribute capsAIM $aflr2AIM;platoAIM\n")
-      f_out.write("attribute capsMeshLength 1.0 \n")
-      f_out.write("attribute capsGroup $" + bodyName + "\n")
-      f_out.write("attribute capsMesh $" + bodyName + "\n")
-
-      f_out.write("select edge\n")
-      f_out.write("attribute capsGroup $remaining_surface_sideset\n")
-
     f_out.write(line)
 
   f_out.close()
+  f_in.close()
 
-  # If paramVals were provided, set them in the model file
-  #
-  for ip in range(len(paramVals)):
-    p = paramVals[ip]
-    print("param: " + str(p))
-    tmp_string = modelName + '-tmp.file'
-    f = open(tmp_string, "w")
-    command = 'BEGIN{ip=0};{if($1~"despmtr"){if(ip=='+str(ip)+'){print $1, $2, val, $4, $5, $6, $7, $8, $9}else{print $0}ip++}else{print $0}}'
-    print("command: ", command)
-    subprocess.call(['awk', '-v', 'val='+str(paramVals[ip]), command, modedName], stdout=f)
-    f.close()
-    subprocess.call(['mv', tmp_string, modedName])
+  insertCurrentParameterVals(modedName, paramVals)
 
   subprocess.call(['mv', modedName, modelName])
-
-  # find any boundary attribute assignments and copy them to the end of the file
-  #
-  boundaryTag = "edge"
-
-  f_in = open(modelName)
-  f_out = open(modedName, 'w')
-
-  boundaryAttrs = []
-
-  bodyLine = ""
-  boundaryLine = ""
-  for line in f_in:
-    if line.strip().lower() == 'end':
-      for boundaryAttr in boundaryAttrs:
-        for attrLine in boundaryAttr:
-          f_out.write(attrLine)
-    else:
-      tokens = line.split(' ')
-      tokens = list(filter(None, tokens)) ## filter out empty strings
-      if bodyLine != "" and boundaryLine != "":
-        if tokens[0] == "attribute" and tokens[1] == "capsGroup":
-          boundaryAttrs.append([bodyLine, boundaryLine, line])
-          bodyLine = ""
-          boundaryLine = ""
-      elif bodyLine != "":
-        if tokens[0] == "select" and tokens[1] == boundaryTag:
-          boundaryLine = line
-        else:
-          bodyLine = ""
-      else:
-        if tokens[0] == "select" and tokens[1] == "body":
-          bodyLine = line
-
-    f_out.write(line)
-
-  f_out.close()
-
-  subprocess.call(['mv', modedName, modelName])
-
 
 ##############################################################################
 ## Moves ESP generated mesh files to files used by plato
