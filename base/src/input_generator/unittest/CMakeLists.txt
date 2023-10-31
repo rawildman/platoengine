@@ -3,7 +3,7 @@ SET(SRCS XMLGenerator_UnitMain.cpp
           UnitTesterTools_UnitTester.cpp
           Plato_Test_XMLGenerator.cpp
           XMLGeneratorLaunch_UnitTester.cpp
-          PlatoGemma_UnitTester.cpp
+          MoveSubDirs_UnitTester.cpp
           XMLGeneratorDefineFile_UnitTester.cpp
           XMLGeneratorDakotaDriver_UnitTester.cpp
           XMLGeneratorParseMetaData_UnitTester.cpp
