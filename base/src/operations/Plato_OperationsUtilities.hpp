@@ -99,14 +99,5 @@ void split(const std::string & aInput, std::vector<std::string> & aOutput);
 **********************************************************************************/
 void zero(const size_t& aLength, double* aData);
 
-/******************************************************************************//**
- * \fn parse_tokens
- * \brief Parse tokens from buffer.
- * \param [in]  aBuffer token buffer
- * \param [out] aTokens parsed tokens
- * \return boolean flag (true=passed, false=failed)
-**********************************************************************************/
-bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens);
-
 }
 // namespace Plato

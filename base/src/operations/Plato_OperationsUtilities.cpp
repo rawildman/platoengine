@@ -169,42 +169,5 @@ void split(const std::string & aInput, std::vector<std::string> & aOutput)
     }
 }
 
-bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens)
-{
-    const std::string tDELIMITER = " \t";
-    constexpr int tMAX_TOKENS_PER_LINE = 5000;
-    const char* tToken[tMAX_TOKENS_PER_LINE] = {}; // initialize to 0
-
-    // parse the line
-    tToken[0] = std::strtok(aBuffer, tDELIMITER.c_str()); // first token
-
-    // If there is a comment...
-    if(tToken[0] && std::strlen(tToken[0]) > 1 && tToken[0][0] == '/' && tToken[0][1] == '/')
-    {
-        aTokens.clear();
-        return true;
-    }
-
-    int tN = 0;
-    if (tToken[0]) // zero if line is blank
-    {
-        for (tN = 1; tN < tMAX_TOKENS_PER_LINE; tN++)
-        {
-            tToken[tN] = std::strtok(0, tDELIMITER.c_str()); // subsequent tokens
-            if (!tToken[tN])
-            {
-                break; // no more tokens
-            }
-        }
-    }
-    for(int tIndex=0; tIndex<tN; ++tIndex)
-    {
-        aTokens.push_back(tToken[tIndex]);
-    }
-
-    return true;
-}
-// function parse_tokens
-
 }
 // namespace Plato
