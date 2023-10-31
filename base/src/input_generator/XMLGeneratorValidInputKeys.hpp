@@ -588,8 +588,7 @@ private:
         {"thermoplasticity", "solid"},
         {"frequency_response_function", "solid"},
         {"modal_response", "solid"},
-        {"steady_state_incompressible_fluids", "fluid"},
-        {"electromagnetics", "electromagnetics"}
+        {"steady_state_incompressible_fluids", "fluid"}
     };
 
 public:
@@ -644,8 +643,7 @@ private:
         "thermoplasticity",
         "forced_convection",
         "natural_convection",
-        "laminar_flow",
-        "electromagnetics"
+        "laminar_flow"
     };
 
 public:
@@ -1186,13 +1184,8 @@ private:
                 { "reynolds_number", {"Reynolds Number", "double"} },
                 { "impermeability_number", {"Impermeability Number", "double"} }
             }
-        },
-
-        { "electromagnetics",
-            {
-                { "conductivity", { "Conductivity", "double" } }
-            }
         }
+
     };
 
 public:

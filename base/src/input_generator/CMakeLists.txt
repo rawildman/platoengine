@@ -66,14 +66,6 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorParseRun.cpp
                       XMLGeneratorPlatoXTKInputFile.cpp
                       XMLGeneratorPlatoXTKOperationFile.cpp
-		      FileObject.cpp
-		      Operation.cpp
-                      Stage.cpp
-		      Performer.cpp
-		      SharedData.cpp
-		      GemmaProblem.cpp
-		      OptimizationAlgorithm.cpp
-		      OptimizationAlgorithmFactory.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -154,14 +146,6 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorPlatoXTKOperationFile.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
-		      FileObject.hpp
-		      Operation.hpp
-                      Stage.hpp
-		      Performer.hpp
-		      SharedData.hpp
-		      GemmaProblem.hpp
-		      OptimizationAlgorithm.hpp
-		      OptimizationAlgorithmFactory.hpp
                       )
 
 add_executable(XMLGenerator ${XMLGenerator_SRCS})
