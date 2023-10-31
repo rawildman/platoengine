@@ -108,13 +108,5 @@ void zero(const size_t& aLength, double* aData);
 **********************************************************************************/
 bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens);
 
-/******************************************************************************//**
- * \fn read_table
- * \brief Read data from text file on disk..
- * \param [in]  aFileName name of file on disk to be read
- * \param [out] aTable    data
-**********************************************************************************/
-void read_table(const std::string& aFileName, std::vector<std::vector<double>>& aTable);
-
 }
 // namespace Plato

@@ -206,41 +206,5 @@ bool parse_tokens(char *aBuffer, std::vector<std::string> &aTokens)
 }
 // function parse_tokens
 
-void read_table(const std::string& aFileName, std::vector<std::vector<double>>& aTable)
-{
-    constexpr int MAX_CHARS_PER_LINE = 10000;
-    std::vector<char> tBuffer(MAX_CHARS_PER_LINE);
-    std::ifstream tFile(aFileName); //taking file as inputstream
-    while (!tFile.eof())
-    {
-        std::vector<std::string> tTokens;
-        tFile.getline(tBuffer.data(), MAX_CHARS_PER_LINE);
-        Plato::parse_tokens(tBuffer.data(), tTokens);
-        
-        bool tPushBack = false;
-        std::vector<double> tRow(tTokens.size(), 0.0);
-        for(auto& tToken : tTokens)
-        {
-            auto tIndex = &tToken - &tTokens[0];
-            try
-            {
-                tRow[tIndex] = std::stod(tToken);
-                tPushBack = true;
-            }
-            catch (std::exception& e)
-            {
-                std::cout << "Token: '" << tTokens[tIndex] << "' is not a number. String to double conversion will be skipped.\n";
-                continue;
-            }
-        }
-
-        if(tPushBack)
-        {
-            aTable.push_back(tRow);
-        }
-    }
-}
-// function read_table
-
 }
 // namespace Plato
