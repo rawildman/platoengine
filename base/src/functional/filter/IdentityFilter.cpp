@@ -4,10 +4,21 @@
 
 #include "Exception.hpp"
 #include "FilterJacobian.hpp"
+#include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
+#include "Plato_InputEnumTypes.hpp"
 
 namespace Plato::Functional
 {
+namespace
+{
+[[maybe_unused]]
+static auto kIdentityFilterRegistration = Plato::Functional::FilterFactory::Registration{
+   Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
+   [](const Plato::density_topology&){ return make_identity_filter_function();}
+};
+}
+
 MeshProxy IdentityFilter::filter(const MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
 ROL::StdVector<double> IdentityFilter::jacobianTimesVector(const MeshProxy& aMeshProxy,
@@ -25,7 +36,8 @@ ROL::StdVector<double> IdentityFilter::jacobianTimesVector(const MeshProxy& aMes
     return aV;
 }
 
-auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>
+auto make_identity_filter_function()
+    -> Function<MeshProxy, FilterJacobian, const MeshProxy&>
 {
     return make_function([](const MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
                          [](const MeshProxy& aMeshProxy) {

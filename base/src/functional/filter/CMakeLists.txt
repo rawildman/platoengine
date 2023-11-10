@@ -1,14 +1,17 @@
 set(SRCS FilterFactory.cpp
          FilterJacobian.cpp
+         FilterRegistration.cpp
+         HelmholtzFilter.cpp
          IdentityFilter.cpp)
 
 set(HDRS FilterInterface.hpp
             FilterFactory.hpp
             FilterJacobian.hpp
+            FilterRegistration.hpp
             IdentityFilter.hpp)
 
 set(LIB_NAME PlatoFunctionalFilter)
-add_library(${LIB_NAME} ${SRCS} ${HDRS} )
+add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
 target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
 target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalCore PlatoFunctionalUtilities PlatoInputParser)
 

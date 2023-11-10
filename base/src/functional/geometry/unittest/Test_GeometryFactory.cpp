@@ -31,6 +31,7 @@ TEST(GeometryFactory, ValidTopology)
     auto tData = Plato::PlatoInput{};
     auto tDensityTopology = Plato::density_topology{};
     tDensityTopology.mesh_name = Plato::FileName{tFileName};
+    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
     tData.mDensityTopology = tDensityTopology;
 
     EXPECT_NO_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tData));

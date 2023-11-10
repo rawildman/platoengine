@@ -12,6 +12,7 @@ install( TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 # Build unit tester
 set(SRCS Test_FilterFactory.cpp
          Test_IdentityFilter.cpp
+         Test_Registration.cpp
          Test_SharedLibFilter.cpp
          UnitMain.cpp )
 
