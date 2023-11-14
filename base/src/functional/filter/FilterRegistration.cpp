@@ -53,12 +53,9 @@ std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInp
     return tCreateFilterFunction(to_filter_parameters(aInput));
 }
 
-namespace detail
+bool is_filter_function_registered(const std::string_view aFunctionName)
 {
-auto registered_functions() -> std::unordered_map<std::string, FactoryFunction>&
-{
-    static auto tFunctions = std::unordered_map<std::string, FactoryFunction>{};
-    return tFunctions;
+    return is_function_registered<FilterFunction, FilterInput>(aFunctionName);
 }
-}  // namespace detail
+
 }  // namespace Plato::Functional::FilterFactory

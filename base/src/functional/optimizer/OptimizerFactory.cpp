@@ -52,4 +52,9 @@ ROL::ParameterList rol_parameter_list(const Plato::optimization_parameters& aOpt
     }
 }
 
+ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Ptr<ROL::Problem<double>> aROLProblem)
+{
+    return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
+}
+
 }  // namespace Plato::Functional

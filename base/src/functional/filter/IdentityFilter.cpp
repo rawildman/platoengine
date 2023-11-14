@@ -12,11 +12,9 @@ namespace Plato::Functional
 {
 namespace
 {
-[[maybe_unused]]
-static auto kIdentityFilterRegistration = Plato::Functional::FilterFactory::Registration{
-   Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
-   [](const Plato::density_topology&){ return make_identity_filter_function();}
-};
+[[maybe_unused]] static auto kIdentityFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
+    Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
+    [](const Plato::density_topology&) { return make_identity_filter_function(); }};
 }
 
 MeshProxy IdentityFilter::filter(const MeshProxy& aMeshProxy) const { return aMeshProxy; }

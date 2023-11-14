@@ -10,7 +10,7 @@ namespace
 {
 const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctionalInterface.so"};
 
-[[maybe_unused]] static auto kHelmholtzFilterRegistration = Plato::Functional::FilterFactory::Registration{
+[[maybe_unused]] static auto kHelmholtzFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
     Plato::kFilterTypesTable.toString(Plato::FilterTypes::kHelmholtz).value(), [](const Plato::density_topology& aInput)
     {
         return FilterFactory::make_filter_function_from_interface(

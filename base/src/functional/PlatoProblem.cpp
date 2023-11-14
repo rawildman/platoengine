@@ -68,9 +68,4 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Ptr<ROL::Problem<double>> aROLProblem)
-{
-    return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
-}
-
 }  // namespace Plato::Functional

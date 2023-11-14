@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Function.hpp"
+#include "FactoryRegistration.hpp"
 
 namespace Plato
 {
@@ -23,28 +24,9 @@ class FilterInterface;
 namespace Plato::Functional::FilterFactory
 {
 using FilterFunction = Function<MeshProxy, FilterJacobian, const MeshProxy&>;
-using FactoryFunction = std::function<FilterFunction(const Plato::density_topology&)>;
+using FilterInput = Plato::density_topology;
+using FilterRegistration = Registration<FilterFunction, FilterInput>;
 
-/// @brief Object used for static registration of Filter creation functions.
-///
-/// The purpose of this struct is to enable static registration of the functions
-/// used in FilterFactory to create a Filter. It must be used for registering new
-/// types. Its usage is:
-/// @code
-/// namespace{
-/// [[maybe_unused]] static auto kNewFilterRegistration = Registration{
-///   "filter-type", // Must match the name used in the input block
-///    [](){ return make_new_filter(); // Must be a function that creates the desired filter
-/// };
-/// }
-/// @endcode
-struct Registration
-{
-    template <typename F>
-    Registration(std::string aName, F aFunction);
-};
-
-///
 [[nodiscard]] auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction;
 
 /// @brief Loads a filter from a shared library.
@@ -53,17 +35,7 @@ struct Registration
 [[nodiscard]] std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
                                                            const std::filesystem::path& aSharedLibraryPath);
 
-namespace detail
-{
-/// @return Map holding registered functions used to create FilterFunction objects in the factory.
-[[nodiscard]] auto registered_functions() -> std::unordered_map<std::string, FactoryFunction>&;
-}  // namespace detail
-
-template <typename F>
-Registration::Registration(std::string aName, F aFunction)
-{
-    detail::registered_functions().try_emplace(std::move(aName), std::move(aFunction));
-}
+bool is_filter_function_registered(const std::string_view aFunctionName);
 }  // namespace Plato::Functional::FilterFactory
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_PLATOPROBLEM
 #define PLATO_FUNCTIONAL_PLATOPROBLEM
 
-#include <ROL_Solver.hpp>
 #include <ROL_StdBoundConstraint.hpp>
+
 #include <memory>
 #include <vector>
 
@@ -59,13 +59,6 @@ struct PlatoProblem
 ///@return std::unique_ptr<ROL::Problem<double>>
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
-///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
-///
-///@param aROLOptions
-///@param aProblem
-///@return ROL::Solver<double>
-[[nodiscard]] ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions,
-                                                  ROL::Ptr<ROL::Problem<double>> aProblem);
 }  // namespace Plato::Functional
 
 #endif

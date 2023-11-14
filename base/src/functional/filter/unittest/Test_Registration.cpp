@@ -18,7 +18,7 @@ namespace
         [](const Plato::Functional::MeshProxy&) { return Plato::Functional::FilterJacobian{}; });
 }
 
-static auto kTestFilterRegistration = Plato::Functional::FilterFactory::Registration{
+static auto kTestFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
    "test",
    [](const Plato::density_topology&){ return make_test_filter_function();}
 };
@@ -26,13 +26,10 @@ static auto kTestFilterRegistration = Plato::Functional::FilterFactory::Registra
 
 TEST(FilterRegistration, PhonyFilter) 
 { 
-   namespace pf = Plato::Functional;
-   // Test that the test filter was registered
-   EXPECT_NO_THROW(pf::FilterFactory::detail::registered_functions().at("test"));
+   EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("test"));
 }
 
 TEST(FilterRegistration, Identity)
 {
-   namespace pf = Plato::Functional;
-   EXPECT_NO_THROW(pf::FilterFactory::detail::registered_functions().at("identity"));
+   EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("identity"));
 }

@@ -1,10 +1,24 @@
 #include "SharedLibCriterion.hpp"
 
+#include "CriterionRegistration.hpp"
+#include "Plato_InputEnumTypes.hpp"
 #include "Exception.hpp"
 #include "SharedLibraryUtilities.hpp"
 
 namespace Plato::Functional
 {
+namespace
+{
+SharedLibCriterion make_shared_lib_criterion(const Plato::Functional::CriterionFactory::CriterionInput& aInput)
+{
+    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
+}
+
+[[maybe_unused]] static auto kCustomAppRegistration =
+    CriterionFactory::CriterionRegistration{Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kCustomApp).value(),
+                                            [](const Plato::Functional::CriterionFactory::CriterionInput& aInput)
+                                            { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
+}  // namespace
 
 SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPath,
                                        const std::vector<std::string>& aFileNames)

@@ -3,10 +3,19 @@
 #include <numeric>
 #include <vector>
 
+#include "CriterionRegistration.hpp"
+#include "Plato_InputEnumTypes.hpp"
 #include "STKUtilities.hpp"
 
 namespace Plato::Functional
 {
+namespace
+{
+[[maybe_unused]] static auto kNodalSumRegistration = CriterionFactory::CriterionRegistration{
+    Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kNodalSum).value(),
+    [](const Plato::Functional::CriterionFactory::CriterionInput&) { return make_nodal_sum_function(); }};
+}
+
 double NodalSumObjective::f(const MeshProxy& aMeshProxy) const
 {
     auto tBulk = read_mesh_bulk_data(aMeshProxy.mFileName.string());

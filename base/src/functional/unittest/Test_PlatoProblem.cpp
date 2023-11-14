@@ -8,6 +8,7 @@
 #include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
+#include "OptimizerFactory.hpp"
 #include "PlatoProblem.hpp"
 
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
