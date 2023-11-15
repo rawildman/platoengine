@@ -3,36 +3,56 @@
 #include "BrickShapeGeometry.hpp"
 #include "DensityTopology.hpp"
 #include "Exception.hpp"
+#include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
 
 namespace Plato::Functional::GeometryFactory
 {
 
-GeometryFunction make_geometry_function(const Plato::PlatoInput& aInput)
+namespace
+{
+
+GeometryFactory::GeometryInput to_geometry_input(const Plato::PlatoInput& aInput)
 {
     if (aInput.mBrickShapeGeometry)
     {
-        if (aInput.mBrickShapeGeometry->mesh_name)
-        {
-            return make_brick_shape_geometry(BrickShapeGeometry{aInput.mBrickShapeGeometry->mesh_name->mName});
-        }
-        else
-        {
-            throw Exception("brick_shape_geometry requires a mesh_name.");
-        }
+        return aInput.mBrickShapeGeometry.value();
     }
     else if (aInput.mDensityTopology)
     {
-        if (aInput.mDensityTopology->mesh_name)
-        {
-            return make_topology_geometry(DensityTopology{aInput.mDensityTopology.value()});
-        }
-        else
-        {
-            throw Exception("density_topology requires a mesh_name.");
-        }
+        return aInput.mDensityTopology.value();
     }
     throw Exception("No geometry block was defined.");
+}
+
+std::string block_name(const GeometryFactory::GeometryInput& aInput)
+{
+    return std::visit(
+        [](const auto& aObj) -> std::string
+        {
+            using InputType = std::decay_t<decltype(aObj)>;
+            return Plato::block_name<InputType>();
+        },
+        aInput);
+    throw Exception("No geometry block was defined.");
+}
+
+}  // namespace
+
+GeometryFunction make_geometry_function(const Plato::PlatoInput& aInput)
+{
+    const GeometryInput tGeometryInput = to_geometry_input(aInput);
+
+    if (const auto tIter =
+            detail::registered_functions<GeometryFunction, GeometryInput>().find(block_name(tGeometryInput));
+        tIter != detail::registered_functions<GeometryFunction, GeometryInput>().end())
+    {
+        return tIter->second(tGeometryInput);
+    }
+    else
+    {
+        throw Plato::Functional::Exception{"Unknown geometry"};
+    }
 }
 
 std::unique_ptr<ROL::StdVector<double>> make_initial_guess(const Plato::PlatoInput& aInput)

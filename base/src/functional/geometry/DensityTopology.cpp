@@ -1,6 +1,8 @@
 #include "DensityTopology.hpp"
 
+#include "Exception.hpp"
 #include "FilterInterface.hpp"
+#include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
 
@@ -11,10 +13,27 @@ namespace
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
+
+void check_valid_input(const density_topology& aInput)
+{
+    if (!aInput.mesh_name)
+    {
+        throw Exception("density_topology requires a mesh_name.");
+    }
+}
+
+[[maybe_unused]] static auto kDensityTopologyGeometryRegistration =
+    Plato::Functional::GeometryFactory::GeometryRegistration{
+        Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+        {
+            check_valid_input(std::get<Plato::density_topology>(aGeometryInput));
+            return make_topology_geometry(DensityTopology{std::get<Plato::density_topology>(aGeometryInput)});
+        }};
+
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)
-    : mFileName(aInput.mesh_name->mName),
+    : mFileName(aInput.mesh_name.value().mName),
       mNumDesignParameters(read_mesh_node_size(mFileName)),
       mFilter(FilterFactory::make_filter_function(aInput))
 {
