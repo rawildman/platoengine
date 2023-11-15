@@ -1,3 +1,4 @@
+// clang-format off
 #ifndef PLATO_INPUTBLOCKS_HPP
 #define PLATO_INPUTBLOCKS_HPP
 
@@ -96,6 +97,16 @@ BOOST_FUSION_DEFINE_STRUCT(
     (Plato::optimization_parameters, mOptimizationParameters)
 )
 
+namespace Plato
+{
+template<typename BlockStruct>
+std::string block_name()
+{
+    return Input::InputTypeName<BlockStruct>::name;
+}
+}
+
 #include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif
+// clang-format on

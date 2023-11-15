@@ -1,3 +1,4 @@
+// clang-format off
 #include <gtest/gtest.h>
 
 #include "Plato_InputBlocks.hpp"
@@ -79,6 +80,12 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
       tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
     Plato::Test::test_existence_and_equality(tObjective.objective_type, Plato::ObjectiveTypes::kMinimize);
     Plato::Test::test_existence_and_equality(tObjective.aggregation_weight, 10.0);
+}
+
+TEST(InputBlockStruct, BlockName)
+{
+    const std::string tResult = Plato::block_name<Plato::brick_shape_geometry>();
+    EXPECT_EQ(tResult, "brick_shape_geometry");
 }
 
 TEST(MassAppInput, ConstraintAllValidInputs)
@@ -315,3 +322,4 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
 }
 
 #include "Plato_RestoreBoostNvccWarnings.hpp"
+// clang-format on
