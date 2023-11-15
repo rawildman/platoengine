@@ -1,5 +1,7 @@
 #include "GeometryFactory.hpp"
 
+#include <optional>
+
 #include "BrickShapeGeometry.hpp"
 #include "DensityTopology.hpp"
 #include "Exception.hpp"
@@ -12,17 +14,55 @@ namespace Plato::Functional::GeometryFactory
 namespace
 {
 
-GeometryFactory::GeometryInput to_geometry_input(const Plato::PlatoInput& aInput)
+template <typename T, typename VARIANT_T>
+struct isVariantMember;
+template <typename T, typename... ALL_T>
+struct isVariantMember<T, std::variant<ALL_T...>> : public std::disjunction<std::is_same<T, ALL_T>...>
 {
-    if (aInput.mBrickShapeGeometry)
+};
+
+template <typename T>
+std::optional<GeometryFactory::GeometryInput> make_variant(const T&)
+{
+    return std::nullopt;
+}
+
+template <typename T>
+std::optional<GeometryFactory::GeometryInput> make_variant([[maybe_unused]] const boost::optional<T>& aObj)
+{
+    if constexpr (isVariantMember<T, GeometryFactory::GeometryInput>::value)
     {
-        return aInput.mBrickShapeGeometry.value();
+        if (aObj)
+        {
+            return std::make_optional(GeometryFactory::GeometryInput{aObj.value()});
+        }
     }
-    else if (aInput.mDensityTopology)
+    return std::nullopt;
+}
+
+template <std::size_t... Is>
+std::optional<GeometryFactory::GeometryInput> geometry_input_impl(const Plato::PlatoInput& aInput,
+                                                                  std::integer_sequence<std::size_t, Is...>)
+{
+    std::optional<GeometryFactory::GeometryInput> tGeometryInput;
+    ((tGeometryInput = make_variant(boost::fusion::at_c<Is>(aInput))) || ...);
+    return tGeometryInput;
+}
+
+std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput)
+{
+    constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
+    return geometry_input_impl(aInput, std::make_index_sequence<tNumInputFields>{});
+}
+
+GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
+{
+    std::optional<GeometryFactory::GeometryInput> tGeometryInput = geometry_block(aInput);
+    if (!tGeometryInput)
     {
-        return aInput.mDensityTopology.value();
+        throw Exception("No geometry block was defined.");
     }
-    throw Exception("No geometry block was defined.");
+    return tGeometryInput.value();
 }
 
 std::string block_name(const GeometryFactory::GeometryInput& aInput)
@@ -41,7 +81,7 @@ std::string block_name(const GeometryFactory::GeometryInput& aInput)
 
 GeometryFunction make_geometry_function(const Plato::PlatoInput& aInput)
 {
-    const GeometryInput tGeometryInput = to_geometry_input(aInput);
+    const GeometryInput tGeometryInput = geometry_input(aInput);
 
     if (const auto tIter =
             detail::registered_functions<GeometryFunction, GeometryInput>().find(block_name(tGeometryInput));
