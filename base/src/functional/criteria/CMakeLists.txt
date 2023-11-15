@@ -1,5 +1,4 @@
 set(SRCS ConstraintFactory.cpp
-         CriterionFactory.cpp
          CriterionRegistration.cpp
          ObjectiveFactory.cpp
          NodalSumObjective.cpp
