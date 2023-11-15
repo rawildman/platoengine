@@ -22,40 +22,37 @@ struct isVariantMember<T, std::variant<ALL_T...>> : public std::disjunction<std:
 };
 
 template <typename T>
-std::optional<GeometryFactory::GeometryInput> make_variant(const T&)
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant(const T&)
 {
     return std::nullopt;
 }
 
 template <typename T>
-std::optional<GeometryFactory::GeometryInput> make_variant([[maybe_unused]] const boost::optional<T>& aObj)
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant(const boost::optional<T>& aObj)
 {
-    if constexpr (isVariantMember<T, GeometryFactory::GeometryInput>::value)
+    if (isVariantMember<T, GeometryFactory::GeometryInput>::value && aObj)
     {
-        if (aObj)
-        {
-            return std::make_optional(GeometryFactory::GeometryInput{aObj.value()});
-        }
+        return std::make_optional(GeometryFactory::GeometryInput{aObj.value()});
     }
     return std::nullopt;
 }
 
 template <std::size_t... Is>
-std::optional<GeometryFactory::GeometryInput> geometry_input_impl(const Plato::PlatoInput& aInput,
-                                                                  std::integer_sequence<std::size_t, Is...>)
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> geometry_input_impl(
+    const Plato::PlatoInput& aInput, std::integer_sequence<std::size_t, Is...>)
 {
     std::optional<GeometryFactory::GeometryInput> tGeometryInput;
     ((tGeometryInput = make_variant(boost::fusion::at_c<Is>(aInput))) || ...);
     return tGeometryInput;
 }
 
-std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput)
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput)
 {
     constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
     return geometry_input_impl(aInput, std::make_index_sequence<tNumInputFields>{});
 }
 
-GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
+[[nodiscard]] GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
 {
     std::optional<GeometryFactory::GeometryInput> tGeometryInput = geometry_block(aInput);
     if (!tGeometryInput)
@@ -65,7 +62,7 @@ GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
     return tGeometryInput.value();
 }
 
-std::string block_name(const GeometryFactory::GeometryInput& aInput)
+[[nodiscard]] std::string block_name(const GeometryFactory::GeometryInput& aInput)
 {
     return std::visit(
         [](const auto& aObj) -> std::string
