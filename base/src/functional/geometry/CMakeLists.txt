@@ -4,9 +4,10 @@ set(SRCS BrickShapeGeometry.cpp
          DensityTopology.cpp)
 
 set(HDRS BrickShapeGeometry.hpp
-            GeometryFactory.hpp
-            GeometryRegistration.hpp
-            DensityTopology.hpp)
+         detail/GeometryRegistrationUtilities.hpp
+         GeometryFactory.hpp
+         GeometryRegistration.hpp
+         DensityTopology.hpp)
 
 set(LIB_NAME PlatoFunctionalGeometry)
 add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
