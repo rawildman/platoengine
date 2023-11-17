@@ -3,6 +3,10 @@
 
 #include "Plato_EnumTable.hpp"
 
+//clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+//clang-format on
+
 #include <boost/spirit/include/qi.hpp>
 
 namespace Plato{
@@ -19,5 +23,7 @@ auto make_enum_symbols(const Plato::EnumTable<Enum>& aTable) -> boost::spirit::q
 }
 
 }
+
+#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

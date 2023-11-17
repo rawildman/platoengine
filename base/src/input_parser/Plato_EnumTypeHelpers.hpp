@@ -4,6 +4,10 @@
 #include "Plato_EnumTable.hpp"
 #include "Plato_EnumParser.hpp"
 
+//clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+//clang-format on
+
 #include <boost/spirit/include/qi.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -94,5 +98,7 @@ namespace Plato                                                                 
         return aStream;                                                                                         \
     }                                                                                                           \
 }
+
+#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

@@ -3,6 +3,10 @@
 
 #include "Plato_BlockStructRule.hpp"
 
+// clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+// clang-format on
+
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
@@ -26,6 +30,12 @@ template<typename T, typename A>
 struct TypeOrVectorValueType<std::vector<T,A>>
 {
     using type = typename std::vector<T, A>::value_type;
+};
+
+template<typename T>
+struct TypeOrVectorValueType<boost::optional<T>>
+{
+    using type = T;
 };
 
 /// A helper class template for obtaining the block structure type associated with
@@ -128,5 +138,7 @@ struct InputParser : boost::spirit::qi::grammar<Iterator, PlatoInput(), boost::s
     Rule mStartPlatoInput;
 };
 }
+
+#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

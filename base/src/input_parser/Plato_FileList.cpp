@@ -1,5 +1,3 @@
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-
 #include "Plato_FileList.hpp"
 
 namespace Plato
@@ -71,5 +69,3 @@ std::ostream& operator<<(std::ostream& stream, const Plato::FileList& aFileList)
 }
 
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"

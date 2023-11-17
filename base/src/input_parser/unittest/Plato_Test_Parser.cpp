@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-
 #include "Plato_InputBlocks.hpp"
+
 #include "Plato_BlockStructRule.hpp"
+
+//clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+//clang-format on
+
 #include "Plato_InputParser.hpp"
 #include "Plato_Test_Helpers.hpp"
 
@@ -49,6 +53,7 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
           begin objective mp_objective
             active true
             app sierra_mass_app
+            shared_library_path /path/to/lib.so
             number_of_processors 10
             input_files test.txt, test2.xml
             objective_type minimize
@@ -67,6 +72,7 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
     const auto& tObjective = tData.mObjectives.front(); 
     Plato::Test::test_existence_and_equality(tObjective.name, "mp_objective");
     Plato::Test::test_existence_and_equality(tObjective.app, Plato::CodeOptions::kSierraMassApp);
+    Plato::Test::test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
     Plato::Test::test_existence_and_equality(tObjective.number_of_processors, 10);
     Plato::Test::test_existence_and_equality(tObjective.active, true);
     Plato::Test::test_existence_and_equality(

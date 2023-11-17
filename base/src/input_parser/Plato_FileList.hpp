@@ -1,6 +1,10 @@
 #ifndef PLATO_FILELIST_HPP
 #define PLATO_FILELIST_HPP
 
+//clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+//clang-format on
+
 #include <boost/spirit/include/qi.hpp>
 
 #include <iostream>
@@ -10,13 +14,13 @@
 
 namespace Plato
 {
-/// @brief Helper for parsing a single file
+/// @brief Helper for parsing a single file with a path
 /// Use this type in the input structs for a file name
 struct FileName
 {
     /// Valid characters for a file name, based on
     /// POSIX "Fully Portable Filenames" from https://en.wikipedia.org/wiki/Filename
-    static constexpr std::string_view kValidChars = "a-zA-Z0-9._-";
+    static constexpr std::string_view kValidChars = "-a-zA-Z0-9._/";
 
     using value_type = char;
 
@@ -82,5 +86,7 @@ struct create_parser<Plato::FileName>
 };
 
 }
+
+#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif
