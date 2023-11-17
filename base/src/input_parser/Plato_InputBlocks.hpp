@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+// clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+// clang-format on
+
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs. 
 ///  For example, the `objective` block will be parsed as
@@ -45,6 +49,7 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (Plato), objective,
     (bool, active)
     (Plato::CodeOptions, app) 
+    (Plato::FileName, shared_library_path)
     (unsigned int, number_of_processors)
     (Plato::FileList, input_files)
     (double, aggregation_weight)
@@ -55,12 +60,27 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (Plato), constraint,
     (bool, active)
     (Plato::CodeOptions, app) 
+    (Plato::FileName, shared_library_path)
     (unsigned int, number_of_processors)
     (Plato::FileList, input_files)
     (double, equal_to)
     (double, less_than)
     (double, greater_than)
     (bool, is_linear)
+)
+
+PLATO_INPUT_BLOCK_STRUCT(
+    (Plato), brick_shape_geometry,
+    (Plato::FileName, mesh_name)
+)
+
+PLATO_INPUT_BLOCK_STRUCT(
+    (Plato), density_topology,
+    (Plato::FileName, mesh_name)
+    (Plato::FileName, output_name)
+    (Plato::FilterTypes, filter_type)
+    (double, filter_radius)
+    (double, boundary_sticking_penalty)
 )
 
 /// PlatoInput is the in-memory representation of a parsed input deck.
@@ -71,7 +91,11 @@ BOOST_FUSION_DEFINE_STRUCT(
     (Plato), PlatoInput,
     (std::vector<Plato::objective>, mObjectives)
     (std::vector<Plato::constraint>, mConstraints)
+    (boost::optional<Plato::brick_shape_geometry>, mBrickShapeGeometry)
+    (boost::optional<Plato::density_topology>, mDensityTopology)
     (Plato::optimization_parameters, mOptimizationParameters)
 )
+
+#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

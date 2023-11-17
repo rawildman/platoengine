@@ -1,0 +1,134 @@
+#include <gtest/gtest.h>
+
+#include <ROL_Algorithm.hpp>
+#include <ROL_Solver.hpp>
+
+#include "BrickShapeGeometry.hpp"
+#include "GeometryFactory.hpp"
+#include "InputParser.hpp"
+#include "MeshProxy.hpp"
+#include "ObjectiveFactory.hpp"
+#include "PlatoProblem.hpp"
+
+TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
+{
+    const std::string tInput =
+        R"(
+        begin brick_shape_geometry
+          mesh_name my_mesh.exo
+        end
+        begin objective test
+          active true
+          app nodal_sum
+          number_of_processors 4
+          input_files test-input.inp
+          aggregation_weight 42.0
+          objective_type minimize
+        end
+      )";
+
+    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
+
+    Plato::Functional::PlatoProblem tProblem = Plato::Functional::make_plato_problem(tData);
+    const auto tGeometry = Plato::Functional::GeometryFactory::make_geometry_function(tData);
+
+    // Test Geometry
+    const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
+    const Plato::Functional::MeshProxy tGeomProxy = tGeometry.f(tBoundingBox);
+    const Plato::Functional::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometryFunction.f(tBoundingBox);
+    EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
+
+    // Test Objective
+    const auto tObjective = Plato::Functional::ObjectiveFactory::make_aggregate_objective_function(tData.mObjectives);
+    EXPECT_EQ(tObjective.f(tGeomProxy), tProblem.mObjective.f(tGeomProxy));
+
+    std::filesystem::remove(tGeomProxy.mFileName);
+}
+
+TEST(PlatoProblem, InputFileToROLObjective)
+{
+    namespace pf = Plato::Functional;
+    constexpr double tWeight = 42.0;
+    const std::string tInput =
+        "begin brick_shape_geometry"
+        " mesh_name my_mesh.exo"
+        " end"
+        " begin objective test"
+        " active true"
+        " app nodal_sum"
+        " number_of_processors 4"
+        " input_files test-input.inp"
+        " aggregation_weight " +
+        std::to_string(tWeight) + " objective_type minimize" + " end";
+
+    const Plato::PlatoInput tData = pf::parse_input(tInput);
+
+    pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
+    std::unique_ptr<pf::ROLObjectiveFunction> tObjectiveFunction = pf::make_rol_objective(tProblem);
+    const ROL::StdVector<double> tBoundingBox{0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+    double tTolerance = 1e-8;
+
+    constexpr double tNodalSum = 12.0;
+    EXPECT_DOUBLE_EQ(tObjectiveFunction->value(tBoundingBox, tTolerance), tWeight * tNodalSum);
+
+    pf::BrickDesign tDesign;
+    EXPECT_EQ(*tProblem.mInitialGuess->getVector(), *pf::detail::to_rol_std_vector(tDesign).getVector());
+
+    std::filesystem::remove("my_mesh.exo");
+}
+
+TEST(PlatoProblem, InputFileToROLConstraint)
+{
+    const std::string tInput =
+        R"(
+        begin brick_shape_geometry
+          mesh_name my_mesh.exo
+        end
+        begin constraint test
+          active true
+          app nodal_sum
+          equal_to 2
+        end
+      )";
+
+    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
+
+    Plato::Functional::PlatoProblem tProblem = Plato::Functional::make_plato_problem(tData);
+    const auto tConstraints = Plato::Functional::make_rol_constraints(tProblem);
+    ASSERT_EQ(tConstraints.size(), 1);
+
+    const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
+    ROL::StdVector<double> tResult{0};
+    const auto tGold = std::vector{-2.0};
+    double tTolerance = 1e-8;
+
+    ASSERT_NE(tConstraints.front(), nullptr);
+    tConstraints.front()->value(tResult, tBoundingBox, tTolerance);
+
+    EXPECT_EQ(*tResult.getVector(), tGold);
+    std::filesystem::remove("my_mesh.exo");
+}
+
+TEST(PlatoProblem, InputFileToROLSolver)
+{
+    namespace pf = Plato::Functional;
+
+    const std::string tInput =
+        R"(
+        begin brick_shape_geometry
+          mesh_name my_mesh.exo
+        end
+        begin constraint test
+          active true
+          app nodal_sum
+          equal_to 2
+        end
+    )";
+    const Plato::PlatoInput tData = pf::parse_input(tInput);
+    const pf::PlatoProblem tPlatoProblem = pf::make_plato_problem(tData);
+    Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
+    const auto tROLProblem = Teuchos::RCP{pf::make_rol_problem(tPlatoProblem).release()};
+    const ROL::Solver<double> tSolver = pf::make_rol_solver(tROLOptions, std::move(tROLProblem));
+
+    EXPECT_EQ(tSolver.getAlgorithmState()->iter, 0);
+}

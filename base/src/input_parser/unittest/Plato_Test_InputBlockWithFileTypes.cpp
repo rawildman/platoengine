@@ -1,10 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 #include "Plato_InputBlockStruct.hpp"
 #include "Plato_Test_Helpers.hpp"
 #include "Plato_FileList.hpp"
+
+// clang-format off
+#include "Plato_SuppressBoostNvccWarnings.hpp"
+// clang-format on
 
 PLATO_INPUT_BLOCK_STRUCT(
     (Plato), TestFileTypes,
