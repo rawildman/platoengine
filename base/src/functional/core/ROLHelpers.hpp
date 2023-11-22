@@ -12,7 +12,7 @@ namespace Plato::Functional
 [[nodiscard]] ROL::StdVector<double> operator+(const ROL::StdVector<double>& aVec1, ROL::StdVector<double> aVec2);
 
 /// @brief Deep copies a `ROL::StdVector`
-[[nodiscard]] ROL::Ptr<ROL::Vector<double>> copy_vector(const ROL::StdVector<double>& aVector);
+[[nodiscard]] ROL::Ptr<ROL::StdVector<double>> copy_vector(const ROL::StdVector<double>& aVector);
 
 }  // namespace Plato::Functional
 

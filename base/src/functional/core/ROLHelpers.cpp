@@ -14,14 +14,10 @@ ROL::StdVector<double> operator+(const ROL::StdVector<double>& aVec1, ROL::StdVe
     return aVec2;
 }
 
-ROL::Ptr<ROL::Vector<double>> copy_vector(const ROL::StdVector<double>& aVector)
+ROL::Ptr<ROL::StdVector<double>> copy_vector(const ROL::StdVector<double>& aVector)
 {
-    auto tCopy = ROL::makePtr<ROL::StdVector<double>>(aVector.dimension());
-    for (int k = 0; k < aVector.dimension(); ++k)
-    {
-        (*tCopy)[k] = aVector[k];
-    }
-    return tCopy;
+    auto tVectorCopy = ROL::makePtr<std::vector<double>>(*aVector.getVector());
+    return ROL::makePtr<ROL::StdVector<double>>(std::move(tVectorCopy));
 }
 
 }  // namespace Plato::Functional
