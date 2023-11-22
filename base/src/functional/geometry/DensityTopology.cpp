@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "FilterInterface.hpp"
+#include "FilterJacobian.hpp"
 #include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"

@@ -26,7 +26,8 @@ template <typename T>
     return std::nullopt;
 }
 
-/// @return If @a aT is an alternative of variant GeometryInput, and is non-empty, returns a wrapped copy of @a aT.
+/// @return If @a aT is an alternative of variant GeometryInput, and is non-empty, returns an optional-wrapped copy of
+/// @a aT.
 template <typename T>
 [[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant_if_geometry(const boost::optional<T>& aT)
 {

@@ -1,16 +1,16 @@
 #ifndef PLATO_FUNCTIONAL_FILTERFACTORY
 #define PLATO_FUNCTIONAL_FILTERFACTORY
 
-#include <filesystem>
-#include <unordered_map>
-
-#include "FilterJacobian.hpp"
 #include "Function.hpp"
-#include "MeshProxy.hpp"
 
 namespace Plato
 {
 struct density_topology;
+namespace Functional
+{
+struct FilterJacobian;
+struct MeshProxy;
+}  // namespace Functional
 }  // namespace Plato
 
 namespace Plato::Functional::FilterFactory

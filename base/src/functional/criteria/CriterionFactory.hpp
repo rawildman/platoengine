@@ -13,11 +13,13 @@ namespace Plato::Functional::CriterionFactory
 {
 using CriterionFunction = Function<double, ROL::StdVector<double>, const MeshProxy&>;
 
-/// @brief Converts either objective and constraint input objects to a common CriterionInput struct
+/// @brief Converts either objective or constraint input objects to a common CriterionInput struct
+/// @tparam Input Must be either Plato::objective or Plato::constraint input structs
 template <typename Input>
 [[nodiscard]] CriterionInput to_criterion_input(const Input& aInput);
 
 /// @brief Creates a criterion Function object from either objective or constraint input objects.
+/// @tparam Input Must be either Plato::objective or Plato::constraint input structs
 template <typename Input>
 [[nodiscard]] CriterionFunction make_criterion_function(const Input& aInput);
 

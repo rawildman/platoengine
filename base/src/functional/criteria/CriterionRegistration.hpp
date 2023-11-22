@@ -2,25 +2,16 @@
 #define PLATO_FUNCTIONAL_CRITERIONREGISTRATION
 
 #include <ROL_StdVector.hpp>
-#include <filesystem>
-#include <memory>
-#include <string>
 #include <string_view>
-#include <unordered_map>
 
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
 #include "Plato_FileList.hpp"
 
-namespace Plato
-{
-struct objective;
-struct constraint;
-namespace Functional
+namespace Plato::Functional
 {
 struct MeshProxy;
-}
-}  // namespace Plato
+}  // namespace Plato::Functional
 
 namespace Plato::Functional::CriterionFactory
 {

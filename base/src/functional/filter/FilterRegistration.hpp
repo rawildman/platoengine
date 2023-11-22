@@ -3,8 +3,6 @@
 
 #include <filesystem>
 #include <memory>
-#include <string>
-#include <unordered_map>
 
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
@@ -35,7 +33,7 @@ using FilterRegistration = Registration<FilterFunction, FilterInput>;
 [[nodiscard]] std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
                                                            const std::filesystem::path& aSharedLibraryPath);
 
-bool is_filter_function_registered(const std::string_view aFunctionName);
+bool is_filter_function_registered(std::string_view aFunctionName);
 }  // namespace Plato::Functional::FilterFactory
 
 #endif

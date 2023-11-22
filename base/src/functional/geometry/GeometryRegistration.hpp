@@ -4,7 +4,6 @@
 #include <ROL_StdVector.hpp>
 #include <memory>
 #include <string_view>
-#include <variant>
 
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
@@ -34,6 +33,8 @@ struct FactoryTypes
     Output mOutput;
 };
 
+/// A `std::variant` with alternatives corresponding to input blocks
+/// created using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 using GeometryInput = Detail::GeometryInputVariant<Plato::PlatoInput>;
 using GeometryRegistration = Registration<FactoryTypes, GeometryInput>;
 
