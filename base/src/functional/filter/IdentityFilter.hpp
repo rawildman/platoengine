@@ -26,8 +26,7 @@ class IdentityFilter : public FilterInterface
                                                              const ROL::StdVector<double>& aV) const override;
 };
 
-[[nodiscard]] auto make_identity_filter_function()
-    -> Function<MeshProxy, FilterJacobian, const MeshProxy&>;
+[[nodiscard]] auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>;
 
 }  // namespace Plato::Functional
 

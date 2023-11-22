@@ -7,7 +7,6 @@
 
 namespace Plato::Functional::Test
 {
-
 class Rosenbrock
 {
    public:

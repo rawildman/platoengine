@@ -34,8 +34,7 @@ ROL::StdVector<double> IdentityFilter::jacobianTimesVector(const MeshProxy& aMes
     return aV;
 }
 
-auto make_identity_filter_function()
-    -> Function<MeshProxy, FilterJacobian, const MeshProxy&>
+auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>
 {
     return make_function([](const MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
                          [](const MeshProxy& aMeshProxy) {

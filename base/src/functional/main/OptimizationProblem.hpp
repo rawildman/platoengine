@@ -8,7 +8,6 @@
 
 namespace Plato::Functional
 {
-
 class OptimizationProblem
 {
    public:
@@ -23,7 +22,7 @@ class OptimizationProblem
     void constraintCheck() const;
 
     ///@brief Run a gradient check using a linear pseudo-objective so that errors in the parameter sensitivities might
-    ///be evident
+    /// be evident
     void sensitivityCheck() const;
 
     ///@brief Run the optimization problem

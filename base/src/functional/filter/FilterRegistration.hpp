@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "Function.hpp"
 #include "FactoryRegistration.hpp"
+#include "Function.hpp"
 
 namespace Plato
 {

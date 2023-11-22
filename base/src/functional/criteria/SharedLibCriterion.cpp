@@ -1,8 +1,8 @@
 #include "SharedLibCriterion.hpp"
 
 #include "CriterionRegistration.hpp"
-#include "Plato_InputEnumTypes.hpp"
 #include "Exception.hpp"
+#include "Plato_InputEnumTypes.hpp"
 #include "SharedLibraryUtilities.hpp"
 
 namespace Plato::Functional

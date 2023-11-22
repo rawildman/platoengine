@@ -5,7 +5,6 @@
 
 namespace Plato::Functional
 {
-
 /// @brief An object representing the multiplication of a row vector and a Jacobian matrix.
 struct JacobianMultiplier
 {

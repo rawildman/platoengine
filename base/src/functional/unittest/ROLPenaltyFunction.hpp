@@ -8,7 +8,6 @@
 
 namespace Plato::Functional::Test
 {
-
 struct ROLVectorJacobian
 {
     ROL::StdVector<double> column(const int aIndex) const;

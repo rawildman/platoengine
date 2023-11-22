@@ -17,7 +17,6 @@ class BulkData;
 
 namespace Plato::Functional
 {
-
 /// @brief Design parameters for BrickShapeGeometry
 struct BrickDesign
 {

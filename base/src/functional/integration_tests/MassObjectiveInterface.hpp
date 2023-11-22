@@ -13,14 +13,14 @@ class MassObjectiveInterface : public CriterionInterface
     MassObjectiveInterface();
 
     ///@brief required by the CriterionInterface, return the value of the criterion evaluated at the controls specified
-    ///by the MeshProxy
+    /// by the MeshProxy
     ///
     ///@param aMeshProxy
     ///@return double
     double value(const MeshProxy& aMeshProxy) const override;
 
     ///@brief required by the CriterionInterface, return the gradient of the criterion evaluated at the controls
-    ///specified by the MeshProxy
+    /// specified by the MeshProxy
     ///
     ///@param aMeshProxy
     ///@return std::vector<double>

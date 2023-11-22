@@ -34,9 +34,7 @@ struct CriterionInput
 using CriterionFunction = Function<double, ROL::StdVector<double>, const MeshProxy&>;
 using CriterionRegistration = Registration<CriterionFunction, CriterionInput>;
 
-
 bool is_criterion_function_registered(const std::string_view aFunctionName);
-
 
 }  // namespace Plato::Functional::CriterionFactory
 

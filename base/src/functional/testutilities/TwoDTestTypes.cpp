@@ -2,7 +2,6 @@
 
 namespace Plato::Functional::Test
 {
-
 double TwoDVector::operator()(const unsigned int index) const { return mData[index]; }
 
 double TwoDMatrix::operator()(const unsigned int i, const unsigned int j) const { return mData[i][j]; }

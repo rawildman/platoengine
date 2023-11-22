@@ -34,9 +34,9 @@ struct Registration
     Registration(std::string aName, FactoryFunction<FactoryReturn, FactoryInput> aFunction);
 };
 
-/// @brief Checks if the function labeled with name @a aFunctionName is registered with the 
+/// @brief Checks if the function labeled with name @a aFunctionName is registered with the
 ///  factory associated with template types @a FactoryReturn and @a FactoryInput.
-template<typename FactoryReturn, typename FactoryInput>
+template <typename FactoryReturn, typename FactoryInput>
 bool is_function_registered(const std::string_view aFunctionName);
 
 namespace detail

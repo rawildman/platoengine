@@ -72,7 +72,7 @@ struct VariantFromTuple<std::tuple<Ts...>>
 };
 
 template <typename FusionStruct>
-using GeometryInputVariant = 
+using GeometryInputVariant =
     typename VariantFromTuple<std::invoke_result_t<make_geometry_input_tuple, FusionStruct>>::type;
 
 }  // namespace Plato::Functional::GeometryFactory::Detail

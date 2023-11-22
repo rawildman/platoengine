@@ -41,7 +41,8 @@ void OptimizationProblem::gradientCheck() const
     std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    mROLProblem->getObjective()->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()), tPrintOutput, tOutFile);
+    mROLProblem->getObjective()->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
+                                               tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::constraintCheck() const
@@ -80,7 +81,8 @@ void OptimizationProblem::sensitivityCheck() const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
-    tSensitivityObjective->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()), tPrintOutput, tOutFile);
+    tSensitivityObjective->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
+                                         tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::optimize()
@@ -92,9 +94,6 @@ void OptimizationProblem::optimize()
     mProblem.mGeometry.mOutput(tSolution);
 }
 
-int OptimizationProblem::dimension() const
-{
-    return mProblem.mGeometry.mInitialGuess->dimension();
-}
+int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess->dimension(); }
 
 }  // namespace Plato::Functional

@@ -12,7 +12,6 @@
 
 namespace Plato::Functional::ConstraintFactory
 {
-
 std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Plato::constraint>& aInput)
 {
     detail::affirm_valid_input(aInput);
@@ -31,7 +30,6 @@ std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Pla
 
 namespace detail
 {
-
 Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput)
 {
     double tValue = 0;

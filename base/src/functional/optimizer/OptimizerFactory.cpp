@@ -5,7 +5,6 @@
 
 namespace Plato::Functional
 {
-
 namespace
 {
 template <typename T>

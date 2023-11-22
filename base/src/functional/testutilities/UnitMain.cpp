@@ -1,8 +1,9 @@
 #include "UnitMain.hpp"
 
-#include <Kokkos_Core.hpp>
 #include <gtest/gtest.h>
 #include <mpi.h>
+
+#include <Kokkos_Core.hpp>
 
 namespace Plato::Functional
 {
@@ -19,4 +20,4 @@ int unit_main(int argc, char **argv)
 
     return returnVal;
 }
-}
+}  // namespace Plato::Functional

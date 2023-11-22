@@ -4,15 +4,14 @@
 #include <unordered_map>
 
 #include "AffirmUtilities.hpp"
+#include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "SharedLibCriterion.hpp"
-#include "CriterionFactory.hpp"
 
 namespace Plato::Functional::ObjectiveFactory
 {
-
 namespace detail
 {
 AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)

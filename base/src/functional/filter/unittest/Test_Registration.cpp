@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "FilterJacobian.hpp"
+#include "FilterRegistration.hpp"
 #include "Function.hpp"
 #include "MeshProxy.hpp"
-#include "FilterRegistration.hpp"
 
 namespace Plato
 {
@@ -19,17 +19,15 @@ namespace
 }
 
 static auto kTestFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
-   "test",
-   [](const Plato::density_topology&){ return make_test_filter_function();}
-};
+    "test", [](const Plato::density_topology&) { return make_test_filter_function(); }};
 }  // namespace
 
-TEST(FilterRegistration, PhonyFilter) 
-{ 
-   EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("test"));
+TEST(FilterRegistration, PhonyFilter)
+{
+    EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("test"));
 }
 
 TEST(FilterRegistration, Identity)
 {
-   EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("identity"));
+    EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("identity"));
 }

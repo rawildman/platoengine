@@ -1,7 +1,6 @@
 #include <mpi.h>
 
 #include <Kokkos_Core.hpp>
-
 #include <iostream>
 
 #include "OptimizationProblem.hpp"
