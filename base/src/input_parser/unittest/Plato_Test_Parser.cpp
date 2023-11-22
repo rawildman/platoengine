@@ -82,6 +82,16 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
     Plato::Test::test_existence_and_equality(tObjective.aggregation_weight, 10.0);
 }
 
+TEST(InputBlockStruct, GeometryBlocks)
+{
+   constexpr bool tDensityTopologyIsGeometry = Plato::Input::kIsGeometryInput<Plato::density_topology>;
+   EXPECT_TRUE(tDensityTopologyIsGeometry);
+   constexpr bool tBrickShapeIsGeometry = Plato::Input::kIsGeometryInput<Plato::brick_shape_geometry>;
+   EXPECT_TRUE(tBrickShapeIsGeometry);
+   constexpr bool tOptimizationIsNotGeometry = Plato::Input::kIsGeometryInput<Plato::optimization_parameters>;
+   EXPECT_FALSE(tOptimizationIsNotGeometry );
+}
+
 TEST(InputBlockStruct, BlockName)
 {
     const std::string tResult = Plato::block_name<Plato::brick_shape_geometry>();

@@ -70,12 +70,12 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (bool, is_linear)
 )
 
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (Plato), brick_shape_geometry,
     (Plato::FileName, mesh_name)
 )
 
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (Plato), density_topology,
     (Plato::FileName, mesh_name)
     (Plato::FileName, output_name)
