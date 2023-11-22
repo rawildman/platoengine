@@ -9,13 +9,13 @@
 
 namespace Plato::Functional::GeometryFactory
 {
-GeometryFunction make_geometry_function(const Plato::PlatoInput& aInput)
+FactoryTypes make_geometry_data(const Plato::PlatoInput& aInput)
 {
     const GeometryInput tGeometryInput = Detail::geometry_input(aInput);
 
     if (const auto tIter =
-            detail::registered_functions<GeometryFunction, GeometryInput>().find(Detail::block_name(tGeometryInput));
-        tIter != detail::registered_functions<GeometryFunction, GeometryInput>().end())
+            detail::registered_functions<FactoryTypes, GeometryInput>().find(Detail::block_name(tGeometryInput));
+        tIter != detail::registered_functions<FactoryTypes, GeometryInput>().end())
     {
         return tIter->second(tGeometryInput);
     }
@@ -23,52 +23,5 @@ GeometryFunction make_geometry_function(const Plato::PlatoInput& aInput)
     {
         throw Plato::Functional::Exception{"Unknown geometry"};
     }
-}
-
-std::unique_ptr<ROL::StdVector<double>> make_initial_guess(const Plato::PlatoInput& aInput)
-{
-    if (aInput.mBrickShapeGeometry)
-    {
-        return BrickShapeGeometry::initialGuess();
-    }
-    else if (aInput.mDensityTopology)
-    {
-        return DensityTopology::initialGuess(aInput.mDensityTopology->mesh_name->mName);
-    }
-    throw Exception("No geometry block was defined.");
-}
-
-ROL::StdBoundConstraint<double> make_bound_constraint(const Plato::PlatoInput& aInput)
-{
-    if (aInput.mBrickShapeGeometry)
-    {
-        auto [lowerBound, upperBound] = BrickShapeGeometry::bounds();
-        return ROL::StdBoundConstraint<double>{lowerBound, upperBound};
-    }
-    else if (aInput.mDensityTopology)
-    {
-        auto [lowerBound, upperBound] = DensityTopology::bounds(aInput.mDensityTopology->mesh_name->mName);
-        return ROL::StdBoundConstraint<double>{lowerBound, upperBound};
-    }
-    throw Exception("No geometry block was defined.");
-}
-
-std::function<void(const ROL::StdVector<double>&)> make_output_function(const Plato::PlatoInput& aInput)
-{
-    if (aInput.mBrickShapeGeometry)
-    {
-        return [](const ROL::StdVector<double>& x) { BrickShapeGeometry::output(x); };
-    }
-    else if (aInput.mDensityTopology)
-    {
-        if (!aInput.mDensityTopology->output_name)
-        {
-            throw Exception("density_topology requires an output_name.");
-        }
-        return [tInputMeshName = aInput.mDensityTopology->mesh_name->mName,
-                tOutputMeshName = aInput.mDensityTopology->output_name->mName](const ROL::StdVector<double>& x)
-        { DensityTopology::output(tInputMeshName, x, tOutputMeshName); };
-    }
-    throw Exception("No geometry block was defined.");
 }
 }  // namespace Plato::Functional::GeometryFactory

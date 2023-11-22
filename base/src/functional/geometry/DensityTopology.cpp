@@ -22,14 +22,25 @@ void check_valid_input(const density_topology& aInput)
     }
 }
 
-[[maybe_unused]] static auto kDensityTopologyGeometryRegistration =
-    Plato::Functional::GeometryFactory::GeometryRegistration{
-        Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
-        {
-            check_valid_input(std::get<Plato::density_topology>(aGeometryInput));
-            return make_topology_geometry(DensityTopology{std::get<Plato::density_topology>(aGeometryInput)});
-        }};
+std::function<void(const ROL::StdVector<double>&)> make_topology_output(const std::filesystem::path& aInputMeshName,
+                                                                        const std::filesystem::path& aOutputMeshName)
+{
+    return [aInputMeshName, aOutputMeshName](const ROL::StdVector<double>& aSolution)
+    { return DensityTopology::output(aInputMeshName, aSolution, aOutputMeshName); };
+}
 
+/// Static registration for GeometryFactory
+[[maybe_unused]] static auto kDensityTopologyRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
+    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    {
+        const Plato::density_topology& tInput = std::get<Plato::density_topology>(aGeometryInput);
+        check_valid_input(tInput);
+        return GeometryFactory::FactoryTypes{
+            make_topology_geometry(DensityTopology{tInput}),
+            DensityTopology::initialGuess(tInput.mesh_name.value().mName),
+            DensityTopology::bounds(tInput.mesh_name.value().mName),
+            make_topology_output(tInput.mesh_name.value().mName, tInput.output_name.value().mName)};
+    }};
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)

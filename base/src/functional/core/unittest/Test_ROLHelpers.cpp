@@ -25,3 +25,16 @@ TEST(ROLHelpers, Summation)
     const auto tExpected = std::vector<double>{0.0, 0.0, 0.0, 0.0};
     EXPECT_EQ(*tV3.getVector(), tExpected);
 }
+
+TEST(ROLHelpers, Copy)
+{
+    const auto tVector = ROL::StdVector<double>{1.0, 2.0, 3.0, 4.0};
+    const ROL::Ptr<ROL::Vector<double>> tCopy = Plato::Functional::copy_vector(tVector);
+    const auto tCopyAsStdVector = dynamic_cast<ROL::StdVector<double>*>(tCopy.get());
+    ASSERT_NE(tCopyAsStdVector, nullptr);
+    ASSERT_EQ(tCopy->dimension(), tVector.dimension());
+    for(int k = 0; k < tVector.dimension(); ++k)
+    {
+        EXPECT_EQ(tVector[k], (*tCopyAsStdVector)[k]);
+    }
+}

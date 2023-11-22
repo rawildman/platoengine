@@ -30,13 +30,13 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
 
-    Plato::Functional::PlatoProblem tProblem = Plato::Functional::make_plato_problem(tData);
-    const auto tGeometry = Plato::Functional::GeometryFactory::make_geometry_function(tData);
+    const Plato::Functional::PlatoProblem tProblem = Plato::Functional::make_plato_problem(tData);
+    const auto tGeometry = Plato::Functional::GeometryFactory::make_geometry_data(tData);
 
     // Test Geometry
     const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
-    const Plato::Functional::MeshProxy tGeomProxy = tGeometry.f(tBoundingBox);
-    const Plato::Functional::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometryFunction.f(tBoundingBox);
+    const Plato::Functional::MeshProxy tGeomProxy = tGeometry.mCompute.f(tBoundingBox);
+    const Plato::Functional::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometry.mCompute.f(tBoundingBox);
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
 
     // Test Objective
@@ -73,7 +73,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
     EXPECT_DOUBLE_EQ(tObjectiveFunction->value(tBoundingBox, tTolerance), tWeight * tNodalSum);
 
     pf::BrickDesign tDesign;
-    EXPECT_EQ(*tProblem.mInitialGuess->getVector(), *pf::detail::to_rol_std_vector(tDesign).getVector());
+    EXPECT_EQ(*tProblem.mGeometry.mInitialGuess->getVector(), *pf::detail::to_rol_std_vector(tDesign).getVector());
 
     std::filesystem::remove("my_mesh.exo");
 }

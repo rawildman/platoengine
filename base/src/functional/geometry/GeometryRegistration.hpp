@@ -8,12 +8,10 @@
 
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
+#include "detail/GeometryInputBuilder.hpp"
 
 namespace Plato
 {
-struct density_topology;
-struct brick_shape_geometry;
-
 namespace Functional
 {
 struct JacobianMultiplier;
@@ -23,10 +21,21 @@ struct MeshProxy;
 
 namespace Plato::Functional::GeometryFactory
 {
+struct FactoryTypes
+{
+    using Compute = Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
+    using InitialGuess = std::unique_ptr<ROL::StdVector<double>>;
+    using Bounds = std::pair<std::vector<double>, std::vector<double>>;
+    using Output = std::function<void(const ROL::StdVector<double>&)>;
 
-using GeometryInput = std::variant<Plato::brick_shape_geometry, Plato::density_topology>;
-using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
-using GeometryRegistration = Registration<GeometryFunction, GeometryInput>;
+    Compute mCompute;
+    InitialGuess mInitialGuess;
+    Bounds mBounds;
+    Output mOutput;
+};
+
+using GeometryInput = Detail::GeometryInputVariant<Plato::PlatoInput>;
+using GeometryRegistration = Registration<FactoryTypes, GeometryInput>;
 
 bool is_geometry_function_registered(const std::string_view aFunctionName);
 

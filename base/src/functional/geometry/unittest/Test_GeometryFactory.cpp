@@ -10,7 +10,7 @@ TEST(GeometryFactory, ValidBrickShapeGeometry)
     namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{/*.mMeshName=*/Plato::FileName{"my_mesh.exo"}};
-    EXPECT_NO_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tInput));
+    EXPECT_NO_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput));
 }
 
 TEST(GeometryFactory, InvalidBrickShapeGeometry)
@@ -18,48 +18,45 @@ TEST(GeometryFactory, InvalidBrickShapeGeometry)
     namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tInput), pf::Exception);
+    EXPECT_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput), pf::Exception);
 }
 
 TEST(GeometryFactory, ValidTopology)
 {
     namespace pf = Plato::Functional;
 
-    const std::string tFileName = "test.exo";
-    pf::write_mesh(tFileName, pf::create_mesh("generated:3x3x4|bbox:-1,-2,-1,2,1,2"));
+    const std::filesystem::path tMeshFileName = "test.exo";
+    const std::filesystem::path tOutFileName = "test_out.exo";
+    pf::write_mesh(tMeshFileName, pf::create_mesh("generated:3x3x4|bbox:-1,-2,-1,2,1,2"));
 
-    auto tData = Plato::PlatoInput{};
+    auto tInput = Plato::PlatoInput{};
     auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.mesh_name = Plato::FileName{tFileName};
+    tDensityTopology.mesh_name = Plato::FileName{tMeshFileName.string()};
+    tDensityTopology.output_name = Plato::FileName{tOutFileName.string()};
     tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
-    tData.mDensityTopology = tDensityTopology;
+    tInput.mDensityTopology = tDensityTopology;
 
-    EXPECT_NO_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tData));
-    EXPECT_NO_THROW(auto tFunction = pf::GeometryFactory::make_initial_guess(tData));
-    EXPECT_NO_THROW(auto tFunction = pf::GeometryFactory::make_bound_constraint(tData));
+    EXPECT_NO_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput));
 
-    std::filesystem::remove(tFileName);
+    std::filesystem::remove(tMeshFileName);
 }
 
 TEST(GeometryFactory, InvalidTopologyNoMesh)
 {
     namespace pf = Plato::Functional;
 
-    auto tData = Plato::PlatoInput{};
+    auto tInput = Plato::PlatoInput{};
     auto tDensityTopology = Plato::density_topology{};
-    tData.mDensityTopology = tDensityTopology;
+    tInput.mDensityTopology = tDensityTopology;
 
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tData), pf::Exception);
+    EXPECT_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput), pf::Exception);
 }
 
 TEST(GeometryFactory, NoGeometry)
 {
     namespace pf = Plato::Functional;
 
-    const auto tData = Plato::PlatoInput{};
+    const auto tInput = Plato::PlatoInput{};
 
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_geometry_function(tData), pf::Exception);
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_initial_guess(tData), pf::Exception);
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_bound_constraint(tData), pf::Exception);
-    EXPECT_THROW(auto tFunction = pf::GeometryFactory::make_output_function(tData), pf::Exception);
+    EXPECT_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput), pf::Exception);
 }

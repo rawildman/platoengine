@@ -5,6 +5,7 @@ set(SRCS BrickShapeGeometry.cpp
 
 set(HDRS BrickShapeGeometry.hpp
          detail/GeometryRegistrationUtilities.hpp
+         detail/GeometryInputBuilder.hpp
          GeometryFactory.hpp
          GeometryRegistration.hpp
          DensityTopology.hpp)

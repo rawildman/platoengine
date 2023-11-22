@@ -7,10 +7,10 @@ TEST(GeometryRegistrationUtilities, IsVariant)
     namespace pfgd = Plato::Functional::GeometryFactory::Detail;
 
     using TestVariant = std::variant<double, char, bool>;
-    constexpr bool tDoubleInVariant = pfgd::IsVariantMember<double, TestVariant>::value;
+    constexpr bool tDoubleInVariant = pfgd::kIsVariantMember<double, TestVariant>;
     EXPECT_TRUE(tDoubleInVariant);
 
-    constexpr bool tIntInVariant = pfgd::IsVariantMember<int, TestVariant>::value;
+    constexpr bool tIntInVariant = pfgd::kIsVariantMember<int, TestVariant>;
     EXPECT_FALSE(tIntInVariant);
 }
 

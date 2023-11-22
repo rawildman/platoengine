@@ -1,8 +1,6 @@
 #ifndef PLATO_FUNCTIONAL_PLATOPROBLEM
 #define PLATO_FUNCTIONAL_PLATOPROBLEM
 
-#include <ROL_StdBoundConstraint.hpp>
-
 #include <memory>
 #include <vector>
 
@@ -20,13 +18,10 @@ namespace Plato::Functional
 ///a ROL problem
 struct PlatoProblem
 {
-    GeometryFactory::GeometryFunction mGeometryFunction;
+    GeometryFactory::FactoryTypes mGeometry;
     ObjectiveFactory::ObjectiveFunction mObjective;
     std::vector<ConstraintFactory::Constraint<const MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
-    ROL::Ptr<ROL::StdVector<double>> mInitialGuess;
-    ROL::StdBoundConstraint<double> mBounds;
-    std::function<void(const ROL::StdVector<double>&)> mOutput;
 };
 
 ///@brief Convert validated parsed input into a populated PlatoProblem struct

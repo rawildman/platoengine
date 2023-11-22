@@ -10,6 +10,10 @@ namespace Plato::Functional
 
 /// @brief Addition operator overload so that ROL vector types can be used with Aggregate
 [[nodiscard]] ROL::StdVector<double> operator+(const ROL::StdVector<double>& aVec1, ROL::StdVector<double> aVec2);
+
+/// @brief Deep copies a `ROL::StdVector`
+[[nodiscard]] ROL::Ptr<ROL::Vector<double>> copy_vector(const ROL::StdVector<double>& aVector);
+
 }  // namespace Plato::Functional
 
 #endif

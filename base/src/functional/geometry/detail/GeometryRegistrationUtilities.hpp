@@ -15,12 +15,10 @@ namespace Plato::Functional::GeometryFactory::Detail
 {
 /// @brief A type trait specifying if a type @a T is an alternative of variant @a VariantT
 template <typename T, typename VariantT>
-struct IsVariantMember;
+constexpr bool kIsVariantMember = false;
 
 template <typename T, typename... Ts>
-struct IsVariantMember<T, std::variant<Ts...>> : public std::disjunction<std::is_same<T, Ts>...>
-{
-};
+constexpr bool kIsVariantMember<T, std::variant<Ts...>> = std::disjunction_v<std::is_same<T, Ts>...>;
 
 template <typename T>
 [[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant_if_geometry(const T&)
@@ -32,7 +30,7 @@ template <typename T>
 template <typename T>
 [[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant_if_geometry(const boost::optional<T>& aT)
 {
-    if (IsVariantMember<T, GeometryFactory::GeometryInput>::value && aT)
+    if (kIsVariantMember<T, GeometryFactory::GeometryInput> && aT)
     {
         return std::make_optional(GeometryFactory::GeometryInput{aT.value()});
     }
