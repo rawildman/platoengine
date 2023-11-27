@@ -8,7 +8,6 @@
 
 namespace Plato::Functional
 {
-
 class OptimizationProblem
 {
    public:
@@ -23,25 +22,19 @@ class OptimizationProblem
     void constraintCheck() const;
 
     ///@brief Run a gradient check using a linear pseudo-objective so that errors in the parameter sensitivities might
-    ///be evident
+    /// be evident
     void sensitivityCheck() const;
-
-    ///@brief Run a gradient check on any individual objectives before aggregation
-    ///@param aInput validated parsed input to construct objective functions
-    void gradientCheckIndividualObjectives(const std::vector<Plato::objective>& aInput) const;
 
     ///@brief Run the optimization problem
     void optimize();
+
+    /// @brief The dimension of the design parameters being optimized.
+    [[nodiscard]] int dimension() const;
 
    private:
     Plato::Functional::PlatoProblem mProblem;
     ROL::Ptr<ROL::Problem<double>> mROLProblem;
     ROL::Solver<double> mROLSolver;
-
-    ///@brief Helper function that creates a perturbation of the initial value for use in diagnostic checks
-    ///
-    ///@return ROL::StdVector<double>
-    ROL::StdVector<double> generatePerturbation() const;
 };
 
 }  // namespace Plato::Functional

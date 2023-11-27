@@ -8,7 +8,6 @@
 
 namespace Plato::Functional
 {
-
 /// @brief Computes the sum of all nodal coordinates. The main purpose of this
 ///  class is for implementing a geometry sensitivity check.
 struct NodalSumObjective

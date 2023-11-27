@@ -26,6 +26,12 @@ struct InputTypeName{};
 /// @note The actual implementation is via template specializations generated from the macros.
 template<typename InputStruct>
 constexpr bool kIsNamedBlock = false;
+
+/// @brief Type trait specifying if a type is a geometry input type.
+///
+/// This is specialized to using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
+template<typename T>
+constexpr bool kIsGeometryInput = false;
 }
 
 #define OPTIONAL_TYPE(r, data, elem) boost::optional<BOOST_PP_TUPLE_ELEM(0, elem)>, BOOST_PP_TUPLE_ELEM(1, elem)
@@ -60,6 +66,13 @@ template<>                                                                      
 struct InputTypeName<STRUCT_NAME>                                                              \
 {   static constexpr const char* name = #STRUCT_NAME;                                          \
 };                                                                                             \
+}
+
+#define PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)              \
+PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
+namespace Plato::Input{                                                                        \
+template<>                                                                                     \
+constexpr bool kIsGeometryInput<STRUCT_NAME> = true;                                           \
 }
 
 /// Macro for generating an adapted struct that can be used for input parsing. The format

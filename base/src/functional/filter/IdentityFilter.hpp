@@ -4,6 +4,10 @@
 #include "FilterInterface.hpp"
 #include "Function.hpp"
 
+namespace Plato
+{
+struct density_topology;
+}
 namespace Plato::Functional
 {
 class FilterJacobian;

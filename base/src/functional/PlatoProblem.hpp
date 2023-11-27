@@ -1,8 +1,6 @@
 #ifndef PLATO_FUNCTIONAL_PLATOPROBLEM
 #define PLATO_FUNCTIONAL_PLATOPROBLEM
 
-#include <ROL_Solver.hpp>
-#include <ROL_StdBoundConstraint.hpp>
 #include <memory>
 #include <vector>
 
@@ -20,13 +18,10 @@ namespace Plato::Functional
 ///a ROL problem
 struct PlatoProblem
 {
-    GeometryFactory::GeometryFunction mGeometryFunction;
+    GeometryFactory::FactoryTypes mGeometry;
     ObjectiveFactory::ObjectiveFunction mObjective;
     std::vector<ConstraintFactory::Constraint<const MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
-    ROL::Ptr<ROL::StdVector<double>> mInitialGuess;
-    ROL::StdBoundConstraint<double> mBounds;
-    std::function<void(const ROL::StdVector<double>&)> mOutput;
 };
 
 ///@brief Convert validated parsed input into a populated PlatoProblem struct
@@ -59,13 +54,6 @@ struct PlatoProblem
 ///@return std::unique_ptr<ROL::Problem<double>>
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
-///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
-///
-///@param aROLOptions
-///@param aProblem
-///@return ROL::Solver<double>
-[[nodiscard]] ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions,
-                                                  ROL::Ptr<ROL::Problem<double>> aProblem);
 }  // namespace Plato::Functional
 
 #endif

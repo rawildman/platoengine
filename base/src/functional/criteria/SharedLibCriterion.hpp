@@ -14,7 +14,6 @@
 
 namespace Plato::Functional
 {
-
 /// @brief for a criterion that is loaded from a shared library.
 ///
 /// A shared library path is given on construction from which to load

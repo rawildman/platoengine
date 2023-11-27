@@ -6,7 +6,6 @@
 
 namespace Plato::Functional::Test
 {
-
 ROL::StdVector<double> ROLVectorJacobian::column(const int aIndex) const
 {
     return ROL::StdVector<double>{mJacobian(0, aIndex), mJacobian(1, aIndex)};

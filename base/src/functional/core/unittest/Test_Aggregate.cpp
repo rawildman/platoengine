@@ -44,8 +44,8 @@ TEST(Aggregate, UsingMakeFunction)
     const double tW2 = 3.0;
     using RosenbrockF = std::decay_t<decltype(tF1)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate = pf::make_aggregate_function(
-        FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
+    const auto tAggregate =
+        pf::make_aggregate_function(FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
     {
         const auto tArg = pft::TwoDVector{1.0, 1.0};
         constexpr double tExpected = 0.0;

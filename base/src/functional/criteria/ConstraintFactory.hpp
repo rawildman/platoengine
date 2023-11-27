@@ -14,7 +14,6 @@ struct MeshProxy;
 
 namespace Plato::Functional::ConstraintFactory
 {
-
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
 ///   Typically, this is either MeshProxy or a vector type such as `ROL::StdVector`.
@@ -41,10 +40,6 @@ namespace detail
 {
 /// @throw Exception If @a aConstraintInput defines more than one of `equal_to`, `greater_than`, or `less_than`.
 void affirm_only_one_type(const Plato::constraint& aConstraintInput);
-
-/// @pre @a aConstraintInput is valid according to affirm_valid_input.
-[[nodiscard]] auto make_constraint_function(const Plato::constraint& aConstraintInput) ->
-    typename Constraint<const MeshProxy&>::ConstraintFunction;
 
 [[nodiscard]] Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput);
 

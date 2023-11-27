@@ -61,10 +61,7 @@ TEST(ConstraintFactory, ValidConstraint)
 
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
 
-    EXPECT_EQ(tData.mConstraints.size(), 1);
-    EXPECT_NO_THROW(auto tFunction = Plato::Functional::ConstraintFactory::detail::make_constraint_function(
-                        tData.mConstraints.front()));
-
+    ASSERT_EQ(tData.mConstraints.size(), 1);
     auto tConstraint = Plato::Functional::ConstraintFactory::detail::make_constraint(tData.mConstraints.front());
     EXPECT_TRUE(tConstraint.mLinear);
     EXPECT_EQ(tConstraint.mConstraintTarget, 13.0);

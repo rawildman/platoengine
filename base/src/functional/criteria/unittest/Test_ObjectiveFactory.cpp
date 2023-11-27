@@ -4,27 +4,6 @@
 #include "InputParser.hpp"
 #include "ObjectiveFactory.hpp"
 
-TEST(ObjectiveFactory, ValidObjective)
-{
-    constexpr std::string_view tInput =
-        R"(
-          begin objective test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-       )";
-
-    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
-
-    EXPECT_EQ(tData.mObjectives.size(), 1);
-    EXPECT_NO_THROW(auto tFunction =
-                        Plato::Functional::ObjectiveFactory::make_objective_function(tData.mObjectives.front()));
-}
-
 TEST(ObjectiveFactory, InvalidObjectiveNoApp)
 {
     constexpr std::string_view tInput =

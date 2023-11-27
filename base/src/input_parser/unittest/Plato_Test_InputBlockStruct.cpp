@@ -48,4 +48,18 @@ TEST(InputBlockStruct, UnNamed)
     EXPECT_EQ(Plato::Input::InputTypeName<Plato::TestUnnamedBlock>::name, "TestUnnamedBlock");
 }
 
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
+    (Plato), TestGeometryBlock,
+    (bool, field1)
+)
+
+TEST(InputBlockStruct, Geometry)
+{
+    const Plato::TestGeometryBlock tTestBlock;
+    constexpr bool tIsGeometry = Plato::Input::kIsGeometryInput<Plato::TestGeometryBlock>;
+    EXPECT_TRUE(tIsGeometry);
+    constexpr bool tIsNotGeometry = Plato::Input::kIsGeometryInput<int>;
+    EXPECT_FALSE(tIsNotGeometry);
+}
+
 #include "Plato_RestoreBoostNvccWarnings.hpp"

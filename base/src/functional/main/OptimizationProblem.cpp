@@ -1,7 +1,6 @@
 #include "OptimizationProblem.hpp"
 
 #include <ROL_Algorithm.hpp>
-#include <ROL_StdBoundConstraint.hpp>
 #include <fstream>
 #include <string_view>
 
@@ -19,6 +18,15 @@ constexpr std::string_view kROLGradientCheckFileName = "ROL_Gradient_Check.txt";
 constexpr std::string_view kROLSensitivityCheckFileName = "ROL_Sensitivity_Check.txt";
 constexpr std::string_view kROLOptimizerFileName = "ROL_Optimizer.txt";
 constexpr std::string_view kROLConstraintCheckFileName = "ROL_Constraint_Check.txt";
+
+///@brief Helper function that creates a perturbation of the initial value for use in diagnostic checks
+ROL::StdVector<double> generatePerturbation(const int aDimension)
+{
+    ROL::StdVector<double> tPerturbation(aDimension);
+    tPerturbation.randomize();
+    return tPerturbation;
+}
+
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
@@ -33,7 +41,8 @@ void OptimizationProblem::gradientCheck() const
     std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    mROLProblem->getObjective()->checkGradient(*mProblem.mInitialGuess, generatePerturbation(), tPrintOutput, tOutFile);
+    mROLProblem->getObjective()->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
+                                               tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::constraintCheck() const
@@ -72,7 +81,8 @@ void OptimizationProblem::sensitivityCheck() const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
-    tSensitivityObjective->checkGradient(*mProblem.mInitialGuess, generatePerturbation(), tPrintOutput, tOutFile);
+    tSensitivityObjective->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
+                                         tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::optimize()
@@ -81,14 +91,9 @@ void OptimizationProblem::optimize()
     mROLSolver.solve(tOutFile);
 
     auto tSolution = dynamic_cast<ROL::StdVector<double>&>(*mROLProblem->getPrimalOptimizationVector());
-    mProblem.mOutput(tSolution);
+    mProblem.mGeometry.mOutput(tSolution);
 }
 
-ROL::StdVector<double> OptimizationProblem::generatePerturbation() const
-{
-    ROL::StdVector<double> tPerturbation(mProblem.mInitialGuess->dimension());
-    tPerturbation.randomize();
-    return tPerturbation;
-}
+int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess->dimension(); }
 
 }  // namespace Plato::Functional

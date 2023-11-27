@@ -1,13 +1,17 @@
 set(SRCS BrickShapeGeometry.cpp
          GeometryFactory.cpp
+         GeometryRegistration.cpp
          DensityTopology.cpp)
 
 set(HDRS BrickShapeGeometry.hpp
-            GeometryFactory.hpp
-            DensityTopology.hpp)
+         detail/GeometryRegistrationUtilities.hpp
+         detail/GeometryInputBuilder.hpp
+         GeometryFactory.hpp
+         GeometryRegistration.hpp
+         DensityTopology.hpp)
 
 set(LIB_NAME PlatoFunctionalGeometry)
-add_library(${LIB_NAME} ${SRCS} ${HDRS} )
+add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
 target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
 target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalUtilities PlatoFunctionalCore PlatoFunctionalFilter PlatoInputParser)
 

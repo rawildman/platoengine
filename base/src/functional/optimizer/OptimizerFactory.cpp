@@ -5,7 +5,6 @@
 
 namespace Plato::Functional
 {
-
 namespace
 {
 template <typename T>
@@ -50,6 +49,11 @@ ROL::ParameterList rol_parameter_list(const Plato::optimization_parameters& aOpt
         set_status_test_parameter(tParlist, aOptimizationParameters.step_tolerance, kStepTolerance);
         return tParlist;
     }
+}
+
+ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Ptr<ROL::Problem<double>> aROLProblem)
+{
+    return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
 }
 
 }  // namespace Plato::Functional

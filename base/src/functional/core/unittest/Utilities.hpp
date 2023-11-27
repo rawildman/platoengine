@@ -8,7 +8,6 @@
 
 namespace Plato::Functional::Test
 {
-
 [[nodiscard]] inline auto make_rosenbrock_function(const Rosenbrock& aRosenbrock)
 {
     return make_function([aRosenbrock](const TwoDVector& aX) { return aRosenbrock.f(aX(0), aX(1)); },

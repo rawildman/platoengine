@@ -3,7 +3,9 @@
 #include <ROL_StdVector.hpp>
 
 #include "FilterFactory.hpp"
+#include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
+#include "Plato_InputBlocks.hpp"
 #include "SharedLibIdentityFilter.hpp"
 
 namespace
@@ -18,6 +20,6 @@ TEST(SharedLibFilter, LoadAndValue)
 {
     namespace pf = Plato::Functional;
     const std::unique_ptr<const pf::FilterInterface> tFilter =
-        pf::FilterFactory::detail::load_filter(pf::FilterParameters{}, kSharedLibPath);
+        pf::FilterFactory::load_filter(Plato::density_topology{}, kSharedLibPath);
     EXPECT_EQ(tFilter->filter(kMeshArgument).mNodalDensities, kRho);
 }

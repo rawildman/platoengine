@@ -22,9 +22,6 @@ namespace detail
 [[nodiscard]] AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput);
 }
 
-/// @pre @a aObjectiveInput is valid according to affirm_valid_input.
-[[nodiscard]] ObjectiveFunction make_objective_function(const Plato::objective& aObjectiveInput);
-
 /// @pre @a aInput is valid according to affirm_valid_input.
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const std::vector<Plato::objective>& aInput);
 

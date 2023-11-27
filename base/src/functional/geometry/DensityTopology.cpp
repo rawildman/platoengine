@@ -1,6 +1,9 @@
 #include "DensityTopology.hpp"
 
+#include "Exception.hpp"
 #include "FilterInterface.hpp"
+#include "FilterJacobian.hpp"
+#include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
 
@@ -11,10 +14,38 @@ namespace
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
+
+void check_valid_input(const density_topology& aInput)
+{
+    if (!aInput.mesh_name)
+    {
+        throw Exception("density_topology requires a mesh_name.");
+    }
+}
+
+std::function<void(const ROL::StdVector<double>&)> make_topology_output(const std::filesystem::path& aInputMeshName,
+                                                                        const std::filesystem::path& aOutputMeshName)
+{
+    return [aInputMeshName, aOutputMeshName](const ROL::StdVector<double>& aSolution)
+    { return DensityTopology::output(aInputMeshName, aSolution, aOutputMeshName); };
+}
+
+/// Static registration for GeometryFactory
+[[maybe_unused]] static auto kDensityTopologyRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
+    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    {
+        const Plato::density_topology& tInput = std::get<Plato::density_topology>(aGeometryInput);
+        check_valid_input(tInput);
+        return GeometryFactory::FactoryTypes{
+            make_topology_geometry(DensityTopology{tInput}),
+            DensityTopology::initialGuess(tInput.mesh_name.value().mName),
+            DensityTopology::bounds(tInput.mesh_name.value().mName),
+            make_topology_output(tInput.mesh_name.value().mName, tInput.output_name.value().mName)};
+    }};
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)
-    : mFileName(aInput.mesh_name->mName),
+    : mFileName(aInput.mesh_name.value().mName),
       mNumDesignParameters(read_mesh_node_size(mFileName)),
       mFilter(FilterFactory::make_filter_function(aInput))
 {

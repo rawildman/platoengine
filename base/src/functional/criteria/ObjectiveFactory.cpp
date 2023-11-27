@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "AffirmUtilities.hpp"
+#include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
@@ -11,7 +12,6 @@
 
 namespace Plato::Functional::ObjectiveFactory
 {
-
 namespace detail
 {
 AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
@@ -23,30 +23,12 @@ AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
         if (Plato::Functional::Affirmations::is_active(tObjective))
         {
             const double tWeight = tObjective.aggregation_weight.value();
-            tFunctionsAndWeights.emplace_back(make_objective_function(tObjective), tWeight);
+            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective), tWeight);
         }
     }
     return AggregateObjective{std::move(tFunctionsAndWeights)};
 }
 }  // namespace detail
-
-ObjectiveFunction make_objective_function(const Plato::objective& aObjectiveInput)
-{
-    const FileList tInputFiles = aObjectiveInput.input_files.value_or(FileList{});
-    if (aObjectiveInput.app.value() == Plato::CodeOptions::kCustomApp)
-    {
-        return make_shared_lib_function(
-            SharedLibCriterion{aObjectiveInput.shared_library_path->mName, tInputFiles.mList});
-    }
-    else if (aObjectiveInput.app.value() == Plato::CodeOptions::kNodalSum)
-    {
-        return make_nodal_sum_function();
-    }
-    else
-    {
-        throw Plato::Functional::Exception("Constraint not supported.");
-    }
-}
 
 ObjectiveFunction make_aggregate_objective_function(const std::vector<Plato::objective>& aInput)
 {

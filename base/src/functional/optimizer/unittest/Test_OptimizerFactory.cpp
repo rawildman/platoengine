@@ -5,7 +5,6 @@
 
 namespace Plato::Functional::Test
 {
-
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
     const std::string tInput =

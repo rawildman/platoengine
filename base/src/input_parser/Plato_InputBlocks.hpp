@@ -1,3 +1,4 @@
+// clang-format off
 #ifndef PLATO_INPUTBLOCKS_HPP
 #define PLATO_INPUTBLOCKS_HPP
 
@@ -69,12 +70,12 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (bool, is_linear)
 )
 
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (Plato), brick_shape_geometry,
     (Plato::FileName, mesh_name)
 )
 
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (Plato), density_topology,
     (Plato::FileName, mesh_name)
     (Plato::FileName, output_name)
@@ -96,6 +97,16 @@ BOOST_FUSION_DEFINE_STRUCT(
     (Plato::optimization_parameters, mOptimizationParameters)
 )
 
+namespace Plato
+{
+template<typename BlockStruct>
+std::string block_name()
+{
+    return Input::InputTypeName<BlockStruct>::name;
+}
+}
+
 #include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif
+// clang-format on

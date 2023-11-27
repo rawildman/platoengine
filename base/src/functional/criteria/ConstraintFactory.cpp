@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "AffirmUtilities.hpp"
+#include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
@@ -11,7 +12,6 @@
 
 namespace Plato::Functional::ConstraintFactory
 {
-
 std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Plato::constraint>& aInput)
 {
     detail::affirm_valid_input(aInput);
@@ -30,26 +30,6 @@ std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Pla
 
 namespace detail
 {
-
-auto make_constraint_function(const Plato::constraint& aConstraintInput) ->
-    typename Constraint<const MeshProxy&>::ConstraintFunction
-{
-    const FileList tInputFiles = aConstraintInput.input_files.value_or(FileList{});
-    if (aConstraintInput.app.value() == Plato::CodeOptions::kCustomApp)
-    {
-        return make_shared_lib_function(
-            SharedLibCriterion{aConstraintInput.shared_library_path->mName, tInputFiles.mList});
-    }
-    else if (aConstraintInput.app.value() == Plato::CodeOptions::kNodalSum)
-    {
-        return make_nodal_sum_function();
-    }
-    else
-    {
-        throw Plato::Functional::Exception("Constraint not supported.");
-    }
-}
-
 Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput)
 {
     double tValue = 0;
@@ -73,7 +53,7 @@ Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstrain
     }
 
     return Constraint<const MeshProxy&>{aConstraintInput.name.value_or("Unnamed Constraint"),
-                                        make_constraint_function(aConstraintInput), tValue, tIsLinear};
+                                        CriterionFactory::make_criterion_function(aConstraintInput), tValue, tIsLinear};
 }
 
 void affirm_only_one_type(const Plato::constraint& aConstraintInput)

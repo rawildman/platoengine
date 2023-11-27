@@ -1,9 +1,13 @@
 #include "BrickShapeGeometry.hpp"
 
+#include <filesystem>
 #include <iomanip>
 #include <sstream>
 
+#include "Exception.hpp"
+#include "GeometryRegistration.hpp"
 #include "JacobianColumnEvaluator.hpp"
+#include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
 
 namespace Plato::Functional
@@ -14,6 +18,29 @@ constexpr int kNumDims = 3;
 constexpr int kNumDesignParameters = 6;
 const std::vector<double> kLowerBounds = {-10.0, -10.0, -10.0, 1e-2, 1e-2, 1e-2};  // Arbitrary
 const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};        // Arbitrary
+
+[[nodiscard]] std::filesystem::path mesh_path(const GeometryFactory::GeometryInput& aGeometryInput)
+{
+    if (!std::get<Plato::brick_shape_geometry>(aGeometryInput).mesh_name)
+    {
+        throw Plato::Functional::Exception{"A brick mesh must have a mesh_name."};
+    }
+    return std::get<Plato::brick_shape_geometry>(aGeometryInput).mesh_name.value().mName;
+}
+
+[[nodiscard]] std::function<void(const ROL::StdVector<double>&)> make_output()
+{
+    return [](const ROL::StdVector<double>& aSolution) { return BrickShapeGeometry::output(aSolution); };
+}
+
+[[maybe_unused]] static auto kBrickShapeGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
+    Plato::block_name<Plato::brick_shape_geometry>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    {
+        return GeometryFactory::FactoryTypes{make_brick_shape_geometry(BrickShapeGeometry{mesh_path(aGeometryInput)}),
+                                             BrickShapeGeometry::initialGuess(), BrickShapeGeometry::bounds(),
+                                             make_output()};
+    }};
+
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)

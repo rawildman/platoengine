@@ -12,7 +12,6 @@ class BulkData;
 
 namespace Plato::Functional
 {
-
 /// @brief Represents a mesh on disk as well as a nodal density field.
 ///
 /// This object is used as an argument to most objectives to represent a mesh
