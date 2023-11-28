@@ -7,6 +7,7 @@
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
 #include "Plato_InputBlocks.hpp"
+#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 namespace
 {
@@ -40,3 +41,4 @@ TEST(GeometryRegistration, DensityTopology)
 {
     EXPECT_TRUE(Plato::Functional::GeometryFactory::is_geometry_function_registered("density_topology"));
 }
+#include "Plato_RestoreBoostNvccWarnings.hpp"

@@ -4,6 +4,7 @@
 #include "FilterRegistration.hpp"
 #include "Function.hpp"
 #include "MeshProxy.hpp"
+#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 namespace Plato
 {
@@ -31,3 +32,4 @@ TEST(FilterRegistration, Identity)
 {
     EXPECT_TRUE(Plato::Functional::FilterFactory::is_filter_function_registered("identity"));
 }
+#include "Plato_RestoreBoostNvccWarnings.hpp"
