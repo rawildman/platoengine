@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-
 #include "Plato_FileList.hpp"
+#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 TEST(FileName, Insert)
 {
