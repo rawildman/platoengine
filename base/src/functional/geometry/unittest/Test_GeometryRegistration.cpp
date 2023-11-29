@@ -18,7 +18,7 @@ namespace
         [](const ROL::StdVector<double>&) { return Plato::Functional::JacobianMultiplier{}; });
 }
 
-static auto kTestGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
+[[maybe_unused]] static auto kTestGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
     "test", [](const Plato::Functional::GeometryFactory::GeometryInput&)
     {
         return Plato::Functional::GeometryFactory::FactoryTypes{

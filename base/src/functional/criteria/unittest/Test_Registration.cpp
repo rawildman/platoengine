@@ -16,7 +16,7 @@ namespace
                                             });
 }
 
-static auto kTestFilterRegistration = Plato::Functional::CriterionFactory::CriterionRegistration{
+[[maybe_unused]] static auto kTestCriterionRegistration = Plato::Functional::CriterionFactory::CriterionRegistration{
     "test", [](const Plato::Functional::CriterionFactory::CriterionInput&) { return make_test_criterion_function(); }};
 
 }  // namespace
