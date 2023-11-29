@@ -15,6 +15,7 @@ target_include_directories(PlatoInputParser PUBLIC $<BUILD_INTERFACE:${CMAKE_CUR
 
 if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
   # Suppress warnings from Boost
+  message(STATUS "Supressing nvcc warnings for parser")
   target_compile_options(PlatoInputParser PUBLIC 
     $<$<COMPILE_LANGUAGE:CXX>:SHELL:-Xcudafe --diag_suppress=20011 -Xcudafe --diag_suppress=20012>) 
 endif()
