@@ -1,10 +1,6 @@
 #ifndef PLATO_INPUTBLOCKSTRUCT_HPP
 #define PLATO_INPUTBLOCKSTRUCT_HPP
 
-// clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-// clang-format on
-
 #include <boost/fusion/adapted/struct/define_struct.hpp>
 #include <boost/fusion/include/define_struct.hpp>
 
@@ -105,7 +101,5 @@ struct InputTypeName<STRUCT_NAME>                                               
 template<>                                                                            \
 constexpr bool kIsNamedBlock<STRUCT_NAME> = true;                                     \
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

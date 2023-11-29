@@ -5,10 +5,6 @@
 #include "Plato_InputEnumTypes.hpp"
 #include "Plato_InputBlocks.hpp"
 
-//clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-//clang-format on
-
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix.hpp>
 #include <boost/fusion/include/at_c.hpp>
@@ -128,7 +124,5 @@ struct BlockStructRule
 };
 
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

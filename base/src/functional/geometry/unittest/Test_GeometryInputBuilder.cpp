@@ -4,7 +4,6 @@
 
 #include "detail/GeometryInputBuilder.hpp"
 // clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
 BOOST_FUSION_DEFINE_STRUCT((Plato)(Functional)(GeometryFactory)(Detail),
                            TestStructNoGeometryTypes,
                            (int, mInt)
@@ -16,7 +15,6 @@ BOOST_FUSION_DEFINE_STRUCT((Plato)(Functional)(GeometryFactory)(Detail),
                            (double, mDouble)
                            (Plato::brick_shape_geometry, mBrickShapeGeometry)
                            (boost::optional<Plato::density_topology>, mDensityTopology2))
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 // clang-format on
 
 TEST(GeometryInputBuilder, TupleIfGeometryInput)

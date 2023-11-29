@@ -3,7 +3,6 @@
 #include "Exception.hpp"
 #include "FilterFactory.hpp"
 #include "InputParser.hpp"
-#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 TEST(FilterFactory, ValidIdentityFilter)
 {
@@ -50,4 +49,3 @@ TEST(FilterFactory, HelmholtzFilterThrows)
         EXPECT_TRUE(tCorrectException);
     }
 }
-#include "Plato_RestoreBoostNvccWarnings.hpp"

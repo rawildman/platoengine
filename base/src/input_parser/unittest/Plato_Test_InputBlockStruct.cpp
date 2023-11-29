@@ -3,10 +3,6 @@
 #include "Plato_InputBlockStruct.hpp"
 #include "Plato_Test_Helpers.hpp"
 
-// clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-// clang-format on
-
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (Plato), TestNamedBlock,
     (int, field1)
@@ -61,5 +57,3 @@ TEST(InputBlockStruct, Geometry)
     constexpr bool tIsNotGeometry = Plato::Input::kIsGeometryInput<int>;
     EXPECT_FALSE(tIsNotGeometry);
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"

@@ -9,10 +9,6 @@
 #include <string>
 #include <vector>
 
-// clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-// clang-format on
-
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs. 
 ///  For example, the `objective` block will be parsed as
@@ -105,8 +101,6 @@ std::string block_name()
     return Input::InputTypeName<BlockStruct>::name;
 }
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif
 // clang-format on

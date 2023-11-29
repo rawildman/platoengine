@@ -2,7 +2,6 @@
 
 #include "BrickShapeGeometry.hpp"
 #include "MassObjective.hpp"
-#include "Plato_SuppressBoostNvccWarnings.hpp"
 #include "STKUtilities.hpp"
 
 TEST(MassObjective, Value)
@@ -30,4 +29,3 @@ TEST(MassObjective, NumMeshNodes)
     constexpr unsigned int tExpectedNumNodes = 12;
     EXPECT_DOUBLE_EQ(tMassObjective.numMeshNodes(tMeshName), tExpectedNumNodes);
 }
-#include "Plato_RestoreBoostNvccWarnings.hpp"

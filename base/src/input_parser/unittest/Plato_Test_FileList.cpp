@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "Plato_FileList.hpp"
-#include "Plato_SuppressBoostNvccWarnings.hpp"
 
 TEST(FileName, Insert)
 {
@@ -82,5 +81,3 @@ TEST(FileList, ConstIterators)
     EXPECT_EQ(tFileList.mList.at(2), "w");
     EXPECT_EQ(tFileList.mList.at(3), "r");
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"

@@ -3,10 +3,6 @@
 
 #include "Plato_BlockStructRule.hpp"
 
-// clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-// clang-format on
-
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
@@ -138,7 +134,5 @@ struct InputParser : boost::spirit::qi::grammar<Iterator, PlatoInput(), boost::s
     Rule mStartPlatoInput;
 };
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif

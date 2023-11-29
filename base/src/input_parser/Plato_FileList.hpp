@@ -1,10 +1,6 @@
 #ifndef PLATO_FILELIST_HPP
 #define PLATO_FILELIST_HPP
 
-//clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-//clang-format on
-
 #include <boost/spirit/include/qi.hpp>
 
 #include <iostream>
@@ -86,7 +82,5 @@ struct create_parser<Plato::FileName>
 };
 
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 
 #endif
