@@ -1,6 +1,7 @@
 SET(SRCS ../Plato_InitializeValues.cpp
          Plato_Test_Operations.cpp
          Plato_Test_Operations_Boost.cpp
+         Plato_Test_OperationUtilities.cpp
          Operations_UnitMain.cpp
          )
 

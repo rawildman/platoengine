@@ -41,7 +41,7 @@
  */
 
 /*
- * Plato_OutputNodalFieldSharedData.cpp
+ * Plato_GetGlobalNodeIDMap.cpp
  *
  *  Created on: October 10, 2020
  */
@@ -51,66 +51,44 @@
 #include <cstdlib>
 
 #include "PlatoApp.hpp"
-#include "Plato_OutputNodalFieldSharedData.hpp"
+#include "Plato_GetGlobalNodeIDMap.hpp"
 #include "Plato_OperationsUtilities.hpp"
-
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-BOOST_CLASS_EXPORT_IMPLEMENT(Plato::OutputNodalFieldSharedData)
 
 namespace Plato
 {
 
-OutputNodalFieldSharedData::OutputNodalFieldSharedData(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
-        Plato::LocalOp(aPlatoApp)
-{
-    mIndex = 0;
-    for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
-    {
-        mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
-    }
-}
-
-OutputNodalFieldSharedData::~OutputNodalFieldSharedData()
+GetGlobalNodeIDMap::GetGlobalNodeIDMap(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
+        Plato::LocalOp(aPlatoApp),
+        mMeshFilename(findFirstStringParameter({"MeshFilename"}, aNode)),
+        mOutputName(findFirstStringParameter({"Output","ArgumentName"}, aNode))
 {
 }
 
-void OutputNodalFieldSharedData::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
+void GetGlobalNodeIDMap::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
 {
-    for(auto& tInputName : mInputNames) {
-        aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, tInputName));
-    }
+    aLocalArgs.push_back(Plato::LocalArg
+        { Plato::data::layout_t::SCALAR, mOutputName });
 }
 
-void OutputNodalFieldSharedData::operator()()
+void GetGlobalNodeIDMap::setValuesInDataLayer(const std::vector<unsigned int> &aValuesIn)
 {
-    int tMyRank = 0;
-    MPI_Comm_rank(mPlatoApp->getComm(), &tMyRank);
-    if(tMyRank == 0)
-    {
-        mIndex++;
-        for(size_t i=0; i<mInputNames.size(); ++i)
-        {
-            auto tInputName = mInputNames[i];
-            auto tFileName = tInputName;
-            
-            tFileName += std::to_string(mIndex);
-            FILE *fp=fopen(tFileName.c_str(), "w");
-            if(fp)
-            {
-                // get input data
-                auto tInfield = mPlatoApp->getNodeField(tInputName);
-                Real* tInputField;
-                tInfield->ExtractView(&tInputField);
-                const int tLength = tInfield->MyLength();
-                for(int j=0; j<tLength; ++j)
-                {
-                    fprintf(fp, "%.16lf\n", tInputField[j]);
-                }
-                fclose(fp);
-            }
-        }
-    }
+/************************************************************************/
+/* NOTE: We are casting the node ids to doubles because the data layer  */
+/* does not support global value integers or vectors of integers        */ 
+/************************************************************************/
+    std::vector<double>& tDataLayerVector = *(mPlatoApp->getValue(mOutputName));
+    tDataLayerVector.clear();
+    std::transform(aValuesIn.begin(), aValuesIn.end(), std::back_inserter(tDataLayerVector),
+         [](const auto& tCurNode){ return static_cast<double>(tCurNode); });
 }
+
+void GetGlobalNodeIDMap::operator()()
+{
+    // Read in the mesh and extract the node ids.
+    std::vector<unsigned int> tNodeIDsAsDoubleVector = extractGlobalNodeIDs(mPlatoApp->getComm(), mMeshFilename);
+    // Put the node ids into the data layer for exporting
+    setValuesInDataLayer(tNodeIDsAsDoubleVector);
+}
+
 
 }

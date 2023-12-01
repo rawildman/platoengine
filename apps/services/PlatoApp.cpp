@@ -340,6 +340,14 @@ void PlatoApp::initialize( bool initializeTimers )
                 continue;
             }
 
+            tFunctions.push_back("GetGlobalNodeIDMap");
+            if(tStrFunction == tFunctions.back())
+            {
+                mOperationMap[tStrName] = new Plato::GetGlobalNodeIDMap(this, tNode);
+                this->createLocalData(mOperationMap[tStrName]);
+                continue;
+            }
+
             tFunctions.push_back("CSMParameterOutput");
             if(tStrFunction == tFunctions.back())
             {

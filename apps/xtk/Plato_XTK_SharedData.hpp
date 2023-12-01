@@ -120,6 +120,8 @@ public:
         }
 
     }
+    bool isDynamic() const override { return false; }
+
 
 private:
     std::vector<double>   mData;
