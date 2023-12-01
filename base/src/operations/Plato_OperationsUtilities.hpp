@@ -48,6 +48,7 @@
 
 #pragma once
 
+#include "mpi.h"
 #include "Plato_SharedData.hpp"
 
 namespace Plato
@@ -98,6 +99,23 @@ void split(const std::string & aInput, std::vector<std::string> & aOutput);
  * \param [in,out] aData container's data
 **********************************************************************************/
 void zero(const size_t& aLength, double* aData);
+
+/******************************************************************************//**
+ * \brief Find the first occurance of a string param given the path
+ * \param [in] aPathStrings vector of strings defining path to parameter
+ * \param [in] aNode Node to start searching from
+**********************************************************************************/
+std::string findFirstStringParameter(const std::vector<std::string>& aPathStrings, 
+                                     const Plato::InputData& aNode);
+
+/******************************************************************************//**
+ * \brief Given a filename extract the global node ids in the mesh.
+ * \param [in] aComm Parallel communicator
+ * \param [in] aFilename Name of file containing Exodus mesh
+**********************************************************************************/
+std::vector<unsigned int> extractGlobalNodeIDs(const MPI_Comm &aComm,
+                                               const std::string &aFilename);
+
 
 }
 // namespace Plato

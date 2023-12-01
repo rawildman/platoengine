@@ -53,6 +53,9 @@
 #include "Plato_Exceptions.hpp"
 #include "Plato_SharedData.hpp"
 #include "Plato_OperationsUtilities.hpp"
+#ifdef STK_ENABLED
+#include <stk_io/StkMeshIoBroker.hpp>
+#endif
 
 namespace Plato
 {
@@ -168,6 +171,57 @@ void split(const std::string & aInput, std::vector<std::string> & aOutput)
        aOutput.push_back(tSegment);
     }
 }
+
+std::string findFirstStringParameter(const std::vector<std::string>& aPathStrings, 
+                                     const Plato::InputData& aNode)
+{
+    if(aPathStrings.size() == 0)
+    {
+        std::stringstream tError;
+        tError << std::endl << "ERROR: Empty path in findFirstStringParameter()." << std::endl;
+        Plato::ParsingException tParsingException(tError.str());
+        throw tParsingException;
+    }
+
+    size_t tNumInPath = aPathStrings.size();
+    Plato::InputData tCurParent = aNode;
+    for(size_t i=0; i<tNumInPath-1; ++i)
+    {
+        auto tCurNode = tCurParent.getByName<Plato::InputData>(aPathStrings[i]);
+        if(tCurNode.size() == 0)
+        {
+            std::stringstream tError;
+            tError << std::endl << "ERROR: Incorrect path in findFirstStringParameter()." << std::endl;
+            Plato::ParsingException tParsingException(tError.str());
+            throw tParsingException;
+        }
+        tCurParent = tCurNode[0];
+    }
+    return Plato::Get::String(tCurParent, aPathStrings[aPathStrings.size()-1]); 
+}
+
+std::vector<unsigned int> extractGlobalNodeIDs(const MPI_Comm &aComm,
+                                               const std::string &aFilename)
+{
+   std::vector<unsigned int> tNodeIDs;
+#ifdef STK_ENABLED
+   stk::io::StkMeshIoBroker tIoBroker(aComm);
+   tIoBroker.add_mesh_database(aFilename, "exodus", stk::io::READ_MESH);
+   tIoBroker.create_input_mesh();
+   tIoBroker.populate_bulk_data();
+   stk::mesh::EntityVector tNodes;
+   stk::mesh::get_entities(tIoBroker.bulk_data(), stk::topology::NODE_RANK, tNodes);
+   std::transform(tNodes.begin(), tNodes.end(), std::back_inserter(tNodeIDs),
+         [&tIoBroker](const auto& tCurNode){ return static_cast<unsigned int>(tIoBroker.bulk_data().identifier(tCurNode)); });
+#else
+   std::stringstream tError;
+   tError << std::endl << "ERROR: Plato was not compiled with STK_ENABLED so you cannot call extractGlobalNodeIDs." << std::endl;
+   Plato::ParsingException tParsingException(tError.str());
+   throw tParsingException;
+#endif
+   return tNodeIDs;
+}
+
 
 }
 // namespace Plato

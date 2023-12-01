@@ -41,76 +41,53 @@
  */
 
 /*
- * Plato_OutputNodalFieldSharedData.cpp
+ * Plato_GetGlobalNodeIDMap.hpp
  *
- *  Created on: October 10, 2020
+ *  Created on: Nov 9, 2023
  */
 
-#include <string>
-#include <cstdio>
-#include <cstdlib>
+#pragma once
 
-#include "PlatoApp.hpp"
-#include "Plato_OutputNodalFieldSharedData.hpp"
-#include "Plato_OperationsUtilities.hpp"
-
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-BOOST_CLASS_EXPORT_IMPLEMENT(Plato::OutputNodalFieldSharedData)
+#include "Plato_LocalOperation.hpp"
 
 namespace Plato
 {
 
-OutputNodalFieldSharedData::OutputNodalFieldSharedData(PlatoApp* aPlatoApp, Plato::InputData& aNode) :
-        Plato::LocalOp(aPlatoApp)
-{
-    mIndex = 0;
-    for(Plato::InputData tInputNode : aNode.getByName<Plato::InputData>("Input"))
-    {
-        mInputNames.push_back(Plato::Get::String(tInputNode, "ArgumentName"));
-    }
-}
+class InputData;
 
-OutputNodalFieldSharedData::~OutputNodalFieldSharedData()
+/******************************************************************************//**
+ * @brief Manage PLATO Main output
+ **********************************************************************************/
+class GetGlobalNodeIDMap : public Plato::LocalOp
 {
-}
+public:
+    /******************************************************************************//**
+     * @brief Constructor
+     * @param [in] aPlatoApp PLATO application
+     * @param [in] aNode input XML data
+     **********************************************************************************/
+    GetGlobalNodeIDMap(PlatoApp* aPlatoApp, Plato::InputData& aNode);
 
-void OutputNodalFieldSharedData::getArguments(std::vector<Plato::LocalArg>& aLocalArgs)
-{
-    for(auto& tInputName : mInputNames) {
-        aLocalArgs.push_back(Plato::LocalArg(Plato::data::layout_t::SCALAR_FIELD, tInputName));
-    }
-}
+    /******************************************************************************//**
+     * @brief perform local operation - output data
+     **********************************************************************************/
+    void operator()() override;
 
-void OutputNodalFieldSharedData::operator()()
-{
-    int tMyRank = 0;
-    MPI_Comm_rank(mPlatoApp->getComm(), &tMyRank);
-    if(tMyRank == 0)
-    {
-        mIndex++;
-        for(size_t i=0; i<mInputNames.size(); ++i)
-        {
-            auto tInputName = mInputNames[i];
-            auto tFileName = tInputName;
-            
-            tFileName += std::to_string(mIndex);
-            FILE *fp=fopen(tFileName.c_str(), "w");
-            if(fp)
-            {
-                // get input data
-                auto tInfield = mPlatoApp->getNodeField(tInputName);
-                Real* tInputField;
-                tInfield->ExtractView(&tInputField);
-                const int tLength = tInfield->MyLength();
-                for(int j=0; j<tLength; ++j)
-                {
-                    fprintf(fp, "%.16lf\n", tInputField[j]);
-                }
-                fclose(fp);
-            }
-        }
-    }
-}
+    /******************************************************************************//**
+     * @brief Return local operation's argument list
+     * @param [out] aLocalArgs argument list
+    **********************************************************************************/
+    void getArguments(std::vector<Plato::LocalArg> & aLocalArgs) override;
+
+private:
+    std::string mMeshFilename;
+    std::string mOutputName;
+
+private:
+    void setValuesInDataLayer(const std::vector<unsigned int> &aValuesIn);
+};
+// class GetGlobalNodeIDMap
 
 }
+// namespace Plato
+
