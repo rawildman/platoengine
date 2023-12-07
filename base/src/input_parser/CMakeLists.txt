@@ -14,7 +14,9 @@ target_link_libraries(PlatoInputParser PUBLIC PlatoParser Boost::headers)
 target_include_directories(PlatoInputParser PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
-  # Suppress warnings from Boost
+  # Boost will define many fusion types' member functions to be __host__ __device__
+  # which ends up causing a lot of warnings. This code will never be used on a 
+  # device, so suppress the warnings.
   message(STATUS "Supressing nvcc warnings for parser")
   target_compile_options(PlatoInputParser PUBLIC 
     $<$<COMPILE_LANGUAGE:CXX>:SHELL:-Xcudafe --diag_suppress=20011 -Xcudafe --diag_suppress=20012>) 
