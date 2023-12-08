@@ -78,6 +78,11 @@ set(CMAKE_CXX_COMPILER     ${Trilinos_CXX_COMPILER})
 set(CMAKE_C_COMPILER       ${Trilinos_C_COMPILER})
 set(CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
 
+if(PLATOENGINE_ENABLE_CUDA)
+  message(STATUS "Enabling CUDA")
+  enable_language(CUDA)
+endif()
+
 ###############################################################################
 ###############################################################################
 

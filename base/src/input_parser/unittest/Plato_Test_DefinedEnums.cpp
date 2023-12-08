@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-
 #include "Plato_InputEnumTypes.hpp"
 
 namespace
@@ -60,4 +58,3 @@ TEST(ObjectiveTypes, SymbolParser)
     EXPECT_EQ(tParsedObjectiveTypes.back(), Plato::ObjectiveTypes::kMaximize);
 }
 
-#include "Plato_RestoreBoostNvccWarnings.hpp"

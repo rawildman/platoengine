@@ -18,7 +18,7 @@ namespace
         [](const Plato::Functional::MeshProxy&) { return Plato::Functional::FilterJacobian{}; });
 }
 
-static auto kTestFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
+[[maybe_unused]] static auto kTestFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
     "test", [](const Plato::density_topology&) { return make_test_filter_function(); }};
 }  // namespace
 

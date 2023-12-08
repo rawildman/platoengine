@@ -2,13 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "Plato_InputBlocks.hpp"
-
 #include "Plato_BlockStructRule.hpp"
-
-//clang-format off
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-//clang-format on
-
 #include "Plato_InputParser.hpp"
 #include "Plato_Test_Helpers.hpp"
 
@@ -331,5 +325,4 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
     Plato::Test::test_existence_and_equality(tConstraint2.greater_than, -10.0);
 }
 
-#include "Plato_RestoreBoostNvccWarnings.hpp"
 // clang-format on

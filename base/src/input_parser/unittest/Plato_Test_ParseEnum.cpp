@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "Plato_SuppressBoostNvccWarnings.hpp"
-
 #include "Plato_EnumParser.hpp"
 #include "Plato_EnumTable.hpp"
 
@@ -50,5 +48,3 @@ TEST(BoostSpirit, ParseEnum)
     EXPECT_TRUE(parse_pizza_list(validPizzas.begin(), validPizzas.end(), parsedPizzas));
     EXPECT_EQ(parsedPizzas.size(), 4);
 }
-
-#include "Plato_RestoreBoostNvccWarnings.hpp"
