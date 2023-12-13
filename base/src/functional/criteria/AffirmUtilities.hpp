@@ -8,9 +8,10 @@
 
 namespace Plato::Functional::Affirmations
 {
-/// @throw Exception if @a aParameter does not contain a value.
+/// @return an optional error message if @a aParameter does not contain a value.
 template <typename T>
-void affirm_parameter_exists(const boost::optional<T>& aParameter, const std::string_view aEntryName);
+[[nodiscard]] std::optional<std::string> error_message_for_empty_parameter(const boost::optional<T>& aParameter,
+                                                                           const std::string_view aEntryName);
 
 /// @brief Checks if the objective or constraint given by @a aParameter should be included in the optimization problem.
 /// @tparam Must have a public field `active` that is a `boost` or `std::optional`.
@@ -18,12 +19,16 @@ template <typename Parameter>
 bool is_active(const Parameter& aParameter);
 
 template <typename T>
-void affirm_parameter_exists(const boost::optional<T>& aParameter, const std::string_view aEntryName)
+std::optional<std::string> error_message_for_empty_parameter(const boost::optional<T>& aParameter,
+                                                             const std::string_view aEntryName)
 {
     if (!aParameter)
     {
-        throw Plato::Functional::Exception("Objective block missing required entry \"" + std::string{aEntryName} +
-                                           "\"");
+        return "Objective block missing required entry \"" + std::string{aEntryName} + "\"";
+    }
+    else
+    {
+        return std::nullopt;
     }
 }
 

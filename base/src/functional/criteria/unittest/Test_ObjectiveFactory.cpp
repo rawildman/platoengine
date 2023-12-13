@@ -4,23 +4,6 @@
 #include "InputParser.hpp"
 #include "ObjectiveFactory.hpp"
 
-TEST(ObjectiveFactory, InvalidObjectiveNoApp)
-{
-    constexpr std::string_view tInput =
-        R"(
-          begin objective test
-            active true
-            aggregation_weight 42.0
-          end
-       )";
-
-    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
-
-    EXPECT_EQ(tData.mObjectives.size(), 1);
-    EXPECT_THROW(Plato::Functional::ObjectiveFactory::affirm_valid_input(tData.mObjectives),
-                 Plato::Functional::Exception);
-}
-
 TEST(ObjectiveFactory, ValidAggregate)
 {
     constexpr std::string_view tInput =
@@ -72,27 +55,4 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
 
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
-}
-
-TEST(ObjectiveFactory, ValidAggregateZeroObjectives)
-{
-    constexpr std::string_view tInput =
-        R"(
-          begin objective test1
-            active false
-            app nodal_sum
-            aggregation_weight 42.0
-          end
-          begin objective test2
-            active false
-            app nodal_sum
-            aggregation_weight 13.0
-          end
-       )";
-
-    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
-
-    EXPECT_EQ(tData.mObjectives.size(), 2);
-    EXPECT_THROW(Plato::Functional::ObjectiveFactory::affirm_valid_input(tData.mObjectives),
-                 Plato::Functional::Exception);
 }

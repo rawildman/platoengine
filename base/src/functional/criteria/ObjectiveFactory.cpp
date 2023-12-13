@@ -35,28 +35,4 @@ ObjectiveFunction make_aggregate_objective_function(const std::vector<Plato::obj
     return make_aggregate_function(detail::make_aggregate(aInput));
 }
 
-void affirm_valid_input(const std::vector<Plato::objective>& aInput)
-{
-    unsigned int tNumActiveObjectives = 0;
-    for (const auto& tObjective : aInput)
-    {
-        if (Plato::Functional::Affirmations::is_active(tObjective))
-        {
-            ++tNumActiveObjectives;
-            Plato::Functional::Affirmations::affirm_parameter_exists(tObjective.aggregation_weight,
-                                                                     "aggregation_weight");
-            Plato::Functional::Affirmations::affirm_parameter_exists(tObjective.app, "app");
-            if (tObjective.app.value() == Plato::CodeOptions::kCustomApp)
-            {
-                Plato::Functional::Affirmations::affirm_parameter_exists(tObjective.shared_library_path,
-                                                                         "shared_library_path");
-            }
-        }
-    }
-    if (tNumActiveObjectives == 0)
-    {
-        throw Plato::Functional::Exception("Error: No active objectives found!");
-    }
-}
-
 }  // namespace Plato::Functional::ObjectiveFactory
