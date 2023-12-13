@@ -22,12 +22,12 @@ namespace
 }
 }  // namespace
 
-PlatoProblem make_plato_problem(const Plato::PlatoInput& aData)
+PlatoProblem make_plato_problem(const ValidatedInput& aData)
 {
-    return PlatoProblem{GeometryFactory::make_geometry_data(aData),
-                        ObjectiveFactory::make_aggregate_objective_function(aData.mObjectives),
-                        ConstraintFactory::make_constraints(aData.mConstraints),
-                        rol_parameter_list(aData.mOptimizationParameters)};
+    return PlatoProblem{GeometryFactory::make_geometry_data(aData.mValue),
+                        ObjectiveFactory::make_aggregate_objective_function(aData.mValue.mObjectives),
+                        ConstraintFactory::make_constraints(aData.mValue.mConstraints),
+                        rol_parameter_list(aData.mValue.mOptimizationParameters)};
 }
 
 std::unique_ptr<ROLObjectiveFunction> make_rol_objective(const PlatoProblem& aProblem)
