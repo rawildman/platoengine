@@ -1,10 +1,17 @@
 #ifndef PLATO_FUNCTIONAL_VALIDATION
 #define PLATO_FUNCTIONAL_VALIDATION
 
+#include <optional>
 #include <string>
 
 #include "FactoryRegistration.hpp"
+#include "NamedType.hpp"
 #include "Plato_InputBlocks.hpp"
+
+namespace Plato::Functional
+{
+using ValidatedInput = Core::NamedType<Plato::PlatoInput, struct ValidatedInputTag>;
+}
 
 namespace Plato::Functional::Validation
 {
@@ -42,6 +49,23 @@ Registration<ValidationInput>::Registration(std::initializer_list<ValidationFunc
 {
     std::move(aFunctions.begin(), aFunctions.end(),
               std::back_inserter(detail::registered_functions<ValidationInput>()));
+}
+
+template <typename ValidationInput>
+std::vector<std::string> validate(const ValidationInput& aInput, const std::vector<std::string>& aCurrentMessageList)
+{
+    std::vector<std::string> tMessageList = aCurrentMessageList;
+
+    auto tTests = detail::registered_functions<ValidationInput>();
+    for (auto& iTest : tTests)
+    {
+        std::optional<std::string> tMessage = iTest(aInput);
+        if (tMessage.has_value())
+        {
+            tMessageList.emplace_back(tMessage.value());
+        }
+    }
+    return tMessageList;
 }
 
 }  // namespace Plato::Functional::Validation
