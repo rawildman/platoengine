@@ -1,6 +1,7 @@
 set(SRCS ConstraintFactory.cpp
          CriterionRegistration.cpp
          ObjectiveFactory.cpp
+         ObjectiveValidation.cpp
          NodalSumObjective.cpp
          SharedLibCriterion.cpp)
 
@@ -10,6 +11,7 @@ set(HDRS AffirmUtilities.hpp
          CriterionInterface.hpp
          CriterionRegistration.hpp
          ObjectiveFactory.hpp
+         ObjectiveValidation.hpp
          NodalSumObjective.hpp
          SharedLibCriterion.hpp)
 
