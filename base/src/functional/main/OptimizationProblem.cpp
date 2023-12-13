@@ -4,10 +4,13 @@
 #include <fstream>
 #include <string_view>
 
+#include "AffirmUtilities.hpp"
+#include "Exception.hpp"
 #include "GeometryFactory.hpp"
 #include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
+#include "ObjectiveValidation.hpp"
 #include "PlatoProblem.hpp"
 
 namespace Plato::Functional
@@ -30,7 +33,7 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
-    : mProblem(make_plato_problem(parse_input_from_file(aInputFile))),
+    : mProblem(make_plato_problem(parse_and_validate(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
@@ -95,5 +98,17 @@ void OptimizationProblem::optimize()
 }
 
 int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess->dimension(); }
+
+ValidatedInput parse_and_validate(const std::string_view aInputFile)
+{
+    const auto tInput = parse_input_from_file(aInputFile);
+    auto tMessages = Criteria::validate_objectives(tInput.mObjectives, {});
+    if (tMessages.size() != 0)
+    {
+        Affirmations::print_messages(tMessages);
+        throw Exception("Could not validate input.");
+    }
+    return ValidatedInput{tInput};
+}
 
 }  // namespace Plato::Functional

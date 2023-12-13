@@ -5,9 +5,11 @@
 
 #include "PlatoProblem.hpp"
 #include "ROL_Problem.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
+
 class OptimizationProblem
 {
    public:
@@ -36,6 +38,9 @@ class OptimizationProblem
     ROL::Ptr<ROL::Problem<double>> mROLProblem;
     ROL::Solver<double> mROLSolver;
 };
+
+///@brief Parse input from file @a aInputFile and then validate the input
+ValidatedInput parse_and_validate(const std::string_view aInputFile);
 
 }  // namespace Plato::Functional
 
