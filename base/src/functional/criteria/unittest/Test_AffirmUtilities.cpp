@@ -31,7 +31,8 @@ TEST(AffirmUtilities, AffirmParameterExistsDNE)
     namespace pfa = Plato::Functional::Affirmations;
     Plato::objective tObjectiveInput;
     EXPECT_TRUE(
-        pfa::error_message_for_empty_parameter(tObjectiveInput.aggregation_weight, "aggregation_weight").has_value());
+        pfa::error_message_for_empty_parameter("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight")
+            .has_value());
 }
 
 TEST(AffirmUtilities, AffirmParameterExistsDoesExist)
@@ -40,5 +41,6 @@ TEST(AffirmUtilities, AffirmParameterExistsDoesExist)
     Plato::objective tObjectiveInput;
     tObjectiveInput.aggregation_weight = 23;
     EXPECT_FALSE(
-        pfa::error_message_for_empty_parameter(tObjectiveInput.aggregation_weight, "aggregation_weight").has_value());
+        pfa::error_message_for_empty_parameter("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight")
+            .has_value());
 }
