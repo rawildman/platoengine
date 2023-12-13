@@ -1,6 +1,7 @@
 set(SRCS InputParser.cpp
          JacobianColumnEvaluator.cpp
-         ROLHelpers.cpp)
+         ROLHelpers.cpp
+         ValidationRegistration.cpp)
 
 set(HDRS Aggregate.hpp
          Compose.hpp
@@ -8,7 +9,9 @@ set(HDRS Aggregate.hpp
          InputParser.hpp
          JacobianColumnEvaluator.hpp
          MeshProxy.hpp
-         ROLHelpers.hpp)
+         NamedType.hpp
+         ROLHelpers.hpp
+         ValidationRegistration.hpp)
 
 set(LIB_NAME PlatoFunctionalCore)
 add_library(${LIB_NAME} ${SRCS} ${HDRS} )
