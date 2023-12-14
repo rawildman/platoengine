@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "AffirmUtilities.hpp"
+#include "CriterionValidation.hpp"
 #include "ObjectiveValidation.hpp"
 #include "Plato_InputBlocks.hpp"
 

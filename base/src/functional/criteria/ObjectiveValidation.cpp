@@ -1,6 +1,7 @@
 #include "ObjectiveValidation.hpp"
 
 #include "AffirmUtilities.hpp"
+#include "CriterionValidation.hpp"
 namespace Plato::Functional::Criteria
 {
 
@@ -17,52 +18,11 @@ namespace Plato::Functional::Criteria
 std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
                                              const std::vector<std::string>& aCurrentMessageList)
 {
-    std::vector<std::string> tMessageList = aCurrentMessageList;
-
-    tMessageList = Plato::Functional::Validation::validate<std::vector<Plato::objective>>(aInput, tMessageList);
-    for (const auto& iObjectiveInput : aInput)
-    {
-        tMessageList = Plato::Functional::Validation::validate<Plato::objective>(iObjectiveInput, tMessageList);
-    }
-    return tMessageList;
+    return detail::validate_criteria(aInput, aCurrentMessageList);
 }
 
 namespace detail
 {
-
-namespace
-{
-std::string prepend_string(const Plato::objective& aInput)
-{
-    if (aInput.name.has_value())
-    {
-        return "Objective " + aInput.name.value();
-    }
-    else
-    {
-        return "Objective";
-    }
-}
-}  // namespace
-
-std::optional<std::string> validate_app(const Plato::objective& aInput)
-{
-    return Plato::Functional::Affirmations::error_message_for_empty_parameter(prepend_string(aInput), aInput.app,
-                                                                              "app");
-}
-
-std::optional<std::string> validate_custom_app(const Plato::objective& aInput)
-{
-    if (aInput.app.has_value() && aInput.app.value() == Plato::CodeOptions::kCustomApp)
-    {
-        return Plato::Functional::Affirmations::error_message_for_empty_parameter(
-            prepend_string(aInput), aInput.shared_library_path, "shared_library_path");
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
 
 std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput)
 {
