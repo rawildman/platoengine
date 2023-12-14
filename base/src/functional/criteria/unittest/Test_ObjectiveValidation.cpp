@@ -56,7 +56,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
     tObjective.app = boost::none;
     namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate<Plato::objective>(tObjective, tMessages);
+    tMessages = pfv::validate<Plato::objective>(tObjective, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }
@@ -68,7 +68,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_objectives(tInput, tMessages);
+    tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }
@@ -80,7 +80,7 @@ TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_objectives(tInput, tMessages);
+    tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 }
 
@@ -92,7 +92,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_objectives(tInput, tMessages);
+    tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }

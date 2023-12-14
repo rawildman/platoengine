@@ -15,7 +15,7 @@ std::optional<std::string> validate_only_one_type(const Plato::constraint& aInpu
 }  // namespace detail
 
 std::vector<std::string> validate_constraints(const std::vector<Plato::constraint>& aInput,
-                                              const std::vector<std::string>& aCurrentMessageList);
+                                              std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace Plato::Functional::Criteria
 

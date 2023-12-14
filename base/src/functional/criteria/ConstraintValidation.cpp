@@ -11,9 +11,9 @@ namespace Plato::Functional::Criteria
         [](const Plato::constraint& aInput) { return detail::validate_only_one_type(aInput); }};
 
 std::vector<std::string> validate_constraints(const std::vector<Plato::constraint>& aInput,
-                                              const std::vector<std::string>& aCurrentMessageList)
+                                              std::vector<std::string>&& aCurrentMessageList)
 {
-    return detail::validate_criteria(aInput, aCurrentMessageList);
+    return detail::validate_criteria(aInput, std::move(aCurrentMessageList));
 }
 
 namespace detail

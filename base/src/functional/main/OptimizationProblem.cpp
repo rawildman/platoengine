@@ -103,8 +103,9 @@ int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialG
 ValidatedInput parse_and_validate(const std::string_view aInputFile)
 {
     const auto tInput = parse_input_from_file(aInputFile);
-    auto tMessages = Criteria::validate_objectives(tInput.mObjectives, {});
-    tMessages = Criteria::validate_constraints(tInput.mConstraints, tMessages);
+    std::vector<std::string> tMessages;
+    tMessages = Criteria::validate_objectives(tInput.mObjectives, std::move(tMessages));
+    tMessages = Criteria::validate_constraints(tInput.mConstraints, std::move(tMessages));
     if (tMessages.size() != 0)
     {
         Affirmations::print_messages(tMessages);

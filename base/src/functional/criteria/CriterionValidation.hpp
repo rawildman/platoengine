@@ -50,16 +50,16 @@ std::optional<std::string> validate_custom_app(const Criteria& aInput)
 
 template <typename Criteria>
 std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
-                                           const std::vector<std::string>& aCurrentMessageList)
+                                           std::vector<std::string>&& aCurrentMessageList)
 {
-    std::vector<std::string> tMessageList = aCurrentMessageList;
-    tMessageList = Plato::Functional::Validation::validate<std::vector<Criteria>>(aInput, tMessageList);
-
+    aCurrentMessageList =
+        Plato::Functional::Validation::validate<std::vector<Criteria>>(aInput, std::move(aCurrentMessageList));
     for (const auto& iCriterionInput : aInput)
     {
-        tMessageList = Plato::Functional::Validation::validate<Criteria>(iCriterionInput, tMessageList);
+        aCurrentMessageList =
+            Plato::Functional::Validation::validate<Criteria>(iCriterionInput, std::move(aCurrentMessageList));
     }
-    return tMessageList;
+    return aCurrentMessageList;
 }
 
 }  // namespace detail

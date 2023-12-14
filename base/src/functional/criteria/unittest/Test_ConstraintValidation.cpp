@@ -48,7 +48,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
     Plato::constraint tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate<Plato::constraint>(tConstraint, tMessages);
+    tMessages = pfv::validate<Plato::constraint>(tConstraint, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }
@@ -63,7 +63,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidInput)
     const std::vector<Plato::constraint> tInput{tConstraint, tConstraintTwo};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_constraints(tInput, tMessages);
+    tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }
@@ -75,7 +75,7 @@ TEST(ConstraintValidation, NoErrorMessagesValidConstraints)
     const std::vector<Plato::constraint> tInput{tConstraint, tConstraint};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_constraints(tInput, tMessages);
+    tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 }
 
@@ -90,7 +90,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraints)
     const std::vector<Plato::constraint> tInput{tConstraint, tConstraintTwo};
 
     std::vector<std::string> tMessages;
-    tMessages = pfc::validate_constraints(tInput, tMessages);
+    tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);
     Plato::Functional::Affirmations::print_messages(tMessages);
 }

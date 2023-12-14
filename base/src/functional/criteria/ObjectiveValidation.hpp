@@ -14,7 +14,7 @@ std::optional<std::string> validate_at_least_one_objective(const std::vector<Pla
 }  // namespace detail
 
 std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
-                                             const std::vector<std::string>& aCurrentMessageList);
+                                             std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace Plato::Functional::Criteria
 

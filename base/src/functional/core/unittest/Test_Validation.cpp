@@ -44,7 +44,7 @@ TEST(Validation, ValidateInputObjective)
 {
     Plato::objective tInput;
     std::vector<std::string> tMessages;
-    tMessages = Plato::Functional::Validation::validate<Plato::objective>(tInput, tMessages);
+    tMessages = Plato::Functional::Validation::validate<Plato::objective>(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
 }
 
@@ -52,7 +52,7 @@ TEST(Validation, ValidateInputGeneral)
 {
     Plato::PlatoInput tInput;
     std::vector<std::string> tMessages;
-    tMessages = Plato::Functional::Validation::validate<Plato::PlatoInput>(tInput, tMessages);
+    tMessages = Plato::Functional::Validation::validate<Plato::PlatoInput>(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
 }
 
@@ -61,6 +61,7 @@ TEST(Validation, ValidateInputObjectiveList_EmptyNoneDefined)
     Plato::objective tInput;
     std::vector<Plato::objective> tInputList{tInput, tInput};
     std::vector<std::string> tMessages;
-    tMessages = Plato::Functional::Validation::validate<std::vector<Plato::objective>>(tInputList, tMessages);
+    tMessages =
+        Plato::Functional::Validation::validate<std::vector<Plato::objective>>(tInputList, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 }

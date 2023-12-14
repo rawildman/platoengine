@@ -16,9 +16,9 @@ namespace Plato::Functional::Criteria
         [](const std::vector<Plato::objective>& aInput) { return detail::validate_at_least_one_objective(aInput); }};
 
 std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
-                                             const std::vector<std::string>& aCurrentMessageList)
+                                             std::vector<std::string>&& aCurrentMessageList)
 {
-    return detail::validate_criteria(aInput, aCurrentMessageList);
+    return detail::validate_criteria(aInput, std::move(aCurrentMessageList));
 }
 
 namespace detail

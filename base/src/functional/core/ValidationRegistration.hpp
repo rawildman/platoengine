@@ -52,19 +52,18 @@ Registration<ValidationInput>::Registration(std::initializer_list<ValidationFunc
 }
 
 template <typename ValidationInput>
-std::vector<std::string> validate(const ValidationInput& aInput, const std::vector<std::string>& aCurrentMessageList)
+std::vector<std::string> validate(const ValidationInput& aInput, std::vector<std::string>&& aCurrentMessageList)
 {
-    std::vector<std::string> tMessageList = aCurrentMessageList;
     auto tTests = detail::registered_functions<ValidationInput>();
     for (auto& iTest : tTests)
     {
         std::optional<std::string> tMessage = iTest(aInput);
         if (tMessage.has_value())
         {
-            tMessageList.emplace_back(tMessage.value());
+            aCurrentMessageList.emplace_back(std::move(tMessage).value());
         }
     }
-    return tMessageList;
+    return aCurrentMessageList;
 }
 
 }  // namespace Plato::Functional::Validation
