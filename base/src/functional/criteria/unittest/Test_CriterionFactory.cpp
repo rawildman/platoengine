@@ -3,22 +3,12 @@
 #include <boost/optional/optional_io.hpp>
 
 #include "CriterionFactory.hpp"
+#include "InputGeneration.hpp"
 #include "InputParser.hpp"
 
 TEST(CriterionFactory, ValidObjective)
 {
-    constexpr std::string_view tInput =
-        R"(
-          begin objective test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-       )";
-
+    const std::string tInput = Plato::Functional::TestUtilities::create_valid_example_objective_string();
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
 
     EXPECT_EQ(tData.mObjectives.size(), 1);
@@ -28,18 +18,7 @@ TEST(CriterionFactory, ValidObjective)
 
 TEST(CriterionFactory, ValidConstraint)
 {
-    constexpr std::string_view tInput =
-        R"(
-          begin constraint test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            equal_to 13
-            is_linear true
-          end
-       )";
-
+    const std::string tInput = Plato::Functional::TestUtilities::create_valid_example_constraint_string();
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
 
     ASSERT_EQ(tData.mConstraints.size(), 1);
@@ -50,15 +29,7 @@ TEST(CriterionFactory, ValidConstraint)
 TEST(CriterionRegistration, ConvertObjectiveInput)
 {
     namespace pf = Plato::Functional;
-
-    const auto tObjective = Plato::objective{/*.name=*/std::string{"bike-shed"},
-                                             /*.active=*/true,
-                                             /*.app=*/Plato::CodeOptions::kCustomApp,
-                                             /*.shared_library_path=*/Plato::FileName{"/sweet/potato/ravioli.so"},
-                                             /*.number_of_processors=*/42u,
-                                             /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
-                                             /*.aggregation_weight=*/13.0,
-                                             /*.objective_type=*/Plato::ObjectiveTypes::kMaximize};
+    const auto tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
 
     const pf::CriterionFactory::CriterionInput tCriterionInput = pf::CriterionFactory::to_criterion_input(tObjective);
 
@@ -75,18 +46,7 @@ TEST(CriterionRegistration, ConvertConstraintInput)
 {
     namespace pf = Plato::Functional;
 
-    const auto tConstraint =
-        Plato::constraint{/*.name=*/std::string{"bleu-bike-shed"},
-                          /*.active=*/true,
-                          /*.app=*/Plato::CodeOptions::kCustomApp,
-                          /*.shared_library_path=*/Plato::FileName{"/sweet/potato/ravioli.so"},
-                          /*.number_of_processors=*/42u,
-                          /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
-                          /*.equal_to=*/boost::none,
-                          /*.less_than=*/boost::none,
-                          /*.greater_than=*/boost::none,
-                          /*.is_linear=*/boost::none};
-
+    const auto tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
     const pf::CriterionFactory::CriterionInput tCriterionInput = pf::CriterionFactory::to_criterion_input(tConstraint);
 
     EXPECT_EQ(tConstraint.shared_library_path->mName, tCriterionInput.mSharedLibraryPath.mName);

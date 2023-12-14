@@ -2,6 +2,7 @@
 
 #include "ConstraintFactory.hpp"
 #include "Exception.hpp"
+#include "InputGeneration.hpp"
 #include "InputParser.hpp"
 
 TEST(ConstraintFactoryDetail, InvalidConstraintNoRequirements)
@@ -47,18 +48,7 @@ TEST(ConstraintFactoryDetail, ValidConstraintRequirements)
 
 TEST(ConstraintFactory, ValidConstraint)
 {
-    constexpr std::string_view tInput =
-        R"(
-          begin constraint test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            equal_to 13
-            is_linear true
-          end
-       )";
-
+    const std::string tInput = Plato::Functional::TestUtilities::create_valid_example_constraint_string();
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
 
     ASSERT_EQ(tData.mConstraints.size(), 1);

@@ -3,25 +3,8 @@
 #include "AffirmUtilities.hpp"
 #include "ConstraintValidation.hpp"
 #include "CriterionValidation.hpp"
+#include "InputGeneration.hpp"
 #include "Plato_InputBlocks.hpp"
-
-namespace
-{
-Plato::constraint create_valid_example_constraint()
-{
-    return Plato::constraint{/*.name=*/std::string{"bike-shed"},
-                             /*.active=*/true,
-                             /*.app=*/Plato::CodeOptions::kCustomApp,
-                             /*.shared_library_path=*/Plato::FileName{"/sweet/potato/ravioli.so"},
-                             /*.number_of_processors=*/42u,
-                             /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
-                             /*.equal_to=*/0.0,
-                             /*.less_than=*/boost::none,
-                             /*.greater_than=*/boost::none,
-                             /*.is_linear=*/true};
-}
-
-}  // namespace
 
 TEST(ConstraintValidation, ValidateApp)
 {
@@ -62,7 +45,7 @@ TEST(ConstraintValidation, ValidateOnlyOneType)
 TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
 {
     namespace pfv = Plato::Functional::Validation;
-    Plato::constraint tConstraint = create_valid_example_constraint();
+    Plato::constraint tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
     tMessages = pfv::validate<Plato::constraint>(tConstraint, tMessages);
@@ -88,7 +71,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidInput)
 TEST(ConstraintValidation, NoErrorMessagesValidConstraints)
 {
     namespace pfc = Plato::Functional::Criteria;
-    const auto tConstraint = create_valid_example_constraint();
+    const auto tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
     const std::vector<Plato::constraint> tInput{tConstraint, tConstraint};
 
     std::vector<std::string> tMessages;
@@ -99,7 +82,7 @@ TEST(ConstraintValidation, NoErrorMessagesValidConstraints)
 TEST(ConstraintValidation, ErrorMessagesInvalidConstraints)
 {
     namespace pfc = Plato::Functional::Criteria;
-    auto tConstraint = create_valid_example_constraint();
+    auto tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
     tConstraint.less_than = 1.0;
     auto tConstraintTwo = tConstraint;
     tConstraint.name = "bad-one";
