@@ -26,7 +26,7 @@ std::optional<std::string> error_message_for_empty_parameter(const std::string_v
 {
     if (!aParameter)
     {
-        return std::string(aPrependString) + " block missing required entry \"" + std::string{aEntryName} + "\"";
+        return std::string(aPrependString) + " missing required entry \"" + std::string{aEntryName} + "\"";
     }
     else
     {
