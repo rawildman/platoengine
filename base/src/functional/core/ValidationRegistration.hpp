@@ -55,7 +55,6 @@ template <typename ValidationInput>
 std::vector<std::string> validate(const ValidationInput& aInput, const std::vector<std::string>& aCurrentMessageList)
 {
     std::vector<std::string> tMessageList = aCurrentMessageList;
-
     auto tTests = detail::registered_functions<ValidationInput>();
     for (auto& iTest : tTests)
     {
