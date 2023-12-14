@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "AffirmUtilities.hpp"
+#include "ConstraintValidation.hpp"
 #include "Exception.hpp"
 #include "GeometryFactory.hpp"
 #include "InputParser.hpp"
@@ -103,6 +104,7 @@ ValidatedInput parse_and_validate(const std::string_view aInputFile)
 {
     const auto tInput = parse_input_from_file(aInputFile);
     auto tMessages = Criteria::validate_objectives(tInput.mObjectives, {});
+    tMessages = Criteria::validate_constraints(tInput.mConstraints, tMessages);
     if (tMessages.size() != 0)
     {
         Affirmations::print_messages(tMessages);
