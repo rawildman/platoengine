@@ -21,6 +21,27 @@ template <typename T, typename... Ts>
 constexpr bool kIsVariantMember<T, std::variant<Ts...>> = std::disjunction_v<std::is_same<T, Ts>...>;
 
 template <typename T>
+[[nodiscard]] unsigned int count_if_geometry(const T&)
+{
+    return 0;
+}
+
+template <typename T>
+[[nodiscard]] unsigned int count_if_geometry(const boost::optional<T>& aT)
+{
+    return kIsVariantMember<T, GeometryFactory::GeometryInput> && aT ? 1 : 0;
+}
+
+template <std::size_t... Is>
+[[nodiscard]] unsigned int geometry_block_count_impl(const Plato::PlatoInput& aInput,
+                                                     std::integer_sequence<std::size_t, Is...>)
+{
+    return (count_if_geometry(boost::fusion::at_c<Is>(aInput)) + ...);
+}
+
+[[nodiscard]] unsigned int geometry_block_count(const Plato::PlatoInput& aInput);
+
+template <typename T>
 [[nodiscard]] std::optional<GeometryFactory::GeometryInput> make_variant_if_geometry(const T&)
 {
     return std::nullopt;
@@ -49,35 +70,15 @@ template <std::size_t... Is>
 
 /// @return An optional GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
 ///  If no geometry block was found, an empty optional is returned.
-[[nodiscard]] std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput)
-{
-    constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
-    return geometry_block_impl(aInput, std::make_index_sequence<tNumInputFields>{});
-}
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput);
 
 /// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
 /// @throw Exception If no geometry block was defined in @a aInput.
-[[nodiscard]] GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
-{
-    std::optional<GeometryFactory::GeometryInput> tGeometryInput = geometry_block(aInput);
-    if (!tGeometryInput)
-    {
-        throw Exception("No geometry block was defined.");
-    }
-    return tGeometryInput.value();
-}
+[[nodiscard]] GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput);
 
 /// @return The name of the geometry input held by the variant @a aInput
-[[nodiscard]] std::string block_name(const GeometryFactory::GeometryInput& aInput)
-{
-    return std::visit(
-        [](const auto& aObj) -> std::string
-        {
-            using InputType = std::decay_t<decltype(aObj)>;
-            return Plato::block_name<InputType>();
-        },
-        aInput);
-}
+[[nodiscard]] std::string block_name(const GeometryFactory::GeometryInput& aInput);
+
 }  // namespace Plato::Functional::GeometryFactory::Detail
 
 #endif

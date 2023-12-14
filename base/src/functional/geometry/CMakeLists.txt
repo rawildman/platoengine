@@ -1,6 +1,8 @@
 set(SRCS BrickShapeGeometry.cpp
+         detail/GeometryRegistrationUtilities.cpp
          GeometryFactory.cpp
          GeometryRegistration.cpp
+         GeometryValidation.cpp
          DensityTopology.cpp)
 
 set(HDRS BrickShapeGeometry.hpp
@@ -8,6 +10,7 @@ set(HDRS BrickShapeGeometry.hpp
          detail/GeometryInputBuilder.hpp
          GeometryFactory.hpp
          GeometryRegistration.hpp
+         GeometryValidation.hpp
          DensityTopology.hpp)
 
 set(LIB_NAME PlatoFunctionalGeometry)
