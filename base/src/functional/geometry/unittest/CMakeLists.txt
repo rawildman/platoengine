@@ -3,6 +3,7 @@ set(SRCS Test_BrickShapeGeometry.cpp
          Test_GeometryRegistration.cpp
          Test_GeometryRegistrationUtilities.cpp
          Test_GeometryInputBuilder.cpp
+         Test_GeometryValidation.cpp
          Test_DensityTopology.cpp
          UnitMain.cpp )
 

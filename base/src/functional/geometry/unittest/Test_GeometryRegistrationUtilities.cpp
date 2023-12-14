@@ -88,3 +88,24 @@ TEST(GeometryRegistrationUtilities, BlockName)
         EXPECT_EQ(pfg::Detail::block_name(tGeometryInput), "brick_shape_geometry");
     }
 }
+
+TEST(GeometryRegistrationUtilities, CountGeometryBlocks)
+{
+    namespace pfg = Plato::Functional::GeometryFactory;
+
+    {
+        Plato::PlatoInput tInput;
+        EXPECT_EQ(pfg::Detail::geometry_block_count(tInput), 0u);
+    }
+    {
+        Plato::PlatoInput tInput;
+        tInput.mDensityTopology = Plato::density_topology{};
+        EXPECT_EQ(pfg::Detail::geometry_block_count(tInput), 1u);
+    }
+    {
+        Plato::PlatoInput tInput;
+        tInput.mDensityTopology = Plato::density_topology{};
+        tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
+        EXPECT_EQ(pfg::Detail::geometry_block_count(tInput), 2u);
+    }
+}
