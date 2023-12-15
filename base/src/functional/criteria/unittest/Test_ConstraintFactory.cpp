@@ -1,50 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "ConstraintFactory.hpp"
+#include "ConstraintValidation.hpp"
 #include "Exception.hpp"
 #include "InputGeneration.hpp"
 #include "InputParser.hpp"
-
-TEST(ConstraintFactoryDetail, InvalidConstraintNoRequirements)
-{
-    Plato::constraint tConstraintInput;
-    EXPECT_THROW(Plato::Functional::ConstraintFactory::detail::affirm_only_one_type(tConstraintInput),
-                 Plato::Functional::Exception);
-}
-
-TEST(ConstraintFactoryDetail, InvalidConstraintMultipleRequirementsEL)
-{
-    Plato::constraint tConstraintInput;
-    tConstraintInput.equal_to = 1;
-    tConstraintInput.less_than = 2;
-    EXPECT_THROW(Plato::Functional::ConstraintFactory::detail::affirm_only_one_type(tConstraintInput),
-                 Plato::Functional::Exception);
-}
-
-TEST(ConstraintFactoryDetail, InvalidConstraintMultipleRequirementsEG)
-{
-    Plato::constraint tConstraintInput;
-    tConstraintInput.equal_to = 1;
-    tConstraintInput.greater_than = 2;
-    EXPECT_THROW(Plato::Functional::ConstraintFactory::detail::affirm_only_one_type(tConstraintInput),
-                 Plato::Functional::Exception);
-}
-
-TEST(ConstraintFactoryDetail, InvalidConstraintMultipleRequirementsLG)
-{
-    Plato::constraint tConstraintInput;
-    tConstraintInput.less_than = 1;
-    tConstraintInput.greater_than = 2;
-    EXPECT_THROW(Plato::Functional::ConstraintFactory::detail::affirm_only_one_type(tConstraintInput),
-                 Plato::Functional::Exception);
-}
-
-TEST(ConstraintFactoryDetail, ValidConstraintRequirements)
-{
-    Plato::constraint tConstraintInput;
-    tConstraintInput.less_than = 1;
-    EXPECT_NO_THROW(Plato::Functional::ConstraintFactory::detail::affirm_only_one_type(tConstraintInput));
-}
 
 TEST(ConstraintFactory, ValidConstraint)
 {
@@ -79,7 +39,9 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
     EXPECT_EQ(tData.mConstraints.size(), 3);
 
-    EXPECT_NO_THROW(Plato::Functional::ConstraintFactory::detail::affirm_valid_input(tData.mConstraints));
+    std::vector<std::string> tMessages;
+    tMessages = Plato::Functional::Validation::validate(tData.mConstraints, std::move(tMessages));
+    EXPECT_EQ(tMessages.size(), 0u);
 
     auto tCons = Plato::Functional::ConstraintFactory::make_constraints(tData.mConstraints);
     EXPECT_EQ(tCons.size(), 3);

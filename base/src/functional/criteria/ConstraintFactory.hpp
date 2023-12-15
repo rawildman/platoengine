@@ -38,13 +38,9 @@ struct Constraint
 
 namespace detail
 {
-/// @throw Exception If @a aConstraintInput defines more than one of `equal_to`, `greater_than`, or `less_than`.
-void affirm_only_one_type(const Plato::constraint& aConstraintInput);
 
 [[nodiscard]] Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput);
 
-/// @throw Exception If @a aInput does not contain valid input, such as a missing `app` field.
-void affirm_valid_input(const std::vector<Plato::constraint>& aInput);
 }  // namespace detail
 }  // namespace Plato::Functional::ConstraintFactory
 
