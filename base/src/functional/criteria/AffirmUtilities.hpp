@@ -40,8 +40,6 @@ bool is_active(const Parameter& aParameter)
     return !aParameter.active.has_value() || aParameter.active.value();
 }
 
-void print_messages(const std::vector<std::string>& aMessages);
-
 }  // namespace Plato::Functional::Affirmations
 
 #endif
