@@ -30,7 +30,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
     tMessages = pfv::validate<Plato::constraint>(tConstraint, std::move(tMessages));
-    EXPECT_TRUE(tMessages.size() > 0);
+    EXPECT_EQ(tMessages.size(), 1u);
     Plato::Functional::Validation::print_messages(tMessages);
 }
 
