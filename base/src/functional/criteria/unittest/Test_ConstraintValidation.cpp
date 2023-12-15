@@ -14,7 +14,8 @@ TEST(ConstraintValidation, ValidateOnlyOneType)
     tConstraint.less_than = 1.0;  // now has 2 : invalid
     EXPECT_TRUE(pfcd::validate_only_one_type(tConstraint).has_value());
     tConstraint.equal_to = boost::none;  // has only 1 : valid
-    tConstraint.greater_than = 2.0;      // now has 2 : invalid
+    EXPECT_FALSE(pfcd::validate_only_one_type(tConstraint).has_value());
+    tConstraint.greater_than = 2.0;  // now has 2 : invalid
     EXPECT_TRUE(pfcd::validate_only_one_type(tConstraint).has_value());
     tConstraint.less_than = boost::none;  // has only 1 : valid
     EXPECT_FALSE(pfcd::validate_only_one_type(tConstraint).has_value());
