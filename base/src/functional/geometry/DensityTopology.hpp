@@ -3,6 +3,7 @@
 
 #include <ROL_StdVector.hpp>
 #include <filesystem>
+#include <optional>
 
 #include "FilterFactory.hpp"
 #include "Function.hpp"

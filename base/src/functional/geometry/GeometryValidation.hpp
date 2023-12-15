@@ -1,6 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_GEOMETRYVALIDATION
 #define PLATO_FUNCTIONAL_GEOMETRYVALIDATION
 
+#include <optional>
+
 #include "Plato_InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
 
