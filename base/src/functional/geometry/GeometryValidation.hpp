@@ -10,12 +10,12 @@ namespace Plato::Functional::Geometry
 namespace detail
 {
 
-std::optional<std::string> validate_only_one_geometry(const Plato::PlatoInput& aInput);
+[[nodiscard]] std::optional<std::string> validate_only_one_geometry(const Plato::PlatoInput& aInput);
 
 }  // namespace detail
 
-std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
-                                           std::vector<std::string>&& aCurrentMessageList);
+[[nodiscard]] std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
+                                                         std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace Plato::Functional::Geometry
 

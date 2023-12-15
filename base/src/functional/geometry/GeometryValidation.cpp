@@ -8,12 +8,13 @@ namespace Plato::Functional::Geometry
 [[maybe_unused]] static auto kGeometryValidationRegistration =
     Plato::Functional::Validation::Registration<Plato::PlatoInput>{
         [](const Plato::PlatoInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
+
 namespace detail
 {
 
 std::optional<std::string> validate_only_one_geometry(const Plato::PlatoInput& aInput)
 {
-    if (const unsigned int tTally = Plato::Functional::GeometryFactory::Detail::geometry_block_count(aInput);
+    if (const unsigned int tTally = Plato::Functional::GeometryFactory::Detail::geometry_blocks(aInput).size();
         tTally != 1)
     {
         return "Only define exactly one geometry block. There were " + std::to_string(tTally) + " found.";
@@ -29,6 +30,19 @@ std::optional<std::string> validate_only_one_geometry(const Plato::PlatoInput& a
 std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
                                            std::vector<std::string>&& aCurrentMessageList)
 {
+    const std::vector<GeometryFactory::GeometryInput> tGeometryBlocks =
+        GeometryFactory::Detail::geometry_blocks(aInput);
+    for (const GeometryFactory::GeometryInput& iBlockEntry : tGeometryBlocks)
+    {
+        aCurrentMessageList = std::visit(
+            [iList = std::move(aCurrentMessageList)](const auto& aObj) mutable -> std::vector<std::string>
+            {
+                using InputType = std::decay_t<decltype(aObj)>;
+                return Plato::Functional::Validation::validate<InputType>(aObj, std::move(iList));
+            },
+            iBlockEntry);
+    }
+
     return Plato::Functional::Validation::validate<Plato::PlatoInput>(aInput, std::move(aCurrentMessageList));
 }
 

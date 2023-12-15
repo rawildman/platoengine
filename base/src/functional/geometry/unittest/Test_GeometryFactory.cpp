@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "GeometryFactory.hpp"
+#include "InputGeneration.hpp"
 #include "InputParser.hpp"
 #include "STKUtilities.hpp"
 
@@ -25,16 +26,12 @@ TEST(GeometryFactory, ValidTopology)
 {
     namespace pf = Plato::Functional;
 
-    const std::filesystem::path tMeshFileName = "test.exo";
-    const std::filesystem::path tOutFileName = "test_out.exo";
-    pf::write_mesh(tMeshFileName, pf::create_mesh("generated:3x3x4|bbox:-1,-2,-1,2,1,2"));
-
     auto tInput = Plato::PlatoInput{};
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.mesh_name = Plato::FileName{tMeshFileName.string()};
-    tDensityTopology.output_name = Plato::FileName{tOutFileName.string()};
-    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
+    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
     tInput.mDensityTopology = tDensityTopology;
+
+    const std::filesystem::path tMeshFileName{tDensityTopology.mesh_name.value().mName};
+    pf::write_mesh(tMeshFileName, pf::create_mesh("generated:3x3x4|bbox:-1,-2,-1,2,1,2"));
 
     EXPECT_NO_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput));
 
