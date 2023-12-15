@@ -33,6 +33,20 @@ void create_input_file(const std::filesystem::path aTestFileName)
     tOutFile.close();
 }
 
+Plato::brick_shape_geometry create_valid_brick_shape_geometry()
+{
+    return Plato::brick_shape_geometry{/*.mesh_name=*/Plato::FileName{"my_mesh.exo"}};
+}
+
+Plato::density_topology create_valid_density_topology_geometry()
+{
+    return Plato::density_topology{/*.mesh_name = */ Plato::FileName{"test.exo"},
+                                   /*.output_name = */ Plato::FileName{"test_out.exo"},
+                                   /*.filter_type = */ Plato::FilterTypes::kIdentity,
+                                   /*.filter_radius=*/0.0,
+                                   /*.boundary_sticking_penalty=*/0.0};
+}
+
 Plato::constraint create_valid_example_constraint()
 {
     return Plato::constraint{/*.name=*/std::string{"bike-shed"},

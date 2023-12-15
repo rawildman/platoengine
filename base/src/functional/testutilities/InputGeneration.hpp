@@ -11,6 +11,9 @@ namespace Plato::Functional::TestUtilities
 
 void create_input_file(const std::filesystem::path aTestFileName);
 
+Plato::brick_shape_geometry create_valid_brick_shape_geometry();
+Plato::density_topology create_valid_density_topology_geometry();
+
 Plato::constraint create_valid_example_constraint();
 std::string create_valid_example_constraint_string();
 Plato::objective create_valid_example_objective();
