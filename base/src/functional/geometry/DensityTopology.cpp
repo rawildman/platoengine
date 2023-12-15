@@ -6,22 +6,20 @@
 #include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
+
+[[maybe_unused]] static auto kDensityTopologyValidationRegistration =
+    Plato::Functional::Validation::Registration<Plato::density_topology>{
+        [](const Plato::density_topology& aInput) { return detail::validate_mesh_name(aInput); }};
+
 namespace
 {
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
-
-void check_valid_input(const density_topology& aInput)
-{
-    if (!aInput.mesh_name)
-    {
-        throw Exception("density_topology requires a mesh_name.");
-    }
-}
 
 std::function<void(const ROL::StdVector<double>&)> make_topology_output(const std::filesystem::path& aInputMeshName,
                                                                         const std::filesystem::path& aOutputMeshName)
@@ -35,7 +33,6 @@ std::function<void(const ROL::StdVector<double>&)> make_topology_output(const st
     Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
     {
         const Plato::density_topology& tInput = std::get<Plato::density_topology>(aGeometryInput);
-        check_valid_input(tInput);
         return GeometryFactory::FactoryTypes{
             make_topology_geometry(DensityTopology{tInput}),
             DensityTopology::initialGuess(tInput.mesh_name.value().mName),
@@ -91,5 +88,16 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
                          [tDensityTopology = aDensityTopology](const ROL::StdVector<double>& x)
                          { return tDensityTopology.jacobian(x); });
 }
+
+namespace detail
+{
+
+std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput)
+{
+    return Plato::Functional::Validation::error_message_for_empty_parameter(
+        Plato::block_name<Plato::density_topology>(), aInput.mesh_name, "mesh_name");
+}
+
+}  // namespace detail
 
 }  // namespace Plato::Functional

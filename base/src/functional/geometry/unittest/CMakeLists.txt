@@ -5,6 +5,7 @@ set(SRCS Test_BrickShapeGeometry.cpp
          Test_GeometryInputBuilder.cpp
          Test_GeometryValidation.cpp
          Test_DensityTopology.cpp
+         Test_DensityTopologyValidation.cpp
          UnitMain.cpp )
 
 set(HDRS )

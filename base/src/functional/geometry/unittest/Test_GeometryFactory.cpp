@@ -38,22 +38,10 @@ TEST(GeometryFactory, ValidTopology)
     std::filesystem::remove(tMeshFileName);
 }
 
-TEST(GeometryFactory, InvalidTopologyNoMesh)
-{
-    namespace pf = Plato::Functional;
-
-    auto tInput = Plato::PlatoInput{};
-    auto tDensityTopology = Plato::density_topology{};
-    tInput.mDensityTopology = tDensityTopology;
-
-    EXPECT_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput), pf::Exception);
-}
-
-TEST(GeometryFactory, NoGeometry)
+TEST(GeometryFactory, UnknownGeometry)
 {
     namespace pf = Plato::Functional;
 
     const auto tInput = Plato::PlatoInput{};
-
     EXPECT_THROW(auto tData = pf::GeometryFactory::make_geometry_data(tInput), pf::Exception);
 }

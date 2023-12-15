@@ -16,6 +16,7 @@ struct density_topology;
 
 namespace Plato::Functional
 {
+
 /// @brief Density-based topology representation of a geometry.
 ///
 /// Implementation for density-based topology optimization. The design
@@ -50,6 +51,11 @@ class DensityTopology
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
+
+namespace detail
+{
+[[nodiscard]] std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput);
+}
 
 }  // namespace Plato::Functional
 
