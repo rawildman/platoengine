@@ -45,7 +45,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidInput)
 
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
-    EXPECT_TRUE(tMessages.size() > 0);
+    EXPECT_EQ(tMessages.size(), 4u);
     Plato::Functional::Validation::print_messages(tMessages);
 }
 

@@ -37,7 +37,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
     namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
     tMessages = pfv::validate<Plato::objective>(tObjective, std::move(tMessages));
-    EXPECT_TRUE(tMessages.size() > 0);
+    EXPECT_EQ(tMessages.size(), 1u);
     Plato::Functional::Validation::print_messages(tMessages);
 }
 
@@ -49,7 +49,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
-    EXPECT_TRUE(tMessages.size() > 0);
+    EXPECT_EQ(tMessages.size(), 4u);
     Plato::Functional::Validation::print_messages(tMessages);
 }
 
