@@ -13,7 +13,10 @@ namespace Plato::Functional
 
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration =
     Plato::Functional::Validation::Registration<Plato::density_topology>{
-        [](const Plato::density_topology& aInput) { return detail::validate_mesh_name(aInput); }};
+        [](const Plato::density_topology& aInput)
+        { return Validation::DensityTopology::detail::validate_mesh_name(aInput); },
+        [](const Plato::density_topology& aInput)
+        { return Validation::DensityTopology::detail::validate_output_name(aInput); }};
 
 namespace
 {
@@ -89,7 +92,7 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
                          { return tDensityTopology.jacobian(x); });
 }
 
-namespace detail
+namespace Validation::DensityTopology::detail
 {
 
 std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput)
@@ -98,6 +101,12 @@ std::optional<std::string> validate_mesh_name(const Plato::density_topology& aIn
         Plato::block_name<Plato::density_topology>(), aInput.mesh_name, "mesh_name");
 }
 
-}  // namespace detail
+std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
+{
+    return Plato::Functional::Validation::error_message_for_empty_parameter(
+        Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
+}
+
+}  // namespace Validation::DensityTopology::detail
 
 }  // namespace Plato::Functional

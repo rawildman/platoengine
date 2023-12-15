@@ -52,10 +52,11 @@ class DensityTopology
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
 
-namespace detail
+namespace Validation::DensityTopology::detail
 {
 [[nodiscard]] std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput);
-}
+[[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
+}  // namespace Validation::DensityTopology::detail
 
 }  // namespace Plato::Functional
 
