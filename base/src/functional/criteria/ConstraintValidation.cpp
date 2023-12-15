@@ -1,6 +1,5 @@
 #include "ConstraintValidation.hpp"
 
-#include "AffirmUtilities.hpp"
 #include "CriterionValidation.hpp"
 namespace Plato::Functional::Criteria
 {

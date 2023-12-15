@@ -3,12 +3,12 @@
 #include <string>
 #include <unordered_map>
 
-#include "AffirmUtilities.hpp"
 #include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "SharedLibCriterion.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::ConstraintFactory
 {
@@ -73,10 +73,10 @@ void affirm_valid_input(const std::vector<Plato::constraint>& aInput)
     for (const auto& tConstraint : aInput)
     {
         detail::affirm_only_one_type(tConstraint);
-        Plato::Functional::Affirmations::error_message_for_empty_parameter("Constraint", tConstraint.app, "app");
+        Plato::Functional::Validation::error_message_for_empty_parameter("Constraint", tConstraint.app, "app");
         if (tConstraint.app.value() == Plato::CodeOptions::kCustomApp)
         {
-            Plato::Functional::Affirmations::error_message_for_empty_parameter(
+            Plato::Functional::Validation::error_message_for_empty_parameter(
                 "Constraint", tConstraint.shared_library_path, "shared_library_path");
         }
     }

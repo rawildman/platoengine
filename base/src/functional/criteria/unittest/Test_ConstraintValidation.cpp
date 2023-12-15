@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "AffirmUtilities.hpp"
 #include "ConstraintValidation.hpp"
 #include "CriterionValidation.hpp"
 #include "InputGeneration.hpp"

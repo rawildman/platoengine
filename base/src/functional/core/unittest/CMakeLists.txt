@@ -9,6 +9,7 @@ set(SRCS Test_Aggregate.cpp
          Test_ROLHelpers.cpp
          Test_Rosenbrock.cpp
          Test_Validation.cpp
+         Test_ValidationErrorCheckingUtilities.cpp
          UnitMain.cpp)
 
 set(HDRS Utilities.hpp)

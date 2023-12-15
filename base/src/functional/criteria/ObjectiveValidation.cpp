@@ -1,6 +1,5 @@
 #include "ObjectiveValidation.hpp"
 
-#include "AffirmUtilities.hpp"
 #include "CriterionValidation.hpp"
 namespace Plato::Functional::Criteria
 {
@@ -26,7 +25,7 @@ namespace detail
 
 std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput)
 {
-    return Plato::Functional::Affirmations::error_message_for_empty_parameter(
+    return Plato::Functional::Validation::error_message_for_empty_parameter(
         prepend_string(aInput), aInput.aggregation_weight, "aggregation_weight");
 }
 
@@ -34,7 +33,7 @@ std::optional<std::string> validate_at_least_one_objective(const std::vector<Pla
 {
     const bool tAnyActiveObjectives = std::any_of(aInput.begin(), aInput.end(),
                                                   [](const Plato::objective& aObjective)
-                                                  { return Plato::Functional::Affirmations::is_active(aObjective); });
+                                                  { return Plato::Functional::Validation::is_active(aObjective); });
 
     if (tAnyActiveObjectives)
     {

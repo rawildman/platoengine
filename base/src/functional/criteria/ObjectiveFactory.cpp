@@ -3,12 +3,12 @@
 #include <string>
 #include <unordered_map>
 
-#include "AffirmUtilities.hpp"
 #include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "SharedLibCriterion.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::ObjectiveFactory
 {
@@ -20,7 +20,7 @@ AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
     for (const auto& tObjective : aInput)
     {
-        if (Plato::Functional::Affirmations::is_active(tObjective))
+        if (Plato::Functional::Validation::is_active(tObjective))
         {
             const double tWeight = tObjective.aggregation_weight.value();
             tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective), tWeight);

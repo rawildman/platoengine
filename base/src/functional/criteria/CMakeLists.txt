@@ -1,5 +1,4 @@
-set(SRCS AffirmUtilities.cpp
-         ConstraintFactory.cpp
+set(SRCS ConstraintFactory.cpp
          ConstraintValidation.cpp
          CriterionRegistration.cpp
          ObjectiveFactory.cpp

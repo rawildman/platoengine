@@ -1,5 +1,4 @@
-set(SRCS Test_AffirmUtilities.cpp 
-         Test_CriterionFactory.cpp
+set(SRCS Test_CriterionFactory.cpp
          Test_CriterionValidation.cpp
          Test_ConstraintFactory.cpp
          Test_ConstraintValidation.cpp

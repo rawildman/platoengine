@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "AffirmUtilities.hpp"
 #include "Exception.hpp"
 #include "InputParser.hpp"
+#include "ValidationRegistration.hpp"
 
 TEST(AffirmUtilities, ActiveConstraint)
 {
-    namespace pfa = Plato::Functional::Affirmations;
+    namespace pfa = Plato::Functional::Validation;
     Plato::constraint tConstraintInput;
     EXPECT_TRUE(pfa::is_active(tConstraintInput));
     tConstraintInput.active = true;
@@ -17,7 +17,7 @@ TEST(AffirmUtilities, ActiveConstraint)
 
 TEST(AffirmUtilities, ActiveObjective)
 {
-    namespace pfa = Plato::Functional::Affirmations;
+    namespace pfa = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
     EXPECT_TRUE(pfa::is_active(tObjectiveInput));
     tObjectiveInput.active = true;
@@ -28,7 +28,7 @@ TEST(AffirmUtilities, ActiveObjective)
 
 TEST(AffirmUtilities, AffirmParameterExistsDNE)
 {
-    namespace pfa = Plato::Functional::Affirmations;
+    namespace pfa = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
     EXPECT_TRUE(
         pfa::error_message_for_empty_parameter("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight")
@@ -37,7 +37,7 @@ TEST(AffirmUtilities, AffirmParameterExistsDNE)
 
 TEST(AffirmUtilities, AffirmParameterExistsDoesExist)
 {
-    namespace pfa = Plato::Functional::Affirmations;
+    namespace pfa = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
     tObjectiveInput.aggregation_weight = 23;
     EXPECT_FALSE(

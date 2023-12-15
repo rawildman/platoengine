@@ -20,8 +20,8 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_app(const Criteria& aInput)
 {
-    return Plato::Functional::Affirmations::error_message_for_empty_parameter(prepend_string<Criteria>(aInput),
-                                                                              aInput.app, "app");
+    return Plato::Functional::Validation::error_message_for_empty_parameter(prepend_string<Criteria>(aInput),
+                                                                            aInput.app, "app");
 }
 
 template <typename Criteria>
@@ -29,7 +29,7 @@ template <typename Criteria>
 {
     if (aInput.app.has_value() && aInput.app.value() == Plato::CodeOptions::kCustomApp)
     {
-        return Plato::Functional::Affirmations::error_message_for_empty_parameter(
+        return Plato::Functional::Validation::error_message_for_empty_parameter(
             prepend_string<Criteria>(aInput), aInput.shared_library_path, "shared_library_path");
     }
     else
