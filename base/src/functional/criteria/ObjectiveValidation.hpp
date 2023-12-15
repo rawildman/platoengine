@@ -9,12 +9,12 @@ namespace Plato::Functional::Criteria
 
 namespace detail
 {
-std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput);
-std::optional<std::string> validate_at_least_one_objective(const std::vector<Plato::objective>& aInput);
+[[nodiscard]] std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput);
+[[nodiscard]] std::optional<std::string> validate_at_least_one_objective(const std::vector<Plato::objective>& aInput);
 }  // namespace detail
 
-std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
-                                             std::vector<std::string>&& aCurrentMessageList);
+[[nodiscard]] std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
+                                                           std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace Plato::Functional::Criteria
 

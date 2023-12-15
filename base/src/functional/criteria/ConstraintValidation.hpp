@@ -10,12 +10,12 @@ namespace Plato::Functional::Criteria
 namespace detail
 {
 
-std::optional<std::string> validate_only_one_type(const Plato::constraint& aInput);
+[[nodiscard]] std::optional<std::string> validate_only_one_type(const Plato::constraint& aInput);
 
 }  // namespace detail
 
-std::vector<std::string> validate_constraints(const std::vector<Plato::constraint>& aInput,
-                                              std::vector<std::string>&& aCurrentMessageList);
+[[nodiscard]] std::vector<std::string> validate_constraints(const std::vector<Plato::constraint>& aInput,
+                                                            std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace Plato::Functional::Criteria
 
