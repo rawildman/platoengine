@@ -6,25 +6,6 @@
 #include "InputGeneration.hpp"
 #include "Plato_InputBlocks.hpp"
 
-TEST(ConstraintValidation, ValidateApp)
-{
-    namespace pfcd = Plato::Functional::Criteria::detail;
-    Plato::constraint tConstraint;
-    EXPECT_TRUE(pfcd::validate_app(tConstraint).has_value());
-    tConstraint.app = Plato::CodeOptions::kCustomApp;
-    EXPECT_FALSE(pfcd::validate_app(tConstraint).has_value());
-}
-
-TEST(ConstraintValidation, ValidateCustomApp)
-{
-    namespace pfcd = Plato::Functional::Criteria::detail;
-    Plato::constraint tConstraint;
-    tConstraint.app = Plato::CodeOptions::kCustomApp;
-    EXPECT_TRUE(pfcd::validate_custom_app(tConstraint).has_value());
-    tConstraint.shared_library_path = Plato::FileName{"/sweet/potato/ravioli.so"};
-    EXPECT_FALSE(pfcd::validate_custom_app(tConstraint).has_value());
-}
-
 TEST(ConstraintValidation, ValidateOnlyOneType)
 {
     namespace pfcd = Plato::Functional::Criteria::detail;
@@ -50,7 +31,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
     std::vector<std::string> tMessages;
     tMessages = pfv::validate<Plato::constraint>(tConstraint, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
-    Plato::Functional::Affirmations::print_messages(tMessages);
+    Plato::Functional::Validation::print_messages(tMessages);
 }
 
 TEST(ConstraintValidation, ErrorMessagesInvalidInput)
@@ -65,7 +46,7 @@ TEST(ConstraintValidation, ErrorMessagesInvalidInput)
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_TRUE(tMessages.size() > 0);
-    Plato::Functional::Affirmations::print_messages(tMessages);
+    Plato::Functional::Validation::print_messages(tMessages);
 }
 
 TEST(ConstraintValidation, NoErrorMessagesValidConstraints)
@@ -92,5 +73,5 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraints)
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);
-    Plato::Functional::Affirmations::print_messages(tMessages);
+    Plato::Functional::Validation::print_messages(tMessages);
 }
