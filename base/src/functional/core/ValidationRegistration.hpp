@@ -66,6 +66,8 @@ std::vector<std::string> validate(const ValidationInput& aInput, std::vector<std
     return aCurrentMessageList;
 }
 
+void print_messages(const std::vector<std::string>& aMessages);
+
 }  // namespace Plato::Functional::Validation
 
 #endif
