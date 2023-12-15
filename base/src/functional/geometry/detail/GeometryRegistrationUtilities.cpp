@@ -3,21 +3,37 @@
 namespace Plato::Functional::GeometryFactory::Detail
 {
 
-[[nodiscard]] unsigned int geometry_block_count(const Plato::PlatoInput& aInput)
+void emplace_back_if_has_value(std::vector<GeometryFactory::GeometryInput>& aGeometryInput,
+                               std::optional<GeometryFactory::GeometryInput>&& aOptionalGeometry)
 {
-    constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
-    return geometry_block_count_impl(aInput, std::make_index_sequence<tNumInputFields>{});
+    if (aOptionalGeometry.has_value())
+    {
+        aGeometryInput.emplace_back(std::move(aOptionalGeometry).value());
+    }
 }
 
-[[nodiscard]] std::optional<GeometryFactory::GeometryInput> geometry_block(const Plato::PlatoInput& aInput)
+[[nodiscard]] std::vector<GeometryFactory::GeometryInput> geometry_blocks(const Plato::PlatoInput& aInput)
 {
     constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
-    return geometry_block_impl(aInput, std::make_index_sequence<tNumInputFields>{});
+    return geometry_blocks_impl(aInput, std::make_index_sequence<tNumInputFields>{});
 }
 
-[[nodiscard]] GeometryFactory::GeometryInput geometry_input(const Plato::PlatoInput& aInput)
+[[nodiscard]] std::optional<GeometryFactory::GeometryInput> first_geometry_block(const Plato::PlatoInput& aInput)
 {
-    std::optional<GeometryFactory::GeometryInput> tGeometryInput = geometry_block(aInput);
+    const std::vector<GeometryFactory::GeometryInput> tGeometryBlocks = geometry_blocks(aInput);
+    if (tGeometryBlocks.empty())
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return tGeometryBlocks.front();
+    }
+}
+
+[[nodiscard]] GeometryFactory::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput)
+{
+    const std::optional<GeometryFactory::GeometryInput> tGeometryInput = first_geometry_block(aInput);
     if (!tGeometryInput)
     {
         throw Exception("No geometry block was defined.");
