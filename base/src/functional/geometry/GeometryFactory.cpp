@@ -11,7 +11,7 @@ namespace Plato::Functional::GeometryFactory
 {
 FactoryTypes make_geometry_data(const Plato::PlatoInput& aInput)
 {
-    const GeometryInput tGeometryInput = Detail::geometry_input(aInput);
+    const GeometryInput tGeometryInput = Detail::first_geometry_input(aInput);
 
     if (const auto tIter =
             detail::registered_functions<FactoryTypes, GeometryInput>().find(Detail::block_name(tGeometryInput));
