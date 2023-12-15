@@ -4,10 +4,10 @@
 #include <fstream>
 #include <string_view>
 
-#include "AffirmUtilities.hpp"
 #include "ConstraintValidation.hpp"
 #include "Exception.hpp"
 #include "GeometryFactory.hpp"
+#include "GeometryValidation.hpp"
 #include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
@@ -104,11 +104,12 @@ ValidatedInput parse_and_validate(const std::string_view aInputFile)
 {
     const auto tInput = parse_input_from_file(aInputFile);
     std::vector<std::string> tMessages;
+    tMessages = Geometry::validate_geometry(tInput, std::move(tMessages));
     tMessages = Criteria::validate_objectives(tInput.mObjectives, std::move(tMessages));
     tMessages = Criteria::validate_constraints(tInput.mConstraints, std::move(tMessages));
     if (tMessages.size() != 0)
     {
-        Affirmations::print_messages(tMessages);
+        Validation::print_messages(tMessages);
         throw Exception("Could not validate input.");
     }
     return ValidatedInput{tInput};
