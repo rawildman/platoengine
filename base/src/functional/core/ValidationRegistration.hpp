@@ -52,7 +52,8 @@ Registration<ValidationInput>::Registration(std::initializer_list<ValidationFunc
 }
 
 template <typename ValidationInput>
-std::vector<std::string> validate(const ValidationInput& aInput, std::vector<std::string>&& aCurrentMessageList)
+[[nodiscard]] std::vector<std::string> validate(const ValidationInput& aInput,
+                                                std::vector<std::string>&& aCurrentMessageList)
 {
     auto tTests = detail::registered_functions<ValidationInput>();
     for (auto& iTest : tTests)
@@ -77,12 +78,12 @@ template <typename T>
 /// @brief Checks if the objective or constraint given by @a aParameter should be included in the optimization problem.
 /// @tparam Must have a public field `active` that is a `boost` or `std::optional`.
 template <typename Parameter>
-bool is_active(const Parameter& aParameter);
+[[nodiscard]] bool is_active(const Parameter& aParameter);
 
 template <typename T>
-[[nodiscard]] std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
-                                                                           const boost::optional<T>& aParameter,
-                                                                           const std::string_view aEntryName)
+std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
+                                                             const boost::optional<T>& aParameter,
+                                                             const std::string_view aEntryName)
 {
     if (!aParameter)
     {
@@ -95,7 +96,7 @@ template <typename T>
 }
 
 template <typename Parameter>
-[[nodiscard]] bool is_active(const Parameter& aParameter)
+bool is_active(const Parameter& aParameter)
 {
     return !aParameter.active.has_value() || aParameter.active.value();
 }
