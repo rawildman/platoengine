@@ -2,19 +2,15 @@
 
 #include "BrickShapeGeometry.hpp"
 #include "Exception.hpp"
+#include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
 #include "InputParser.hpp"
+#include "Plato_InputBlocks.hpp"
 
-TEST(BrickShapeGeometryValidation, ValidBrickShapeMeshName)
+TEST(BrickShapeGeometryValidation, BrickShapeMeshName)
 {
     namespace pf = Plato::Functional;
-    const auto tBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
-    EXPECT_FALSE(pf::Validation::BrickShapeGeometry::detail::validate_mesh_name(tBrickShapeGeometry).has_value());
-}
-
-TEST(BrickShapeGeometryValidation, InvalidBrickShape)
-{
-    namespace pf = Plato::Functional;
-    const auto tBrickShapeGeometry = Plato::brick_shape_geometry{};
-    EXPECT_TRUE(pf::Validation::BrickShapeGeometry::detail::validate_mesh_name(tBrickShapeGeometry).has_value());
+    auto tBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
+    EXPECT_FALSE(pf::Geometry::detail::validate_mesh_name(tBrickShapeGeometry).has_value());
+    EXPECT_TRUE(pf::Geometry::detail::validate_mesh_name(Plato::brick_shape_geometry{}).has_value());
 }

@@ -2,14 +2,9 @@
 
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
+
 namespace
 {
-
-// create some registered tests on geometry to make sure the right test is called for the right variant
-[[maybe_unused]] static auto kBrickValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::brick_shape_geometry>{[](const Plato::brick_shape_geometry&)
-                                                                             { return std::nullopt; }};
-
 std::optional<std::string> bogus_error(const Plato::density_topology& aInput)
 {
     if (aInput.mesh_name.value().mName == "trigger_bogus_test")
@@ -26,6 +21,10 @@ std::optional<std::string> bogus_error(const Plato::density_topology& aInput)
     Plato::Functional::Validation::Registration<Plato::density_topology>{[](const Plato::density_topology& aInput)
                                                                          { return bogus_error(aInput); }};
 
+// create some registered tests on geometry to make sure the right test is called for the right variant
+[[maybe_unused]] static auto kBrickValidationRegistration =
+    Plato::Functional::Validation::Registration<Plato::brick_shape_geometry>{[](const Plato::brick_shape_geometry&)
+                                                                             { return std::nullopt; }};
 }  // namespace
 
 TEST(GeometryValidation, InValidPlatoInputNoGeometry)
@@ -47,6 +46,21 @@ TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
     tInput.mDensityTopology = Plato::density_topology{};
     EXPECT_TRUE(Plato::Functional::Geometry::detail::validate_only_one_geometry(tInput).has_value());
+}
+
+TEST(GeometryValidation, MeshName)
+{
+    namespace pf = Plato::Functional;
+    auto tInput = Plato::PlatoInput{};
+    tInput.mBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
+
+    std::vector<std::string> tMessages;
+    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    EXPECT_EQ(tMessages.size(), 0u);
+    tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
+    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    pf::Validation::print_messages(tMessages);
+    EXPECT_EQ(tMessages.size(), 1u);
 }
 
 TEST(GeometryValidation, ValidInputCallsRightVariantTest)

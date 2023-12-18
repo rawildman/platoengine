@@ -6,13 +6,17 @@
 
 #include "Exception.hpp"
 #include "GeometryRegistration.hpp"
+#include "GeometryValidation.hpp"
 #include "JacobianColumnEvaluator.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
-#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
+
+[[maybe_unused]] static auto kBrickShapeValidationRegistration = Validation::Registration<Plato::brick_shape_geometry>{
+    [](const Plato::brick_shape_geometry& aInput) { return Geometry::detail::validate_mesh_name(aInput); }};
+
 namespace
 {
 constexpr int kNumDims = 3;
@@ -183,14 +187,5 @@ BrickDesign to_design_parameters(const ROL::StdVector<double>& aDesignParameter)
                        /*.dimension_z=*/aDesignParameter[5]};
 }
 }  // namespace detail
-
-namespace Validation::BrickShapeGeometry::detail
-{
-std::optional<std::string> validate_mesh_name(const Plato::brick_shape_geometry& aInput)
-{
-    return Plato::Functional::Validation::error_message_for_empty_parameter(
-        Plato::block_name<Plato::brick_shape_geometry>(), aInput.mesh_name, "mesh_name");
-}
-}  // namespace Validation::BrickShapeGeometry::detail
 
 }  // namespace Plato::Functional

@@ -81,10 +81,5 @@ namespace detail
 [[nodiscard]] std::unique_ptr<ROL::StdVector<double>> to_rol_std_vector_ptr(const BrickDesign& aDesignParameters);
 }  // namespace detail
 
-namespace Validation::BrickShapeGeometry::detail
-{
-[[nodiscard]] std::optional<std::string> validate_mesh_name(const Plato::brick_shape_geometry& aInput);
-}
-
 }  // namespace Plato::Functional
 #endif

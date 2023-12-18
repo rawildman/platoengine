@@ -55,7 +55,6 @@ class DensityTopology
 
 namespace Validation::DensityTopology::detail
 {
-[[nodiscard]] std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput);
 [[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
 }  // namespace Validation::DensityTopology::detail
 

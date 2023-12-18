@@ -4,19 +4,17 @@
 #include "FilterInterface.hpp"
 #include "FilterJacobian.hpp"
 #include "GeometryRegistration.hpp"
+#include "GeometryValidation.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
-#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
 
-[[maybe_unused]] static auto kDensityTopologyValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::density_topology>{
-        [](const Plato::density_topology& aInput)
-        { return Validation::DensityTopology::detail::validate_mesh_name(aInput); },
-        [](const Plato::density_topology& aInput)
-        { return Validation::DensityTopology::detail::validate_output_name(aInput); }};
+[[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
+    [](const Plato::density_topology& aInput) { return Geometry::detail::validate_mesh_name(aInput); },
+    [](const Plato::density_topology& aInput)
+    { return Validation::DensityTopology::detail::validate_output_name(aInput); }};
 
 namespace
 {
@@ -94,12 +92,6 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
 
 namespace Validation::DensityTopology::detail
 {
-
-std::optional<std::string> validate_mesh_name(const Plato::density_topology& aInput)
-{
-    return Plato::Functional::Validation::error_message_for_empty_parameter(
-        Plato::block_name<Plato::density_topology>(), aInput.mesh_name, "mesh_name");
-}
 
 std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
 {
