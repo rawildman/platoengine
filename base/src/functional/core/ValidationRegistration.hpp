@@ -80,9 +80,9 @@ template <typename Parameter>
 bool is_active(const Parameter& aParameter);
 
 template <typename T>
-std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
-                                                             const boost::optional<T>& aParameter,
-                                                             const std::string_view aEntryName)
+[[nodiscard]] std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
+                                                                           const boost::optional<T>& aParameter,
+                                                                           const std::string_view aEntryName)
 {
     if (!aParameter)
     {
@@ -95,7 +95,7 @@ std::optional<std::string> error_message_for_empty_parameter(const std::string_v
 }
 
 template <typename Parameter>
-bool is_active(const Parameter& aParameter)
+[[nodiscard]] bool is_active(const Parameter& aParameter)
 {
     return !aParameter.active.has_value() || aParameter.active.value();
 }
