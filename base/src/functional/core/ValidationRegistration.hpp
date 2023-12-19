@@ -5,13 +5,7 @@
 #include <string>
 
 #include "FactoryRegistration.hpp"
-#include "NamedType.hpp"
 #include "Plato_InputBlocks.hpp"
-
-namespace Plato::Functional
-{
-using ValidatedInput = Core::NamedType<Plato::PlatoInput, struct ValidatedInputTag>;
-}
 
 namespace Plato::Functional::Validation
 {

@@ -4,15 +4,11 @@
 #include <fstream>
 #include <string_view>
 
-#include "ConstraintValidation.hpp"
-#include "Exception.hpp"
 #include "GeometryFactory.hpp"
-#include "GeometryValidation.hpp"
-#include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
-#include "ObjectiveValidation.hpp"
 #include "PlatoProblem.hpp"
+#include "ValidatedInput.hpp"
 
 namespace Plato::Functional
 {
@@ -34,7 +30,7 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
-    : mProblem(make_plato_problem(parse_and_validate(aInputFile))),
+    : mProblem(make_plato_problem(parse_and_validate_from_file(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
@@ -99,20 +95,5 @@ void OptimizationProblem::optimize()
 }
 
 int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess->dimension(); }
-
-ValidatedInput parse_and_validate(const std::string_view aInputFile)
-{
-    const auto tInput = parse_input_from_file(aInputFile);
-    std::vector<std::string> tMessages;
-    tMessages = Geometry::validate_geometry(tInput, std::move(tMessages));
-    tMessages = Criteria::validate_objectives(tInput.mObjectives, std::move(tMessages));
-    tMessages = Criteria::validate_constraints(tInput.mConstraints, std::move(tMessages));
-    if (tMessages.size() != 0)
-    {
-        Validation::print_messages(tMessages);
-        throw Exception("Could not validate input.");
-    }
-    return ValidatedInput{tInput};
-}
 
 }  // namespace Plato::Functional

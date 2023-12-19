@@ -8,7 +8,3 @@ add_executable(${EXE_NAME} ${SRCS} ${HDRS})
 target_link_libraries(${EXE_NAME} PRIVATE ROL::rol PlatoFunctional PlatoFunctionalCore PlatoInputParser)
 
 install( TARGETS ${EXE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-
-if( UNIT_TESTING )
-  add_subdirectory(./unittest)
-endif()

@@ -5,6 +5,7 @@ set(SRCS ROLPenaltyFunction.cpp
          Test_ROLObjectiveRosenbrock.cpp
          Test_ROLPenaltyFunction.cpp
          Test_SimpleSumObjective.cpp
+         Test_ValidatedInput.cpp
          UnitMain.cpp 
          )
 

@@ -39,9 +39,6 @@ class OptimizationProblem
     ROL::Solver<double> mROLSolver;
 };
 
-///@brief Parse input from file @a aInputFile and then validate the input
-ValidatedInput parse_and_validate(const std::string_view aInputFile);
-
 }  // namespace Plato::Functional
 
 #endif
