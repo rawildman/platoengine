@@ -11,6 +11,7 @@ set(HDRS Aggregate.hpp
          MeshProxy.hpp
          NamedType.hpp
          ROLHelpers.hpp
+         ValidatedInputTypeWrapper.hpp
          ValidationRegistration.hpp)
 
 set(LIB_NAME PlatoFunctionalCore)
