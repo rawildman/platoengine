@@ -1,9 +1,11 @@
 #ifndef PLATO_FUNCTIONAL_VALIDATEDINPUT
 #define PLATO_FUNCTIONAL_VALIDATEDINPUT
 
+#include "GeometryRegistration.hpp"
 #include "Plato_InputBlocks.hpp"
+#include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional::Core
+namespace Plato::Functional::Validation
 {
 class ValidatedInput;
 
@@ -20,7 +22,11 @@ class ValidatedInput
 {
    public:
     ValidatedInput(Plato::PlatoInput aInput, Key);
-    Plato::PlatoInput value() const;
+
+    [[nodiscard]] auto geometry() const -> Core::ValidatedInputTypeWrapper<GeometryFactory::GeometryInput>;
+    [[nodiscard]] auto objectives() const -> Core::ValidatedInputTypeWrapper<std::vector<Plato::objective>>;
+    [[nodiscard]] auto constraints() const -> Core::ValidatedInputTypeWrapper<std::vector<Plato::constraint>>;
+    [[nodiscard]] auto optimizationParameters() const -> Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
    private:
     Plato::PlatoInput mInput;
@@ -28,6 +34,6 @@ class ValidatedInput
 
 ValidatedInput make_validated_input(Plato::PlatoInput aInput);
 
-}  // namespace Plato::Functional::Core
+}  // namespace Plato::Functional::Validation
 
 #endif

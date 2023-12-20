@@ -11,10 +11,10 @@
 
 namespace Plato::Functional::ConstraintFactory
 {
-std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Plato::constraint>& aInput)
+std::vector<Constraint<const MeshProxy&>> make_constraints(const ValidatedConstraints& aInput)
 {
     std::vector<Constraint<const MeshProxy&>> tConstraints;
-    for (const auto& tConInp : aInput)
+    for (const auto& tConInp : aInput.value())
     {
         tConstraints.push_back(detail::make_constraint(tConInp));
     }

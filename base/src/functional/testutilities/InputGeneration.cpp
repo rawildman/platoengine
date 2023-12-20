@@ -79,8 +79,8 @@ Plato::constraint create_valid_example_constraint()
 {
     return Plato::constraint{/*.name=*/std::string{"bike-shed"},
                              /*.active=*/true,
-                             /*.app=*/Plato::CodeOptions::kCustomApp,
-                             /*.shared_library_path=*/Plato::FileName{"/sweet/potato/ravioli.so"},
+                             /*.app=*/Plato::CodeOptions::kNodalSum,
+                             /*.shared_library_path=*/Plato::FileName{},
                              /*.number_of_processors=*/42u,
                              /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                              /*.equal_to=*/0.0,
@@ -107,8 +107,8 @@ Plato::objective create_valid_example_objective()
 {
     return Plato::objective{/*.name=*/std::string{"bike-shed"},
                             /*.active=*/true,
-                            /*.app=*/Plato::CodeOptions::kCustomApp,
-                            /*.shared_library_path=*/Plato::FileName{"/sweet/potato/ravioli.so"},
+                            /*.app=*/Plato::CodeOptions::kNodalSum,
+                            /*.shared_library_path=*/Plato::FileName{},
                             /*.number_of_processors=*/42u,
                             /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                             /*.aggregation_weight=*/13.0,

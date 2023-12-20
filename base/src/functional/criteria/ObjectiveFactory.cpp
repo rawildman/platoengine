@@ -8,6 +8,7 @@
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "SharedLibCriterion.hpp"
+#include "ValidatedInputTypeWrapper.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::ObjectiveFactory
@@ -30,9 +31,9 @@ AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
 }
 }  // namespace detail
 
-ObjectiveFunction make_aggregate_objective_function(const std::vector<Plato::objective>& aInput)
+ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput)
 {
-    return make_aggregate_function(detail::make_aggregate(aInput));
+    return make_aggregate_function(detail::make_aggregate(aInput.value()));
 }
 
 }  // namespace Plato::Functional::ObjectiveFactory

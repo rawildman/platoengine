@@ -1,6 +1,8 @@
-set(SRCS OptimizerFactory.cpp)
+set(SRCS OptimizerFactory.cpp
+         OptimizerValidation.cpp)
 
-set(HDRS OptimizerFactory.hpp)
+set(HDRS OptimizerFactory.hpp
+         OptimizerValidation.hpp)
 
 set(LIB_NAME PlatoFunctionalOptimizer)
 add_library(${LIB_NAME} ${SRCS} ${HDRS} )

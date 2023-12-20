@@ -29,7 +29,7 @@ struct PlatoProblem
 ///
 ///@param aData
 ///@return PlatoProblem
-[[nodiscard]] PlatoProblem make_plato_problem(const Core::ValidatedInput& aData);
+[[nodiscard]] PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData);
 
 ///@brief Create a ROL objective object from a PlatoProblem by composing the mGeometryFunction with the mObjective
 ///
@@ -56,10 +56,10 @@ struct PlatoProblem
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
 ///@brief Parse input from file @a aInputFile and then validate the input
-[[nodiscard]] Core::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName);
+[[nodiscard]] Validation::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName);
 
 ///@brief Parse input from input string @a aInput and then validate the input
-[[nodiscard]] Core::ValidatedInput parse_and_validate(const std::string_view aInput);
+[[nodiscard]] Validation::ValidatedInput parse_and_validate(const std::string_view aInput);
 
 }  // namespace Plato::Functional
 

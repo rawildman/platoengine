@@ -1,4 +1,4 @@
-set(SRCS Test_OptimizerFactory.cpp
+set(SRCS Test_OptimizerValidation.cpp
          UnitMain.cpp )
 
 set(HDRS )

@@ -9,15 +9,14 @@
 
 namespace Plato::Functional::GeometryFactory
 {
-FactoryTypes make_geometry_data(const Plato::PlatoInput& aInput)
-{
-    const GeometryInput tGeometryInput = Detail::first_geometry_input(aInput);
 
+FactoryTypes make_geometry_data(const ValidGeometryInput& aGeometryInput)
+{
     if (const auto tIter =
-            detail::registered_functions<FactoryTypes, GeometryInput>().find(Detail::block_name(tGeometryInput));
+            detail::registered_functions<FactoryTypes, GeometryInput>().find(Detail::block_name(aGeometryInput.value()));
         tIter != detail::registered_functions<FactoryTypes, GeometryInput>().end())
     {
-        return tIter->second(tGeometryInput);
+        return tIter->second(aGeometryInput.value());
     }
     else
     {

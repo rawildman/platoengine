@@ -31,22 +31,22 @@ void set_status_test_parameter(ROL::ParameterList& aParlist,
 }
 }  // anonymous namespace
 
-ROL::ParameterList rol_parameter_list(const Plato::optimization_parameters& aOptimizationParameters)
+ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimizationParameters)
 {
     /// @todo Would like to make this first load from a file if present,
     /// then override or set any parameters specified in the input block,
     /// then fill in any missing entries with defaults.
-    if (aOptimizationParameters.input_file_name)
+    if (aOptimizationParameters.value().input_file_name)
     {
-        return *ROL::getParametersFromXmlFile(aOptimizationParameters.input_file_name.value().mName);
+        return *ROL::getParametersFromXmlFile(aOptimizationParameters.value().input_file_name.value().mName);
     }
     else
     {
         ROL::ParameterList tParlist;
         tParlist.sublist("Step").sublist("Line Search").sublist("Descent Method").set("Type", "Newton-Krylov");
-        set_status_test_parameter(tParlist, aOptimizationParameters.max_iterations, kIterationLimit);
-        set_status_test_parameter(tParlist, aOptimizationParameters.gradient_tolerance, kGradientTolerance);
-        set_status_test_parameter(tParlist, aOptimizationParameters.step_tolerance, kStepTolerance);
+        set_status_test_parameter(tParlist, aOptimizationParameters.value().max_iterations, kIterationLimit);
+        set_status_test_parameter(tParlist, aOptimizationParameters.value().gradient_tolerance, kGradientTolerance);
+        set_status_test_parameter(tParlist, aOptimizationParameters.value().step_tolerance, kStepTolerance);
         return tParlist;
     }
 }

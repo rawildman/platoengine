@@ -23,12 +23,12 @@ namespace
 }
 }  // namespace
 
-PlatoProblem make_plato_problem(const Core::ValidatedInput& aData)
+PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
 {
-    return PlatoProblem{GeometryFactory::make_geometry_data(aData.value()),
-                        ObjectiveFactory::make_aggregate_objective_function(aData.value().mObjectives),
-                        ConstraintFactory::make_constraints(aData.value().mConstraints),
-                        rol_parameter_list(aData.value().mOptimizationParameters)};
+    return PlatoProblem{GeometryFactory::make_geometry_data(aData.geometry()),
+                        ObjectiveFactory::make_aggregate_objective_function(aData.objectives()),
+                        ConstraintFactory::make_constraints(aData.constraints()),
+                        rol_parameter_list(aData.optimizationParameters())};
 }
 
 std::unique_ptr<ROLObjectiveFunction> make_rol_objective(const PlatoProblem& aProblem)
@@ -84,14 +84,14 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-Core::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
+Validation::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
 {
-    return Core::make_validated_input(parse_input_from_file(aFileName));
+    return Validation::make_validated_input(parse_input_from_file(aFileName));
 }
 
-Core::ValidatedInput parse_and_validate(const std::string_view aInput)
+Validation::ValidatedInput parse_and_validate(const std::string_view aInput)
 {
-    return Core::make_validated_input(parse_input(aInput));
+    return Validation::make_validated_input(parse_input(aInput));
 }
 
 }  // namespace Plato::Functional

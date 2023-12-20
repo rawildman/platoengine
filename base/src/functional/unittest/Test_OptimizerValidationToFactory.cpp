@@ -1,29 +1,35 @@
 #include <gtest/gtest.h>
 
+#include "InputGeneration.hpp"
 #include "InputParser.hpp"
 #include "OptimizerFactory.hpp"
+#include "ValidatedInput.hpp"
 
 namespace Plato::Functional::Test
 {
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
-    const std::string tInput =
-        R"(
-          begin optimization_parameters
-            step_tolerance 10
-            gradient_tolerance 100.0
-          end
-       )";
+    const std::string tInput = TestUtilities::create_valid_brick_shape_geometry_string() +
+                               TestUtilities::create_valid_example_objective_string() +
+                               R"(
+                                  begin optimization_parameters
+                                    step_tolerance 10
+                                    gradient_tolerance 100.0
+                                    max_iterations 10
+                                  end
+                              )";
 
-    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
-    ROL::ParameterList tParlist = rol_parameter_list(tData.mOptimizationParameters);
+    const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
+
+    const auto tOPData = tData.optimizationParameters();
+    ROL::ParameterList tParlist = rol_parameter_list(tOPData);
 
     constexpr int kDefaultIterationLimit = 10;
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"), kDefaultIterationLimit);
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
-              tData.mOptimizationParameters.gradient_tolerance.value());
+              tOPData.value().gradient_tolerance.value());
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
-              tData.mOptimizationParameters.step_tolerance.value());
+              tOPData.value().step_tolerance.value());
 }
 
 TEST(OptimizerFactory, ParlistGenerationFromFile)
@@ -36,13 +42,14 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     tParameterListToWrite.sublist("Status Test").set<double>("Step Tolerance", 0.25);
     Teuchos::writeParameterListToXmlFile(tParameterListToWrite, kFileName);
 
-    const std::string tInput =
-        "begin optimization_parameters"
-        " input_file_name" +
-        kFileName + " step_tolerance 10" + " end";
+    const std::string tInput = TestUtilities::create_valid_brick_shape_geometry_string() +
+                               TestUtilities::create_valid_example_objective_string() +
+                               "begin optimization_parameters"
+                               " input_file_name" +
+                               kFileName + " step_tolerance 10" + " end";
 
-    const Plato::PlatoInput tData = Plato::Functional::parse_input(tInput);
-    ROL::ParameterList tParameterListFromDisk = rol_parameter_list(tData.mOptimizationParameters);
+    const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
+    ROL::ParameterList tParameterListFromDisk = rol_parameter_list(tData.optimizationParameters());
 
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<int>("Iteration Limit"),
               tParameterListToWrite.sublist("Status Test").get<int>("Iteration Limit"));

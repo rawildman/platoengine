@@ -1,6 +1,10 @@
 set(SRCS ROLPenaltyFunction.cpp
+         Test_ConstraintValidationToFactory.cpp
+         Test_GeometryValidationToFactory.cpp
          Test_PlatoProblem.cpp
+         Test_ObjectiveValidationToFactory.cpp
          Test_OptimizeRosenbrock.cpp 
+         Test_OptimizerValidationToFactory.cpp
          Test_ROLConstraint.cpp
          Test_ROLObjectiveRosenbrock.cpp
          Test_ROLPenaltyFunction.cpp
