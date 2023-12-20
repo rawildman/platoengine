@@ -112,7 +112,8 @@ std::optional<std::string> error_message_for_parameter_out_of_bounds(const std::
     {
         const std::string tLowerBoundString = aLowerBound ? "[" + std::to_string(aLowerBound.value()) + ", " : "(-inf, ";
         const std::string tUpperBoundString = aUpperBound ? std::to_string(aUpperBound.value()) + "]." : "inf).";
-        return std::string(aPrependString) + " entry \"" + std::string{aEntryName} + "\" is outside the bounds " + tLowerBoundString + tUpperBoundString;
+        return std::string(aPrependString) + " entry \"" + std::string{aEntryName} + "\" has value " + std::to_string(aParameter.value()) +
+               " and is outside the bounds " + tLowerBoundString + tUpperBoundString;
     }
     else
     {
