@@ -10,11 +10,12 @@
 TEST(GeometryFactory, ValidBrickShapeGeometry)
 {
     namespace pf = Plato::Functional;
-    const std::string tInput = pf::TestUtilities::create_valid_brick_shape_geometry_string() +
-                               pf::TestUtilities::create_valid_example_objective_string() +
-                               pf::TestUtilities::create_valid_example_optimization_parameters_string();
+    Plato::PlatoInput tInput;
+    tInput.mBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
+    tInput.mObjectives = {pf::TestUtilities::create_valid_example_objective()};
+    tInput.mOptimizationParameters = pf::TestUtilities::create_valid_example_optimization_parameters();
 
-    const pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(pf::parse_input(tInput));
+    const pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(tInput);
     EXPECT_NO_THROW(auto tUnused = pf::GeometryFactory::make_geometry_data(tData.geometry()));
 }
 
