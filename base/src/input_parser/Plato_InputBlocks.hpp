@@ -10,7 +10,7 @@
 #include <vector>
 
 /// @file Input block declarations.
-///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs. 
+///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs.
 ///  For example, the `objective` block will be parsed as
 /// @code
 /// begin objective
@@ -21,8 +21,8 @@
 /// @endcode
 /// and the parsed object has fields corresponding to the input keys.
 ///
-/// Each declaration starts with the namespace the struct is declared in. 
-/// The second argument is the struct name, and the third argument is a 
+/// Each declaration starts with the namespace the struct is declared in.
+/// The second argument is the struct name, and the third argument is a
 /// sequence of type/name pairs for each struct field. Any new input blocks
 /// must also be added to the main PlatoInput struct.
 ///
@@ -33,7 +33,7 @@
 /// the helper types FileName and FileList.
 /// @note Enumerations may be used, but must be declared with DECLARE_ENUM_SYMBOL_TABLE and
 ///  defined with DEFINE_ENUM_SYMBOL_TABLE.
-
+// clang-format off
 PLATO_INPUT_BLOCK_STRUCT(
     (Plato), optimization_parameters,
     (Plato::FileName, input_file_name)
@@ -61,8 +61,6 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (unsigned int, number_of_processors)
     (Plato::FileList, input_files)
     (double, equal_to)
-    (double, less_than)
-    (double, greater_than)
     (bool, is_linear)
 )
 
@@ -92,15 +90,15 @@ BOOST_FUSION_DEFINE_STRUCT(
     (boost::optional<Plato::density_topology>, mDensityTopology)
     (Plato::optimization_parameters, mOptimizationParameters)
 )
-
+// clang-format on
 namespace Plato
 {
-template<typename BlockStruct>
+template <typename BlockStruct>
 std::string block_name()
 {
     return Input::InputTypeName<BlockStruct>::name;
 }
-}
+}  // namespace Plato
 
 #endif
 // clang-format on

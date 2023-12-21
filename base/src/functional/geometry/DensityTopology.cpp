@@ -5,16 +5,18 @@
 #include "FilterJacobian.hpp"
 #include "GeometryRegistration.hpp"
 #include "GeometryValidation.hpp"
-#include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
 
 namespace Plato::Functional
 {
 
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
-    [](const Plato::density_topology& aInput) { return Geometry::detail::validate_mesh_name(aInput); },
     [](const Plato::density_topology& aInput)
-    { return Validation::DensityTopology::detail::validate_output_name(aInput); }};
+    { return Geometry::detail::validate_mesh_name(aInput); },
+    [](const Plato::density_topology& aInput)
+    { return Validation::DensityTopology::detail::validate_output_name(aInput); },
+    [](const Plato::density_topology& aInput)
+    { return Validation::DensityTopology::detail::validate_filter(aInput); }};
 
 namespace
 {
@@ -59,7 +61,8 @@ JacobianMultiplier DensityTopology::jacobian(const ROL::StdVector<double>& aDesi
     return JacobianMultiplier{/*.mNumColumns=*/mNumDesignParameters,
                               /*.mJacobianTimesVectorFunction=*/
                               [tMeshProxy = MeshProxy{mFileName, *aDesignParameters.getVector()},
-                               this](const ROL::StdVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
+                               this](const ROL::StdVector<double>& x)
+                              { return x * mFilter.df(tMeshProxy); }};
 }
 
 std::unique_ptr<ROL::StdVector<double>> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
@@ -97,6 +100,25 @@ std::optional<std::string> validate_output_name(const Plato::density_topology& a
 {
     return Plato::Functional::Validation::error_message_for_empty_parameter(
         Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
+}
+
+std::optional<std::string> validate_filter(const Plato::density_topology& aInput)
+{
+    if (!aInput.filter_type)
+    {
+        return Plato::Functional::Validation::error_message_for_empty_parameter(
+            Plato::block_name<Plato::density_topology>(), aInput.filter_type, "filter_type");
+    }
+    else
+    {
+        // return check_filter_values<aInput.filter_type.value()>(aInput);
+        if (aInput.filter_type == Plato::FilterTypes::kIdentity)
+            return check_filter_values<Plato::FilterTypes::kIdentity>(aInput);
+        else if (aInput.filter_type == Plato::FilterTypes::kHelmholtz)
+            return check_filter_values<Plato::FilterTypes::kHelmholtz>(aInput);
+        else
+            return "Unknown filter type";
+    }
 }
 
 }  // namespace Validation::DensityTopology::detail

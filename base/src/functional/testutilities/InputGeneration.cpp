@@ -61,8 +61,8 @@ Plato::density_topology create_valid_density_topology_geometry()
     return Plato::density_topology{/*.mesh_name = */ Plato::FileName{"test.exo"},
                                    /*.output_name = */ Plato::FileName{"test_out.exo"},
                                    /*.filter_type = */ Plato::FilterTypes::kIdentity,
-                                   /*.filter_radius=*/0.0,
-                                   /*.boundary_sticking_penalty=*/0.0};
+                                   /*.filter_radius=*/boost::none,
+                                   /*.boundary_sticking_penalty=*/boost::none};
 }
 
 std::string create_valid_density_topology_geometry_string()
@@ -84,8 +84,6 @@ Plato::constraint create_valid_example_constraint()
                              /*.number_of_processors=*/42u,
                              /*.input_files=*/Plato::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                              /*.equal_to=*/0.0,
-                             /*.less_than=*/boost::none,
-                             /*.greater_than=*/boost::none,
                              /*.is_linear=*/true};
 }
 

@@ -10,7 +10,7 @@ namespace Plato::Functional::Criteria
 namespace detail
 {
 
-[[nodiscard]] std::optional<std::string> validate_only_one_type(const Plato::constraint& aInput);
+[[nodiscard]] std::optional<std::string> validate_equal_to(const Plato::constraint& aInput);
 
 }  // namespace detail
 

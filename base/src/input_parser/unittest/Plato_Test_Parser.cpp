@@ -102,8 +102,6 @@ TEST(MassAppInput, ConstraintAllValidInputs)
             number_of_processors 10
             input_files test.txt
             equal_to 1.0
-            less_than 10.0
-            greater_than -10.0
             is_linear false
           end
        )";
@@ -123,8 +121,6 @@ TEST(MassAppInput, ConstraintAllValidInputs)
     Plato::Test::test_existence_and_equality(tConstraint.number_of_processors, 10);
     Plato::Test::test_existence_and_equality(tConstraint.input_files, std::vector<std::string>{"test.txt"});
     Plato::Test::test_existence_and_equality(tConstraint.equal_to, 1.0);
-    Plato::Test::test_existence_and_equality(tConstraint.less_than, 10.0);
-    Plato::Test::test_existence_and_equality(tConstraint.greater_than, -10.0);
     Plato::Test::test_existence_and_equality(tConstraint.is_linear, false);
 }
 
@@ -303,7 +299,7 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
           end
           begin constraint mp_constraint_2
             number_of_processors 10
-            greater_than -10.0
+            equal_to -10.0
           end
 
        )";
@@ -322,7 +318,7 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
     const auto& tConstraint2 = tData.mConstraints.back();
     Plato::Test::test_existence_and_equality(tConstraint2.name, "mp_constraint_2");
     Plato::Test::test_existence_and_equality(tConstraint2.number_of_processors, 10);
-    Plato::Test::test_existence_and_equality(tConstraint2.greater_than, -10.0);
+    Plato::Test::test_existence_and_equality(tConstraint2.equal_to, -10.0);
 }
 
 // clang-format on
