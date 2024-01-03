@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 #include "InputParser.hpp"
-#include "ValidationRegistration.hpp"
+#include "ValidationUtilities.hpp"
 
 TEST(ValidateUtilities, ActiveConstraint)
 {

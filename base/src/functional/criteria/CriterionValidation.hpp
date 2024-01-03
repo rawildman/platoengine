@@ -3,15 +3,14 @@
 
 #include "Plato_InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
+#include "ValidationUtilities.hpp"
 
 namespace Plato::Functional::Criteria
 {
-
 namespace detail
 {
-
 template <typename Criteria>
-[[nodiscard]] std::string prepend_string(const Criteria& aInput)
+[[nodiscard]] std::string criterion_name(const Criteria& aInput)
 {
     std::string tName = aInput.name.value_or("unnamed");
     return Plato::block_name<Criteria>() + " " + tName;
@@ -20,8 +19,7 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_app(const Criteria& aInput)
 {
-    return Plato::Functional::Validation::error_message_for_empty_parameter(prepend_string<Criteria>(aInput),
-                                                                            aInput.app, "app");
+    return Plato::Functional::Validation::error_message_for_empty_parameter(criterion_name(aInput), aInput.app, "app");
 }
 
 template <typename Criteria>
@@ -30,7 +28,7 @@ template <typename Criteria>
     if (aInput.app.has_value() && aInput.app.value() == Plato::CodeOptions::kCustomApp)
     {
         return Plato::Functional::Validation::error_message_for_empty_parameter(
-            prepend_string<Criteria>(aInput), aInput.shared_library_path, "shared_library_path");
+            criterion_name(aInput), aInput.shared_library_path, "shared_library_path");
     }
     else
     {
@@ -42,12 +40,10 @@ template <typename Criteria>
 std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
                                            std::vector<std::string>&& aCurrentMessageList)
 {
-    aCurrentMessageList =
-        Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
+    aCurrentMessageList = Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
     for (const auto& iCriterionInput : aInput)
     {
-        aCurrentMessageList =
-            Plato::Functional::Validation::validate(iCriterionInput, std::move(aCurrentMessageList));
+        aCurrentMessageList = Plato::Functional::Validation::validate(iCriterionInput, std::move(aCurrentMessageList));
     }
     return aCurrentMessageList;
 }

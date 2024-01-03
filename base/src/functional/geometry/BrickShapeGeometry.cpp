@@ -10,6 +10,7 @@
 #include "JacobianColumnEvaluator.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "STKUtilities.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {

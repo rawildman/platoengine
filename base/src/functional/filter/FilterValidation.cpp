@@ -1,6 +1,8 @@
 #include "FilterValidation.hpp"
+
 #include "Plato_InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
+#include "ValidationUtilities.hpp"
 
 namespace Plato::Functional::Filter
 {
@@ -22,4 +24,4 @@ std::optional<std::string> validate_filter_type(const Plato::density_topology& a
         return std::nullopt;
     }
 }
-}  // namespace Plato::Functional
+}  // namespace Plato::Functional::Filter

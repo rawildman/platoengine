@@ -2,6 +2,7 @@
 
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace
 {

@@ -1,6 +1,7 @@
 #include "GeometryValidation.hpp"
 
 #include "detail/GeometryRegistrationUtilities.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::Geometry
 {

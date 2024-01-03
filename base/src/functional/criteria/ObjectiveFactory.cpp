@@ -9,7 +9,7 @@
 #include "NodalSumObjective.hpp"
 #include "SharedLibCriterion.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
-#include "ValidationRegistration.hpp"
+#include "ValidationUtilities.hpp"
 
 namespace Plato::Functional::ObjectiveFactory
 {

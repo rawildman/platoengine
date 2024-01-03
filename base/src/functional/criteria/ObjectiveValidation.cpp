@@ -3,20 +3,15 @@
 #include "CriterionValidation.hpp"
 namespace Plato::Functional::Criteria
 {
-
 [[maybe_unused]] static auto kObjectiveValidationRegistration =
     Plato::Functional::Validation::Registration<Plato::objective>{
-        [](const Plato::objective& aInput)
-        { return detail::validate_app(aInput); },
-        [](const Plato::objective& aInput)
-        { return detail::validate_custom_app(aInput); },
-        [](const Plato::objective& aInput)
-        { return detail::validate_aggregation_weight(aInput); }};
+        [](const Plato::objective& aInput) { return detail::validate_app(aInput); },
+        [](const Plato::objective& aInput) { return detail::validate_custom_app(aInput); },
+        [](const Plato::objective& aInput) { return detail::validate_aggregation_weight(aInput); }};
 
 [[maybe_unused]] static auto kListObjectivesValidationRegistration =
     Plato::Functional::Validation::Registration<std::vector<Plato::objective>>{
-        [](const std::vector<Plato::objective>& aInput)
-        { return detail::validate_at_least_one_objective(aInput); }};
+        [](const std::vector<Plato::objective>& aInput) { return detail::validate_at_least_one_objective(aInput); }};
 
 std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
                                              std::vector<std::string>&& aCurrentMessageList)
@@ -26,11 +21,10 @@ std::vector<std::string> validate_objectives(const std::vector<Plato::objective>
 
 namespace detail
 {
-
 std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput)
 {
     return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
-        prepend_string(aInput), aInput.aggregation_weight, "aggregation_weight", 0, std::nullopt);
+        criterion_name(aInput), aInput.aggregation_weight, "aggregation_weight", 0, std::nullopt);
 }
 
 std::optional<std::string> validate_at_least_one_objective(const std::vector<Plato::objective>& aInput)

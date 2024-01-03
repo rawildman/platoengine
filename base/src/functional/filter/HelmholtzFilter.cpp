@@ -6,6 +6,7 @@
 #include "FilterRegistration.hpp"
 #include "Plato_InputEnumTypes.hpp"
 #include "ValidationRegistration.hpp"
+#include "ValidationUtilities.hpp"
 
 namespace Plato::Functional
 {
