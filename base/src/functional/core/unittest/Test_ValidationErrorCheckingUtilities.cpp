@@ -26,7 +26,7 @@ TEST(ValidateUtilities, ActiveObjective)
     EXPECT_FALSE(pfv::is_active(tObjectiveInput));
 }
 
-TEST(ValidateUtilities, ValidateParameterExistsDNE)
+TEST(ValidateUtilities, ValidateParameterExistsWhenParameterDoesNotExist)
 {
     namespace pfv = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
@@ -76,11 +76,11 @@ TEST(ValidateUtilities, IsWithinBounds)
     EXPECT_FALSE(pfvd::is_within_bounds(1.5, tLowerBound, tUpperBound));
 }
 
-TEST(ValidateUtilities, ValidateParameterDNEWithinBounds)
+TEST(ValidateUtilities, ValidateParameterWhenParmeterDoesNotExistWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
-    constexpr double tLowerBound = 0;
+    constexpr std::optional<double> tLowerBound = std::nullopt;
     constexpr std::optional<double> tUpperBound = std::nullopt;
 
     EXPECT_TRUE(
