@@ -43,11 +43,11 @@ std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
                                            std::vector<std::string>&& aCurrentMessageList)
 {
     aCurrentMessageList =
-        Plato::Functional::Validation::validate<std::vector<Criteria>>(aInput, std::move(aCurrentMessageList));
+        Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
     for (const auto& iCriterionInput : aInput)
     {
         aCurrentMessageList =
-            Plato::Functional::Validation::validate<Criteria>(iCriterionInput, std::move(aCurrentMessageList));
+            Plato::Functional::Validation::validate(iCriterionInput, std::move(aCurrentMessageList));
     }
     return aCurrentMessageList;
 }

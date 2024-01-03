@@ -1,14 +1,17 @@
 set(SRCS FilterFactory.cpp
          FilterJacobian.cpp
          FilterRegistration.cpp
+         FilterValidation.cpp
          HelmholtzFilter.cpp
          IdentityFilter.cpp)
 
 set(HDRS FilterInterface.hpp
-            FilterFactory.hpp
-            FilterJacobian.hpp
-            FilterRegistration.hpp
-            IdentityFilter.hpp)
+         FilterFactory.hpp
+         FilterJacobian.hpp
+         FilterRegistration.hpp
+         FilterValidation.hpp
+         HelmholtzFilter.hpp
+         IdentityFilter.hpp)
 
 set(LIB_NAME PlatoFunctionalFilter)
 add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )

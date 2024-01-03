@@ -17,7 +17,7 @@ namespace Plato::Functional::Optimizer
 std::vector<std::string> validate_optimization_parameters(const Plato::optimization_parameters& aInput,
                                                           std::vector<std::string>&& aCurrentMessageList)
 {
-    return Plato::Functional::Validation::validate<Plato::optimization_parameters>(aInput, std::move(aCurrentMessageList));
+    return Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
 }
 
 namespace detail

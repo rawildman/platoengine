@@ -35,15 +35,14 @@ std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
     for (const GeometryFactory::GeometryInput& iBlockEntry : tGeometryBlocks)
     {
         aCurrentMessageList = std::visit(
-            [iList = std::move(aCurrentMessageList)](const auto& aObj) mutable -> std::vector<std::string>
+            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string>
             {
-                using InputType = std::decay_t<decltype(aObj)>;
-                return Plato::Functional::Validation::validate<InputType>(aObj, std::move(iList));
+                return Plato::Functional::Validation::validate(aGeometryInput, std::move(tList));
             },
             iBlockEntry);
     }
 
-    return Plato::Functional::Validation::validate<Plato::PlatoInput>(aInput, std::move(aCurrentMessageList));
+    return Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
 }
 
 }  // namespace Plato::Functional::Geometry

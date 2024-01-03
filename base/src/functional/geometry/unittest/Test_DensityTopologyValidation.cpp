@@ -18,91 +18,32 @@ TEST(DensityTopologyValidation, ValidateMeshName)
 TEST(DensityTopologyValidation, ValidateOutputName)
 {
     namespace pf = Plato::Functional;
-    namespace pfvdd = Plato::Functional::Validation::DensityTopology::detail;
+    namespace pfd = Plato::Functional::detail;
     auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    EXPECT_FALSE(pfvdd::validate_output_name(tDensityTopology).has_value());
+    EXPECT_FALSE(pfd::validate_output_name(tDensityTopology).has_value());
     tDensityTopology.output_name = boost::none;
-    EXPECT_TRUE(pfvdd::validate_output_name(tDensityTopology).has_value());
+    EXPECT_TRUE(pfd::validate_output_name(tDensityTopology).has_value());
 }
 
-TEST(DensityTopologyValidation, CheckFilterValuesIdentity)
+TEST(DensityTopologyValidation, ValidDensityTopologyInput)
 {
     namespace pf = Plato::Functional;
-    namespace pfvdd = Plato::Functional::Validation::DensityTopology::detail;
-    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
+    auto tInput = Plato::PlatoInput{};
+    tInput.mDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
 
-    EXPECT_FALSE(pfvdd::check_filter_values<Plato::FilterTypes::kIdentity>(tDensityTopology).has_value());
-    tDensityTopology.filter_radius = 1;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kIdentity>(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kIdentity>(tDensityTopology).has_value());
-    tDensityTopology.filter_radius = boost::none;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kIdentity>(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = boost::none;
-    EXPECT_FALSE(pfvdd::check_filter_values<Plato::FilterTypes::kIdentity>(tDensityTopology).has_value());
+    std::vector<std::string> tMessages;
+    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    EXPECT_TRUE(tMessages.empty());
 }
 
-TEST(DensityTopologyValidation, CheckFilterValuesHelmholtz)
+TEST(DensityTopologyValidation, InvalidDensityTopologyInput)
 {
     namespace pf = Plato::Functional;
-    namespace pfvdd = Plato::Functional::Validation::DensityTopology::detail;
-    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    tDensityTopology.filter_type = Plato::FilterTypes::kHelmholtz;
-    tDensityTopology.filter_radius = 1;
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_FALSE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());  // valid
+    auto tInput = Plato::PlatoInput{};
+    tInput.mDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
+    tInput.mDensityTopology->filter_radius = 1.0;
 
-    tDensityTopology.filter_radius = boost::none;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = boost::none;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-    tDensityTopology.filter_radius = 1;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_FALSE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-
-    tDensityTopology.boundary_sticking_penalty = -1;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_FALSE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-
-    tDensityTopology.filter_radius = -1;
-    EXPECT_TRUE(pfvdd::check_filter_values<Plato::FilterTypes::kHelmholtz>(tDensityTopology).has_value());
-}
-
-TEST(DensityTopologyValidation, ValidateFilterIdentity)
-{
-    namespace pf = Plato::Functional;
-    namespace pfvdd = Plato::Functional::Validation::DensityTopology::detail;
-    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    EXPECT_FALSE(pfvdd::validate_filter(tDensityTopology).has_value());
-    tDensityTopology.filter_type = boost::none;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());
-    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
-    EXPECT_FALSE(pfvdd::validate_filter(tDensityTopology).has_value());
-    tDensityTopology.filter_radius = 1;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());  // Identity filter has no radius, this is an error
-    tDensityTopology.filter_radius = boost::none;
-    EXPECT_FALSE(pfvdd::validate_filter(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());  // Identity filter has no sticking penalty, this is an error
-}
-
-TEST(DensityTopologyValidation, ValidateFilterHelmholtz)
-{
-    namespace pf = Plato::Functional;
-    namespace pfvdd = Plato::Functional::Validation::DensityTopology::detail;
-    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    tDensityTopology.filter_radius = 1;
-    tDensityTopology.boundary_sticking_penalty = 1;
-    tDensityTopology.filter_type = boost::none;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());  // missing filter type
-    tDensityTopology.filter_type = Plato::FilterTypes::kHelmholtz;
-    EXPECT_FALSE(pfvdd::validate_filter(tDensityTopology).has_value());  // valid
-    tDensityTopology.filter_radius = boost::none;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());  // helmholtz filter must have radius
-    tDensityTopology.filter_radius = 1;
-    EXPECT_FALSE(pfvdd::validate_filter(tDensityTopology).has_value());  // valid
-    tDensityTopology.boundary_sticking_penalty = boost::none;
-    EXPECT_TRUE(pfvdd::validate_filter(tDensityTopology).has_value());  // helmholtz filter must have sticking penalty
+    std::vector<std::string> tMessages;
+    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    EXPECT_EQ(tMessages.size(), 1);
 }

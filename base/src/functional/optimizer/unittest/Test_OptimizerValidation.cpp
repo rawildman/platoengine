@@ -85,7 +85,7 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 
     namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate<Plato::optimization_parameters>(tOptimizationParameters, std::move(tMessages));
+    tMessages = pfv::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
     pfv::print_messages(tMessages);
 }

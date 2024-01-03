@@ -19,7 +19,6 @@ struct density_topology;
 
 namespace Plato::Functional
 {
-
 /// @brief Density-based topology representation of a geometry.
 ///
 /// Implementation for density-based topology optimization. The design
@@ -55,57 +54,10 @@ class DensityTopology
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
 
-namespace Validation::DensityTopology::detail
+namespace detail
 {
-
-template <Plato::FilterTypes X>
-[[nodiscard]] constexpr typename std::enable_if<X == Plato::FilterTypes::kIdentity, std::optional<std::string>>::type
-check_filter_values(const Plato::density_topology& aInput)
-{
-    if (aInput.boundary_sticking_penalty.has_value() || aInput.filter_radius.has_value())
-    {
-        return Plato::block_name<Plato::density_topology>() + R"( identity filter cannot have "filter_radius" or "boundary_sticking_penalty" defined.)";
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
-
-template <Plato::FilterTypes X>
-[[nodiscard]] constexpr typename std::enable_if<X == Plato::FilterTypes::kHelmholtz, std::optional<std::string>>::type
-check_filter_values(const Plato::density_topology& aInput)
-{
-    const std::optional<std::string> tErrorMsgForStickingMethod =
-        Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
-                                                                                 aInput.boundary_sticking_penalty,
-                                                                                 "boundary_sticking_penalty",
-                                                                                 0,
-                                                                                 std::nullopt);
-
-    const std::optional<std::string> tErrorMsgForFilterRadius =
-        Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
-                                                                                 aInput.filter_radius,
-                                                                                 "filter_radius",
-                                                                                 1e-16,
-                                                                                 std::nullopt);
-    std::string tErrorMsg;
-    if (tErrorMsgForFilterRadius)
-    {
-        tErrorMsg = tErrorMsgForFilterRadius.value();
-    }
-    if (tErrorMsgForStickingMethod)
-    {
-        tErrorMsg += tErrorMsgForStickingMethod.value();
-    }
-
-    return tErrorMsg.length() == 0 ? std::nullopt : std::optional<std::string>{tErrorMsg};
-}
-
 [[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
-[[nodiscard]] std::optional<std::string> validate_filter(const Plato::density_topology& aInput);
-
-}  // namespace Validation::DensityTopology::detail
+}  // namespace detail
 
 }  // namespace Plato::Functional
 

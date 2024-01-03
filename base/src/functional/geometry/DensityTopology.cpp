@@ -9,17 +9,9 @@
 
 namespace Plato::Functional
 {
-
-[[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
-    [](const Plato::density_topology& aInput)
-    { return Geometry::detail::validate_mesh_name(aInput); },
-    [](const Plato::density_topology& aInput)
-    { return Validation::DensityTopology::detail::validate_output_name(aInput); },
-    [](const Plato::density_topology& aInput)
-    { return Validation::DensityTopology::detail::validate_filter(aInput); }};
-
 namespace
 {
+
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
@@ -42,6 +34,12 @@ std::function<void(const ROL::StdVector<double>&)> make_topology_output(const st
             DensityTopology::bounds(tInput.mesh_name.value().mName),
             make_topology_output(tInput.mesh_name.value().mName, tInput.output_name.value().mName)};
     }};
+
+/// Static registration for input validation functions
+[[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
+    [](const Plato::density_topology& aInput) { return Geometry::detail::validate_mesh_name(aInput); },
+    [](const Plato::density_topology& aInput)
+    { return detail::validate_output_name(aInput); }};
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)
@@ -61,8 +59,7 @@ JacobianMultiplier DensityTopology::jacobian(const ROL::StdVector<double>& aDesi
     return JacobianMultiplier{/*.mNumColumns=*/mNumDesignParameters,
                               /*.mJacobianTimesVectorFunction=*/
                               [tMeshProxy = MeshProxy{mFileName, *aDesignParameters.getVector()},
-                               this](const ROL::StdVector<double>& x)
-                              { return x * mFilter.df(tMeshProxy); }};
+                               this](const ROL::StdVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
 }
 
 std::unique_ptr<ROL::StdVector<double>> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
@@ -93,32 +90,12 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
                          { return tDensityTopology.jacobian(x); });
 }
 
-namespace Validation::DensityTopology::detail
+namespace detail
 {
-
 std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
 {
     return Plato::Functional::Validation::error_message_for_empty_parameter(
         Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
-}
-
-std::optional<std::string> validate_filter(const Plato::density_topology& aInput)
-{
-    if (!aInput.filter_type)
-    {
-        return Plato::Functional::Validation::error_message_for_empty_parameter(
-            Plato::block_name<Plato::density_topology>(), aInput.filter_type, "filter_type");
-    }
-    else
-    {
-        // return check_filter_values<aInput.filter_type.value()>(aInput);
-        if (aInput.filter_type == Plato::FilterTypes::kIdentity)
-            return check_filter_values<Plato::FilterTypes::kIdentity>(aInput);
-        else if (aInput.filter_type == Plato::FilterTypes::kHelmholtz)
-            return check_filter_values<Plato::FilterTypes::kHelmholtz>(aInput);
-        else
-            return "Unknown filter type";
-    }
 }
 
 }  // namespace Validation::DensityTopology::detail

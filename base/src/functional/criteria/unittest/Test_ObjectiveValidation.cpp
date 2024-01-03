@@ -36,7 +36,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
     tObjective.app = boost::none;
     namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate<Plato::objective>(tObjective, std::move(tMessages));
+    tMessages = pfv::validate(tObjective, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
     Plato::Functional::Validation::print_messages(tMessages);
 }
