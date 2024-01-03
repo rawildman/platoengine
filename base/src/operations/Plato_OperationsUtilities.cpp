@@ -55,6 +55,7 @@
 #include "Plato_OperationsUtilities.hpp"
 #ifdef STK_ENABLED
 #include <stk_io/StkMeshIoBroker.hpp>
+#include "Ioss_NodeBlock.h"
 #endif
 
 namespace Plato
@@ -209,10 +210,17 @@ std::vector<unsigned int> extractGlobalNodeIDs(const MPI_Comm &aComm,
    tIoBroker.add_mesh_database(aFilename, "exodus", stk::io::READ_MESH);
    tIoBroker.create_input_mesh();
    tIoBroker.populate_bulk_data();
-   stk::mesh::EntityVector tNodes;
-   stk::mesh::get_entities(tIoBroker.bulk_data(), stk::topology::NODE_RANK, tNodes);
-   std::transform(tNodes.begin(), tNodes.end(), std::back_inserter(tNodeIDs),
-         [&tIoBroker](const auto& tCurNode){ return static_cast<unsigned int>(tIoBroker.bulk_data().identifier(tCurNode)); });
+
+   const Ioss::NodeBlockContainer& tNodeBlocks = tIoBroker.get_input_ioss_region()->get_node_blocks();
+   if(tNodeBlocks.size() != 1)
+   {
+       std::stringstream tError;
+       tError << std::endl << "ERROR: Wrong number of node blocks found in exodus file in extractGlobalNodeIDs." << std::endl;
+       Plato::ParsingException tParsingException(tError.str());
+       throw tParsingException;
+   }
+   Ioss::NodeBlock *tNB = tNodeBlocks[0];
+   tNB->get_field_data("ids", tNodeIDs);
 #else
    std::stringstream tError;
    tError << std::endl << "ERROR: Plato was not compiled with STK_ENABLED so you cannot call extractGlobalNodeIDs." << std::endl;
