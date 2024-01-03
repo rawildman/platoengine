@@ -76,7 +76,7 @@ TEST(ValidateUtilities, IsWithinBounds)
     EXPECT_FALSE(pfvd::is_within_bounds(1.5, tLowerBound, tUpperBound));
 }
 
-TEST(ValidateUtilities, ValidateParameterWhenParmeterDoesNotExistWithinBounds)
+TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
     Plato::objective tObjectiveInput;
