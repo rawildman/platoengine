@@ -42,8 +42,10 @@ std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density
 [[nodiscard]] std::optional<std::string> validate_helmholtz_filter_boundary_sticking_penalty(
     const Plato::density_topology& aInput)
 {
-    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kHelmholtz)
+    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kHelmholtz &&
+        aInput.boundary_sticking_penalty)
     {
+        // boundary_sticking_penalty is optional, so only validate bounds if it exists
         return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
             Plato::block_name<Plato::density_topology>(), aInput.boundary_sticking_penalty, "boundary_sticking_penalty",
             0.0, std::nullopt);

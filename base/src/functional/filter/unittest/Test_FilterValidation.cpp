@@ -73,13 +73,14 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzBoundaryStickingPenalty)
     tDensityTopology.filter_radius = 1;
     tDensityTopology.boundary_sticking_penalty = 1;
     EXPECT_FALSE(pf::validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid
+    tDensityTopology.boundary_sticking_penalty = boost::none;
+    EXPECT_FALSE(
+        pf::validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid, optional
     tDensityTopology.boundary_sticking_penalty = -1;
-    EXPECT_TRUE(pf::validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());
-    tDensityTopology.boundary_sticking_penalty = 1;
-    EXPECT_FALSE(pf::validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());
+    EXPECT_TRUE(pf::validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // invalid
 
     // Check in registered function list
-    tDensityTopology.boundary_sticking_penalty = boost::none;  // Make invalid
+    tDensityTopology.boundary_sticking_penalty = -1;  // Make invalid
     auto tErrorMessages = std::vector<std::string>{};
     tErrorMessages = Plato::Functional::Validation::validate(tDensityTopology, std::move(tErrorMessages));
     EXPECT_EQ(tErrorMessages.size(), 1);

@@ -120,6 +120,6 @@ TEST(ValidateUtilities, AllMessages)
     const auto tMessage2 = std::string{"two fish"};
     const auto tMessages = std::vector{tMessage1, tMessage2};
     const auto tAllMessages = Plato::Functional::Validation::all_messages(tMessages);
-    const auto tExpected = tMessage1 + "\n" + tMessage2;
+    const auto tExpected = tMessage1 + "\n" + tMessage2 + "\n";
     EXPECT_EQ(tExpected, tAllMessages);
 }
