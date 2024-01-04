@@ -73,7 +73,6 @@ TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
     std::vector<std::string> tMessages;
     tMessages = pfo::validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
-    Plato::Functional::Validation::print_messages(tMessages);
 }
 
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
@@ -87,5 +86,4 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
     std::vector<std::string> tMessages;
     tMessages = pfv::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
-    pfv::print_messages(tMessages);
 }

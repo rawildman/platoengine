@@ -84,14 +84,4 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-Validation::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
-{
-    return Validation::make_validated_input(parse_input_from_file(aFileName));
-}
-
-Validation::ValidatedInput parse_and_validate(const std::string_view aInput)
-{
-    return Validation::make_validated_input(parse_input(aInput));
-}
-
 }  // namespace Plato::Functional

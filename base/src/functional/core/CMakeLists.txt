@@ -1,7 +1,6 @@
 set(SRCS InputParser.cpp
          JacobianColumnEvaluator.cpp
          ROLHelpers.cpp
-         ValidationRegistration.cpp
          ValidationUtilities.cpp)
 
 set(HDRS Aggregate.hpp

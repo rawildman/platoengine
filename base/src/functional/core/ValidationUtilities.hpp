@@ -1,10 +1,14 @@
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "Plato_InputBlocks.hpp"
 
 namespace Plato::Functional::Validation
 {
+/// @brief Creates a string by concatenating each entry of @a aMessages, with a newline between each.
+[[nodiscard]] std::string all_messages(const std::vector<std::string>& aMessages);
+
 /// @return an optional error message if @a aParameter does not contain a value.
 template <typename T>
 [[nodiscard]] std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,

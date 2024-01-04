@@ -60,7 +60,6 @@ TEST(GeometryValidation, MeshName)
     EXPECT_EQ(tMessages.size(), 0u);
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
     tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
-    pf::Validation::print_messages(tMessages);
     EXPECT_EQ(tMessages.size(), 1u);
 }
 
@@ -81,11 +80,9 @@ TEST(GeometryValidation, ValidInputCallsRightVariantTest)
     tInput.mDensityTopology = tDensityTopology;
     tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);  // from bogus test geometry registration above
-    pf::Validation::print_messages(tMessages);
 
     tMessages.resize(0);
     tInput.mBrickShapeGeometry = tBrickShapeGeometry;  // now there are two geometries
     tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);  // from bogus test geometry registration above and multiple geometries
-    pf::Validation::print_messages(tMessages);
 }

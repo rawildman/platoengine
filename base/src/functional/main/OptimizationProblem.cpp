@@ -30,7 +30,7 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
-    : mProblem(make_plato_problem(parse_and_validate_from_file(aInputFile))),
+    : mProblem(make_plato_problem(Validation::parse_and_validate_from_file(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {

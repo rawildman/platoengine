@@ -15,16 +15,16 @@ namespace Plato::Functional::ObjectiveFactory
 {
 namespace detail
 {
-AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
+AggregateObjective make_aggregate(const ValidatedObjectives& aInput)
 {
     using ObjectiveAndWeight = std::pair<ObjectiveFunction, double>;
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
-    for (const auto& tObjective : aInput)
+    for (const auto& tObjective : aInput.value())
     {
-        if (Plato::Functional::Validation::is_active(tObjective))
+        if (Plato::Functional::Validation::is_active(tObjective.value()))
         {
-            const double tWeight = tObjective.aggregation_weight.value();
-            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective), tWeight);
+            const double tWeight = tObjective.value().aggregation_weight.value();
+            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective.value()), tWeight);
         }
     }
     return AggregateObjective{std::move(tFunctionsAndWeights)};
@@ -33,7 +33,7 @@ AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput)
 
 ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput)
 {
-    return make_aggregate_function(detail::make_aggregate(aInput.value()));
+    return make_aggregate_function(detail::make_aggregate(aInput));
 }
 
 }  // namespace Plato::Functional::ObjectiveFactory

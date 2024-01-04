@@ -21,7 +21,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
                                pf::TestUtilities::create_valid_example_objective_string() +
                                pf::TestUtilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::parse_and_validate(tInput)};
+    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
     const pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
     const auto tGeometry = pf::GeometryFactory::make_geometry_data(tData.geometry());
@@ -54,7 +54,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
                                std::to_string(tWeight) + " objective_type minimize" + " end" +
                                pf::TestUtilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::parse_and_validate(tInput)};
+    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
     pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
     std::unique_ptr<pf::ROLObjectiveFunction> tObjectiveFunction = pf::make_rol_objective(tProblem);
@@ -84,7 +84,7 @@ TEST(PlatoProblem, InputFileToROLConstraint)
                               )" +
                                pf::TestUtilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::parse_and_validate(tInput)};
+    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
     pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
     const auto tConstraints = pf::make_rol_constraints(tProblem);
@@ -117,7 +117,7 @@ TEST(PlatoProblem, InputFileToROLSolver)
                               )" +
                                pf::TestUtilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::parse_and_validate(tInput)};
+    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
     const pf::PlatoProblem tPlatoProblem = pf::make_plato_problem(tData);
     Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
     const auto tROLProblem = Teuchos::RCP{pf::make_rol_problem(tPlatoProblem).release()};
@@ -130,5 +130,5 @@ TEST(PlatoProblem, ParseAndValidateInvalidInput)
 {
     namespace pf = Plato::Functional;
     const std::string tInput;
-    EXPECT_THROW(const pf::Validation::ValidatedInput tData = pf::parse_and_validate(""), pf::Exception);
+    EXPECT_THROW(const pf::Validation::ValidatedInput tData = pf::Validation::parse_and_validate(""), pf::Exception);
 }

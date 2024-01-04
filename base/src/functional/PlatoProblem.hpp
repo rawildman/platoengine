@@ -55,12 +55,6 @@ struct PlatoProblem
 ///@return std::unique_ptr<ROL::Problem<double>>
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
-///@brief Parse input from file @a aInputFile and then validate the input
-[[nodiscard]] Validation::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName);
-
-///@brief Parse input from input string @a aInput and then validate the input
-[[nodiscard]] Validation::ValidatedInput parse_and_validate(const std::string_view aInput);
-
 }  // namespace Plato::Functional
 
 #endif

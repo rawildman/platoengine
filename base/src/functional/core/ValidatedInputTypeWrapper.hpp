@@ -25,6 +25,7 @@ class ValidatedInputTypeWrapper
     ValidatedInputTypeWrapper(InputType aValue) : mValue(std::move(aValue)) {}
     InputType mValue;
 };
+
 }  // namespace Plato::Functional::Core
 
 #endif

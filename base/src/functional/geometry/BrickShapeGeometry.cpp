@@ -14,10 +14,6 @@
 
 namespace Plato::Functional
 {
-
-[[maybe_unused]] static auto kBrickShapeValidationRegistration = Validation::Registration<Plato::brick_shape_geometry>{
-    [](const Plato::brick_shape_geometry& aInput) { return Geometry::detail::validate_mesh_name(aInput); }};
-
 namespace
 {
 constexpr int kNumDims = 3;
@@ -47,6 +43,8 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
                                              make_output()};
     }};
 
+[[maybe_unused]] static auto kBrickShapeValidationRegistration = Validation::Registration<Plato::brick_shape_geometry>{
+    [](const Plato::brick_shape_geometry& aInput) { return Geometry::detail::validate_mesh_name(aInput); }};
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)

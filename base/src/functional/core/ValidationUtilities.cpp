@@ -1,6 +1,17 @@
 #include "ValidationUtilities.hpp"
 
-namespace Plato::Functional::Validation::detail
+#include <numeric>
+
+namespace Plato::Functional::Validation
+{
+std::string all_messages(const std::vector<std::string>& aMessages)
+{
+    return std::accumulate(aMessages.cbegin(), aMessages.cend(), std::string{},
+                           [](std::string aCurrentMessages, std::string aMessage)
+                           { return std::move(aCurrentMessages) + std::move(aMessage) + "\n"; });
+}
+
+namespace detail
 {
 bool is_within_bounds(const double aValue,
                       const std::optional<double> aLowerBound,
@@ -31,4 +42,5 @@ bool is_within_upper_bounds(const double aValue, const std::optional<double> aUp
         return aValue <= aUpperBound.value();
     }
 }
-}  // namespace Plato::Functional::Validation::detail
+}  // namespace detail
+}  // namespace Plato::Functional::Validation

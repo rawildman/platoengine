@@ -22,7 +22,6 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
     std::vector<std::string> tMessages;
     tMessages = pfv::validate(tConstraint, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
-    Plato::Functional::Validation::print_messages(tMessages);
 }
 
 TEST(ConstraintValidation, ErrorMessagesTwoInvalidInput)
@@ -37,7 +36,6 @@ TEST(ConstraintValidation, ErrorMessagesTwoInvalidInput)
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 4u);
-    Plato::Functional::Validation::print_messages(tMessages);
 }
 
 TEST(ConstraintValidation, NoErrorMessagesTwoValidConstraints)
@@ -64,5 +62,4 @@ TEST(ConstraintValidation, ErrorMessagesTwoInvalidConstraints)
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);
-    Plato::Functional::Validation::print_messages(tMessages);
 }

@@ -113,3 +113,13 @@ TEST(ValidateUtilities, ValidateParameterExistsOutOfBounds)
         pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", tLowerBound, tUpperBound)
             .has_value());
 }
+
+TEST(ValidateUtilities, AllMessages)
+{
+    const auto tMessage1 = std::string{"one fish"};
+    const auto tMessage2 = std::string{"two fish"};
+    const auto tMessages = std::vector{tMessage1, tMessage2};
+    const auto tAllMessages = Plato::Functional::Validation::all_messages(tMessages);
+    const auto tExpected = tMessage1 + "\n" + tMessage2;
+    EXPECT_EQ(tExpected, tAllMessages);
+}

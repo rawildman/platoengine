@@ -15,6 +15,7 @@ struct MeshProxy;
 
 namespace Plato::Functional::ConstraintFactory
 {
+//using ValidatedConstraints = std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>;
 using ValidatedConstraints = Core::ValidatedInputTypeWrapper<std::vector<Plato::constraint>>;
 
 /// @brief Holds members for defining a Constraint

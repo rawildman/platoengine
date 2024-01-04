@@ -15,17 +15,17 @@ struct MeshProxy;
 
 namespace Plato::Functional::ObjectiveFactory
 {
-using ValidatedObjectives = Core::ValidatedInputTypeWrapper<std::vector<Plato::objective>>;
+using ValidatedObjectives =
+    Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>>;
 
 using ObjectiveFunction = Function<double, ROL::StdVector<double>, const MeshProxy&>;
 using AggregateObjective = Aggregate<double, ROL::StdVector<double>, const MeshProxy&>;
 
 namespace detail
 {
-[[nodiscard]] AggregateObjective make_aggregate(const std::vector<Plato::objective>& aInput);
+[[nodiscard]] AggregateObjective make_aggregate(const ValidatedObjectives& aInput);
 }
 
-/// @pre @a aInput is valid according to affirm_valid_input.
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);
 
 }  // namespace Plato::Functional::ObjectiveFactory
