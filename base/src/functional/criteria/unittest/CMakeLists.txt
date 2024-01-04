@@ -1,6 +1,6 @@
-set(SRCS Test_CriterionFactory.cpp
+set(SRCS Test_ConstraintFactory.cpp
+         Test_CriterionFactory.cpp
          Test_CriterionValidation.cpp
-         Test_ConstraintFactory.cpp
          Test_ConstraintValidation.cpp
          Test_NodalSumObjective.cpp
          Test_ObjectiveValidation.cpp

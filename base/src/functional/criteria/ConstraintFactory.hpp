@@ -15,8 +15,8 @@ struct MeshProxy;
 
 namespace Plato::Functional::ConstraintFactory
 {
-//using ValidatedConstraints = std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>;
-using ValidatedConstraints = Core::ValidatedInputTypeWrapper<std::vector<Plato::constraint>>;
+using ValidatedConstraints =
+    Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
 
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
@@ -42,8 +42,8 @@ struct Constraint
 
 namespace detail
 {
-
-[[nodiscard]] Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput);
+[[nodiscard]] Constraint<const MeshProxy&> make_constraint(
+    const Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
 
 }  // namespace detail
 }  // namespace Plato::Functional::ConstraintFactory

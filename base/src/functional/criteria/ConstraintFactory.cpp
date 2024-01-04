@@ -14,10 +14,9 @@ namespace Plato::Functional::ConstraintFactory
 std::vector<Constraint<const MeshProxy&>> make_constraints(const ValidatedConstraints& aInput)
 {
     std::vector<Constraint<const MeshProxy&>> tConstraints;
-    for (const auto& tConInp : aInput.value())
-    {
-        tConstraints.push_back(detail::make_constraint(tConInp));
-    }
+    std::transform(aInput.value().cbegin(), aInput.value().cend(), std::back_inserter(tConstraints),
+                   [](const Core::ValidatedInputTypeWrapper<Plato::constraint>& aValidatedInput)
+                   { return detail::make_constraint(aValidatedInput); });
     return tConstraints;
 }
 
@@ -28,12 +27,12 @@ std::unique_ptr<ROL::StdVector<double>> make_dual_vector()
 
 namespace detail
 {
-Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput)
+Constraint<const MeshProxy&> make_constraint(const Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput)
 {
-    const double tValue = aConstraintInput.equal_to.value();
-    const bool tIsLinear = aConstraintInput.is_linear.value_or(false);
-    return Constraint<const MeshProxy&>{aConstraintInput.name.value_or("Unnamed Constraint"),
-                                        CriterionFactory::make_criterion_function(aConstraintInput), tValue, tIsLinear};
+    const double tValue = aConstraintInput.value().equal_to.value();
+    const bool tIsLinear = aConstraintInput.value().is_linear.value_or(false);
+    return Constraint<const MeshProxy&>{aConstraintInput.value().name.value_or("Unnamed Constraint"),
+                                        CriterionFactory::make_criterion_function(aConstraintInput.value()), tValue, tIsLinear};
 }
 
 }  // namespace detail

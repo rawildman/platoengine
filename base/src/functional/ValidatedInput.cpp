@@ -41,7 +41,7 @@ ValidatedInput::Objectives ValidatedInput::objectives() const
 
 ValidatedInput::Constraints ValidatedInput::constraints() const
 {
-    return Core::ValidatedInputTypeWrapper{mInput.mConstraints};
+    return Core::ValidatedInputTypeWrapper{validatedVector(mInput.mConstraints)};
 }
 
 ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() const

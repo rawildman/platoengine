@@ -16,7 +16,8 @@ target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
 install( FILES ${HDRS} DESTINATION include)
 
 # Build unit tester
-set(SRCS Test_MassObjective.cpp
+set(SRCS Test_ConstraintFactory.cpp
+         Test_MassObjective.cpp
          Test_ObjectiveFactory.cpp
          Test_SharedLibObjective.cpp
          UnitMain.cpp )

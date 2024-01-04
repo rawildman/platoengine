@@ -25,7 +25,7 @@ class ValidatedInput
    public:
     using Geometry = Core::ValidatedInputTypeWrapper<GeometryFactory::GeometryInput>;
     using Objectives = Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>>;
-    using Constraints = Core::ValidatedInputTypeWrapper<std::vector<Plato::constraint>>;
+    using Constraints = Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
     using OptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
    public:
