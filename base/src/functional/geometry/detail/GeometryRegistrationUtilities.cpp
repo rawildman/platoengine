@@ -61,7 +61,7 @@ std::string block_name(const GeometryFactory::ValidatedGeometryInput& aInput)
             using RawInputType = typename ValidatedInputType::RawInputType;
             return Plato::block_name<RawInputType>();
         },
-        aInput.value());
+        aInput.rawInput());
 }
 
 }  // namespace Plato::Functional::GeometryFactory::Detail

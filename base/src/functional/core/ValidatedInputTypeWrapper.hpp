@@ -17,15 +17,15 @@ class ValidatedInputTypeWrapper
    public:
     using RawInputType = InputType;
 
-    const InputType& value() const
+    const InputType& rawInput() const
     {
-        return mValue;
+        return mRawInput;
     }
 
    private:
     friend class Validation::ValidatedInput;
-    ValidatedInputTypeWrapper(InputType aValue) : mValue(std::move(aValue)) {}
-    InputType mValue;
+    ValidatedInputTypeWrapper(InputType aRawInput) : mRawInput(std::move(aRawInput)) {}
+    InputType mRawInput;
 };
 
 }  // namespace Plato::Functional::Core

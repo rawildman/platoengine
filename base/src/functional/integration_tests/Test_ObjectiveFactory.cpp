@@ -29,7 +29,7 @@ TEST(ObjectiveFactory, ValidAggregate)
 
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
-    EXPECT_EQ(tData.objectives().value().size(), 2);
+    EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::Aggregate tAggregate =
         Plato::Functional::ObjectiveFactory::detail::make_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 2);
@@ -63,7 +63,7 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
 
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
-    EXPECT_EQ(tData.objectives().value().size(), 2);
+    EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::Aggregate tAggregate =
         Plato::Functional::ObjectiveFactory::detail::make_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 1);

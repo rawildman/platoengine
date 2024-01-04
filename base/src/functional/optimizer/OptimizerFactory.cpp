@@ -36,17 +36,17 @@ ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimi
     /// @todo Would like to make this first load from a file if present,
     /// then override or set any parameters specified in the input block,
     /// then fill in any missing entries with defaults.
-    if (aOptimizationParameters.value().input_file_name)
+    if (aOptimizationParameters.rawInput().input_file_name)
     {
-        return *ROL::getParametersFromXmlFile(aOptimizationParameters.value().input_file_name.value().mName);
+        return *ROL::getParametersFromXmlFile(aOptimizationParameters.rawInput().input_file_name.value().mName);
     }
     else
     {
         ROL::ParameterList tParlist;
         tParlist.sublist("Step").sublist("Line Search").sublist("Descent Method").set("Type", "Newton-Krylov");
-        set_status_test_parameter(tParlist, aOptimizationParameters.value().max_iterations, kIterationLimit);
-        set_status_test_parameter(tParlist, aOptimizationParameters.value().gradient_tolerance, kGradientTolerance);
-        set_status_test_parameter(tParlist, aOptimizationParameters.value().step_tolerance, kStepTolerance);
+        set_status_test_parameter(tParlist, aOptimizationParameters.rawInput().max_iterations, kIterationLimit);
+        set_status_test_parameter(tParlist, aOptimizationParameters.rawInput().gradient_tolerance, kGradientTolerance);
+        set_status_test_parameter(tParlist, aOptimizationParameters.rawInput().step_tolerance, kStepTolerance);
         return tParlist;
     }
 }

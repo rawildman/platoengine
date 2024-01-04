@@ -27,9 +27,9 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
     constexpr int kDefaultIterationLimit = 10;
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"), kDefaultIterationLimit);
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
-              tOPData.value().gradient_tolerance.value());
+              tOPData.rawInput().gradient_tolerance.value());
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
-              tOPData.value().step_tolerance.value());
+              tOPData.rawInput().step_tolerance.value());
 }
 
 TEST(OptimizerFactory, ParlistGenerationFromFile)

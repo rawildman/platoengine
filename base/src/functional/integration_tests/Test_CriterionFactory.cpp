@@ -16,9 +16,9 @@ TEST(CriterionFactory, ValidObjective)
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
-    ASSERT_EQ(tData.objectives().value().size(), 1);
+    ASSERT_EQ(tData.objectives().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction = Plato::Functional::CriterionFactory::make_criterion_function(
-                        tData.objectives().value().front()));
+                        tData.objectives().rawInput().front()));
 }
 
 TEST(CriterionFactory, ValidConstraint)
@@ -34,9 +34,9 @@ TEST(CriterionFactory, ValidConstraint)
     const pfv::ValidatedInput tData =
         pfv::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
 
-    ASSERT_EQ(tData.constraints().value().size(), 1);
+    ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction = Plato::Functional::CriterionFactory::make_criterion_function(
-                        tData.constraints().value().front()));
+                        tData.constraints().rawInput().front()));
 }
 
 TEST(CriterionRegistration, ConvertObjectiveInput)
@@ -50,13 +50,13 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
 
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
-    ASSERT_EQ(tData.objectives().value().size(), 1);
+    ASSERT_EQ(tData.objectives().rawInput().size(), 1);
     const pf::Core::ValidatedInputTypeWrapper<Plato::objective>& tValidatedObjective =
-        tData.objectives().value().front();
+        tData.objectives().rawInput().front();
 
     const pf::CriterionFactory::CriterionInput tCriterionInput =
         pf::CriterionFactory::to_criterion_input(tValidatedObjective);
-    const Plato::objective& tObjective = tValidatedObjective.value();
+    const Plato::objective& tObjective = tValidatedObjective.rawInput();
 
     ASSERT_TRUE(tObjective.shared_library_path.has_value());
     EXPECT_EQ(tObjective.shared_library_path->mName, tCriterionInput.mSharedLibraryPath.mName);
@@ -82,13 +82,13 @@ TEST(CriterionRegistration, ConvertConstraintInput)
 
     const pfv::ValidatedInput tData =
         pfv::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
-    ASSERT_EQ(tData.constraints().value().size(), 1);
+    ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     const pf::Core::ValidatedInputTypeWrapper<Plato::constraint>& tValidatedConstraint =
-        tData.constraints().value().front();
+        tData.constraints().rawInput().front();
 
     const pf::CriterionFactory::CriterionInput tCriterionInput =
         pf::CriterionFactory::to_criterion_input(tValidatedConstraint);
-    const Plato::constraint& tConstraint = tValidatedConstraint.value();
+    const Plato::constraint& tConstraint = tValidatedConstraint.rawInput();
 
     EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mName.empty());
     EXPECT_EQ(tConstraint.number_of_processors, tCriterionInput.mNumberOfProcessors);

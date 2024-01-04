@@ -26,6 +26,7 @@ template <typename Geometry>
 [[nodiscard]] std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
                                                          std::vector<std::string>&& aCurrentMessageList);
 
+
 }  // namespace Plato::Functional::Geometry
 
 #endif

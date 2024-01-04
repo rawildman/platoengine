@@ -23,8 +23,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 
 [[nodiscard]] std::filesystem::path mesh_path(const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
 {
-    const auto& tInput =
-        std::get<Core::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>(aGeometryInput.value()).value();
+    const auto& tInput = GeometryFactory::geometry_raw_input<Plato::brick_shape_geometry>(aGeometryInput);
     return tInput.mesh_name.value().mName;
 }
 

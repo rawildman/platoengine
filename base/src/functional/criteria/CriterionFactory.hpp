@@ -32,7 +32,7 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput)
                   "make_criterion_function must only be called with Plato::objective or Plato::constraint wrapped in "
                   "ValidatedInputTypeWrapper");
 
-    const auto& tRawInput = aValidatedInput.value();
+    const auto& tRawInput = aValidatedInput.rawInput();
     const std::string tAppName = Plato::kCodeOptionsTable.toString(tRawInput.app.value()).value();
     if (const auto tIter = detail::registered_functions<CriterionFunction, CriterionInput>().find(tAppName);
         tIter != detail::registered_functions<CriterionFunction, CriterionInput>().end())
@@ -51,9 +51,9 @@ CriterionInput to_criterion_input(const Input& aInput)
     static_assert(std::is_same_v<Input, Core::ValidatedInputTypeWrapper<Plato::objective>> ||
                       std::is_same_v<Input, Core::ValidatedInputTypeWrapper<Plato::constraint>>,
                   "to_criterion_input must only be called with Plato::objective or Plato::constraint wrapped in ValidatedInputTypeWrapper");
-    return CriterionInput{/*.mSharedLibraryPath=*/aInput.value().shared_library_path.value_or(Plato::FileName{}),
-                          /*.mNumberOfProcessors=*/aInput.value().number_of_processors.value_or(1),
-                          /*.mInputFiles=*/aInput.value().input_files.value_or(Plato::FileList{})};
+    return CriterionInput{/*.mSharedLibraryPath=*/aInput.rawInput().shared_library_path.value_or(Plato::FileName{}),
+                          /*.mNumberOfProcessors=*/aInput.rawInput().number_of_processors.value_or(1),
+                          /*.mInputFiles=*/aInput.rawInput().input_files.value_or(Plato::FileList{})};
 }
 
 }  // namespace Plato::Functional::CriterionFactory
