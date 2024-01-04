@@ -603,6 +603,22 @@ void OptimizerEngineStageData::setInitializationStageName(const std::string & aI
 }
 
 /******************************************************************************/
+std::string OptimizerEngineStageData::getControlResetStageName() const
+/******************************************************************************/
+{
+    return (mControlResetStageName);
+}
+
+/******************************************************************************/
+void OptimizerEngineStageData::setControlResetStageName(const std::string & aInput)
+/******************************************************************************/
+{
+    assert(aInput.empty() == false);
+    mControlResetStageName.clear();
+    mControlResetStageName.assign(aInput.begin(), aInput.end());
+}
+
+/******************************************************************************/
 std::string OptimizerEngineStageData::getInitialControlDataName() const
 /******************************************************************************/
 {
@@ -1092,6 +1108,16 @@ bool OptimizerEngineStageData::getResetAlgorithmOnUpdate() const
 void OptimizerEngineStageData::setResetAlgorithmOnUpdate(const bool aInput)
 {
     mResetAlgorithmOnUpdate = aInput;
+}
+
+std::string OptimizerEngineStageData::getProblemResetType() const
+{
+    return mProblemResetType;
+}
+
+void OptimizerEngineStageData::setProblemResetType(const std::string aInput)
+{
+    mProblemResetType = aInput;
 }
 
 } //namespace Plato

@@ -42,6 +42,7 @@
 #include "Plato_InputData.hpp"
 #ifdef STK_ENABLED
 #include "stk_io/StkMeshIoBroker.hpp"
+#include "Ioss_NodeBlock.h"
 #endif
 #include "Plato_OperationsUtilities.hpp"
 #include "Plato_Exceptions.hpp"
@@ -136,12 +137,13 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_
     iobroker.use_simple_fields();
     iobroker.add_mesh_database("generated:1x1x1", stk::io::READ_MESH);
     iobroker.create_input_mesh();
-    iobroker.populate_bulk_data();
 
     const Ioss::NodeBlockContainer& tNodeBlocks = iobroker.get_input_ioss_region()->get_node_blocks();
     Ioss::NodeBlock *tNB = tNodeBlocks[0];
     const std::vector<unsigned int> tScrambledIDs = {7,4,6,1,8,2,3,5};
     tNB->put_field_data("ids", tScrambledIDs);
+
+    iobroker.populate_bulk_data();
 
     Ioss::PropertyManager properties;
     size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
@@ -151,7 +153,7 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_
     std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "temp_mesh.exo");
     
     // Test against gold values
-    EXPECT_EQ(tGold, tScrambledIDs);
+    EXPECT_EQ(tResults, tScrambledIDs);
     
     // Clean up mesh from disk
     std::filesystem::remove("temp_mesh.exo");

@@ -81,6 +81,195 @@ public:
         return mAlgorithmType;
     }
 
+    ROL::Ptr<ROL::Problem<ScalarType>> makeOptimizationProblem(Teuchos::RCP<ROL::Objective<ScalarType>> &aObjective,
+                                                               Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls,
+                                                               Teuchos::RCP<ROL::BoundConstraint<ScalarType>> &aControlBoundsMng)
+    {
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = ROL::makePtr<ROL::Problem<ScalarType>>(aObjective, aControls);
+                
+        tOptimizationProblem->addBoundConstraint(aControlBoundsMng);
+        if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT)
+        {
+            createOptimizationProblemLinearConstraint(*tOptimizationProblem);
+        }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
+        {
+            createOptimizationProblemAugmentedLagrangian(*tOptimizationProblem);
+        }
+        
+        tOptimizationProblem = updateProblem(std::move(tOptimizationProblem));
+
+        const bool tLumpConstraints = ( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        constexpr bool tPrintToStream = true;
+
+        tOptimizationProblem->finalize(tLumpConstraints, tPrintToStream, mOutputFile);
+        return tOptimizationProblem;
+    }
+
+    void run() override
+    {
+        this->initialize();
+        constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
+        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+        const OrdinalType tNumControls = this->mInterface->size(tControlName);
+        auto tControlBoundsMng = this->setControlBounds(tNumControls);
+        
+        /******************************** SET CONTROL INITIAL GUESS *********************************/
+        Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> tControls =
+                Teuchos::rcp(new Plato::DistributedVectorROL<ScalarType>(this->mComm, tNumControls));
+        this->setInitialGuess(tControlName, *tControls);
+        
+        /********************************* SET OPTIMIZATION PROBLEM *********************************/
+        Teuchos::RCP<ROL::Objective<ScalarType>> tObjective = makeObjective();
+
+        solve(tObjective, tControls, tControlBoundsMng);
+
+/*
+
+        if(this->mInputData.getCheckGradient())
+        {
+            auto tGradCheckOutput = this->checkGradient(tOptimizationProblem, this->mInputData);
+            this->checkConstraint(tOptimizationProblem);
+        }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
+        {
+            this->solveBoundConstrained(tOptimizationProblem);
+        }
+        else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT 
+            || mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
+        {
+            this->solve(tOptimizationProblem);
+        }
+*/
+    
+        this->finalize();
+    }
+
+    void solve(Teuchos::RCP<ROL::Objective<ScalarType>> &aObjective,
+               Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls,
+               Teuchos::RCP<ROL::BoundConstraint<ScalarType>> &aControlBoundsMng)
+    {
+        if(this->mInputData.getCheckGradient())
+        {
+            runChecks(aObjective, aControls, aControlBoundsMng);
+        }
+        else
+        {
+            solveOptimizationProblem(aObjective, aControls, aControlBoundsMng);
+        }
+    }
+
+    void runChecks(Teuchos::RCP<ROL::Objective<ScalarType>> &aObjective,
+                   Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls,
+                   Teuchos::RCP<ROL::BoundConstraint<ScalarType>> &aControlBoundsMng)
+    {
+    }
+
+    void solveOptimizationProblem(Teuchos::RCP<ROL::Objective<ScalarType>> &aObjective,
+                                  Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls,
+                                  Teuchos::RCP<ROL::BoundConstraint<ScalarType>> &aControlBoundsMng)
+    {
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "Calling new solveOptimizationProblem function" << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+        auto tParameterList = this->updateParameterListFromRolInputsFile();
+        int tNumSolves=1;
+        std::string tProblemResetType = this->mInputData.getProblemResetType();
+        Plato::Parse::toUppercase(tProblemResetType);
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "ProblemResetType: " << tProblemResetType << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+        if(tProblemResetType != "NONE")
+        {
+            // The approach here assumes the max number of iterations in the rol_inputs.xml file has been
+            // set to the this->mInputData.getProblemUpdateFrequency() value
+            tNumSolves = this->mInputData.getMaxNumIterations()/this->mInputData.getProblemUpdateFrequency();
+        }
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "tNumSolves: " << tNumSolves << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+
+        double tCurDelta;
+        ROL::Ptr<ROL::Problem<ScalarType>> tOptimizationProblem = makeOptimizationProblem(aObjective, aControls, aControlBoundsMng);
+        for(int i=0; i<tNumSolves; ++i)
+        {
+            if(i>0)
+            {
+                tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
+                if(tProblemResetType == "OPTIMIZATIONPROBLEM")
+                {
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "Going into block to reset problem " << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+                    // update controls
+                    std::string tControlResetStageName = this->mInputData.getControlResetStageName();
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "tControlResetStageName: " << tControlResetStageName << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+                    if(!tControlResetStageName.empty())
+                    {
+                        // Use user-defined stage to compute initial guess
+                        Teuchos::ParameterList tControlResetStageParameterList;
+                        constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
+                        std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+std::cout << "*************************************************************************" << std::endl;
+std::cout << "tControlName: " << tControlName << std::endl;
+std::cout << "*************************************************************************" << std::endl;
+
+        static int tIter=1;
+        std::string tFilename = "control_in_ROL_interface_";
+        tFilename += std::to_string(tIter);
+        tFilename += ".txt";
+        std::ofstream tOutputFile;
+        tOutputFile.open(tFilename);
+        std::vector<ScalarType> & tData = aControls->vector();
+        for(OrdinalType tIndex = 0; tIndex < tData.size(); tIndex++)
+            tOutputFile << tData[tIndex] << "\n";
+        tOutputFile.close();
+
+        tFilename = "control_from_optimization_problem_";
+        tFilename += std::to_string(tIter);
+        tFilename += ".txt";
+        std::ofstream tOutputFile2;
+        tOutputFile2.open(tFilename);
+        ROL::Ptr<ROL::Vector<ScalarType>> tSolutionPtr = tOptimizationProblem->getPrimalOptimizationVector();
+        Plato::DistributedVectorROL<ScalarType> & tSolution =
+                dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(tSolutionPtr.operator*());
+        tData = tSolution.vector();
+        for(OrdinalType tIndex = 0; tIndex < tData.size(); tIndex++)
+            tOutputFile2 << tData[tIndex] << "\n";
+        tOutputFile2.close();
+
+                        tControlResetStageParameterList.set(tControlName, aControls->vector().data());
+                        this->mInterface->compute(tControlResetStageName, tControlResetStageParameterList);
+        tFilename = "control_after_redistance_";
+        tFilename += std::to_string(tIter);
+        tFilename += ".txt";
+        std::ofstream tOutputFile3;
+        tOutputFile3.open(tFilename);
+        tData = aControls->vector();
+        for(OrdinalType tIndex = 0; tIndex < tData.size(); tIndex++)
+            tOutputFile3 << tData[tIndex] << "\n";
+        tOutputFile3.close();
+
+        tIter++;
+                    }
+                    tOptimizationProblem = makeOptimizationProblem(aObjective, aControls, aControlBoundsMng);
+                }
+            }
+            ROL::Solver<ScalarType> tOptimizer(tOptimizationProblem, *tParameterList);
+            std::ostream outputStream(this->mOutputBuffer);
+            tOptimizer.solve(outputStream);
+            ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
+                    ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
+            tCurDelta = tAlgorithmState->searchSize;
+            outputStream << "Delta: " << tCurDelta << std::endl;
+            outputStream.flush();
+        }
+        this->printControl(tOptimizationProblem);
+    }
+
+#if 0
     void run() override
     {
         this->initialize();
@@ -132,6 +321,7 @@ public:
     
         this->finalize();
     }
+#endif
 
     std::vector<std::vector<ScalarType>> checkGradient
     (const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem,

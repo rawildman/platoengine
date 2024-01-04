@@ -1248,6 +1248,11 @@ void parseOptimizationVariablesNames(const Plato::InputData & aOptimizerNode, Pl
     {
         aOptimizerEngineStageData.setInitializationStageName(tInitializationStage);
     }
+    std::string tControlResetStage = Plato::Get::String(tOptimizationVariablesNode, "ControlResetStage");
+    if(tControlResetStage.empty() == false)
+    {
+        aOptimizerEngineStageData.setControlResetStageName(tControlResetStage);
+    }
     std::string tFinalizationStage = Plato::Get::String(tOptimizationVariablesNode, "FinalizationStage");
     if(tFinalizationStage.empty() == false)
     {
@@ -1533,6 +1538,11 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
         {
             const bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
             aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
+        }
+        if( tOptionsNode.size<std::string>("ProblemResetType") )
+        {
+            const std::string tType = tOptionsNode.get<std::string>("ProblemResetType");
+            aOptimizerEngineStageData.setProblemResetType(tType);
         }
         if( tOptionsNode.size<std::string>("ROLStochasticDistributionsFile"))
         {
