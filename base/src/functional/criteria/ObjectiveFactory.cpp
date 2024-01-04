@@ -24,7 +24,7 @@ AggregateObjective make_aggregate(const ValidatedObjectives& aInput)
         if (Plato::Functional::Validation::is_active(tObjective.value()))
         {
             const double tWeight = tObjective.value().aggregation_weight.value();
-            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective.value()), tWeight);
+            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective), tWeight);
         }
     }
     return AggregateObjective{std::move(tFunctionsAndWeights)};

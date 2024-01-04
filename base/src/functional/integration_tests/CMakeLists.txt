@@ -17,6 +17,7 @@ install( FILES ${HDRS} DESTINATION include)
 
 # Build unit tester
 set(SRCS Test_ConstraintFactory.cpp
+         Test_CriterionFactory.cpp
          Test_MassObjective.cpp
          Test_ObjectiveFactory.cpp
          Test_SharedLibObjective.cpp

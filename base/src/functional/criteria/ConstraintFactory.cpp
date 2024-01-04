@@ -32,7 +32,7 @@ Constraint<const MeshProxy&> make_constraint(const Core::ValidatedInputTypeWrapp
     const double tValue = aConstraintInput.value().equal_to.value();
     const bool tIsLinear = aConstraintInput.value().is_linear.value_or(false);
     return Constraint<const MeshProxy&>{aConstraintInput.value().name.value_or("Unnamed Constraint"),
-                                        CriterionFactory::make_criterion_function(aConstraintInput.value()), tValue, tIsLinear};
+                                        CriterionFactory::make_criterion_function(aConstraintInput), tValue, tIsLinear};
 }
 
 }  // namespace detail

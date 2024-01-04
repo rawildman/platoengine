@@ -1,5 +1,4 @@
 set(SRCS Test_ConstraintFactory.cpp
-         Test_CriterionFactory.cpp
          Test_CriterionValidation.cpp
          Test_ConstraintValidation.cpp
          Test_NodalSumObjective.cpp
