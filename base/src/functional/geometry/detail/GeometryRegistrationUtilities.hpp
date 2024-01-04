@@ -62,6 +62,9 @@ template <std::size_t... Is>
 /// @return The name of the geometry input held by the variant @a aInput
 [[nodiscard]] std::string block_name(const GeometryFactory::GeometryInput& aInput);
 
+/// @return The name of the geometry input held by the variant @a aInput
+[[nodiscard]] std::string block_name(const GeometryFactory::ValidatedGeometryInput& aInput);
+
 }  // namespace Plato::Functional::GeometryFactory::Detail
 
 #endif

@@ -15,6 +15,8 @@ template <typename InputType>
 class ValidatedInputTypeWrapper
 {
    public:
+    using RawInputType = InputType;
+
     const InputType& value() const
     {
         return mValue;

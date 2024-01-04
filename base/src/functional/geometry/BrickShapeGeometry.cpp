@@ -21,13 +21,11 @@ constexpr int kNumDesignParameters = 6;
 const std::vector<double> kLowerBounds = {-10.0, -10.0, -10.0, 1e-2, 1e-2, 1e-2};  // Arbitrary
 const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};        // Arbitrary
 
-[[nodiscard]] std::filesystem::path mesh_path(const GeometryFactory::GeometryInput& aGeometryInput)
+[[nodiscard]] std::filesystem::path mesh_path(const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
 {
-    if (!std::get<Plato::brick_shape_geometry>(aGeometryInput).mesh_name)
-    {
-        throw Plato::Functional::Exception{"A brick mesh must have a mesh_name."};
-    }
-    return std::get<Plato::brick_shape_geometry>(aGeometryInput).mesh_name.value().mName;
+    const auto& tInput =
+        std::get<Core::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>(aGeometryInput.value()).value();
+    return tInput.mesh_name.value().mName;
 }
 
 [[nodiscard]] std::function<void(const ROL::StdVector<double>&)> make_output()
@@ -36,7 +34,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 }
 
 [[maybe_unused]] static auto kBrickShapeGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
-    Plato::block_name<Plato::brick_shape_geometry>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    Plato::block_name<Plato::brick_shape_geometry>(), [](const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
     {
         return GeometryFactory::FactoryTypes{make_brick_shape_geometry(BrickShapeGeometry{mesh_path(aGeometryInput)}),
                                              BrickShapeGeometry::initialGuess(), BrickShapeGeometry::bounds(),

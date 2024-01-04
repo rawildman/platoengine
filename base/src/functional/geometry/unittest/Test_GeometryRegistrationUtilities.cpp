@@ -77,7 +77,8 @@ TEST(GeometryRegistrationUtilities, GeometryInputHasDensityTopology)
 
 TEST(GeometryRegistrationUtilities, BlockName)
 {
-    namespace pfg = Plato::Functional::GeometryFactory;
+    namespace pf = Plato::Functional;
+    namespace pfg = pf::GeometryFactory;
     {
         const auto tGeometryInput = pfg::GeometryInput{Plato::density_topology{}};
         EXPECT_EQ(pfg::Detail::block_name(tGeometryInput), "density_topology");

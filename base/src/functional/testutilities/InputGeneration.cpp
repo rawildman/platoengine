@@ -4,7 +4,6 @@
 
 namespace Plato::Functional::TestUtilities
 {
-const std::filesystem::path kTestFileName = "testInput.i";
 
 void create_input_file(const std::filesystem::path aTestFileName)
 {
@@ -121,6 +120,21 @@ std::string create_valid_example_objective_string()
             active true
             app nodal_sum
             number_of_processors 4
+            input_files test-input.inp
+            aggregation_weight 42.0
+            objective_type minimize
+          end
+       )";
+}
+
+std::string create_valid_example_custom_app_objective_string()
+{
+    return R"(
+          begin objective test
+            active true
+            app custom_app
+            shared_library_path /path/to/nothing.so
+            number_of_processors 13
             input_files test-input.inp
             aggregation_weight 42.0
             objective_type minimize

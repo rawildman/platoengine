@@ -25,9 +25,10 @@ std::function<void(const ROL::StdVector<double>&)> make_topology_output(const st
 
 /// Static registration for GeometryFactory
 [[maybe_unused]] static auto kDensityTopologyRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
-    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
     {
-        const Plato::density_topology& tInput = std::get<Plato::density_topology>(aGeometryInput);
+        const auto& tInput =
+            std::get<Core::ValidatedInputTypeWrapper<Plato::density_topology>>(aGeometryInput.value()).value();
         return GeometryFactory::FactoryTypes{
             make_topology_geometry(DensityTopology{tInput}),
             DensityTopology::initialGuess(tInput.mesh_name.value().mName),

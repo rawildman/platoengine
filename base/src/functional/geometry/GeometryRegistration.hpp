@@ -36,7 +36,8 @@ struct FactoryTypes
 /// A `std::variant` with alternatives corresponding to input blocks
 /// created using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 using GeometryInput = Detail::GeometryInputVariant<Plato::PlatoInput>;
-using GeometryRegistration = Registration<FactoryTypes, GeometryInput>;
+using ValidatedGeometryInput = Core::ValidatedInputTypeWrapper<Detail::ValidatedGeometryInputVariant<Plato::PlatoInput>>;
+using GeometryRegistration = Registration<FactoryTypes, ValidatedGeometryInput>;
 
 bool is_geometry_function_registered(const std::string_view aFunctionName);
 

@@ -22,6 +22,7 @@ void create_input_file(const std::filesystem::path aTestFileName);
 
 [[nodiscard]] Plato::objective create_valid_example_objective();
 [[nodiscard]] std::string create_valid_example_objective_string();
+[[nodiscard]] std::string create_valid_example_custom_app_objective_string();
 
 [[nodiscard]] Plato::constraint create_valid_example_constraint();
 [[nodiscard]] std::string create_valid_example_constraint_string();

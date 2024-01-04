@@ -10,13 +10,13 @@
 namespace Plato::Functional::GeometryFactory
 {
 
-FactoryTypes make_geometry_data(const ValidGeometryInput& aGeometryInput)
+FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
     if (const auto tIter =
-            detail::registered_functions<FactoryTypes, GeometryInput>().find(Detail::block_name(aGeometryInput.value()));
-        tIter != detail::registered_functions<FactoryTypes, GeometryInput>().end())
+            detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().find(Detail::block_name(aGeometryInput));
+        tIter != detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().end())
     {
-        return tIter->second(aGeometryInput.value());
+        return tIter->second(aGeometryInput);
     }
     else
     {

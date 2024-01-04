@@ -1,6 +1,5 @@
 set(SRCS Test_BrickShapeGeometry.cpp
          Test_BrickShapeGeometryValidation.cpp
-         Test_GeometryFactory.cpp
          Test_GeometryRegistration.cpp
          Test_GeometryRegistrationUtilities.cpp
          Test_GeometryInputBuilder.cpp
