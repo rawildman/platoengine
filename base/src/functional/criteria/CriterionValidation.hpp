@@ -37,8 +37,22 @@ template <typename Criteria>
 }
 
 template <typename Criteria>
-std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
-                                           std::vector<std::string>&& aCurrentMessageList)
+[[nodiscard]] std::optional<std::string> validate_number_of_processors(const Criteria& aInput)
+{
+    if (aInput.number_of_processors.has_value())
+    {
+        return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
+            criterion_name(aInput), aInput.number_of_processors, "num_processors", 1, std::nullopt);
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
+
+template <typename Criteria>
+[[nodiscard]] std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
+                                                         std::vector<std::string>&& aCurrentMessageList)
 {
     aCurrentMessageList = Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
     for (const auto& iCriterionInput : aInput)

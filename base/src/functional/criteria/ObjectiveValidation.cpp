@@ -7,6 +7,7 @@ namespace Plato::Functional::Criteria
     Plato::Functional::Validation::Registration<Plato::objective>{
         [](const Plato::objective& aInput) { return detail::validate_app(aInput); },
         [](const Plato::objective& aInput) { return detail::validate_custom_app(aInput); },
+        [](const Plato::objective& aInput) { return detail::validate_number_of_processors(aInput); },
         [](const Plato::objective& aInput) { return detail::validate_aggregation_weight(aInput); }};
 
 [[maybe_unused]] static auto kListObjectivesValidationRegistration =

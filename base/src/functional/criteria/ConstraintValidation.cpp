@@ -8,6 +8,7 @@ namespace Plato::Functional::Criteria
     Plato::Functional::Validation::Registration<Plato::constraint>{
         [](const Plato::constraint& aInput) { return detail::validate_app(aInput); },
         [](const Plato::constraint& aInput) { return detail::validate_custom_app(aInput); },
+        [](const Plato::constraint& aInput) { return detail::validate_number_of_processors(aInput); },
         [](const Plato::constraint& aInput) { return detail::validate_equal_to(aInput); }};
 
 std::vector<std::string> validate_constraints(const std::vector<Plato::constraint>& aInput,
