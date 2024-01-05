@@ -24,8 +24,11 @@ namespace detail
 {
 std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput)
 {
-    return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
-        criterion_name(aInput), aInput.aggregation_weight, "aggregation_weight", 0, std::nullopt);
+    namespace pfv = Plato::Functional::Validation;
+    namespace pfc = Plato::Functional::Core;
+    return pfv::error_message_for_parameter_out_of_bounds(
+        criterion_name(aInput), aInput.aggregation_weight, "aggregation_weight",
+        pfc::lower_bounded(pfc::Exclusive{0.0}));
 }
 
 std::optional<std::string> validate_at_least_one_objective(const std::vector<Plato::objective>& aInput)

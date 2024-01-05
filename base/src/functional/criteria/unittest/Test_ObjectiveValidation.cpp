@@ -12,6 +12,8 @@ TEST(ObjectiveValidation, ValidateAggregationWeight)
     EXPECT_TRUE(pfcd::validate_aggregation_weight(tObjective).has_value());
     tObjective.aggregation_weight = 13.0;
     EXPECT_FALSE(pfcd::validate_aggregation_weight(tObjective).has_value());
+    tObjective.aggregation_weight = -13.0;
+    EXPECT_TRUE(pfcd::validate_aggregation_weight(tObjective).has_value());
 }
 
 TEST(ObjectiveValidation, ValidateAtLeastOneObjective)

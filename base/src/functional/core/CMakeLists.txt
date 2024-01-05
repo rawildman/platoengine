@@ -1,15 +1,18 @@
 set(SRCS InputParser.cpp
          JacobianColumnEvaluator.cpp
+         ParameterBounds.cpp
          ROLHelpers.cpp
          ValidationUtilities.cpp)
 
 set(HDRS Aggregate.hpp
+         BoundClusivity.hpp
          Compose.hpp
          Function.hpp
          InputParser.hpp
          JacobianColumnEvaluator.hpp
          MeshProxy.hpp
          NamedType.hpp
+         ParameterBounds.hpp
          ROLHelpers.hpp
          ValidatedInputTypeWrapper.hpp
          ValidationRegistration.hpp

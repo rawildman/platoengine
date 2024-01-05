@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <functional>
 
 #include "InputGeneration.hpp"
@@ -39,7 +40,7 @@ TEST(OptimizerValidation, ValidateStepTolerance)
     tOptimizationParameters.input_file_name = boost::none;
     EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // bad entry
 
-    tOptimizationParameters.step_tolerance = 0;
+    tOptimizationParameters.step_tolerance = std::nextafter(0.0, 1.0);
     EXPECT_FALSE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // good entry
     tOptimizationParameters.step_tolerance = 1e-8;
     EXPECT_FALSE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());
@@ -59,7 +60,7 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
     tOptimizationParameters.input_file_name = boost::none;
     EXPECT_TRUE(pfod::validate_gradient_tolerance(tOptimizationParameters).has_value());
 
-    tOptimizationParameters.gradient_tolerance = 0;
+    tOptimizationParameters.gradient_tolerance = std::nextafter(0.0, 1.0);
     EXPECT_FALSE(pfod::validate_gradient_tolerance(tOptimizationParameters).has_value());
     tOptimizationParameters.gradient_tolerance = 1e-8;
     EXPECT_FALSE(pfod::validate_gradient_tolerance(tOptimizationParameters).has_value());

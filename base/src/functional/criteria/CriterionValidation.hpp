@@ -39,10 +39,12 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_number_of_processors(const Criteria& aInput)
 {
+    namespace pfv = Plato::Functional::Validation;
+    namespace pfc = Plato::Functional::Core;
     if (aInput.number_of_processors.has_value())
     {
-        return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
-            criterion_name(aInput), aInput.number_of_processors, "num_processors", 1, std::nullopt);
+        return pfv::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.number_of_processors,
+                                                              "num_processors", pfc::lower_bounded(pfc::Inclusive{1u}));
     }
     else
     {

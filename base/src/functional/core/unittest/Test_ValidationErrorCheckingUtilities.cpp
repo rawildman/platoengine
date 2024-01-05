@@ -45,73 +45,42 @@ TEST(ValidateUtilities, ValidateParameterExistsDoesExist)
             .has_value());
 }
 
-TEST(ValidateUtilities, IsWithinLowerBounds)
-{
-    namespace pfvd = Plato::Functional::Validation::detail;
-    EXPECT_TRUE(pfvd::is_within_lower_bounds(10, std::nullopt));
-    EXPECT_TRUE(pfvd::is_within_lower_bounds(10, 9));
-    EXPECT_TRUE(pfvd::is_within_lower_bounds(10, 10));
-    EXPECT_FALSE(pfvd::is_within_lower_bounds(10, 11));
-}
-
-TEST(ValidateUtilities, IsWithinUpperBounds)
-{
-    namespace pfvd = Plato::Functional::Validation::detail;
-    EXPECT_TRUE(pfvd::is_within_upper_bounds(10, std::nullopt));
-    EXPECT_FALSE(pfvd::is_within_upper_bounds(10, 9));
-    EXPECT_TRUE(pfvd::is_within_upper_bounds(10, 10));
-    EXPECT_TRUE(pfvd::is_within_upper_bounds(10, 11));
-}
-
-TEST(ValidateUtilities, IsWithinBounds)
-{
-    namespace pfvd = Plato::Functional::Validation::detail;
-    constexpr double tLowerBound = 0;
-    constexpr double tUpperBound = 1;
-
-    EXPECT_FALSE(pfvd::is_within_bounds(-0.5, tLowerBound, tUpperBound));
-    EXPECT_TRUE(pfvd::is_within_bounds(0, tLowerBound, tUpperBound));
-    EXPECT_TRUE(pfvd::is_within_bounds(0.5, tLowerBound, tUpperBound));
-    EXPECT_TRUE(pfvd::is_within_bounds(1, tLowerBound, tUpperBound));
-    EXPECT_FALSE(pfvd::is_within_bounds(1.5, tLowerBound, tUpperBound));
-}
-
 TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
+    namespace pfc = Plato::Functional::Core;
     Plato::objective tObjectiveInput;
-    constexpr std::optional<double> tLowerBound = std::nullopt;
-    constexpr std::optional<double> tUpperBound = std::nullopt;
-
     EXPECT_TRUE(
-        pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", tLowerBound, tUpperBound)
+        pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", pfc::unbounded<double>())
             .has_value());
 }
 
 TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
+    namespace pfc = Plato::Functional::Core;
     Plato::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
-    constexpr std::optional<double> tUpperBound = std::nullopt;
 
     tObjectiveInput.aggregation_weight = 23;
-    EXPECT_FALSE(
-        pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", tLowerBound, tUpperBound)
-            .has_value());
+    EXPECT_FALSE(pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
+                                                                "aggregation_weight",
+                                                                pfc::lower_bounded(pfc::Inclusive{tLowerBound}))
+                     .has_value());
 }
 
 TEST(ValidateUtilities, ValidateParameterExistsOutOfBounds)
 {
     namespace pfv = Plato::Functional::Validation;
+    namespace pfc = Plato::Functional::Core;
     Plato::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
-    constexpr std::optional<double> tUpperBound = std::nullopt;
 
     tObjectiveInput.aggregation_weight = -23;
-    EXPECT_TRUE(
-        pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", tLowerBound, tUpperBound)
-            .has_value());
+    EXPECT_TRUE(pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
+                                                               "aggregation_weight",
+                                                               pfc::lower_bounded(pfc::Inclusive{tLowerBound}))
+                    .has_value());
 }
 
 TEST(ValidateUtilities, AllMessages)

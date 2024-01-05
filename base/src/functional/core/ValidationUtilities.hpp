@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "ParameterBounds.hpp"
 #include "Plato_InputBlocks.hpp"
 
 namespace Plato::Functional::Validation
@@ -21,22 +22,12 @@ template <typename T>
     const std::string_view aPrependString,
     const boost::optional<T>& aParameter,
     const std::string_view aEntryName,
-    const std::optional<double> aLowerBound,
-    const std::optional<double> aUpperBound);
+    const Core::ParameterBounds<T>& aBounds);
 
 /// @brief Checks if the objective or constraint given by @a aParameter should be included in the optimization problem.
 /// @tparam Must have a public field `active` that is a `boost` or `std::optional`.
 template <typename Parameter>
 [[nodiscard]] bool is_active(const Parameter& aParameter);
-
-namespace detail
-{
-[[nodiscard]] bool is_within_bounds(const double aValue,
-                                    const std::optional<double> aLowerBound,
-                                    const std::optional<double> aUpperBound);
-[[nodiscard]] bool is_within_lower_bounds(const double aValue, const std::optional<double> aLowerBound);
-[[nodiscard]] bool is_within_upper_bounds(const double aValue, const std::optional<double> aUpperBound);
-}  // namespace detail
 
 template <typename T>
 std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
@@ -57,17 +48,12 @@ template <typename T>
 std::optional<std::string> error_message_for_parameter_out_of_bounds(const std::string_view aPrependString,
                                                                      const boost::optional<T>& aParameter,
                                                                      const std::string_view aEntryName,
-                                                                     const std::optional<double> aLowerBound,
-                                                                     const std::optional<double> aUpperBound)
+                                                                     const Core::ParameterBounds<T>& aBounds)
 {
-    if (aParameter && !detail::is_within_bounds(aParameter.value(), aLowerBound, aUpperBound))
+    if (aParameter && !aBounds.contains(aParameter.value()))
     {
-        const std::string tLowerBoundString =
-            aLowerBound ? "[" + std::to_string(aLowerBound.value()) + ", " : "(-inf, ";
-        const std::string tUpperBoundString = aUpperBound ? std::to_string(aUpperBound.value()) + "]." : "inf).";
-        return std::string(aPrependString) + " entry \"" + std::string{aEntryName} + "\" has value " +
-               std::to_string(aParameter.value()) + " and is outside the bounds " + tLowerBoundString +
-               tUpperBoundString;
+        return std::string{aPrependString} + " entry \"" + std::string{aEntryName} + "\" has value " +
+               std::to_string(aParameter.value()) + " and is outside the bounds " + aBounds.description();
     }
     else
     {
