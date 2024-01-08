@@ -51,7 +51,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
 
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
-    const pf::Core::ValidatedInputTypeWrapper<Plato::objective>& tValidatedObjective =
+    const pf::Core::ValidatedInputTypeWrapper<Plato::objective> tValidatedObjective =
         tData.objectives().rawInput().front();
 
     const pf::CriterionFactory::CriterionInput tCriterionInput =
@@ -83,7 +83,7 @@ TEST(CriterionRegistration, ConvertConstraintInput)
     const pfv::ValidatedInput tData =
         pfv::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
-    const pf::Core::ValidatedInputTypeWrapper<Plato::constraint>& tValidatedConstraint =
+    const pf::Core::ValidatedInputTypeWrapper<Plato::constraint> tValidatedConstraint =
         tData.constraints().rawInput().front();
 
     const pf::CriterionFactory::CriterionInput tCriterionInput =
