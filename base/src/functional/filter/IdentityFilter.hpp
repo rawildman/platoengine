@@ -28,6 +28,8 @@ class IdentityFilter : public FilterInterface
 
 [[nodiscard]] auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>;
 
+[[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput);
+
 }  // namespace Plato::Functional
 
 #endif

@@ -10,6 +10,11 @@
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
 
+namespace Plato
+{
+struct brick_shape_geometry;
+}
+
 namespace stk::mesh
 {
 class BulkData;
@@ -75,5 +80,6 @@ namespace detail
 
 [[nodiscard]] std::unique_ptr<ROL::StdVector<double>> to_rol_std_vector_ptr(const BrickDesign& aDesignParameters);
 }  // namespace detail
+
 }  // namespace Plato::Functional
 #endif

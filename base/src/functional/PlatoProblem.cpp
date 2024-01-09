@@ -3,6 +3,7 @@
 #include <ROL_Bounds.hpp>
 
 #include "Compose.hpp"
+#include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "ROLHelpers.hpp"
@@ -22,12 +23,12 @@ namespace
 }
 }  // namespace
 
-PlatoProblem make_plato_problem(const Plato::PlatoInput& aData)
+PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
 {
-    return PlatoProblem{GeometryFactory::make_geometry_data(aData),
-                        ObjectiveFactory::make_aggregate_objective_function(aData.mObjectives),
-                        ConstraintFactory::make_constraints(aData.mConstraints),
-                        rol_parameter_list(aData.mOptimizationParameters)};
+    return PlatoProblem{GeometryFactory::make_geometry_data(aData.geometry()),
+                        ObjectiveFactory::make_aggregate_objective_function(aData.objectives()),
+                        ConstraintFactory::make_constraints(aData.constraints()),
+                        rol_parameter_list(aData.optimizationParameters())};
 }
 
 std::unique_ptr<ROLObjectiveFunction> make_rol_objective(const PlatoProblem& aProblem)
@@ -78,7 +79,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?
     constexpr bool tLumpConstraints =
-        false;  //( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        false;                                //( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
     tROLProblem->finalize(tLumpConstraints);  //, tPrintToStream, mOutputFile);
     return tROLProblem;
 }

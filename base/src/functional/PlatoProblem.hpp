@@ -10,12 +10,13 @@
 #include "OptimizerFactory.hpp"
 #include "ROLConstraintFunction.hpp"
 #include "ROLObjectiveFunction.hpp"
+#include "ValidatedInput.hpp"
 
 namespace Plato::Functional
 {
 
 ///@brief The struct that contains the functions used to create a ROL objective, as well as the ROL parameters to create
-///a ROL problem
+/// a ROL problem
 struct PlatoProblem
 {
     GeometryFactory::FactoryTypes mGeometry;
@@ -28,7 +29,7 @@ struct PlatoProblem
 ///
 ///@param aData
 ///@return PlatoProblem
-[[nodiscard]] PlatoProblem make_plato_problem(const Plato::PlatoInput& aData);
+[[nodiscard]] PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData);
 
 ///@brief Create a ROL objective object from a PlatoProblem by composing the mGeometryFunction with the mObjective
 ///

@@ -91,3 +91,15 @@ TEST(GeometryInputBuilder, GeometryInput)
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, Plato::density_topology>);
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, Plato::brick_shape_geometry>);
 }
+
+TEST(GeometryInputBuilder, ValidatedGeometryInput)
+{
+    namespace pfgd = Plato::Functional::GeometryFactory::Detail;
+    namespace pfc = Plato::Functional::Core;
+    using TestInput = pfgd::ValidatedGeometryInputVariant<Plato::PlatoInput>;
+    static_assert(std::variant_size_v<TestInput> == 2);
+    static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
+                                 pfc::ValidatedInputTypeWrapper<Plato::density_topology>>);
+    static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>,
+                                 pfc::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>);
+}

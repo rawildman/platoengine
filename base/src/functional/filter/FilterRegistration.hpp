@@ -33,7 +33,7 @@ using FilterRegistration = Registration<FilterFunction, FilterInput>;
 [[nodiscard]] std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
                                                            const std::filesystem::path& aSharedLibraryPath);
 
-bool is_filter_function_registered(std::string_view aFunctionName);
+[[nodiscard]] bool is_filter_function_registered(std::string_view aFunctionName);
 }  // namespace Plato::Functional::FilterFactory
 
 #endif
