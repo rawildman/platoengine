@@ -289,6 +289,7 @@ void writeModalInverseBlocks(const XMLGen::InputData &/*aMetaData*/,
         outfile << "  eigen_objective mpe" << std::endl;
     }
     outfile << "  design_variable shape" << std::endl;
+    outfile << "  shape_sideset all" << std::endl;
     outfile << "END" << std::endl;
 
     writeOptimizationBlock(outfile);

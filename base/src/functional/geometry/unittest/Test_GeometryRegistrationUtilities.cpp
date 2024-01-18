@@ -45,7 +45,7 @@ TEST(GeometryRegistrationUtilities, GeometryBlockAllEmpty)
 {
     namespace pfg = Plato::Functional::GeometryFactory;
     namespace pfgd = Plato::Functional::GeometryFactory::Detail;
-    const std::optional<pfg::GeometryInput> tGeometryInput = pfgd::geometry_block(Plato::PlatoInput{});
+    const std::optional<pfg::GeometryInput> tGeometryInput = pfgd::first_geometry_block(Plato::PlatoInput{});
     EXPECT_FALSE(tGeometryInput.has_value());
 }
 
@@ -55,7 +55,7 @@ TEST(GeometryRegistrationUtilities, GeometryBlockHasDensityTopology)
     namespace pfgd = Plato::Functional::GeometryFactory::Detail;
     auto tInput = Plato::PlatoInput{};
     tInput.mDensityTopology.emplace();
-    const std::optional<pfg::GeometryInput> tGeometryInput = pfgd::geometry_block(tInput);
+    const std::optional<pfg::GeometryInput> tGeometryInput = pfgd::first_geometry_block(tInput);
     EXPECT_TRUE(tGeometryInput.has_value());
 }
 
@@ -63,7 +63,7 @@ TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
 {
     namespace pfg = Plato::Functional::GeometryFactory;
     namespace pfgd = Plato::Functional::GeometryFactory::Detail;
-    EXPECT_THROW(auto tGeometryInput = pfgd::geometry_input(Plato::PlatoInput{}), Plato::Functional::Exception);
+    EXPECT_THROW(auto tGeometryInput = pfgd::first_geometry_input(Plato::PlatoInput{}), Plato::Functional::Exception);
 }
 
 TEST(GeometryRegistrationUtilities, GeometryInputHasDensityTopology)
@@ -72,13 +72,13 @@ TEST(GeometryRegistrationUtilities, GeometryInputHasDensityTopology)
     namespace pfgd = Plato::Functional::GeometryFactory::Detail;
     auto tInput = Plato::PlatoInput{};
     tInput.mDensityTopology.emplace();
-    EXPECT_NO_THROW(auto tGeometryInput = pfgd::geometry_block(tInput));
+    EXPECT_NO_THROW(auto tGeometryInput = pfgd::first_geometry_block(tInput));
 }
 
 TEST(GeometryRegistrationUtilities, BlockName)
 {
-    namespace pfg = Plato::Functional::GeometryFactory;
-
+    namespace pf = Plato::Functional;
+    namespace pfg = pf::GeometryFactory;
     {
         const auto tGeometryInput = pfg::GeometryInput{Plato::density_topology{}};
         EXPECT_EQ(pfg::Detail::block_name(tGeometryInput), "density_topology");
@@ -86,5 +86,26 @@ TEST(GeometryRegistrationUtilities, BlockName)
     {
         const auto tGeometryInput = pfg::GeometryInput{Plato::brick_shape_geometry{}};
         EXPECT_EQ(pfg::Detail::block_name(tGeometryInput), "brick_shape_geometry");
+    }
+}
+
+TEST(GeometryRegistrationUtilities, GeometryBlocksVector)
+{
+    namespace pfg = Plato::Functional::GeometryFactory;
+
+    {
+        Plato::PlatoInput tInput;
+        EXPECT_EQ(pfg::Detail::geometry_blocks(tInput).size(), 0u);
+    }
+    {
+        Plato::PlatoInput tInput;
+        tInput.mDensityTopology = Plato::density_topology{};
+        EXPECT_EQ(pfg::Detail::geometry_blocks(tInput).size(), 1u);
+    }
+    {
+        Plato::PlatoInput tInput;
+        tInput.mDensityTopology = Plato::density_topology{};
+        tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
+        EXPECT_EQ(pfg::Detail::geometry_blocks(tInput).size(), 2u);
     }
 }

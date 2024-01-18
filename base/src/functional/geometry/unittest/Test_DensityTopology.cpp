@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "DensityTopology.hpp"
+#include "InputGeneration.hpp"
 #include "JacobianColumnEvaluator.hpp"
 #include "MeshProxy.hpp"
 #include "Plato_InputBlocks.hpp"
@@ -17,11 +18,7 @@
 
 namespace
 {
-const auto kDensityInput = Plato::density_topology{/*.mesh_name=*/Plato::FileName{"test.exo"},
-                                                   /*.output_name=*/Plato::FileName{"out.exo"},
-                                                   /*.filter_type=*/Plato::FilterTypes::kIdentity,
-                                                   /*.filter_radius=*/0.0,
-                                                   /*.boundary_sticking_penalty=*/0.0};
+const auto kDensityInput = Plato::Functional::TestUtilities::create_valid_density_topology_geometry();
 
 constexpr int kExpectedDensitySize = 8;  // Based on mesh generation command below (1x1x1)
 

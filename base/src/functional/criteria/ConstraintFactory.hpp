@@ -6,6 +6,7 @@
 
 #include "Function.hpp"
 #include "Plato_InputBlocks.hpp"
+#include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato::Functional
 {
@@ -14,6 +15,9 @@ struct MeshProxy;
 
 namespace Plato::Functional::ConstraintFactory
 {
+using ValidatedConstraints =
+    Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
 ///   Typically, this is either MeshProxy or a vector type such as `ROL::StdVector`.
@@ -30,7 +34,7 @@ struct Constraint
 
 /// @brief Factory to create Constraint objects from input data.
 /// @post The return vector will have the same size as @a aInput.
-[[nodiscard]] std::vector<Constraint<const MeshProxy&>> make_constraints(const std::vector<Plato::constraint>& aInput);
+[[nodiscard]] std::vector<Constraint<const MeshProxy&>> make_constraints(const ValidatedConstraints& aInput);
 
 /// @brief Helper for providing ROL a dual vector for constraints.
 /// @note Currently, constraints are scalar, and so the dual vector always has dimension 1.
@@ -38,13 +42,9 @@ struct Constraint
 
 namespace detail
 {
-/// @throw Exception If @a aConstraintInput defines more than one of `equal_to`, `greater_than`, or `less_than`.
-void affirm_only_one_type(const Plato::constraint& aConstraintInput);
+[[nodiscard]] Constraint<const MeshProxy&> make_constraint(
+    const Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
 
-[[nodiscard]] Constraint<const MeshProxy&> make_constraint(const Plato::constraint& aConstraintInput);
-
-/// @throw Exception If @a aInput does not contain valid input, such as a missing `app` field.
-void affirm_valid_input(const std::vector<Plato::constraint>& aInput);
 }  // namespace detail
 }  // namespace Plato::Functional::ConstraintFactory
 

@@ -1,0 +1,39 @@
+#include <gtest/gtest.h>
+
+#include "GeometryFactory.hpp"
+#include "InputGeneration.hpp"
+#include "ValidatedInput.hpp"
+#include "detail/GeometryRegistrationUtilities.hpp"
+
+TEST(GeometryFactory, BrickGeometry)
+{
+    namespace pf = Plato::Functional;
+    namespace pftu = pf::TestUtilities;
+
+    const auto tRawInput =
+        Plato::PlatoInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
+                          /*.mConstraints=*/{pftu::create_valid_example_constraint()},
+                          /*.mBrickShapeGeometry=*/pftu::create_valid_brick_shape_geometry(),
+                          /*.mDensityTopology = */ boost::none,
+                          /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters()};
+
+    const pf::Validation::ValidatedInput tInput = pf::Validation::make_validated_input(tRawInput);
+    const auto tData = pf::GeometryFactory::make_geometry_data(tInput.geometry());
+
+    constexpr auto tExpectedBrickShapeDimensions = int{6};
+    ASSERT_TRUE(tData.mInitialGuess);
+    EXPECT_EQ(tData.mInitialGuess->dimension(), tExpectedBrickShapeDimensions);
+    EXPECT_EQ(tData.mBounds.first.size(), tExpectedBrickShapeDimensions);
+    EXPECT_EQ(tData.mBounds.second.size(), tExpectedBrickShapeDimensions);
+}
+
+TEST(GeometryFactory, BlockName)
+{
+    namespace pf = Plato::Functional;
+    namespace pfg = pf::GeometryFactory;
+    namespace pftu = pf::TestUtilities;
+
+    const pf::Validation::ValidatedInput tValidatedInput =
+        pf::Validation::make_validated_input(pftu::create_valid_example_input());
+    EXPECT_EQ(pfg::Detail::block_name(tValidatedInput.geometry()), "density_topology");
+}

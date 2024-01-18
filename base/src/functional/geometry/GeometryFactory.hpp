@@ -7,6 +7,7 @@
 #include "GeometryRegistration.hpp"
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
+#include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato
 {
@@ -27,7 +28,7 @@ using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const ROL::StdV
 /// a uniform density field.
 /// The bound constraints are generated from the specific geometry representation, such as
 /// all 0 lower bounds and all 1 upper bounds for density topology optimization.
-[[nodiscard]] FactoryTypes make_geometry_data(const Plato::PlatoInput& aInput);
+[[nodiscard]] FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput);
 
 }  // namespace Plato::Functional::GeometryFactory
 

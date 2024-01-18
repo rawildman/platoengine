@@ -18,7 +18,7 @@ namespace
 }
 
 [[maybe_unused]] static auto kTestGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
-    "test", [](const Plato::Functional::GeometryFactory::GeometryInput&)
+    "test", [](const Plato::Functional::GeometryFactory::ValidatedGeometryInput&)
     {
         return Plato::Functional::GeometryFactory::FactoryTypes{
             make_test_geometry_function(), nullptr, std::make_pair(std::vector<double>{}, std::vector<double>{}),

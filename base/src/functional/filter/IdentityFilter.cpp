@@ -7,6 +7,7 @@
 #include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
 #include "Plato_InputEnumTypes.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
@@ -15,7 +16,10 @@ namespace
 [[maybe_unused]] static auto kIdentityFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
     Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
     [](const Plato::density_topology&) { return make_identity_filter_function(); }};
-}
+
+[[maybe_unused]] static auto kIdentityFilterValidationRegistration = Validation::Registration<Plato::density_topology>{
+    [](const Plato::density_topology& aInput) { return validate_identity_filter(aInput); }};
+}  // namespace
 
 MeshProxy IdentityFilter::filter(const MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
@@ -41,4 +45,18 @@ auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, cons
                              return FilterJacobian{std::make_unique<IdentityFilter>(), aMeshProxy};
                          });
 }
+
+[[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput)
+{
+    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kIdentity)
+    {
+        if (aInput.boundary_sticking_penalty.has_value() || aInput.filter_radius.has_value())
+        {
+            return Plato::block_name<Plato::density_topology>() +
+                   R"( identity filter cannot have "filter_radius" or "boundary_sticking_penalty" defined.)";
+        }
+    }
+    return std::nullopt;
+}
+
 }  // namespace Plato::Functional

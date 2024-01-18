@@ -16,7 +16,11 @@ target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
 install( FILES ${HDRS} DESTINATION include)
 
 # Build unit tester
-set(SRCS Test_MassObjective.cpp
+set(SRCS Test_ConstraintFactory.cpp
+         Test_CriterionFactory.cpp
+         Test_GeometryFactory.cpp
+         Test_MassObjective.cpp
+         Test_ObjectiveFactory.cpp
          Test_SharedLibObjective.cpp
          UnitMain.cpp )
 
@@ -25,7 +29,7 @@ set(HDRS )
 set(TEST_EXE PlatoFunctional_IntegrationUnitTester)
 add_executable(${TEST_EXE} ${SRCS} ${HDRS})
 target_link_libraries( ${TEST_EXE} PRIVATE 
-    GTest::GTest TeuchosCore::teuchoscore ROL::rol PlatoFunctionalCriteria PlatoTestMassObjective PlatoFunctionalOptimizer PlatoFunctionalGeometry PlatoFunctionalTestUtilities)
+    GTest::GTest TeuchosCore::teuchoscore ROL::rol PlatoFunctional PlatoTestMassObjective PlatoFunctionalTestUtilities)
 
 add_test(NAME ${TEST_EXE} COMMAND ${TEST_EXE})
 set_property(TEST ${TEST_EXE} PROPERTY LABELS "small")

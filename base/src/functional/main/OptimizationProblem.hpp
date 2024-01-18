@@ -5,9 +5,11 @@
 
 #include "PlatoProblem.hpp"
 #include "ROL_Problem.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato::Functional
 {
+
 class OptimizationProblem
 {
    public:

@@ -4,6 +4,6 @@ namespace Plato::Functional::GeometryFactory
 {
 bool is_geometry_function_registered(const std::string_view aFunctionName)
 {
-    return is_function_registered<FactoryTypes, GeometryInput>(aFunctionName);
+    return is_function_registered<FactoryTypes, ValidatedGeometryInput>(aFunctionName);
 }
 }  // namespace Plato::Functional::GeometryFactory

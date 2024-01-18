@@ -1,10 +1,12 @@
 set(SRCS PlatoProblem.cpp
          ROLConstraintFunction.cpp
-         ROLObjectiveFunction.cpp )
+         ROLObjectiveFunction.cpp
+         ValidatedInput.cpp )
 
 set(HDRS PlatoProblem.hpp
          ROLConstraintFunction.hpp
-         ROLObjectiveFunction.hpp )
+         ROLObjectiveFunction.hpp 
+         ValidatedInput.hpp )
 
 add_library(PlatoFunctional ${SRCS} ${HDRS} )
 target_include_directories(PlatoFunctional PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )

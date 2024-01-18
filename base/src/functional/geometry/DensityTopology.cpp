@@ -4,24 +4,17 @@
 #include "FilterInterface.hpp"
 #include "FilterJacobian.hpp"
 #include "GeometryRegistration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "GeometryValidation.hpp"
 #include "STKUtilities.hpp"
 
 namespace Plato::Functional
 {
 namespace
 {
+
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
-
-void check_valid_input(const density_topology& aInput)
-{
-    if (!aInput.mesh_name)
-    {
-        throw Exception("density_topology requires a mesh_name.");
-    }
-}
 
 std::function<void(const ROL::StdVector<double>&)> make_topology_output(const std::filesystem::path& aInputMeshName,
                                                                         const std::filesystem::path& aOutputMeshName)
@@ -32,16 +25,21 @@ std::function<void(const ROL::StdVector<double>&)> make_topology_output(const st
 
 /// Static registration for GeometryFactory
 [[maybe_unused]] static auto kDensityTopologyRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
-    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::GeometryInput& aGeometryInput)
+    Plato::block_name<Plato::density_topology>(), [](const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
     {
-        const Plato::density_topology& tInput = std::get<Plato::density_topology>(aGeometryInput);
-        check_valid_input(tInput);
+        const auto& tInput = GeometryFactory::geometry_raw_input<Plato::density_topology>(aGeometryInput);
         return GeometryFactory::FactoryTypes{
             make_topology_geometry(DensityTopology{tInput}),
             DensityTopology::initialGuess(tInput.mesh_name.value().mName),
             DensityTopology::bounds(tInput.mesh_name.value().mName),
             make_topology_output(tInput.mesh_name.value().mName, tInput.output_name.value().mName)};
     }};
+
+/// Static registration for input validation functions
+[[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
+    [](const Plato::density_topology& aInput) { return Geometry::detail::validate_mesh_name(aInput); },
+    [](const Plato::density_topology& aInput)
+    { return detail::validate_output_name(aInput); }};
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)
@@ -91,5 +89,15 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
                          [tDensityTopology = aDensityTopology](const ROL::StdVector<double>& x)
                          { return tDensityTopology.jacobian(x); });
 }
+
+namespace detail
+{
+std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
+{
+    return Plato::Functional::Validation::error_message_for_empty_parameter(
+        Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
+}
+
+}  // namespace Validation::DensityTopology::detail
 
 }  // namespace Plato::Functional

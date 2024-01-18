@@ -3,44 +3,17 @@
 #include <filesystem>
 #include <fstream>
 
+#include "InputGeneration.hpp"
 #include "InputParser.hpp"
 
 namespace
 {
 const std::filesystem::path kTestFileName = "testInput.i";
-
-void createInput()
-{
-    std::ofstream tOutFile(kTestFileName);
-    const std::string tInput =
-        R"(
-          begin brick_shape_geometry
-            mesh_name my_mesh.exo
-          end
-          begin objective test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-          begin optimization_parameters
-            input_file_name its-a_file.txt
-            step_tolerance 10
-            gradient_tolerance 100.0
-            
-          end
-       )";
-    tOutFile << tInput << std::endl;
-    tOutFile.close();
 }
-
-}  // namespace
 
 TEST(InputParser, ParseFromFile)
 {
-    createInput();
+    Plato::Functional::TestUtilities::create_input_file(kTestFileName);
     const Plato::PlatoInput tInput = Plato::Functional::parse_input_from_file(kTestFileName);
 
     EXPECT_FALSE(tInput.mOptimizationParameters.max_iterations.has_value());

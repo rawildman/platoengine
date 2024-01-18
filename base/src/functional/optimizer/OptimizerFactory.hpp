@@ -5,9 +5,12 @@
 #include <ROL_Solver.hpp>
 
 #include "Plato_InputBlocks.hpp"
+#include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato::Functional
 {
+using ValidOptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+
 ///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
 ///
 ///@param aROLOptions
@@ -21,7 +24,7 @@ namespace Plato::Functional
 /// or values specified in the input block will be used
 ///@param aOptimizationParameters
 ///@return ROL::ParameterList
-[[nodiscard]] ROL::ParameterList rol_parameter_list(const Plato::optimization_parameters& aOptimizationParameters);
+[[nodiscard]] ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimizationParameters);
 
 }  // namespace Plato::Functional
 

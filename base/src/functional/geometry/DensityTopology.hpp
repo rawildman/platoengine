@@ -3,11 +3,14 @@
 
 #include <ROL_StdVector.hpp>
 #include <filesystem>
+#include <optional>
 
 #include "FilterFactory.hpp"
 #include "Function.hpp"
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
+#include "Plato_InputBlocks.hpp"
+#include "ValidationRegistration.hpp"
 
 namespace Plato
 {
@@ -50,6 +53,11 @@ class DensityTopology
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
+
+namespace detail
+{
+[[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
+}  // namespace detail
 
 }  // namespace Plato::Functional
 

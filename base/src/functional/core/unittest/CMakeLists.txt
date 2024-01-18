@@ -4,9 +4,13 @@ set(SRCS Test_Aggregate.cpp
          Test_InputParser.cpp
          Test_JacobianColumnEvaluator.cpp
          Test_JacobianMultiplier.cpp
+         Test_NamedType.cpp
+         Test_ParameterBounds.cpp
          Test_Penalty.cpp
          Test_ROLHelpers.cpp
          Test_Rosenbrock.cpp
+         Test_Validation.cpp
+         Test_ValidationErrorCheckingUtilities.cpp
          UnitMain.cpp)
 
 set(HDRS Utilities.hpp)
