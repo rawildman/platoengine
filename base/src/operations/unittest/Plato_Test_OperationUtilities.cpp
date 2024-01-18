@@ -43,11 +43,13 @@
 #ifdef STK_ENABLED
 #include "stk_io/StkMeshIoBroker.hpp"
 #include "Ioss_NodeBlock.h"
+#include "stk_unit_test_utils/TextMeshToFile.hpp"
 #endif
 #include "Plato_OperationsUtilities.hpp"
 #include "Plato_Exceptions.hpp"
 #include <filesystem>
 #include <gtest/gtest.h>
+
 
 namespace PlatoTestOperationUtilities
 {
@@ -132,7 +134,13 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_trivial_node_map)
 
 TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_map)
 {
+    stk::unit_test_util::simple_fields::TextMeshToFile tMesh(get_comm(), stk::mesh::BulkData::AUTO_AURA);
+    std::string tMeshDescription("0,1,HEX_8,1,2,3,4,11,12,13,14"); 
+    tMesh.setup_mesh(tMeshDescription, "tempFile.g");
+    tMesh.write_mesh();
+
     // Generate a mesh in core and write it to disk
+     /*
     stk::io::StkMeshIoBroker iobroker(MPI_COMM_WORLD);
     iobroker.use_simple_fields();
     iobroker.add_mesh_database("generated:1x1x1", stk::io::READ_MESH);
@@ -148,15 +156,17 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_
     Ioss::PropertyManager properties;
     size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
     iobroker.write_output_mesh(outputFileIndex);
+*/
   
     // Call the function to extract the node ids from the mesh on disk
-    std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "temp_mesh.exo");
+    std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "tempFile.g");
     
     // Test against gold values
+    const std::vector<unsigned int> tGold = {1,2,3,4,11,12,13,14};
     EXPECT_EQ(tResults, tScrambledIDs);
     
     // Clean up mesh from disk
-    std::filesystem::remove("temp_mesh.exo");
+    //std::filesystem::remove("tempFile.g");
 }
 
 #endif
