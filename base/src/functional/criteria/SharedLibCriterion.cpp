@@ -35,14 +35,14 @@ SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPa
 
 double SharedLibCriterion::f(const MeshProxy& aMesh) const { return mCriterionFunction->value(aMesh); }
 
-ROL::StdVector<double> SharedLibCriterion::df(const MeshProxy& aMesh) const
+Core::DynamicVector<double> SharedLibCriterion::df(const MeshProxy& aMesh) const
 {
     std::vector<double> tGradient = mCriterionFunction->gradient(aMesh);
-    return ROL::StdVector<double>(ROL::makePtr<std::vector<double>>(std::move(tGradient)));
+    return Core::DynamicVector<double>(std::move(tGradient));
 }
 
 auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
-    -> Function<double, ROL::StdVector<double>, const MeshProxy&>
+    -> Function<double, Core::DynamicVector<double>, const MeshProxy&>
 {
     return make_function([aSharedLibCriterion](const MeshProxy& mesh) { return aSharedLibCriterion.f(mesh); },
                          [aSharedLibCriterion](const MeshProxy& mesh) { return aSharedLibCriterion.df(mesh); });

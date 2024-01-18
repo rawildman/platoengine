@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <ROL_StdVector.hpp>
-
 #include "FilterFactory.hpp"
 #include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"

@@ -1,7 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_CORE_DYNAMICVECTOR
 #define PLATO_FUNCTIONAL_CORE_DYNAMICVECTOR
 
-#include <valarray>
+#include <algorithm>
+#include <numeric>
 #include <vector>
 
 namespace Plato::Functional::Core
@@ -22,45 +23,52 @@ class DynamicVector
 {
    public:
     DynamicVector() = default;
-    explicit DynamicVector(const std::vector<T>& aVector);
+    DynamicVector(std::size_t aSize, const T& aInitialValue);
+    explicit DynamicVector(std::vector<T> aVector);
+    explicit DynamicVector(std::initializer_list<T> aList);
 
-    std::size_t size() const;
-    const T& operator[](std::size_t aIndex) const;
+    [[nodiscard]] std::size_t size() const;
+    [[nodiscard]] const T& operator[](std::size_t aIndex) const;
+
+    [[nodiscard]] T dot(const DynamicVector<T>& aRightOperand) const;
+    [[nodiscard]] const std::vector<T>& stdVector() const&;
+    [[nodiscard]] std::vector<T> stdVector() &&;
 
     /// @pre The size of @a aRightOperand must be equal to this object's size. Checked with an assertion.
     DynamicVector<T>& operator+=(const DynamicVector<T>& aRightOperand);
     DynamicVector<T>& operator*=(const T aScalar);
+    [[nodiscard]] bool operator==(const DynamicVector<T>& aRight) const;
 
     template <typename Archive, typename U>
     friend void serialize(Archive& aArchive, DynamicVector<U>& aVector, const unsigned int aVersion);
 
    private:
-    std::valarray<T> mVector;
+    std::vector<T> mVector;
 };
 
 template <typename T>
-DynamicVector<T> operator+(DynamicVector<T>&& aLeft, const DynamicVector<T>& aRight)
+[[nodiscard]] DynamicVector<T> operator+(DynamicVector<T>&& aLeft, const DynamicVector<T>& aRight)
 {
     aLeft += aRight;
     return std::move(aLeft);
 }
 
 template <typename T>
-DynamicVector<T> operator+(const DynamicVector<T>& aLeft, DynamicVector<T>&& aRight)
+[[nodiscard]] DynamicVector<T> operator+(const DynamicVector<T>& aLeft, DynamicVector<T>&& aRight)
 {
     aRight += aLeft;
     return std::move(aRight);
 }
 
 template <typename T>
-DynamicVector<T> operator+(DynamicVector<T>&& aLeft, DynamicVector<T>&& aRight)
+[[nodiscard]] DynamicVector<T> operator+(DynamicVector<T>&& aLeft, DynamicVector<T>&& aRight)
 {
     aLeft += aRight;
     return std::move(aLeft);
 }
 
 template <typename T>
-DynamicVector<T> operator+(const DynamicVector<T>& aLeft, const DynamicVector<T>& aRight)
+[[nodiscard]] DynamicVector<T> operator+(const DynamicVector<T>& aLeft, const DynamicVector<T>& aRight)
 {
     DynamicVector<T> tCopy = aLeft;
     tCopy += aRight;
@@ -68,21 +76,31 @@ DynamicVector<T> operator+(const DynamicVector<T>& aLeft, const DynamicVector<T>
 }
 
 template <typename T>
-DynamicVector<T> operator*(DynamicVector<T> aLeft, const T& aRight)
+[[nodiscard]] DynamicVector<T> operator*(DynamicVector<T> aLeft, const T& aRight)
 {
     aLeft *= aRight;
     return aLeft;
 }
 
 template <typename T>
-DynamicVector<T> operator*(const T& aLeft, DynamicVector<T> aRight)
+[[nodiscard]] DynamicVector<T> operator*(const T& aLeft, DynamicVector<T> aRight)
 {
     aRight *= aLeft;
     return aRight;
 }
 
 template <typename T>
-DynamicVector<T>::DynamicVector(const std::vector<T>& aVector) : mVector(aVector.data(), aVector.size())
+DynamicVector<T>::DynamicVector(std::size_t aSize, const T& aInitialValue) : mVector(aSize, aInitialValue)
+{
+}
+
+template <typename T>
+DynamicVector<T>::DynamicVector(std::vector<T> aVector) : mVector(std::move(aVector))
+{
+}
+
+template <typename T>
+DynamicVector<T>::DynamicVector(std::initializer_list<T> aList) : mVector(std::move(aList))
 {
 }
 
@@ -99,18 +117,44 @@ const T& DynamicVector<T>::operator[](std::size_t aIndex) const
 }
 
 template <typename T>
+const std::vector<T>& DynamicVector<T>::stdVector() const&
+{
+    return mVector;
+}
+
+template <typename T>
+std::vector<T> DynamicVector<T>::stdVector() &&
+{
+    return std::move(mVector);
+}
+
+template <typename T>
+T DynamicVector<T>::dot(const DynamicVector<T>& aRightOperand) const
+{
+    return std::inner_product(std::begin(mVector), std::end(mVector), std::begin(aRightOperand.mVector), T{});
+}
+
+template <typename T>
 DynamicVector<T>& DynamicVector<T>::operator+=(const DynamicVector<T>& aRightOperand)
 {
     assert(size() == aRightOperand.size());
-    mVector += aRightOperand.mVector;
+    std::transform(std::begin(mVector), std::end(mVector), std::begin(aRightOperand.mVector), std::begin(mVector),
+                   [](const T& aLeft, const T& aRight) { return aLeft + aRight; });
     return *this;
 }
 
 template <typename T>
 DynamicVector<T>& DynamicVector<T>::operator*=(const T aScalar)
 {
-    mVector *= aScalar;
+    std::transform(std::begin(mVector), std::end(mVector), std::begin(mVector),
+                   [&aScalar](const T& aValue) { return aScalar * aValue; });
     return *this;
+}
+
+template <typename T>
+[[nodiscard]] bool DynamicVector<T>::operator==(const DynamicVector<T>& aRight) const
+{
+    return mVector == aRight.mVector;
 }
 
 }  // namespace Plato::Functional::Core

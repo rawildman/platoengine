@@ -6,8 +6,8 @@ namespace Plato::Functional::Test
 {
 MeshProxy SharedLibIdentityFilter::filter(const MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
-ROL::StdVector<double> SharedLibIdentityFilter::jacobianTimesVector(const MeshProxy&,
-                                                                    const ROL::StdVector<double>& aV) const
+Core::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVector(const MeshProxy&,
+                                                                         const Core::DynamicVector<double>& aV) const
 {
     return aV;
 }

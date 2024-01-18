@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ROLConstraintFunction.hpp"
-#include "ROLTestUtilities.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 
 TEST(ROLConstraintFunction, ConstraintValue)
 {
@@ -20,8 +20,8 @@ TEST(ROLConstraintFunction, ConstraintValue)
 
     constexpr bool tIsLinear = false;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const ROL::StdVector<double>&>{
-            "name", pft::make_rosenbrock_rol_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
+        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            "name", pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
     auto tConstraintsVector = ROL::StdVector<double>{.0};
     double tTolerance;
@@ -46,8 +46,8 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
 
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const ROL::StdVector<double>&>{
-            "name", pft::make_rosenbrock_rol_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
+        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            "name", pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
 
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
     ROL::StdVector<double> tJacobianTimesDirection{1.0};
@@ -80,8 +80,8 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     auto tDirection = ROL::StdVector<double>{tDual};
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const ROL::StdVector<double>&>{
-            std::string{tConstraintName}, pft::make_rosenbrock_rol_vector_function(pft::Rosenbrock{}), tTarget,
+        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            std::string{tConstraintName}, pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget,
             tIsLinear}};
 
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};

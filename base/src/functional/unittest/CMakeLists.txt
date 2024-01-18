@@ -1,4 +1,4 @@
-set(SRCS ROLPenaltyFunction.cpp
+set(SRCS DynamicVectorPenaltyFunction.cpp
          Test_ConstraintValidationToFactory.cpp
          Test_GeometryValidationToFactory.cpp
          Test_PlatoProblem.cpp
@@ -7,14 +7,15 @@ set(SRCS ROLPenaltyFunction.cpp
          Test_OptimizerValidationToFactory.cpp
          Test_ROLConstraint.cpp
          Test_ROLObjectiveRosenbrock.cpp
-         Test_ROLPenaltyFunction.cpp
+         Test_PenaltyFunction.cpp
+         Test_Serialization.cpp
          Test_SimpleSumObjective.cpp
          Test_ValidatedInput.cpp
          UnitMain.cpp 
          )
 
-set(HDRS ROLPenaltyFunction.hpp
-         ROLTestUtilities.hpp)
+set(HDRS DynamicVectorPenaltyFunction.hpp
+         DynamicVectorTestUtilities.hpp)
 
 set(TEST_EXE PlatoFunctional_UnitTester)
 add_executable(${TEST_EXE} ${SRCS} ${HDRS})
@@ -24,3 +25,18 @@ add_test(NAME ${TEST_EXE} COMMAND ${TEST_EXE})
 set_property(TEST ${TEST_EXE} PROPERTY LABELS "small")
 
 install( TARGETS ${TEST_EXE} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+
+# Parallel tests
+set(PARALLEL_SRCS Test_ParallelAggregateDynamicVector.cpp
+                  UnitMain.cpp)
+
+set(PARALLEL_TEST_EXE PlatoFunctional_ParallelUnitTester)
+add_executable(${PARALLEL_TEST_EXE} ${PARALLEL_SRCS} ${HDRS})
+target_link_libraries(${PARALLEL_TEST_EXE} PRIVATE GTest::GTest ROL::rol PlatoFunctional PlatoFunctionalCore PlatoInputParser PlatoFunctionalTestUtilities)
+
+set(MPI_RANKS_FOR_TEST 2)
+add_test(NAME ${PARALLEL_TEST_EXE} COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${MPI_RANKS_FOR_TEST} ${MPIEXEC_PREFLAGS} ${PARALLEL_TEST_EXE} ${MPIEXEC_POSTFLAGS})
+set_property(TEST ${PARALLEL_TEST_EXE} PROPERTY LABELS "small")
+set_property(TEST ${PARALLEL_TEST_EXE} PROPERTY PROCESSORS ${MPI_RANKS_FOR_TEST})
+
+install( TARGETS ${PARALLEL_TEST_EXE} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

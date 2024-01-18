@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <ROL_StdVector.hpp>
-
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "GeometryRegistration.hpp"
 #include "JacobianMultiplier.hpp"
@@ -13,16 +12,17 @@ namespace
 [[nodiscard]] auto make_test_geometry_function() -> Plato::Functional::GeometryFactory::FactoryTypes::Compute
 {
     return Plato::Functional::make_function(
-        [](const ROL::StdVector<double>&) { return Plato::Functional::MeshProxy{}; },
-        [](const ROL::StdVector<double>&) { return Plato::Functional::JacobianMultiplier{}; });
+        [](const Plato::Functional::Core::DynamicVector<double>&) { return Plato::Functional::MeshProxy{}; },
+        [](const Plato::Functional::Core::DynamicVector<double>&) { return Plato::Functional::JacobianMultiplier{}; });
 }
 
 [[maybe_unused]] static auto kTestGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
     "test", [](const Plato::Functional::GeometryFactory::ValidatedGeometryInput&)
     {
         return Plato::Functional::GeometryFactory::FactoryTypes{
-            make_test_geometry_function(), nullptr, std::make_pair(std::vector<double>{}, std::vector<double>{}),
-            std::function<void(const ROL::StdVector<double>&)>{}};
+            make_test_geometry_function(), Plato::Functional::Core::DynamicVector<double>{},
+            std::make_pair(std::vector<double>{}, std::vector<double>{}),
+            std::function<void(const Plato::Functional::Core::DynamicVector<double>&)>{}};
     }};
 }  // namespace
 

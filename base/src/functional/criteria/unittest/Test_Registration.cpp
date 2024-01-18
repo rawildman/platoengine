@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <ROL_StdVector.hpp>
-
 #include "CriterionRegistration.hpp"
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "Plato_InputBlocks.hpp"
 
@@ -12,7 +11,7 @@ namespace
 {
     return Plato::Functional::make_function([](const Plato::Functional::MeshProxy&) { return 0.0; },
                                             [](const Plato::Functional::MeshProxy&) {
-                                                return ROL::StdVector<double>{1.0, 2.0};
+                                                return Plato::Functional::Core::DynamicVector<double>{1.0, 2.0};
                                             });
 }
 

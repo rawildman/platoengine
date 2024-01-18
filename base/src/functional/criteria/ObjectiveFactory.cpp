@@ -1,13 +1,6 @@
 #include "ObjectiveFactory.hpp"
 
-#include <string>
-#include <unordered_map>
-
 #include "CriterionFactory.hpp"
-#include "Exception.hpp"
-#include "MeshProxy.hpp"
-#include "NodalSumObjective.hpp"
-#include "SharedLibCriterion.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 #include "ValidationUtilities.hpp"
 

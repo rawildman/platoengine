@@ -27,7 +27,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     const auto tGeometry = pf::GeometryFactory::make_geometry_data(tData.geometry());
 
     // Test Geometry
-    const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
+    const auto tBoundingBox = pf::Core::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
     const pf::MeshProxy tGeomProxy = tGeometry.mCompute.f(tBoundingBox);
     const pf::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometry.mCompute.f(tBoundingBox);
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
@@ -65,7 +65,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
     EXPECT_DOUBLE_EQ(tObjectiveFunction->value(tBoundingBox, tTolerance), tWeight * tNodalSum);
 
     pf::BrickDesign tDesign;
-    EXPECT_EQ(*tProblem.mGeometry.mInitialGuess->getVector(), *pf::detail::to_rol_std_vector(tDesign).getVector());
+    EXPECT_EQ(tProblem.mGeometry.mInitialGuess.stdVector(), pf::detail::to_dynamic_vector(tDesign).stdVector());
 
     std::filesystem::remove("my_mesh.exo");
 }

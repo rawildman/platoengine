@@ -11,7 +11,7 @@ TEST(DynamicVector, VectorConstructor)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector = std::vector{1.0, 2.0};
-    const auto tDynamicVector = pfc::DynamicVector{tVector};
+    const auto tDynamicVector = pfc::DynamicVector(tVector);
 
     EXPECT_EQ(tDynamicVector.size(), tVector.size());
     EXPECT_EQ(tDynamicVector[0], tVector[0]);
@@ -22,9 +22,9 @@ TEST(DynamicVector, PlusEqual)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector1 = std::vector{1.0, 2.0, 3.0};
-    const auto tDynamicVector1 = pfc::DynamicVector{tVector1};
+    const auto tDynamicVector1 = pfc::DynamicVector(tVector1);
     const auto tVector2 = std::vector{4.0, 5.0, 6.0};
-    auto tDynamicVector2 = pfc::DynamicVector{tVector2};
+    auto tDynamicVector2 = pfc::DynamicVector(tVector2);
     tDynamicVector2 += tDynamicVector1;
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector2.size(); ++tIndex)
@@ -37,7 +37,7 @@ TEST(DynamicVector, AdditionLValueLValue)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector1 = std::vector{1.0, 2.0, 3.0};
-    const auto tDynamicVector1 = pfc::DynamicVector{tVector1};
+    const auto tDynamicVector1 = pfc::DynamicVector(tVector1);
     auto tDynamicVector2 = tDynamicVector1 + tDynamicVector1;
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector2.size(); ++tIndex)
@@ -50,9 +50,9 @@ TEST(DynamicVector, AdditionRValueRValue)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector1 = std::vector{1.0, 2.0, 3.0};
-    auto tDynamicVector1 = pfc::DynamicVector{tVector1};
+    auto tDynamicVector1 = pfc::DynamicVector(tVector1);
     const auto tVector2 = std::vector{4.0, 5.0, 6.0};
-    auto tDynamicVector2 = pfc::DynamicVector{tVector2};
+    auto tDynamicVector2 = pfc::DynamicVector(tVector2);
     auto tDynamicVector3 = std::move(tDynamicVector1) + std::move(tDynamicVector2);
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector3.size(); ++tIndex)
@@ -65,9 +65,9 @@ TEST(DynamicVector, AdditionLValueRValue)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector1 = std::vector{1.0, 2.0, 3.0};
-    const auto tDynamicVector1 = pfc::DynamicVector{tVector1};
+    const auto tDynamicVector1 = pfc::DynamicVector(tVector1);
     const auto tVector2 = std::vector{4.0, 5.0, 6.0};
-    auto tDynamicVector2 = pfc::DynamicVector{tVector2};
+    auto tDynamicVector2 = pfc::DynamicVector(tVector2);
     auto tDynamicVector3 = tDynamicVector1 + std::move(tDynamicVector2);
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector3.size(); ++tIndex)
@@ -80,9 +80,9 @@ TEST(DynamicVector, AdditionRValueLValue)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector1 = std::vector{1.0, 2.0, 3.0};
-    auto tDynamicVector1 = pfc::DynamicVector{tVector1};
+    auto tDynamicVector1 = pfc::DynamicVector(tVector1);
     const auto tVector2 = std::vector{4.0, 5.0, 6.0};
-    const auto tDynamicVector2 = pfc::DynamicVector{tVector2};
+    const auto tDynamicVector2 = pfc::DynamicVector(tVector2);
     auto tDynamicVector3 = std::move(tDynamicVector1) + tDynamicVector2;
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector3.size(); ++tIndex)
@@ -95,7 +95,7 @@ TEST(DynamicVector, TimesEqual)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector = std::vector{1.0, 2.0, 3.0};
-    auto tDynamicVector = pfc::DynamicVector{tVector};
+    auto tDynamicVector = pfc::DynamicVector(tVector);
     const auto tScalar = double{2.0};
     tDynamicVector *= tScalar;
 
@@ -109,7 +109,7 @@ TEST(DynamicVector, ScalarLeftMultiply)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector = std::vector{1.0, 2.0, 3.0};
-    auto tDynamicVector1 = pfc::DynamicVector{tVector};
+    auto tDynamicVector1 = pfc::DynamicVector(tVector);
     const auto tScalar = double{2.0};
     const auto tDynamicVector2 = tScalar * std::move(tDynamicVector1);
 
@@ -123,14 +123,38 @@ TEST(DynamicVector, ScalarRightMultiply)
 {
     namespace pfc = Plato::Functional::Core;
     const auto tVector = std::vector{1.0, 2.0, 3.0};
-    auto tDynamicVector1 = pfc::DynamicVector{tVector};
+    auto tDynamicVector1 = pfc::DynamicVector(tVector);
     const auto tScalar = double{2.0};
-    const auto tDynamicVector2 = std::move(tDynamicVector1) * tScalar ;
+    const auto tDynamicVector2 = std::move(tDynamicVector1) * tScalar;
 
     for (std::size_t tIndex = 0; tIndex < tDynamicVector2.size(); ++tIndex)
     {
         EXPECT_EQ(tDynamicVector2[tIndex], tScalar * tVector[tIndex]);
     }
+}
+
+TEST(DynamicVector, InnerProduct)
+{
+    namespace pfc = Plato::Functional::Core;
+    const auto tVector1 = std::vector{1.0, 2.0, 3.0};
+    const auto tDynamicVector1 = pfc::DynamicVector(tVector1);
+    const auto tVector2 = std::vector{4.0, 5.0, 6.0};
+    const auto tDynamicVector2 = pfc::DynamicVector(tVector2);
+    const double tResult = tDynamicVector1.dot(tDynamicVector2);
+    const double tExpected = std::inner_product(tVector1.cbegin(), tVector1.cend(), tVector2.cbegin(), 0.0);
+    EXPECT_EQ(tResult, tExpected);
+}
+
+TEST(DynamicVector, StdVector)
+{
+    namespace pfc = Plato::Functional::Core;
+    const auto tVector = std::vector{1, 2, 3};
+    auto tDynamicVector = pfc::DynamicVector(tVector);
+    const std::vector<int> tVectorCopy1 = tDynamicVector.stdVector();
+    EXPECT_EQ(tVector, tVectorCopy1);
+
+    const std::vector<int> tVectorCopy2 = std::move(tDynamicVector).stdVector();
+    EXPECT_EQ(tVector, tVectorCopy2);
 }
 
 TEST(DynamicVector, Serialization)
@@ -141,7 +165,7 @@ TEST(DynamicVector, Serialization)
     auto tSaveArchive = boost::archive::binary_oarchive{tStream};
 
     const auto tVector = std::vector{1.0, 2.0, 3.0, 4.0};
-    const auto tStoredVector = pfc::DynamicVector{tVector};
+    const auto tStoredVector = pfc::DynamicVector(tVector);
     tSaveArchive << tStoredVector;
 
     auto tLoadedVector = pfc::DynamicVector<double>{};

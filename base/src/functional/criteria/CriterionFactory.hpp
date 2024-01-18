@@ -1,10 +1,10 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIONFACTORY
 #define PLATO_FUNCTIONAL_CRITERIONFACTORY
 
-#include <ROL_StdVector.hpp>
 #include <string>
 
 #include "CriterionRegistration.hpp"
+#include "DynamicVector.hpp"
 #include "Exception.hpp"
 #include "Function.hpp"
 #include "Plato_InputBlocks.hpp"
@@ -12,7 +12,7 @@
 
 namespace Plato::Functional::CriterionFactory
 {
-using CriterionFunction = Function<double, ROL::StdVector<double>, const MeshProxy&>;
+using CriterionFunction = Function<double, Core::DynamicVector<double>, const MeshProxy&>;
 
 /// @brief Converts either objective or constraint input objects to a common CriterionInput struct
 /// @tparam Input Must be either Plato::objective or Plato::constraint input structs
@@ -50,7 +50,8 @@ CriterionInput to_criterion_input(const Input& aInput)
 {
     static_assert(std::is_same_v<Input, Core::ValidatedInputTypeWrapper<Plato::objective>> ||
                       std::is_same_v<Input, Core::ValidatedInputTypeWrapper<Plato::constraint>>,
-                  "to_criterion_input must only be called with Plato::objective or Plato::constraint wrapped in ValidatedInputTypeWrapper");
+                  "to_criterion_input must only be called with Plato::objective or Plato::constraint wrapped in "
+                  "ValidatedInputTypeWrapper");
     return CriterionInput{/*.mSharedLibraryPath=*/aInput.rawInput().shared_library_path.value_or(Plato::FileName{}),
                           /*.mNumberOfProcessors=*/aInput.rawInput().number_of_processors.value_or(1),
                           /*.mInputFiles=*/aInput.rawInput().input_files.value_or(Plato::FileList{})};

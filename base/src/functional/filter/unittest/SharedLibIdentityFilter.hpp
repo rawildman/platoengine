@@ -1,8 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_TEST_SHAREDLIBIDENTITYFILTER
 #define PLATO_FUNCTIONAL_TEST_SHAREDLIBIDENTITYFILTER
 
-#include <ROL_StdVector.hpp>
-
+#include "DynamicVector.hpp"
 #include "FilterInterface.hpp"
 
 namespace Plato::Functional
@@ -21,8 +20,8 @@ class SharedLibIdentityFilter : public FilterInterface
    public:
     [[nodiscard]] MeshProxy filter(const MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] ROL::StdVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
-                                                             const ROL::StdVector<double>& aV) const override;
+    [[nodiscard]] Core::DynamicVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
+                                                                  const Core::DynamicVector<double>& aV) const override;
 };
 }  // namespace Plato::Functional::Test
 

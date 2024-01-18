@@ -1,10 +1,10 @@
 #ifndef PLATO_BRICK_SHAPE_GEOMETRY
 #define PLATO_BRICK_SHAPE_GEOMETRY
 
-#include <ROL_StdVector.hpp>
 #include <filesystem>
 #include <optional>
 
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "JacobianColumnEvaluator.hpp"
 #include "JacobianMultiplier.hpp"
@@ -52,11 +52,11 @@ class BrickShapeGeometry
 
     [[nodiscard]] JacobianColumnEvaluator jacobian(const BrickDesign& aDesignParameters) const;
 
-    [[nodiscard]] static std::unique_ptr<ROL::StdVector<double>> initialGuess();
+    [[nodiscard]] static Core::DynamicVector<double> initialGuess();
 
     [[nodiscard]] static std::pair<std::vector<double>, std::vector<double>> bounds();
 
-    static void output(const ROL::StdVector<double>& aSolution);
+    static void output(const Core::DynamicVector<double>& aSolution);
 
    private:
     std::filesystem::path mFileName;
@@ -65,20 +65,18 @@ class BrickShapeGeometry
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
+    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
 
 namespace detail
 {
-[[nodiscard]] BrickDesign to_design_parameters(const ROL::StdVector<double>& aDesignParameter);
+[[nodiscard]] BrickDesign to_design_parameters(const Core::DynamicVector<double>& aDesignParameter);
 
 [[nodiscard]] std::shared_ptr<stk::mesh::BulkData> create_mesh(
     const BrickDesign& aDesign, std::optional<double> aDiscretizationSize = std::nullopt);
 
 [[nodiscard]] std::vector<double> sensitivities(unsigned int aParameterIndex);
 
-[[nodiscard]] ROL::StdVector<double> to_rol_std_vector(const BrickDesign& aDesignParameters);
-
-[[nodiscard]] std::unique_ptr<ROL::StdVector<double>> to_rol_std_vector_ptr(const BrickDesign& aDesignParameters);
+[[nodiscard]] Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters);
 }  // namespace detail
 
 }  // namespace Plato::Functional

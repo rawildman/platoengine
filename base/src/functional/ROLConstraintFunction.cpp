@@ -1,9 +1,11 @@
 #include "ROLConstraintFunction.hpp"
 
+#include "ROLHelpers.hpp"
+
 namespace Plato::Functional
 {
-
-ROLConstraintFunction::ROLConstraintFunction(ConstraintFactory::Constraint<const ROL::StdVector<double>&> aConstraint)
+ROLConstraintFunction::ROLConstraintFunction(
+    ConstraintFactory::Constraint<const Core::DynamicVector<double>&> aConstraint)
     : mName(aConstraint.mName),
       mFunction(std::move(aConstraint.mConstraintFunction)),
       mConstraintTarget(aConstraint.mConstraintTarget),
@@ -13,11 +15,10 @@ ROLConstraintFunction::ROLConstraintFunction(ConstraintFactory::Constraint<const
 
 void ROLConstraintFunction::value(ROL::Vector<double>& aConstraints, const ROL::Vector<double>& aControl, double&)
 {
-    auto tControlAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aControl);
-    double tConstraintValue = mFunction.f(tControlAsStdVector);
+    const double tConstraintValue = mFunction.f(to_dynamic_vector(aControl));
 
     const double tOutput = tConstraintValue - mConstraintTarget;
-    auto aConstraintsAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aConstraints);
+    auto& aConstraintsAsStdVector = dynamic_cast<ROL::StdVector<double>&>(aConstraints);
     aConstraintsAsStdVector.getVector()->front() = tOutput;
 }
 
@@ -26,11 +27,8 @@ void ROLConstraintFunction::applyJacobian(ROL::Vector<double>& aJacobianTimesDir
                                           const ROL::Vector<double>& aControl,
                                           double& /*aTolerance*/)
 {
-    auto tControlAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aControl);
-    const double tJacobianTimesDirection = mFunction.df(tControlAsStdVector).dot(aDirection);
-
-    auto tJacobianTimesDirectionAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aJacobianTimesDirection);
-    *tJacobianTimesDirectionAsStdVector.getVector() = {tJacobianTimesDirection};
+    const double tJacobianTimesDirection = mFunction.df(to_dynamic_vector(aControl)).dot(to_dynamic_vector(aDirection));
+    assign_vector(aJacobianTimesDirection, {tJacobianTimesDirection});
 }
 
 void ROLConstraintFunction::applyAdjointJacobian(ROL::Vector<double>& aAdjointJacobianTimesDirection,
@@ -40,21 +38,21 @@ void ROLConstraintFunction::applyAdjointJacobian(ROL::Vector<double>& aAdjointJa
 {
     assert(aDual.dimension() == 1);
     assert(aAdjointJacobianTimesDirection.dimension() == aControl.dimension());
-    auto tControlAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aControl);
-    auto tDualAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aDual);
+    auto tAdjointJacobianTimesDirection = mFunction.df(to_dynamic_vector(aControl));
+    auto tAdjointJacobianTimesDirectionROLVector = to_rol_vector(tAdjointJacobianTimesDirection);
 
-    auto tAdjointJacobianTimesDirection = mFunction.df(tControlAsStdVector);
-    tAdjointJacobianTimesDirection.scale(tDualAsStdVector.getVector()->front());
+    const auto& tDualAsStdVector = dynamic_cast<const ROL::StdVector<double>&>(aDual);
+    tAdjointJacobianTimesDirectionROLVector.scale(tDualAsStdVector.getVector()->front());
     auto tAdjointJacobianTimesDirectionAsStdVector =
         dynamic_cast<const ROL::StdVector<double>&>(aAdjointJacobianTimesDirection);
-    tAdjointJacobianTimesDirectionAsStdVector.set(tAdjointJacobianTimesDirection);
+    tAdjointJacobianTimesDirectionAsStdVector.set(tAdjointJacobianTimesDirectionROLVector);
 }
 
 void ROLConstraintFunction::applyAdjointJacobian(ROL::Vector<double>& aAdjointJacobianTimesDirection,
-                          const ROL::Vector<double>& aDual,
-                          const ROL::Vector<double>& aControl,
-                          const ROL::Vector<double>& /*aDualV*/,
-                          double& aTolerance)
+                                                 const ROL::Vector<double>& aDual,
+                                                 const ROL::Vector<double>& aControl,
+                                                 const ROL::Vector<double>& /*aDualV*/,
+                                                 double& aTolerance)
 {
     applyAdjointJacobian(aAdjointJacobianTimesDirection, aDual, aControl, aTolerance);
 }

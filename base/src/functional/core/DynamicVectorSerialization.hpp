@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_CORE_DYNAMICVECTORSERIALIZATION
 #define PLATO_FUNCTIONAL_CORE_DYNAMICVECTORSERIALIZATION
 
-#include <boost/serialization/valarray.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "DynamicVector.hpp"
 

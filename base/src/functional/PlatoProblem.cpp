@@ -42,7 +42,7 @@ std::vector<std::unique_ptr<ROLConstraintFunction>> make_rol_constraints(const P
     std::transform(aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
                    [&aProblem](const ConstraintFactory::Constraint<const MeshProxy&>& aConstraintData)
                    {
-                       ConstraintFactory::Constraint<const ROL::StdVector<double>&> tConstraint{
+                       ConstraintFactory::Constraint<const Core::DynamicVector<double>&> tConstraint{
                            aConstraintData.mName,
                            compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
                            aConstraintData.mConstraintTarget, aConstraintData.mLinear};
@@ -61,7 +61,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
 {
     auto tROLProblem =
         std::make_unique<ROL::Problem<double>>(ROL::Ptr<ROL::Objective<double>>(make_rol_objective(aProblem).release()),
-                                               copy_vector(*aProblem.mGeometry.mInitialGuess));
+                                               make_rol_vector(aProblem.mGeometry.mInitialGuess));
     tROLProblem->addBoundConstraint(make_rol_bound_constraint(aProblem.mGeometry.mBounds));
     for (auto& tConstraint : make_rol_constraints(aProblem))
     {

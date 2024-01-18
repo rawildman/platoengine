@@ -2,39 +2,37 @@
 
 #include "ROLHelpers.hpp"
 
-TEST(ROLHelpers, ScalarMultiplication)
+TEST(ROLHelpers, ToDynamicVector)
 {
-    const auto tV = ROL::StdVector<double>{1.0, 2.0, 3.0, 4.0};
-    const double tA = 2.0;
-    using Plato::Functional::operator*;
-
-    const ROL::StdVector tU = tA * tV;
-
-    const auto tExpected = std::vector<double>{2.0, 4.0, 6.0, 8.0};
-    EXPECT_EQ(*tU.getVector(), tExpected);
+    namespace pf = Plato::Functional;
+    const auto tROLStdVector = ROL::StdVector<double>{1.0, 2.0, 3.0};
+    const ROL::StdVector<double>& tROLVector = tROLStdVector;
+    const pf::Core::DynamicVector<double> tDynamicVector = pf::to_dynamic_vector(tROLVector);
+    EXPECT_EQ(tDynamicVector.stdVector(), *tROLStdVector.getVector());
 }
 
-TEST(ROLHelpers, Summation)
+TEST(ROLHelpers, ToROLVector)
 {
-    const auto tV1 = ROL::StdVector<double>{1.0, 2.0, 3.0, 4.0};
-    const auto tV2 = ROL::StdVector<double>{-1.0, -2.0, -3.0, -4.0};
-    using Plato::Functional::operator+;
-
-    const ROL::StdVector tV3 = tV1 + tV2;
-
-    const auto tExpected = std::vector<double>{0.0, 0.0, 0.0, 0.0};
-    EXPECT_EQ(*tV3.getVector(), tExpected);
+    namespace pf = Plato::Functional;
+    const auto tDynamicVector = pf::Core::DynamicVector<double>{1.0, 2.0, 3.0};
+    const ROL::StdVector<double> tROLStdVector = pf::to_rol_vector(tDynamicVector);
+    EXPECT_EQ(tDynamicVector.stdVector(), *tROLStdVector.getVector());
 }
 
-TEST(ROLHelpers, Copy)
+TEST(ROLHelpers, MakeROLVector)
 {
-    const auto tVector = ROL::StdVector<double>{1.0, 2.0, 3.0, 4.0};
-    const ROL::Ptr<ROL::Vector<double>> tCopy = Plato::Functional::copy_vector(tVector);
-    const auto tCopyAsStdVector = dynamic_cast<ROL::StdVector<double>*>(tCopy.get());
-    ASSERT_NE(tCopyAsStdVector, nullptr);
-    ASSERT_EQ(tCopy->dimension(), tVector.dimension());
-    for (int k = 0; k < tVector.dimension(); ++k)
-    {
-        EXPECT_EQ(tVector[k], (*tCopyAsStdVector)[k]);
-    }
+    namespace pf = Plato::Functional;
+    const auto tDynamicVector = pf::Core::DynamicVector<double>{1.0, 2.0, 3.0};
+    const ROL::Ptr<ROL::Vector<double>> tROLVector = pf::make_rol_vector(tDynamicVector);
+    const auto& tROLStdVector = dynamic_cast<const ROL::StdVector<double>&>(*tROLVector);
+    EXPECT_EQ(tDynamicVector.stdVector(), *tROLStdVector.getVector());
+}
+
+TEST(ROLHelpers, AssignVector)
+{
+    namespace pf = Plato::Functional;
+    const auto tVector = std::vector{1.0, 2.0, 3.0};
+    auto tROLStdVector = ROL::StdVector<double>{-1.0, -2.0};
+    pf::assign_vector(tROLStdVector, tVector);
+    EXPECT_EQ(*tROLStdVector.getVector(), tVector);
 }

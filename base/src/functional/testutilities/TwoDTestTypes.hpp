@@ -50,7 +50,7 @@ struct TwoDScalarFunction
 };
 
 // [dy/dx1]
-// [dy/dx1]
+// [dy/dx2]
 struct TwoDScalarFunctionGradient
 {
     [[nodiscard]] TwoDVector operator()(const TwoDVector& x) const

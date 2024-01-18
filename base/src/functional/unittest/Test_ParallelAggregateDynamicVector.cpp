@@ -1,0 +1,48 @@
+#include <gtest/gtest.h>
+
+#include "DynamicVector.hpp"
+#include "DynamicVectorSerialization.hpp"
+#include "ParallelAggregate.hpp"
+#include "ROLHelpers.hpp"
+#include "DynamicVectorTestUtilities.hpp"
+#include "Rosenbrock.hpp"
+
+namespace
+{
+constexpr auto kNumRanks = int{2};
+}
+
+TEST(ROLObjectiveFunction, MPISize)
+{
+    int tMPISize = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &tMPISize);
+    EXPECT_EQ(tMPISize, kNumRanks);
+}
+
+TEST(ROLObjectiveFunction, ParallelAggregateTwoRosenbrockObjectives)
+{
+    namespace pf = Plato::Functional;
+    namespace pfc = pf::Core;
+    namespace pft = pf::Test;
+
+    // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
+    // Each rank constructs a `ParallelAggregate` object with a single function, so that
+    // the resulting aggregation should be the evaluation of one function times the number
+    // of ranks.
+    const auto tRosenbrockFunction = pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
+    using RosenbrockF = std::decay_t<decltype(tRosenbrockFunction)>;
+    constexpr auto tWeight = double{0.5};
+
+    using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
+    const auto tAggregate =
+        pf::ParallelAggregate<double, pfc::DynamicVector<double>, const pfc::DynamicVector<double>&>(
+            FunctionAndWeight{std::make_pair(tRosenbrockFunction, tWeight)});
+
+    const auto tControl = pfc::DynamicVector{1.0, -2.0};
+    const double tExpectedF = kNumRanks * tWeight * tRosenbrockFunction.f(tControl);
+    const double tComputedF = tAggregate.f(tControl);
+    EXPECT_EQ(tComputedF, tExpectedF);
+    const pfc::DynamicVector<double> tExpectedDF = kNumRanks * tWeight * tRosenbrockFunction.df(tControl);
+    const pfc::DynamicVector<double> tComputedDF = tAggregate.df(tControl);
+    EXPECT_EQ(tComputedDF, tExpectedDF);
+}

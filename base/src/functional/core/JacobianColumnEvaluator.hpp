@@ -1,8 +1,9 @@
 #ifndef PLATO_JACOBIAN_COLUMN_EVALUATOR
 #define PLATO_JACOBIAN_COLUMN_EVALUATOR
 
-#include <ROL_StdVector.hpp>
 #include <functional>
+
+#include "DynamicVector.hpp"
 
 namespace Plato::Functional
 {
@@ -15,17 +16,18 @@ struct JacobianMultiplier;
 struct JacobianColumnEvaluator
 {
     /// @return Column with index @a aIndex.
-    [[nodiscard]] ROL::StdVector<double> column(const unsigned int aIndex) const;
+    [[nodiscard]] Core::DynamicVector<double> column(const unsigned int aIndex) const;
 
-    using ColumnFunction = std::function<ROL::StdVector<double>(unsigned int, const ROL::StdVector<double>&)>;
+    using ColumnFunction = std::function<Core::DynamicVector<double>(unsigned int, const Core::DynamicVector<double>&)>;
 
     unsigned int mColumns = 0;
-    ROL::StdVector<double> mX;
+    Core::DynamicVector<double> mX;
     ColumnFunction mColumnFunction;
 };
 
 /// Implements multiplication of a row vector @a aX with the Jacobian matrix represented by @a aA
-[[nodiscard]] ROL::StdVector<double> operator*(const ROL::StdVector<double>& aX, const JacobianColumnEvaluator& aA);
+[[nodiscard]] Core::DynamicVector<double> operator*(const Core::DynamicVector<double>& aX,
+                                                    const JacobianColumnEvaluator& aA);
 
 /// @brief Creates a JacobianMultiplier from @a aJacobianColumnEvaluator
 JacobianMultiplier to_jacobian_multiplier(JacobianColumnEvaluator aJacobianColumnEvaluator);

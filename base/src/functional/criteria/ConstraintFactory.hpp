@@ -7,6 +7,7 @@
 #include "Function.hpp"
 #include "Plato_InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
+#include "DynamicVector.hpp"
 
 namespace Plato::Functional
 {
@@ -20,11 +21,11 @@ using ValidatedConstraints =
 
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
-///   Typically, this is either MeshProxy or a vector type such as `ROL::StdVector`.
+///   Typically, this is either MeshProxy or a vector type such as DynamicVector.
 template <typename FunctionArg>
 struct Constraint
 {
-    using ConstraintFunction = Function<double, ROL::StdVector<double>, FunctionArg>;
+    using ConstraintFunction = Function<double, Core::DynamicVector<double>, FunctionArg>;
 
     std::string mName;
     ConstraintFunction mConstraintFunction;
