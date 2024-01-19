@@ -10,22 +10,17 @@ namespace Plato::Functional
 {
 namespace
 {
-int num_ranks()
-{
-    int tNumRanks = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &tNumRanks);
-    return tNumRanks;
-}
-
-/// Removes listeners on all but rank 0
-void setup_listeners()
+void output_xml(const int aMyExitCode, const int aGroupExitCode)
 {
     int tRank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &tRank);
-    if (tRank != 0)
+    const bool tShouldOutputForSuccess = aGroupExitCode == 0 && tRank == 0;
+    const bool tShouldOutputForFailure = aMyExitCode != 0;
+    const bool tShouldSilenceOutput = !(tShouldOutputForSuccess || tShouldOutputForFailure);
+    if (tShouldSilenceOutput)
     {
         ::testing::TestEventListeners& tListeners = ::testing::UnitTest::GetInstance()->listeners();
-        delete tListeners.Release(tListeners.default_result_printer());
+        delete tListeners.Release(tListeners.default_xml_generator());
     }
 }
 
@@ -45,7 +40,9 @@ auto program_name_and_arguments_for_mpi(const int argc, char** argv) -> std::pai
 MPI_Comm setup_children(int argc, char** argv, unsigned int aNumRanks)
 {
     MPI_Comm tInterComm = MPI_COMM_NULL;
-    if (num_ranks() == 1)
+    int tNumRanks = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &tNumRanks);
+    if (tNumRanks == 1)
     {
         std::vector<int> tErrorCodes(aNumRanks);
         MPI_Comm tParentComm;
@@ -90,7 +87,6 @@ int unit_main(int argc, char** argv)
     Kokkos::initialize(argc, argv);
 
     testing::InitGoogleTest(&argc, argv);
-    setup_listeners();
     const int returnVal = RUN_ALL_TESTS();
 
     Kokkos::finalize();
@@ -109,9 +105,10 @@ int parallel_unit_main(int argc, char** argv, unsigned int aNumRanks)
     if (rank_should_run_tests(tInterComm))
     {
         testing::InitGoogleTest(&argc, argv);
-        setup_listeners();
-        tExitStatus = RUN_ALL_TESTS();
-        tExitStatus = communicate_exit_code(tInterComm, tExitStatus);
+        const int tMyExitStatus = RUN_ALL_TESTS();
+        const int tGroupExitStatus = communicate_exit_code(tInterComm, tMyExitStatus);
+        output_xml(tMyExitStatus, tGroupExitStatus);
+        tExitStatus = tGroupExitStatus;
     }
     else
     {

@@ -13,7 +13,7 @@ class DynamicVector;
 template <typename Archive, typename U>
 void serialize(Archive& aArchive, DynamicVector<U>& aVector, const unsigned int aVersion);
 
-/// @brief A wrapper for a valarray, with functions for addition, multiplication and serialization.
+/// @brief A wrapper for a `std::vector`, with functions for addition, multiplication and serialization.
 ///
 /// The purpose of this class is to provide an interface with ROL vector types, isolating the ROL types
 /// to the objective/constraint ROL classes.

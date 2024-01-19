@@ -51,7 +51,7 @@ template <typename R, typename dR, typename Arg>
     return make_aggregate_function(Aggregate{std::move(aFunctionsAndWeights)});
 }
 
-template < typename  R, typename dR, typename Arg>
+template <typename R, typename dR, typename Arg>
 Aggregate<R, dR, Arg>::Aggregate(std::vector<std::pair<Function<R, dR, Arg>, double>> aFunctionsAndWeights)
     : mFunctionsAndWeights(std::move(aFunctionsAndWeights))
 {
