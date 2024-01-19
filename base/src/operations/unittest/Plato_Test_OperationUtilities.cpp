@@ -43,13 +43,40 @@
 #ifdef STK_ENABLED
 #include "stk_io/StkMeshIoBroker.hpp"
 #include "Ioss_NodeBlock.h"
-#include "stk_unit_test_utils/TextMeshToFile.hpp"
+//#include "stk_unit_test_utils/TextMeshToFile.hpp"
+#include "exodusII.h"
 #endif
 #include "Plato_OperationsUtilities.hpp"
 #include "Plato_Exceptions.hpp"
-#include <filesystem>
 #include <gtest/gtest.h>
+#include <cstdio>
 
+
+void createSingleHexMeshWithNonTrivialNodemap(const unsigned int* aNodeMap)
+{
+    int tExodusID, tIOWordSize, tCPUWordSize;
+    tCPUWordSize = sizeof(double);
+    tIOWordSize = 8;
+    tExodusID = ex_create("SingleHexMeshWithNonTrivialNodeMap.exo", EX_CLOBBER, &tCPUWordSize, &tIOWordSize);
+    ex_put_init(tExodusID, "dummy_exodus_file", 3, 8, 1, 1, 0, 0);
+    const char *tCoordNames[] = {"x","y","z"};
+    ex_put_coord_names(tExodusID, (char* const*)tCoordNames);
+    double tX[8], tY[8], tZ[8];
+    tX[0] = -5.0; tY[0] = -5.0; tZ[0] = 5.0;
+    tX[1] = -5.0; tY[1] = -5.0; tZ[1] = -5.0;
+    tX[2] = -5.0; tY[2] = 5.0; tZ[2] = -5.0;
+    tX[3] = -5.0; tY[3] = 5.0; tZ[3] = 5.0;
+    tX[4] = 5.0; tY[4] = -5.0; tZ[4] = 5.0;
+    tX[5] = 5.0; tY[5] = -5.0; tZ[5] = -5.0;
+    tX[6] = 5.0; tY[6] = 5.0; tZ[6] = -5.0;
+    tX[7] = 5.0; tY[7] = 5.0; tZ[7] = 5.0;
+    ex_put_coord(tExodusID, tX, tY, tZ);
+    ex_put_id_map(tExodusID, EX_NODE_MAP, aNodeMap);
+    ex_put_block(tExodusID, EX_ELEM_BLOCK, 1, "HEX8", 1, 8, 0, 0, 0);
+    int tConnectivity[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    ex_put_conn(tExodusID, EX_ELEM_BLOCK, 1, tConnectivity, 0, 0);
+    ex_close(tExodusID);
+}
 
 namespace PlatoTestOperationUtilities
 {
@@ -129,44 +156,22 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_trivial_node_map)
     EXPECT_EQ(tGold, tResults);
     
     // Clean up mesh from disk
-    std::filesystem::remove("temp_mesh.exo");
+    std::remove("temp_mesh.exo");
 }
 
 TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_map)
 {
-    stk::unit_test_util::simple_fields::TextMeshToFile tMesh(get_comm(), stk::mesh::BulkData::AUTO_AURA);
-    std::string tMeshDescription("0,1,HEX_8,1,2,3,4,11,12,13,14"); 
-    tMesh.setup_mesh(tMeshDescription, "tempFile.g");
-    tMesh.write_mesh();
+    const std::vector<unsigned int> tGold = {44, 77, 8, 3, 1, 6, 5, 2};
+    createSingleHexMeshWithNonTrivialNodemap(tGold.data());
 
-    // Generate a mesh in core and write it to disk
-     /*
-    stk::io::StkMeshIoBroker iobroker(MPI_COMM_WORLD);
-    iobroker.use_simple_fields();
-    iobroker.add_mesh_database("generated:1x1x1", stk::io::READ_MESH);
-    iobroker.create_input_mesh();
-
-    const Ioss::NodeBlockContainer& tNodeBlocks = iobroker.get_input_ioss_region()->get_node_blocks();
-    Ioss::NodeBlock *tNB = tNodeBlocks[0];
-    const std::vector<unsigned int> tScrambledIDs = {7,4,6,1,8,2,3,5};
-    tNB->put_field_data("ids", tScrambledIDs);
-
-    iobroker.populate_bulk_data();
-
-    Ioss::PropertyManager properties;
-    size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
-    iobroker.write_output_mesh(outputFileIndex);
-*/
-  
     // Call the function to extract the node ids from the mesh on disk
-    std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "tempFile.g");
+    std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "SingleHexMeshWithNonTrivialNodeMap.exo");
     
     // Test against gold values
-    const std::vector<unsigned int> tGold = {1,2,3,4,11,12,13,14};
-    EXPECT_EQ(tResults, tScrambledIDs);
+    EXPECT_EQ(tResults, tGold);
     
     // Clean up mesh from disk
-    //std::filesystem::remove("tempFile.g");
+    std::remove("SingleHexMeshWithNonTrivialNodeMap.exo");
 }
 
 #endif
