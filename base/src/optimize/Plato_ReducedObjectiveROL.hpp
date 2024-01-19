@@ -136,7 +136,7 @@ public:
         }
         mGradientComputed = false;
 
-        const bool tNewIteration = aIteration != mLastIteration && aIteration != -1;
+        const bool tNewIteration = aIteration != mLastIteration && aIteration != -1 && aUpdateType == ROL::UpdateType::Accept;
         if(tNewIteration)
         {
           callOutputStage();
@@ -191,6 +191,10 @@ public:
         Plato::DistributedVectorROL<ScalarType> & tOutputGradient =
                 dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(aGradient);
         std::copy(mGradient.begin(), mGradient.end(), tOutputGradient.vector().begin());
+
+        // Output everytime the gradient is called.  This should roughly be equivalent
+        // to every outer iteration.
+        //callOutputStage();
     }
     /******************************************************************************//**
      * \brief Returns current hessian applied to a vector

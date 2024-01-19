@@ -1539,11 +1539,6 @@ void parseOptimizerOptions(const Plato::InputData & aOptimizerNode, Plato::Optim
             const bool tResetAlgorithmOnUpdate = Plato::Get::Bool(tOptionsNode, "ResetAlgorithmOnUpdate");
             aOptimizerEngineStageData.setResetAlgorithmOnUpdate(tResetAlgorithmOnUpdate);
         }
-        if( tOptionsNode.size<std::string>("ProblemResetType") )
-        {
-            const std::string tType = tOptionsNode.get<std::string>("ProblemResetType");
-            aOptimizerEngineStageData.setProblemResetType(tType);
-        }
         if( tOptionsNode.size<std::string>("ROLStochasticDistributionsFile"))
         {
             aOptimizerEngineStageData.setROLStochasticDistributionsFile(Get::String(tOptionsNode, "ROLStochasticDistributionsFile"));

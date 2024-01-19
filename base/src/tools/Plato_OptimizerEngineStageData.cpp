@@ -1110,14 +1110,4 @@ void OptimizerEngineStageData::setResetAlgorithmOnUpdate(const bool aInput)
     mResetAlgorithmOnUpdate = aInput;
 }
 
-std::string OptimizerEngineStageData::getProblemResetType() const
-{
-    return mProblemResetType;
-}
-
-void OptimizerEngineStageData::setProblemResetType(const std::string aInput)
-{
-    mProblemResetType = aInput;
-}
-
 } //namespace Plato

@@ -344,9 +344,6 @@ public:
     bool getResetAlgorithmOnUpdate() const;
     void setResetAlgorithmOnUpdate(const bool aInput);
 
-    std::string getProblemResetType() const;
-    void setProblemResetType(const std::string);
-
     friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & aArchive, const unsigned int /*version*/)
@@ -394,7 +391,6 @@ public:
       aArchive & boost::serialization::make_nvp("ObjectiveValueStageName",mObjectiveValueStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveGradientStageName",mObjectiveGradientStageName);
       aArchive & boost::serialization::make_nvp("ObjectiveHessianStageName",mObjectiveHessianStageName);
-      aArchive & boost::serialization::make_nvp("ProblemResetType",mProblemResetType);
       aArchive & boost::serialization::make_nvp("StochasticSampleSharedDataNames",mStochasticSampleSharedDataNames);
       
       aArchive & boost::serialization::make_nvp("InitialGuess",mInitialGuess);
@@ -461,7 +457,6 @@ private:
     std::string mObjectiveValueStageName;
     std::string mObjectiveGradientStageName;
     std::string mObjectiveHessianStageName;
-    std::string mProblemResetType;
     
     std::vector<StochasticSampleSharedDataNames> mStochasticSampleSharedDataNames;
 
