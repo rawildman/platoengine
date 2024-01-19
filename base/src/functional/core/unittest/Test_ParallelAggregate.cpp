@@ -9,7 +9,19 @@
 namespace
 {
 constexpr auto kNumRanks = int{2};
-}
+}  // namespace
+
+class MPICommSpawnFixture : public ::testing::Test
+{
+   protected:
+    void SetUp() override
+    {
+    }
+    bool shouldRun() const { return mParentComm != MPI_COMM_NULL; }
+
+   protected:
+    MPI_Comm mParentComm;
+};
 
 TEST(Aggregate, MPISize)
 {
@@ -18,7 +30,7 @@ TEST(Aggregate, MPISize)
     EXPECT_EQ(tMPISize, kNumRanks);
 }
 
-TEST(Aggregate, ParallelAggregate)
+TEST_F(MPICommSpawnFixture, ParallelAggregate)
 {
     namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;

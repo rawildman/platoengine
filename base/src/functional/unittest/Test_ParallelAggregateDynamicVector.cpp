@@ -9,7 +9,7 @@
 
 namespace
 {
-constexpr auto kNumRanks = int{2};
+constexpr auto kNumRanks = int{4};
 }
 
 TEST(ROLObjectiveFunction, MPISize)
