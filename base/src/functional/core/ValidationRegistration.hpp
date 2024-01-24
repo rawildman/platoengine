@@ -82,7 +82,7 @@ template <typename ValidationInput>
             aCurrentMessageList.emplace_back(std::move(tMessage).value());
         }
     }
-    return aCurrentMessageList;
+    return std::move(aCurrentMessageList);
 }
 
 }  // namespace Plato::Functional::Validation

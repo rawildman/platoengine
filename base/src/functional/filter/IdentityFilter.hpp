@@ -10,7 +10,7 @@ struct density_topology;
 }
 namespace Plato::Functional
 {
-class FilterJacobian;
+struct FilterJacobian;
 struct MeshProxy;
 
 /// @brief A Filter that does not alter the density field, mostly used for testing.
