@@ -1,7 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_OBJECTIVEFACTORY
 #define PLATO_FUNCTIONAL_OBJECTIVEFACTORY
 
-#include "Aggregate.hpp"
+//#include "Aggregate.hpp"
+#include "ParallelAggregate.hpp"
 #include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "Plato_InputBlocks.hpp"
@@ -19,10 +20,12 @@ using ValidatedObjectives =
 
 using ObjectiveFunction = Function<double, Core::DynamicVector<double>, const MeshProxy&>;
 using AggregateObjective = Aggregate<double, Core::DynamicVector<double>, const MeshProxy&>;
+using ParallelAggregateObjective = ParallelAggregate<double, Core::DynamicVector<double>, const MeshProxy&>;
 
 namespace detail
 {
 [[nodiscard]] AggregateObjective make_aggregate(const ValidatedObjectives& aInput);
+[[nodiscard]] ParallelAggregateObjective make_parallel_aggregate(const ValidatedObjectives& aInput);
 }
 
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);

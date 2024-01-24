@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include <mpi.h>
+
+#include <boost/mpi/communicator.hpp>
 
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
@@ -11,26 +12,13 @@ namespace
 constexpr auto kNumRanks = int{2};
 }  // namespace
 
-class MPICommSpawnFixture : public ::testing::Test
+TEST(ParallelAggregate, MPISize)
 {
-   protected:
-    void SetUp() override
-    {
-    }
-    bool shouldRun() const { return mParentComm != MPI_COMM_NULL; }
-
-   protected:
-    MPI_Comm mParentComm;
-};
-
-TEST(Aggregate, MPISize)
-{
-    int tMPISize = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &tMPISize);
-    EXPECT_EQ(tMPISize, kNumRanks);
+    auto tComm = boost::mpi::communicator{};
+    EXPECT_EQ(tComm.size(), kNumRanks);
 }
 
-TEST_F(MPICommSpawnFixture, ParallelAggregate)
+TEST(ParallelAggregate, Evaluate)
 {
     namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
@@ -44,7 +32,7 @@ TEST_F(MPICommSpawnFixture, ParallelAggregate)
     using RosenbrockF = std::decay_t<decltype(tF)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
     const auto tAggregate = pf::ParallelAggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
-        FunctionAndWeight{std::make_pair(tF, tW)});
+        FunctionAndWeight{std::make_pair(tF, tW)}, boost::mpi::communicator{});
 
     EXPECT_EQ(tAggregate.size(), 1);
 

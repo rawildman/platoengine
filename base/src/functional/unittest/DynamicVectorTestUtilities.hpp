@@ -2,6 +2,7 @@
 #define PLATO_FUNCTIONAL_TEST_ROLTESTUTILITIES
 
 #include "DynamicVector.hpp"
+#include "Function.hpp"
 #include "Rosenbrock.hpp"
 #include "TwoDTestTypes.hpp"
 

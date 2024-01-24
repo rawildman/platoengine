@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 
+#include <boost/mpi/communicator.hpp>
+
 #include "DynamicVector.hpp"
 #include "DynamicVectorSerialization.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 #include "ParallelAggregate.hpp"
 #include "ROLHelpers.hpp"
-#include "DynamicVectorTestUtilities.hpp"
 #include "Rosenbrock.hpp"
 
 namespace
@@ -14,9 +16,8 @@ constexpr auto kNumRanks = int{4};
 
 TEST(ROLObjectiveFunction, MPISize)
 {
-    int tMPISize = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &tMPISize);
-    EXPECT_EQ(tMPISize, kNumRanks);
+    auto tComm = boost::mpi::communicator{};
+    EXPECT_EQ(tComm.size(), kNumRanks);
 }
 
 TEST(ROLObjectiveFunction, ParallelAggregateTwoRosenbrockObjectives)
@@ -36,7 +37,7 @@ TEST(ROLObjectiveFunction, ParallelAggregateTwoRosenbrockObjectives)
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
     const auto tAggregate =
         pf::ParallelAggregate<double, pfc::DynamicVector<double>, const pfc::DynamicVector<double>&>(
-            FunctionAndWeight{std::make_pair(tRosenbrockFunction, tWeight)});
+            FunctionAndWeight{std::make_pair(tRosenbrockFunction, tWeight)}, boost::mpi::communicator{});
 
     const auto tControl = pfc::DynamicVector{1.0, -2.0};
     const double tExpectedF = kNumRanks * tWeight * tRosenbrockFunction.f(tControl);

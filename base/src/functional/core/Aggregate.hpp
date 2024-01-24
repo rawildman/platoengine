@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "Function.hpp"
-#include "ROLHelpers.hpp"
 
 namespace Plato::Functional
 {

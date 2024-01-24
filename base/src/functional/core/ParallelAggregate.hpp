@@ -5,7 +5,6 @@
 
 #include "Aggregate.hpp"
 #include "Function.hpp"
-#include "ROLHelpers.hpp"
 
 namespace Plato::Functional
 {
@@ -22,7 +21,8 @@ class ParallelAggregate
    public:
     using AggregateFunction = Function<R, dR, Arg>;
 
-    explicit ParallelAggregate(std::vector<std::pair<AggregateFunction, double>> aFunctionsAndWeights);
+    ParallelAggregate(std::vector<std::pair<AggregateFunction, double>> aFunctionsAndWeights,
+                      boost::mpi::communicator aCommunicator);
 
     /// @brief Computes the weighted sum of functions owned by this object and
     ///  then performs a blocking all reduce operation on the result.
@@ -36,29 +36,37 @@ class ParallelAggregate
 
    private:
     Aggregate<R, dR, Arg> mAggregateFunction;
+    boost::mpi::communicator mCommunicator{};
 };
 
+/// @brief Creates a Function object from an Aggregate.
 template <typename R, typename dR, typename Arg>
-ParallelAggregate<R, dR, Arg>::ParallelAggregate(std::vector<std::pair<AggregateFunction, double>> aFunctionsAndWeights)
-    : mAggregateFunction{std::move(aFunctionsAndWeights)}
+[[nodiscard]] auto make_aggregate_function(const ParallelAggregate<R, dR, Arg>& aAggregate)
+{
+    return make_function([aAggregate](const Arg& aArg) { return aAggregate.f(aArg); },
+                         [aAggregate](const Arg& aArg) { return aAggregate.df(aArg); });
+}
+
+template <typename R, typename dR, typename Arg>
+ParallelAggregate<R, dR, Arg>::ParallelAggregate(std::vector<std::pair<AggregateFunction, double>> aFunctionsAndWeights,
+                                                 boost::mpi::communicator aCommunicator)
+    : mAggregateFunction{std::move(aFunctionsAndWeights)}, mCommunicator{std::move(aCommunicator)}
 {
 }
 
 template <typename R, typename dR, typename Arg>
 R ParallelAggregate<R, dR, Arg>::f(const Arg& aArg) const
 {
-    const auto tCommWorld = boost::mpi::communicator{};
     R tResult = mAggregateFunction.f(aArg);
-    boost::mpi::all_reduce(tCommWorld, boost::mpi::inplace(tResult), std::plus<R>());
+    boost::mpi::all_reduce(mCommunicator, boost::mpi::inplace(tResult), std::plus<R>());
     return tResult;
 }
 
 template <typename R, typename dR, typename Arg>
 dR ParallelAggregate<R, dR, Arg>::df(const Arg& aArg) const
 {
-    const auto tCommWorld = boost::mpi::communicator{};
     dR tResult = mAggregateFunction.df(aArg);
-    boost::mpi::all_reduce(tCommWorld, boost::mpi::inplace(tResult), std::plus<dR>());
+    boost::mpi::all_reduce(mCommunicator, boost::mpi::inplace(tResult), std::plus<dR>());
     return tResult;
 }
 

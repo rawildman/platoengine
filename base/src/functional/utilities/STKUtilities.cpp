@@ -21,7 +21,7 @@ constexpr std::string_view kTopologyFieldName = "topology";
 
 std::shared_ptr<stk::io::StkMeshIoBroker> create_input_mesh_broker(const std::filesystem::path& aInputMeshName)
 {
-    std::shared_ptr<stk::io::StkMeshIoBroker> tIOBroker = std::make_shared<stk::io::StkMeshIoBroker>(MPI_COMM_WORLD);
+    std::shared_ptr<stk::io::StkMeshIoBroker> tIOBroker = std::make_shared<stk::io::StkMeshIoBroker>(MPI_COMM_SELF);
     tIOBroker->use_simple_fields();
 
     const size_t index = tIOBroker->add_mesh_database(aInputMeshName.string(), stk::io::READ_MESH);
@@ -43,7 +43,7 @@ void write_defined_output_fields(stk::io::StkMeshIoBroker& tIOBroker,
 
 std::shared_ptr<stk::mesh::BulkData> create_mesh(const std::string_view aGenerationCommand)
 {
-    std::shared_ptr<stk::mesh::BulkData> bulk = stk::mesh::MeshBuilder(MPI_COMM_WORLD).create();
+    std::shared_ptr<stk::mesh::BulkData> bulk = stk::mesh::MeshBuilder(MPI_COMM_SELF).create();
     bulk->mesh_meta_data().use_simple_fields();
     stk::io::fill_mesh(std::string{aGenerationCommand}, *bulk);
     return bulk;
@@ -60,7 +60,7 @@ void write_mesh(const std::filesystem::path& aMeshName, std::shared_ptr<stk::mes
 
 std::shared_ptr<stk::mesh::BulkData> read_mesh_bulk_data(const std::filesystem::path& aMeshName)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulk = stk::mesh::MeshBuilder(MPI_COMM_WORLD).create();
+    std::shared_ptr<stk::mesh::BulkData> tBulk = stk::mesh::MeshBuilder(MPI_COMM_SELF).create();
     stk::mesh::MetaData& tMeta = tBulk->mesh_meta_data();
     tMeta.use_simple_fields();
     stk::io::fill_mesh(aMeshName.string(), *tBulk);
@@ -70,7 +70,7 @@ std::shared_ptr<stk::mesh::BulkData> read_mesh_bulk_data(const std::filesystem::
 std::vector<double> read_mesh_density(const std::filesystem::path& aMeshName)
 {
     Ioss::DatabaseIO* tResultsDb =
-        Ioss::IOFactory::create("exodus", aMeshName.string(), Ioss::READ_MODEL, MPI_COMM_WORLD);
+        Ioss::IOFactory::create("exodus", aMeshName.string(), Ioss::READ_MODEL, MPI_COMM_SELF);
     Ioss::Region tResults(tResultsDb);
 
     tResults.begin_state(1);
