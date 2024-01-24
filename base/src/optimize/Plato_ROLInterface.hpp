@@ -280,44 +280,6 @@ protected:
         }
     }    
 
-    void solve(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    {
-        auto tParameterList = this->updateParameterListFromRolInputsFile();   
-        ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-        std::ostream outputStream(this->mOutputBuffer);
-        tOptimizer.solve(outputStream);
-        outputStream.flush();
-        this->printControl(aOptimizationProblem);
-    }
-
-    void solveBoundConstrained(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
-    {
-        auto tParameterList = this->updateParameterListFromRolInputsFile();
-        int tNumSolves=1;
-        if(this->mInputData.getResetAlgorithmOnUpdate())
-        {
-            tNumSolves = this->mInputData.getMaxNumIterations()/this->mInputData.getProblemUpdateFrequency();
-        }
-
-        double tCurDelta;
-        for(int i=0; i<tNumSolves; ++i)
-        {
-            if(i>0)
-            {
-                tParameterList->sublist("Step").sublist("Trust Region").set("Initial Radius", tCurDelta);
-            }
-            ROL::Solver<ScalarType> tOptimizer(aOptimizationProblem, *tParameterList);
-            std::ostream outputStream(this->mOutputBuffer);
-            tOptimizer.solve(outputStream);
-            ROL::Ptr<const ROL::TypeB::AlgorithmState<ScalarType>> tAlgorithmState =
-                    ROL::staticPtrCast<const ROL::TypeB::AlgorithmState<ScalarType>>(tOptimizer.getAlgorithmState());
-            tCurDelta = tAlgorithmState->searchSize;
-            outputStream << "Delta: " << tCurDelta << std::endl;
-            outputStream.flush();
-        }
-        this->printControl(aOptimizationProblem);
-    }
-    
     void printControl(const ROL::Ptr<ROL::Problem<ScalarType>> & aOptimizationProblem)
     {
         int tMyRank = -1;
