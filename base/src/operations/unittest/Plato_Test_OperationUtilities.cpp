@@ -43,7 +43,6 @@
 #ifdef STK_ENABLED
 #include "stk_io/StkMeshIoBroker.hpp"
 #include "Ioss_NodeBlock.h"
-//#include "stk_unit_test_utils/TextMeshToFile.hpp"
 #include "exodusII.h"
 #endif
 #include "Plato_OperationsUtilities.hpp"

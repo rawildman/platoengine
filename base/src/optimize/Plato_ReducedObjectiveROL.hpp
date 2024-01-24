@@ -192,9 +192,6 @@ public:
                 dynamic_cast<Plato::DistributedVectorROL<ScalarType>&>(aGradient);
         std::copy(mGradient.begin(), mGradient.end(), tOutputGradient.vector().begin());
 
-        // Output everytime the gradient is called.  This should roughly be equivalent
-        // to every outer iteration.
-        //callOutputStage();
     }
     /******************************************************************************//**
      * \brief Returns current hessian applied to a vector
