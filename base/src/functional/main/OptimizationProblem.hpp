@@ -1,6 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_OPTIMIZATIONPROBLEM
 #define PLATO_FUNCTIONAL_OPTIMIZATIONPROBLEM
 
+#include <boost/mpi/communicator.hpp>
 #include <string_view>
 
 #include "PlatoProblem.hpp"
@@ -9,7 +10,6 @@
 
 namespace Plato::Functional
 {
-
 class OptimizationProblem
 {
    public:
@@ -34,9 +34,13 @@ class OptimizationProblem
     [[nodiscard]] int dimension() const;
 
    private:
+    void outputResult() const;
+
+   private:
     Plato::Functional::PlatoProblem mProblem;
     ROL::Ptr<ROL::Problem<double>> mROLProblem;
     ROL::Solver<double> mROLSolver;
+    boost::mpi::communicator mCommunicator{};
 };
 
 }  // namespace Plato::Functional

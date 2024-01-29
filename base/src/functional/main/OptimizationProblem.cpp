@@ -91,8 +91,15 @@ void OptimizationProblem::optimize()
 {
     std::ofstream tOutFile(std::string{kROLOptimizerFileName});
     mROLSolver.solve(tOutFile);
+    outputResult();
+}
 
-    mProblem.mGeometry.mOutput(to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
+void OptimizationProblem::outputResult() const
+{
+    if (mCommunicator.rank() == 0)
+    {
+        mProblem.mGeometry.mOutput(to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
+    }
 }
 
 int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess.size(); }
