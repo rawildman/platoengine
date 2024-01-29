@@ -1,7 +1,6 @@
 #ifndef PLATO_FUNCTIONAL_OBJECTIVEFACTORY
 #define PLATO_FUNCTIONAL_OBJECTIVEFACTORY
 
-//#include "Aggregate.hpp"
 #include "ParallelAggregate.hpp"
 #include "DynamicVector.hpp"
 #include "Function.hpp"

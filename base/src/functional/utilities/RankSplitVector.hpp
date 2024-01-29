@@ -7,7 +7,7 @@
 
 namespace Plato::Functional::Utilities
 {
-/// @brief Splits the elements of @a aVector among available ranks on MPI_COMM_WORLD.
+/// @brief Splits the elements of @a aVector among available ranks on communicator @a aComm.
 ///
 /// This attempts to distribute the elements as evenly as possible. If the number of elements is
 /// evenly divisible by the number of ranks, then the first `N` elements are distributed to

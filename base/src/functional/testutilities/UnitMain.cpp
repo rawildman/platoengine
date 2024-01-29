@@ -81,8 +81,6 @@ int communicate_exit_code(const MPI_Comm& tInterComm, const int tExitStatus)
 
 }  // namespace
 
-/// @brief A convenience function for running serial unit tests. Call this
-///  from a unit tester's main for serial unit tests.
 int unit_main(int argc, char** argv)
 {
     MPI_Init(&argc, &argv);
@@ -97,15 +95,6 @@ int unit_main(int argc, char** argv)
     return returnVal;
 }
 
-/// @brief A convenience function for running parallel unit tests. Call this
-///  froma a unit tester's main for parallel uni tests.
-///
-/// The behavior of a unit test executable that uses this function is that
-/// if the executable is launched without an MPI launcher (or with one rank),
-/// @a aNumRanks will be spawned to run the tests in parallel. If the executable
-/// is launched with more than one rank, the tests will be run with those ranks.
-/// The first case is useful for simplifying CI and ctest, and the second is
-/// useful for testing during development.
 int parallel_unit_main(int argc, char** argv, unsigned int aNumRanks)
 {
     MPI_Init(&argc, &argv);
