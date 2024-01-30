@@ -148,8 +148,8 @@ public:
             saveOptimizerValues(tOptimizer);
 
             outputStream.flush();
+            this->printControl(tOptimizationProblem);
         }
-        //this->printControl(tOptimizationProblem);
     }
 
     void updateControl(Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls)
