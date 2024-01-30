@@ -7,7 +7,7 @@
 
 namespace
 {
-bool printMessage(const std::string_view aMessage)
+void printMessage(const std::string_view aMessage)
 {
     if (boost::mpi::communicator{}.rank() == 0)
     {
