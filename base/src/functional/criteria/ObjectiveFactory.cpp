@@ -15,7 +15,8 @@ namespace detail
 namespace
 {
 template <typename AggregateType, typename... Args>
-AggregateType make_aggregate_impl(const std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives, Args&&... aArgs)
+AggregateType make_aggregate_impl(const std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
+                                  Args&&... aArgs)
 {
     using ObjectiveAndWeight = std::pair<ObjectiveFunction, double>;
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
@@ -29,6 +30,14 @@ AggregateType make_aggregate_impl(const std::vector<Core::ValidatedInputTypeWrap
     }
     return AggregateType{std::move(tFunctionsAndWeights), std::forward<Args>(aArgs)...};
 }
+
+auto rank_split_vector(const std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
+                       const boost::mpi::communicator& aComm)
+    -> std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>
+{
+    return Utilities::rank_split_vector(aInputs, Utilities::RankNamedType{aComm.rank()},
+                                        Utilities::SizeNamedType{aComm.size()});
+}
 }  // namespace
 
 AggregateObjective make_aggregate(const ValidatedObjectives& aInput)
@@ -39,7 +48,7 @@ AggregateObjective make_aggregate(const ValidatedObjectives& aInput)
 ParallelAggregateObjective make_parallel_aggregate(const ValidatedObjectives& aInput)
 {
     const auto tCommunicator = boost::mpi::communicator{};
-    const auto tObjectives = Utilities::rank_split_vector(aInput.rawInput(), tCommunicator);
+    const auto tObjectives = rank_split_vector(aInput.rawInput(), tCommunicator);
     return make_aggregate_impl<ParallelAggregateObjective>(tObjectives, tCommunicator);
 }
 

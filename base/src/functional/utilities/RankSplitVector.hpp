@@ -4,9 +4,17 @@
 #include <array>
 #include <boost/mpi/communicator.hpp>
 #include <type_traits>
+#include <vector>
+
+#include "NamedType.hpp"
 
 namespace Plato::Functional::Utilities
 {
+using RankType = decltype(std::declval<const boost::mpi::communicator&>().rank());
+using SizeType = decltype(std::declval<const boost::mpi::communicator&>().size());
+using RankNamedType = NamedType<RankType, struct RankTypeTag>;
+using SizeNamedType = NamedType<SizeType, struct SizeTypeTag>;
+
 /// @brief Splits the elements of @a aVector among available ranks on communicator @a aComm.
 ///
 /// This attempts to distribute the elements as evenly as possible. If the number of elements is
@@ -21,6 +29,9 @@ namespace Plato::Functional::Utilities
 template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const boost::mpi::communicator& aComm);
 
+template <typename T>
+std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize);
+
 namespace detail
 {
 /// @brief Divides @a aNumElements by @a aNumRanks and returns the quotient in the first element and
@@ -34,32 +45,37 @@ auto num_elements_per_rank(const T aNumElements, const U aNumRanks) -> std::arra
 }
 
 template <typename T>
-bool assign_remainder_element_to_rank(const boost::mpi::communicator& aComm, const T aRemainder)
+bool assign_remainder_element_to_rank(const RankNamedType aRank, const T aRemainder)
 {
     static_assert(std::is_integral_v<T>, "aRemainder must have an integer type.");
-    return static_cast<T>(aComm.rank()) < aRemainder;
+    return static_cast<T>(aRank.mValue) < aRemainder;
 }
 }  // namespace detail
 
 template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const boost::mpi::communicator& aComm)
 {
+    return rank_split_vector(aVector, RankNamedType{aComm.rank()}, SizeNamedType{aComm.size()});
+}
+
+template <typename T>
+std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize)
+{
     auto tDistributedVector = std::vector<T>{};
-    const auto [tNumElementsPerRank, tRemainder] = detail::num_elements_per_rank(aVector.size(), aComm.size());
-    const auto tFirstIndex = aComm.rank() * tNumElementsPerRank;
-    const auto tLastIndex = (aComm.rank() + 1) * tNumElementsPerRank;
+    const auto [tNumElementsPerRank, tRemainder] = detail::num_elements_per_rank(aVector.size(), aSize.mValue);
+    const auto tFirstIndex = aRank.mValue * tNumElementsPerRank;
+    const auto tLastIndex = (aRank.mValue + 1) * tNumElementsPerRank;
     tDistributedVector.reserve(tNumElementsPerRank);
     std::copy(std::next(aVector.cbegin(), tFirstIndex), std::next(aVector.cbegin(), tLastIndex),
               std::back_inserter(tDistributedVector));
-    if (detail::assign_remainder_element_to_rank(aComm, tRemainder))
+    if (detail::assign_remainder_element_to_rank(aRank, tRemainder))
     {
-        const int tNumDistributed = tNumElementsPerRank * aComm.size();
-        const int tRemainderForRankIndex = tNumDistributed + aComm.rank();
+        const int tNumDistributed = tNumElementsPerRank * aSize.mValue;
+        const int tRemainderForRankIndex = tNumDistributed + aRank.mValue;
         tDistributedVector.push_back(aVector.at(tRemainderForRankIndex));
     }
     return tDistributedVector;
 }
-
 }  // namespace Plato::Functional::Utilities
 
 #endif

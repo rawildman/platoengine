@@ -12,7 +12,6 @@ set(HDRS Aggregate.hpp
          InputParser.hpp
          JacobianColumnEvaluator.hpp
          MeshProxy.hpp
-         NamedType.hpp
          ParallelAggregate.hpp
          ParameterBounds.hpp
          ROLHelpers.hpp

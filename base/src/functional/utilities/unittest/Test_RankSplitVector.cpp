@@ -1,12 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <boost/mpi/communicator.hpp>
-
 #include "RankSplitVector.hpp"
 
 namespace
 {
-constexpr auto kExpectedMPISize = int{3};
+constexpr auto kMPISize = int{3};
 }  // namespace
 
 TEST(RankSplitVector, NumElementsPerRank)
@@ -27,21 +25,22 @@ TEST(RankSplitVector, NumElementsPerRank)
 TEST(RankSplitVector, DividesEvenly)
 {
     namespace pf = Plato::Functional;
-    auto tCommWorld = boost::mpi::communicator{};
-    ASSERT_EQ(tCommWorld.size(), kExpectedMPISize);
+    namespace pfu = pf::Utilities;
 
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6};
-    const std::vector<int> tDistributedValues = pf::Utilities::rank_split_vector(tValues, boost::mpi::communicator{});
-    if (tCommWorld.rank() == 0)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{0}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2}));
     }
-    else if (tCommWorld.rank() == 1)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{1}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4}));
     }
-    else
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{2}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
     }
 }
@@ -49,21 +48,22 @@ TEST(RankSplitVector, DividesEvenly)
 TEST(RankSplitVector, DividesUnevenlyOneRemaining)
 {
     namespace pf = Plato::Functional;
-    auto tCommWorld = boost::mpi::communicator{};
-    ASSERT_EQ(tCommWorld.size(), kExpectedMPISize);
+    namespace pfu = pf::Utilities;
 
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6, 7};
-    const std::vector<int> tDistributedValues = pf::Utilities::rank_split_vector(tValues, boost::mpi::communicator{});
-    if (tCommWorld.rank() == 0)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{0}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2, 7}));
     }
-    else if (tCommWorld.rank() == 1)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{1}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4}));
     }
-    else
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{2}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
     }
 }
@@ -71,21 +71,23 @@ TEST(RankSplitVector, DividesUnevenlyOneRemaining)
 TEST(RankSplitVector, DividesUnevenlyTwoRemaining)
 {
     namespace pf = Plato::Functional;
-    auto tCommWorld = boost::mpi::communicator{};
-    ASSERT_EQ(tCommWorld.size(), kExpectedMPISize);
+    namespace pfu = pf::Utilities;
 
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8};
     const std::vector<int> tDistributedValues = pf::Utilities::rank_split_vector(tValues, boost::mpi::communicator{});
-    if (tCommWorld.rank() == 0)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{0}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2, 7}));
     }
-    else if (tCommWorld.rank() == 1)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{1}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4, 8}));
     }
-    else
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{2}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
     }
 }
@@ -93,21 +95,22 @@ TEST(RankSplitVector, DividesUnevenlyTwoRemaining)
 TEST(RankSplitVector, MoreRanksThanElements)
 {
     namespace pf = Plato::Functional;
-    auto tCommWorld = boost::mpi::communicator{};
-    ASSERT_EQ(tCommWorld.size(), kExpectedMPISize);
+    namespace pfu = pf::Utilities;
 
     const auto tValues = std::vector<int>{1, 2};
-    const std::vector<int> tDistributedValues = pf::Utilities::rank_split_vector(tValues, boost::mpi::communicator{});
-    if (tCommWorld.rank() == 0)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{0}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{1}));
     }
-    else if (tCommWorld.rank() == 1)
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{1}, pfu::SizeNamedType{kMPISize});
         EXPECT_EQ(tDistributedValues, (std::vector<int>{2}));
     }
-    else
     {
+        const std::vector<int> tDistributedValues =
+            pfu::rank_split_vector(tValues, pfu::RankNamedType{2}, pfu::SizeNamedType{kMPISize});
         EXPECT_TRUE(tDistributedValues.empty());
     }
 }
