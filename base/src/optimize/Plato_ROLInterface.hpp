@@ -173,6 +173,8 @@ public:
         }
         else if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_AUGMENTED_LAGRANGIAN)
         {
+         // Below is how you would reset the penalty parameter if you wanted to. We need to investigate this more to know 
+         // if we want to set it or not.
          //   aParameterList->sublist("Step").sublist("Augmented Lagrangian").set("Initial Penalty Parameter", mAugmentedLagrangianPenalty);
         }
     }
