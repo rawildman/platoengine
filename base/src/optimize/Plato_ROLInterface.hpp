@@ -154,12 +154,12 @@ public:
 
     void updateControl(Teuchos::RCP<Plato::DistributedVectorROL<ScalarType>> &aControls)
     {
-        std::string tControlResetStageName = this->mInputData.getControlResetStageName();
+        const std::string tControlResetStageName = this->mInputData.getControlResetStageName();
         if(!tControlResetStageName.empty())
         {
             Teuchos::ParameterList tControlResetStageParameterList;
             constexpr OrdinalType tCONTROL_VECTOR_INDEX = 0;
-            std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
+            const std::string tControlName = this->mInputData.getControlName(tCONTROL_VECTOR_INDEX);
             tControlResetStageParameterList.set(tControlName, aControls->vector().data());
             this->mInterface->compute(tControlResetStageName, tControlResetStageParameterList);
         }
@@ -177,7 +177,7 @@ public:
         }
     }
     
-    void saveOptimizerValues(ROL::Solver<ScalarType> &aOptimizer)
+    void saveOptimizerValues(const ROL::Solver<ScalarType> &aOptimizer)
     {
         if(mAlgorithmType == Plato::optimizer::algorithm_t::ROL_BOUND_CONSTRAINED)
         {

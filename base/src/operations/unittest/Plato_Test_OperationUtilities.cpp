@@ -139,11 +139,11 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_
     iobroker.create_input_mesh();
     iobroker.populate_bulk_data();
     Ioss::PropertyManager properties;
-    size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
+    const size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
     iobroker.write_output_mesh(outputFileIndex);
 
     // Call the function to extract the node ids from the mesh on disk
-    std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "temp_mesh.exo");
+    const std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "temp_mesh.exo");
     
     // Test against gold values
     EXPECT_EQ(tResults, tGold);

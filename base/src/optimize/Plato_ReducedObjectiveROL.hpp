@@ -136,13 +136,14 @@ public:
         }
         mGradientComputed = false;
 
-        const bool tNewIteration = aIteration != mLastIteration && aIteration != -1 && aUpdateType == ROL::UpdateType::Accept;
-        if(tNewIteration)
+        // output at the beginning and when we are accepting a trial 
+        const bool tOutputIteration = aIteration == 0 || aUpdateType == ROL::UpdateType::Accept;
+        if(tOutputIteration)
         {
           callOutputStage();
         }
 
-        const bool tUpdateIteration = mUpdateFrequency > 0 && tNewIteration && aIteration > 0 && aIteration % mUpdateFrequency == 0;
+        const bool tUpdateIteration = mUpdateFrequency > 0 && aUpdateType == ROL::UpdateType::Accept && aIteration > 0 && aIteration % mUpdateFrequency == 0;
         if(tUpdateIteration)
         {
           callUpdateStage();

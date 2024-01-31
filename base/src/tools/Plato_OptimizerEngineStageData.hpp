@@ -182,7 +182,7 @@ public:
     std::string getInitializationStageName() const;
     void setInitializationStageName(const std::string & aInput);
 
-    std::string getControlResetStageName() const;
+    const std::string& getControlResetStageName() const;
     void setControlResetStageName(const std::string & aInput);
 
     std::string getInitialControlDataName() const;

@@ -214,12 +214,9 @@ std::vector<unsigned int> extractGlobalNodeIDs(const MPI_Comm &aComm,
    const Ioss::NodeBlockContainer& tNodeBlocks = tIoBroker.get_input_ioss_region()->get_node_blocks();
    if(tNodeBlocks.size() != 1)
    {
-       std::stringstream tError;
-       tError << std::endl << "ERROR: Wrong number of node blocks found in exodus file in extractGlobalNodeIDs." << std::endl;
-       Plato::ParsingException tParsingException(tError.str());
-       throw tParsingException;
+       throw Plato::ParsingException("ERROR: Wrong number of node blocks found in exodus file in extractGlobalNodeIDs.\n");
    }
-   Ioss::NodeBlock *tNB = tNodeBlocks[0];
+   const Ioss::NodeBlock * const tNB = tNodeBlocks[0];
    tNB->get_field_data("ids", tNodeIDs);
 #else
    std::stringstream tError;
