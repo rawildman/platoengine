@@ -4,8 +4,10 @@
 
 #include "DynamicVector.hpp"
 #include "Exception.hpp"
+#include "FilterFactory.hpp"
 #include "FilterJacobian.hpp"
 #include "IdentityFilter.hpp"
+#include "InputParser.hpp"
 #include "MeshProxy.hpp"
 
 namespace
@@ -15,6 +17,13 @@ const auto kRho = std::vector{-1.0, 0.0, 1.0};
 const auto kMeshArgument = Plato::Functional::MeshProxy{kMeshName, kRho};
 const auto kV = Plato::Functional::Core::DynamicVector<double>{-2.0, -1.0, 42.0};
 }  // namespace
+
+TEST(FilterFactory, ValidIdentityFilter)
+{
+    auto tDensityTopology = Plato::density_topology{};
+    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
+    EXPECT_NO_THROW(auto tFunction = Plato::Functional::FilterFactory::make_filter_function(tDensityTopology));
+}
 
 TEST(IdentityFilter, Filter)
 {

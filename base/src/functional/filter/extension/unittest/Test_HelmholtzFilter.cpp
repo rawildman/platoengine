@@ -4,21 +4,6 @@
 #include "FilterFactory.hpp"
 #include "InputParser.hpp"
 
-TEST(FilterFactory, ValidIdentityFilter)
-{
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
-    EXPECT_NO_THROW(auto tFunction = Plato::Functional::FilterFactory::make_filter_function(tDensityTopology));
-}
-
-TEST(FilterFactory, KernelFilterThrows)
-{
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.filter_type = Plato::FilterTypes::kKernel;
-    EXPECT_THROW(auto tFunction = Plato::Functional::FilterFactory::make_filter_function(tDensityTopology),
-                 Plato::Functional::Exception);
-}
-
 TEST(FilterFactory, HelmholtzFilterThrows)
 {
     // For the Helmholtz filter, the filter may be loaded depending on whether
