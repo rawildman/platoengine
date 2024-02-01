@@ -1,62 +1,26 @@
-set(SRCS library/FilterFactory.cpp
-         library/FilterJacobian.cpp
-         library/FilterRegistration.cpp
-         library/FilterValidation.cpp
-         extension/HelmholtzFilter.cpp
-         extension/IdentityFilter.cpp)
+include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
+include(${CMAKE_UTIL_DIR}/create_plato_unittester.cmake)
 
-set(HDRS library/FilterInterface.hpp
-         library/FilterFactory.hpp
-         library/FilterJacobian.hpp
-         library/FilterRegistration.hpp
-         library/FilterValidation.hpp
-         extension/HelmholtzFilter.hpp
-         extension/IdentityFilter.hpp)
+set(FOLDERS library
+            extension)
 
-set(LIB_NAME PlatoFunctionalFilter)
-add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/library>)
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension>)
+set(LINK_LIBS PlatoFunctionalCore
+              PlatoFunctionalUtilities
+              PlatoInputParser)
 
-target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalCore PlatoFunctionalUtilities PlatoInputParser)
+create_plato_library(PlatoFunctionalFilter "${FOLDERS}" "${LINK_LIBS}")
 
-install( TARGETS ${LIB_NAME} EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
 
 if( UNIT_TESTING )
   # Build test filter shared lib
-  set(SRCS testutilities/SharedLibIdentityFilter.cpp)
-  set(HDRS testutilities/SharedLibIdentityFilter.hpp)
-
-  set(LIB_NAME PlatoIdentityFilter)
-  add_library(${LIB_NAME} SHARED ${SRCS} ${HDS} )
-  target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/testutilities>)
-  target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalFilter)
-
-  install( TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  add_subdirectory(./testutilities)
 
   # Build unit tester
-  set(SRCS library/unittest/Test_FilterFactory.cpp
-           library/unittest/Test_FilterValidation.cpp
-           library/unittest/Test_Registration.cpp
-           library/unittest/Test_SharedLibFilter.cpp
-           extension/unittest/Test_HelmholtzFilter.cpp
-           extension/unittest/Test_IdentityFilter.cpp
-           testutilities/UnitMain.cpp )
-
-  set(HDRS )
-
-  set(TEST_EXE PlatoFunctional_FilterUnitTester )
-  add_executable(${TEST_EXE} ${SRCS} ${HDRS})
-  target_include_directories(${TEST_EXE} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/testutilities>)
-  target_link_libraries( ${TEST_EXE} PRIVATE GTest::GTest PlatoFunctionalFilter PlatoFunctionalTestUtilities)
-
-  add_test(NAME ${TEST_EXE} COMMAND ${TEST_EXE})
-  set_property(TEST ${TEST_EXE} PROPERTY LABELS "small")
-
-  install( TARGETS ${TEST_EXE} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+  set(FOLDERS library/unittest
+              extension/unittest)
+  set(LINK_LIBS PlatoFunctionalFilter
+                PlatoFunctionalTestUtilities)
+  
+  create_plato_unittester(PlatoFunctional_FilterUnitTester "${FOLDERS}" "${LINK_LIBS}")
 
 endif()

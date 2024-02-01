@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "FilterFactory.hpp"
+#include "FilterInterface.hpp"
 #include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
 #include "Plato_InputBlocks.hpp"
-#include "SharedLibIdentityFilter.hpp"
 
 namespace
 {
