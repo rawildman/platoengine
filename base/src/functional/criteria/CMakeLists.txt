@@ -1,33 +1,21 @@
-set(SRCS ConstraintFactory.cpp
-         ConstraintValidation.cpp
-         CriterionRegistration.cpp
-         ObjectiveFactory.cpp
-         ObjectiveValidation.cpp
-         NodalSumObjective.cpp
-         SharedLibCriterion.cpp)
+include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
+include(${CMAKE_UTIL_DIR}/create_plato_unittester.cmake)
 
-set(HDRS ConstraintFactory.hpp
-         ConstraintValidation.hpp
-         CriterionFactory.hpp
-         CriterionInterface.hpp
-         CriterionRegistration.hpp
-         CriterionValidation.hpp
-         ObjectiveFactory.hpp
-         ObjectiveValidation.hpp
-         NodalSumObjective.hpp
-         SharedLibCriterion.hpp)
-
-set(LIB_NAME PlatoFunctionalCriteria)
-add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalCore PlatoFunctionalUtilities PlatoInputParser)
-
-install( TARGETS ${LIB_NAME} EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
+set(DIRECTORIES library
+                extension)
+set(LINK_LIBS PlatoFunctionalCore
+              PlatoFunctionalUtilities
+              PlatoInputParser)
+create_plato_library(PlatoFunctionalCriteria "${DIRECTORIES}" "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-  add_subdirectory(./unittest)
+  set(DIRECTORIES library/unittest
+                  extension/unittest)
+  set(LINK_LIBS PlatoFunctionalCriteria 
+                PlatoFunctionalTestUtilities)
+  create_plato_unittester(PlatoFunctional_CriteriaUnitTester "${DIRECTORIES}" "${LINK_LIBS}")
+
+  set(DIRECTORIES library/parallel_unittest)
+  set(NUM_RANKS_FOR_TEST 3)
+  create_plato_parallel_unittester(PlatoFunctional_CriteriaParallelUnitTester "${DIRECTORIES}" "${LINK_LIBS}" ${NUM_RANKS_FOR_TEST})
 endif()

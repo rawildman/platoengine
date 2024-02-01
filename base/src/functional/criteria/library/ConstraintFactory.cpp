@@ -6,8 +6,6 @@
 #include "CriterionFactory.hpp"
 #include "Exception.hpp"
 #include "MeshProxy.hpp"
-#include "NodalSumObjective.hpp"
-#include "SharedLibCriterion.hpp"
 
 namespace Plato::Functional::ConstraintFactory
 {

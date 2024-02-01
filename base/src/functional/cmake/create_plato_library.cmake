@@ -1,5 +1,9 @@
 include(${CMAKE_UTIL_DIR}/add_to_srcs_and_hdrs.cmake)
 
+# create_plato_library 
+#   LIBRARY_NAME: The name of the library and CMake target that will be created.
+#   DIRECTORIES: A list of directories containing the test source files.
+#   TARGET_LINK_LIST: A list of targets to link against.
 function( create_plato_library LIBRARY_NAME DIRECTORIES TARGET_LINK_LIST)
 
     unset(LIB_SRCS)
