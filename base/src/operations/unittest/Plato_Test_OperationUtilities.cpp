@@ -42,11 +42,12 @@
 #include "Plato_InputData.hpp"
 #ifdef STK_ENABLED
 #include "stk_io/StkMeshIoBroker.hpp"
+#include "Ioss_NodeBlock.h"
 #endif
 #include "Plato_OperationsUtilities.hpp"
 #include "Plato_Exceptions.hpp"
-#include <filesystem>
 #include <gtest/gtest.h>
+#include <cstdio>
 
 namespace PlatoTestOperationUtilities
 {
@@ -105,9 +106,9 @@ TEST(PlatoTestOperationUtilities, EmptyPath_Throw)
 }
 
 #ifdef STK_ENABLED
-TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs)
+
+TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_trivial_node_map)
 {
-    // Generate a mesh in core and write it to disk
     stk::io::StkMeshIoBroker iobroker(MPI_COMM_WORLD);
     iobroker.use_simple_fields();
     iobroker.add_mesh_database("generated:1x1x1", stk::io::READ_MESH);
@@ -125,8 +126,32 @@ TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs)
     EXPECT_EQ(tGold, tResults);
     
     // Clean up mesh from disk
-    std::filesystem::remove("temp_mesh.exo");
+    std::remove("temp_mesh.exo");
 }
+
+TEST(PlatoTestOperationUtilities, ExtractGlobalNodeIDs_succeed_non_trivial_node_map)
+{
+    const std::vector<unsigned int> tGold = {1, 2, 3, 4, 11, 12, 13, 14};
+    
+    stk::io::StkMeshIoBroker iobroker(MPI_COMM_WORLD);
+    iobroker.use_simple_fields();
+    iobroker.add_mesh_database("textmesh:0,1,HEX_8,1,2,3,4,11,12,13,14", stk::io::READ_MESH);
+    iobroker.create_input_mesh();
+    iobroker.populate_bulk_data();
+    Ioss::PropertyManager properties;
+    const size_t outputFileIndex = iobroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, properties);
+    iobroker.write_output_mesh(outputFileIndex);
+
+    // Call the function to extract the node ids from the mesh on disk
+    const std::vector<unsigned int> tResults = Plato::extractGlobalNodeIDs(MPI_COMM_WORLD, "temp_mesh.exo");
+    
+    // Test against gold values
+    EXPECT_EQ(tResults, tGold);
+    
+    // Clean up mesh from disk
+    std::remove("temp_mesh.exo");
+}
+
 #endif
     
 } // end PlatoTestOperationUtilities namespace
