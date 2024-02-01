@@ -21,6 +21,7 @@ function( create_plato_parallel_unittester TEST_EXE DIRECTORIES TARGET_LINK_LIST
     configure_file(${PARALLEL_TEST_UNIT_MAIN_INCL} ${CMAKE_CURRENT_BINARY_DIR}/ParallelUnitMain.cpp)
     set( TEST_MAIN_CPP "${CMAKE_CURRENT_BINARY_DIR}/ParallelUnitMain.cpp" )
     create_plato_unittester_impl( ${TEST_EXE} "${DIRECTORIES}" ${TEST_MAIN_CPP} "${TARGET_LINK_LIST}" )
+    set_property(TEST ${TEST_EXE} PROPERTY PROCESSORS ${NUM_RANKS_FOR_TEST})
 
 endfunction(create_plato_parallel_unittester)
 
