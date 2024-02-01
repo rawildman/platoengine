@@ -74,7 +74,6 @@ TEST(RankSplitVector, DividesUnevenlyTwoRemaining)
     namespace pfu = pf::Utilities;
 
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8};
-    const std::vector<int> tDistributedValues = pf::Utilities::rank_split_vector(tValues, boost::mpi::communicator{});
     {
         const std::vector<int> tDistributedValues =
             pfu::rank_split_vector(tValues, pfu::RankNamedType{0}, pfu::SizeNamedType{kMPISize});

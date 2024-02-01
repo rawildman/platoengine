@@ -27,9 +27,6 @@ using SizeNamedType = NamedType<SizeType, struct SizeTypeTag>;
 ///
 /// @note No communication is performed, it is assumed that @a aVector is the same on all ranks.
 template <typename T>
-std::vector<T> rank_split_vector(const std::vector<T>& aVector, const boost::mpi::communicator& aComm);
-
-template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize);
 
 namespace detail
@@ -52,11 +49,6 @@ bool assign_remainder_element_to_rank(const RankNamedType aRank, const T aRemain
 }
 }  // namespace detail
 
-template <typename T>
-std::vector<T> rank_split_vector(const std::vector<T>& aVector, const boost::mpi::communicator& aComm)
-{
-    return rank_split_vector(aVector, RankNamedType{aComm.rank()}, SizeNamedType{aComm.size()});
-}
 
 template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize)
