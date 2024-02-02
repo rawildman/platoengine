@@ -7,7 +7,7 @@
 
 namespace
 {
-constexpr auto kNumRanks = int{2};
+constexpr auto kNumRanks = int{4};
 
 Plato::Functional::Validation::ValidatedInput create_one_objective_test_input()
 {

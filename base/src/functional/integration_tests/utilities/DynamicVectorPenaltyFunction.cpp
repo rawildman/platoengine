@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 
 namespace Plato::Functional::Test
 {

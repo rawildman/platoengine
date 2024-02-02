@@ -2,7 +2,7 @@
 
 #include "Compose.hpp"
 #include "DynamicVectorPenaltyFunction.hpp"
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 #include "Penalty.hpp"
 
 TEST(PenaltyFunction, ValueAndJacobian)

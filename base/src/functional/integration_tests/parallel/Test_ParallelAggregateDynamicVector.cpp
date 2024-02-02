@@ -4,7 +4,7 @@
 
 #include "DynamicVector.hpp"
 #include "DynamicVectorSerialization.hpp"
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
 

@@ -5,12 +5,9 @@ set(FOLDERS library
             extension)
 
 set(LINK_LIBS PlatoFunctionalCore
-              PlatoFunctionalLinearAlgebra
-              PlatoFunctionalUtilities
-              PlatoInputParser)
+              PlatoFunctionalLinearAlgebra)
 
 create_plato_library(PlatoFunctionalFilter "${FOLDERS}" "${LINK_LIBS}")
-
 
 if( UNIT_TESTING )
   # Build test filter shared lib

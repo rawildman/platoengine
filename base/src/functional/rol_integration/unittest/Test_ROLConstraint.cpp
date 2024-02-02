@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 #include "ROLConstraintFunction.hpp"
 
 TEST(ROLConstraintFunction, ConstraintValue)

@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "Aggregate.hpp"
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 #include "ROLObjectiveFunction.hpp"
 #include "Rosenbrock.hpp"
 

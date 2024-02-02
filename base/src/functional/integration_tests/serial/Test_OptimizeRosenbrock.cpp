@@ -9,7 +9,7 @@
 
 #include "Compose.hpp"
 #include "DynamicVectorPenaltyFunction.hpp"
-#include "DynamicVectorTestUtilities.hpp"
+#include "DynamicVectorRosenbrockFunction.hpp"
 #include "ROLObjectiveFunction.hpp"
 
 namespace

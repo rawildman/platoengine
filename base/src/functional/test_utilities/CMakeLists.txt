@@ -1,6 +1,6 @@
 include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
 
 set(LINK_LIBS Kokkos::kokkos 
-              PlatoInputParser)
+              PlatoFunctionalInputParser)
 
 create_plato_library(PlatoFunctionalTestUtilities "." "${LINK_LIBS}")
