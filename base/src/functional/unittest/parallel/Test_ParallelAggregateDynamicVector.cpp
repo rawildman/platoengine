@@ -6,7 +6,6 @@
 #include "DynamicVectorSerialization.hpp"
 #include "DynamicVectorTestUtilities.hpp"
 #include "ParallelAggregate.hpp"
-#include "ROLHelpers.hpp"
 #include "Rosenbrock.hpp"
 
 namespace
@@ -14,13 +13,13 @@ namespace
 constexpr auto kNumRanks = int{4};
 }
 
-TEST(ROLObjectiveFunction, MPISize)
+TEST(ParallelAggregateDynamicVector, MPISize)
 {
     auto tComm = boost::mpi::communicator{};
     EXPECT_EQ(tComm.size(), kNumRanks);
 }
 
-TEST(ROLObjectiveFunction, ParallelAggregateTwoRosenbrockObjectives)
+TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
 {
     namespace pf = Plato::Functional;
     namespace pfc = pf::Core;
