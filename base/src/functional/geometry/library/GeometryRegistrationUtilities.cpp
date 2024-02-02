@@ -31,16 +31,6 @@ std::optional<GeometryFactory::GeometryInput> first_geometry_block(const Plato::
     }
 }
 
-GeometryFactory::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput)
-{
-    const std::optional<GeometryFactory::GeometryInput> tGeometryInput = first_geometry_block(aInput);
-    if (!tGeometryInput)
-    {
-        throw Exception("No geometry block was defined.");
-    }
-    return tGeometryInput.value();
-}
-
 std::string block_name(const GeometryFactory::GeometryInput& aInput)
 {
     return std::visit(

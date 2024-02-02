@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
 
 #include "DynamicVector.hpp"
+#include "Exception.hpp"
 #include "Function.hpp"
 #include "GeometryRegistration.hpp"
+#include "InputBlocks.hpp"
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
-#include "InputBlocks.hpp"
 
 namespace
 {
@@ -39,4 +40,10 @@ TEST(GeometryRegistration, BrickGeometry)
 TEST(GeometryRegistration, DensityTopology)
 {
     EXPECT_TRUE(Plato::Functional::GeometryFactory::is_geometry_function_registered("density_topology"));
+}
+
+TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
+{
+    namespace pfg = Plato::Functional::GeometryFactory;
+    EXPECT_THROW(auto tGeometryInput = pfg::first_geometry_input(Plato::PlatoInput{}), Plato::Functional::Exception);
 }

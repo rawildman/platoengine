@@ -40,6 +40,10 @@ using ValidatedGeometryInput =
     Core::ValidatedInputTypeWrapper<Detail::ValidatedGeometryInputVariant<Plato::PlatoInput>>;
 using GeometryRegistration = Registration<FactoryTypes, ValidatedGeometryInput>;
 
+/// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
+/// @throw Exception If no geometry block was defined in @a aInput.
+[[nodiscard]] GeometryFactory::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput);
+
 bool is_geometry_function_registered(const std::string_view aFunctionName);
 
 /// @brief Helper to get the raw input from a validated geometry variant.

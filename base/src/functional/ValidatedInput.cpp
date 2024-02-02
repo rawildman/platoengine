@@ -5,7 +5,7 @@
 
 #include "ConstraintValidation.hpp"
 #include "Exception.hpp"
-#include "GeometryRegistrationUtilities.hpp"  //calling detail function GeometryFactory::Detail::first_geometry_input
+#include "GeometryRegistration.hpp"
 #include "GeometryValidation.hpp"
 #include "InputParser.hpp"
 #include "ObjectiveValidation.hpp"
@@ -17,7 +17,7 @@ ValidatedInput::ValidatedInput(Plato::PlatoInput aInput, Key) : mInput{std::move
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
-    GeometryFactory::GeometryInput tGeometryInput = GeometryFactory::Detail::first_geometry_input(mInput);
+    GeometryFactory::GeometryInput tGeometryInput = GeometryFactory::first_geometry_input(mInput);
     using ValidatedGeometryVariant = typename GeometryFactory::ValidatedGeometryInput::RawInputType;
     // Use visit with a return value in c++20
     std::optional<ValidatedGeometryVariant> tValidatedGeometry;

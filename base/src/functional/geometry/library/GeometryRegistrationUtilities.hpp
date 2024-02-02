@@ -55,10 +55,6 @@ template <std::size_t... Is>
 ///  If no geometry block was found, an empty optional is returned.
 [[nodiscard]] std::optional<GeometryFactory::GeometryInput> first_geometry_block(const Plato::PlatoInput& aInput);
 
-/// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
-/// @throw Exception If no geometry block was defined in @a aInput.
-[[nodiscard]] GeometryFactory::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput);
-
 /// @return The name of the geometry input held by the variant @a aInput
 [[nodiscard]] std::string block_name(const GeometryFactory::GeometryInput& aInput);
 

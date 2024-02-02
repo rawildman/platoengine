@@ -59,13 +59,6 @@ TEST(GeometryRegistrationUtilities, GeometryBlockHasDensityTopology)
     EXPECT_TRUE(tGeometryInput.has_value());
 }
 
-TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
-{
-    namespace pfg = Plato::Functional::GeometryFactory;
-    namespace pfgd = Plato::Functional::GeometryFactory::Detail;
-    EXPECT_THROW(auto tGeometryInput = pfgd::first_geometry_input(Plato::PlatoInput{}), Plato::Functional::Exception);
-}
-
 TEST(GeometryRegistrationUtilities, GeometryInputHasDensityTopology)
 {
     namespace pfg = Plato::Functional::GeometryFactory;
