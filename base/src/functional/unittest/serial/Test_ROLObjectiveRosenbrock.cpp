@@ -3,9 +3,9 @@
 #include <ROL_StdVector.hpp>
 #include <memory>
 
+#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "Aggregate.hpp"
 #include "ROLObjectiveFunction.hpp"
-#include "DynamicVectorTestUtilities.hpp"
 #include "Rosenbrock.hpp"
 
 TEST(ROLObjectiveFunction, RosenbrockObjectiveValueAndGradient)

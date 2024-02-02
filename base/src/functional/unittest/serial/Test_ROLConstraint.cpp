@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "ROLConstraintFunction.hpp"
-#include "DynamicVectorTestUtilities.hpp"
 
 TEST(ROLConstraintFunction, ConstraintValue)
 {
