@@ -1,26 +1,13 @@
-set(TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/cmake/TestMain.cpp)
-set(PARALLEL_TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ParallelUnitMain.cpp)
-set(CMAKE_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(./cmake/plato_functional_setup.cmake)
+plato_functional_setup()
 
-set(SRCS PlatoProblem.cpp
-         ROLConstraintFunction.cpp
-         ROLObjectiveFunction.cpp
-         ValidatedInput.cpp )
+include(./cmake/create_plato_library.cmake)
 
-set(HDRS PlatoProblem.hpp
-         ROLConstraintFunction.hpp
-         ROLObjectiveFunction.hpp 
-         ValidatedInput.hpp )
+set(LINK_LIBS PlatoFunctionalGeometry 
+              PlatoFunctionalCriteria 
+              PlatoFunctionalOptimizer)
 
-add_library(PlatoFunctional ${SRCS} ${HDRS} )
-target_include_directories(PlatoFunctional PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_link_libraries(PlatoFunctional PUBLIC PlatoFunctionalGeometry PlatoFunctionalCriteria PlatoFunctionalOptimizer)
-
-install( TARGETS PlatoFunctional EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(PlatoFunctional INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
+create_plato_library(PlatoFunctional "." "${LINK_LIBS}")
 
 add_subdirectory(./utilities)
 add_subdirectory(./core)
