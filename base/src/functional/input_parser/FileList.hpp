@@ -2,7 +2,6 @@
 #define PLATO_FILELIST_HPP
 
 #include <boost/spirit/include/qi.hpp>
-
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -51,36 +50,28 @@ struct FileList
 
 std::ostream& operator<<(std::ostream& stream, const Plato::FileList& aFileList);
 std::ostream& operator<<(std::ostream& stream, const Plato::FileName& aFileName);
-}
+}  // namespace Plato
 
 namespace boost::spirit::traits
 {
 template <>
 struct create_parser<Plato::FileList>
 {
-    typedef proto::result_of::deep_copy<
-        BOOST_TYPEOF( ( qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ',' ) )
-    >::type type;
+    typedef proto::result_of::deep_copy<BOOST_TYPEOF(
+        (qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ','))>::type type;
 
-    static type call()
-    {
-        return proto::deep_copy( ( qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ',' ) );
-    }
+    static type call() { return proto::deep_copy((qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ',')); }
 };
 
 template <>
 struct create_parser<Plato::FileName>
 {
-    typedef proto::result_of::deep_copy<
-        BOOST_TYPEOF( ( qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] ) )
-    >::type type;
+    typedef proto::result_of::deep_copy<BOOST_TYPEOF(
+        (qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())]))>::type type;
 
-    static type call()
-    {
-        return proto::deep_copy( ( qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] ) );
-    }
+    static type call() { return proto::deep_copy((qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())])); }
 };
 
-}
+}  // namespace boost::spirit::traits
 
 #endif

@@ -1,14 +1,16 @@
 #include <gtest/gtest.h>
 
+#include "FileList.hpp"
 #include "InputBlockStruct.hpp"
 #include "Test_Helpers.hpp"
-#include "FileList.hpp"
 
+// clang-format off
 PLATO_INPUT_BLOCK_STRUCT(
     (Plato), TestFileTypes,
     (Plato::FileName, file_name)
     (Plato::FileList, file_list)
 )
+// clang-format on
 
 TEST(ParseFileTypes, FileName)
 {

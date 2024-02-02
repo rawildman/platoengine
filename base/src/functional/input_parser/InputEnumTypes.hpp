@@ -1,9 +1,10 @@
 #ifndef PLATO_INPUTENUMTYPES_HPP
 #define PLATO_INPUTENUMTYPES_HPP
 
-#include "EnumTypeHelpers.hpp"
 #include "EnumTable.hpp"
+#include "EnumTypeHelpers.hpp"
 
+// clang-format off
 DECLARE_ENUM_SYMBOL_TABLE(CodeOptions,
                          (kSierraMassApp, "sierra_mass_app")
                          (kNodalSum, "nodal_sum")
@@ -17,5 +18,6 @@ DECLARE_ENUM_SYMBOL_TABLE(FilterTypes,
                          (kIdentity, "identity")
                          (kHelmholtz, "helmholtz")
                          (kKernel, "kernel"))
+// clang-format on
 
 #endif

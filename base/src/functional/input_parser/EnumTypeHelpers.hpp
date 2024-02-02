@@ -1,17 +1,17 @@
 #ifndef PLATO_ENUMTYPEHELPERS_HPP
 #define PLATO_ENUMTYPEHELPERS_HPP
 
-#include "EnumTable.hpp"
-#include "EnumParser.hpp"
-
-#include <boost/spirit/include/qi.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/variadic_seq_to_seq.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
-
+#include <boost/spirit/include/qi.hpp>
 #include <iostream>
 
+#include "EnumParser.hpp"
+#include "EnumTable.hpp"
+
+// clang-format off
 #define ENUMERATE(a) BOOST_PP_TUPLE_ELEM(2, 0, a)
 #define ENUM_STRING(a) BOOST_PP_TUPLE_ELEM(2, 1, a)
 #define ENUMERATE_WITH_COMMA(r,data,a) ENUMERATE(a),
@@ -94,5 +94,6 @@ namespace Plato                                                                 
         return aStream;                                                                                         \
     }                                                                                                           \
 }
+// clang-format on
 
 #endif

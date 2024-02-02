@@ -1,21 +1,19 @@
-// clang-format off
 #include <gtest/gtest.h>
 
-#include "InputBlocks.hpp"
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <type_traits>
+
 #include "BlockStructRule.hpp"
+#include "InputBlocks.hpp"
 #include "InputParser.hpp"
 #include "Test_Helpers.hpp"
 
-#include <boost/fusion/algorithm/iteration/for_each.hpp>
-
-#include <type_traits>
-
 namespace
 {
-template<typename T>
+template <typename T>
 constexpr bool kIsBoostOptional = false;
 
-template<typename T>
+template <typename T>
 constexpr bool kIsBoostOptional<boost::optional<T>> = true;
 
 auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, Plato::PlatoInput>
@@ -33,18 +31,18 @@ void check_nothing_parsed(const Plato::PlatoInput& aInput)
     EXPECT_TRUE(aInput.mConstraints.empty());
     const auto check_value_empty = [](const auto& aValue)
     {
-        static_assert(kIsBoostOptional<std::decay_t<decltype(aValue)>>, 
-          "Only boost::optional values should be in an input struct");
+        static_assert(kIsBoostOptional<std::decay_t<decltype(aValue)>>,
+                      "Only boost::optional values should be in an input struct");
         EXPECT_FALSE(aValue);
     };
     boost::fusion::for_each(aInput.mOptimizationParameters, check_value_empty);
 }
-}
+}  // namespace
 
 TEST(MassAppInput, ObjectiveAllValidInputs)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin objective mp_objective
             active true
             app sierra_mass_app
@@ -58,32 +56,31 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
 
     ASSERT_EQ(tData.mObjectives.size(), 1);
-    const auto& tObjective = tData.mObjectives.front(); 
+    const auto& tObjective = tData.mObjectives.front();
     Plato::Test::test_existence_and_equality(tObjective.name, "mp_objective");
     Plato::Test::test_existence_and_equality(tObjective.app, Plato::CodeOptions::kSierraMassApp);
     Plato::Test::test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
     Plato::Test::test_existence_and_equality(tObjective.number_of_processors, 10);
     Plato::Test::test_existence_and_equality(tObjective.active, true);
-    Plato::Test::test_existence_and_equality(
-      tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
+    Plato::Test::test_existence_and_equality(tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
     Plato::Test::test_existence_and_equality(tObjective.objective_type, Plato::ObjectiveTypes::kMinimize);
     Plato::Test::test_existence_and_equality(tObjective.aggregation_weight, 10.0);
 }
 
 TEST(InputBlockStruct, GeometryBlocks)
 {
-   constexpr bool tDensityTopologyIsGeometry = Plato::Input::kIsGeometryInput<Plato::density_topology>;
-   EXPECT_TRUE(tDensityTopologyIsGeometry);
-   constexpr bool tBrickShapeIsGeometry = Plato::Input::kIsGeometryInput<Plato::brick_shape_geometry>;
-   EXPECT_TRUE(tBrickShapeIsGeometry);
-   constexpr bool tOptimizationIsNotGeometry = Plato::Input::kIsGeometryInput<Plato::optimization_parameters>;
-   EXPECT_FALSE(tOptimizationIsNotGeometry );
+    constexpr bool tDensityTopologyIsGeometry = Plato::Input::kIsGeometryInput<Plato::density_topology>;
+    EXPECT_TRUE(tDensityTopologyIsGeometry);
+    constexpr bool tBrickShapeIsGeometry = Plato::Input::kIsGeometryInput<Plato::brick_shape_geometry>;
+    EXPECT_TRUE(tBrickShapeIsGeometry);
+    constexpr bool tOptimizationIsNotGeometry = Plato::Input::kIsGeometryInput<Plato::optimization_parameters>;
+    EXPECT_FALSE(tOptimizationIsNotGeometry);
 }
 
 TEST(InputBlockStruct, BlockName)
@@ -94,8 +91,8 @@ TEST(InputBlockStruct, BlockName)
 
 TEST(MassAppInput, ConstraintAllValidInputs)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint
             active true
             app sierra_mass_app
@@ -108,7 +105,7 @@ TEST(MassAppInput, ConstraintAllValidInputs)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
@@ -126,8 +123,8 @@ TEST(MassAppInput, ConstraintAllValidInputs)
 
 TEST(MassAppInput, OptimizationParametersAllValidInputs)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin optimization_parameters
             input_file_name its-a_file.txt
             max_iterations 100
@@ -140,25 +137,22 @@ TEST(MassAppInput, OptimizationParametersAllValidInputs)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.end());
 
-    Plato::Test::test_existence_and_equality(
-      tData.mOptimizationParameters.input_file_name, std::string{"its-a_file.txt"});
-    Plato::Test::test_existence_and_equality(
-      tData.mOptimizationParameters.max_iterations, 100u);
-    Plato::Test::test_existence_and_equality(
-      tData.mOptimizationParameters.step_tolerance, 10.0);
-    Plato::Test::test_existence_and_equality(
-      tData.mOptimizationParameters.gradient_tolerance, 100.0);
+    Plato::Test::test_existence_and_equality(tData.mOptimizationParameters.input_file_name,
+                                             std::string{"its-a_file.txt"});
+    Plato::Test::test_existence_and_equality(tData.mOptimizationParameters.max_iterations, 100u);
+    Plato::Test::test_existence_and_equality(tData.mOptimizationParameters.step_tolerance, 10.0);
+    Plato::Test::test_existence_and_equality(tData.mOptimizationParameters.gradient_tolerance, 100.0);
 }
 
 TEST(MassAppInput, ObjectiveNotAllInputs)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin objective mp_objective
             app sierra_mass_app
             number_of_processors 10
@@ -170,7 +164,7 @@ TEST(MassAppInput, ObjectiveNotAllInputs)
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
 
     ASSERT_EQ(tData.mObjectives.size(), 1);
-    const auto& tObjective = tData.mObjectives.front(); 
+    const auto& tObjective = tData.mObjectives.front();
     Plato::Test::test_existence_and_equality(tObjective.name, "mp_objective");
     Plato::Test::test_existence_and_equality(tObjective.app, Plato::CodeOptions::kSierraMassApp);
     Plato::Test::test_existence_and_equality(tObjective.number_of_processors, 10);
@@ -182,8 +176,8 @@ TEST(MassAppInput, ObjectiveNotAllInputs)
 
 TEST(MassAppInput, MisspelledBegin)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begn constraint mp_constraint
             active true
           end
@@ -191,7 +185,7 @@ TEST(MassAppInput, MisspelledBegin)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_NE(tIter, tInput.cend());
@@ -200,8 +194,8 @@ TEST(MassAppInput, MisspelledBegin)
 
 TEST(MassAppInput, MisspelledEnd)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint
             active true
           en
@@ -209,7 +203,7 @@ TEST(MassAppInput, MisspelledEnd)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_FALSE(tParseResult);
     EXPECT_NE(tIter, tInput.cend());
@@ -218,8 +212,8 @@ TEST(MassAppInput, MisspelledEnd)
 
 TEST(MassAppInput, MisspelledBlockType)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constrain mp_constraint
             active true
           end
@@ -227,7 +221,7 @@ TEST(MassAppInput, MisspelledBlockType)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_NE(tIter, tInput.cend());
@@ -236,8 +230,8 @@ TEST(MassAppInput, MisspelledBlockType)
 
 TEST(MassAppInput, MisspelledToken)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint
             ave true
           end
@@ -245,7 +239,7 @@ TEST(MassAppInput, MisspelledToken)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_FALSE(tParseResult);
     EXPECT_NE(tIter, tInput.cend());
@@ -254,8 +248,8 @@ TEST(MassAppInput, MisspelledToken)
 
 TEST(MassAppInput, MisspelledValue)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint
             active te
           end
@@ -263,7 +257,7 @@ TEST(MassAppInput, MisspelledValue)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_FALSE(tParseResult);
     EXPECT_NE(tIter, tInput.cend());
@@ -272,8 +266,8 @@ TEST(MassAppInput, MisspelledValue)
 
 TEST(MassAppInput, MissingValue)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint
             number_of_processors 10
             active
@@ -282,7 +276,7 @@ TEST(MassAppInput, MissingValue)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_FALSE(tData.mConstraints.front().active);
     EXPECT_TRUE(tData.mConstraints.front().number_of_processors);
@@ -291,8 +285,8 @@ TEST(MassAppInput, MissingValue)
 
 TEST(MassAppInput, ConstraintMultipleBlocks)
 {
-    const std::string tInput = 
-       R"(
+    const std::string tInput =
+        R"(
           begin constraint mp_constraint_1
             active true
             app sierra_mass_app
@@ -306,7 +300,7 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
 
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
-    
+
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
@@ -320,5 +314,3 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
     Plato::Test::test_existence_and_equality(tConstraint2.number_of_processors, 10);
     Plato::Test::test_existence_and_equality(tConstraint2.equal_to, -10.0);
 }
-
-// clang-format on

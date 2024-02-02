@@ -3,33 +3,34 @@
 
 #include <boost/fusion/adapted/struct/define_struct.hpp>
 #include <boost/fusion/include/define_struct.hpp>
-
+#include <boost/optional.hpp>
 #include <boost/preprocessor/seq/push_front.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
-#include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/seq/variadic_seq_to_seq.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
 
-#include <boost/optional.hpp>
-
-namespace Plato::Input{
-
+namespace Plato::Input
+{
 /// @brief Provides the name of an input block parsed into @a InputStruct as a static `name` member.
 /// @note The actual implementation is via template specializations generated from the macros.
-template<typename InputStruct>
-struct InputTypeName{};
+template <typename InputStruct>
+struct InputTypeName
+{
+};
 
 /// @brief Specifies whether the input block parsed into @a InputStruct is named or unnamed.
 /// @note The actual implementation is via template specializations generated from the macros.
-template<typename InputStruct>
+template <typename InputStruct>
 constexpr inline bool kIsNamedBlock = false;
 
 /// @brief Type trait specifying if a type is a geometry input type.
 ///
 /// This is specialized to using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
-template<typename T>
+template <typename T>
 constexpr inline bool kIsGeometryInput = false;
-}
+}  // namespace Plato::Input
 
+// clang-format off
 #define OPTIONAL_TYPE(r, data, elem) boost::optional<BOOST_PP_TUPLE_ELEM(0, elem)>, BOOST_PP_TUPLE_ELEM(1, elem)
 #define PLATO_BOOST_FUSION_NAME_FIELD (std::string, name)
 #define ATTRIBUTES_WITH_NAME(ATTRIBUTES) BOOST_PP_SEQ_PUSH_FRONT(ATTRIBUTES, PLATO_BOOST_FUSION_NAME_FIELD)
@@ -101,5 +102,7 @@ struct InputTypeName<STRUCT_NAME>                                               
 template<>                                                                            \
 constexpr inline bool kIsNamedBlock<STRUCT_NAME> = true;                              \
 }
+
+// clang-format on
 
 #endif

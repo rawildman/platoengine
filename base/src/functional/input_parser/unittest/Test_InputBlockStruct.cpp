@@ -3,11 +3,13 @@
 #include "InputBlockStruct.hpp"
 #include "Test_Helpers.hpp"
 
+// clang-format off
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
-    (Plato), TestNamedBlock,
+    (Plato), TestNamedBlock, 
     (int, field1)
     (double, field2)
 )
+// clang-format on
 
 TEST(InputBlockStruct, Named)
 {
@@ -23,12 +25,7 @@ TEST(InputBlockStruct, Named)
     EXPECT_EQ(Plato::Input::InputTypeName<Plato::TestNamedBlock>::name, "TestNamedBlock");
 }
 
-PLATO_INPUT_BLOCK_STRUCT(
-    (Plato), TestUnnamedBlock,
-    (bool, field1)
-    (int, field2)
-    (double, field3)
-)
+PLATO_INPUT_BLOCK_STRUCT((Plato), TestUnnamedBlock, (bool, field1)(int, field2)(double, field3))
 
 TEST(InputBlockStruct, UnNamed)
 {
@@ -44,10 +41,7 @@ TEST(InputBlockStruct, UnNamed)
     EXPECT_EQ(Plato::Input::InputTypeName<Plato::TestUnnamedBlock>::name, "TestUnnamedBlock");
 }
 
-PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
-    (Plato), TestGeometryBlock,
-    (bool, field1)
-)
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT((Plato), TestGeometryBlock, (bool, field1))
 
 TEST(InputBlockStruct, Geometry)
 {

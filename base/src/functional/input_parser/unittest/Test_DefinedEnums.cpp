@@ -5,22 +5,21 @@
 namespace
 {
 /// Assumes an auto-parser has been defined for `EnumType` via create_parser
-template<typename Iterator, typename EnumType>
+template <typename Iterator, typename EnumType>
 bool parse_symbol_table(Iterator aBegin, Iterator aEnd, std::vector<EnumType>& aEnums)
 {
     namespace bsq = boost::spirit::qi;
     namespace bsa = boost::spirit::ascii;
 
-    const bool tResult = bsq::phrase_parse(
-        aBegin, aEnd, ( bsq::auto_ % ',' ), bsa::space, aEnums);
+    const bool tResult = bsq::phrase_parse(aBegin, aEnd, (bsq::auto_ % ','), bsa::space, aEnums);
 
-    if(aBegin != aEnd)
+    if (aBegin != aEnd)
     {
         return false;
     }
     return tResult;
 }
-}
+}  // namespace
 
 TEST(CodeOptions, EnumTable)
 {
@@ -57,4 +56,3 @@ TEST(ObjectiveTypes, SymbolParser)
     EXPECT_EQ(tParsedObjectiveTypes.front(), Plato::ObjectiveTypes::kMinimize);
     EXPECT_EQ(tParsedObjectiveTypes.back(), Plato::ObjectiveTypes::kMaximize);
 }
-

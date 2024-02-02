@@ -1,13 +1,12 @@
-// clang-format off
 #ifndef PLATO_INPUTBLOCKS_HPP
 #define PLATO_INPUTBLOCKS_HPP
 
-#include "InputBlockStruct.hpp"
-#include "FileList.hpp"
-#include "InputEnumTypes.hpp"
-
 #include <string>
 #include <vector>
+
+#include "FileList.hpp"
+#include "InputBlockStruct.hpp"
+#include "InputEnumTypes.hpp"
 
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs.
@@ -101,4 +100,3 @@ std::string block_name()
 }  // namespace Plato
 
 #endif
-// clang-format on
