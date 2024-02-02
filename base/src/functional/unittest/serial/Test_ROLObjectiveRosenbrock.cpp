@@ -3,8 +3,8 @@
 #include <ROL_StdVector.hpp>
 #include <memory>
 
-#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "Aggregate.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 #include "ROLObjectiveFunction.hpp"
 #include "Rosenbrock.hpp"
 

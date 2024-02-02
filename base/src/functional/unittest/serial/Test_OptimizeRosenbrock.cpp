@@ -7,9 +7,9 @@
 #include <ROL_Stream.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
 
-#include "../testutilities/DynamicVectorPenaltyFunction.hpp"
-#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "Compose.hpp"
+#include "DynamicVectorPenaltyFunction.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 #include "ROLObjectiveFunction.hpp"
 
 namespace

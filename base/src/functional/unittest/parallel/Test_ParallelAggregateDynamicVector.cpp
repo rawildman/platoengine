@@ -2,9 +2,9 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "DynamicVector.hpp"
 #include "DynamicVectorSerialization.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 #include "ParallelAggregate.hpp"
 #include "ROLHelpers.hpp"
 #include "Rosenbrock.hpp"

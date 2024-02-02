@@ -1,5 +1,5 @@
-set(TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/testutilities/TestMain.cpp)
-set(PARALLEL_TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/testutilities/ParallelUnitMain.cpp)
+set(TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/cmake/TestMain.cpp)
+set(PARALLEL_TEST_UNIT_MAIN_INCL ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ParallelUnitMain.cpp)
 set(CMAKE_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(SRCS PlatoProblem.cpp

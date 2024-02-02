@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "../testutilities/DynamicVectorPenaltyFunction.hpp"
-#include "../testutilities/DynamicVectorTestUtilities.hpp"
 #include "Compose.hpp"
+#include "DynamicVectorPenaltyFunction.hpp"
+#include "DynamicVectorTestUtilities.hpp"
 #include "Penalty.hpp"
 
 TEST(PenaltyFunction, ValueAndJacobian)

@@ -1,21 +1,6 @@
-set(SRCS InputGeneration.cpp
-         TwoDTestTypes.cpp
-         UnitMain.cpp)
+include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
 
-set(HDRS InputGeneration.hpp
-         Penalty.hpp
-         Rosenbrock.hpp
-         TwoDTestTypes.hpp
-         TwoDTestTypesSerialization.hpp
-         UnitMain.hpp)
+set(LINK_LIBS Kokkos::kokkos 
+              PlatoInputParser)
 
-set(LIB_NAME PlatoFunctionalTestUtilities)
-add_library(${LIB_NAME} ${SRCS} ${HDRS} )
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_link_libraries(${LIB_NAME} PRIVATE Kokkos::kokkos GTest::GTest PlatoInputParser)
-
-install( TARGETS ${LIB_NAME} EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
+create_plato_library(PlatoFunctionalTestUtilities "." "${LINK_LIBS}" )
