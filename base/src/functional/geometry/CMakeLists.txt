@@ -1,31 +1,22 @@
-set(SRCS BrickShapeGeometry.cpp
-         DensityTopology.cpp
-         GeometryFactory.cpp
-         GeometryRegistration.cpp
-         GeometryValidation.cpp
-         detail/GeometryRegistrationUtilities.cpp
-         )
+include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
+include(${CMAKE_UTIL_DIR}/create_plato_unittester.cmake)
 
-set(HDRS BrickShapeGeometry.hpp
-         DensityTopology.hpp
-         GeometryFactory.hpp
-         GeometryRegistration.hpp
-         GeometryValidation.hpp
-         detail/GeometryRegistrationUtilities.hpp
-         detail/GeometryInputBuilder.hpp
-         )
+set(FOLDERS library 
+            extension)
+set(LINK_LIBS PlatoFunctionalUtilities 
+              PlatoFunctionalCore 
+              PlatoFunctionalFilter 
+              PlatoInputParser)
 
-set(LIB_NAME PlatoFunctionalGeometry)
-add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS} )
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_link_libraries(${LIB_NAME} PUBLIC PlatoFunctionalUtilities PlatoFunctionalCore PlatoFunctionalFilter PlatoInputParser)
-
-install( TARGETS ${LIB_NAME} EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
+create_plato_library(PlatoFunctionalGeometry "${FOLDERS}" "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-  add_subdirectory(./unittest)
+  # Build unit tester
+  set(FOLDERS library/unittest 
+              extension/unittest)
+  set(LINK_LIBS PlatoFunctionalGeometry
+                PlatoFunctionalTestUtilities)
+
+  create_plato_unittester(PlatoFunctional_GeometryUnitTester "${FOLDERS}" "${LINK_LIBS}")
+
 endif()

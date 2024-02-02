@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "detail/GeometryRegistrationUtilities.hpp"
+#include "GeometryRegistrationUtilities.hpp"
 
 TEST(GeometryRegistrationUtilities, IsVariant)
 {

@@ -7,7 +7,7 @@
 #include "DynamicVector.hpp"
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
-#include "detail/GeometryInputBuilder.hpp"
+#include "GeometryInputBuilder.hpp"
 
 namespace Plato
 {

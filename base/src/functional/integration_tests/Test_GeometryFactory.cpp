@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "GeometryFactory.hpp"
+#include "GeometryRegistrationUtilities.hpp"
 #include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
-#include "detail/GeometryRegistrationUtilities.hpp"
 
 TEST(GeometryFactory, BrickGeometry)
 {

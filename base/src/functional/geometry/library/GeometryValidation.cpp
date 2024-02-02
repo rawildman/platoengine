@@ -1,6 +1,6 @@
 #include "GeometryValidation.hpp"
 
-#include "detail/GeometryRegistrationUtilities.hpp"
+#include "GeometryRegistrationUtilities.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::Geometry
@@ -37,9 +37,7 @@ std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
     {
         aCurrentMessageList = std::visit(
             [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string>
-            {
-                return Plato::Functional::Validation::validate(aGeometryInput, std::move(tList));
-            },
+            { return Plato::Functional::Validation::validate(aGeometryInput, std::move(tList)); },
             iBlockEntry);
     }
 

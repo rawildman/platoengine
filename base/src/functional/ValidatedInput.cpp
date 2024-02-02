@@ -5,11 +5,11 @@
 
 #include "ConstraintValidation.hpp"
 #include "Exception.hpp"
+#include "GeometryRegistrationUtilities.hpp"  //calling detail function GeometryFactory::Detail::first_geometry_input
 #include "GeometryValidation.hpp"
 #include "InputParser.hpp"
 #include "ObjectiveValidation.hpp"
 #include "OptimizerValidation.hpp"
-#include "detail/GeometryRegistrationUtilities.hpp"
 
 namespace Plato::Functional::Validation
 {
@@ -61,7 +61,8 @@ ValidatedInput make_validated_input(Plato::PlatoInput aInput)
     tMessages = Optimizer::validate_optimization_parameters(aInput.mOptimizationParameters, std::move(tMessages));
     if (!tMessages.empty())
     {
-        throw Exception("Error: Could not validate input, the following errors were found: \n" + all_messages(tMessages));
+        throw Exception("Error: Could not validate input, the following errors were found: \n" +
+                        all_messages(tMessages));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }
