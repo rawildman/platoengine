@@ -3,7 +3,7 @@
 #include "Compose.hpp"
 #include "Penalty.hpp"
 #include "Rosenbrock.hpp"
-#include "Utilities.hpp"
+#include "testutilities/Utilities.hpp"
 
 TEST(Rosenbrock, Rosenbrock)
 {

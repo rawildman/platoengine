@@ -2,7 +2,7 @@
 
 #include "Aggregate.hpp"
 #include "Rosenbrock.hpp"
-#include "Utilities.hpp"
+#include "testutilities/Utilities.hpp"
 
 TEST(Aggregate, DirectConstruction)
 {

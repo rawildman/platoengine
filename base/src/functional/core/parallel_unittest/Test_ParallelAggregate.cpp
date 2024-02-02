@@ -5,7 +5,7 @@
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
 #include "TwoDTestTypesSerialization.hpp"
-#include "Utilities.hpp"
+#include "testutilities/Utilities.hpp"
 
 namespace
 {

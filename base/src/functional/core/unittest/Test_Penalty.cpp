@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "Penalty.hpp"
-#include "Utilities.hpp"
+#include "testutilities/Utilities.hpp"
 
 TEST(Penalty, Penalty)
 {
