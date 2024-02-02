@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "Exception.hpp"
-#include "InputParser.hpp"
 #include "ValidationUtilities.hpp"
 
 TEST(ValidateUtilities, ActiveConstraint)

@@ -9,7 +9,7 @@
 
 #include "Exception.hpp"
 #include "GeometryRegistration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::GeometryFactory::Detail
 {

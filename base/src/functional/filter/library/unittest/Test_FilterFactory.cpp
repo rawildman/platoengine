@@ -2,7 +2,8 @@
 
 #include "Exception.hpp"
 #include "FilterFactory.hpp"
-#include "InputParser.hpp"
+#include "InputBlocks.hpp"
+#include "InputEnumTypes.hpp"
 
 TEST(FilterFactory, KernelFilterThrows)
 {

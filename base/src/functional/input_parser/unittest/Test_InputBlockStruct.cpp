@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Plato_InputBlockStruct.hpp"
-#include "Plato_Test_Helpers.hpp"
+#include "InputBlockStruct.hpp"
+#include "Test_Helpers.hpp"
 
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (Plato), TestNamedBlock,

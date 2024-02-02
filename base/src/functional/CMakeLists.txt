@@ -10,6 +10,8 @@ set(LINK_LIBS PlatoFunctionalGeometry
 create_plato_library(PlatoFunctional "." "${LINK_LIBS}")
 
 add_subdirectory(./utilities)
+add_subdirectory(./input_parser)
+add_subdirectory(./linear_algebra)
 add_subdirectory(./core)
 add_subdirectory(./geometry)
 add_subdirectory(./filter)
@@ -18,7 +20,7 @@ add_subdirectory(./optimizer)
 add_subdirectory(./main)
 
 if( UNIT_TESTING )
-  add_subdirectory(./testutilities)
+  add_subdirectory(./test_utilities)
   add_subdirectory(./integration_tests)
   add_subdirectory(./unittest)
 endif()

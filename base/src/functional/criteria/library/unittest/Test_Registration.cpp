@@ -3,7 +3,7 @@
 #include "CriterionRegistration.hpp"
 #include "DynamicVector.hpp"
 #include "Function.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace
 {

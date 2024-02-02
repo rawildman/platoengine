@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "ParameterBounds.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::Validation
 {

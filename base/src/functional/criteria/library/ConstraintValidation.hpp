@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_CONSTRAINTVALIDATION
 #define PLATO_FUNCTIONAL_CONSTRAINTVALIDATION
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato::Functional::Criteria

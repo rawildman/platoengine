@@ -4,7 +4,7 @@
 
 #include "Exception.hpp"
 #include "FilterRegistration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::FilterFactory
 {

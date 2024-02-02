@@ -2,7 +2,7 @@
 
 #include "CriterionRegistration.hpp"
 #include "Exception.hpp"
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 #include "SharedLibraryUtilities.hpp"
 
 namespace Plato::Functional

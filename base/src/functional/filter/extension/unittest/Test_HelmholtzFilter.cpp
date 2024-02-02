@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 #include "FilterFactory.hpp"
-#include "InputParser.hpp"
+#include "InputBlocks.hpp"
 
 TEST(FilterFactory, HelmholtzFilterThrows)
 {

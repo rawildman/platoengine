@@ -3,7 +3,6 @@
 #include "Exception.hpp"
 #include "GeometryFactory.hpp"
 #include "InputGeneration.hpp"
-#include "InputParser.hpp"
 #include "STKUtilities.hpp"
 #include "ValidatedInput.hpp"
 

@@ -5,7 +5,7 @@
 #include "FilterInterface.hpp"
 #include "FilterJacobian.hpp"
 #include "MeshProxy.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "SharedLibraryUtilities.hpp"
 
 namespace Plato::Functional::FilterFactory

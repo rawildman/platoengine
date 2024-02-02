@@ -1,8 +1,8 @@
 #ifndef PLATO_ENUMTYPEHELPERS_HPP
 #define PLATO_ENUMTYPEHELPERS_HPP
 
-#include "Plato_EnumTable.hpp"
-#include "Plato_EnumParser.hpp"
+#include "EnumTable.hpp"
+#include "EnumParser.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/preprocessor/cat.hpp>

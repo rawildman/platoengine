@@ -5,6 +5,7 @@ set(FOLDERS library
             extension)
 
 set(LINK_LIBS PlatoFunctionalCore
+              PlatoFunctionalLinearAlgebra
               PlatoFunctionalUtilities
               PlatoInputParser)
 
@@ -18,9 +19,6 @@ if( UNIT_TESTING )
   # Build unit tester
   set(FOLDERS library/unittest
               extension/unittest)
-  set(LINK_LIBS PlatoFunctionalFilter
-                PlatoFunctionalTestUtilities)
-  
-  create_plato_unittester(PlatoFunctional_FilterUnitTester "${FOLDERS}" "${LINK_LIBS}")
+  create_plato_unittester(PlatoFunctional_FilterUnitTester "${FOLDERS}" PlatoFunctionalFilter)
 
 endif()

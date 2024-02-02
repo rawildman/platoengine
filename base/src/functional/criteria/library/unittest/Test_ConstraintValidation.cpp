@@ -3,7 +3,7 @@
 #include "ConstraintValidation.hpp"
 #include "CriterionValidation.hpp"
 #include "InputGeneration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 TEST(ConstraintValidation, ValidateEqualTo)
 {

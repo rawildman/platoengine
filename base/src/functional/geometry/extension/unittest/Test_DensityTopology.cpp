@@ -13,7 +13,7 @@
 #include "InputGeneration.hpp"
 #include "JacobianColumnEvaluator.hpp"
 #include "MeshProxy.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "STKUtilities.hpp"
 
 namespace

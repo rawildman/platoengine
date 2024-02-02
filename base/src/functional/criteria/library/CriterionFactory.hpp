@@ -7,7 +7,7 @@
 #include "DynamicVector.hpp"
 #include "Exception.hpp"
 #include "Function.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato::Functional::CriterionFactory

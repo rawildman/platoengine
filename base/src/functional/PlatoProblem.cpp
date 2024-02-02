@@ -3,7 +3,6 @@
 #include <ROL_Bounds.hpp>
 
 #include "Compose.hpp"
-#include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "NodalSumObjective.hpp"
 #include "ROLHelpers.hpp"

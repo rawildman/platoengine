@@ -1,6 +1,6 @@
 #include "CriterionRegistration.hpp"
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::CriterionFactory
 {

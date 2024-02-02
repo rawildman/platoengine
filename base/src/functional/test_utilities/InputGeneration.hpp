@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::TestUtilities
 {

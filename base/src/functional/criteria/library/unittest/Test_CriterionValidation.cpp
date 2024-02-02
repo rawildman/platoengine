@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "CriterionValidation.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace
 {

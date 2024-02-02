@@ -1,7 +1,7 @@
 #ifndef PLATO_ENUMPARSER_HPP
 #define PLATO_ENUMPARSER_HPP
 
-#include "Plato_EnumTable.hpp"
+#include "EnumTable.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 

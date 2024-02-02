@@ -1,9 +1,9 @@
 #ifndef PLATO_BLOCKSTRUCTRULE_HPP
 #define PLATO_BLOCKSTRUCTRULE_HPP
 
-#include "Plato_EnumParser.hpp"
-#include "Plato_InputEnumTypes.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "EnumParser.hpp"
+#include "InputEnumTypes.hpp"
+#include "InputBlocks.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix.hpp>

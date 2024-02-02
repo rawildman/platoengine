@@ -1,7 +1,7 @@
 #ifndef PLATO_INPUTPARSER_HPP
 #define PLATO_INPUTPARSER_HPP
 
-#include "Plato_BlockStructRule.hpp"
+#include "BlockStructRule.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/core.hpp>
@@ -9,6 +9,7 @@
 #include <boost/phoenix/object.hpp>
 #include <boost/phoenix/fusion.hpp>
 
+#include <filesystem>
 #include <type_traits>
 
 namespace Plato
@@ -134,5 +135,14 @@ struct InputParser : boost::spirit::qi::grammar<Iterator, PlatoInput(), boost::s
     Rule mStartPlatoInput;
 };
 }
+
+namespace Plato::Functional
+{
+/// @brief Parses all content of @a aInput as if it were an input deck.
+[[nodiscard]] Plato::PlatoInput parse_input(std::string_view aInput);
+
+/// @brief Parses all content of the file @a aFileName.
+[[nodiscard]] Plato::PlatoInput parse_input_from_file(const std::filesystem::path& aFileName);
+}  // namespace Plato::Functional
 
 #endif

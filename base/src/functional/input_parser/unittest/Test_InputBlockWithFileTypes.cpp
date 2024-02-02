@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Plato_InputBlockStruct.hpp"
-#include "Plato_Test_Helpers.hpp"
-#include "Plato_FileList.hpp"
+#include "InputBlockStruct.hpp"
+#include "Test_Helpers.hpp"
+#include "FileList.hpp"
 
 PLATO_INPUT_BLOCK_STRUCT(
     (Plato), TestFileTypes,

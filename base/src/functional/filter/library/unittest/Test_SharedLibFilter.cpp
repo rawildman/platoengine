@@ -4,7 +4,7 @@
 #include "FilterInterface.hpp"
 #include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace
 {

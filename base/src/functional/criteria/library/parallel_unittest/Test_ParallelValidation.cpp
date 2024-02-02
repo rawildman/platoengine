@@ -3,7 +3,7 @@
 #include <boost/mpi/communicator.hpp>
 
 #include "ObjectiveValidation.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace
 {

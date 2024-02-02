@@ -2,9 +2,9 @@
 #ifndef PLATO_INPUTBLOCKS_HPP
 #define PLATO_INPUTBLOCKS_HPP
 
-#include "Plato_InputBlockStruct.hpp"
-#include "Plato_FileList.hpp"
-#include "Plato_InputEnumTypes.hpp"
+#include "InputBlockStruct.hpp"
+#include "FileList.hpp"
+#include "InputEnumTypes.hpp"
 
 #include <string>
 #include <vector>

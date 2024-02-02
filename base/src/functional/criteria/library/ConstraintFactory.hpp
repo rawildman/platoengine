@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Function.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 #include "DynamicVector.hpp"
 

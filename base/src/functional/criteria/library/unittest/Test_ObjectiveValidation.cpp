@@ -3,7 +3,7 @@
 #include "CriterionValidation.hpp"
 #include "InputGeneration.hpp"
 #include "ObjectiveValidation.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 TEST(ObjectiveValidation, ValidateAggregationWeight)
 {

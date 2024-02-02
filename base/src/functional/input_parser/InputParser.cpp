@@ -7,7 +7,7 @@
 #include <streambuf>
 
 #include "Exception.hpp"
-#include "Plato_InputParser.hpp"
+#include "InputParser.hpp"
 
 namespace Plato::Functional
 {

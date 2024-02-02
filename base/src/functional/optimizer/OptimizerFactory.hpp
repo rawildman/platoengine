@@ -4,7 +4,7 @@
 #include <ROL_Algorithm.hpp>
 #include <ROL_Solver.hpp>
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato::Functional

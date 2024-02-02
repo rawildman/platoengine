@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Plato_EnumParser.hpp"
-#include "Plato_EnumTable.hpp"
+#include "EnumParser.hpp"
+#include "EnumTable.hpp"
 
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>

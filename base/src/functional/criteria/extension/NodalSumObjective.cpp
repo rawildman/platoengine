@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "CriterionRegistration.hpp"
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 #include "STKUtilities.hpp"
 
 namespace Plato::Functional

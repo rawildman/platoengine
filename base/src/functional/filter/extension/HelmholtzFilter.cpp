@@ -4,7 +4,7 @@
 
 #include "FilterInterface.hpp"
 #include "FilterRegistration.hpp"
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 #include "ValidationRegistration.hpp"
 #include "ValidationUtilities.hpp"
 

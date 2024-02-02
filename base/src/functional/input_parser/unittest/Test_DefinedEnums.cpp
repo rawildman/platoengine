@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 
 namespace
 {

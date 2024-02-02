@@ -4,7 +4,7 @@
 #include "ParallelAggregate.hpp"
 #include "DynamicVector.hpp"
 #include "Function.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
 namespace Plato::Functional

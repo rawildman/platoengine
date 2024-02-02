@@ -7,7 +7,8 @@
 #include "FilterFactory.hpp"
 #include "FilterJacobian.hpp"
 #include "IdentityFilter.hpp"
-#include "InputParser.hpp"
+#include "InputBlocks.hpp"
+#include "InputEnumTypes.hpp"
 #include "MeshProxy.hpp"
 
 namespace

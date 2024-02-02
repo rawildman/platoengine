@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIAVALIDATION
 #define PLATO_FUNCTIONAL_CRITERIAVALIDATION
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
 #include "ValidationUtilities.hpp"
 

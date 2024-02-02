@@ -7,7 +7,6 @@
 #include "Exception.hpp"
 #include "GeometryFactory.hpp"
 #include "InputGeneration.hpp"
-#include "InputParser.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
 #include "OptimizerFactory.hpp"

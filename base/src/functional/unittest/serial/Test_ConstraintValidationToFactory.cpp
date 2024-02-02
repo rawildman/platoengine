@@ -4,7 +4,6 @@
 #include "ConstraintValidation.hpp"
 #include "Exception.hpp"
 #include "InputGeneration.hpp"
-#include "InputParser.hpp"
 #include "ValidatedInput.hpp"
 
 TEST(ConstraintFactory, MultipleValidConstraints)

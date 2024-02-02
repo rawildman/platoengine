@@ -9,7 +9,7 @@
 #include "Function.hpp"
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato

@@ -14,9 +14,6 @@ if( UNIT_TESTING )
   # Build unit tester
   set(FOLDERS library/unittest 
               extension/unittest)
-  set(LINK_LIBS PlatoFunctionalGeometry
-                PlatoFunctionalTestUtilities)
-
-  create_plato_unittester(PlatoFunctional_GeometryUnitTester "${FOLDERS}" "${LINK_LIBS}")
+  create_plato_unittester(PlatoFunctional_GeometryUnitTester "${FOLDERS}" PlatoFunctionalGeometry)
 
 endif()

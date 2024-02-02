@@ -4,7 +4,6 @@
 #include "Exception.hpp"
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
-#include "InputParser.hpp"
 
 TEST(DensityTopologyValidation, ValidateMeshName)
 {

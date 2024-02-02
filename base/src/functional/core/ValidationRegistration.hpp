@@ -5,7 +5,7 @@
 #include <string>
 
 #include "FactoryRegistration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 
 namespace Plato::Functional::Validation
 {

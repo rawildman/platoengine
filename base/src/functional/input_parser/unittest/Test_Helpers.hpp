@@ -1,7 +1,7 @@
 #ifndef PLATO_INPUT_PARSER_TEST_HELPERS
 #define PLATO_INPUT_PARSER_TEST_HELPERS
 
-#include "Plato_FileList.hpp"
+#include "FileList.hpp"
 
 #include <gtest/gtest.h>
 

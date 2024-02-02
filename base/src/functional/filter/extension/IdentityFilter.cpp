@@ -5,7 +5,7 @@
 #include "FilterJacobian.hpp"
 #include "FilterRegistration.hpp"
 #include "MeshProxy.hpp"
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato::Functional

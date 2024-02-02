@@ -1,10 +1,10 @@
 // clang-format off
 #include <gtest/gtest.h>
 
-#include "Plato_InputBlocks.hpp"
-#include "Plato_BlockStructRule.hpp"
-#include "Plato_InputParser.hpp"
-#include "Plato_Test_Helpers.hpp"
+#include "InputBlocks.hpp"
+#include "BlockStructRule.hpp"
+#include "InputParser.hpp"
+#include "Test_Helpers.hpp"
 
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 

@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 #include "InputGeneration.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidatedInput.hpp"
 
 TEST(ValidatedInput, MakeValidInputWithInvalidInput)

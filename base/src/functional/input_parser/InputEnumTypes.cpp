@@ -1,4 +1,4 @@
-#include "Plato_InputEnumTypes.hpp"
+#include "InputEnumTypes.hpp"
 
 DEFINE_ENUM_SYMBOL_TABLE(CodeOptions)
 DEFINE_ENUM_SYMBOL_TABLE(ObjectiveTypes)

@@ -3,7 +3,7 @@
 
 #include <optional>
 
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "ValidationUtilities.hpp"
 
 namespace Plato::Functional::Geometry

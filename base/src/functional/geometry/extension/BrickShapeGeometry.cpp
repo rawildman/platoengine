@@ -9,7 +9,7 @@
 #include "GeometryRegistration.hpp"
 #include "GeometryValidation.hpp"
 #include "JacobianColumnEvaluator.hpp"
-#include "Plato_InputBlocks.hpp"
+#include "InputBlocks.hpp"
 #include "STKUtilities.hpp"
 #include "ValidationRegistration.hpp"
 

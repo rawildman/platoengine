@@ -4,8 +4,6 @@
 #include "Exception.hpp"
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
-#include "InputParser.hpp"
-#include "Plato_InputBlocks.hpp"
 
 TEST(BrickShapeGeometryValidation, BrickShapeMeshName)
 {
