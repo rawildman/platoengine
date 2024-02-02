@@ -1,23 +1,14 @@
-set(SRCS SharedLibraryUtilities.cpp
-         STKUtilities.cpp)
+include(${CMAKE_UTIL_DIR}/create_plato_library.cmake)
+include(${CMAKE_UTIL_DIR}/create_plato_unittester.cmake)
 
-set(HDRS Exception.hpp
-         NamedType.hpp
-         RankSplitVector.hpp
-         SharedLibraryUtilities.hpp
-         STKUtilities.hpp)
-
-set(LIB_NAME PlatoFunctionalUtilities)
-add_library(${LIB_NAME} ${SRCS} ${HDRS} )
-target_include_directories(${LIB_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_link_libraries(${LIB_NAME} PUBLIC STKIO::stk_io)
-
-install( TARGETS ${LIB_NAME} EXPORT PlatoEngine
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib)
-target_include_directories(${LIB_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
-install( FILES ${HDRS} DESTINATION include)
+set(LINK_LIBS STKIO::stk_io)
+create_plato_library(PlatoFunctionalUtilities "." "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-  add_subdirectory(./unittest)
+  
+  set(LINK_LIBS PlatoFunctionalUtilities 
+                PlatoFunctionalTestUtilities)
+
+  create_plato_unittester(PlatoFunctionalUtilities_UnitTester "unittest" "${LINK_LIBS}")
+
 endif()
