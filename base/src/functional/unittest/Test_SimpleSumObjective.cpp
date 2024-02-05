@@ -32,7 +32,7 @@ TEST(NodalSumObjective, Gradient)
 
     Plato::Functional::NodalSumObjective tPass;
     std::vector<double> tGold(24, 1);
-    EXPECT_EQ(*tPass.df(tMeshProxy).getVector(), tGold);
+    EXPECT_EQ(tPass.df(tMeshProxy).stdVector(), tGold);
     EXPECT_TRUE(std::filesystem::exists(kBrickFile));
     EXPECT_TRUE(std::filesystem::remove(kBrickFile));
 }

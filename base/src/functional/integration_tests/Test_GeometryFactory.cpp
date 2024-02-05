@@ -21,8 +21,7 @@ TEST(GeometryFactory, BrickGeometry)
     const auto tData = pf::GeometryFactory::make_geometry_data(tInput.geometry());
 
     constexpr auto tExpectedBrickShapeDimensions = int{6};
-    ASSERT_TRUE(tData.mInitialGuess);
-    EXPECT_EQ(tData.mInitialGuess->dimension(), tExpectedBrickShapeDimensions);
+    EXPECT_EQ(tData.mInitialGuess.size(), tExpectedBrickShapeDimensions);
     EXPECT_EQ(tData.mBounds.first.size(), tExpectedBrickShapeDimensions);
     EXPECT_EQ(tData.mBounds.second.size(), tExpectedBrickShapeDimensions);
 }

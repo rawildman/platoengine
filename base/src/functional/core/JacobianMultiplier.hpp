@@ -1,14 +1,14 @@
 #ifndef PLATO_FUNCTIONAL_JACOBIANMULTIPLIER
 #define PLATO_FUNCTIONAL_JACOBIANMULTIPLIER
 
-#include <ROL_StdVector.hpp>
+#include "DynamicVector.hpp"
 
 namespace Plato::Functional
 {
 /// @brief An object representing the multiplication of a row vector and a Jacobian matrix.
 struct JacobianMultiplier
 {
-    using JacobianTimesVectorFunction = std::function<ROL::StdVector<double>(const ROL::StdVector<double>&)>;
+    using JacobianTimesVectorFunction = std::function<Core::DynamicVector<double>(const Core::DynamicVector<double>&)>;
 
     unsigned int mNumColumns = 0;
     JacobianTimesVectorFunction mJacobianTimesVectorFunction;
@@ -16,7 +16,7 @@ struct JacobianMultiplier
 
 /// @brief Implementation of multiplication of a row vector @a aX
 template <typename Arg>
-[[nodiscard]] ROL::StdVector<double> operator*(const Arg& aX, const JacobianMultiplier& aA)
+[[nodiscard]] Core::DynamicVector<double> operator*(const Arg& aX, const JacobianMultiplier& aA)
 {
     return aA.mJacobianTimesVectorFunction(aX);
 }

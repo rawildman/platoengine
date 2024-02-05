@@ -1,7 +1,6 @@
 #ifndef PLATO_FUNCTIONAL_SHAREDLIBCRITERION
 #define PLATO_FUNCTIONAL_SHAREDLIBCRITERION
 
-#include <ROL_StdVector.hpp>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -9,6 +8,7 @@
 #include <vector>
 
 #include "CriterionInterface.hpp"
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "MeshProxy.hpp"
 
@@ -25,7 +25,7 @@ class SharedLibCriterion
 
     [[nodiscard]] double f(const MeshProxy& aMesh) const;
 
-    [[nodiscard]] ROL::StdVector<double> df(const MeshProxy& aMesh) const;
+    [[nodiscard]] Core::DynamicVector<double> df(const MeshProxy& aMesh) const;
 
    private:
     std::filesystem::path mSharedLibPath;
@@ -33,7 +33,7 @@ class SharedLibCriterion
 };
 
 [[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
-    -> Function<double, ROL::StdVector<double>, const MeshProxy&>;
+    -> Function<double, Core::DynamicVector<double>, const MeshProxy&>;
 
 }  // namespace Plato::Functional
 

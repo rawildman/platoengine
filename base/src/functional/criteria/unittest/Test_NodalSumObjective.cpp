@@ -48,7 +48,7 @@ TEST(NodalSumObjective, Gradient111)
     constexpr int tNumCoordsPerNode = 3;
     constexpr int tNumNodes = 24;
     const auto tExpected = std::vector<double>(tNumCoordsPerNode * tNumNodes, 1.0);
-    const std::vector tComputed = *tNodalSum.df(pf::MeshProxy{tFileName, {}}).getVector();
+    const std::vector tComputed = tNodalSum.df(pf::MeshProxy{tFileName, {}}).stdVector();
     EXPECT_EQ(tComputed, tExpected);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }

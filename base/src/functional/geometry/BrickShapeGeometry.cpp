@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "DynamicVector.hpp"
 #include "Exception.hpp"
 #include "GeometryRegistration.hpp"
 #include "GeometryValidation.hpp"
@@ -27,9 +28,9 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
     return tInput.mesh_name.value().mName;
 }
 
-[[nodiscard]] std::function<void(const ROL::StdVector<double>&)> make_output()
+[[nodiscard]] std::function<void(const Core::DynamicVector<double>&)> make_output()
 {
-    return [](const ROL::StdVector<double>& aSolution) { return BrickShapeGeometry::output(aSolution); };
+    return [](const Core::DynamicVector<double>& aSolution) { return BrickShapeGeometry::output(aSolution); };
 }
 
 [[maybe_unused]] static auto kBrickShapeGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
@@ -58,37 +59,33 @@ MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters)
 
 JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
 {
-    return JacobianColumnEvaluator{
-        /*.mColumns=*/kNumDesignParameters,
-        /*.mX=*/detail::to_rol_std_vector(aDesignParameters),
-        /*.mColumnFunction=*/[](unsigned int i, const ROL::StdVector<double>&) {
-            return ROL::StdVector<double>(ROL::makePtr<std::vector<double>>(detail::sensitivities(i)));
-        }};
+    return JacobianColumnEvaluator{/*.mColumns=*/kNumDesignParameters,
+                                   /*.mX=*/detail::to_dynamic_vector(aDesignParameters),
+                                   /*.mColumnFunction=*/[](unsigned int i, const Core::DynamicVector<double>&) {
+                                       return Core::DynamicVector<double>(detail::sensitivities(i));
+                                   }};
 }
 
-std::unique_ptr<ROL::StdVector<double>> BrickShapeGeometry::initialGuess()
-{
-    return detail::to_rol_std_vector_ptr(BrickDesign{});
-}
+Core::DynamicVector<double> BrickShapeGeometry::initialGuess() { return detail::to_dynamic_vector(BrickDesign{}); }
 
 std::pair<std::vector<double>, std::vector<double>> BrickShapeGeometry::bounds()
 {
     return {kLowerBounds, kUpperBounds};
 }
 
-void BrickShapeGeometry::output(const ROL::StdVector<double>& aSolution)
+void BrickShapeGeometry::output(const Core::DynamicVector<double>& aSolution)
 {
     std::cout << "centers: " << aSolution[0] << " " << aSolution[1] << " " << aSolution[2] << std::endl;
     std::cout << "dimensions: " << aSolution[3] << " " << aSolution[4] << " " << aSolution[5] << std::endl;
 }
 
 auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>
+    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>
 {
     return make_function(
-        [tBrickShapeGeometry = aBrickShapeGeometry](const ROL::StdVector<double>& x)
+        [tBrickShapeGeometry = aBrickShapeGeometry](const Core::DynamicVector<double>& x)
         { return tBrickShapeGeometry.generateMesh(detail::to_design_parameters(x)); },
-        [tBrickShapeGeometry = aBrickShapeGeometry](const ROL::StdVector<double>& x)
+        [tBrickShapeGeometry = aBrickShapeGeometry](const Core::DynamicVector<double>& x)
         { return to_jacobian_multiplier(tBrickShapeGeometry.jacobian(detail::to_design_parameters(x))); });
 }
 
@@ -159,22 +156,16 @@ std::vector<double> sensitivities(const unsigned int aParameterIndex)
     return sensitive;
 }
 
-ROL::StdVector<double> to_rol_std_vector(const BrickDesign& aDesignParameters)
+Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
 {
-    return ROL::StdVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
-                                  aDesignParameters.center_z,    aDesignParameters.dimension_x,
-                                  aDesignParameters.dimension_y, aDesignParameters.dimension_z};
+    return Core::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
+                                       aDesignParameters.center_z,    aDesignParameters.dimension_x,
+                                       aDesignParameters.dimension_y, aDesignParameters.dimension_z};
 }
 
-std::unique_ptr<ROL::StdVector<double>> to_rol_std_vector_ptr(const BrickDesign& aDesignParameters)
+BrickDesign to_design_parameters(const Core::DynamicVector<double>& aDesignParameter)
 {
-    ROL::StdVector<double> tROLVector = to_rol_std_vector(aDesignParameters);
-    return std::make_unique<ROL::StdVector<double>>(tROLVector.getVector());
-}
-
-BrickDesign to_design_parameters(const ROL::StdVector<double>& aDesignParameter)
-{
-    assert(aDesignParameter.dimension() == kNumDesignParameters);
+    assert(aDesignParameter.size() == kNumDesignParameters);
     return BrickDesign{/*.center_x=*/aDesignParameter[0],
                        /*.center_y=*/aDesignParameter[1],
                        /*.center_z=*/aDesignParameter[2],

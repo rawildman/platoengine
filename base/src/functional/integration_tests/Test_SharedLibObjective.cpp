@@ -48,7 +48,7 @@ TEST(SharedLibObjective, CallGradient)
     const auto tGrad = tSharedLib.df(pf::MeshProxy{tMeshName, {}});
 
     const std::vector<double> tGold(24, 0);
-    EXPECT_EQ(*tGrad.getVector(), tGold);
+    EXPECT_EQ(tGrad.stdVector(), tGold);
 }
 
 TEST(SharedLibObjective, ValueUsingFunction)

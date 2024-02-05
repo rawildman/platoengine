@@ -1,8 +1,7 @@
 #ifndef PLATO_GEOMETRY_MANAGER
 #define PLATO_GEOMETRY_MANAGER
 
-#include <ROL_StdVector.hpp>
-
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "GeometryRegistration.hpp"
 #include "JacobianMultiplier.hpp"
@@ -16,8 +15,8 @@ struct PlatoInput;
 
 namespace Plato::Functional::GeometryFactory
 {
-using DesignParameters = ROL::StdVector<double>;
-using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
+using DesignParameters = Core::DynamicVector<double>;
+using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
 
 /// @brief Factory function for creating all geometry data, including a GeometryFunction, an initial guess,
 ///  the bound constraints, and an output function.

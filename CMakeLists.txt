@@ -59,6 +59,8 @@ endif()
 
 project(PlatoEngine LANGUAGES CXX C)
 
+find_package(MPI REQUIRED COMPONENTS CXX)
+
 ############################  Trilinos Setup  #################################
 ###############################################################################
 IF (DEFINED TRILINOS_INSTALL_DIR)
@@ -91,7 +93,7 @@ endif()
 if( DAKOTADRIVER )
   find_package(Dakota REQUIRED)
 endif()
-find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex)
+find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_options regex mpi)
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################

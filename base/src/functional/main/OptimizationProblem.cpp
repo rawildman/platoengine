@@ -4,10 +4,12 @@
 #include <fstream>
 #include <string_view>
 
+#include "DynamicVector.hpp"
 #include "GeometryFactory.hpp"
 #include "MeshProxy.hpp"
 #include "ObjectiveFactory.hpp"
 #include "PlatoProblem.hpp"
+#include "ROLHelpers.hpp"
 #include "ValidatedInput.hpp"
 
 namespace Plato::Functional
@@ -41,8 +43,8 @@ void OptimizationProblem::gradientCheck() const
     std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    mROLProblem->getObjective()->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
-                                               tPrintOutput, tOutFile);
+    mROLProblem->getObjective()->checkGradient(to_rol_vector(mProblem.mGeometry.mInitialGuess),
+                                               generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::constraintCheck() const
@@ -81,19 +83,25 @@ void OptimizationProblem::sensitivityCheck() const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
-    tSensitivityObjective->checkGradient(*mProblem.mGeometry.mInitialGuess, generatePerturbation(dimension()),
-                                         tPrintOutput, tOutFile);
+    tSensitivityObjective->checkGradient(to_rol_vector(mProblem.mGeometry.mInitialGuess),
+                                         generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::optimize()
 {
     std::ofstream tOutFile(std::string{kROLOptimizerFileName});
     mROLSolver.solve(tOutFile);
-
-    auto tSolution = dynamic_cast<ROL::StdVector<double>&>(*mROLProblem->getPrimalOptimizationVector());
-    mProblem.mGeometry.mOutput(tSolution);
+    outputResult();
 }
 
-int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess->dimension(); }
+void OptimizationProblem::outputResult() const
+{
+    if (mCommunicator.rank() == 0)
+    {
+        mProblem.mGeometry.mOutput(to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
+    }
+}
+
+int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess.size(); }
 
 }  // namespace Plato::Functional

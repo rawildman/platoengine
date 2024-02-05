@@ -6,6 +6,7 @@ set(HDRS InputGeneration.hpp
          Penalty.hpp
          Rosenbrock.hpp
          TwoDTestTypes.hpp
+         TwoDTestTypesSerialization.hpp
          UnitMain.hpp)
 
 set(LIB_NAME PlatoFunctionalTestUtilities)

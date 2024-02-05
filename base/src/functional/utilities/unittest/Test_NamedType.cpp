@@ -9,7 +9,7 @@ struct Input
     double mValue;
     std::string mName;
 };
-using ValidatedInput = Plato::Functional::Core::NamedType<Input, struct ValidatedInputTag>;
+using ValidatedInput = Plato::Functional::Utilities::NamedType<Input, struct ValidatedInputTag>;
 }  // namespace
 
 TEST(NamedType, Creation)

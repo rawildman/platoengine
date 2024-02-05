@@ -1,9 +1,9 @@
 #ifndef PLATO_FUNCTIONAL_FILTERJACOBIAN
 #define PLATO_FUNCTIONAL_FILTERJACOBIAN
 
-#include <ROL_StdVector.hpp>
 #include <memory>
 
+#include "DynamicVector.hpp"
 #include "MeshProxy.hpp"
 
 namespace Plato::Functional
@@ -18,7 +18,7 @@ struct FilterJacobian
 };
 
 /// @pre `FilterJacobian::mFilter` must not be `nullptr`.
-ROL::StdVector<double> operator*(const ROL::StdVector<double>& aV, const FilterJacobian& aJacobian);
+Core::DynamicVector<double> operator*(const Core::DynamicVector<double>& aV, const FilterJacobian& aJacobian);
 
 }  // namespace Plato::Functional
 

@@ -32,6 +32,15 @@ TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
     EXPECT_FALSE(pfcd::validate_at_least_one_objective({tObjectiveTwo, tObjectiveTwo}).has_value());
 }
 
+TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
+{
+    namespace pfcd = Plato::Functional::Criteria::detail;
+
+    // One objective and one rank
+    Plato::objective tObjective;
+    EXPECT_FALSE(pfcd::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
+}
+
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
 {
     Plato::objective tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();

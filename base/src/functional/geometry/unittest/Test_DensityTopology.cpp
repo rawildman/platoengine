@@ -39,19 +39,19 @@ TEST(DensityTopology, Jacobian)
     const pf::DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
-    const ROL::StdVector<double> tDesignVec(ROL::makePtr<std::vector<double>>(tDesignVars));
-    const int tNumDesignParameters = tDesignVec.dimension();
+    const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
+    const int tNumDesignParameters = tDesignVec.size();
 
     const pf::JacobianMultiplier tJacobian = tDensityTopology.jacobian(tDesignVec);
 
     std::vector<double> tRowVec(tNumDesignParameters, 0.0);
     std::iota(tRowVec.begin(), tRowVec.end(), 1.0);
-    const ROL::StdVector<double> tRolVec(ROL::makePtr<std::vector<double>>(tRowVec));
+    const pf::Core::DynamicVector<double> tRolVec(tRowVec);
 
     // Jacobian is identity matrix
     const std::vector<double> tGold = tRowVec;
-    const ROL::StdVector<double> tRes = tRolVec * tJacobian;
-    EXPECT_EQ(*(tRes.getVector()), tGold);
+    const pf::Core::DynamicVector<double> tRes = tRolVec * tJacobian;
+    EXPECT_EQ(tRes.stdVector(), tGold);
 
     EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
 }
@@ -64,7 +64,7 @@ TEST(DensityTopology, GenerateMesh)
     const pf::DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
-    const ROL::StdVector<double> tDesignVec(ROL::makePtr<std::vector<double>>(tDesignVars));
+    const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
 
     const auto tMeshProxy = tDensityTopology.generateMesh(tDesignVec);
     EXPECT_EQ(tMeshProxy.mNodalDensities, tDesignVars);
@@ -77,12 +77,12 @@ TEST(DensityTopology, InitialGuess)
     namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const std::unique_ptr<ROL::StdVector<double>> tInitialGuess =
+    const pf::Core::DynamicVector<double> tInitialGuess =
         pf::DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
 
-    EXPECT_EQ(tInitialGuess->dimension(), kExpectedDensitySize);
+    EXPECT_EQ(tInitialGuess.size(), kExpectedDensitySize);
 
-    for (const double val : *tInitialGuess->getVector())
+    for (const double val : tInitialGuess.stdVector())
     {
         EXPECT_EQ(val, 0.5);
     }

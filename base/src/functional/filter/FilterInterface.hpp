@@ -1,9 +1,11 @@
 #ifndef PLATO_FUNCTIONAL_FILTERINTERFACE
 #define PLATO_FUNCTIONAL_FILTERINTERFACE
 
-#include <ROL_StdVector.hpp>
 #include <memory>
 #include <optional>
+#include <string_view>
+
+#include "DynamicVector.hpp"
 
 namespace Plato::Functional
 {
@@ -35,8 +37,8 @@ class FilterInterface
 
     /// @brief Implements multiplication of row vector @a aV and the Jacobian of the
     ///  filter computed at the argument @a aMeshProxy.
-    [[nodiscard]] virtual ROL::StdVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
-                                                                     const ROL::StdVector<double>& aV) const = 0;
+    [[nodiscard]] virtual Core::DynamicVector<double> jacobianTimesVector(
+        const MeshProxy& aMeshProxy, const Core::DynamicVector<double>& aV) const = 0;
 
     FilterInterface(const FilterInterface&) = delete;
     FilterInterface& operator=(const FilterInterface&) = delete;

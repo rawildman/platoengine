@@ -61,7 +61,7 @@ template <typename Criteria>
     {
         aCurrentMessageList = Plato::Functional::Validation::validate(iCriterionInput, std::move(aCurrentMessageList));
     }
-    return aCurrentMessageList;
+    return std::move(aCurrentMessageList);
 }
 
 }  // namespace detail

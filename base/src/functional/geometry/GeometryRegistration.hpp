@@ -1,10 +1,10 @@
 #ifndef PLATO_FUNCTIONAL_GEOMETRYREGISTRATION
 #define PLATO_FUNCTIONAL_GEOMETRYREGISTRATION
 
-#include <ROL_StdVector.hpp>
 #include <memory>
 #include <string_view>
 
+#include "DynamicVector.hpp"
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
 #include "detail/GeometryInputBuilder.hpp"
@@ -22,10 +22,10 @@ namespace Plato::Functional::GeometryFactory
 {
 struct FactoryTypes
 {
-    using Compute = Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>;
-    using InitialGuess = std::unique_ptr<ROL::StdVector<double>>;
+    using Compute = Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
+    using InitialGuess = Core::DynamicVector<double>;
     using Bounds = std::pair<std::vector<double>, std::vector<double>>;
-    using Output = std::function<void(const ROL::StdVector<double>&)>;
+    using Output = std::function<void(const Core::DynamicVector<double>&)>;
 
     Compute mCompute;
     InitialGuess mInitialGuess;

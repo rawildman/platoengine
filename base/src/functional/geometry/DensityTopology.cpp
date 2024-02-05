@@ -11,15 +11,14 @@ namespace Plato::Functional
 {
 namespace
 {
-
 constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
 
-std::function<void(const ROL::StdVector<double>&)> make_topology_output(const std::filesystem::path& aInputMeshName,
-                                                                        const std::filesystem::path& aOutputMeshName)
+std::function<void(const Core::DynamicVector<double>&)> make_topology_output(
+    const std::filesystem::path& aInputMeshName, const std::filesystem::path& aOutputMeshName)
 {
-    return [aInputMeshName, aOutputMeshName](const ROL::StdVector<double>& aSolution)
+    return [aInputMeshName, aOutputMeshName](const Core::DynamicVector<double>& aSolution)
     { return DensityTopology::output(aInputMeshName, aSolution, aOutputMeshName); };
 }
 
@@ -38,8 +37,7 @@ std::function<void(const ROL::StdVector<double>&)> make_topology_output(const st
 /// Static registration for input validation functions
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration = Validation::Registration<Plato::density_topology>{
     [](const Plato::density_topology& aInput) { return Geometry::detail::validate_mesh_name(aInput); },
-    [](const Plato::density_topology& aInput)
-    { return detail::validate_output_name(aInput); }};
+    [](const Plato::density_topology& aInput) { return detail::validate_output_name(aInput); }};
 }  // namespace
 
 DensityTopology::DensityTopology(const density_topology& aInput)
@@ -49,23 +47,23 @@ DensityTopology::DensityTopology(const density_topology& aInput)
 {
 }
 
-MeshProxy DensityTopology::generateMesh(const ROL::StdVector<double>& aDesignParameters) const
+MeshProxy DensityTopology::generateMesh(const Core::DynamicVector<double>& aDesignParameters) const
 {
-    return mFilter.f(MeshProxy{mFileName, *aDesignParameters.getVector()});
+    return mFilter.f(MeshProxy{mFileName, aDesignParameters.stdVector()});
 }
 
-JacobianMultiplier DensityTopology::jacobian(const ROL::StdVector<double>& aDesignParameters) const
+JacobianMultiplier DensityTopology::jacobian(const Core::DynamicVector<double>& aDesignParameters) const
 {
     return JacobianMultiplier{/*.mNumColumns=*/mNumDesignParameters,
                               /*.mJacobianTimesVectorFunction=*/
-                              [tMeshProxy = MeshProxy{mFileName, *aDesignParameters.getVector()},
-                               this](const ROL::StdVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
+                              [tMeshProxy = MeshProxy{mFileName, aDesignParameters.stdVector()},
+                               this](const Core::DynamicVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
 }
 
-std::unique_ptr<ROL::StdVector<double>> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
+Core::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
 {
     const unsigned int tNumNodes = read_mesh_node_size(aMeshFileName);
-    return std::make_unique<ROL::StdVector<double>>(tNumNodes, kInitialDensity);
+    return Core::DynamicVector<double>(tNumNodes, kInitialDensity);
 }
 
 std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(const std::filesystem::path& aMeshFileName)
@@ -75,18 +73,18 @@ std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(cons
 }
 
 void DensityTopology::output(const std::filesystem::path& aInputMeshName,
-                             const ROL::StdVector<double>& aSolution,
+                             const Core::DynamicVector<double>& aSolution,
                              const std::filesystem::path& aOutputMeshName)
 {
-    write_mesh_density(aInputMeshName, *aSolution.getVector(), aOutputMeshName);
+    write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
 }
 
 auto make_topology_geometry(const DensityTopology& aDensityTopology)
-    -> Function<MeshProxy, JacobianMultiplier, const ROL::StdVector<double>&>
+    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>
 {
-    return make_function([tDensityTopology = aDensityTopology](const ROL::StdVector<double>& x)
+    return make_function([tDensityTopology = aDensityTopology](const Core::DynamicVector<double>& x)
                          { return tDensityTopology.generateMesh(x); },
-                         [tDensityTopology = aDensityTopology](const ROL::StdVector<double>& x)
+                         [tDensityTopology = aDensityTopology](const Core::DynamicVector<double>& x)
                          { return tDensityTopology.jacobian(x); });
 }
 
@@ -98,6 +96,6 @@ std::optional<std::string> validate_output_name(const Plato::density_topology& a
         Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
 }
 
-}  // namespace Validation::DensityTopology::detail
+}  // namespace detail
 
 }  // namespace Plato::Functional

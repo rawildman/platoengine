@@ -110,18 +110,18 @@ TEST(BrickSensitivities, JacobianEvaluator)
     namespace pf = Plato::Functional;
     const pf::JacobianColumnEvaluator tJacobian = {
         /*.mColumns=*/6,
-        /*.mX=*/ROL::StdVector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
-        /*.mColumnFunction=*/[](unsigned int i, ROL::StdVector<double>) {
-            return ROL::StdVector<double>(ROL::makePtr<std::vector<double>>(pf::detail::sensitivities(i)));
+        /*.mX=*/pf::Core::DynamicVector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+        /*.mColumnFunction=*/[](unsigned int i, pf::Core::DynamicVector<double>) {
+            return pf::Core::DynamicVector<double>(pf::detail::sensitivities(i));
         }};
 
     std::vector<double> tVec(24, 0.0);
     std::iota(tVec.begin(), tVec.end(), 1.0);
-    const ROL::StdVector<double> tRolvec(ROL::makePtr<std::vector<double>>(tVec));
+    const pf::Core::DynamicVector<double> tRolvec(tVec);
 
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const ROL::StdVector<double> tRes = tRolvec * tJacobian;
-    EXPECT_EQ(*(tRes.getVector()), tGold);
+    const pf::Core::DynamicVector<double> tRes = tRolvec * tJacobian;
+    EXPECT_EQ(tRes.stdVector(), tGold);
 }
 
 TEST(Brick, ABrick)
@@ -158,13 +158,13 @@ TEST(Brick, ConvertDesignParametersToROLStdVector)
                                                    /*.dimension_x = */ 2,
                                                    /*.dimension_y = */ 4,
                                                    /*.dimension_z = */ 6};
-    const ROL::StdVector<double> tResult = pf::detail::to_rol_std_vector(tDesignParameters);
+    const pf::Core::DynamicVector<double> tResult = pf::detail::to_dynamic_vector(tDesignParameters);
 
     const std::vector<double> tGold{tDesignParameters.center_x,    tDesignParameters.center_y,
                                     tDesignParameters.center_z,    tDesignParameters.dimension_x,
                                     tDesignParameters.dimension_y, tDesignParameters.dimension_z};
 
-    EXPECT_EQ(*(tResult.getVector()), tGold);
+    EXPECT_EQ(tResult.stdVector(), tGold);
 }
 
 TEST(Brick, Jacobian)
@@ -186,11 +186,11 @@ TEST(Brick, Jacobian)
     constexpr unsigned int tNumCoordinates = 3;
     std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
     std::iota(tVec.begin(), tVec.end(), 1.0);
-    const ROL::StdVector<double> tRolvec(ROL::makePtr<std::vector<double>>(tVec));
+    const pf::Core::DynamicVector<double> tRolvec(tVec);
 
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const ROL::StdVector<double> tRes = tRolvec * tJacobian;
-    EXPECT_EQ(*(tRes.getVector()), tGold);
+    const pf::Core::DynamicVector<double> tRes = tRolvec * tJacobian;
+    EXPECT_EQ(tRes.stdVector(), tGold);
 }
 
 TEST(Brick, ToROLStdVector)
@@ -203,20 +203,11 @@ TEST(Brick, ToROLStdVector)
                                                    /*.dimension_y = */ 4,
                                                    /*.dimension_z = */ 6};
 
-    const ROL::StdVector<double> tAsROLVector = pf::detail::to_rol_std_vector(tDesignParameters);
-    EXPECT_EQ(tDesignParameters.center_x, tAsROLVector.getVector()->at(0));
-    EXPECT_EQ(tDesignParameters.center_y, tAsROLVector.getVector()->at(1));
-    EXPECT_EQ(tDesignParameters.center_z, tAsROLVector.getVector()->at(2));
-    EXPECT_EQ(tDesignParameters.dimension_x, tAsROLVector.getVector()->at(3));
-    EXPECT_EQ(tDesignParameters.dimension_y, tAsROLVector.getVector()->at(4));
-    EXPECT_EQ(tDesignParameters.dimension_z, tAsROLVector.getVector()->at(5));
-
-    const std::unique_ptr<ROL::StdVector<double>> tAsROLVectorPtr =
-        pf::detail::to_rol_std_vector_ptr(tDesignParameters);
-    EXPECT_EQ(tDesignParameters.center_x, tAsROLVectorPtr->getVector()->at(0));
-    EXPECT_EQ(tDesignParameters.center_y, tAsROLVectorPtr->getVector()->at(1));
-    EXPECT_EQ(tDesignParameters.center_z, tAsROLVectorPtr->getVector()->at(2));
-    EXPECT_EQ(tDesignParameters.dimension_x, tAsROLVectorPtr->getVector()->at(3));
-    EXPECT_EQ(tDesignParameters.dimension_y, tAsROLVectorPtr->getVector()->at(4));
-    EXPECT_EQ(tDesignParameters.dimension_z, tAsROLVectorPtr->getVector()->at(5));
+    const pf::Core::DynamicVector<double> tAsDynamicVector = pf::detail::to_dynamic_vector(tDesignParameters);
+    EXPECT_EQ(tDesignParameters.center_x, tAsDynamicVector.stdVector().at(0));
+    EXPECT_EQ(tDesignParameters.center_y, tAsDynamicVector.stdVector().at(1));
+    EXPECT_EQ(tDesignParameters.center_z, tAsDynamicVector.stdVector().at(2));
+    EXPECT_EQ(tDesignParameters.dimension_x, tAsDynamicVector.stdVector().at(3));
+    EXPECT_EQ(tDesignParameters.dimension_y, tAsDynamicVector.stdVector().at(4));
+    EXPECT_EQ(tDesignParameters.dimension_z, tAsDynamicVector.stdVector().at(5));
 }

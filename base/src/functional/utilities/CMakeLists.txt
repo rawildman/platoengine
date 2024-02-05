@@ -2,6 +2,8 @@ set(SRCS SharedLibraryUtilities.cpp
          STKUtilities.cpp)
 
 set(HDRS Exception.hpp
+         NamedType.hpp
+         RankSplitVector.hpp
          SharedLibraryUtilities.hpp
          STKUtilities.hpp)
 

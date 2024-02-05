@@ -10,7 +10,7 @@ struct density_topology;
 }
 namespace Plato::Functional
 {
-class FilterJacobian;
+struct FilterJacobian;
 struct MeshProxy;
 
 /// @brief A Filter that does not alter the density field, mostly used for testing.
@@ -22,8 +22,8 @@ class IdentityFilter : public FilterInterface
    public:
     [[nodiscard]] MeshProxy filter(const MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] ROL::StdVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
-                                                             const ROL::StdVector<double>& aV) const override;
+    [[nodiscard]] Core::DynamicVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
+                                                                  const Core::DynamicVector<double>& aV) const override;
 };
 
 [[nodiscard]] auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>;

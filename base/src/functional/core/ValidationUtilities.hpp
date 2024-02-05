@@ -53,7 +53,7 @@ std::optional<std::string> error_message_for_parameter_out_of_bounds(const std::
     if (aParameter && !aBounds.contains(aParameter.value()))
     {
         return std::string{aPrependString} + " entry \"" + std::string{aEntryName} + "\" has value " +
-               std::to_string(aParameter.value()) + " and is outside the bounds " + aBounds.description();
+               std::to_string(aParameter.value()) + " and is outside the expected bounds " + aBounds.description();
     }
     else
     {
