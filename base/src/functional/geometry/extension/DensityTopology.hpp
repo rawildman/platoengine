@@ -7,9 +7,9 @@
 #include "DynamicVector.hpp"
 #include "FilterFactory.hpp"
 #include "Function.hpp"
+#include "InputBlocks.hpp"
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
-#include "InputBlocks.hpp"
 #include "ValidationRegistration.hpp"
 
 namespace Plato
@@ -17,7 +17,7 @@ namespace Plato
 struct density_topology;
 }
 
-namespace Plato::Functional
+namespace plato::functional::geometry::extension
 {
 /// @brief Density-based topology representation of a geometry.
 ///
@@ -28,19 +28,22 @@ namespace Plato::Functional
 class DensityTopology
 {
    public:
-    explicit DensityTopology(const density_topology& aInput);
+    explicit DensityTopology(const Plato::density_topology& aInput);
 
-    [[nodiscard]] MeshProxy generateMesh(const Core::DynamicVector<double>& aDesignParameter) const;
+    [[nodiscard]] Plato::Functional::MeshProxy generateMesh(
+        const Plato::Functional::Core::DynamicVector<double>& aDesignParameter) const;
 
-    [[nodiscard]] JacobianMultiplier jacobian(const Core::DynamicVector<double>& aDesignParameter) const;
+    [[nodiscard]] Plato::Functional::JacobianMultiplier jacobian(
+        const Plato::Functional::Core::DynamicVector<double>& aDesignParameter) const;
 
-    [[nodiscard]] static Core::DynamicVector<double> initialGuess(const std::filesystem::path& aMeshFileName);
+    [[nodiscard]] static Plato::Functional::Core::DynamicVector<double> initialGuess(
+        const std::filesystem::path& aMeshFileName);
 
     [[nodiscard]] static std::pair<std::vector<double>, std::vector<double>> bounds(
         const std::filesystem::path& aMeshFileName);
 
     static void output(const std::filesystem::path& aInputMeshName,
-                       const Core::DynamicVector<double>& aSolution,
+                       const Plato::Functional::Core::DynamicVector<double>& aSolution,
                        const std::filesystem::path& aOutputMeshName);
 
    private:
@@ -51,13 +54,15 @@ class DensityTopology
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
-    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
+    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
+                                   Plato::Functional::JacobianMultiplier,
+                                   const Plato::Functional::Core::DynamicVector<double>&>;
 
 namespace detail
 {
 [[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
 }  // namespace detail
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::geometry::extension
 
 #endif

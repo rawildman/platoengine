@@ -7,14 +7,14 @@
 #include "GeometryRegistrationUtilities.hpp"
 #include "InputBlocks.hpp"
 
-namespace Plato::Functional::GeometryFactory
+namespace plato::functional::geometry::library
 {
 
 FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
-    if (const auto tIter = detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().find(
-            Detail::block_name(aGeometryInput));
-        tIter != detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().end())
+    if (const auto tIter = Plato::Functional::detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().find(
+            detail::block_name(aGeometryInput));
+        tIter != Plato::Functional::detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().end())
     {
         return tIter->second(aGeometryInput);
     }
@@ -23,4 +23,4 @@ FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
         throw Plato::Functional::Exception{"Unknown geometry"};
     }
 }
-}  // namespace Plato::Functional::GeometryFactory
+}  // namespace plato::functional::geometry::library

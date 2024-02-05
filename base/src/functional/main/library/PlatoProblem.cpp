@@ -24,7 +24,7 @@ namespace
 
 PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
 {
-    return PlatoProblem{GeometryFactory::make_geometry_data(aData.geometry()),
+    return PlatoProblem{plato::functional::geometry::library::make_geometry_data(aData.geometry()),
                         ObjectiveFactory::make_aggregate_objective_function(aData.objectives()),
                         ConstraintFactory::make_constraints(aData.constraints()),
                         plato::functional::optimizer::rol_parameter_list(aData.optimizationParameters())};

@@ -3,7 +3,8 @@
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
 #include "ValidationRegistration.hpp"
-
+namespace plato::functional::geometry::library::unittest
+{
 namespace
 {
 std::optional<std::string> bogus_error(const Plato::density_topology& aInput)
@@ -31,14 +32,14 @@ std::optional<std::string> bogus_error(const Plato::density_topology& aInput)
 TEST(GeometryValidation, InValidPlatoInputNoGeometry)
 {
     const auto tInput = Plato::PlatoInput{};
-    EXPECT_TRUE(Plato::Functional::Geometry::detail::validate_only_one_geometry(tInput).has_value());
+    EXPECT_TRUE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
 }
 
 TEST(GeometryValidation, ValidPlatoInputOneGeometry)
 {
     auto tInput = Plato::PlatoInput{};
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
-    EXPECT_FALSE(Plato::Functional::Geometry::detail::validate_only_one_geometry(tInput).has_value());
+    EXPECT_FALSE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
 }
 
 TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
@@ -46,7 +47,7 @@ TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
     auto tInput = Plato::PlatoInput{};
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
     tInput.mDensityTopology = Plato::density_topology{};
-    EXPECT_TRUE(Plato::Functional::Geometry::detail::validate_only_one_geometry(tInput).has_value());
+    EXPECT_TRUE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
 }
 
 TEST(GeometryValidation, MeshName)
@@ -56,10 +57,10 @@ TEST(GeometryValidation, MeshName)
     tInput.mBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
 
     std::vector<std::string> tMessages;
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
     tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
 }
 
@@ -73,16 +74,17 @@ TEST(GeometryValidation, ValidInputCallsRightVariantTest)
     std::vector<std::string> tMessages;
 
     tInput.mBrickShapeGeometry = tBrickShapeGeometry;
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 
     tInput.mBrickShapeGeometry = boost::none;
     tInput.mDensityTopology = tDensityTopology;
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);  // from bogus test geometry registration above
 
     tMessages.resize(0);
     tInput.mBrickShapeGeometry = tBrickShapeGeometry;  // now there are two geometries
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);  // from bogus test geometry registration above and multiple geometries
 }
+}  // namespace plato::functional::geometry::library::unittest

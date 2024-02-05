@@ -1,10 +1,10 @@
 #include "GeometryRegistrationUtilities.hpp"
 
-namespace Plato::Functional::GeometryFactory::Detail
+namespace plato::functional::geometry::library::detail
 {
 
-void emplace_back_if_has_value(std::vector<GeometryFactory::GeometryInput>& aGeometryInput,
-                               std::optional<GeometryFactory::GeometryInput>&& aOptionalGeometry)
+void emplace_back_if_has_value(std::vector<library::GeometryInput>& aGeometryInput,
+                               std::optional<library::GeometryInput>&& aOptionalGeometry)
 {
     if (aOptionalGeometry.has_value())
     {
@@ -12,15 +12,15 @@ void emplace_back_if_has_value(std::vector<GeometryFactory::GeometryInput>& aGeo
     }
 }
 
-std::vector<GeometryFactory::GeometryInput> geometry_blocks(const Plato::PlatoInput& aInput)
+std::vector<library::GeometryInput> geometry_blocks(const Plato::PlatoInput& aInput)
 {
     constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
     return geometry_blocks_impl(aInput, std::make_index_sequence<tNumInputFields>{});
 }
 
-std::optional<GeometryFactory::GeometryInput> first_geometry_block(const Plato::PlatoInput& aInput)
+std::optional<library::GeometryInput> first_geometry_block(const Plato::PlatoInput& aInput)
 {
-    const std::vector<GeometryFactory::GeometryInput> tGeometryBlocks = geometry_blocks(aInput);
+    const std::vector<library::GeometryInput> tGeometryBlocks = geometry_blocks(aInput);
     if (tGeometryBlocks.empty())
     {
         return std::nullopt;
@@ -31,7 +31,7 @@ std::optional<GeometryFactory::GeometryInput> first_geometry_block(const Plato::
     }
 }
 
-std::string block_name(const GeometryFactory::GeometryInput& aInput)
+std::string block_name(const library::GeometryInput& aInput)
 {
     return std::visit(
         [](const auto& aObj) -> std::string
@@ -42,7 +42,7 @@ std::string block_name(const GeometryFactory::GeometryInput& aInput)
         aInput);
 }
 
-std::string block_name(const GeometryFactory::ValidatedGeometryInput& aInput)
+std::string block_name(const library::ValidatedGeometryInput& aInput)
 {
     return std::visit(
         [](const auto& aObj) -> std::string
@@ -54,4 +54,4 @@ std::string block_name(const GeometryFactory::ValidatedGeometryInput& aInput)
         aInput.rawInput());
 }
 
-}  // namespace Plato::Functional::GeometryFactory::Detail
+}  // namespace plato::functional::geometry::library::detail

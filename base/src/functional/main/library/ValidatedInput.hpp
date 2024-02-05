@@ -23,9 +23,10 @@ struct Key
 class ValidatedInput
 {
    public:
-    using Geometry = GeometryFactory::ValidatedGeometryInput;
+    using Geometry = plato::functional::geometry::library::ValidatedGeometryInput;
     using Objectives = Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>>;
-    using Constraints = Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+    using Constraints =
+        Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
     using OptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
    public:

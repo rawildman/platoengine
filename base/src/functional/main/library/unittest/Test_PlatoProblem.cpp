@@ -23,7 +23,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
     const pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
-    const auto tGeometry = pf::GeometryFactory::make_geometry_data(tData.geometry());
+    const auto tGeometry = plato::functional::geometry::library::make_geometry_data(tData.geometry());
 
     // Test Geometry
     const auto tBoundingBox = pf::Core::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
@@ -64,8 +64,9 @@ TEST(PlatoProblem, InputFileToROLObjective)
     constexpr double tNodalSum = 12.0;
     EXPECT_DOUBLE_EQ(tObjectiveFunction->value(tBoundingBox, tTolerance), tWeight * tNodalSum);
 
-    pf::BrickDesign tDesign;
-    EXPECT_EQ(tProblem.mGeometry.mInitialGuess.stdVector(), pf::detail::to_dynamic_vector(tDesign).stdVector());
+    plato::functional::geometry::extension::BrickDesign tDesign;
+    EXPECT_EQ(tProblem.mGeometry.mInitialGuess.stdVector(),
+              plato::functional::geometry::extension::detail::to_dynamic_vector(tDesign).stdVector());
 
     std::filesystem::remove("my_mesh.exo");
 }

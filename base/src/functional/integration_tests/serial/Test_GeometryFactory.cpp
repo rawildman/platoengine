@@ -20,7 +20,7 @@ TEST(GeometryFactory, BrickGeometry)
                           /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters()};
 
     const pf::Validation::ValidatedInput tInput = pf::Validation::make_validated_input(tRawInput);
-    const auto tData = pf::GeometryFactory::make_geometry_data(tInput.geometry());
+    const auto tData = plato::functional::geometry::library::make_geometry_data(tInput.geometry());
 
     constexpr auto tExpectedBrickShapeDimensions = int{6};
     EXPECT_EQ(tData.mInitialGuess.size(), tExpectedBrickShapeDimensions);
@@ -31,11 +31,10 @@ TEST(GeometryFactory, BrickGeometry)
 TEST(GeometryFactory, BlockName)
 {
     namespace pf = Plato::Functional;
-    namespace pfg = pf::GeometryFactory;
     namespace pftu = pf::TestUtilities;
 
     const pf::Validation::ValidatedInput tValidatedInput =
         pf::Validation::make_validated_input(pftu::create_valid_example_input());
-    EXPECT_EQ(pfg::Detail::block_name(tValidatedInput.geometry()), "density_topology");
+    EXPECT_EQ(plato::functional::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
 }
 }

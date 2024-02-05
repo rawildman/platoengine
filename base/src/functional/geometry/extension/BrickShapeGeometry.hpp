@@ -20,7 +20,7 @@ namespace stk::mesh
 class BulkData;
 }
 
-namespace Plato::Functional
+namespace plato::functional::geometry::extension
 {
 /// @brief Design parameters for BrickShapeGeometry
 struct BrickDesign
@@ -48,15 +48,15 @@ class BrickShapeGeometry
     explicit BrickShapeGeometry(std::filesystem::path aFileName,
                                 std::optional<double> aDiscretizationSize = std::nullopt);
 
-    [[nodiscard]] MeshProxy generateMesh(const BrickDesign& aDesignParameters) const;
+    [[nodiscard]] Plato::Functional::MeshProxy generateMesh(const BrickDesign& aDesignParameters) const;
 
-    [[nodiscard]] JacobianColumnEvaluator jacobian(const BrickDesign& aDesignParameters) const;
+    [[nodiscard]] Plato::Functional::JacobianColumnEvaluator jacobian(const BrickDesign& aDesignParameters) const;
 
-    [[nodiscard]] static Core::DynamicVector<double> initialGuess();
+    [[nodiscard]] static Plato::Functional::Core::DynamicVector<double> initialGuess();
 
     [[nodiscard]] static std::pair<std::vector<double>, std::vector<double>> bounds();
 
-    static void output(const Core::DynamicVector<double>& aSolution);
+    static void output(const Plato::Functional::Core::DynamicVector<double>& aSolution);
 
    private:
     std::filesystem::path mFileName;
@@ -65,19 +65,21 @@ class BrickShapeGeometry
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
+    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
+                                   Plato::Functional::JacobianMultiplier,
+                                   const Plato::Functional::Core::DynamicVector<double>&>;
 
 namespace detail
 {
-[[nodiscard]] BrickDesign to_design_parameters(const Core::DynamicVector<double>& aDesignParameter);
+[[nodiscard]] BrickDesign to_design_parameters(const Plato::Functional::Core::DynamicVector<double>& aDesignParameter);
 
 [[nodiscard]] std::shared_ptr<stk::mesh::BulkData> create_mesh(
     const BrickDesign& aDesign, std::optional<double> aDiscretizationSize = std::nullopt);
 
 [[nodiscard]] std::vector<double> sensitivities(unsigned int aParameterIndex);
 
-[[nodiscard]] Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters);
+[[nodiscard]] Plato::Functional::Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters);
 }  // namespace detail
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::geometry::extension
 #endif

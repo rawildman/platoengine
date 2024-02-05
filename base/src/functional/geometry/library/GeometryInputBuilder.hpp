@@ -8,7 +8,7 @@
 #include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional::GeometryFactory::Detail
+namespace plato::functional::geometry::library::detail
 {
 template <typename T>
 struct TypeOrOptional
@@ -70,7 +70,7 @@ template <typename... Ts>
 struct VariantFromTuple<std::tuple<Ts...>>
 {
     using type = std::variant<Ts...>;
-    using validated_type = std::variant<Core::ValidatedInputTypeWrapper<Ts>...>;
+    using validated_type = std::variant<Plato::Functional::Core::ValidatedInputTypeWrapper<Ts>...>;
 };
 
 template <typename FusionStruct>
@@ -81,6 +81,6 @@ template <typename FusionStruct>
 using ValidatedGeometryInputVariant =
     typename VariantFromTuple<std::invoke_result_t<make_geometry_input_tuple, FusionStruct>>::validated_type;
 
-}  // namespace Plato::Functional::GeometryFactory::Detail
+}  // namespace plato::functional::geometry::library::detail
 
 #endif

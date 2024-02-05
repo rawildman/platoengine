@@ -15,7 +15,7 @@ TEST(GeometryFactory, ValidBrickShapeGeometry)
     tInput.mOptimizationParameters = pf::TestUtilities::create_valid_example_optimization_parameters();
 
     const pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(tInput);
-    EXPECT_NO_THROW(auto tUnused = pf::GeometryFactory::make_geometry_data(tData.geometry()));
+    EXPECT_NO_THROW(auto tUnused = plato::functional::geometry::library::make_geometry_data(tData.geometry()));
 }
 
 TEST(GeometryFactory, ValidTopology)
@@ -32,7 +32,7 @@ TEST(GeometryFactory, ValidTopology)
 
     const pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(tInput);
 
-    EXPECT_NO_THROW(auto tUnused = pf::GeometryFactory::make_geometry_data(tData.geometry()));
+    EXPECT_NO_THROW(auto tUnused = plato::functional::geometry::library::make_geometry_data(tData.geometry()));
 
     std::filesystem::remove(tMeshFileName);
 }

@@ -10,12 +10,13 @@
 #include <vector>
 
 #include "DensityTopology.hpp"
+#include "InputBlocks.hpp"
 #include "InputGeneration.hpp"
 #include "JacobianColumnEvaluator.hpp"
 #include "MeshProxy.hpp"
-#include "InputBlocks.hpp"
 #include "STKUtilities.hpp"
-
+namespace plato::functional::geometry::extension::unittest
+{
 namespace
 {
 const auto kDensityInput = Plato::Functional::TestUtilities::create_valid_density_topology_geometry();
@@ -36,7 +37,7 @@ TEST(DensityTopology, Jacobian)
     namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const pf::DensityTopology tDensityTopology(kDensityInput);
+    const DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
     const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
@@ -61,7 +62,7 @@ TEST(DensityTopology, GenerateMesh)
     namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const pf::DensityTopology tDensityTopology(kDensityInput);
+    const DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
     const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
@@ -77,8 +78,7 @@ TEST(DensityTopology, InitialGuess)
     namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const pf::Core::DynamicVector<double> tInitialGuess =
-        pf::DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
+    const pf::Core::DynamicVector<double> tInitialGuess = DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
 
     EXPECT_EQ(tInitialGuess.size(), kExpectedDensitySize);
 
@@ -95,7 +95,7 @@ TEST(DensityTopology, Bounds)
     namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const auto [tLowerBounds, tUpperBounds] = pf::DensityTopology::bounds(kDensityInput.mesh_name->mName);
+    const auto [tLowerBounds, tUpperBounds] = DensityTopology::bounds(kDensityInput.mesh_name->mName);
 
     EXPECT_EQ(tLowerBounds.size(), kExpectedDensitySize);
     EXPECT_EQ(tUpperBounds.size(), kExpectedDensitySize);
@@ -105,3 +105,4 @@ TEST(DensityTopology, Bounds)
 
     EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
 }
+}  // namespace plato::functional::geometry::extension::unittest

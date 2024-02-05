@@ -8,12 +8,12 @@
 #include "Exception.hpp"
 #include "GeometryRegistration.hpp"
 #include "GeometryValidation.hpp"
-#include "JacobianColumnEvaluator.hpp"
 #include "InputBlocks.hpp"
+#include "JacobianColumnEvaluator.hpp"
 #include "STKUtilities.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::geometry::extension
 {
 namespace
 {
@@ -22,27 +22,30 @@ constexpr int kNumDesignParameters = 6;
 const std::vector<double> kLowerBounds = {-10.0, -10.0, -10.0, 1e-2, 1e-2, 1e-2};  // Arbitrary
 const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};        // Arbitrary
 
-[[nodiscard]] std::filesystem::path mesh_path(const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
+[[nodiscard]] std::filesystem::path mesh_path(const library::ValidatedGeometryInput& aGeometryInput)
 {
-    const auto& tInput = GeometryFactory::geometry_raw_input<Plato::brick_shape_geometry>(aGeometryInput);
+    const auto& tInput = library::geometry_raw_input<Plato::brick_shape_geometry>(aGeometryInput);
     return tInput.mesh_name.value().mName;
 }
 
-[[nodiscard]] std::function<void(const Core::DynamicVector<double>&)> make_output()
+[[nodiscard]] std::function<void(const Plato::Functional::Core::DynamicVector<double>&)> make_output()
 {
-    return [](const Core::DynamicVector<double>& aSolution) { return BrickShapeGeometry::output(aSolution); };
+    return [](const Plato::Functional::Core::DynamicVector<double>& aSolution)
+    { return BrickShapeGeometry::output(aSolution); };
 }
 
-[[maybe_unused]] static auto kBrickShapeGeometryRegistration = Plato::Functional::GeometryFactory::GeometryRegistration{
-    Plato::block_name<Plato::brick_shape_geometry>(), [](const GeometryFactory::ValidatedGeometryInput& aGeometryInput)
-    {
-        return GeometryFactory::FactoryTypes{make_brick_shape_geometry(BrickShapeGeometry{mesh_path(aGeometryInput)}),
-                                             BrickShapeGeometry::initialGuess(), BrickShapeGeometry::bounds(),
-                                             make_output()};
-    }};
+[[maybe_unused]] static auto kBrickShapeGeometryRegistration =
+    plato::functional::geometry::library::GeometryRegistration{
+        Plato::block_name<Plato::brick_shape_geometry>(), [](const library::ValidatedGeometryInput& aGeometryInput)
+        {
+            return library::FactoryTypes{make_brick_shape_geometry(BrickShapeGeometry{mesh_path(aGeometryInput)}),
+                                         BrickShapeGeometry::initialGuess(), BrickShapeGeometry::bounds(),
+                                         make_output()};
+        }};
 
-[[maybe_unused]] static auto kBrickShapeValidationRegistration = Validation::Registration<Plato::brick_shape_geometry>{
-    [](const Plato::brick_shape_geometry& aInput) { return Geometry::detail::validate_mesh_name(aInput); }};
+[[maybe_unused]] static auto kBrickShapeValidationRegistration =
+    Plato::Functional::Validation::Registration<Plato::brick_shape_geometry>{
+        [](const Plato::brick_shape_geometry& aInput) { return library::detail::validate_mesh_name(aInput); }};
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)
@@ -50,42 +53,48 @@ BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const st
 {
 }
 
-MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
+Plato::Functional::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {
     std::shared_ptr<stk::mesh::BulkData> tMesh = detail::create_mesh(aDesignParameters, mDiscretizationSize);
-    write_mesh(mFileName, tMesh);
-    return MeshProxy{mFileName, {}};
+    Plato::Functional::write_mesh(mFileName, tMesh);
+    return Plato::Functional::MeshProxy{mFileName, {}};
 }
 
-JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
+Plato::Functional::JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
 {
-    return JacobianColumnEvaluator{/*.mColumns=*/kNumDesignParameters,
-                                   /*.mX=*/detail::to_dynamic_vector(aDesignParameters),
-                                   /*.mColumnFunction=*/[](unsigned int i, const Core::DynamicVector<double>&) {
-                                       return Core::DynamicVector<double>(detail::sensitivities(i));
-                                   }};
+    return Plato::Functional::JacobianColumnEvaluator{
+        /*.mColumns=*/kNumDesignParameters,
+        /*.mX=*/detail::to_dynamic_vector(aDesignParameters),
+        /*.mColumnFunction=*/[](unsigned int i, const Plato::Functional::Core::DynamicVector<double>&) {
+            return Plato::Functional::Core::DynamicVector<double>(detail::sensitivities(i));
+        }};
 }
 
-Core::DynamicVector<double> BrickShapeGeometry::initialGuess() { return detail::to_dynamic_vector(BrickDesign{}); }
+Plato::Functional::Core::DynamicVector<double> BrickShapeGeometry::initialGuess()
+{
+    return detail::to_dynamic_vector(BrickDesign{});
+}
 
 std::pair<std::vector<double>, std::vector<double>> BrickShapeGeometry::bounds()
 {
     return {kLowerBounds, kUpperBounds};
 }
 
-void BrickShapeGeometry::output(const Core::DynamicVector<double>& aSolution)
+void BrickShapeGeometry::output(const Plato::Functional::Core::DynamicVector<double>& aSolution)
 {
     std::cout << "centers: " << aSolution[0] << " " << aSolution[1] << " " << aSolution[2] << std::endl;
     std::cout << "dimensions: " << aSolution[3] << " " << aSolution[4] << " " << aSolution[5] << std::endl;
 }
 
 auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>
+    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
+                                   Plato::Functional::JacobianMultiplier,
+                                   const Plato::Functional::Core::DynamicVector<double>&>
 {
-    return make_function(
-        [tBrickShapeGeometry = aBrickShapeGeometry](const Core::DynamicVector<double>& x)
+    return Plato::Functional::make_function(
+        [tBrickShapeGeometry = aBrickShapeGeometry](const Plato::Functional::Core::DynamicVector<double>& x)
         { return tBrickShapeGeometry.generateMesh(detail::to_design_parameters(x)); },
-        [tBrickShapeGeometry = aBrickShapeGeometry](const Core::DynamicVector<double>& x)
+        [tBrickShapeGeometry = aBrickShapeGeometry](const Plato::Functional::Core::DynamicVector<double>& x)
         { return to_jacobian_multiplier(tBrickShapeGeometry.jacobian(detail::to_design_parameters(x))); });
 }
 
@@ -156,14 +165,14 @@ std::vector<double> sensitivities(const unsigned int aParameterIndex)
     return sensitive;
 }
 
-Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
+Plato::Functional::Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
 {
-    return Core::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
-                                       aDesignParameters.center_z,    aDesignParameters.dimension_x,
-                                       aDesignParameters.dimension_y, aDesignParameters.dimension_z};
+    return Plato::Functional::Core::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
+                                                          aDesignParameters.center_z,    aDesignParameters.dimension_x,
+                                                          aDesignParameters.dimension_y, aDesignParameters.dimension_z};
 }
 
-BrickDesign to_design_parameters(const Core::DynamicVector<double>& aDesignParameter)
+BrickDesign to_design_parameters(const Plato::Functional::Core::DynamicVector<double>& aDesignParameter)
 {
     assert(aDesignParameter.size() == kNumDesignParameters);
     return BrickDesign{/*.center_x=*/aDesignParameter[0],
@@ -175,4 +184,4 @@ BrickDesign to_design_parameters(const Core::DynamicVector<double>& aDesignParam
 }
 }  // namespace detail
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::geometry::extension

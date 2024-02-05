@@ -13,10 +13,12 @@ namespace Plato
 struct PlatoInput;
 }
 
-namespace Plato::Functional::GeometryFactory
+namespace plato::functional::geometry::library
 {
-using DesignParameters = Core::DynamicVector<double>;
-using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const Core::DynamicVector<double>&>;
+using DesignParameters = Plato::Functional::Core::DynamicVector<double>;
+using GeometryFunction = Plato::Functional::Function<Plato::Functional::MeshProxy,
+                                                     Plato::Functional::JacobianMultiplier,
+                                                     const Plato::Functional::Core::DynamicVector<double>&>;
 
 /// @brief Factory function for creating all geometry data, including a GeometryFunction, an initial guess,
 ///  the bound constraints, and an output function.
@@ -29,6 +31,6 @@ using GeometryFunction = Function<MeshProxy, JacobianMultiplier, const Core::Dyn
 /// all 0 lower bounds and all 1 upper bounds for density topology optimization.
 [[nodiscard]] FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput);
 
-}  // namespace Plato::Functional::GeometryFactory
+}  // namespace plato::functional::geometry::library
 
 #endif

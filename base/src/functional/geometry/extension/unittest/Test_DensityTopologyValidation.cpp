@@ -4,24 +4,24 @@
 #include "Exception.hpp"
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
-
+namespace plato::functional::geometry::extension::unittest
+{
 TEST(DensityTopologyValidation, ValidateMeshName)
 {
     namespace pf = Plato::Functional;
     auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    EXPECT_FALSE(pf::Geometry::detail::validate_mesh_name(tDensityTopology).has_value());
+    EXPECT_FALSE(library::detail::validate_mesh_name(tDensityTopology).has_value());
     tDensityTopology.mesh_name = boost::none;
-    EXPECT_TRUE(pf::Geometry::detail::validate_mesh_name(tDensityTopology).has_value());
+    EXPECT_TRUE(library::detail::validate_mesh_name(tDensityTopology).has_value());
 }
 
 TEST(DensityTopologyValidation, ValidateOutputName)
 {
     namespace pf = Plato::Functional;
-    namespace pfd = Plato::Functional::detail;
     auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
-    EXPECT_FALSE(pfd::validate_output_name(tDensityTopology).has_value());
+    EXPECT_FALSE(detail::validate_output_name(tDensityTopology).has_value());
     tDensityTopology.output_name = boost::none;
-    EXPECT_TRUE(pfd::validate_output_name(tDensityTopology).has_value());
+    EXPECT_TRUE(detail::validate_output_name(tDensityTopology).has_value());
 }
 
 TEST(DensityTopologyValidation, ValidDensityTopologyInput)
@@ -31,7 +31,7 @@ TEST(DensityTopologyValidation, ValidDensityTopologyInput)
     tInput.mDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
 
     std::vector<std::string> tMessages;
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_TRUE(tMessages.empty());
 }
 
@@ -43,6 +43,7 @@ TEST(DensityTopologyValidation, InvalidDensityTopologyInput)
     tInput.mDensityTopology->filter_radius = 1.0;
 
     std::vector<std::string> tMessages;
-    tMessages = pf::Geometry::validate_geometry(tInput, std::move(tMessages));
+    tMessages = library::validate_geometry(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1);
 }
+}  // namespace plato::functional::geometry::extension::unittest

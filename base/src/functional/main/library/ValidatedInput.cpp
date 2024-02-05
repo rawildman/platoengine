@@ -17,8 +17,10 @@ ValidatedInput::ValidatedInput(Plato::PlatoInput aInput, Key) : mInput{std::move
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
-    GeometryFactory::GeometryInput tGeometryInput = GeometryFactory::first_geometry_input(mInput);
-    using ValidatedGeometryVariant = typename GeometryFactory::ValidatedGeometryInput::RawInputType;
+    plato::functional::geometry::library::GeometryInput tGeometryInput =
+        plato::functional::geometry::library::first_geometry_input(mInput);
+    using ValidatedGeometryVariant =
+        typename plato::functional::geometry::library::ValidatedGeometryInput::RawInputType;
     // Use visit with a return value in c++20
     std::optional<ValidatedGeometryVariant> tValidatedGeometry;
     std::visit([&tValidatedGeometry](auto&& tGeometry)
@@ -55,7 +57,7 @@ std::vector<Core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
 ValidatedInput make_validated_input(Plato::PlatoInput aInput)
 {
     std::vector<std::string> tMessages;
-    tMessages = Geometry::validate_geometry(aInput, std::move(tMessages));
+    tMessages = plato::functional::geometry::library::validate_geometry(aInput, std::move(tMessages));
     tMessages = Criteria::validate_objectives(aInput.mObjectives, std::move(tMessages));
     tMessages = Criteria::validate_constraints(aInput.mConstraints, std::move(tMessages));
     tMessages = plato::functional::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters,

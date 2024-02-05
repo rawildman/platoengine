@@ -18,7 +18,7 @@ namespace Plato::Functional
 /// a ROL problem
 struct PlatoProblem
 {
-    GeometryFactory::FactoryTypes mGeometry;
+    plato::functional::geometry::library::FactoryTypes mGeometry;
     ObjectiveFactory::ObjectiveFunction mObjective;
     std::vector<ConstraintFactory::Constraint<const MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
