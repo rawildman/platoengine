@@ -7,9 +7,11 @@
 #include "OptimizerValidation.hpp"
 #include "ValidationRegistration.hpp"
 
+namespace plato::functional::optimizer
+{
 TEST(OptimizerValidation, ValidateMaxIterations)
 {
-    namespace pfod = Plato::Functional::Optimizer::detail;
+    namespace pfod = plato::functional::optimizer::detail;
     Plato::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_max_iterations(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = Plato::FileName{"filler"};
@@ -29,14 +31,16 @@ TEST(OptimizerValidation, ValidateMaxIterations)
 
 TEST(OptimizerValidation, ValidateStepTolerance)
 {
-    namespace pfod = Plato::Functional::Optimizer::detail;
+    namespace pfod = plato::functional::optimizer::detail;
     Plato::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // Empty
     tOptimizationParameters.input_file_name = Plato::FileName{"filler"};
-    EXPECT_FALSE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // external file trumps missing others
+    EXPECT_FALSE(
+        pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // external file trumps missing others
 
     tOptimizationParameters.step_tolerance = -1.0;
-    EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // external file will be overwritten by bad entry
+    EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters)
+                    .has_value());  // external file will be overwritten by bad entry
     tOptimizationParameters.input_file_name = boost::none;
     EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // bad entry
 
@@ -48,7 +52,7 @@ TEST(OptimizerValidation, ValidateStepTolerance)
 
 TEST(OptimizerValidation, ValidateGradientTolerance)
 {
-    namespace pfod = Plato::Functional::Optimizer::detail;
+    namespace pfod = plato::functional::optimizer::detail;
     Plato::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_gradient_tolerance(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = Plato::FileName{"filler"};
@@ -68,17 +72,18 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
 
 TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 {
-    Plato::optimization_parameters tOptimizationParameters = Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
+    Plato::optimization_parameters tOptimizationParameters =
+        Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
 
-    namespace pfo = Plato::Functional::Optimizer;
     std::vector<std::string> tMessages;
-    tMessages = pfo::validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
+    tMessages = validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 }
 
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 {
-    Plato::optimization_parameters tOptimizationParameters = Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
+    Plato::optimization_parameters tOptimizationParameters =
+        Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
     tOptimizationParameters.gradient_tolerance = -1;
     tOptimizationParameters.max_iterations = 0;
     tOptimizationParameters.step_tolerance = boost::none;
@@ -88,3 +93,4 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
     tMessages = pfv::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
 }
+}  // namespace plato::functional::optimizer

@@ -121,7 +121,8 @@ TEST(PlatoProblem, InputFileToROLSolver)
     const pf::PlatoProblem tPlatoProblem = pf::make_plato_problem(tData);
     Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
     const auto tROLProblem = Teuchos::RCP{pf::make_rol_problem(tPlatoProblem).release()};
-    const ROL::Solver<double> tSolver = pf::make_rol_solver(tROLOptions, std::move(tROLProblem));
+    const ROL::Solver<double> tSolver =
+        plato::functional::optimizer::make_rol_solver(tROLOptions, std::move(tROLProblem));
 
     EXPECT_EQ(tSolver.getAlgorithmState()->iter, 0);
 }

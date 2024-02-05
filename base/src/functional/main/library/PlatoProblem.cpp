@@ -27,7 +27,7 @@ PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
     return PlatoProblem{GeometryFactory::make_geometry_data(aData.geometry()),
                         ObjectiveFactory::make_aggregate_objective_function(aData.objectives()),
                         ConstraintFactory::make_constraints(aData.constraints()),
-                        rol_parameter_list(aData.optimizationParameters())};
+                        plato::functional::optimizer::rol_parameter_list(aData.optimizationParameters())};
 }
 
 std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_objective(

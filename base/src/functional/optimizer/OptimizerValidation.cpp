@@ -4,7 +4,7 @@
 #include "ValidationRegistration.hpp"
 #include "ValidationUtilities.hpp"
 
-namespace Plato::Functional::Optimizer
+namespace plato::functional::optimizer
 {
 [[maybe_unused]] static auto kOptimizerValidationRegistration =
     Plato::Functional::Validation::Registration<Plato::optimization_parameters>{
@@ -69,4 +69,4 @@ std::optional<std::string> validate_max_iterations(const Plato::optimization_par
 }
 
 }  // namespace detail
-}  // namespace Plato::Functional::Optimizer
+}  // namespace plato::functional::optimizer

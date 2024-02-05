@@ -3,7 +3,7 @@
 #include <ROL_LineSearchStep.hpp>
 #include <ROL_StatusTest.hpp>
 
-namespace Plato::Functional
+namespace plato::functional::optimizer
 {
 namespace
 {
@@ -56,4 +56,4 @@ ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Pt
     return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::optimizer

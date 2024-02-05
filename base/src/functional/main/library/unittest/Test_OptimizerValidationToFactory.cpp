@@ -22,14 +22,13 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
     const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
 
     const auto tOPData = tData.optimizationParameters();
-    ROL::ParameterList tParlist = rol_parameter_list(tOPData);
+    ROL::ParameterList tParlist = plato::functional::optimizer::rol_parameter_list(tOPData);
 
     constexpr int kDefaultIterationLimit = 10;
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"), kDefaultIterationLimit);
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
               tOPData.rawInput().gradient_tolerance.value());
-    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
-              tOPData.rawInput().step_tolerance.value());
+    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"), tOPData.rawInput().step_tolerance.value());
 }
 
 TEST(OptimizerFactory, ParlistGenerationFromFile)
@@ -49,7 +48,8 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
                                kFileName + " step_tolerance 10" + " end";
 
     const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
-    ROL::ParameterList tParameterListFromDisk = rol_parameter_list(tData.optimizationParameters());
+    ROL::ParameterList tParameterListFromDisk =
+        plato::functional::optimizer::rol_parameter_list(tData.optimizationParameters());
 
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<int>("Iteration Limit"),
               tParameterListToWrite.sublist("Status Test").get<int>("Iteration Limit"));

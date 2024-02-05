@@ -7,9 +7,9 @@
 #include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::optimizer
 {
-using ValidOptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+using ValidOptimizationParameters = Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
 ///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
 ///
@@ -26,6 +26,6 @@ using ValidOptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optim
 ///@return ROL::ParameterList
 [[nodiscard]] ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimizationParameters);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::optimizer
 
 #endif
