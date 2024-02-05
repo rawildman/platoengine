@@ -50,8 +50,11 @@ class FilterInterface
     FilterInterface& operator=(FilterInterface&&) = delete;
 };
 
-extern "C" std::unique_ptr<FilterInterface> plato_create_filter(const FilterParameters& aFilterParameters);
-
 }  // namespace plato::functional::filter::library
 
+namespace plato::functional
+{
+extern "C" std::unique_ptr<filter::library::FilterInterface> plato_create_filter(
+    const filter::library::FilterParameters& aFilterParameters);
+}
 #endif
