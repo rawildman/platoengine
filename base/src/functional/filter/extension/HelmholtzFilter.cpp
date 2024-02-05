@@ -8,20 +8,20 @@
 #include "ValidationRegistration.hpp"
 #include "ValidationUtilities.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::filter::extension
 {
 namespace
 {
 const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctionalInterface.so"};
 
-[[maybe_unused]] static auto kHelmholtzFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
+[[maybe_unused]] static auto kHelmholtzFilterRegistration = library::FilterRegistration{
     Plato::kFilterTypesTable.toString(Plato::FilterTypes::kHelmholtz).value(), [](const Plato::density_topology& aInput)
     {
-        return FilterFactory::make_filter_function_from_interface(
-            FilterFactory::load_filter(aInput, kHelmholtzFilterLibName));
+        return library::make_filter_function_from_interface(
+            library::load_filter(aInput, kHelmholtzFilterLibName));
     }};
 
-[[maybe_unused]] static auto kHelmholtzFilterValidationRegistration = Validation::Registration<Plato::density_topology>{
+[[maybe_unused]] static auto kHelmholtzFilterValidationRegistration = Plato::Functional::Validation::Registration<Plato::density_topology>{
     [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
     [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_boundary_sticking_penalty(aInput); }};
 }  // namespace

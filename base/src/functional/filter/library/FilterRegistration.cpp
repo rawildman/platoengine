@@ -8,7 +8,7 @@
 #include "InputBlocks.hpp"
 #include "SharedLibraryUtilities.hpp"
 
-namespace Plato::Functional::FilterFactory
+namespace plato::functional::filter::library
 {
 namespace
 {
@@ -36,8 +36,8 @@ FilterParameters to_filter_parameters(const Plato::density_topology& aInput)
 auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction
 {
     auto tFilterAsShared = std::shared_ptr<FilterInterface>(std::move(aFilter));
-    return make_function([tFilterAsShared](const MeshProxy& aMeshProxy) { return tFilterAsShared->filter(aMeshProxy); },
-                         [tFilterAsShared](const MeshProxy& aMeshProxy) {
+    return Plato::Functional::make_function([tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) { return tFilterAsShared->filter(aMeshProxy); },
+                         [tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) {
                              return FilterJacobian{tFilterAsShared, aMeshProxy};
                          });
 }
@@ -46,8 +46,8 @@ std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInp
                                              const std::filesystem::path& aSharedLibraryPath)
 {
     using CreateFilterFunction = std::add_pointer_t<std::unique_ptr<FilterInterface>(const FilterParameters&)>;
-    void* const tSharedLibInterface = Utilities::load_shared_library(aSharedLibraryPath);
-    const auto tCreateFilterFunction = Utilities::load_function<CreateFilterFunction>(
+    void* const tSharedLibInterface = Plato::Functional::Utilities::load_shared_library(aSharedLibraryPath);
+    const auto tCreateFilterFunction = Plato::Functional::Utilities::load_function<CreateFilterFunction>(
         tSharedLibInterface, kCreateFilterFunctionName, aSharedLibraryPath);
 
     return tCreateFilterFunction(to_filter_parameters(aInput));
@@ -55,7 +55,7 @@ std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInp
 
 bool is_filter_function_registered(const std::string_view aFunctionName)
 {
-    return is_function_registered<FilterFunction, FilterInput>(aFunctionName);
+    return Plato::Functional::is_function_registered<FilterFunction, FilterInput>(aFunctionName);
 }
 
-}  // namespace Plato::Functional::FilterFactory
+}  // namespace plato::functional::filter::library

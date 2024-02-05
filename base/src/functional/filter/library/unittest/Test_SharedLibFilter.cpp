@@ -14,10 +14,12 @@ const auto kRho = std::vector{-1.0, 0.0, 1.0};
 const auto kMeshArgument = Plato::Functional::MeshProxy{kMeshName, kRho};
 }  // namespace
 
+namespace plato::functional::filter::library
+{
 TEST(SharedLibFilter, LoadAndValue)
 {
-    namespace pf = Plato::Functional;
-    const std::unique_ptr<const pf::FilterInterface> tFilter =
-        pf::FilterFactory::load_filter(Plato::density_topology{}, kSharedLibPath);
+    const std::unique_ptr<const FilterInterface> tFilter =
+        load_filter(Plato::density_topology{}, kSharedLibPath);
     EXPECT_EQ(tFilter->filter(kMeshArgument).mNodalDensities, kRho);
+}
 }

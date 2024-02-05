@@ -8,28 +8,28 @@
 #include "InputEnumTypes.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::filter::extension
 {
 namespace
 {
-[[maybe_unused]] static auto kIdentityFilterRegistration = Plato::Functional::FilterFactory::FilterRegistration{
+[[maybe_unused]] static auto kIdentityFilterRegistration = library::FilterRegistration{
     Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
     [](const Plato::density_topology&) { return make_identity_filter_function(); }};
 
-[[maybe_unused]] static auto kIdentityFilterValidationRegistration = Validation::Registration<Plato::density_topology>{
+[[maybe_unused]] static auto kIdentityFilterValidationRegistration = Plato::Functional::Validation::Registration<Plato::density_topology>{
     [](const Plato::density_topology& aInput) { return validate_identity_filter(aInput); }};
 }  // namespace
 
-MeshProxy IdentityFilter::filter(const MeshProxy& aMeshProxy) const { return aMeshProxy; }
+Plato::Functional::MeshProxy IdentityFilter::filter(const Plato::Functional::MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
-Core::DynamicVector<double> IdentityFilter::jacobianTimesVector(const MeshProxy& aMeshProxy,
-                                                                const Core::DynamicVector<double>& aV) const
+Plato::Functional::Core::DynamicVector<double> IdentityFilter::jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
+                                                                const Plato::Functional::Core::DynamicVector<double>& aV) const
 {
     const auto tVectorDimension = static_cast<std::size_t>(aV.size());
     const std::size_t tDensityDimension = aMeshProxy.mNodalDensities.size();
     if (tVectorDimension != tDensityDimension)
     {
-        throw Exception{
+        throw Plato::Functional::Exception{
             "IdentityFilter jacobian multiplication: Dimensions of vector and nodal density field don't match. Vector "
             "dimension: " +
             std::to_string(tVectorDimension) + ", density dimension: " + std::to_string(tDensityDimension)};
@@ -37,11 +37,11 @@ Core::DynamicVector<double> IdentityFilter::jacobianTimesVector(const MeshProxy&
     return aV;
 }
 
-auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, const MeshProxy&>
+auto make_identity_filter_function() -> Plato::Functional::Function<Plato::Functional::MeshProxy, library::FilterJacobian, const Plato::Functional::MeshProxy&>
 {
-    return make_function([](const MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
-                         [](const MeshProxy& aMeshProxy) {
-                             return FilterJacobian{std::make_unique<IdentityFilter>(), aMeshProxy};
+    return Plato::Functional::make_function([](const Plato::Functional::MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
+                         [](const Plato::Functional::MeshProxy& aMeshProxy) {
+                             return library::FilterJacobian{std::make_unique<IdentityFilter>(), aMeshProxy};
                          });
 }
 
@@ -58,4 +58,4 @@ auto make_identity_filter_function() -> Function<MeshProxy, FilterJacobian, cons
     return std::nullopt;
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::filter::extension

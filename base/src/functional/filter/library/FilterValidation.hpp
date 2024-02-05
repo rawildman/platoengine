@@ -9,9 +9,9 @@ namespace Plato
 struct density_topology;
 }
 
-namespace Plato::Functional::Filter
+namespace plato::functional::filter::library
 {
 [[nodiscard]] std::optional<std::string> validate_filter_type(const Plato::density_topology& aInput);
-}  // namespace Plato::Functional::Filter
+}  // namespace plato::functional::filter::library
 
 #endif

@@ -46,7 +46,7 @@ class DensityTopology
    private:
     std::filesystem::path mFileName;
     unsigned int mNumDesignParameters = 0;
-    FilterFactory::FilterFunction mFilter;
+    plato::functional::filter::library::FilterFunction mFilter;
 };
 
 /// @brief Generate a geometry function, that can be composed with an objective function.

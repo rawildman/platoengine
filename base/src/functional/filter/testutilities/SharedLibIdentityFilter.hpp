@@ -9,20 +9,20 @@ namespace Plato::Functional
 struct MeshProxy;
 }
 
-namespace Plato::Functional::Test
+namespace plato::functional::filter::testutilities
 {
 /// @brief The purpose of this filter is to test the shared library interface.
 ///
 /// It is an identity filter, meaning that the density field will be unchanged on
 /// calls to `filter` and its Jacobian is the identity matrix.
-class SharedLibIdentityFilter : public FilterInterface
+class SharedLibIdentityFilter : public library::FilterInterface
 {
    public:
-    [[nodiscard]] MeshProxy filter(const MeshProxy& aMeshProxy) const override;
+    [[nodiscard]] Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] Core::DynamicVector<double> jacobianTimesVector(const MeshProxy& aMeshProxy,
-                                                                  const Core::DynamicVector<double>& aV) const override;
+    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
+                                                                  const Plato::Functional::Core::DynamicVector<double>& aV) const override;
 };
-}  // namespace Plato::Functional::Test
+}  // namespace plato::functional::filter::testutilities
 
 #endif

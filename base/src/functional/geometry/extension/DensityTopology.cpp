@@ -43,7 +43,7 @@ std::function<void(const Core::DynamicVector<double>&)> make_topology_output(
 DensityTopology::DensityTopology(const density_topology& aInput)
     : mFileName(aInput.mesh_name.value().mName),
       mNumDesignParameters(read_mesh_node_size(mFileName)),
-      mFilter(FilterFactory::make_filter_function(aInput))
+      mFilter(plato::functional::filter::library::make_filter_function(aInput))
 {
 }
 

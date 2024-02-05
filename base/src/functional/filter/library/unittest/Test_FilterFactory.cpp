@@ -9,6 +9,6 @@ TEST(FilterFactory, KernelFilterThrows)
 {
     auto tDensityTopology = Plato::density_topology{};
     tDensityTopology.filter_type = Plato::FilterTypes::kKernel;
-    EXPECT_THROW(auto tFunction = Plato::Functional::FilterFactory::make_filter_function(tDensityTopology),
+    EXPECT_THROW(auto tFunction = plato::functional::filter::library::make_filter_function(tDensityTopology),
                  Plato::Functional::Exception);
 }

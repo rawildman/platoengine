@@ -8,12 +8,12 @@ namespace Plato
 {
 struct density_topology;
 }
-namespace Plato::Functional
+namespace plato::functional::filter::extension
 {
 [[nodiscard]] std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density_topology& aInput);
 [[nodiscard]] std::optional<std::string> validate_helmholtz_filter_boundary_sticking_penalty(
     const Plato::density_topology& aInput);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::filter::extension
 
 #endif

@@ -10,7 +10,10 @@
 namespace Plato::Functional
 {
 struct MeshProxy;
+}
 
+namespace plato::functional::filter::library 
+{
 static constexpr std::string_view kCreateFilterFunctionName = "plato_create_filter";
 
 /// @brief Holds parameters defining a filter for construction.
@@ -33,12 +36,12 @@ class FilterInterface
     virtual ~FilterInterface() = default;
 
     /// @brief Appies the filter to the density field held in @a aMeshProxy
-    [[nodiscard]] virtual MeshProxy filter(const MeshProxy& aMeshProxy) const = 0;
+    [[nodiscard]] virtual Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
 
     /// @brief Implements multiplication of row vector @a aV and the Jacobian of the
     ///  filter computed at the argument @a aMeshProxy.
-    [[nodiscard]] virtual Core::DynamicVector<double> jacobianTimesVector(
-        const MeshProxy& aMeshProxy, const Core::DynamicVector<double>& aV) const = 0;
+    [[nodiscard]] virtual Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(
+        const Plato::Functional::MeshProxy& aMeshProxy, const Plato::Functional::Core::DynamicVector<double>& aV) const = 0;
 
     FilterInterface(const FilterInterface&) = delete;
     FilterInterface& operator=(const FilterInterface&) = delete;
@@ -48,6 +51,6 @@ class FilterInterface
 
 extern "C" std::unique_ptr<FilterInterface> plato_create_filter(const FilterParameters& aFilterParameters);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::filter::library
 
 #endif

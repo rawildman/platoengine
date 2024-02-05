@@ -6,7 +6,7 @@
 #include "DynamicVector.hpp"
 #include "MeshProxy.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::filter::library
 {
 class FilterInterface;
 
@@ -14,12 +14,12 @@ class FilterInterface;
 struct FilterJacobian
 {
     std::shared_ptr<FilterInterface> mFilter;
-    MeshProxy mMeshProxy;
+    Plato::Functional::MeshProxy mMeshProxy;
 };
 
 /// @pre `FilterJacobian::mFilter` must not be `nullptr`.
-Core::DynamicVector<double> operator*(const Core::DynamicVector<double>& aV, const FilterJacobian& aJacobian);
+Plato::Functional::Core::DynamicVector<double> operator*(const Plato::Functional::Core::DynamicVector<double>& aV, const FilterJacobian& aJacobian);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::filter::library
 
 #endif

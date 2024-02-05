@@ -6,13 +6,13 @@
 #include "FilterRegistration.hpp"
 #include "InputBlocks.hpp"
 
-namespace Plato::Functional::FilterFactory
+namespace plato::functional::filter::library
 {
 FilterFunction make_filter_function(const Plato::density_topology& aInput)
 {
-    if (const auto tIter = detail::registered_functions<FilterFunction, FilterInput>().find(
+    if (const auto tIter = Plato::Functional::detail::registered_functions<FilterFunction, FilterInput>().find(
             Plato::kFilterTypesTable.toString(aInput.filter_type.value()).value());
-        tIter != detail::registered_functions<FilterFunction, FilterInput>().end())
+        tIter != Plato::Functional::detail::registered_functions<FilterFunction, FilterInput>().end())
     {
         return tIter->second(aInput);
     }
@@ -21,4 +21,4 @@ FilterFunction make_filter_function(const Plato::density_topology& aInput)
         throw Plato::Functional::Exception{"Unknown filter_type"};
     }
 }
-}  // namespace Plato::Functional::FilterFactory
+}  // namespace plato::functional::filter::library
