@@ -6,7 +6,7 @@
 
 #include "MassObjective.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::integration_tests::test_mass_objective
 {
 MassObjectiveInterface::MassObjectiveInterface()
 {
@@ -25,7 +25,7 @@ MassObjectiveInterface::MassObjectiveInterface()
     }
 }
 
-double MassObjectiveInterface::value(const MeshProxy& aMeshProxy) const
+double MassObjectiveInterface::value(const Plato::Functional::MeshProxy& aMeshProxy) const
 {
     constexpr double tDensity = 1.0;
     constexpr double tTarget = 0.0;
@@ -33,7 +33,7 @@ double MassObjectiveInterface::value(const MeshProxy& aMeshProxy) const
     return tMassObjective.mass(aMeshProxy.mFileName.string());
 }
 
-std::vector<double> MassObjectiveInterface::gradient(const MeshProxy& aMeshProxy) const
+std::vector<double> MassObjectiveInterface::gradient(const Plato::Functional::MeshProxy& aMeshProxy) const
 {
     ///@todo Populate the gradient with actual values
     constexpr double tDensity = 1.0;
@@ -44,8 +44,8 @@ std::vector<double> MassObjectiveInterface::gradient(const MeshProxy& aMeshProxy
     return std::vector<double>(tGradientSize, 0.0);
 }
 
-std::unique_ptr<CriterionInterface> plato_create_criterion(const std::vector<std::string>&)
+std::unique_ptr<Plato::Functional::CriterionInterface> plato_create_criterion(const std::vector<std::string>&)
 {
     return std::make_unique<MassObjectiveInterface>();
 }
-}  // namespace Plato::Functional
+}  // namespace plato::functional::integration_tests::test_mass_objective

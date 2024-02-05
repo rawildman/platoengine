@@ -11,6 +11,8 @@ namespace
 const std::filesystem::path kTestFileName = "testInput.i";
 }
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(InputParser, ParseFromFile)
 {
     Plato::Functional::TestUtilities::create_input_file(kTestFileName);
@@ -45,4 +47,5 @@ TEST(InputParser, ParseFromFile)
     EXPECT_EQ(tInput.mBrickShapeGeometry->mesh_name->mName, "my_mesh.exo");
 
     std::filesystem::remove(kTestFileName);
+}
 }

@@ -5,6 +5,8 @@
 #include "ValidatedInput.hpp"
 #include "InputGeneration.hpp"
 
+namespace plato::functional::integration_tests::parallel
+{
 namespace
 {
 constexpr auto kNumRanks = int{4};
@@ -41,4 +43,5 @@ TEST(ObjectiveFactory, InvalidParallelAggregate)
     namespace pfv = Plato::Functional::Validation;
 
     EXPECT_THROW(const pfv::ValidatedInput tData = create_one_objective_test_input(), Plato::Functional::Exception);
+}
 }

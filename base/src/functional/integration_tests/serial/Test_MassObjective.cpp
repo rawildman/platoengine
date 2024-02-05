@@ -4,12 +4,16 @@
 #include "MassObjective.hpp"
 #include "STKUtilities.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(MassObjective, Value)
 {
     namespace pf = Plato::Functional;
+    namespace pfittmo = plato::functional::integration_tests::test_mass_objective;
+
     constexpr double tDensity = 2.0;
     constexpr double tTarget = 1.0;
-    const auto tMassObjective = pf::MassObjective{tDensity, tTarget};
+    const auto tMassObjective = pfittmo::MassObjective{tDensity, tTarget};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
@@ -21,7 +25,9 @@ TEST(MassObjective, Value)
 TEST(MassObjective, NumMeshNodes)
 {
     namespace pf = Plato::Functional;
-    const auto tMassObjective = pf::MassObjective{0.0, 0.0};
+    namespace pfittmo = plato::functional::integration_tests::test_mass_objective;
+
+    const auto tMassObjective = pfittmo::MassObjective{0.0, 0.0};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x2x1|bbox:-1,-1,-1,1,1,1"));
@@ -29,3 +35,4 @@ TEST(MassObjective, NumMeshNodes)
     constexpr unsigned int tExpectedNumNodes = 12;
     EXPECT_DOUBLE_EQ(tMassObjective.numMeshNodes(tMeshName), tExpectedNumNodes);
 }
+}  // namespace plato::functional::integration_tests::serial

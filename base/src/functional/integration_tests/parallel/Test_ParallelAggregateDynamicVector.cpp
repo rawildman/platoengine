@@ -8,6 +8,8 @@
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
 
+namespace plato::functional::integration_tests::parallel
+{
 namespace
 {
 constexpr auto kNumRanks = int{4};
@@ -29,7 +31,7 @@ TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
     // the resulting aggregation should be the evaluation of one function times the number
     // of ranks.
-    const auto tRosenbrockFunction = pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
+    const auto tRosenbrockFunction = utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
     using RosenbrockF = std::decay_t<decltype(tRosenbrockFunction)>;
     constexpr auto tWeight = double{0.5};
 
@@ -45,4 +47,5 @@ TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
     const pfc::DynamicVector<double> tExpectedDF = kNumRanks * tWeight * tRosenbrockFunction.df(tControl);
     const pfc::DynamicVector<double> tComputedDF = tAggregate.df(tControl);
     EXPECT_EQ(tComputedDF, tExpectedDF);
+}
 }

@@ -5,14 +5,17 @@
 #include "DynamicVectorRosenbrockFunction.hpp"
 #include "Penalty.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(PenaltyFunction, ValueAndJacobian)
 {
     namespace pfc = Plato::Functional::Core;
     namespace pft = Plato::Functional::Test;
+    namespace pfitu = plato::functional::integration_tests::utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tPower = 2.0;
-    const auto tPenalty = make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower});
+    const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower});
 
     // Function and derivative at 1 and 0
     const auto tControl = pfc::DynamicVector{1.0, 0.0};
@@ -41,7 +44,7 @@ TEST(PenaltyFunction, Multiplication)
     namespace pft = Plato::Functional::Test;
 
     const auto tX = pfc::DynamicVector{1.0, 2.0};
-    const auto tA = pft::DynamicVectorJacobian{pft::makeTwoDMatrix(1.0, 2.0, 3.0, 4.0)};
+    const auto tA = utilities::DynamicVectorJacobian{pft::makeTwoDMatrix(1.0, 2.0, 3.0, 4.0)};
     const auto tb = tX * tA;
     EXPECT_EQ(tb[0], 7.0);
     EXPECT_EQ(tb[1], 10.0);
@@ -51,8 +54,10 @@ TEST(PenaltyFunction, Composition)
 {
     namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
-    const auto tPenalty = pft::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});
-    const auto tRosenbrock = pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
+    namespace pfitu = plato::functional::integration_tests::utilities;
+
+    const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});
+    const auto tRosenbrock = pfitu::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
     const auto tComposition = pf::compose(tRosenbrock, tPenalty);
 
     const auto tControl = pf::Core::DynamicVector<double>{std::vector{1.0, 1.0}};
@@ -62,4 +67,5 @@ TEST(PenaltyFunction, Composition)
     const pf::Core::DynamicVector<double> tDCompositionOfX = tComposition.df(tControl);
     EXPECT_EQ(tDCompositionOfX[0], 0.0);
     EXPECT_EQ(tDCompositionOfX[1], 0.0);
+}
 }

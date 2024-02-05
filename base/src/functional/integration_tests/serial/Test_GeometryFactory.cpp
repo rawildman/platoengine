@@ -5,6 +5,8 @@
 #include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(GeometryFactory, BrickGeometry)
 {
     namespace pf = Plato::Functional;
@@ -35,4 +37,5 @@ TEST(GeometryFactory, BlockName)
     const pf::Validation::ValidatedInput tValidatedInput =
         pf::Validation::make_validated_input(pftu::create_valid_example_input());
     EXPECT_EQ(pfg::Detail::block_name(tValidatedInput.geometry()), "density_topology");
+}
 }

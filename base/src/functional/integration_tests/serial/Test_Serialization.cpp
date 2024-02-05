@@ -6,6 +6,8 @@
 
 #include "TwoDTestTypesSerialization.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(Serialization, TwoDTestTypes)
 {
     auto tStream = std::stringstream{};
@@ -18,4 +20,5 @@ TEST(Serialization, TwoDTestTypes)
     auto tLoadArchive = boost::archive::binary_iarchive{tStream};
     tLoadArchive >> tLoadedVector;
     EXPECT_EQ(tLoadedVector, tStoredVector);
+}
 }

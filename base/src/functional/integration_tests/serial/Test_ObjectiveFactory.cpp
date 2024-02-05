@@ -5,6 +5,8 @@
 #include "ValidatedInput.hpp"
 #include "InputGeneration.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 namespace
 {
 Plato::Functional::Validation::ValidatedInput create_two_objective_test_input()
@@ -92,4 +94,5 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
 
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
+}
 }

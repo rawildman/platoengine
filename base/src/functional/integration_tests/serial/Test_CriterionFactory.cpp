@@ -6,6 +6,8 @@
 #include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(CriterionFactory, ValidObjective)
 {
     namespace pfv = Plato::Functional::Validation;
@@ -98,4 +100,5 @@ TEST(CriterionRegistration, ConvertConstraintInput)
     {
         EXPECT_EQ(tConstraint.input_files->mList[tIndex], tCriterionInput.mInputFiles.mList[tIndex]);
     }
+}
 }

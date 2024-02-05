@@ -6,6 +6,8 @@
 #include "STKUtilities.hpp"
 #include "SharedLibCriterion.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 namespace
 {
 // These tests use the mass objective library but through the shared library interface so they are testing the shared
@@ -60,4 +62,5 @@ TEST(SharedLibObjective, ValueUsingFunction)
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
     const double tMass = tFunction.f(pf::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
+}
 }

@@ -3,27 +3,18 @@
 
 #include <string>
 
-namespace Plato::Functional
+namespace plato::functional::integration_tests::test_mass_objective
 {
 class MassObjective
 {
    public:
     ///@brief Construct a new Mass Objective object
-    ///
-    ///@param aDensity
-    ///@param aTarget
     MassObjective(const double aDensity, const double aTarget);
 
     ///@brief return the total mass of the mesh
-    ///
-    ///@param aMeshFileName
-    ///@return double
     [[nodiscard]] double mass(std::string_view aMeshFileName) const;
 
     ///@brief return the number of nodes in the mesh
-    ///
-    ///@param aMeshFileName
-    ///@return unsigned int
     [[nodiscard]] unsigned int numMeshNodes(std::string_view aMeshFileName) const;
 
    private:
@@ -31,6 +22,6 @@ class MassObjective
     double mTarget = 0.0;
 };
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::integration_tests::test_mass_objective
 
 #endif

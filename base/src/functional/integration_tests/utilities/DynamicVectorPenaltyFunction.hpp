@@ -5,19 +5,22 @@
 #include "Function.hpp"
 #include "Penalty.hpp"
 
-namespace Plato::Functional::Test
+namespace plato::functional::integration_tests::utilities
 {
 struct DynamicVectorJacobian
 {
-    Core::DynamicVector<double> column(const int aIndex) const;
-    TwoDMatrix mJacobian;
+    Plato::Functional::Core::DynamicVector<double> column(const int aIndex) const;
+    Plato::Functional::Test::TwoDMatrix mJacobian;
 };
 
-Core::DynamicVector<double> operator*(const Core::DynamicVector<double>& aX, const DynamicVectorJacobian& aJacobian);
+[[nodiscard]] Plato::Functional::Core::DynamicVector<double> operator*(
+    const Plato::Functional::Core::DynamicVector<double>& aX, const DynamicVectorJacobian& aJacobian);
 
-[[nodiscard]] auto make_penalty_dynamic_vector_function(const Penalty& aPenalty) -> Plato::Functional::
-    Function<Core::DynamicVector<double>, DynamicVectorJacobian, const Core::DynamicVector<double>&>;
+[[nodiscard]] auto make_penalty_dynamic_vector_function(const Plato::Functional::Test::Penalty& aPenalty)
+    -> Plato::Functional::Function<Plato::Functional::Core::DynamicVector<double>,
+                                   DynamicVectorJacobian,
+                                   const Plato::Functional::Core::DynamicVector<double>&>;
 
-}  // namespace Plato::Functional::Test
+}  // namespace plato::functional::integration_tests::utilities
 
 #endif

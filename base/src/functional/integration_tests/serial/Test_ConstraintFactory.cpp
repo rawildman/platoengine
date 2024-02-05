@@ -6,6 +6,8 @@
 #include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
 
+namespace plato::functional::integration_tests::serial
+{
 TEST(ConstraintFactory, ValidConstraint)
 {
     namespace pfv = Plato::Functional::Validation;
@@ -22,4 +24,5 @@ TEST(ConstraintFactory, ValidConstraint)
     const auto tConstraint = Plato::Functional::ConstraintFactory::detail::make_constraint(tData.constraints().rawInput().front());
     EXPECT_TRUE(tConstraint.mLinear);
     EXPECT_EQ(tConstraint.mConstraintTarget, 13.0);
+}
 }

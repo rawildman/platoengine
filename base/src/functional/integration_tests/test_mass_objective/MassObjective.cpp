@@ -12,7 +12,7 @@
 
 #include "STKUtilities.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::integration_tests::test_mass_objective
 {
 namespace
 {
@@ -125,7 +125,7 @@ MassObjective::MassObjective(const double aDensity, const double aTarget) : mDen
 
 double MassObjective::mass(const std::string_view aMeshFileName) const
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulk = read_mesh_bulk_data(aMeshFileName);
+    std::shared_ptr<stk::mesh::BulkData> tBulk = Plato::Functional::read_mesh_bulk_data(aMeshFileName);
     const stk::mesh::EntityVector tElements = element_vector(*tBulk);
 
     const double tMass = std::accumulate(tElements.begin(), tElements.end(), 0.0,
@@ -136,6 +136,6 @@ double MassObjective::mass(const std::string_view aMeshFileName) const
 
 unsigned int MassObjective::numMeshNodes(const std::string_view aMeshFileName) const
 {
-    return read_mesh_node_size(aMeshFileName);
+    return Plato::Functional::read_mesh_node_size(aMeshFileName);
 }
-}  // namespace Plato::Functional
+}  // namespace plato::functional::integration_tests::test_mass_objective

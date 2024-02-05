@@ -3,29 +3,22 @@
 
 #include "CriterionInterface.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::integration_tests::test_mass_objective
 {
-class MassObjectiveInterface : public CriterionInterface
+class MassObjectiveInterface : public Plato::Functional::CriterionInterface
 {
    public:
     ///@brief Construct a new Mass Objective Interface object
-    ///
     MassObjectiveInterface();
 
     ///@brief required by the CriterionInterface, return the value of the criterion evaluated at the controls specified
     /// by the MeshProxy
-    ///
-    ///@param aMeshProxy
-    ///@return double
-    double value(const MeshProxy& aMeshProxy) const override;
+    double value(const Plato::Functional::MeshProxy& aMeshProxy) const override;
 
     ///@brief required by the CriterionInterface, return the gradient of the criterion evaluated at the controls
     /// specified by the MeshProxy
-    ///
-    ///@param aMeshProxy
-    ///@return std::vector<double>
-    std::vector<double> gradient(const MeshProxy& aMeshProxy) const override;
+    std::vector<double> gradient(const Plato::Functional::MeshProxy& aMeshProxy) const override;
 };
-}  // namespace Plato::Functional
+}  // namespace plato::functional::integration_tests::test_mass_objective
 
 #endif
