@@ -56,7 +56,8 @@ TEST(PlatoProblem, InputFileToROLObjective)
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
     pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
-    std::unique_ptr<pf::ROLObjectiveFunction> tObjectiveFunction = pf::make_rol_objective(tProblem);
+    std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> tObjectiveFunction =
+        pf::make_rol_objective(tProblem);
     const ROL::StdVector<double> tBoundingBox{0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
     double tTolerance = 1e-8;
 

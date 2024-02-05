@@ -7,13 +7,14 @@
 #include "DynamicVector.hpp"
 #include "Function.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::rol_integration
 {
 class ROLObjectiveFunction : public ROL::Objective<double>
 {
    public:
-    using ROLPlatoFunction =
-        Plato::Functional::Function<double, Core::DynamicVector<double>, const Core::DynamicVector<double> &>;
+    using ROLPlatoFunction = Plato::Functional::Function<double,
+                                                         Plato::Functional::Core::DynamicVector<double>,
+                                                         const Plato::Functional::Core::DynamicVector<double> &>;
 
     ///@brief Construct a new ROLObjectiveFunction object
     explicit ROLObjectiveFunction(ROLPlatoFunction aROLPlatoFunction);
@@ -28,6 +29,6 @@ class ROLObjectiveFunction : public ROL::Objective<double>
    private:
     ROLPlatoFunction mFunction;
 };
-}  // namespace Plato::Functional
+}  // namespace glato::functional::rol_integration
 
 #endif

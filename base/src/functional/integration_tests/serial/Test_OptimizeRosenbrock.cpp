@@ -39,7 +39,8 @@ TEST(Optimize, Rosenbrock)
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{-1.2, 1.0};
-    auto tObjective = pf::ROLObjectiveFunction{pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{})};
+    auto tObjective = plato::functional::rol_integration::ROLObjectiveFunction{
+        pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{})};
 
     rol_algorithm().run(tControl, tObjective, tPrintFlag, *tOutStream);
 
@@ -57,9 +58,9 @@ TEST(Optimize, RosenbrockPenaltyComposition)
     auto tControl = ROL::StdVector<double>{1.5, 0.5};
     constexpr double tXMin = 0.0;
     constexpr double tPower = 3.0;
-    auto tObjective =
-        pf::ROLObjectiveFunction{pf::compose(pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
-                                             pft::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};
+    auto tObjective = plato::functional::rol_integration::ROLObjectiveFunction{
+        pf::compose(pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
+                    pft::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};
 
     rol_algorithm().run(tControl, tObjective, tPrintFlag, *tOutStream);
 

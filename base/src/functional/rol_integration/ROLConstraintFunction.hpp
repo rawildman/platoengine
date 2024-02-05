@@ -8,16 +8,19 @@
 #include "DynamicVector.hpp"
 #include "Function.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::rol_integration
 {
 class ROLConstraintFunction : public ROL::Constraint<double>
 {
    public:
-    using ROLPlatoFunction =
-        Plato::Functional::Function<double, Core::DynamicVector<double>, const Core::DynamicVector<double>&>;
+    using ROLPlatoFunction = Plato::Functional::Function<double,
+                                                         Plato::Functional::Core::DynamicVector<double>,
+                                                         const Plato::Functional::Core::DynamicVector<double>&>;
 
     ///@brief Construct a new ROLConstraintFunction object
-    ROLConstraintFunction(ConstraintFactory::Constraint<const Core::DynamicVector<double>&> aConstraint);
+    ROLConstraintFunction(
+        Plato::Functional::ConstraintFactory::Constraint<const Plato::Functional::Core::DynamicVector<double>&>
+            aConstraint);
 
     ///@brief Evaluate and populate aConstraints with the constraints at a given control vector and tolerance
     void value(ROL::Vector<double>& aConstraints, const ROL::Vector<double>& aControl, double& aTolerance) override;
@@ -53,6 +56,6 @@ class ROLConstraintFunction : public ROL::Constraint<double>
     double mConstraintTarget = 0;
     bool mLinear = false;
 };
-}  // namespace Plato::Functional
+}  // namespace plato::functional::rol_integration
 
 #endif

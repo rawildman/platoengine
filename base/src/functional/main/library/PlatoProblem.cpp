@@ -30,30 +30,35 @@ PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
                         rol_parameter_list(aData.optimizationParameters())};
 }
 
-std::unique_ptr<ROLObjectiveFunction> make_rol_objective(const PlatoProblem& aProblem)
+std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_objective(
+    const PlatoProblem& aProblem)
 {
-    return std::make_unique<ROLObjectiveFunction>(compose(aProblem.mObjective, aProblem.mGeometry.mCompute));
+    return std::make_unique<plato::functional::rol_integration::ROLObjectiveFunction>(
+        compose(aProblem.mObjective, aProblem.mGeometry.mCompute));
 }
 
-std::vector<std::unique_ptr<ROLConstraintFunction>> make_rol_constraints(const PlatoProblem& aProblem)
+std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> make_rol_constraints(
+    const PlatoProblem& aProblem)
 {
-    std::vector<std::unique_ptr<ROLConstraintFunction>> tROLConstraints;
-    std::transform(aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-                   [&aProblem](const ConstraintFactory::Constraint<const MeshProxy&>& aConstraintData)
-                   {
-                       ConstraintFactory::Constraint<const Core::DynamicVector<double>&> tConstraint{
-                           aConstraintData.mName,
-                           compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
-                           aConstraintData.mConstraintTarget, aConstraintData.mLinear};
-                       return std::make_unique<ROLConstraintFunction>(std::move(tConstraint));
-                   });
+    std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
+    std::transform(
+        aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
+        [&aProblem](const ConstraintFactory::Constraint<const MeshProxy&>& aConstraintData)
+        {
+            ConstraintFactory::Constraint<const Core::DynamicVector<double>&> tConstraint{
+                aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
+                aConstraintData.mConstraintTarget, aConstraintData.mLinear};
+            return std::make_unique<plato::functional::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
+        });
     return tROLConstraints;
 }
 
-std::unique_ptr<ROLObjectiveFunction> make_rol_sensitivity_objective(const PlatoProblem& aProblem)
+std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
+    const PlatoProblem& aProblem)
 {
     auto tSimpleObjectiveFunction = make_nodal_sum_function();
-    return std::make_unique<ROLObjectiveFunction>(compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
+    return std::make_unique<plato::functional::rol_integration::ROLObjectiveFunction>(
+        compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
 }
 
 std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem)
@@ -78,7 +83,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?
     constexpr bool tLumpConstraints =
-        false;                                //( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        false;  //( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
     tROLProblem->finalize(tLumpConstraints);  //, tPrintToStream, mOutputFile);
     return tROLProblem;
 }

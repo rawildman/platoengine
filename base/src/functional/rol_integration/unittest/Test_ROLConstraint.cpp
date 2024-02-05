@@ -7,6 +7,8 @@
 #include "DynamicVectorRosenbrockFunction.hpp"
 #include "ROLConstraintFunction.hpp"
 
+namespace plato::functional::rol_integration
+{
 TEST(ROLConstraintFunction, ConstraintValue)
 {
     namespace pft = Plato::Functional::Test;
@@ -20,8 +22,8 @@ TEST(ROLConstraintFunction, ConstraintValue)
 
     constexpr bool tIsLinear = false;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
-            "name", pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
+        ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            "name", make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
     auto tConstraintsVector = ROL::StdVector<double>{.0};
     double tTolerance;
@@ -46,8 +48,8 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
 
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
-            "name", pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
+        ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            "name", make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
 
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
     ROL::StdVector<double> tJacobianTimesDirection{1.0};
@@ -80,8 +82,8 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     auto tDirection = ROL::StdVector<double>{tDual};
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        pf::ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
-            std::string{tConstraintName}, pft::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget,
+        ROLConstraintFunction{pf::ConstraintFactory::Constraint<const pf::Core::DynamicVector<double>&>{
+            std::string{tConstraintName}, make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget,
             tIsLinear}};
 
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
@@ -97,3 +99,5 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     EXPECT_TRUE(tROLConstraintFunction.linear());
     EXPECT_EQ(tROLConstraintFunction.name(), std::string{tConstraintName});
 }
+
+}  // namespace plato::functional::rol_integration
