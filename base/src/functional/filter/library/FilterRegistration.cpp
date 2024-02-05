@@ -4,8 +4,8 @@
 
 #include "FilterInterface.hpp"
 #include "FilterJacobian.hpp"
-#include "MeshProxy.hpp"
 #include "InputBlocks.hpp"
+#include "MeshProxy.hpp"
 #include "SharedLibraryUtilities.hpp"
 
 namespace plato::functional::filter::library
@@ -36,10 +36,11 @@ FilterParameters to_filter_parameters(const Plato::density_topology& aInput)
 auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction
 {
     auto tFilterAsShared = std::shared_ptr<FilterInterface>(std::move(aFilter));
-    return Plato::Functional::make_function([tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) { return tFilterAsShared->filter(aMeshProxy); },
-                         [tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) {
-                             return FilterJacobian{tFilterAsShared, aMeshProxy};
-                         });
+    return Plato::Functional::make_function([tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy)
+                                            { return tFilterAsShared->filter(aMeshProxy); },
+                                            [tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) {
+                                                return FilterJacobian{tFilterAsShared, aMeshProxy};
+                                            });
 }
 
 std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,

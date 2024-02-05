@@ -6,10 +6,12 @@
 
 namespace plato::functional::filter::library
 {
+
 namespace
 {
-[[maybe_unused]] static auto kFilterValidationRegistration = Plato::Functional::Validation::Registration<Plato::density_topology>{
-    [](const Plato::density_topology& aInput) { return validate_filter_type(aInput); }};
+[[maybe_unused]] static auto kFilterValidationRegistration =
+    Plato::Functional::Validation::Registration<Plato::density_topology>{[](const Plato::density_topology& aInput)
+                                                                         { return validate_filter_type(aInput); }};
 }
 
 std::optional<std::string> validate_filter_type(const Plato::density_topology& aInput)

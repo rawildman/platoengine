@@ -3,9 +3,11 @@
 #include "FilterFactory.hpp"
 #include "FilterInterface.hpp"
 #include "FilterRegistration.hpp"
-#include "MeshProxy.hpp"
 #include "InputBlocks.hpp"
+#include "MeshProxy.hpp"
 
+namespace plato::functional::filter::extension::unittest
+{
 namespace
 {
 const std::filesystem::path kSharedLibPath = "libPlatoIdentityFilter.so";
@@ -14,12 +16,11 @@ const auto kRho = std::vector{-1.0, 0.0, 1.0};
 const auto kMeshArgument = Plato::Functional::MeshProxy{kMeshName, kRho};
 }  // namespace
 
-namespace plato::functional::filter::library
-{
 TEST(SharedLibFilter, LoadAndValue)
 {
-    const std::unique_ptr<const FilterInterface> tFilter =
-        load_filter(Plato::density_topology{}, kSharedLibPath);
+    const std::unique_ptr<const library::FilterInterface> tFilter =
+        library::load_filter(Plato::density_topology{}, kSharedLibPath);
     EXPECT_EQ(tFilter->filter(kMeshArgument).mNodalDensities, kRho);
 }
-}
+
+}  // namespace plato::functional::filter::extension::unittest

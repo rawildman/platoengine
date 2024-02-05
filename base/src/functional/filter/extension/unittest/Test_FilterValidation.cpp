@@ -6,7 +6,7 @@
 #include "InputGeneration.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace plato::functional::filter::extension
+namespace plato::functional::filter::extension::unittest
 {
 
 TEST(FilterValidation, CheckFilterValuesIdentity)
@@ -58,8 +58,7 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzBoundaryStickingPenalty)
     tDensityTopology.boundary_sticking_penalty = 1;
     EXPECT_FALSE(validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid
     tDensityTopology.boundary_sticking_penalty = boost::none;
-    EXPECT_FALSE(
-        validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid, optional
+    EXPECT_FALSE(validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid, optional
     tDensityTopology.boundary_sticking_penalty = -1;
     EXPECT_TRUE(validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // invalid
 
@@ -70,4 +69,4 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzBoundaryStickingPenalty)
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 
-}
+}  // namespace plato::functional::filter::extension::unittest

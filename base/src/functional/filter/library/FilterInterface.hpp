@@ -12,7 +12,7 @@ namespace Plato::Functional
 struct MeshProxy;
 }
 
-namespace plato::functional::filter::library 
+namespace plato::functional::filter::library
 {
 static constexpr std::string_view kCreateFilterFunctionName = "plato_create_filter";
 
@@ -41,7 +41,8 @@ class FilterInterface
     /// @brief Implements multiplication of row vector @a aV and the Jacobian of the
     ///  filter computed at the argument @a aMeshProxy.
     [[nodiscard]] virtual Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(
-        const Plato::Functional::MeshProxy& aMeshProxy, const Plato::Functional::Core::DynamicVector<double>& aV) const = 0;
+        const Plato::Functional::MeshProxy& aMeshProxy,
+        const Plato::Functional::Core::DynamicVector<double>& aV) const = 0;
 
     FilterInterface(const FilterInterface&) = delete;
     FilterInterface& operator=(const FilterInterface&) = delete;

@@ -16,14 +16,13 @@ const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctional
 
 [[maybe_unused]] static auto kHelmholtzFilterRegistration = library::FilterRegistration{
     Plato::kFilterTypesTable.toString(Plato::FilterTypes::kHelmholtz).value(), [](const Plato::density_topology& aInput)
-    {
-        return library::make_filter_function_from_interface(
-            library::load_filter(aInput, kHelmholtzFilterLibName));
-    }};
+    { return library::make_filter_function_from_interface(library::load_filter(aInput, kHelmholtzFilterLibName)); }};
 
-[[maybe_unused]] static auto kHelmholtzFilterValidationRegistration = Plato::Functional::Validation::Registration<Plato::density_topology>{
-    [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
-    [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_boundary_sticking_penalty(aInput); }};
+[[maybe_unused]] static auto kHelmholtzFilterValidationRegistration =
+    Plato::Functional::Validation::Registration<Plato::density_topology>{
+        [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
+        [](const Plato::density_topology& aInput)
+        { return validate_helmholtz_filter_boundary_sticking_penalty(aInput); }};
 }  // namespace
 
 std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density_topology& aInput)
@@ -59,4 +58,4 @@ std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density
         return std::nullopt;
     }
 }
-}  // namespace Plato::Functional
+}  // namespace plato::functional::filter::extension

@@ -22,7 +22,8 @@ namespace plato::functional::filter::library
 class FilterInterface;
 struct FilterJacobian;
 
-using FilterFunction = Plato::Functional::Function<Plato::Functional::MeshProxy, FilterJacobian, const Plato::Functional::MeshProxy&>;
+using FilterFunction =
+    Plato::Functional::Function<Plato::Functional::MeshProxy, FilterJacobian, const Plato::Functional::MeshProxy&>;
 using FilterInput = Plato::density_topology;
 using FilterRegistration = Plato::Functional::Registration<FilterFunction, FilterInput>;
 

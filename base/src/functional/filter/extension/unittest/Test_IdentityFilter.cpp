@@ -11,7 +11,7 @@
 #include "InputEnumTypes.hpp"
 #include "MeshProxy.hpp"
 
-namespace plato::functional::filter::extension
+namespace plato::functional::filter::extension::unittest
 {
 
 namespace
@@ -29,22 +29,20 @@ TEST(FilterFactory, ValidIdentityFilter)
     EXPECT_NO_THROW(auto tFunction = library::make_filter_function(tDensityTopology));
 }
 
-TEST(IdentityFilter, Filter)
-{
-    EXPECT_EQ(IdentityFilter{}.filter(kMeshArgument).mNodalDensities, kRho);
-}
+TEST(IdentityFilter, Filter) { EXPECT_EQ(IdentityFilter{}.filter(kMeshArgument).mNodalDensities, kRho); }
 
 TEST(IdentityFilter, JacobianTimesVector)
 {
     const auto tV = Plato::Functional::Core::DynamicVector<double>{-2.0, -1.0, 42.0};
-    const Plato::Functional::Core::DynamicVector<double> tResult = IdentityFilter{}.jacobianTimesVector(kMeshArgument, tV);
+    const Plato::Functional::Core::DynamicVector<double> tResult =
+        IdentityFilter{}.jacobianTimesVector(kMeshArgument, tV);
     EXPECT_EQ(tResult.stdVector(), tV.stdVector());
 }
 
 TEST(IdentityFilter, JacobianMultiplication)
 {
     const auto tFilterJacobian = library::FilterJacobian{/*.mFilter=*/std::make_unique<IdentityFilter>(),
-                                                    /*.mMeshProxy=*/kMeshArgument};
+                                                         /*.mMeshProxy=*/kMeshArgument};
     const Plato::Functional::Core::DynamicVector<double> tResult = kV * tFilterJacobian;
     EXPECT_EQ(tResult.stdVector(), kV.stdVector());
 }
@@ -54,7 +52,7 @@ TEST(IdentityFilter, JacobianBadDimensions)
     namespace pf = Plato::Functional;
 
     const auto tFilterJacobian = library::FilterJacobian{/*.mFilter=*/std::make_unique<IdentityFilter>(),
-                                                    /*.mMeshProxy=*/kMeshArgument};
+                                                         /*.mMeshProxy=*/kMeshArgument};
 
     const auto tVBad = pf::Core::DynamicVector<double>{-2.0, -1.0, 42.0, 84.0};
     EXPECT_THROW(auto tTemp = IdentityFilter{}.jacobianTimesVector(kMeshArgument, tVBad), pf::Exception);
@@ -69,4 +67,4 @@ TEST(IdentityFilter, Function)
     const Plato::Functional::Core::DynamicVector<double> tResult = kV * tFilterFunction.df(kMeshArgument);
     EXPECT_EQ(tResult.stdVector(), kV.stdVector());
 }
-}
+}  // namespace plato::functional::filter::extension::unittest

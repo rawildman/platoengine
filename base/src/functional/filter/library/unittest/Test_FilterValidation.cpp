@@ -6,7 +6,7 @@
 #include "InputGeneration.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace plato::functional::filter::library
+namespace plato::functional::filter::library::unittest
 {
 
 TEST(FilterValidation, TypeExists)
@@ -23,4 +23,4 @@ TEST(FilterValidation, TypeExists)
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 
-}
+}  // namespace plato::functional::filter::library::unittest

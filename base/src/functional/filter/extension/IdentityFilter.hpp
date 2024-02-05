@@ -11,6 +11,7 @@ struct density_topology;
 namespace Plato::Functional
 {
 struct MeshProxy;
+
 }
 
 namespace plato::functional::filter::library
@@ -29,11 +30,13 @@ class IdentityFilter : public library::FilterInterface
    public:
     [[nodiscard]] Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
-                                                                  const Plato::Functional::Core::DynamicVector<double>& aV) const override;
+    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(
+        const Plato::Functional::MeshProxy& aMeshProxy,
+        const Plato::Functional::Core::DynamicVector<double>& aV) const override;
 };
 
-[[nodiscard]] auto make_identity_filter_function() -> Plato::Functional::Function<Plato::Functional::MeshProxy, library::FilterJacobian, const Plato::Functional::MeshProxy&>;
+[[nodiscard]] auto make_identity_filter_function() -> Plato::Functional::
+    Function<Plato::Functional::MeshProxy, library::FilterJacobian, const Plato::Functional::MeshProxy&>;
 
 [[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput);
 

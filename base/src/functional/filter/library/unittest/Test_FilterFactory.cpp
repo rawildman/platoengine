@@ -4,7 +4,8 @@
 #include "FilterFactory.hpp"
 #include "InputBlocks.hpp"
 #include "InputEnumTypes.hpp"
-
+namespace plato::functional::filter::extension::unittest
+{
 TEST(FilterFactory, KernelFilterThrows)
 {
     auto tDensityTopology = Plato::density_topology{};
@@ -12,3 +13,4 @@ TEST(FilterFactory, KernelFilterThrows)
     EXPECT_THROW(auto tFunction = plato::functional::filter::library::make_filter_function(tDensityTopology),
                  Plato::Functional::Exception);
 }
+}  // namespace plato::functional::filter::extension::unittest

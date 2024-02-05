@@ -17,7 +17,8 @@ namespace plato::functional::filter::library
 {
 struct FilterJacobian;
 
-using FilterFunction = Plato::Functional::Function<Plato::Functional::MeshProxy, FilterJacobian, const Plato::Functional::MeshProxy&>;
+using FilterFunction =
+    Plato::Functional::Function<Plato::Functional::MeshProxy, FilterJacobian, const Plato::Functional::MeshProxy&>;
 
 /// @brief Creates a Function used for filtering a nodal density field for density TO.
 /// @param aInput The input parameters parsed from an input deck.

@@ -4,7 +4,8 @@
 #include "FilterFactory.hpp"
 #include "InputBlocks.hpp"
 
-
+namespace plato::functional::filter::extension::unittest
+{
 TEST(FilterFactory, HelmholtzFilterThrows)
 {
     // For the Helmholtz filter, the filter may be loaded depending on whether
@@ -36,3 +37,4 @@ TEST(FilterFactory, HelmholtzFilterThrows)
         EXPECT_TRUE(tCorrectException);
     }
 }
+}  // namespace plato::functional::filter::extension::unittest
