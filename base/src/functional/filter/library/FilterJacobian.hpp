@@ -18,8 +18,8 @@ struct FilterJacobian
 };
 
 /// @pre `FilterJacobian::mFilter` must not be `nullptr`.
-Plato::Functional::Core::DynamicVector<double> operator*(const Plato::Functional::Core::DynamicVector<double>& aV,
-                                                         const FilterJacobian& aJacobian);
+linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVector<double>& aV,
+                                                const FilterJacobian& aJacobian);
 
 }  // namespace plato::functional::filter::library
 #endif

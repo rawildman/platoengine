@@ -34,24 +34,23 @@ void create_small_mesh(const std::string& aFileName)
 
 TEST(DensityTopology, Jacobian)
 {
-    namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
     const DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
-    const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
+    const linear_algebra::DynamicVector<double> tDesignVec(tDesignVars);
     const int tNumDesignParameters = tDesignVec.size();
 
-    const pf::JacobianMultiplier tJacobian = tDensityTopology.jacobian(tDesignVec);
+    const linear_algebra::JacobianMultiplier tJacobian = tDensityTopology.jacobian(tDesignVec);
 
     std::vector<double> tRowVec(tNumDesignParameters, 0.0);
     std::iota(tRowVec.begin(), tRowVec.end(), 1.0);
-    const pf::Core::DynamicVector<double> tRolVec(tRowVec);
+    const linear_algebra::DynamicVector<double> tRolVec(tRowVec);
 
     // Jacobian is identity matrix
     const std::vector<double> tGold = tRowVec;
-    const pf::Core::DynamicVector<double> tRes = tRolVec * tJacobian;
+    const linear_algebra::DynamicVector<double> tRes = tRolVec * tJacobian;
     EXPECT_EQ(tRes.stdVector(), tGold);
 
     EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
@@ -59,13 +58,12 @@ TEST(DensityTopology, Jacobian)
 
 TEST(DensityTopology, GenerateMesh)
 {
-    namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
     const DensityTopology tDensityTopology(kDensityInput);
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
-    const pf::Core::DynamicVector<double> tDesignVec(tDesignVars);
+    const linear_algebra::DynamicVector<double> tDesignVec(tDesignVars);
 
     const auto tMeshProxy = tDensityTopology.generateMesh(tDesignVec);
     EXPECT_EQ(tMeshProxy.mNodalDensities, tDesignVars);
@@ -75,10 +73,9 @@ TEST(DensityTopology, GenerateMesh)
 
 TEST(DensityTopology, InitialGuess)
 {
-    namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const pf::Core::DynamicVector<double> tInitialGuess = DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
+    const linear_algebra::DynamicVector<double> tInitialGuess = DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
 
     EXPECT_EQ(tInitialGuess.size(), kExpectedDensitySize);
 
@@ -92,7 +89,6 @@ TEST(DensityTopology, InitialGuess)
 
 TEST(DensityTopology, Bounds)
 {
-    namespace pf = Plato::Functional;
     create_small_mesh(kDensityInput.mesh_name->mName);
 
     const auto [tLowerBounds, tUpperBounds] = DensityTopology::bounds(kDensityInput.mesh_name->mName);

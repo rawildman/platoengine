@@ -13,7 +13,7 @@
 namespace plato::functional::criteria::library
 {
 using CriterionFunction = Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 
 /// @brief Converts either objective or constraint input objects to a common CriterionInput struct
 /// @tparam Input Must be either Plato::objective or Plato::constraint input structs

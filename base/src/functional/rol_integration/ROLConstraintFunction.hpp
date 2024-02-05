@@ -14,12 +14,12 @@ class ROLConstraintFunction : public ROL::Constraint<double>
 {
    public:
     using ROLPlatoFunction = Plato::Functional::Function<double,
-                                                         Plato::Functional::Core::DynamicVector<double>,
-                                                         const Plato::Functional::Core::DynamicVector<double>&>;
+                                                         linear_algebra::DynamicVector<double>,
+                                                         const linear_algebra::DynamicVector<double>&>;
 
     ///@brief Construct a new ROLConstraintFunction object
     ROLConstraintFunction(
-        criteria::library::Constraint<const Plato::Functional::Core::DynamicVector<double>&> aConstraint);
+        criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> aConstraint);
 
     ///@brief Evaluate and populate aConstraints with the constraints at a given control vector and tolerance
     void value(ROL::Vector<double>& aConstraints, const ROL::Vector<double>& aControl, double& aTolerance) override;

@@ -9,18 +9,18 @@
 namespace plato::functional::rol_integration::unittest
 {
 [[nodiscard]] inline auto to_dynamic_vector(const Plato::Functional::Test::TwoDVector& aX)
-    -> Plato::Functional::Core::DynamicVector<double>
+    -> linear_algebra::DynamicVector<double>
 {
-    return Plato::Functional::Core::DynamicVector<double>{std::vector{aX(0), aX(1)}};
+    return linear_algebra::DynamicVector<double>{std::vector{aX(0), aX(1)}};
 }
 
 [[nodiscard]] inline auto make_rosenbrock_dynamic_vector_function(
     const Plato::Functional::Test::Rosenbrock& aRosenbrock)
 {
     return Plato::Functional::make_function(
-        [rosenbrock = aRosenbrock](const Plato::Functional::Core::DynamicVector<double>& x)
+        [rosenbrock = aRosenbrock](const linear_algebra::DynamicVector<double>& x)
         { return rosenbrock.f(x[0], x[1]); },
-        [rosenbrock = aRosenbrock](const Plato::Functional::Core::DynamicVector<double>& x)
+        [rosenbrock = aRosenbrock](const linear_algebra::DynamicVector<double>& x)
         { return to_dynamic_vector(rosenbrock.df(x[0], x[1])); });
 }
 

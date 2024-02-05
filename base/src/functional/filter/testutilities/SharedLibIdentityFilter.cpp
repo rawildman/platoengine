@@ -9,8 +9,8 @@ Plato::Functional::MeshProxy SharedLibIdentityFilter::filter(const Plato::Functi
     return aMeshProxy;
 }
 
-Plato::Functional::Core::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVector(
-    const Plato::Functional::MeshProxy&, const Plato::Functional::Core::DynamicVector<double>& aV) const
+linear_algebra::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVector(
+    const Plato::Functional::MeshProxy&, const linear_algebra::DynamicVector<double>& aV) const
 {
     return aV;
 }

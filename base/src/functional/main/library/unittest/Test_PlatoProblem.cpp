@@ -28,7 +28,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     const auto tGeometry = geometry::library::make_geometry_data(tData.geometry());
 
     // Test Geometry
-    const auto tBoundingBox = pf::Core::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+    const auto tBoundingBox = linear_algebra::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
     const pf::MeshProxy tGeomProxy = tGeometry.mCompute.f(tBoundingBox);
     const pf::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometry.mCompute.f(tBoundingBox);
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);

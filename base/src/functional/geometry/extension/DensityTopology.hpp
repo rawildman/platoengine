@@ -31,19 +31,19 @@ class DensityTopology
     explicit DensityTopology(const Plato::density_topology& aInput);
 
     [[nodiscard]] Plato::Functional::MeshProxy generateMesh(
-        const Plato::Functional::Core::DynamicVector<double>& aDesignParameter) const;
+        const linear_algebra::DynamicVector<double>& aDesignParameter) const;
 
-    [[nodiscard]] Plato::Functional::JacobianMultiplier jacobian(
-        const Plato::Functional::Core::DynamicVector<double>& aDesignParameter) const;
+    [[nodiscard]] linear_algebra::JacobianMultiplier jacobian(
+        const linear_algebra::DynamicVector<double>& aDesignParameter) const;
 
-    [[nodiscard]] static Plato::Functional::Core::DynamicVector<double> initialGuess(
+    [[nodiscard]] static linear_algebra::DynamicVector<double> initialGuess(
         const std::filesystem::path& aMeshFileName);
 
     [[nodiscard]] static std::pair<std::vector<double>, std::vector<double>> bounds(
         const std::filesystem::path& aMeshFileName);
 
     static void output(const std::filesystem::path& aInputMeshName,
-                       const Plato::Functional::Core::DynamicVector<double>& aSolution,
+                       const linear_algebra::DynamicVector<double>& aSolution,
                        const std::filesystem::path& aOutputMeshName);
 
    private:
@@ -55,8 +55,8 @@ class DensityTopology
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                   Plato::Functional::JacobianMultiplier,
-                                   const Plato::Functional::Core::DynamicVector<double>&>;
+                                   linear_algebra::JacobianMultiplier,
+                                   const linear_algebra::DynamicVector<double>&>;
 
 namespace detail
 {

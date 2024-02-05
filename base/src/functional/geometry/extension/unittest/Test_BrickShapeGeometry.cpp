@@ -10,6 +10,7 @@
 #include "JacobianColumnEvaluator.hpp"
 #include "MeshProxy.hpp"
 #include "STKUtilities.hpp"
+
 namespace plato::functional::geometry::extension::unittest
 {
 TEST(Brick, CenterAndDims)
@@ -102,20 +103,19 @@ TEST(Brick, SensitivityLengthZ)
 
 TEST(BrickSensitivities, JacobianEvaluator)
 {
-    namespace pf = Plato::Functional;
-    const pf::JacobianColumnEvaluator tJacobian = {
+    const linear_algebra::JacobianColumnEvaluator tJacobian = {
         /*.mColumns=*/6,
-        /*.mX=*/pf::Core::DynamicVector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
-        /*.mColumnFunction=*/[](unsigned int i, pf::Core::DynamicVector<double>) {
-            return pf::Core::DynamicVector<double>(detail::sensitivities(i));
+        /*.mX=*/linear_algebra::DynamicVector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+        /*.mColumnFunction=*/[](unsigned int i, linear_algebra::DynamicVector<double>) {
+            return linear_algebra::DynamicVector<double>(detail::sensitivities(i));
         }};
 
     std::vector<double> tVec(24, 0.0);
     std::iota(tVec.begin(), tVec.end(), 1.0);
-    const pf::Core::DynamicVector<double> tRolvec(tVec);
+    const linear_algebra::DynamicVector<double> tRolvec(tVec);
 
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const pf::Core::DynamicVector<double> tRes = tRolvec * tJacobian;
+    const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
     EXPECT_EQ(tRes.stdVector(), tGold);
 }
 
@@ -153,7 +153,7 @@ TEST(Brick, ConvertDesignParametersToROLStdVector)
                                                /*.dimension_x = */ 2,
                                                /*.dimension_y = */ 4,
                                                /*.dimension_z = */ 6};
-    const pf::Core::DynamicVector<double> tResult = detail::to_dynamic_vector(tDesignParameters);
+    const linear_algebra::DynamicVector<double> tResult = detail::to_dynamic_vector(tDesignParameters);
 
     const std::vector<double> tGold{tDesignParameters.center_x,    tDesignParameters.center_y,
                                     tDesignParameters.center_z,    tDesignParameters.dimension_x,
@@ -164,7 +164,6 @@ TEST(Brick, ConvertDesignParametersToROLStdVector)
 
 TEST(Brick, Jacobian)
 {
-    namespace pf = Plato::Functional;
     const std::string tFileName = "brick.exo";
 
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
@@ -175,16 +174,16 @@ TEST(Brick, Jacobian)
                                                /*.dimension_z = */ 6};
 
     const BrickShapeGeometry tBrick(tFileName);
-    const pf::JacobianColumnEvaluator tJacobian = tBrick.jacobian(tDesignParameters);
+    const linear_algebra::JacobianColumnEvaluator tJacobian = tBrick.jacobian(tDesignParameters);
 
     constexpr unsigned int tNumNodes = 8;
     constexpr unsigned int tNumCoordinates = 3;
     std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
     std::iota(tVec.begin(), tVec.end(), 1.0);
-    const pf::Core::DynamicVector<double> tRolvec(tVec);
+    const linear_algebra::DynamicVector<double> tRolvec(tVec);
 
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const pf::Core::DynamicVector<double> tRes = tRolvec * tJacobian;
+    const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
     EXPECT_EQ(tRes.stdVector(), tGold);
 }
 
@@ -198,7 +197,7 @@ TEST(Brick, ToROLStdVector)
                                                /*.dimension_y = */ 4,
                                                /*.dimension_z = */ 6};
 
-    const pf::Core::DynamicVector<double> tAsDynamicVector = detail::to_dynamic_vector(tDesignParameters);
+    const linear_algebra::DynamicVector<double> tAsDynamicVector = detail::to_dynamic_vector(tDesignParameters);
     EXPECT_EQ(tDesignParameters.center_x, tAsDynamicVector.stdVector().at(0));
     EXPECT_EQ(tDesignParameters.center_y, tAsDynamicVector.stdVector().at(1));
     EXPECT_EQ(tDesignParameters.center_z, tAsDynamicVector.stdVector().at(2));

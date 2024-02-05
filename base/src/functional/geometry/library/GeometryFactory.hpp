@@ -15,10 +15,10 @@ struct PlatoInput;
 
 namespace plato::functional::geometry::library
 {
-using DesignParameters = Plato::Functional::Core::DynamicVector<double>;
+using DesignParameters = linear_algebra::DynamicVector<double>;
 using GeometryFunction = Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                                     Plato::Functional::JacobianMultiplier,
-                                                     const Plato::Functional::Core::DynamicVector<double>&>;
+                                                     linear_algebra::JacobianMultiplier,
+                                                     const linear_algebra::DynamicVector<double>&>;
 
 /// @brief Factory function for creating all geometry data, including a GeometryFunction, an initial guess,
 ///  the bound constraints, and an output function.

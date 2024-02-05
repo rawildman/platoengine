@@ -22,7 +22,7 @@ TEST(ROLConstraintFunction, ConstraintValue)
 
     constexpr bool tIsLinear = false;
     auto tROLConstraintFunction =
-        ROLConstraintFunction{criteria::library::Constraint<const pf::Core::DynamicVector<double>&>{
+        ROLConstraintFunction{criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>{
             "name", make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
     auto tConstraintsVector = ROL::StdVector<double>{.0};
@@ -48,7 +48,7 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
 
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        ROLConstraintFunction{criteria::library::Constraint<const pf::Core::DynamicVector<double>&>{
+        ROLConstraintFunction{criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>{
             "name", make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget, tIsLinear}};
 
     const auto tControls = ROL::StdVector<double>{tControlValue, tControlValue};
@@ -82,7 +82,7 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     auto tDirection = ROL::StdVector<double>{tDual};
     constexpr bool tIsLinear = true;
     auto tROLConstraintFunction =
-        ROLConstraintFunction{criteria::library::Constraint<const pf::Core::DynamicVector<double>&>{
+        ROLConstraintFunction{criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>{
             std::string{tConstraintName}, make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}), tTarget,
             tIsLinear}};
 

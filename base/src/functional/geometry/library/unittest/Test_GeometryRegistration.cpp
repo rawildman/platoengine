@@ -14,16 +14,16 @@ namespace
 [[nodiscard]] auto make_test_geometry_function() -> FactoryTypes::Compute
 {
     return Plato::Functional::make_function(
-        [](const Plato::Functional::Core::DynamicVector<double>&) { return Plato::Functional::MeshProxy{}; },
-        [](const Plato::Functional::Core::DynamicVector<double>&) { return Plato::Functional::JacobianMultiplier{}; });
+        [](const linear_algebra::DynamicVector<double>&) { return Plato::Functional::MeshProxy{}; },
+        [](const linear_algebra::DynamicVector<double>&) { return linear_algebra::JacobianMultiplier{}; });
 }
 
 [[maybe_unused]] static auto kTestGeometryRegistration = GeometryRegistration{
     "test", [](const ValidatedGeometryInput&)
     {
-        return FactoryTypes{make_test_geometry_function(), Plato::Functional::Core::DynamicVector<double>{},
+        return FactoryTypes{make_test_geometry_function(), linear_algebra::DynamicVector<double>{},
                             std::make_pair(std::vector<double>{}, std::vector<double>{}),
-                            std::function<void(const Plato::Functional::Core::DynamicVector<double>&)>{}};
+                            std::function<void(const linear_algebra::DynamicVector<double>&)>{}};
     }};
 }  // namespace
 

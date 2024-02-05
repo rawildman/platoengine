@@ -18,11 +18,11 @@ using ValidatedObjectives = Plato::Functional::Core::ValidatedInputTypeWrapper<
     std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>>;
 
 using ObjectiveFunction = Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 using AggregateObjective = Plato::Functional::
-    Aggregate<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Aggregate<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 using ParallelAggregateObjective = Plato::Functional::
-    ParallelAggregate<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    ParallelAggregate<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 
 namespace detail
 {

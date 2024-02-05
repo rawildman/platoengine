@@ -43,7 +43,7 @@ void OptimizationProblem::gradientCheck() const
     std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    mROLProblem->getObjective()->checkGradient(Plato::Functional::to_rol_vector(mProblem.mGeometry.mInitialGuess),
+    mROLProblem->getObjective()->checkGradient(linear_algebra::to_rol_vector(mProblem.mGeometry.mInitialGuess),
                                                generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
@@ -83,7 +83,7 @@ void OptimizationProblem::sensitivityCheck() const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
-    tSensitivityObjective->checkGradient(Plato::Functional::to_rol_vector(mProblem.mGeometry.mInitialGuess),
+    tSensitivityObjective->checkGradient(linear_algebra::to_rol_vector(mProblem.mGeometry.mInitialGuess),
                                          generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
@@ -98,7 +98,7 @@ void OptimizationProblem::outputResult() const
 {
     if (mCommunicator.rank() == 0)
     {
-        mProblem.mGeometry.mOutput(Plato::Functional::to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
+        mProblem.mGeometry.mOutput(linear_algebra::to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
     }
 }
 

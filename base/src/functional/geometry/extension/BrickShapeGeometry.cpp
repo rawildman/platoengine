@@ -28,9 +28,9 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
     return tInput.mesh_name.value().mName;
 }
 
-[[nodiscard]] std::function<void(const Plato::Functional::Core::DynamicVector<double>&)> make_output()
+[[nodiscard]] std::function<void(const linear_algebra::DynamicVector<double>&)> make_output()
 {
-    return [](const Plato::Functional::Core::DynamicVector<double>& aSolution)
+    return [](const linear_algebra::DynamicVector<double>& aSolution)
     { return BrickShapeGeometry::output(aSolution); };
 }
 
@@ -60,17 +60,17 @@ Plato::Functional::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign&
     return Plato::Functional::MeshProxy{mFileName, {}};
 }
 
-Plato::Functional::JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
+linear_algebra::JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
 {
-    return Plato::Functional::JacobianColumnEvaluator{
+    return linear_algebra::JacobianColumnEvaluator{
         /*.mColumns=*/kNumDesignParameters,
         /*.mX=*/detail::to_dynamic_vector(aDesignParameters),
-        /*.mColumnFunction=*/[](unsigned int i, const Plato::Functional::Core::DynamicVector<double>&) {
-            return Plato::Functional::Core::DynamicVector<double>(detail::sensitivities(i));
+        /*.mColumnFunction=*/[](unsigned int i, const linear_algebra::DynamicVector<double>&) {
+            return linear_algebra::DynamicVector<double>(detail::sensitivities(i));
         }};
 }
 
-Plato::Functional::Core::DynamicVector<double> BrickShapeGeometry::initialGuess()
+linear_algebra::DynamicVector<double> BrickShapeGeometry::initialGuess()
 {
     return detail::to_dynamic_vector(BrickDesign{});
 }
@@ -80,7 +80,7 @@ std::pair<std::vector<double>, std::vector<double>> BrickShapeGeometry::bounds()
     return {kLowerBounds, kUpperBounds};
 }
 
-void BrickShapeGeometry::output(const Plato::Functional::Core::DynamicVector<double>& aSolution)
+void BrickShapeGeometry::output(const linear_algebra::DynamicVector<double>& aSolution)
 {
     std::cout << "centers: " << aSolution[0] << " " << aSolution[1] << " " << aSolution[2] << std::endl;
     std::cout << "dimensions: " << aSolution[3] << " " << aSolution[4] << " " << aSolution[5] << std::endl;
@@ -88,13 +88,13 @@ void BrickShapeGeometry::output(const Plato::Functional::Core::DynamicVector<dou
 
 auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
     -> Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                   Plato::Functional::JacobianMultiplier,
-                                   const Plato::Functional::Core::DynamicVector<double>&>
+                                   linear_algebra::JacobianMultiplier,
+                                   const linear_algebra::DynamicVector<double>&>
 {
     return Plato::Functional::make_function(
-        [tBrickShapeGeometry = aBrickShapeGeometry](const Plato::Functional::Core::DynamicVector<double>& x)
+        [tBrickShapeGeometry = aBrickShapeGeometry](const linear_algebra::DynamicVector<double>& x)
         { return tBrickShapeGeometry.generateMesh(detail::to_design_parameters(x)); },
-        [tBrickShapeGeometry = aBrickShapeGeometry](const Plato::Functional::Core::DynamicVector<double>& x)
+        [tBrickShapeGeometry = aBrickShapeGeometry](const linear_algebra::DynamicVector<double>& x)
         { return to_jacobian_multiplier(tBrickShapeGeometry.jacobian(detail::to_design_parameters(x))); });
 }
 
@@ -165,14 +165,14 @@ std::vector<double> sensitivities(const unsigned int aParameterIndex)
     return sensitive;
 }
 
-Plato::Functional::Core::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
+linear_algebra::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
 {
-    return Plato::Functional::Core::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
+    return linear_algebra::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
                                                           aDesignParameters.center_z,    aDesignParameters.dimension_x,
                                                           aDesignParameters.dimension_y, aDesignParameters.dimension_z};
 }
 
-BrickDesign to_design_parameters(const Plato::Functional::Core::DynamicVector<double>& aDesignParameter)
+BrickDesign to_design_parameters(const linear_algebra::DynamicVector<double>& aDesignParameter)
 {
     assert(aDesignParameter.size() == kNumDesignParameters);
     return BrickDesign{/*.center_x=*/aDesignParameter[0],

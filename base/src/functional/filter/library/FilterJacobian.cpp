@@ -6,7 +6,7 @@
 
 namespace plato::functional::filter::library
 {
-Plato::Functional::Core::DynamicVector<double> operator*(const Plato::Functional::Core::DynamicVector<double>& aV,
+linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVector<double>& aV,
                                                          const FilterJacobian& aJacobian)
 {
     assert(aJacobian.mFilter);

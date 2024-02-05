@@ -5,7 +5,7 @@
 
 #include "DynamicVector.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::linear_algebra
 {
 struct JacobianMultiplier;
 
@@ -16,22 +16,21 @@ struct JacobianMultiplier;
 struct JacobianColumnEvaluator
 {
     /// @return Column with index @a aIndex.
-    [[nodiscard]] Core::DynamicVector<double> column(const unsigned int aIndex) const;
+    [[nodiscard]] DynamicVector<double> column(const unsigned int aIndex) const;
 
-    using ColumnFunction = std::function<Core::DynamicVector<double>(unsigned int, const Core::DynamicVector<double>&)>;
+    using ColumnFunction = std::function<DynamicVector<double>(unsigned int, const DynamicVector<double>&)>;
 
     unsigned int mColumns = 0;
-    Core::DynamicVector<double> mX;
+    DynamicVector<double> mX;
     ColumnFunction mColumnFunction;
 };
 
 /// Implements multiplication of a row vector @a aX with the Jacobian matrix represented by @a aA
-[[nodiscard]] Core::DynamicVector<double> operator*(const Core::DynamicVector<double>& aX,
-                                                    const JacobianColumnEvaluator& aA);
+[[nodiscard]] DynamicVector<double> operator*(const DynamicVector<double>& aX, const JacobianColumnEvaluator& aA);
 
 /// @brief Creates a JacobianMultiplier from @a aJacobianColumnEvaluator
 JacobianMultiplier to_jacobian_multiplier(JacobianColumnEvaluator aJacobianColumnEvaluator);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::linear_algebra
 
 #endif

@@ -12,14 +12,13 @@ ROLObjectiveFunction::ROLObjectiveFunction(ROLPlatoFunction aROLPlatoFunction) :
 
 double ROLObjectiveFunction::value(const ROL::Vector<double>& aControls, double&)
 {
-    return mFunction.f(Plato::Functional::to_dynamic_vector(aControls));
+    return mFunction.f(linear_algebra::to_dynamic_vector(aControls));
 }
 
 void ROLObjectiveFunction::gradient(ROL::Vector<double>& aGradient, const ROL::Vector<double>& aControls, double&)
 {
-    Plato::Functional::Core::DynamicVector<double> tLocalGradient =
-        mFunction.df(Plato::Functional::to_dynamic_vector(aControls));
-    Plato::Functional::assign_vector(aGradient, std::move(tLocalGradient).stdVector());
+    linear_algebra::DynamicVector<double> tLocalGradient = mFunction.df(linear_algebra::to_dynamic_vector(aControls));
+    linear_algebra::assign_vector(aGradient, std::move(tLocalGradient).stdVector());
 }
 
 }  // namespace plato::functional::rol_integration

@@ -13,8 +13,8 @@ class ROLObjectiveFunction : public ROL::Objective<double>
 {
    public:
     using ROLPlatoFunction = Plato::Functional::Function<double,
-                                                         Plato::Functional::Core::DynamicVector<double>,
-                                                         const Plato::Functional::Core::DynamicVector<double> &>;
+                                                         linear_algebra::DynamicVector<double>,
+                                                         const linear_algebra::DynamicVector<double> &>;
 
     ///@brief Construct a new ROLObjectiveFunction object
     explicit ROLObjectiveFunction(ROLPlatoFunction aROLPlatoFunction);

@@ -46,7 +46,7 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
         [&aProblem](const plato::functional::criteria::library::Constraint<const Plato::Functional::MeshProxy&>&
                         aConstraintData)
         {
-            plato::functional::criteria::library::Constraint<const Plato::Functional::Core::DynamicVector<double>&>
+            plato::functional::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>
                 tConstraint{aConstraintData.mName,
                             compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
                             aConstraintData.mConstraintTarget, aConstraintData.mLinear};
@@ -67,7 +67,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
 {
     auto tROLProblem =
         std::make_unique<ROL::Problem<double>>(ROL::Ptr<ROL::Objective<double>>(make_rol_objective(aProblem).release()),
-                                               Plato::Functional::make_rol_vector(aProblem.mGeometry.mInitialGuess));
+                                               linear_algebra::make_rol_vector(aProblem.mGeometry.mInitialGuess));
     tROLProblem->addBoundConstraint(make_rol_bound_constraint(aProblem.mGeometry.mBounds));
     for (auto& tConstraint : make_rol_constraints(aProblem))
     {

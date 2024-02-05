@@ -25,7 +25,7 @@ class SharedLibCriterion
 
     [[nodiscard]] double f(const Plato::Functional::MeshProxy& aMesh) const;
 
-    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> df(const Plato::Functional::MeshProxy& aMesh) const;
+    [[nodiscard]] linear_algebra::DynamicVector<double> df(const Plato::Functional::MeshProxy& aMesh) const;
 
    private:
     std::filesystem::path mSharedLibPath;
@@ -33,7 +33,7 @@ class SharedLibCriterion
 };
 
 [[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion) -> Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 
 }  // namespace plato::functional::criteria::extension
 

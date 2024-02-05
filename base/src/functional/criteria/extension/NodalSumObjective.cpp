@@ -23,17 +23,17 @@ double NodalSumObjective::f(const Plato::Functional::MeshProxy& aMeshProxy) cons
     return std::accumulate(tCoordinates.begin(), tCoordinates.end(), 0.0);
 }
 
-Plato::Functional::Core::DynamicVector<double> NodalSumObjective::df(
+linear_algebra::DynamicVector<double> NodalSumObjective::df(
     const Plato::Functional::MeshProxy& aMeshProxy) const
 {
     auto tBulk = Plato::Functional::read_mesh_bulk_data(aMeshProxy.mFileName.string());
     std::vector<double> tCoordinates = Plato::Functional::nodal_coordinates(tBulk);
     std::fill(tCoordinates.begin(), tCoordinates.end(), 1.0);
-    return Plato::Functional::Core::DynamicVector<double>(std::move(tCoordinates));
+    return linear_algebra::DynamicVector<double>(std::move(tCoordinates));
 }
 
 auto make_nodal_sum_function() -> Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>
 {
     return Plato::Functional::make_function(
         [](const Plato::Functional::MeshProxy& mesh) { return NodalSumObjective{}.f(mesh); },

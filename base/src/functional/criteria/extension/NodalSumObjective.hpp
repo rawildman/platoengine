@@ -12,13 +12,13 @@ namespace plato::functional::criteria::extension
 struct NodalSumObjective
 {
     [[nodiscard]] double f(const Plato::Functional::MeshProxy& aMeshProxy) const;
-    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> df(
+    [[nodiscard]] linear_algebra::DynamicVector<double> df(
         const Plato::Functional::MeshProxy& aMeshProxy) const;
 };
 
 /// @brief Creates a Function object from a NodalSumObjective
 [[nodiscard]] auto make_nodal_sum_function() -> Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 
 }  // namespace plato::functional::criteria::extension
 

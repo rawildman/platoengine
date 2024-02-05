@@ -20,8 +20,8 @@ class SharedLibIdentityFilter : public library::FilterInterface
    public:
     [[nodiscard]] Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
-                                                                  const Plato::Functional::Core::DynamicVector<double>& aV) const override;
+    [[nodiscard]] linear_algebra::DynamicVector<double> jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
+                                                                  const linear_algebra::DynamicVector<double>& aV) const override;
 };
 }  // namespace plato::functional::filter::testutilities
 

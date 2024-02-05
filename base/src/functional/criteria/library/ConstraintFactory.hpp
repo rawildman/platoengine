@@ -26,7 +26,7 @@ template <typename FunctionArg>
 struct Constraint
 {
     using ConstraintFunction =
-        Plato::Functional::Function<double, Plato::Functional::Core::DynamicVector<double>, FunctionArg>;
+        Plato::Functional::Function<double, linear_algebra::DynamicVector<double>, FunctionArg>;
 
     std::string mName;
     ConstraintFunction mConstraintFunction;

@@ -13,7 +13,7 @@ namespace
 {
     return Plato::Functional::make_function([](const Plato::Functional::MeshProxy&) { return 0.0; },
                                             [](const Plato::Functional::MeshProxy&) {
-                                                return Plato::Functional::Core::DynamicVector<double>{1.0, 2.0};
+                                                return linear_algebra::DynamicVector<double>{1.0, 2.0};
                                             });
 }
 

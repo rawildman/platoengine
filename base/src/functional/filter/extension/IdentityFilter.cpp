@@ -26,8 +26,8 @@ Plato::Functional::MeshProxy IdentityFilter::filter(const Plato::Functional::Mes
     return aMeshProxy;
 }
 
-Plato::Functional::Core::DynamicVector<double> IdentityFilter::jacobianTimesVector(
-    const Plato::Functional::MeshProxy& aMeshProxy, const Plato::Functional::Core::DynamicVector<double>& aV) const
+linear_algebra::DynamicVector<double> IdentityFilter::jacobianTimesVector(
+    const Plato::Functional::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const
 {
     const auto tVectorDimension = static_cast<std::size_t>(aV.size());
     const std::size_t tDensityDimension = aMeshProxy.mNodalDensities.size();

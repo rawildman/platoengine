@@ -3,12 +3,12 @@
 
 #include "DynamicVector.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::linear_algebra
 {
 /// @brief An object representing the multiplication of a row vector and a Jacobian matrix.
 struct JacobianMultiplier
 {
-    using JacobianTimesVectorFunction = std::function<Core::DynamicVector<double>(const Core::DynamicVector<double>&)>;
+    using JacobianTimesVectorFunction = std::function<DynamicVector<double>(const DynamicVector<double>&)>;
 
     unsigned int mNumColumns = 0;
     JacobianTimesVectorFunction mJacobianTimesVectorFunction;
@@ -16,11 +16,11 @@ struct JacobianMultiplier
 
 /// @brief Implementation of multiplication of a row vector @a aX
 template <typename Arg>
-[[nodiscard]] Core::DynamicVector<double> operator*(const Arg& aX, const JacobianMultiplier& aA)
+[[nodiscard]] DynamicVector<double> operator*(const Arg& aX, const JacobianMultiplier& aA)
 {
     return aA.mJacobianTimesVectorFunction(aX);
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::linear_algebra
 
 #endif

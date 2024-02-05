@@ -38,14 +38,14 @@ double SharedLibCriterion::f(const Plato::Functional::MeshProxy& aMesh) const
     return mCriterionFunction->value(aMesh);
 }
 
-Plato::Functional::Core::DynamicVector<double> SharedLibCriterion::df(const Plato::Functional::MeshProxy& aMesh) const
+linear_algebra::DynamicVector<double> SharedLibCriterion::df(const Plato::Functional::MeshProxy& aMesh) const
 {
     std::vector<double> tGradient = mCriterionFunction->gradient(aMesh);
-    return Plato::Functional::Core::DynamicVector<double>(std::move(tGradient));
+    return linear_algebra::DynamicVector<double>(std::move(tGradient));
 }
 
 auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion) -> Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>
 {
     return Plato::Functional::make_function(
         [aSharedLibCriterion](const Plato::Functional::MeshProxy& mesh) { return aSharedLibCriterion.f(mesh); },

@@ -13,21 +13,25 @@ namespace Plato
 {
 namespace Functional
 {
-struct JacobianMultiplier;
 struct MeshProxy;
 }  // namespace Functional
 }  // namespace Plato
+
+namespace plato::functional::linear_algebra
+{
+struct JacobianMultiplier;
+}
 
 namespace plato::functional::geometry::library
 {
 struct FactoryTypes
 {
     using Compute = Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                                Plato::Functional::JacobianMultiplier,
-                                                const Plato::Functional::Core::DynamicVector<double>&>;
-    using InitialGuess = Plato::Functional::Core::DynamicVector<double>;
+                                                linear_algebra::JacobianMultiplier,
+                                                const linear_algebra::DynamicVector<double>&>;
+    using InitialGuess = linear_algebra::DynamicVector<double>;
     using Bounds = std::pair<std::vector<double>, std::vector<double>>;
-    using Output = std::function<void(const Plato::Functional::Core::DynamicVector<double>&)>;
+    using Output = std::function<void(const linear_algebra::DynamicVector<double>&)>;
 
     Compute mCompute;
     InitialGuess mInitialGuess;

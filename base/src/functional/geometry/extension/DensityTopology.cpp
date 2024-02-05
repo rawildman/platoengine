@@ -15,10 +15,10 @@ constexpr double kInitialDensity = 0.5;
 constexpr double kDensityLowerBound = 0.0;
 constexpr double kDensityUpperBound = 1.0;
 
-std::function<void(const Plato::Functional::Core::DynamicVector<double>&)> make_topology_output(
+std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_output(
     const std::filesystem::path& aInputMeshName, const std::filesystem::path& aOutputMeshName)
 {
-    return [aInputMeshName, aOutputMeshName](const Plato::Functional::Core::DynamicVector<double>& aSolution)
+    return [aInputMeshName, aOutputMeshName](const linear_algebra::DynamicVector<double>& aSolution)
     { return DensityTopology::output(aInputMeshName, aSolution, aOutputMeshName); };
 }
 
@@ -49,25 +49,25 @@ DensityTopology::DensityTopology(const Plato::density_topology& aInput)
 }
 
 Plato::Functional::MeshProxy DensityTopology::generateMesh(
-    const Plato::Functional::Core::DynamicVector<double>& aDesignParameters) const
+    const linear_algebra::DynamicVector<double>& aDesignParameters) const
 {
     return mFilter.f(Plato::Functional::MeshProxy{mFileName, aDesignParameters.stdVector()});
 }
 
-Plato::Functional::JacobianMultiplier DensityTopology::jacobian(
-    const Plato::Functional::Core::DynamicVector<double>& aDesignParameters) const
+linear_algebra::JacobianMultiplier DensityTopology::jacobian(
+    const linear_algebra::DynamicVector<double>& aDesignParameters) const
 {
-    return Plato::Functional::JacobianMultiplier{
+    return linear_algebra::JacobianMultiplier{
         /*.mNumColumns=*/mNumDesignParameters,
         /*.mJacobianTimesVectorFunction=*/
         [tMeshProxy = Plato::Functional::MeshProxy{mFileName, aDesignParameters.stdVector()},
-         this](const Plato::Functional::Core::DynamicVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
+         this](const linear_algebra::DynamicVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
 }
 
-Plato::Functional::Core::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
+linear_algebra::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
 {
     const unsigned int tNumNodes = Plato::Functional::read_mesh_node_size(aMeshFileName);
-    return Plato::Functional::Core::DynamicVector<double>(tNumNodes, kInitialDensity);
+    return linear_algebra::DynamicVector<double>(tNumNodes, kInitialDensity);
 }
 
 std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(const std::filesystem::path& aMeshFileName)
@@ -77,7 +77,7 @@ std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(cons
 }
 
 void DensityTopology::output(const std::filesystem::path& aInputMeshName,
-                             const Plato::Functional::Core::DynamicVector<double>& aSolution,
+                             const linear_algebra::DynamicVector<double>& aSolution,
                              const std::filesystem::path& aOutputMeshName)
 {
     Plato::Functional::write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
@@ -85,13 +85,13 @@ void DensityTopology::output(const std::filesystem::path& aInputMeshName,
 
 auto make_topology_geometry(const DensityTopology& aDensityTopology)
     -> Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                   Plato::Functional::JacobianMultiplier,
-                                   const Plato::Functional::Core::DynamicVector<double>&>
+                                   linear_algebra::JacobianMultiplier,
+                                   const linear_algebra::DynamicVector<double>&>
 {
     return Plato::Functional::make_function(
-        [tDensityTopology = aDensityTopology](const Plato::Functional::Core::DynamicVector<double>& x)
+        [tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
         { return tDensityTopology.generateMesh(x); },
-        [tDensityTopology = aDensityTopology](const Plato::Functional::Core::DynamicVector<double>& x)
+        [tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
         { return tDensityTopology.jacobian(x); });
 }
 

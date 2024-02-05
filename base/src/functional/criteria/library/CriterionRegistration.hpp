@@ -23,7 +23,7 @@ struct CriterionInput
 };
 
 using CriterionFunction = Plato::Functional::
-    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 using CriterionRegistration = Plato::Functional::Registration<CriterionFunction, CriterionInput>;
 
 bool is_criterion_function_registered(const std::string_view aFunctionName);

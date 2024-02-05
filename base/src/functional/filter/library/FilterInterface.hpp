@@ -40,9 +40,9 @@ class FilterInterface
 
     /// @brief Implements multiplication of row vector @a aV and the Jacobian of the
     ///  filter computed at the argument @a aMeshProxy.
-    [[nodiscard]] virtual Plato::Functional::Core::DynamicVector<double> jacobianTimesVector(
+    [[nodiscard]] virtual linear_algebra::DynamicVector<double> jacobianTimesVector(
         const Plato::Functional::MeshProxy& aMeshProxy,
-        const Plato::Functional::Core::DynamicVector<double>& aV) const = 0;
+        const linear_algebra::DynamicVector<double>& aV) const = 0;
 
     FilterInterface(const FilterInterface&) = delete;
     FilterInterface& operator=(const FilterInterface&) = delete;
