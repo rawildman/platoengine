@@ -16,9 +16,9 @@
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 {
     namespace pf = Plato::Functional;
-    const std::string tInput = pf::TestUtilities::create_valid_brick_shape_geometry_string() +
-                               pf::TestUtilities::create_valid_example_objective_string() +
-                               pf::TestUtilities::create_valid_example_optimization_parameters_string();
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::functional::test_utilities::create_valid_example_objective_string() +
+                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
 
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
@@ -43,7 +43,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
     namespace pf = Plato::Functional;
     constexpr double tWeight = 42.0;
 
-    const std::string tInput = pf::TestUtilities::create_valid_brick_shape_geometry_string() +
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
                                " begin objective test"
                                " active true"
                                " app nodal_sum"
@@ -51,7 +51,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
                                " input_files test-input.inp"
                                " aggregation_weight " +
                                std::to_string(tWeight) + " objective_type minimize" + " end" +
-                               pf::TestUtilities::create_valid_example_optimization_parameters_string();
+                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
 
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
@@ -74,8 +74,8 @@ TEST(PlatoProblem, InputFileToROLObjective)
 TEST(PlatoProblem, InputFileToROLConstraint)
 {
     namespace pf = Plato::Functional;
-    const std::string tInput = pf::TestUtilities::create_valid_brick_shape_geometry_string() +
-                               pf::TestUtilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::functional::test_utilities::create_valid_example_objective_string() +
                                R"(
                                 begin constraint test
                                   active true
@@ -83,7 +83,7 @@ TEST(PlatoProblem, InputFileToROLConstraint)
                                   equal_to 2
                                 end
                               )" +
-                               pf::TestUtilities::create_valid_example_optimization_parameters_string();
+                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
 
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
 
@@ -107,8 +107,8 @@ TEST(PlatoProblem, InputFileToROLSolver)
 {
     namespace pf = Plato::Functional;
 
-    const std::string tInput = pf::TestUtilities::create_valid_brick_shape_geometry_string() +
-                               pf::TestUtilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::functional::test_utilities::create_valid_example_objective_string() +
                                R"(
                                 begin constraint test
                                   active true
@@ -116,7 +116,7 @@ TEST(PlatoProblem, InputFileToROLSolver)
                                   equal_to 2
                                 end
                               )" +
-                               pf::TestUtilities::create_valid_example_optimization_parameters_string();
+                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
 
     const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
     const pf::PlatoProblem tPlatoProblem = pf::make_plato_problem(tData);

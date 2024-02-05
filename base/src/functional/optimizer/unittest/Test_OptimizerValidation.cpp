@@ -73,7 +73,7 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
 TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 {
     Plato::optimization_parameters tOptimizationParameters =
-        Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
+        plato::functional::test_utilities::create_valid_example_optimization_parameters();
 
     std::vector<std::string> tMessages;
     tMessages = validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
@@ -83,7 +83,7 @@ TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 {
     Plato::optimization_parameters tOptimizationParameters =
-        Plato::Functional::TestUtilities::create_valid_example_optimization_parameters();
+        plato::functional::test_utilities::create_valid_example_optimization_parameters();
     tOptimizationParameters.gradient_tolerance = -1;
     tOptimizationParameters.max_iterations = 0;
     tOptimizationParameters.step_tolerance = boost::none;
@@ -93,4 +93,4 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
     tMessages = pfv::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
 }
-}  // namespace plato::functional::optimizer
+}  // namespace plato::functional::optimizer::unittest

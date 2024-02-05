@@ -11,7 +11,7 @@ namespace plato::functional::integration_tests::serial
 TEST(CriterionFactory, ValidObjective)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pftu = Plato::Functional::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
@@ -26,7 +26,7 @@ TEST(CriterionFactory, ValidObjective)
 TEST(CriterionFactory, ValidConstraint)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pftu = Plato::Functional::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const std::string tConstraintInput = pftu::create_valid_example_constraint_string();
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
@@ -45,7 +45,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
 {
     namespace pf = Plato::Functional;
     namespace pfv = pf::Validation;
-    namespace pftu = pf::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const std::string tObjectiveInput = pftu::create_valid_example_custom_app_objective_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
@@ -75,7 +75,7 @@ TEST(CriterionRegistration, ConvertConstraintInput)
 {
     namespace pf = Plato::Functional;
     namespace pfv = pf::Validation;
-    namespace pftu = pf::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const std::string tConstraintInput = pftu::create_valid_example_constraint_string();
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
@@ -101,4 +101,4 @@ TEST(CriterionRegistration, ConvertConstraintInput)
         EXPECT_EQ(tConstraint.input_files->mList[tIndex], tCriterionInput.mInputFiles.mList[tIndex]);
     }
 }
-}
+}  // namespace plato::functional::integration_tests::serial

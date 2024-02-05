@@ -54,7 +54,7 @@ TEST(GeometryValidation, MeshName)
 {
     namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
-    tInput.mBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
+    tInput.mBrickShapeGeometry = plato::functional::test_utilities::create_valid_brick_shape_geometry();
 
     std::vector<std::string> tMessages;
     tMessages = plato::functional::geometry::library::validate_geometry(tInput, std::move(tMessages));
@@ -68,9 +68,9 @@ TEST(GeometryValidation, ValidInputCallsRightVariantTest)
 {
     namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
-    auto tDensityTopology = pf::TestUtilities::create_valid_density_topology_geometry();
+    auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
     tDensityTopology.mesh_name = Plato::FileName{"trigger_bogus_test"};
-    auto tBrickShapeGeometry = pf::TestUtilities::create_valid_brick_shape_geometry();
+    auto tBrickShapeGeometry = plato::functional::test_utilities::create_valid_brick_shape_geometry();
     std::vector<std::string> tMessages;
 
     tInput.mBrickShapeGeometry = tBrickShapeGeometry;

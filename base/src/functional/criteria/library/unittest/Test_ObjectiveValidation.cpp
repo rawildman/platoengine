@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "CriterionValidation.hpp"
+#include "InputBlocks.hpp"
 #include "InputGeneration.hpp"
 #include "ObjectiveValidation.hpp"
-#include "InputBlocks.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {
@@ -45,7 +45,7 @@ TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
 {
-    Plato::objective tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
+    Plato::objective tObjective = plato::functional::test_utilities::create_valid_example_objective();
     tObjective.app = boost::none;
     namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
@@ -67,7 +67,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 {
     namespace pfc = plato::functional::criteria::library;
-    const auto tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
+    const auto tObjective = plato::functional::test_utilities::create_valid_example_objective();
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
     std::vector<std::string> tMessages;
@@ -78,7 +78,7 @@ TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
 {
     namespace pfc = plato::functional::criteria::library;
-    auto tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
+    auto tObjective = plato::functional::test_utilities::create_valid_example_objective();
     tObjective.active = false;
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 

@@ -9,8 +9,8 @@ namespace Plato::Functional::Test
 {
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
-    const std::string tInput = TestUtilities::create_valid_brick_shape_geometry_string() +
-                               TestUtilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::functional::test_utilities::create_valid_example_objective_string() +
                                R"(
                                   begin optimization_parameters
                                     step_tolerance 10
@@ -41,8 +41,8 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     tParameterListToWrite.sublist("Status Test").set<double>("Step Tolerance", 0.25);
     Teuchos::writeParameterListToXmlFile(tParameterListToWrite, kFileName);
 
-    const std::string tInput = TestUtilities::create_valid_brick_shape_geometry_string() +
-                               TestUtilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::functional::test_utilities::create_valid_example_objective_string() +
                                "begin optimization_parameters"
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";

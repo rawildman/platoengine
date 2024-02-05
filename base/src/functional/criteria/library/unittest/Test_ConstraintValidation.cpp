@@ -2,8 +2,8 @@
 
 #include "ConstraintValidation.hpp"
 #include "CriterionValidation.hpp"
-#include "InputGeneration.hpp"
 #include "InputBlocks.hpp"
+#include "InputGeneration.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {
@@ -19,7 +19,7 @@ TEST(ConstraintValidation, ValidateEqualTo)
 TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
 {
     namespace pfv = Plato::Functional::Validation;
-    Plato::constraint tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
+    Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
     tMessages = pfv::validate(tConstraint, std::move(tMessages));
@@ -43,7 +43,7 @@ TEST(ConstraintValidation, ErrorMessagesTwoInvalidInput)
 TEST(ConstraintValidation, NoErrorMessagesTwoValidConstraints)
 {
     namespace pfc = plato::functional::criteria::library;
-    const auto tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
+    const auto tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     const std::vector<Plato::constraint> tInput{tConstraint, tConstraint};
 
     std::vector<std::string> tMessages;
@@ -54,7 +54,7 @@ TEST(ConstraintValidation, NoErrorMessagesTwoValidConstraints)
 TEST(ConstraintValidation, ErrorMessagesTwoInvalidConstraints)
 {
     namespace pfc = plato::functional::criteria::library;
-    auto tConstraint = Plato::Functional::TestUtilities::create_valid_example_constraint();
+    auto tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.equal_to = boost::none;
     auto tConstraintTwo = tConstraint;
     tConstraint.name = "bad-one";

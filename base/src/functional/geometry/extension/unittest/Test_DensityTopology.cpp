@@ -19,7 +19,7 @@ namespace plato::functional::geometry::extension::unittest
 {
 namespace
 {
-const auto kDensityInput = Plato::Functional::TestUtilities::create_valid_density_topology_geometry();
+const auto kDensityInput = plato::functional::test_utilities::create_valid_density_topology_geometry();
 
 constexpr int kExpectedDensitySize = 8;  // Based on mesh generation command below (1x1x1)
 

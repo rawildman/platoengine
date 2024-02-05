@@ -9,8 +9,8 @@
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
     namespace pf = Plato::Functional;
-    Plato::PlatoInput tInput = pf::TestUtilities::create_valid_example_input();
-    Plato::constraint tConstraint = pf::TestUtilities::create_valid_example_constraint();
+    Plato::PlatoInput tInput = plato::functional::test_utilities::create_valid_example_input();
+    Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.name = "eq";
     tConstraint.app = Plato::CodeOptions::kNodalSum;
     tConstraint.equal_to = 13;

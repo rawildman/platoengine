@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "Exception.hpp"
-#include "InputGeneration.hpp"
 #include "InputBlocks.hpp"
+#include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
 
 TEST(ValidatedInput, MakeValidInputWithInvalidInput)
@@ -16,5 +16,6 @@ TEST(ValidatedInput, MakeValidInputWithValidInput)
 {
     namespace pf = Plato::Functional;
     namespace pfv = Plato::Functional::Validation;
-    EXPECT_NO_THROW(const auto tValidatedInput = pfv::make_validated_input(pf::TestUtilities::create_valid_example_input()));
+    EXPECT_NO_THROW(const auto tValidatedInput =
+                        pfv::make_validated_input(plato::functional::test_utilities::create_valid_example_input()));
 }

@@ -10,7 +10,7 @@ namespace plato::functional::integration_tests::serial
 TEST(GeometryFactory, BrickGeometry)
 {
     namespace pf = Plato::Functional;
-    namespace pftu = pf::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const auto tRawInput =
         Plato::PlatoInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
@@ -31,10 +31,10 @@ TEST(GeometryFactory, BrickGeometry)
 TEST(GeometryFactory, BlockName)
 {
     namespace pf = Plato::Functional;
-    namespace pftu = pf::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     const pf::Validation::ValidatedInput tValidatedInput =
         pf::Validation::make_validated_input(pftu::create_valid_example_input());
     EXPECT_EQ(plato::functional::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
 }
-}
+}  // namespace plato::functional::integration_tests::serial

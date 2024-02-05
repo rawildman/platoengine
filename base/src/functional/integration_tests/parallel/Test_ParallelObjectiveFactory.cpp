@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "Exception.hpp"
+#include "InputGeneration.hpp"
 #include "ObjectiveFactory.hpp"
 #include "ValidatedInput.hpp"
-#include "InputGeneration.hpp"
 
 namespace plato::functional::integration_tests::parallel
 {
@@ -14,7 +14,7 @@ constexpr auto kNumRanks = int{4};
 Plato::Functional::Validation::ValidatedInput create_one_objective_test_input()
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pftu = Plato::Functional::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
@@ -30,7 +30,7 @@ Plato::Functional::Validation::ValidatedInput create_one_objective_test_input()
 
     return pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
-}
+}  // namespace
 
 TEST(ObjectiveFactory, MPISize)
 {
@@ -44,4 +44,4 @@ TEST(ObjectiveFactory, InvalidParallelAggregate)
 
     EXPECT_THROW(const pfv::ValidatedInput tData = create_one_objective_test_input(), Plato::Functional::Exception);
 }
-}
+}  // namespace plato::functional::integration_tests::parallel

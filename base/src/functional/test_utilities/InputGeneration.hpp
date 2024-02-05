@@ -7,7 +7,7 @@
 
 #include "InputBlocks.hpp"
 
-namespace Plato::Functional::TestUtilities
+namespace plato::functional::test_utilities
 {
 
 void create_input_file(const std::filesystem::path aTestFileName);
@@ -30,5 +30,5 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] Plato::optimization_parameters create_valid_example_optimization_parameters();
 [[nodiscard]] std::string create_valid_example_optimization_parameters_string();
 
-}  // namespace Plato::Functional::TestUtilities
+}  // namespace plato::functional::test_utilities
 #endif

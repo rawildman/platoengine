@@ -11,7 +11,7 @@ namespace plato::functional::filter::library::unittest
 
 TEST(FilterValidation, TypeExists)
 {
-    auto tDensityTopology = Plato::Functional::TestUtilities::create_valid_density_topology_geometry();
+    auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
 
     EXPECT_FALSE(validate_filter_type(tDensityTopology).has_value());
     tDensityTopology.filter_type = boost::none;

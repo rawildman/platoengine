@@ -12,7 +12,7 @@ namespace
 Plato::Functional::Validation::ValidatedInput create_two_objective_test_input()
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pftu = Plato::Functional::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
@@ -64,7 +64,7 @@ TEST(ObjectiveFactory, ValidParallelAggregate)
 TEST(ObjectiveFactory, ValidAggregateOneObjective)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pftu = Plato::Functional::TestUtilities;
+    namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
