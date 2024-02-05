@@ -8,7 +8,7 @@
 #include "ROLObjectiveFunction.hpp"
 #include "Rosenbrock.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::functional::rol_integration::unittest
 {
 TEST(ROLObjectiveFunction, RosenbrockObjectiveValueAndGradient)
 {

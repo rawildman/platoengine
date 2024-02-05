@@ -6,7 +6,7 @@
 #include "Rosenbrock.hpp"
 #include "TwoDTestTypes.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::functional::rol_integration::unittest
 {
 [[nodiscard]] inline auto to_dynamic_vector(const Plato::Functional::Test::TwoDVector& aX)
     -> Plato::Functional::Core::DynamicVector<double>

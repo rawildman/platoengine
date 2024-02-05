@@ -7,7 +7,7 @@
 #include "OptimizerValidation.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace plato::functional::optimizer
+namespace plato::functional::optimizer::unittest
 {
 TEST(OptimizerValidation, ValidateMaxIterations)
 {

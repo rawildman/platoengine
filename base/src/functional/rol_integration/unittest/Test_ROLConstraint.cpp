@@ -7,7 +7,7 @@
 #include "DynamicVectorRosenbrockFunction.hpp"
 #include "ROLConstraintFunction.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::functional::rol_integration::unittest
 {
 TEST(ROLConstraintFunction, ConstraintValue)
 {
