@@ -7,7 +7,7 @@
 #include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional::Validation
+namespace plato::functional::main::library
 {
 class ValidatedInput;
 
@@ -24,10 +24,11 @@ class ValidatedInput
 {
    public:
     using Geometry = plato::functional::geometry::library::ValidatedGeometryInput;
-    using Objectives = Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>>;
-    using Constraints =
-        Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
-    using OptimizationParameters = Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+    using Objectives = Plato::Functional::Core::ValidatedInputTypeWrapper<
+        std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>>;
+    using Constraints = Plato::Functional::Core::ValidatedInputTypeWrapper<
+        std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+    using OptimizationParameters = Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
    public:
     ValidatedInput(Plato::PlatoInput aInput, Key);
@@ -39,7 +40,8 @@ class ValidatedInput
 
    private:
     template <typename T>
-    static std::vector<Core::ValidatedInputTypeWrapper<T>> validatedVector(const std::vector<T>& aInputs);
+    static std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<T>> validatedVector(
+        const std::vector<T>& aInputs);
 
    private:
     Plato::PlatoInput mInput;
@@ -53,6 +55,6 @@ class ValidatedInput
 /// @brief Parse input from input string @a aInput and then validate the input
 [[nodiscard]] ValidatedInput parse_and_validate(const std::string_view aInput);
 
-}  // namespace Plato::Functional::Validation
+}  // namespace plato::functional::main::library
 
 #endif

@@ -5,7 +5,7 @@
 #include "OptimizerFactory.hpp"
 #include "ValidatedInput.hpp"
 
-namespace Plato::Functional::Test
+namespace plato::functional::main::library::unittest
 {
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
@@ -19,7 +19,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
                                   end
                               )";
 
-    const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
+    const ValidatedInput tData{make_validated_input(Plato::Functional::parse_input(tInput))};
 
     const auto tOPData = tData.optimizationParameters();
     ROL::ParameterList tParlist = plato::functional::optimizer::rol_parameter_list(tOPData);
@@ -47,7 +47,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";
 
-    const Validation::ValidatedInput tData{Validation::make_validated_input(parse_input(tInput))};
+    const ValidatedInput tData{make_validated_input(Plato::Functional::parse_input(tInput))};
     ROL::ParameterList tParameterListFromDisk =
         plato::functional::optimizer::rol_parameter_list(tData.optimizationParameters());
 
@@ -61,4 +61,4 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     std::filesystem::remove(kFileName);
 }
 
-}  // namespace Plato::Functional::Test
+}  // namespace plato::functional::main::library::unittest

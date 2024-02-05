@@ -3,27 +3,23 @@
 
 #include <utility>
 
-namespace Plato::Functional::Validation
+namespace plato::functional::main::library
 {
 class ValidatedInput;
 }
 
 namespace Plato::Functional::Core
 {
-
 template <typename InputType>
 class ValidatedInputTypeWrapper
 {
    public:
     using RawInputType = InputType;
 
-    const InputType& rawInput() const
-    {
-        return mRawInput;
-    }
+    const InputType& rawInput() const { return mRawInput; }
 
    private:
-    friend class Validation::ValidatedInput;
+    friend class plato::functional::main::library::ValidatedInput;
     ValidatedInputTypeWrapper(InputType aRawInput) : mRawInput(std::move(aRawInput)) {}
     InputType mRawInput;
 };

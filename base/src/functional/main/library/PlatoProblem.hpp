@@ -12,7 +12,7 @@
 #include "ROLObjectiveFunction.hpp"
 #include "ValidatedInput.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::main::library
 {
 ///@brief The struct that contains the functions used to create a ROL objective, as well as the ROL parameters to create
 /// a ROL problem
@@ -20,12 +20,12 @@ struct PlatoProblem
 {
     plato::functional::geometry::library::FactoryTypes mGeometry;
     plato::functional::criteria::library::ObjectiveFunction mObjective;
-    std::vector<plato::functional::criteria::library::Constraint<const MeshProxy&>> mConstraints;
+    std::vector<plato::functional::criteria::library::Constraint<const Plato::Functional::MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
 };
 
 ///@brief Convert validated parsed input into a populated PlatoProblem struct
-[[nodiscard]] PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData);
+[[nodiscard]] PlatoProblem make_plato_problem(const ValidatedInput& aData);
 
 ///@brief Create a ROL objective object from a PlatoProblem by composing the mGeometryFunction with the mObjective
 [[nodiscard]] std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_objective(
@@ -43,6 +43,6 @@ make_rol_constraints(const PlatoProblem& aProblem);
 /// Apply bound constraints, constraints, and finalize the ROL problem
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::main::library
 
 #endif

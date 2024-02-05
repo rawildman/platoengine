@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     {
         try
         {
-            Plato::Functional::OptimizationProblem tOptimizationProblem(argv[1]);
+            auto tOptimizationProblem = plato::functional::main::library::OptimizationProblem{argv[1]};
             tOptimizationProblem.optimize();
         }
         catch (const Plato::Functional::Exception& tError)

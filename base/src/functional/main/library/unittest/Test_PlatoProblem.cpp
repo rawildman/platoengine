@@ -13,17 +13,19 @@
 #include "PlatoProblem.hpp"
 #include "ValidatedInput.hpp"
 
+namespace plato::functional::main::library::unittest
+{
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 {
     namespace pf = Plato::Functional;
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
-                               plato::functional::test_utilities::create_valid_example_objective_string() +
-                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
+    const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
+                               test_utilities::create_valid_example_objective_string() +
+                               test_utilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
+    const ValidatedInput tData{parse_and_validate(tInput)};
 
-    const pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
-    const auto tGeometry = plato::functional::geometry::library::make_geometry_data(tData.geometry());
+    const PlatoProblem tProblem = make_plato_problem(tData);
+    const auto tGeometry = geometry::library::make_geometry_data(tData.geometry());
 
     // Test Geometry
     const auto tBoundingBox = pf::Core::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
@@ -32,7 +34,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
 
     // Test Objective
-    const auto tObjective = plato::functional::criteria::library::make_aggregate_objective_function(tData.objectives());
+    const auto tObjective = criteria::library::make_aggregate_objective_function(tData.objectives());
     EXPECT_EQ(tObjective.f(tGeomProxy), tProblem.mObjective.f(tGeomProxy));
 
     std::filesystem::remove(tGeomProxy.mFileName);
@@ -43,7 +45,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
     namespace pf = Plato::Functional;
     constexpr double tWeight = 42.0;
 
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
+    const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                " begin objective test"
                                " active true"
                                " app nodal_sum"
@@ -51,22 +53,21 @@ TEST(PlatoProblem, InputFileToROLObjective)
                                " input_files test-input.inp"
                                " aggregation_weight " +
                                std::to_string(tWeight) + " objective_type minimize" + " end" +
-                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
+    const ValidatedInput tData{parse_and_validate(tInput)};
 
-    pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
-    std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> tObjectiveFunction =
-        pf::make_rol_objective(tProblem);
+    PlatoProblem tProblem = make_plato_problem(tData);
+    std::unique_ptr<rol_integration::ROLObjectiveFunction> tObjectiveFunction = make_rol_objective(tProblem);
     const ROL::StdVector<double> tBoundingBox{0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
     double tTolerance = 1e-8;
 
     constexpr double tNodalSum = 12.0;
     EXPECT_DOUBLE_EQ(tObjectiveFunction->value(tBoundingBox, tTolerance), tWeight * tNodalSum);
 
-    plato::functional::geometry::extension::BrickDesign tDesign;
+    geometry::extension::BrickDesign tDesign;
     EXPECT_EQ(tProblem.mGeometry.mInitialGuess.stdVector(),
-              plato::functional::geometry::extension::detail::to_dynamic_vector(tDesign).stdVector());
+              geometry::extension::detail::to_dynamic_vector(tDesign).stdVector());
 
     std::filesystem::remove("my_mesh.exo");
 }
@@ -74,8 +75,8 @@ TEST(PlatoProblem, InputFileToROLObjective)
 TEST(PlatoProblem, InputFileToROLConstraint)
 {
     namespace pf = Plato::Functional;
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
-                               plato::functional::test_utilities::create_valid_example_objective_string() +
+    const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
+                               test_utilities::create_valid_example_objective_string() +
                                R"(
                                 begin constraint test
                                   active true
@@ -83,12 +84,12 @@ TEST(PlatoProblem, InputFileToROLConstraint)
                                   equal_to 2
                                 end
                               )" +
-                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
+    const ValidatedInput tData{parse_and_validate(tInput)};
 
-    pf::PlatoProblem tProblem = pf::make_plato_problem(tData);
-    const auto tConstraints = pf::make_rol_constraints(tProblem);
+    PlatoProblem tProblem = make_plato_problem(tData);
+    const auto tConstraints = make_rol_constraints(tProblem);
     ASSERT_EQ(tConstraints.size(), 1);
 
     const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
@@ -107,8 +108,8 @@ TEST(PlatoProblem, InputFileToROLSolver)
 {
     namespace pf = Plato::Functional;
 
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
-                               plato::functional::test_utilities::create_valid_example_objective_string() +
+    const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
+                               test_utilities::create_valid_example_objective_string() +
                                R"(
                                 begin constraint test
                                   active true
@@ -116,14 +117,13 @@ TEST(PlatoProblem, InputFileToROLSolver)
                                   equal_to 2
                                 end
                               )" +
-                               plato::functional::test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_optimization_parameters_string();
 
-    const pf::Validation::ValidatedInput tData{pf::Validation::parse_and_validate(tInput)};
-    const pf::PlatoProblem tPlatoProblem = pf::make_plato_problem(tData);
+    const ValidatedInput tData{parse_and_validate(tInput)};
+    const PlatoProblem tPlatoProblem = make_plato_problem(tData);
     Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
-    const auto tROLProblem = Teuchos::RCP{pf::make_rol_problem(tPlatoProblem).release()};
-    const ROL::Solver<double> tSolver =
-        plato::functional::optimizer::make_rol_solver(tROLOptions, std::move(tROLProblem));
+    const auto tROLProblem = Teuchos::RCP{make_rol_problem(tPlatoProblem).release()};
+    const ROL::Solver<double> tSolver = optimizer::make_rol_solver(tROLOptions, std::move(tROLProblem));
 
     EXPECT_EQ(tSolver.getAlgorithmState()->iter, 0);
 }
@@ -132,5 +132,6 @@ TEST(PlatoProblem, ParseAndValidateInvalidInput)
 {
     namespace pf = Plato::Functional;
     const std::string tInput;
-    EXPECT_THROW(const pf::Validation::ValidatedInput tData = pf::Validation::parse_and_validate(""), pf::Exception);
+    EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), pf::Exception);
 }
+}  // namespace plato::functional::main::library::unittest

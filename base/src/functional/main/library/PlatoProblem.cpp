@@ -7,7 +7,7 @@
 #include "NodalSumObjective.hpp"
 #include "ROLHelpers.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::main::library
 {
 namespace
 {
@@ -22,7 +22,7 @@ namespace
 }
 }  // namespace
 
-PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
+PlatoProblem make_plato_problem(const ValidatedInput& aData)
 {
     return PlatoProblem{plato::functional::geometry::library::make_geometry_data(aData.geometry()),
                         plato::functional::criteria::library::make_aggregate_objective_function(aData.objectives()),
@@ -43,11 +43,13 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
     std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
     std::transform(
         aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const plato::functional::criteria::library::Constraint<const MeshProxy&>& aConstraintData)
+        [&aProblem](const plato::functional::criteria::library::Constraint<const Plato::Functional::MeshProxy&>&
+                        aConstraintData)
         {
-            plato::functional::criteria::library::Constraint<const Core::DynamicVector<double>&> tConstraint{
-                aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
-                aConstraintData.mConstraintTarget, aConstraintData.mLinear};
+            plato::functional::criteria::library::Constraint<const Plato::Functional::Core::DynamicVector<double>&>
+                tConstraint{aConstraintData.mName,
+                            compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
+                            aConstraintData.mConstraintTarget, aConstraintData.mLinear};
             return std::make_unique<plato::functional::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
         });
     return tROLConstraints;
@@ -65,7 +67,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
 {
     auto tROLProblem =
         std::make_unique<ROL::Problem<double>>(ROL::Ptr<ROL::Objective<double>>(make_rol_objective(aProblem).release()),
-                                               make_rol_vector(aProblem.mGeometry.mInitialGuess));
+                                               Plato::Functional::make_rol_vector(aProblem.mGeometry.mInitialGuess));
     tROLProblem->addBoundConstraint(make_rol_bound_constraint(aProblem.mGeometry.mBounds));
     for (auto& tConstraint : make_rol_constraints(aProblem))
     {
@@ -90,4 +92,4 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::main::library

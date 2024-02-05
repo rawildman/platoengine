@@ -11,9 +11,8 @@ namespace
 {
 constexpr auto kNumRanks = int{4};
 
-Plato::Functional::Validation::ValidatedInput create_one_objective_test_input()
+main::library::ValidatedInput create_one_objective_test_input()
 {
-    namespace pfv = Plato::Functional::Validation;
     namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
@@ -28,7 +27,7 @@ Plato::Functional::Validation::ValidatedInput create_one_objective_test_input()
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
 
-    return pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    return main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
 }  // namespace
 
@@ -40,8 +39,7 @@ TEST(ObjectiveFactory, MPISize)
 
 TEST(ObjectiveFactory, InvalidParallelAggregate)
 {
-    namespace pfv = Plato::Functional::Validation;
-
-    EXPECT_THROW(const pfv::ValidatedInput tData = create_one_objective_test_input(), Plato::Functional::Exception);
+    EXPECT_THROW(const main::library::ValidatedInput tData = create_one_objective_test_input(),
+                 Plato::Functional::Exception);
 }
 }  // namespace plato::functional::integration_tests::parallel

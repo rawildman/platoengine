@@ -9,9 +9,8 @@ namespace plato::functional::integration_tests::serial
 {
 namespace
 {
-Plato::Functional::Validation::ValidatedInput create_two_objective_test_input()
+main::library::ValidatedInput create_two_objective_test_input()
 {
-    namespace pfv = Plato::Functional::Validation;
     namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
@@ -31,15 +30,13 @@ Plato::Functional::Validation::ValidatedInput create_two_objective_test_input()
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
 
-    return pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    return main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
 }  // namespace
 
 TEST(ObjectiveFactory, ValidAggregate)
 {
-    namespace pfv = Plato::Functional::Validation;
-
-    const pfv::ValidatedInput tData = create_two_objective_test_input();
+    const main::library::ValidatedInput tData = create_two_objective_test_input();
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());
@@ -51,9 +48,7 @@ TEST(ObjectiveFactory, ValidAggregate)
 
 TEST(ObjectiveFactory, ValidParallelAggregate)
 {
-    namespace pfv = Plato::Functional::Validation;
-
-    const pfv::ValidatedInput tData = create_two_objective_test_input();
+    const main::library::ValidatedInput tData = create_two_objective_test_input();
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::ParallelAggregate tAggregate =
@@ -63,7 +58,6 @@ TEST(ObjectiveFactory, ValidParallelAggregate)
 
 TEST(ObjectiveFactory, ValidAggregateOneObjective)
 {
-    namespace pfv = Plato::Functional::Validation;
     namespace pftu = plato::functional::test_utilities;
 
     // Input for the actual test
@@ -84,7 +78,8 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
 
-    const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    const main::library::ValidatedInput tData =
+        main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());

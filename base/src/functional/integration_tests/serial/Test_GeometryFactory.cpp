@@ -19,8 +19,8 @@ TEST(GeometryFactory, BrickGeometry)
                           /*.mDensityTopology = */ boost::none,
                           /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters()};
 
-    const pf::Validation::ValidatedInput tInput = pf::Validation::make_validated_input(tRawInput);
-    const auto tData = plato::functional::geometry::library::make_geometry_data(tInput.geometry());
+    const main::library::ValidatedInput tInput = main::library::make_validated_input(tRawInput);
+    const auto tData = geometry::library::make_geometry_data(tInput.geometry());
 
     constexpr auto tExpectedBrickShapeDimensions = int{6};
     EXPECT_EQ(tData.mInitialGuess.size(), tExpectedBrickShapeDimensions);
@@ -33,8 +33,8 @@ TEST(GeometryFactory, BlockName)
     namespace pf = Plato::Functional;
     namespace pftu = plato::functional::test_utilities;
 
-    const pf::Validation::ValidatedInput tValidatedInput =
-        pf::Validation::make_validated_input(pftu::create_valid_example_input());
+    const main::library::ValidatedInput tValidatedInput =
+        main::library::make_validated_input(pftu::create_valid_example_input());
     EXPECT_EQ(plato::functional::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
 }
 }  // namespace plato::functional::integration_tests::serial

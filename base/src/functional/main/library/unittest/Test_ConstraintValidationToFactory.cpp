@@ -2,10 +2,11 @@
 
 #include "ConstraintFactory.hpp"
 #include "ConstraintValidation.hpp"
-#include "Exception.hpp"
 #include "InputGeneration.hpp"
 #include "ValidatedInput.hpp"
 
+namespace plato::functional::main::library::unittest
+{
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
     namespace pf = Plato::Functional;
@@ -26,7 +27,7 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     tConstraint.is_linear = false;
     tInput.mConstraints.push_back(tConstraint);
 
-    pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(tInput);
+    const ValidatedInput tData = make_validated_input(tInput);
     auto tCons = plato::functional::criteria::library::make_constraints(tData.constraints());
     ASSERT_EQ(tCons.size(), 3);
 
@@ -37,3 +38,4 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     EXPECT_FALSE(tCons[2].mLinear);
     EXPECT_EQ(tCons[2].mConstraintTarget, 10);
 }
+}  // namespace plato::functional::main::library::unittest

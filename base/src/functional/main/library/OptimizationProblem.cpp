@@ -12,7 +12,7 @@
 #include "ROLHelpers.hpp"
 #include "ValidatedInput.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::main::library
 {
 namespace
 {
@@ -32,7 +32,7 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
-    : mProblem(make_plato_problem(Validation::parse_and_validate_from_file(aInputFile))),
+    : mProblem(make_plato_problem(parse_and_validate_from_file(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(plato::functional::optimizer::make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
@@ -43,7 +43,7 @@ void OptimizationProblem::gradientCheck() const
     std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    mROLProblem->getObjective()->checkGradient(to_rol_vector(mProblem.mGeometry.mInitialGuess),
+    mROLProblem->getObjective()->checkGradient(Plato::Functional::to_rol_vector(mProblem.mGeometry.mInitialGuess),
                                                generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
@@ -83,7 +83,7 @@ void OptimizationProblem::sensitivityCheck() const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
-    tSensitivityObjective->checkGradient(to_rol_vector(mProblem.mGeometry.mInitialGuess),
+    tSensitivityObjective->checkGradient(Plato::Functional::to_rol_vector(mProblem.mGeometry.mInitialGuess),
                                          generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }
 
@@ -98,10 +98,10 @@ void OptimizationProblem::outputResult() const
 {
     if (mCommunicator.rank() == 0)
     {
-        mProblem.mGeometry.mOutput(to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
+        mProblem.mGeometry.mOutput(Plato::Functional::to_dynamic_vector(*mROLProblem->getPrimalOptimizationVector()));
     }
 }
 
 int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess.size(); }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::main::library

@@ -8,7 +8,7 @@
 #include "ROL_Problem.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::main::library
 {
 class OptimizationProblem
 {
@@ -37,12 +37,12 @@ class OptimizationProblem
     void outputResult() const;
 
    private:
-    Plato::Functional::PlatoProblem mProblem;
+    PlatoProblem mProblem;
     ROL::Ptr<ROL::Problem<double>> mROLProblem;
     ROL::Solver<double> mROLSolver;
     boost::mpi::communicator mCommunicator{};
 };
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::main::library
 
 #endif

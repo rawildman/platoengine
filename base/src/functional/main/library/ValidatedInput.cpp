@@ -11,7 +11,7 @@
 #include "ObjectiveValidation.hpp"
 #include "OptimizerValidation.hpp"
 
-namespace Plato::Functional::Validation
+namespace plato::functional::main::library
 {
 ValidatedInput::ValidatedInput(Plato::PlatoInput aInput, Key) : mInput{std::move(aInput)} {}
 
@@ -24,33 +24,34 @@ ValidatedInput::Geometry ValidatedInput::geometry() const
     // Use visit with a return value in c++20
     std::optional<ValidatedGeometryVariant> tValidatedGeometry;
     std::visit([&tValidatedGeometry](auto&& tGeometry)
-               { tValidatedGeometry = Core::ValidatedInputTypeWrapper{std::move(tGeometry)}; },
+               { tValidatedGeometry = Plato::Functional::Core::ValidatedInputTypeWrapper{std::move(tGeometry)}; },
                std::move(tGeometryInput));
     assert(tValidatedGeometry);
-    return Core::ValidatedInputTypeWrapper{*tValidatedGeometry};
+    return Plato::Functional::Core::ValidatedInputTypeWrapper{*tValidatedGeometry};
 }
 
 ValidatedInput::Objectives ValidatedInput::objectives() const
 {
-    return Core::ValidatedInputTypeWrapper{validatedVector(mInput.mObjectives)};
+    return Plato::Functional::Core::ValidatedInputTypeWrapper{validatedVector(mInput.mObjectives)};
 }
 
 ValidatedInput::Constraints ValidatedInput::constraints() const
 {
-    return Core::ValidatedInputTypeWrapper{validatedVector(mInput.mConstraints)};
+    return Plato::Functional::Core::ValidatedInputTypeWrapper{validatedVector(mInput.mConstraints)};
 }
 
 ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() const
 {
-    return Core::ValidatedInputTypeWrapper{mInput.mOptimizationParameters};
+    return Plato::Functional::Core::ValidatedInputTypeWrapper{mInput.mOptimizationParameters};
 }
 
 template <typename T>
-std::vector<Core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(const std::vector<T>& aInputs)
+std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
+    const std::vector<T>& aInputs)
 {
-    std::vector<Core::ValidatedInputTypeWrapper<T>> tValidatedInputs;
+    std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<T>> tValidatedInputs;
     std::transform(aInputs.cbegin(), aInputs.cend(), std::back_inserter(tValidatedInputs),
-                   [](T aT) { return Core::ValidatedInputTypeWrapper{std::move(aT)}; });
+                   [](T aT) { return Plato::Functional::Core::ValidatedInputTypeWrapper{std::move(aT)}; });
     return tValidatedInputs;
 }
 
@@ -64,20 +65,20 @@ ValidatedInput make_validated_input(Plato::PlatoInput aInput)
                                                                                std::move(tMessages));
     if (!tMessages.empty())
     {
-        throw Exception("Error: Could not validate input, the following errors were found: \n" +
-                        all_messages(tMessages));
+        throw Plato::Functional::Exception("Error: Could not validate input, the following errors were found: \n" +
+                                           Plato::Functional::Validation::all_messages(tMessages));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }
 
-Validation::ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
+ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
 {
-    return Validation::make_validated_input(parse_input_from_file(aFileName));
+    return make_validated_input(Plato::Functional::parse_input_from_file(aFileName));
 }
 
-Validation::ValidatedInput parse_and_validate(const std::string_view aInput)
+ValidatedInput parse_and_validate(const std::string_view aInput)
 {
-    return Validation::make_validated_input(parse_input(aInput));
+    return make_validated_input(Plato::Functional::parse_input(aInput));
 }
 
-}  // namespace Plato::Functional::Validation
+}  // namespace plato::functional::main::library
