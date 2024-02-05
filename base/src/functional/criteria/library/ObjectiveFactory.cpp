@@ -8,15 +8,16 @@
 #include "ValidatedInputTypeWrapper.hpp"
 #include "ValidationUtilities.hpp"
 
-namespace Plato::Functional::ObjectiveFactory
+namespace plato::functional::criteria::library
 {
 namespace detail
 {
 namespace
 {
 template <typename AggregateType, typename... Args>
-AggregateType make_aggregate_impl(const std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
-                                  Args&&... aArgs)
+AggregateType make_aggregate_impl(
+    const std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
+    Args&&... aArgs)
 {
     using ObjectiveAndWeight = std::pair<ObjectiveFunction, double>;
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
@@ -25,18 +26,19 @@ AggregateType make_aggregate_impl(const std::vector<Core::ValidatedInputTypeWrap
         if (Plato::Functional::Validation::is_active(tObjective.rawInput()))
         {
             const double tWeight = tObjective.rawInput().aggregation_weight.value();
-            tFunctionsAndWeights.emplace_back(CriterionFactory::make_criterion_function(tObjective), tWeight);
+            tFunctionsAndWeights.emplace_back(make_criterion_function(tObjective), tWeight);
         }
     }
     return AggregateType{std::move(tFunctionsAndWeights), std::forward<Args>(aArgs)...};
 }
 
-auto rank_split_vector(const std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
+auto rank_split_vector(const std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
                        const boost::mpi::communicator& aComm)
-    -> std::vector<Core::ValidatedInputTypeWrapper<Plato::objective>>
+    -> std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>
 {
-    return Utilities::rank_split_vector(aInputs, Utilities::RankNamedType{aComm.rank()},
-                                        Utilities::SizeNamedType{aComm.size()});
+    return Plato::Functional::Utilities::rank_split_vector(aInputs,
+                                                           Plato::Functional::Utilities::RankNamedType{aComm.rank()},
+                                                           Plato::Functional::Utilities::SizeNamedType{aComm.size()});
 }
 }  // namespace
 
@@ -59,4 +61,4 @@ ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& a
     return make_aggregate_function(detail::make_parallel_aggregate(aInput));
 }
 
-}  // namespace Plato::Functional::ObjectiveFactory
+}  // namespace plato::functional::criteria::library

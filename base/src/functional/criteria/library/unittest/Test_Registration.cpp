@@ -5,9 +5,11 @@
 #include "Function.hpp"
 #include "InputBlocks.hpp"
 
+namespace plato::functional::criteria::library::unittest
+{
 namespace
 {
-[[nodiscard]] auto make_test_criterion_function() -> Plato::Functional::CriterionFactory::CriterionFunction
+[[nodiscard]] auto make_test_criterion_function() -> plato::functional::criteria::library::CriterionFunction
 {
     return Plato::Functional::make_function([](const Plato::Functional::MeshProxy&) { return 0.0; },
                                             [](const Plato::Functional::MeshProxy&) {
@@ -15,24 +17,25 @@ namespace
                                             });
 }
 
-[[maybe_unused]] static auto kTestCriterionRegistration = Plato::Functional::CriterionFactory::CriterionRegistration{
-    "test", [](const Plato::Functional::CriterionFactory::CriterionInput&) { return make_test_criterion_function(); }};
+[[maybe_unused]] static auto kTestCriterionRegistration = plato::functional::criteria::library::CriterionRegistration{
+    "test", [](const plato::functional::criteria::library::CriterionInput&) { return make_test_criterion_function(); }};
 
 }  // namespace
 
 TEST(CriterionRegistration, PhonyCriterion)
 {
-    EXPECT_TRUE(Plato::Functional::CriterionFactory::is_criterion_function_registered("test"));
+    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered("test"));
 }
 
 TEST(CriterionRegistration, NodalSum)
 {
     const std::string_view tNodalSumName = Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kNodalSum).value();
-    EXPECT_TRUE(Plato::Functional::CriterionFactory::is_criterion_function_registered(tNodalSumName));
+    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tNodalSumName));
 }
 
 TEST(CriterionRegistration, CustomApp)
 {
     const std::string_view tCustomAppName = Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kCustomApp).value();
-    EXPECT_TRUE(Plato::Functional::CriterionFactory::is_criterion_function_registered(tCustomAppName));
+    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tCustomAppName));
+}
 }

@@ -19,8 +19,8 @@ namespace Plato::Functional
 struct PlatoProblem
 {
     plato::functional::geometry::library::FactoryTypes mGeometry;
-    ObjectiveFactory::ObjectiveFunction mObjective;
-    std::vector<ConstraintFactory::Constraint<const MeshProxy&>> mConstraints;
+    plato::functional::criteria::library::ObjectiveFunction mObjective;
+    std::vector<plato::functional::criteria::library::Constraint<const MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
 };
 

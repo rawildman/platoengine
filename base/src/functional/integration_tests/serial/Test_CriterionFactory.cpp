@@ -19,7 +19,7 @@ TEST(CriterionFactory, ValidObjective)
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
-    EXPECT_NO_THROW(auto tFunction = Plato::Functional::CriterionFactory::make_criterion_function(
+    EXPECT_NO_THROW(auto tFunction = criteria::library::make_criterion_function(
                         tData.objectives().rawInput().front()));
 }
 
@@ -37,7 +37,7 @@ TEST(CriterionFactory, ValidConstraint)
         pfv::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
-    EXPECT_NO_THROW(auto tFunction = Plato::Functional::CriterionFactory::make_criterion_function(
+    EXPECT_NO_THROW(auto tFunction = criteria::library::make_criterion_function(
                         tData.constraints().rawInput().front()));
 }
 
@@ -56,8 +56,8 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
     const pf::Core::ValidatedInputTypeWrapper<Plato::objective> tValidatedObjective =
         tData.objectives().rawInput().front();
 
-    const pf::CriterionFactory::CriterionInput tCriterionInput =
-        pf::CriterionFactory::to_criterion_input(tValidatedObjective);
+    const criteria::library::CriterionInput tCriterionInput =
+        criteria::library::to_criterion_input(tValidatedObjective);
     const Plato::objective& tObjective = tValidatedObjective.rawInput();
 
     ASSERT_TRUE(tObjective.shared_library_path.has_value());
@@ -88,8 +88,8 @@ TEST(CriterionRegistration, ConvertConstraintInput)
     const pf::Core::ValidatedInputTypeWrapper<Plato::constraint> tValidatedConstraint =
         tData.constraints().rawInput().front();
 
-    const pf::CriterionFactory::CriterionInput tCriterionInput =
-        pf::CriterionFactory::to_criterion_input(tValidatedConstraint);
+    const criteria::library::CriterionInput tCriterionInput =
+        criteria::library::to_criterion_input(tValidatedConstraint);
     const Plato::constraint& tConstraint = tValidatedConstraint.rawInput();
 
     EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mName.empty());

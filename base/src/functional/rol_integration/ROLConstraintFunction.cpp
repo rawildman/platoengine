@@ -5,7 +5,7 @@
 namespace plato::functional::rol_integration
 {
 ROLConstraintFunction::ROLConstraintFunction(
-    Plato::Functional::ConstraintFactory::Constraint<const Plato::Functional::Core::DynamicVector<double>&> aConstraint)
+    criteria::library::Constraint<const Plato::Functional::Core::DynamicVector<double>&> aConstraint)
     : mName(aConstraint.mName),
       mFunction(std::move(aConstraint.mConstraintFunction)),
       mConstraintTarget(aConstraint.mConstraintTarget),

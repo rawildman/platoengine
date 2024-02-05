@@ -2,10 +2,10 @@
 
 #include "InputBlocks.hpp"
 
-namespace Plato::Functional::CriterionFactory
+namespace plato::functional::criteria::library
 {
 bool is_criterion_function_registered(const std::string_view aFunctionName)
 {
-    return is_function_registered<CriterionFunction, CriterionInput>(aFunctionName);
+    return Plato::Functional::is_function_registered<CriterionFunction, CriterionInput>(aFunctionName);
 }
-}  // namespace Plato::Functional::CriterionFactory
+}  // namespace plato::functional::criteria::library

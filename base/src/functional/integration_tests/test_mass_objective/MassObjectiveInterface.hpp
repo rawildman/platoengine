@@ -5,7 +5,7 @@
 
 namespace plato::functional::integration_tests::test_mass_objective
 {
-class MassObjectiveInterface : public Plato::Functional::CriterionInterface
+class MassObjectiveInterface : public criteria::library::CriterionInterface
 {
    public:
     ///@brief Construct a new Mass Objective Interface object

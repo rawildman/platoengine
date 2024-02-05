@@ -3,12 +3,14 @@
 #include "CriterionValidation.hpp"
 #include "InputBlocks.hpp"
 
+namespace plato::functional::criteria::library::unittest
+{
 namespace
 {
 template <typename Criteria>
 void check_validation_app_and_custom_app()
 {
-    namespace pfcd = Plato::Functional::Criteria::detail;
+    namespace pfcd = plato::functional::criteria::library::detail;
     Criteria tCriteria;
     EXPECT_TRUE(pfcd::validate_app(tCriteria).has_value());
     tCriteria.app = Plato::CodeOptions::kCustomApp;
@@ -34,4 +36,5 @@ TEST(CriterionValidation, CheckValidationAppAndCustomAppOnObjective)
 TEST(CriterionValidation, CheckValidationAppAndCustomAppOnConstraint)
 {
     check_validation_app_and_custom_app<Plato::constraint>();
+}
 }

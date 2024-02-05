@@ -4,20 +4,20 @@
 #include <ROL_StdVector.hpp>
 #include <string>
 
+#include "DynamicVector.hpp"
 #include "Function.hpp"
 #include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
-#include "DynamicVector.hpp"
 
 namespace Plato::Functional
 {
 struct MeshProxy;
 }
 
-namespace Plato::Functional::ConstraintFactory
+namespace plato::functional::criteria::library
 {
-using ValidatedConstraints =
-    Core::ValidatedInputTypeWrapper<std::vector<Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+using ValidatedConstraints = Plato::Functional::Core::ValidatedInputTypeWrapper<
+    std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
 
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
@@ -25,7 +25,8 @@ using ValidatedConstraints =
 template <typename FunctionArg>
 struct Constraint
 {
-    using ConstraintFunction = Function<double, Core::DynamicVector<double>, FunctionArg>;
+    using ConstraintFunction =
+        Plato::Functional::Function<double, Plato::Functional::Core::DynamicVector<double>, FunctionArg>;
 
     std::string mName;
     ConstraintFunction mConstraintFunction;
@@ -35,7 +36,7 @@ struct Constraint
 
 /// @brief Factory to create Constraint objects from input data.
 /// @post The return vector will have the same size as @a aInput.
-[[nodiscard]] std::vector<Constraint<const MeshProxy&>> make_constraints(const ValidatedConstraints& aInput);
+[[nodiscard]] std::vector<Constraint<const Plato::Functional::MeshProxy&>> make_constraints(const ValidatedConstraints& aInput);
 
 /// @brief Helper for providing ROL a dual vector for constraints.
 /// @note Currently, constraints are scalar, and so the dual vector always has dimension 1.
@@ -43,10 +44,10 @@ struct Constraint
 
 namespace detail
 {
-[[nodiscard]] Constraint<const MeshProxy&> make_constraint(
-    const Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
+[[nodiscard]] Constraint<const Plato::Functional::MeshProxy&> make_constraint(
+    const Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
 
 }  // namespace detail
-}  // namespace Plato::Functional::ConstraintFactory
+}  // namespace plato::functional::criteria::library
 
 #endif

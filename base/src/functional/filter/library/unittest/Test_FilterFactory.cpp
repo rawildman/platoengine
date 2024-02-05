@@ -4,6 +4,7 @@
 #include "FilterFactory.hpp"
 #include "InputBlocks.hpp"
 #include "InputEnumTypes.hpp"
+
 namespace plato::functional::filter::extension::unittest
 {
 TEST(FilterFactory, KernelFilterThrows)

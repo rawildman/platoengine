@@ -18,7 +18,7 @@ void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
     namespace pf = Plato::Functional;
-    const auto tBad = pf::SharedLibCriterion{std::string{"badRobot.so"}, {}};
+    const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
     std::cout << tBad.f(pf::MeshProxy{"dne.exo", {}}) << std::endl;
 }
 }  // namespace
@@ -32,7 +32,7 @@ TEST(SharedLibObjective, BadLibraryPath)
 TEST(SharedLibObjective, CallValue)
 {
     namespace pf = Plato::Functional;
-    const auto tSharedLib = pf::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
@@ -43,7 +43,7 @@ TEST(SharedLibObjective, CallValue)
 TEST(SharedLibObjective, CallGradient)
 {
     namespace pf = Plato::Functional;
-    const auto tSharedLib = pf::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
@@ -56,11 +56,12 @@ TEST(SharedLibObjective, CallGradient)
 TEST(SharedLibObjective, ValueUsingFunction)
 {
     namespace pf = Plato::Functional;
-    const auto tFunction = pf::make_shared_lib_function(pf::SharedLibCriterion{std::string{kLibPath}, {}});
+    const auto tFunction =
+        criteria::extension::make_shared_lib_function(criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
     const double tMass = tFunction.f(pf::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
-}
+}  // namespace plato::functional::integration_tests::serial

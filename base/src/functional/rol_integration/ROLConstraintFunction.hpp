@@ -19,8 +19,7 @@ class ROLConstraintFunction : public ROL::Constraint<double>
 
     ///@brief Construct a new ROLConstraintFunction object
     ROLConstraintFunction(
-        Plato::Functional::ConstraintFactory::Constraint<const Plato::Functional::Core::DynamicVector<double>&>
-            aConstraint);
+        criteria::library::Constraint<const Plato::Functional::Core::DynamicVector<double>&> aConstraint);
 
     ///@brief Evaluate and populate aConstraints with the constraints at a given control vector and tolerance
     void value(ROL::Vector<double>& aConstraints, const ROL::Vector<double>& aControl, double& aTolerance) override;

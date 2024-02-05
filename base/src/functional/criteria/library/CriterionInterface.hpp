@@ -7,7 +7,7 @@
 
 #include "MeshProxy.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::criteria::library
 {
 static constexpr std::string_view kCreateCriterionFunctionName = "plato_create_criterion";
 
@@ -23,8 +23,8 @@ class CriterionInterface
 
     /// @note When implementing a constraint, the target value will be subtracted in the optimizer interface.
     /// A criterion that is a constraint should then just evaluate without considering any target value.
-    virtual double value(const MeshProxy& aMeshProxy) const = 0;
-    virtual std::vector<double> gradient(const MeshProxy& aMeshProxy) const = 0;
+    virtual double value(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
+    virtual std::vector<double> gradient(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
 
     CriterionInterface(const CriterionInterface&) = delete;
     CriterionInterface& operator=(const CriterionInterface&) = delete;
@@ -32,8 +32,12 @@ class CriterionInterface
     CriterionInterface& operator=(CriterionInterface&&) = delete;
 };
 
-extern "C" std::unique_ptr<CriterionInterface> plato_create_criterion(const std::vector<std::string>& aFileNames);
+}  // namespace plato::functional::criteria::library
 
-}  // namespace Plato::Functional
+namespace plato::functional
+{
+extern "C" std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(
+    const std::vector<std::string>& aFileNames);
+}
 
 #endif

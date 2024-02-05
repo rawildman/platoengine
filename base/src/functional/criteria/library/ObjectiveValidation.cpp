@@ -4,7 +4,7 @@
 
 #include "CriterionValidation.hpp"
 
-namespace Plato::Functional::Criteria
+namespace plato::functional::criteria::library
 {
 [[maybe_unused]] static auto kObjectiveValidationRegistration =
     Plato::Functional::Validation::Registration<Plato::objective>{
@@ -65,4 +65,4 @@ std::optional<std::string> validate_number_of_ranks_vs_objectives(const std::vec
 }
 
 }  // namespace detail
-}  // namespace Plato::Functional::Criteria
+}  // namespace plato::functional::criteria::library

@@ -5,6 +5,8 @@
 #include "ObjectiveValidation.hpp"
 #include "InputBlocks.hpp"
 
+namespace plato::functional::criteria::library::unittest
+{
 namespace
 {
 constexpr auto kNumRanks = int{3};
@@ -18,7 +20,7 @@ TEST(ParallelObjectiveValidation, MPISize)
 
 TEST(ParallelObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
-    namespace pfcd = Plato::Functional::Criteria::detail;
+    namespace pfcd = plato::functional::criteria::library::detail;
 
     // One objective and three ranks
     const Plato::objective tObjective;
@@ -29,4 +31,5 @@ TEST(ParallelObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 
     // Four objectives and three ranks
     EXPECT_FALSE(pfcd::validate_number_of_ranks_vs_objectives({tObjective, tObjective, tObjective, tObjective}).has_value());
+}
 }

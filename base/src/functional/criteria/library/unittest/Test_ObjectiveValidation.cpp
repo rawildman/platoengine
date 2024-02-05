@@ -5,9 +5,11 @@
 #include "ObjectiveValidation.hpp"
 #include "InputBlocks.hpp"
 
+namespace plato::functional::criteria::library::unittest
+{
 TEST(ObjectiveValidation, ValidateAggregationWeight)
 {
-    namespace pfcd = Plato::Functional::Criteria::detail;
+    namespace pfcd = plato::functional::criteria::library::detail;
     Plato::objective tObjective;
     EXPECT_TRUE(pfcd::validate_aggregation_weight(tObjective).has_value());
     tObjective.aggregation_weight = 13.0;
@@ -18,7 +20,7 @@ TEST(ObjectiveValidation, ValidateAggregationWeight)
 
 TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
 {
-    namespace pfcd = Plato::Functional::Criteria::detail;
+    namespace pfcd = plato::functional::criteria::library::detail;
     EXPECT_TRUE(pfcd::validate_at_least_one_objective({}).has_value());
     Plato::objective tObjective;
     EXPECT_FALSE(pfcd::validate_at_least_one_objective({tObjective}).has_value());
@@ -34,7 +36,7 @@ TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
 
 TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
-    namespace pfcd = Plato::Functional::Criteria::detail;
+    namespace pfcd = plato::functional::criteria::library::detail;
 
     // One objective and one rank
     Plato::objective tObjective;
@@ -53,7 +55,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 {
-    namespace pfc = Plato::Functional::Criteria;
+    namespace pfc = plato::functional::criteria::library;
     const Plato::objective tObjective;
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
@@ -64,7 +66,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 
 TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 {
-    namespace pfc = Plato::Functional::Criteria;
+    namespace pfc = plato::functional::criteria::library;
     const auto tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
 
@@ -75,7 +77,7 @@ TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
 {
-    namespace pfc = Plato::Functional::Criteria;
+    namespace pfc = plato::functional::criteria::library;
     auto tObjective = Plato::Functional::TestUtilities::create_valid_example_objective();
     tObjective.active = false;
     const std::vector<Plato::objective> tInput{tObjective, tObjective};
@@ -83,4 +85,5 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
+}
 }

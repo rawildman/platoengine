@@ -2,6 +2,7 @@
 #define PLATO_FUNCTIONAL_CORE_DYNAMICVECTOR
 
 #include <algorithm>
+#include <cassert>
 #include <numeric>
 #include <vector>
 

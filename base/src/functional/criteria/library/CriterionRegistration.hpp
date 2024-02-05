@@ -5,15 +5,15 @@
 
 #include "DynamicVector.hpp"
 #include "FactoryRegistration.hpp"
-#include "Function.hpp"
 #include "FileList.hpp"
+#include "Function.hpp"
 
 namespace Plato::Functional
 {
 struct MeshProxy;
 }  // namespace Plato::Functional
 
-namespace Plato::Functional::CriterionFactory
+namespace plato::functional::criteria::library
 {
 struct CriterionInput
 {
@@ -22,11 +22,12 @@ struct CriterionInput
     Plato::FileList mInputFiles;
 };
 
-using CriterionFunction = Function<double, Core::DynamicVector<double>, const MeshProxy&>;
-using CriterionRegistration = Registration<CriterionFunction, CriterionInput>;
+using CriterionFunction = Plato::Functional::
+    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+using CriterionRegistration = Plato::Functional::Registration<CriterionFunction, CriterionInput>;
 
 bool is_criterion_function_registered(const std::string_view aFunctionName);
 
-}  // namespace Plato::Functional::CriterionFactory
+}  // namespace plato::functional::criteria::library
 
 #endif

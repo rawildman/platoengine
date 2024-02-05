@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "Exception.hpp"
+#include "InputGeneration.hpp"
 #include "ObjectiveFactory.hpp"
 #include "ValidatedInput.hpp"
-#include "InputGeneration.hpp"
 
 namespace plato::functional::integration_tests::serial
 {
@@ -33,7 +33,7 @@ Plato::Functional::Validation::ValidatedInput create_two_objective_test_input()
 
     return pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
-}
+}  // namespace
 
 TEST(ObjectiveFactory, ValidAggregate)
 {
@@ -42,8 +42,7 @@ TEST(ObjectiveFactory, ValidAggregate)
     const pfv::ValidatedInput tData = create_two_objective_test_input();
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
-    const Plato::Functional::Aggregate tAggregate =
-        Plato::Functional::ObjectiveFactory::detail::make_aggregate(tData.objectives());
+    const Plato::Functional::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 2);
 
     const std::vector tExpected = {42.0, 13.0};
@@ -58,7 +57,7 @@ TEST(ObjectiveFactory, ValidParallelAggregate)
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const Plato::Functional::ParallelAggregate tAggregate =
-        Plato::Functional::ObjectiveFactory::detail::make_parallel_aggregate(tData.objectives());
+        criteria::library::detail::make_parallel_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 2);
 }
 
@@ -88,11 +87,10 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     const pfv::ValidatedInput tData = pfv::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
-    const Plato::Functional::Aggregate tAggregate =
-        Plato::Functional::ObjectiveFactory::detail::make_aggregate(tData.objectives());
+    const Plato::Functional::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 1);
 
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
 }
-}
+}  // namespace plato::functional::integration_tests::serial

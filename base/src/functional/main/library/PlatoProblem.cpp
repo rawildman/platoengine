@@ -25,8 +25,8 @@ namespace
 PlatoProblem make_plato_problem(const Validation::ValidatedInput& aData)
 {
     return PlatoProblem{plato::functional::geometry::library::make_geometry_data(aData.geometry()),
-                        ObjectiveFactory::make_aggregate_objective_function(aData.objectives()),
-                        ConstraintFactory::make_constraints(aData.constraints()),
+                        plato::functional::criteria::library::make_aggregate_objective_function(aData.objectives()),
+                        plato::functional::criteria::library::make_constraints(aData.constraints()),
                         plato::functional::optimizer::rol_parameter_list(aData.optimizationParameters())};
 }
 
@@ -43,9 +43,9 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
     std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
     std::transform(
         aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const ConstraintFactory::Constraint<const MeshProxy&>& aConstraintData)
+        [&aProblem](const plato::functional::criteria::library::Constraint<const MeshProxy&>& aConstraintData)
         {
-            ConstraintFactory::Constraint<const Core::DynamicVector<double>&> tConstraint{
+            plato::functional::criteria::library::Constraint<const Core::DynamicVector<double>&> tConstraint{
                 aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
                 aConstraintData.mConstraintTarget, aConstraintData.mLinear};
             return std::make_unique<plato::functional::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
@@ -56,7 +56,7 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
 std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
     const PlatoProblem& aProblem)
 {
-    auto tSimpleObjectiveFunction = make_nodal_sum_function();
+    auto tSimpleObjectiveFunction = plato::functional::criteria::extension::make_nodal_sum_function();
     return std::make_unique<plato::functional::rol_integration::ROLObjectiveFunction>(
         compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
 }
@@ -72,13 +72,15 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
         const std::string& tName = tConstraint->name();
         if (tConstraint->linear())
         {
-            tROLProblem->addLinearConstraint(tName, Teuchos::rcp(tConstraint.release()),
-                                             Teuchos::rcp(ConstraintFactory::make_dual_vector().release()));
+            tROLProblem->addLinearConstraint(
+                tName, Teuchos::rcp(tConstraint.release()),
+                Teuchos::rcp(plato::functional::criteria::library::make_dual_vector().release()));
         }
         else
         {
-            tROLProblem->addConstraint(tName, Teuchos::rcp(tConstraint.release()),
-                                       Teuchos::rcp(ConstraintFactory::make_dual_vector().release()));
+            tROLProblem->addConstraint(
+                tName, Teuchos::rcp(tConstraint.release()),
+                Teuchos::rcp(plato::functional::criteria::library::make_dual_vector().release()));
         }
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?

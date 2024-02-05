@@ -3,6 +3,8 @@
 #include "NodalSumObjective.hpp"
 #include "STKUtilities.hpp"
 
+namespace plato::functional::criteria::extension::unittest
+{
 namespace
 {
 constexpr std::string_view kBrickFile = "brick.exo";
@@ -16,7 +18,7 @@ TEST(NodalSumObjective, Value111)
     pf::write_mesh(tFileName, pf::create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1"));
 
     constexpr double tExpectedValue = 12.0;
-    EXPECT_EQ(pf::NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -27,7 +29,7 @@ TEST(NodalSumObjective, Value211)
     pf::write_mesh(tFileName, pf::create_mesh("generated:2x1x1|bbox:0,0,0,1,1,1"));
 
     constexpr double tExpectedValue = 18.0;
-    EXPECT_EQ(pf::NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -38,7 +40,7 @@ TEST(NodalSumObjective, Value0)
     pf::write_mesh(tFileName, pf::create_mesh("generated:1x1x1|bbox:-2,-1,-3,2,1,3"));
 
     constexpr double tExpectedValue = 0.0;
-    EXPECT_EQ(pf::NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(pf::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -49,7 +51,7 @@ TEST(NodalSumObjective, Gradient111)
     auto tBulk = pf::create_mesh("generated:1x2x3|bbox:0,0,0,1,1,1");
     pf::write_mesh(tFileName, tBulk);
 
-    const auto tNodalSum = pf::NodalSumObjective{};
+    const auto tNodalSum = NodalSumObjective{};
 
     constexpr int tNumCoordsPerNode = 3;
     constexpr int tNumNodes = 24;
@@ -65,7 +67,7 @@ TEST(NodalSumObjective, Value)
     pf::write_mesh(kBrickFile, pf::create_mesh(kOneBlockCommand));
     Plato::Functional::MeshProxy tMeshProxy{kBrickFile, {}};
 
-    Plato::Functional::NodalSumObjective tPass;
+    const NodalSumObjective tPass;
     EXPECT_EQ(tPass.f(tMeshProxy), 12);
     EXPECT_TRUE(std::filesystem::exists(kBrickFile));
     EXPECT_TRUE(std::filesystem::remove(kBrickFile));
@@ -77,9 +79,10 @@ TEST(NodalSumObjective, Gradient)
     pf::write_mesh(kBrickFile, pf::create_mesh(kOneBlockCommand));
     Plato::Functional::MeshProxy tMeshProxy{kBrickFile, {}};
 
-    Plato::Functional::NodalSumObjective tPass;
-    std::vector<double> tGold(24, 1);
+    const NodalSumObjective tPass;
+    const std::vector<double> tGold(24, 1);
     EXPECT_EQ(tPass.df(tMeshProxy).stdVector(), tGold);
     EXPECT_TRUE(std::filesystem::exists(kBrickFile));
     EXPECT_TRUE(std::filesystem::remove(kBrickFile));
 }
+}  // namespace plato::functional::criteria::extension

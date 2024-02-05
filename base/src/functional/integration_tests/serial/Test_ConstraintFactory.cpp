@@ -21,7 +21,7 @@ TEST(ConstraintFactory, ValidConstraint)
         pfv::parse_and_validate(tConstraintInput + tGeometryInput + tOptimizerInput + tObjectiveInput);
 
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
-    const auto tConstraint = Plato::Functional::ConstraintFactory::detail::make_constraint(tData.constraints().rawInput().front());
+    const auto tConstraint = criteria::library::detail::make_constraint(tData.constraints().rawInput().front());
     EXPECT_TRUE(tConstraint.mLinear);
     EXPECT_EQ(tConstraint.mConstraintTarget, 13.0);
 }

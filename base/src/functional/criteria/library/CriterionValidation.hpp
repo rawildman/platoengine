@@ -5,7 +5,7 @@
 #include "ValidationRegistration.hpp"
 #include "ValidationUtilities.hpp"
 
-namespace Plato::Functional::Criteria
+namespace plato::functional::criteria::library
 {
 namespace detail
 {
@@ -66,6 +66,6 @@ template <typename Criteria>
 
 }  // namespace detail
 
-}  // namespace Plato::Functional::Criteria
+}  // namespace plato::functional::criteria::library
 
 #endif

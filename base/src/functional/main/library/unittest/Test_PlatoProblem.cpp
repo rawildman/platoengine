@@ -32,7 +32,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
 
     // Test Objective
-    const auto tObjective = pf::ObjectiveFactory::make_aggregate_objective_function(tData.objectives());
+    const auto tObjective = plato::functional::criteria::library::make_aggregate_objective_function(tData.objectives());
     EXPECT_EQ(tObjective.f(tGeomProxy), tProblem.mObjective.f(tGeomProxy));
 
     std::filesystem::remove(tGeomProxy.mFileName);

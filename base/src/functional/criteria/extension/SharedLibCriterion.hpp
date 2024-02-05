@@ -12,7 +12,7 @@
 #include "Function.hpp"
 #include "MeshProxy.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::criteria::extension
 {
 /// @brief for a criterion that is loaded from a shared library.
 ///
@@ -23,18 +23,18 @@ class SharedLibCriterion
    public:
     SharedLibCriterion(const std::filesystem::path& aSharedLibPath, const std::vector<std::string>& aFileNames);
 
-    [[nodiscard]] double f(const MeshProxy& aMesh) const;
+    [[nodiscard]] double f(const Plato::Functional::MeshProxy& aMesh) const;
 
-    [[nodiscard]] Core::DynamicVector<double> df(const MeshProxy& aMesh) const;
+    [[nodiscard]] Plato::Functional::Core::DynamicVector<double> df(const Plato::Functional::MeshProxy& aMesh) const;
 
    private:
     std::filesystem::path mSharedLibPath;
-    std::shared_ptr<CriterionInterface> mCriterionFunction;
+    std::shared_ptr<library::CriterionInterface> mCriterionFunction;
 };
 
-[[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
-    -> Function<double, Core::DynamicVector<double>, const MeshProxy&>;
+[[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion) -> Plato::Functional::
+    Function<double, Plato::Functional::Core::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::criteria::extension
 
 #endif

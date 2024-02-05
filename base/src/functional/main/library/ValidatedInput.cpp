@@ -58,8 +58,8 @@ ValidatedInput make_validated_input(Plato::PlatoInput aInput)
 {
     std::vector<std::string> tMessages;
     tMessages = plato::functional::geometry::library::validate_geometry(aInput, std::move(tMessages));
-    tMessages = Criteria::validate_objectives(aInput.mObjectives, std::move(tMessages));
-    tMessages = Criteria::validate_constraints(aInput.mConstraints, std::move(tMessages));
+    tMessages = plato::functional::criteria::library::validate_objectives(aInput.mObjectives, std::move(tMessages));
+    tMessages = plato::functional::criteria::library::validate_constraints(aInput.mConstraints, std::move(tMessages));
     tMessages = plato::functional::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters,
                                                                                std::move(tMessages));
     if (!tMessages.empty())

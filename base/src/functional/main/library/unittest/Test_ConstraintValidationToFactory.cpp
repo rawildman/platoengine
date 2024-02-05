@@ -27,7 +27,7 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     tInput.mConstraints.push_back(tConstraint);
 
     pf::Validation::ValidatedInput tData = pf::Validation::make_validated_input(tInput);
-    auto tCons = Plato::Functional::ConstraintFactory::make_constraints(tData.constraints());
+    auto tCons = plato::functional::criteria::library::make_constraints(tData.constraints());
     ASSERT_EQ(tCons.size(), 3);
 
     EXPECT_TRUE(tCons[0].mLinear);

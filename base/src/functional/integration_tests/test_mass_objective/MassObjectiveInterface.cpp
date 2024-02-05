@@ -43,9 +43,12 @@ std::vector<double> MassObjectiveInterface::gradient(const Plato::Functional::Me
     const unsigned int tGradientSize = tMassObjective.numMeshNodes(aMeshProxy.mFileName.string()) * tNumDimensions;
     return std::vector<double>(tGradientSize, 0.0);
 }
-
-std::unique_ptr<Plato::Functional::CriterionInterface> plato_create_criterion(const std::vector<std::string>&)
-{
-    return std::make_unique<MassObjectiveInterface>();
-}
 }  // namespace plato::functional::integration_tests::test_mass_objective
+
+namespace plato::functional
+{
+std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(const std::vector<std::string>&)
+{
+    return std::make_unique<integration_tests::test_mass_objective::MassObjectiveInterface>();
+}
+}  // namespace plato::functional
