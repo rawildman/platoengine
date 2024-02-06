@@ -47,38 +47,38 @@ TEST(ValidateUtilities, ValidateParameterExistsDoesExist)
 TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pfc = Plato::Functional::Core;
+    namespace pfu = plato::functional::utilities;
     Plato::objective tObjectiveInput;
-    EXPECT_TRUE(
-        pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight", pfc::unbounded<double>())
-            .has_value());
+    EXPECT_TRUE(pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
+                                                               "aggregation_weight", pfu::unbounded<double>())
+                    .has_value());
 }
 
 TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pfc = Plato::Functional::Core;
+    namespace pfu = plato::functional::utilities;
     Plato::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
     tObjectiveInput.aggregation_weight = 23;
     EXPECT_FALSE(pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
                                                                 "aggregation_weight",
-                                                                pfc::lower_bounded(pfc::Inclusive{tLowerBound}))
+                                                                pfu::lower_bounded(pfu::Inclusive{tLowerBound}))
                      .has_value());
 }
 
 TEST(ValidateUtilities, ValidateParameterExistsOutOfBounds)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pfc = Plato::Functional::Core;
+    namespace pfu = plato::functional::utilities;
     Plato::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
     tObjectiveInput.aggregation_weight = -23;
     EXPECT_TRUE(pfv::error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
                                                                "aggregation_weight",
-                                                               pfc::lower_bounded(pfc::Inclusive{tLowerBound}))
+                                                               pfu::lower_bounded(pfu::Inclusive{tLowerBound}))
                     .has_value());
 }
 

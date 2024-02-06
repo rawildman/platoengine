@@ -1,12 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "ParameterBounds.hpp"
-
+namespace plato::functional::utilities::unittest
+{
 TEST(ParameterBounds, DirectConstructionAllInclusive)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Inclusive{0.0}, pfc::Inclusive{1.0}};
+    const auto tBounds = ParameterBounds{Inclusive{0.0}, Inclusive{1.0}};
     EXPECT_FALSE(tBounds.contains(-0.5));
     EXPECT_TRUE(tBounds.contains(0.0));
     EXPECT_TRUE(tBounds.contains(0.5));
@@ -16,9 +15,7 @@ TEST(ParameterBounds, DirectConstructionAllInclusive)
 
 TEST(ParameterBounds, DirectConstructionAllExclusive)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Exclusive{0.0}, pfc::Exclusive{1.0}};
+    const auto tBounds = ParameterBounds{Exclusive{0.0}, Exclusive{1.0}};
     EXPECT_FALSE(tBounds.contains(-0.5));
     EXPECT_FALSE(tBounds.contains(0.0));
     EXPECT_TRUE(tBounds.contains(0.5));
@@ -28,9 +25,7 @@ TEST(ParameterBounds, DirectConstructionAllExclusive)
 
 TEST(ParameterBounds, DirectConstructionInclusiveLowerExclusiveUpper)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Inclusive{0.25}, pfc::Exclusive{0.5}};
+    const auto tBounds = ParameterBounds{Inclusive{0.25}, Exclusive{0.5}};
     EXPECT_FALSE(tBounds.contains(-0.5));
     EXPECT_TRUE(tBounds.contains(0.25));
     EXPECT_TRUE(tBounds.contains(0.3));
@@ -40,9 +35,7 @@ TEST(ParameterBounds, DirectConstructionInclusiveLowerExclusiveUpper)
 
 TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpper)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Exclusive{-10.0}, pfc::Inclusive{1.0}};
+    const auto tBounds = ParameterBounds{Exclusive{-10.0}, Inclusive{1.0}};
     EXPECT_FALSE(tBounds.contains(-11.0));
     EXPECT_FALSE(tBounds.contains(-10.0));
     EXPECT_TRUE(tBounds.contains(0.5));
@@ -52,9 +45,7 @@ TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpper)
 
 TEST(ParameterBounds, Unbounded)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::unbounded<double>();
+    const auto tBounds = unbounded<double>();
     EXPECT_TRUE(tBounds.contains(-11.0));
     EXPECT_TRUE(tBounds.contains(-10.0));
     EXPECT_TRUE(tBounds.contains(0.5));
@@ -64,9 +55,7 @@ TEST(ParameterBounds, Unbounded)
 
 TEST(ParameterBounds, LowerBounded)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::lower_bounded(pfc::Inclusive{0.0});
+    const auto tBounds = lower_bounded(Inclusive{0.0});
     EXPECT_FALSE(tBounds.contains(-11.0));
     EXPECT_TRUE(tBounds.contains(0.0));
     EXPECT_TRUE(tBounds.contains(1.5));
@@ -74,9 +63,7 @@ TEST(ParameterBounds, LowerBounded)
 
 TEST(ParameterBounds, UpperBounded)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::upper_bounded(pfc::Exclusive{0.0});
+    const auto tBounds = upper_bounded(Exclusive{0.0});
     EXPECT_TRUE(tBounds.contains(-11.0));
     EXPECT_FALSE(tBounds.contains(0.0));
     EXPECT_FALSE(tBounds.contains(1.5));
@@ -84,9 +71,7 @@ TEST(ParameterBounds, UpperBounded)
 
 TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpperInt)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Exclusive{0}, pfc::Inclusive{10}};
+    const auto tBounds = ParameterBounds{Exclusive{0}, Inclusive{10}};
     EXPECT_FALSE(tBounds.contains(-11.0));
     EXPECT_FALSE(tBounds.contains(0));
     EXPECT_TRUE(tBounds.contains(5));
@@ -96,9 +81,7 @@ TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpperInt)
 
 TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpperUnsignedInt)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    const auto tBounds = pfc::ParameterBounds{pfc::Exclusive{0u}, pfc::Inclusive{10u}};
+    const auto tBounds = ParameterBounds{Exclusive{0u}, Inclusive{10u}};
     EXPECT_FALSE(tBounds.contains(0));
     EXPECT_TRUE(tBounds.contains(5));
     EXPECT_TRUE(tBounds.contains(10));
@@ -107,9 +90,8 @@ TEST(ParameterBounds, DirectConstructionExclusiveLowerInclusiveUpperUnsignedInt)
 
 TEST(ParameterBounds, Description)
 {
-    namespace pfc = Plato::Functional::Core;
-
-    EXPECT_EQ(pfc::unbounded<double>().description(), "(-inf, inf)");
-    EXPECT_EQ((pfc::ParameterBounds{pfc::Inclusive{0}, pfc::Inclusive{10}}.description()), "[0, 10]");
-    EXPECT_EQ((pfc::ParameterBounds{pfc::Exclusive{-42}, pfc::Exclusive{0}}.description()), "(-42, 0)");
+    EXPECT_EQ(unbounded<double>().description(), "(-inf, inf)");
+    EXPECT_EQ((ParameterBounds{Inclusive{0}, Inclusive{10}}.description()), "[0, 10]");
+    EXPECT_EQ((ParameterBounds{Exclusive{-42}, Exclusive{0}}.description()), "(-42, 0)");
 }
+}  // namespace plato::functional::utilities::unittest

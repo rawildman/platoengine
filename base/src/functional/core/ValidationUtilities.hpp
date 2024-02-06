@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "ParameterBounds.hpp"
 #include "InputBlocks.hpp"
+#include "ParameterBounds.hpp"
 
 namespace Plato::Functional::Validation
 {
@@ -22,7 +22,7 @@ template <typename T>
     const std::string_view aPrependString,
     const boost::optional<T>& aParameter,
     const std::string_view aEntryName,
-    const Core::ParameterBounds<T>& aBounds);
+    const plato::functional::utilities::ParameterBounds<T>& aBounds);
 
 /// @brief Checks if the objective or constraint given by @a aParameter should be included in the optimization problem.
 /// @tparam Must have a public field `active` that is a `boost` or `std::optional`.
@@ -45,10 +45,11 @@ std::optional<std::string> error_message_for_empty_parameter(const std::string_v
 }
 
 template <typename T>
-std::optional<std::string> error_message_for_parameter_out_of_bounds(const std::string_view aPrependString,
-                                                                     const boost::optional<T>& aParameter,
-                                                                     const std::string_view aEntryName,
-                                                                     const Core::ParameterBounds<T>& aBounds)
+std::optional<std::string> error_message_for_parameter_out_of_bounds(
+    const std::string_view aPrependString,
+    const boost::optional<T>& aParameter,
+    const std::string_view aEntryName,
+    const plato::functional::utilities::ParameterBounds<T>& aBounds)
 {
     if (aParameter && !aBounds.contains(aParameter.value()))
     {

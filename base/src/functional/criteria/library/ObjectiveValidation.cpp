@@ -16,7 +16,8 @@ namespace plato::functional::criteria::library
 [[maybe_unused]] static auto kListObjectivesValidationRegistration =
     Plato::Functional::Validation::Registration<std::vector<Plato::objective>>{
         [](const std::vector<Plato::objective>& aInput) { return detail::validate_at_least_one_objective(aInput); },
-        [](const std::vector<Plato::objective>& aInput) { return detail::validate_number_of_ranks_vs_objectives(aInput); }};
+        [](const std::vector<Plato::objective>& aInput)
+        { return detail::validate_number_of_ranks_vs_objectives(aInput); }};
 
 std::vector<std::string> validate_objectives(const std::vector<Plato::objective>& aInput,
                                              std::vector<std::string>&& aCurrentMessageList)
@@ -29,10 +30,10 @@ namespace detail
 std::optional<std::string> validate_aggregation_weight(const Plato::objective& aInput)
 {
     namespace pfv = Plato::Functional::Validation;
-    namespace pfc = Plato::Functional::Core;
+    namespace pfu = plato::functional::utilities;
     return pfv::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.aggregation_weight,
                                                           "aggregation_weight",
-                                                          pfc::lower_bounded(pfc::Exclusive{0.0}));
+                                                          pfu::lower_bounded(pfu::Exclusive{0.0}));
 }
 
 std::optional<std::string> validate_at_least_one_objective(const std::vector<Plato::objective>& aInput)

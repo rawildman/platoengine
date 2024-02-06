@@ -7,7 +7,7 @@
 
 #include "BoundClusivity.hpp"
 
-namespace Plato::Functional::Core
+namespace plato::functional::utilities
 {
 /// @brief A helper type for defining the bounds of an input parameter.
 ///
@@ -170,6 +170,6 @@ template <typename T>
     return ParameterBounds{Unbounded<T>{}, Unbounded<T>{}};
 }
 
-}  // namespace Plato::Functional::Core
+}  // namespace plato::functional::utilities
 
 #endif

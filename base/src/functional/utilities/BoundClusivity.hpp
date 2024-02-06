@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-namespace Plato::Functional::Core
+namespace plato::functional::utilities
 {
 namespace detail
 {
@@ -59,6 +59,6 @@ Inclusive(T) -> Inclusive<T>;
 
 template <typename T>
 Exclusive(T) -> Exclusive<T>;
-}
+}  // namespace plato::functional::utilities
 
 #endif
