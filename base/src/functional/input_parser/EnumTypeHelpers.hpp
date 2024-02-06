@@ -1,5 +1,5 @@
-#ifndef PLATO_ENUMTYPEHELPERS_HPP
-#define PLATO_ENUMTYPEHELPERS_HPP
+#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_ENUMTYPEHELPERS
+#define PLATO_FUNCTIONAL_INPUT_PARSER_ENUMTYPEHELPERS
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

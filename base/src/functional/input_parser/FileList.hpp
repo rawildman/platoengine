@@ -1,5 +1,5 @@
-#ifndef PLATO_FILELIST_HPP
-#define PLATO_FILELIST_HPP
+#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_FILELIST
+#define PLATO_FUNCTIONAL_INPUT_PARSER_FILELIST
 
 #include <boost/spirit/include/qi.hpp>
 #include <iostream>

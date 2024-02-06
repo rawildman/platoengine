@@ -1,5 +1,5 @@
-#ifndef PLATO_INPUTPARSER_HPP
-#define PLATO_INPUTPARSER_HPP
+#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_INPUTPARSER
+#define PLATO_FUNCTIONAL_INPUT_PARSER_INPUTPARSER
 
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/fusion.hpp>
