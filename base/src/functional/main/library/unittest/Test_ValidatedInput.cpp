@@ -9,14 +9,11 @@ namespace plato::functional::main::library::unittest
 {
 TEST(ValidatedInput, MakeValidInputWithInvalidInput)
 {
-    namespace pf = Plato::Functional;
-    EXPECT_THROW(const auto tValidatedInput = make_validated_input(Plato::PlatoInput{}), pf::Exception);
+    EXPECT_THROW(const auto tValidatedInput = make_validated_input(Plato::PlatoInput{}), utilities::Exception);
 }
 
 TEST(ValidatedInput, MakeValidInputWithValidInput)
 {
-    namespace pf = Plato::Functional;
-    EXPECT_NO_THROW(const auto tValidatedInput =
-                        make_validated_input(plato::functional::test_utilities::create_valid_example_input()));
+    EXPECT_NO_THROW(const auto tValidatedInput = make_validated_input(test_utilities::create_valid_example_input()));
 }
 }  // namespace plato::functional::main::library::unittest

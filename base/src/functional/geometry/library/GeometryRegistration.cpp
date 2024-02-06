@@ -14,7 +14,7 @@ library::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput)
     const std::optional<library::GeometryInput> tGeometryInput = detail::first_geometry_block(aInput);
     if (!tGeometryInput)
     {
-        throw Plato::Functional::Exception("No geometry block was defined.");
+        throw plato::functional::utilities::Exception("No geometry block was defined.");
     }
     return tGeometryInput.value();
 }

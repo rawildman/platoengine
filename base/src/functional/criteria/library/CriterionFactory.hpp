@@ -42,7 +42,7 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput)
     }
     else
     {
-        throw Plato::Functional::Exception("App not supported.");
+        throw plato::functional::utilities::Exception("App not supported.");
     }
 }
 

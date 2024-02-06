@@ -40,6 +40,6 @@ TEST(ObjectiveFactory, MPISize)
 TEST(ObjectiveFactory, InvalidParallelAggregate)
 {
     EXPECT_THROW(const main::library::ValidatedInput tData = create_one_objective_test_input(),
-                 Plato::Functional::Exception);
+                 plato::functional::utilities::Exception);
 }
 }  // namespace plato::functional::integration_tests::parallel

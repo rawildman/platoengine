@@ -65,8 +65,9 @@ ValidatedInput make_validated_input(Plato::PlatoInput aInput)
                                                                                std::move(tMessages));
     if (!tMessages.empty())
     {
-        throw Plato::Functional::Exception("Error: Could not validate input, the following errors were found: \n" +
-                                           Plato::Functional::Validation::all_messages(tMessages));
+        throw plato::functional::utilities::Exception(
+            "Error: Could not validate input, the following errors were found: \n" +
+            Plato::Functional::Validation::all_messages(tMessages));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }

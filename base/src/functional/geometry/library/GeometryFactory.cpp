@@ -20,7 +20,7 @@ FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
     }
     else
     {
-        throw Plato::Functional::Exception{"Unknown geometry"};
+        throw plato::functional::utilities::Exception{"Unknown geometry"};
     }
 }
 }  // namespace plato::functional::geometry::library

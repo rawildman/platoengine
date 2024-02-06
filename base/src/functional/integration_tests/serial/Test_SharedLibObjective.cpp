@@ -25,7 +25,7 @@ void generate_bad_library_and_do_nothing()
 
 TEST(SharedLibObjective, BadLibraryPath)
 {
-    EXPECT_THROW(generate_bad_library_and_do_nothing(), Plato::Functional::Exception);
+    EXPECT_THROW(generate_bad_library_and_do_nothing(), plato::functional::utilities::Exception);
 }
 
 TEST(SharedLibObjective, CallValue)

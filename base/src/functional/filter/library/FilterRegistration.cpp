@@ -47,8 +47,8 @@ std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInp
                                              const std::filesystem::path& aSharedLibraryPath)
 {
     using CreateFilterFunction = std::add_pointer_t<std::unique_ptr<FilterInterface>(const FilterParameters&)>;
-    void* const tSharedLibInterface = Plato::Functional::Utilities::load_shared_library(aSharedLibraryPath);
-    const auto tCreateFilterFunction = Plato::Functional::Utilities::load_function<CreateFilterFunction>(
+    void* const tSharedLibInterface = plato::functional::utilities::load_shared_library(aSharedLibraryPath);
+    const auto tCreateFilterFunction = plato::functional::utilities::load_function<CreateFilterFunction>(
         tSharedLibInterface, kCreateFilterFunctionName, aSharedLibraryPath);
 
     return tCreateFilterFunction(to_filter_parameters(aInput));

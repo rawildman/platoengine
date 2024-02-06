@@ -1,6 +1,6 @@
 #include "SharedLibraryUtilities.hpp"
 
-namespace Plato::Functional::Utilities
+namespace plato::functional::utilities
 {
 void* load_shared_library(const std::filesystem::path& aSharedLibPath)
 {
@@ -11,4 +11,4 @@ void* load_shared_library(const std::filesystem::path& aSharedLibPath)
     }
     return tSharedLibInterface;
 }
-}  // namespace Plato::Functional::Utilities
+}  // namespace plato::functional::utilities

@@ -130,8 +130,7 @@ TEST(PlatoProblem, InputFileToROLSolver)
 
 TEST(PlatoProblem, ParseAndValidateInvalidInput)
 {
-    namespace pf = Plato::Functional;
     const std::string tInput;
-    EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), pf::Exception);
+    EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), utilities::Exception);
 }
 }  // namespace plato::functional::main::library::unittest

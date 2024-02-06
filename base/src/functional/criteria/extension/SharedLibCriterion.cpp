@@ -27,8 +27,8 @@ SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPa
     using CreateCriterionFunction =
         std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
 
-    void* const tSharedLibInterface = Plato::Functional::Utilities::load_shared_library(aSharedLibPath);
-    const auto tCreateCriterionFunction = Plato::Functional::Utilities::load_function<CreateCriterionFunction>(
+    void* const tSharedLibInterface = plato::functional::utilities::load_shared_library(aSharedLibPath);
+    const auto tCreateCriterionFunction = plato::functional::utilities::load_function<CreateCriterionFunction>(
         tSharedLibInterface, library::kCreateCriterionFunctionName, aSharedLibPath);
     mCriterionFunction = tCreateCriterionFunction(aFileNames);
 }
@@ -44,8 +44,8 @@ linear_algebra::DynamicVector<double> SharedLibCriterion::df(const Plato::Functi
     return linear_algebra::DynamicVector<double>(std::move(tGradient));
 }
 
-auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion) -> Plato::Functional::
-    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>
+auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
+    -> Plato::Functional::Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>
 {
     return Plato::Functional::make_function(
         [aSharedLibCriterion](const Plato::Functional::MeshProxy& mesh) { return aSharedLibCriterion.f(mesh); },

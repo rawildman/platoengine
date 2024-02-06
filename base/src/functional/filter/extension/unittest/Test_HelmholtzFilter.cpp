@@ -23,7 +23,7 @@ TEST(FilterFactory, HelmholtzFilterThrows)
         const pff::library::FilterFunction tFunction = pff::library::make_filter_function(tDensityTopology);
         tCreationSuccessful = true;
     }
-    catch (const pf::Exception&)
+    catch (const plato::functional::utilities::Exception&)
     {
         tCorrectException = true;
     }

@@ -18,7 +18,7 @@ FilterFunction make_filter_function(const Plato::density_topology& aInput)
     }
     else
     {
-        throw Plato::Functional::Exception{"Unknown filter_type"};
+        throw plato::functional::utilities::Exception{"Unknown filter_type"};
     }
 }
 }  // namespace plato::functional::filter::library

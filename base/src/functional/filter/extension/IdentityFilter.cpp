@@ -33,7 +33,7 @@ linear_algebra::DynamicVector<double> IdentityFilter::jacobianTimesVector(
     const std::size_t tDensityDimension = aMeshProxy.mNodalDensities.size();
     if (tVectorDimension != tDensityDimension)
     {
-        throw Plato::Functional::Exception{
+        throw plato::functional::utilities::Exception{
             "IdentityFilter jacobian multiplication: Dimensions of vector and nodal density field don't match. Vector "
             "dimension: " +
             std::to_string(tVectorDimension) + ", density dimension: " + std::to_string(tDensityDimension)};

@@ -18,13 +18,13 @@ namespace
         [](const linear_algebra::DynamicVector<double>&) { return linear_algebra::JacobianMultiplier{}; });
 }
 
-[[maybe_unused]] static auto kTestGeometryRegistration = GeometryRegistration{
-    "test", [](const ValidatedGeometryInput&)
-    {
-        return FactoryTypes{make_test_geometry_function(), linear_algebra::DynamicVector<double>{},
-                            std::make_pair(std::vector<double>{}, std::vector<double>{}),
-                            std::function<void(const linear_algebra::DynamicVector<double>&)>{}};
-    }};
+[[maybe_unused]] static auto kTestGeometryRegistration =
+    GeometryRegistration{"test", [](const ValidatedGeometryInput&)
+                         {
+                             return FactoryTypes{make_test_geometry_function(), linear_algebra::DynamicVector<double>{},
+                                                 std::make_pair(std::vector<double>{}, std::vector<double>{}),
+                                                 std::function<void(const linear_algebra::DynamicVector<double>&)>{}};
+                         }};
 }  // namespace
 
 TEST(GeometryRegistration, PhonyGeometry) { EXPECT_TRUE(is_geometry_function_registered("test")); }
@@ -35,6 +35,7 @@ TEST(GeometryRegistration, DensityTopology) { EXPECT_TRUE(is_geometry_function_r
 
 TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
 {
-    EXPECT_THROW(auto tGeometryInput = first_geometry_input(Plato::PlatoInput{}), Plato::Functional::Exception);
+    EXPECT_THROW(auto tGeometryInput = first_geometry_input(Plato::PlatoInput{}),
+                 plato::functional::utilities::Exception);
 }
 }  // namespace plato::functional::geometry::library::unittest

@@ -19,7 +19,7 @@ Plato::PlatoInput parse_input(const std::string_view aInput)
     const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
     if (!tParseResult || tIter != aInput.cend())
     {
-        throw Plato::Functional::Exception("Could not parse input deck.");
+        throw plato::functional::utilities::Exception("Could not parse input deck.");
     }
     return tData;
 }
