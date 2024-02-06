@@ -2,6 +2,9 @@
 
 #include "NamedType.hpp"
 
+namespace plato::functional::utilities::unittest
+{
+
 namespace
 {
 struct Input
@@ -9,7 +12,7 @@ struct Input
     double mValue;
     std::string mName;
 };
-using ValidatedInput = plato::functional::utilities::NamedType<Input, struct ValidatedInputTag>;
+using ValidatedInput = NamedType<Input, struct ValidatedInputTag>;
 }  // namespace
 
 TEST(NamedType, Creation)
@@ -19,3 +22,4 @@ TEST(NamedType, Creation)
     EXPECT_EQ(tValid.mValue.mValue, tInput.mValue);
     EXPECT_EQ(tValid.mValue.mName, tInput.mName);
 }
+}  // namespace plato::functional::utilities::unittest
