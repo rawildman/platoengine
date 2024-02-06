@@ -14,10 +14,10 @@ SharedLibCriterion make_shared_lib_criterion(const plato::functional::criteria::
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
 }
 
-[[maybe_unused]] static auto kCustomAppRegistration =
-    library::CriterionRegistration{Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kCustomApp).value(),
-                                   [](const plato::functional::criteria::library::CriterionInput& aInput)
-                                   { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
+[[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
+    input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
+    [](const plato::functional::criteria::library::CriterionInput& aInput)
+    { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
 }  // namespace
 
 SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPath,

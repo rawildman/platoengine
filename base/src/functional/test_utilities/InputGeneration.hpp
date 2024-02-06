@@ -12,22 +12,22 @@ namespace plato::functional::test_utilities
 
 void create_input_file(const std::filesystem::path aTestFileName);
 
-[[nodiscard]] Plato::PlatoInput create_valid_example_input();
+[[nodiscard]] input_parser::PlatoInput create_valid_example_input();
 
-[[nodiscard]] Plato::brick_shape_geometry create_valid_brick_shape_geometry();
+[[nodiscard]] input_parser::brick_shape_geometry create_valid_brick_shape_geometry();
 [[nodiscard]] std::string create_valid_brick_shape_geometry_string();
 
-[[nodiscard]] Plato::density_topology create_valid_density_topology_geometry();
+[[nodiscard]] input_parser::density_topology create_valid_density_topology_geometry();
 [[nodiscard]] std::string create_valid_density_topology_geometry_string();
 
-[[nodiscard]] Plato::objective create_valid_example_objective();
+[[nodiscard]] input_parser::objective create_valid_example_objective();
 [[nodiscard]] std::string create_valid_example_objective_string();
 [[nodiscard]] std::string create_valid_example_custom_app_objective_string();
 
-[[nodiscard]] Plato::constraint create_valid_example_constraint();
+[[nodiscard]] input_parser::constraint create_valid_example_constraint();
 [[nodiscard]] std::string create_valid_example_constraint_string();
 
-[[nodiscard]] Plato::optimization_parameters create_valid_example_optimization_parameters();
+[[nodiscard]] input_parser::optimization_parameters create_valid_example_optimization_parameters();
 [[nodiscard]] std::string create_valid_example_optimization_parameters_string();
 
 }  // namespace plato::functional::test_utilities

@@ -13,12 +13,12 @@ namespace plato::functional::filter::extension
 namespace
 {
 [[maybe_unused]] static auto kIdentityFilterRegistration =
-    library::FilterRegistration{Plato::kFilterTypesTable.toString(Plato::FilterTypes::kIdentity).value(),
-                                [](const Plato::density_topology&) { return make_identity_filter_function(); }};
+    library::FilterRegistration{input_parser::kFilterTypesTable.toString(input_parser::FilterTypes::kIdentity).value(),
+                                [](const input_parser::density_topology&) { return make_identity_filter_function(); }};
 
 [[maybe_unused]] static auto kIdentityFilterValidationRegistration =
-    core::ValidationRegistration<Plato::density_topology>{[](const Plato::density_topology& aInput)
-                                                          { return validate_identity_filter(aInput); }};
+    core::ValidationRegistration<input_parser::density_topology>{[](const input_parser::density_topology& aInput)
+                                                                 { return validate_identity_filter(aInput); }};
 }  // namespace
 
 core::MeshProxy IdentityFilter::filter(const core::MeshProxy& aMeshProxy) const { return aMeshProxy; }
@@ -46,13 +46,13 @@ auto make_identity_filter_function() -> core::Function<core::MeshProxy, library:
                                });
 }
 
-[[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput)
+[[nodiscard]] std::optional<std::string> validate_identity_filter(const input_parser::density_topology& aInput)
 {
-    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kIdentity)
+    if (aInput.filter_type && aInput.filter_type.value() == input_parser::FilterTypes::kIdentity)
     {
         if (aInput.boundary_sticking_penalty.has_value() || aInput.filter_radius.has_value())
         {
-            return Plato::block_name<Plato::density_topology>() +
+            return input_parser::block_name<input_parser::density_topology>() +
                    R"( identity filter cannot have "filter_radius" or "boundary_sticking_penalty" defined.)";
         }
     }

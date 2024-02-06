@@ -19,7 +19,7 @@ const auto kMeshArgument = core::MeshProxy{kMeshName, kRho};
 TEST(SharedLibFilter, LoadAndValue)
 {
     const std::unique_ptr<const library::FilterInterface> tFilter =
-        library::load_filter(Plato::density_topology{}, kSharedLibPath);
+        library::load_filter(input_parser::density_topology{}, kSharedLibPath);
     EXPECT_EQ(tFilter->filter(kMeshArgument).mNodalDensities, kRho);
 }
 

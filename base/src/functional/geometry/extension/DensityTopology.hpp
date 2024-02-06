@@ -12,7 +12,7 @@
 #include "MeshProxy.hpp"
 #include "ValidationRegistration.hpp"
 
-namespace Plato
+namespace input_parser
 {
 struct density_topology;
 }
@@ -28,16 +28,14 @@ namespace plato::functional::geometry::extension
 class DensityTopology
 {
    public:
-    explicit DensityTopology(const Plato::density_topology& aInput);
+    explicit DensityTopology(const input_parser::density_topology& aInput);
 
-    [[nodiscard]] core::MeshProxy generateMesh(
-        const linear_algebra::DynamicVector<double>& aDesignParameter) const;
+    [[nodiscard]] core::MeshProxy generateMesh(const linear_algebra::DynamicVector<double>& aDesignParameter) const;
 
     [[nodiscard]] linear_algebra::JacobianMultiplier jacobian(
         const linear_algebra::DynamicVector<double>& aDesignParameter) const;
 
-    [[nodiscard]] static linear_algebra::DynamicVector<double> initialGuess(
-        const std::filesystem::path& aMeshFileName);
+    [[nodiscard]] static linear_algebra::DynamicVector<double> initialGuess(const std::filesystem::path& aMeshFileName);
 
     [[nodiscard]] static std::pair<std::vector<double>, std::vector<double>> bounds(
         const std::filesystem::path& aMeshFileName);
@@ -53,14 +51,12 @@ class DensityTopology
 };
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
-[[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
-    -> core::Function<core::MeshProxy,
-                                   linear_algebra::JacobianMultiplier,
-                                   const linear_algebra::DynamicVector<double>&>;
+[[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology) -> core::
+    Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>;
 
 namespace detail
 {
-[[nodiscard]] std::optional<std::string> validate_output_name(const Plato::density_topology& aInput);
+[[nodiscard]] std::optional<std::string> validate_output_name(const input_parser::density_topology& aInput);
 }  // namespace detail
 
 }  // namespace plato::functional::geometry::extension

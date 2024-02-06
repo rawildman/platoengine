@@ -13,7 +13,7 @@ template <typename Criteria>
 [[nodiscard]] std::string criterion_name(const Criteria& aInput)
 {
     std::string tName = aInput.name.value_or("unnamed");
-    return Plato::block_name<Criteria>() + " " + tName;
+    return input_parser::block_name<Criteria>() + " " + tName;
 }
 
 template <typename Criteria>
@@ -25,7 +25,7 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_custom_app(const Criteria& aInput)
 {
-    if (aInput.app.has_value() && aInput.app.value() == Plato::CodeOptions::kCustomApp)
+    if (aInput.app.has_value() && aInput.app.value() == input_parser::CodeOptions::kCustomApp)
     {
         return core::error_message_for_empty_parameter(criterion_name(aInput), aInput.shared_library_path,
                                                        "shared_library_path");

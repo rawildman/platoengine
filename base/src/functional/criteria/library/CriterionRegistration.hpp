@@ -17,9 +17,9 @@ namespace plato::functional::criteria::library
 {
 struct CriterionInput
 {
-    Plato::FileName mSharedLibraryPath;
+    input_parser::FileName mSharedLibraryPath;
     unsigned int mNumberOfProcessors;
-    Plato::FileList mInputFiles;
+    input_parser::FileList mInputFiles;
 };
 
 using CriterionFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;

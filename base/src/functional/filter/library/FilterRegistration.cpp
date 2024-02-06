@@ -25,7 +25,7 @@ std::optional<T> to_std_optional(const boost::optional<T>& aT)
     }
 }
 
-FilterParameters to_filter_parameters(const Plato::density_topology& aInput)
+FilterParameters to_filter_parameters(const input_parser::density_topology& aInput)
 {
     return FilterParameters{
         /*.mFilterRadius=*/aInput.filter_radius.value_or(1.0),  // FIX-ME When adding validation, should be required
@@ -43,7 +43,7 @@ auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilte
                                });
 }
 
-std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
+std::unique_ptr<FilterInterface> load_filter(const input_parser::density_topology& aInput,
                                              const std::filesystem::path& aSharedLibraryPath)
 {
     using CreateFilterFunction = std::add_pointer_t<std::unique_ptr<FilterInterface>(const FilterParameters&)>;

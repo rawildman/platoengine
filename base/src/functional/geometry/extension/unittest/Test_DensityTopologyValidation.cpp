@@ -24,7 +24,7 @@ TEST(DensityTopologyValidation, ValidateOutputName)
 
 TEST(DensityTopologyValidation, ValidDensityTopologyInput)
 {
-    auto tInput = Plato::PlatoInput{};
+    auto tInput = input_parser::PlatoInput{};
     tInput.mDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
 
     std::vector<std::string> tMessages;
@@ -34,7 +34,7 @@ TEST(DensityTopologyValidation, ValidDensityTopologyInput)
 
 TEST(DensityTopologyValidation, InvalidDensityTopologyInput)
 {
-    auto tInput = Plato::PlatoInput{};
+    auto tInput = input_parser::PlatoInput{};
     tInput.mDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
     tInput.mDensityTopology->filter_radius = 1.0;
 

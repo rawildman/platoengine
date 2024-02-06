@@ -11,7 +11,7 @@
 
 #include "BlockStructRule.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 namespace detail
 {
@@ -127,15 +127,12 @@ struct InputParser : boost::spirit::qi::grammar<Iterator, PlatoInput(), boost::s
     using Rule = boost::spirit::qi::rule<Iterator, PlatoInput(), boost::spirit::ascii::space_type>;
     Rule mStartPlatoInput;
 };
-}  // namespace Plato
 
-namespace Plato::Functional
-{
 /// @brief Parses all content of @a aInput as if it were an input deck.
-[[nodiscard]] Plato::PlatoInput parse_input(std::string_view aInput);
+[[nodiscard]] PlatoInput parse_input(std::string_view aInput);
 
 /// @brief Parses all content of the file @a aFileName.
-[[nodiscard]] Plato::PlatoInput parse_input_from_file(const std::filesystem::path& aFileName);
-}  // namespace Plato::Functional
+[[nodiscard]] PlatoInput parse_input_from_file(const std::filesystem::path& aFileName);
+}  // namespace plato::functional::input_parser
 
 #endif

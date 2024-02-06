@@ -13,8 +13,8 @@ TEST(FilterFactory, HelmholtzFilterThrows)
     // and if not, checks that we get the right exception type.
     namespace pff = plato::functional::filter;
 
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.filter_type = Plato::FilterTypes::kHelmholtz;
+    auto tDensityTopology = input_parser::density_topology{};
+    tDensityTopology.filter_type = input_parser::FilterTypes::kHelmholtz;
     bool tCreationSuccessful = false;
     bool tCorrectException = false;
     try

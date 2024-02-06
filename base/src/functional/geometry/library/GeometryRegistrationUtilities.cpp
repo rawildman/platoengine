@@ -12,13 +12,13 @@ void emplace_back_if_has_value(std::vector<library::GeometryInput>& aGeometryInp
     }
 }
 
-std::vector<library::GeometryInput> geometry_blocks(const Plato::PlatoInput& aInput)
+std::vector<library::GeometryInput> geometry_blocks(const input_parser::PlatoInput& aInput)
 {
-    constexpr auto tNumInputFields = boost::fusion::result_of::size<Plato::PlatoInput>::value;
+    constexpr auto tNumInputFields = boost::fusion::result_of::size<input_parser::PlatoInput>::value;
     return geometry_blocks_impl(aInput, std::make_index_sequence<tNumInputFields>{});
 }
 
-std::optional<library::GeometryInput> first_geometry_block(const Plato::PlatoInput& aInput)
+std::optional<library::GeometryInput> first_geometry_block(const input_parser::PlatoInput& aInput)
 {
     const std::vector<library::GeometryInput> tGeometryBlocks = geometry_blocks(aInput);
     if (tGeometryBlocks.empty())
@@ -37,7 +37,7 @@ std::string block_name(const library::GeometryInput& aInput)
         [](const auto& aObj) -> std::string
         {
             using InputType = std::decay_t<decltype(aObj)>;
-            return Plato::block_name<InputType>();
+            return input_parser::block_name<InputType>();
         },
         aInput);
 }
@@ -49,7 +49,7 @@ std::string block_name(const library::ValidatedGeometryInput& aInput)
         {
             using ValidatedInputType = std::decay_t<decltype(aObj)>;
             using RawInputType = typename ValidatedInputType::RawInputType;
-            return Plato::block_name<RawInputType>();
+            return input_parser::block_name<RawInputType>();
         },
         aInput.rawInput());
 }

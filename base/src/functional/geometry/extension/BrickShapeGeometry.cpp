@@ -24,7 +24,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 
 [[nodiscard]] std::filesystem::path mesh_path(const library::ValidatedGeometryInput& aGeometryInput)
 {
-    const auto& tInput = library::geometry_raw_input<Plato::brick_shape_geometry>(aGeometryInput);
+    const auto& tInput = library::geometry_raw_input<input_parser::brick_shape_geometry>(aGeometryInput);
     return tInput.mesh_name.value().mName;
 }
 
@@ -35,7 +35,8 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 
 [[maybe_unused]] static auto kBrickShapeGeometryRegistration =
     plato::functional::geometry::library::GeometryRegistration{
-        Plato::block_name<Plato::brick_shape_geometry>(), [](const library::ValidatedGeometryInput& aGeometryInput)
+        input_parser::block_name<input_parser::brick_shape_geometry>(),
+        [](const library::ValidatedGeometryInput& aGeometryInput)
         {
             return library::FactoryTypes{make_brick_shape_geometry(BrickShapeGeometry{mesh_path(aGeometryInput)}),
                                          BrickShapeGeometry::initialGuess(), BrickShapeGeometry::bounds(),
@@ -43,8 +44,8 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
         }};
 
 [[maybe_unused]] static auto kBrickShapeValidationRegistration =
-    core::ValidationRegistration<Plato::brick_shape_geometry>{[](const Plato::brick_shape_geometry& aInput)
-                                                              { return library::detail::validate_mesh_name(aInput); }};
+    core::ValidationRegistration<input_parser::brick_shape_geometry>{
+        [](const input_parser::brick_shape_geometry& aInput) { return library::detail::validate_mesh_name(aInput); }};
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)

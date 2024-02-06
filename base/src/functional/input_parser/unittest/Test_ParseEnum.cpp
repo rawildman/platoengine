@@ -30,7 +30,7 @@ bool parse_pizza_list(Iterator aBegin, Iterator aEnd, std::vector<Pizza>& aPizza
     namespace bsa = boost::spirit::ascii;
     namespace bp = boost::phoenix;
 
-    const boost::spirit::qi::symbols<char, Pizza> tSymbolTable = Plato::make_enum_symbols<Pizza>(kPizzaTable);
+    const boost::spirit::qi::symbols<char, Pizza> tSymbolTable = make_enum_symbols<Pizza>(kPizzaTable);
 
     const bool tResult =
         bsq::phrase_parse(aBegin, aEnd, (tSymbolTable[bp::push_back(bp::ref(aPizzas), bsq::_1)] % ','), bsa::space);

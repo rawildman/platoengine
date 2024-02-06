@@ -15,8 +15,8 @@ struct MeshProxy;
 
 namespace plato::functional::criteria::library
 {
-using ValidatedConstraints = core::ValidatedInputTypeWrapper<
-    std::vector<core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+using ValidatedConstraints =
+    core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
 
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
@@ -24,8 +24,7 @@ using ValidatedConstraints = core::ValidatedInputTypeWrapper<
 template <typename FunctionArg>
 struct Constraint
 {
-    using ConstraintFunction =
-        core::Function<double, linear_algebra::DynamicVector<double>, FunctionArg>;
+    using ConstraintFunction = core::Function<double, linear_algebra::DynamicVector<double>, FunctionArg>;
 
     std::string mName;
     ConstraintFunction mConstraintFunction;
@@ -44,7 +43,7 @@ struct Constraint
 namespace detail
 {
 [[nodiscard]] Constraint<const core::MeshProxy&> make_constraint(
-    const core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
+    const core::ValidatedInputTypeWrapper<input_parser::constraint>& aConstraintInput);
 
 }  // namespace detail
 }  // namespace plato::functional::criteria::library

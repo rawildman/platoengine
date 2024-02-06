@@ -15,7 +15,7 @@ struct MeshProxy;
 namespace plato::functional::criteria::library
 {
 using ValidatedObjectives =
-    core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>>;
+    core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>>;
 
 using ObjectiveFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 using AggregateObjective = core::Aggregate<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;

@@ -2,8 +2,8 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "ObjectiveValidation.hpp"
 #include "InputBlocks.hpp"
+#include "ObjectiveValidation.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {
@@ -23,13 +23,14 @@ TEST(ParallelObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
     namespace pfcd = plato::functional::criteria::library::detail;
 
     // One objective and three ranks
-    const Plato::objective tObjective;
+    const input_parser::objective tObjective;
     EXPECT_TRUE(pfcd::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
 
     // Three objectives and three ranks
     EXPECT_FALSE(pfcd::validate_number_of_ranks_vs_objectives({tObjective, tObjective, tObjective}).has_value());
 
     // Four objectives and three ranks
-    EXPECT_FALSE(pfcd::validate_number_of_ranks_vs_objectives({tObjective, tObjective, tObjective, tObjective}).has_value());
+    EXPECT_FALSE(
+        pfcd::validate_number_of_ranks_vs_objectives({tObjective, tObjective, tObjective, tObjective}).has_value());
 }
-}
+}  // namespace plato::functional::criteria::library::unittest

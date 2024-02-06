@@ -5,7 +5,7 @@
 #include "Function.hpp"
 #include "MeshProxy.hpp"
 
-namespace Plato
+namespace input_parser
 {
 struct density_topology;
 }
@@ -21,7 +21,7 @@ namespace
 }
 
 [[maybe_unused]] static auto kTestFilterRegistration =
-    FilterRegistration{"test", [](const Plato::density_topology&) { return make_test_filter_function(); }};
+    FilterRegistration{"test", [](const input_parser::density_topology&) { return make_test_filter_function(); }};
 }  // namespace
 
 TEST(FilterRegistration, PhonyFilter) { EXPECT_TRUE(is_filter_function_registered("test")); }

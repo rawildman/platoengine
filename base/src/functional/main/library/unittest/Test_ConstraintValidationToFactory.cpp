@@ -9,10 +9,10 @@ namespace plato::functional::main::library::unittest
 {
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
-    Plato::PlatoInput tInput = plato::functional::test_utilities::create_valid_example_input();
-    Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
+    input_parser::PlatoInput tInput = plato::functional::test_utilities::create_valid_example_input();
+    input_parser::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.name = "eq";
-    tConstraint.app = Plato::CodeOptions::kNodalSum;
+    tConstraint.app = input_parser::CodeOptions::kNodalSum;
     tConstraint.equal_to = 13;
     tInput.mConstraints = {tConstraint};
 

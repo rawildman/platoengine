@@ -7,12 +7,13 @@
 namespace plato::functional::optimizer
 {
 [[maybe_unused]] static auto kOptimizerValidationRegistration =
-    core::ValidationRegistration<Plato::optimization_parameters>{
-        [](const Plato::optimization_parameters& aInput) { return detail::validate_max_iterations(aInput); },
-        [](const Plato::optimization_parameters& aInput) { return detail::validate_step_tolerance(aInput); },
-        [](const Plato::optimization_parameters& aInput) { return detail::validate_gradient_tolerance(aInput); }};
+    core::ValidationRegistration<input_parser::optimization_parameters>{
+        [](const input_parser::optimization_parameters& aInput) { return detail::validate_max_iterations(aInput); },
+        [](const input_parser::optimization_parameters& aInput) { return detail::validate_step_tolerance(aInput); },
+        [](const input_parser::optimization_parameters& aInput)
+        { return detail::validate_gradient_tolerance(aInput); }};
 
-std::vector<std::string> validate_optimization_parameters(const Plato::optimization_parameters& aInput,
+std::vector<std::string> validate_optimization_parameters(const input_parser::optimization_parameters& aInput,
                                                           std::vector<std::string>&& aCurrentMessageList)
 {
     return core::validate(aInput, std::move(aCurrentMessageList));
@@ -20,14 +21,14 @@ std::vector<std::string> validate_optimization_parameters(const Plato::optimizat
 
 namespace detail
 {
-std::optional<std::string> validate_max_iterations(const Plato::optimization_parameters& aInput)
+std::optional<std::string> validate_max_iterations(const input_parser::optimization_parameters& aInput)
 {
     namespace pfu = plato::functional::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.max_iterations))
     {
-        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::optimization_parameters>(),
-                                                               aInput.max_iterations, "max_iterations",
-                                                               pfu::lower_bounded(pfu::Inclusive{1u}));
+        return core::error_message_for_parameter_out_of_bounds(
+            input_parser::block_name<input_parser::optimization_parameters>(), aInput.max_iterations, "max_iterations",
+            pfu::lower_bounded(pfu::Inclusive{1u}));
     }
     else
     {
@@ -35,14 +36,14 @@ std::optional<std::string> validate_max_iterations(const Plato::optimization_par
     }
 }
 
-[[nodiscard]] std::optional<std::string> validate_step_tolerance(const Plato::optimization_parameters& aInput)
+[[nodiscard]] std::optional<std::string> validate_step_tolerance(const input_parser::optimization_parameters& aInput)
 {
     namespace pfu = plato::functional::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.step_tolerance))
     {
-        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::optimization_parameters>(),
-                                                               aInput.step_tolerance, "step_tolerance",
-                                                               pfu::lower_bounded(pfu::Exclusive{0.0}));
+        return core::error_message_for_parameter_out_of_bounds(
+            input_parser::block_name<input_parser::optimization_parameters>(), aInput.step_tolerance, "step_tolerance",
+            pfu::lower_bounded(pfu::Exclusive{0.0}));
     }
     else
     {
@@ -50,14 +51,15 @@ std::optional<std::string> validate_max_iterations(const Plato::optimization_par
     }
 }
 
-[[nodiscard]] std::optional<std::string> validate_gradient_tolerance(const Plato::optimization_parameters& aInput)
+[[nodiscard]] std::optional<std::string> validate_gradient_tolerance(
+    const input_parser::optimization_parameters& aInput)
 {
     namespace pfu = plato::functional::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.gradient_tolerance))
     {
-        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::optimization_parameters>(),
-                                                               aInput.gradient_tolerance, "gradient_tolerance",
-                                                               pfu::lower_bounded(pfu::Exclusive{0.0}));
+        return core::error_message_for_parameter_out_of_bounds(
+            input_parser::block_name<input_parser::optimization_parameters>(), aInput.gradient_tolerance,
+            "gradient_tolerance", pfu::lower_bounded(pfu::Exclusive{0.0}));
     }
     else
     {

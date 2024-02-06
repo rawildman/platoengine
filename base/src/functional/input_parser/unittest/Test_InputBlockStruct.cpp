@@ -5,49 +5,60 @@
 
 // clang-format off
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
-    (Plato), TestNamedBlock, 
+    (plato)(functional)(input_parser), TestNamedBlock, 
     (int, field1)
     (double, field2)
 )
+
+PLATO_INPUT_BLOCK_STRUCT(
+    (plato)(functional)(input_parser), TestUnnamedBlock, 
+    (bool, field1)
+    (int, field2)
+    (double, field3)
+)
+
+PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
+    (plato)(functional)(input_parser), TestGeometryBlock, 
+    (bool, field1)
+)
 // clang-format on
+namespace plato::functional::input_parser::unittest
+{
 
 TEST(InputBlockStruct, Named)
 {
     // These are mostly compile-time checks
-    Plato::TestNamedBlock tTestBlock;
+    TestNamedBlock tTestBlock;
     tTestBlock.name = "rockemsockem";
     tTestBlock.field1 = 42;
     tTestBlock.field2 = 0.5;
-    Plato::Test::test_existence_and_equality(tTestBlock.name, "rockemsockem");
-    Plato::Test::test_existence_and_equality(tTestBlock.field1, 42);
-    Plato::Test::test_existence_and_equality(tTestBlock.field2, 0.5);
-    EXPECT_TRUE(Plato::Input::kIsNamedBlock<Plato::TestNamedBlock>);
-    EXPECT_EQ(Plato::Input::InputTypeName<Plato::TestNamedBlock>::name, "TestNamedBlock");
+    test_existence_and_equality(tTestBlock.name, "rockemsockem");
+    test_existence_and_equality(tTestBlock.field1, 42);
+    test_existence_and_equality(tTestBlock.field2, 0.5);
+    EXPECT_TRUE(kIsNamedBlock<TestNamedBlock>);
+    EXPECT_EQ(InputTypeName<TestNamedBlock>::name, "TestNamedBlock");
 }
-
-PLATO_INPUT_BLOCK_STRUCT((Plato), TestUnnamedBlock, (bool, field1)(int, field2)(double, field3))
 
 TEST(InputBlockStruct, UnNamed)
 {
     // These are mostly compile-time checks
-    Plato::TestUnnamedBlock tTestBlock;
+    TestUnnamedBlock tTestBlock;
     tTestBlock.field1 = true;
     tTestBlock.field2 = 42;
     tTestBlock.field3 = 0.5;
-    Plato::Test::test_existence_and_equality(tTestBlock.field1, true);
-    Plato::Test::test_existence_and_equality(tTestBlock.field2, 42);
-    Plato::Test::test_existence_and_equality(tTestBlock.field3, 0.5);
-    EXPECT_FALSE(Plato::Input::kIsNamedBlock<Plato::TestUnnamedBlock>);
-    EXPECT_EQ(Plato::Input::InputTypeName<Plato::TestUnnamedBlock>::name, "TestUnnamedBlock");
+    test_existence_and_equality(tTestBlock.field1, true);
+    test_existence_and_equality(tTestBlock.field2, 42);
+    test_existence_and_equality(tTestBlock.field3, 0.5);
+    EXPECT_FALSE(kIsNamedBlock<TestUnnamedBlock>);
+    EXPECT_EQ(InputTypeName<TestUnnamedBlock>::name, "TestUnnamedBlock");
 }
-
-PLATO_GEOMETRY_INPUT_BLOCK_STRUCT((Plato), TestGeometryBlock, (bool, field1))
 
 TEST(InputBlockStruct, Geometry)
 {
-    const Plato::TestGeometryBlock tTestBlock;
-    constexpr bool tIsGeometry = Plato::Input::kIsGeometryInput<Plato::TestGeometryBlock>;
+    const TestGeometryBlock tTestBlock;
+    constexpr bool tIsGeometry = kIsGeometryInput<TestGeometryBlock>;
     EXPECT_TRUE(tIsGeometry);
-    constexpr bool tIsNotGeometry = Plato::Input::kIsGeometryInput<int>;
+    constexpr bool tIsNotGeometry = kIsGeometryInput<int>;
     EXPECT_FALSE(tIsNotGeometry);
 }
+}  // namespace plato::functional::input_parser::unittest

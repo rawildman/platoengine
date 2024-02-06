@@ -19,7 +19,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
                                   end
                               )";
 
-    const ValidatedInput tData{make_validated_input(Plato::Functional::parse_input(tInput))};
+    const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
 
     const auto tOPData = tData.optimizationParameters();
     ROL::ParameterList tParlist = plato::functional::optimizer::rol_parameter_list(tOPData);
@@ -47,7 +47,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";
 
-    const ValidatedInput tData{make_validated_input(Plato::Functional::parse_input(tInput))};
+    const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
     ROL::ParameterList tParameterListFromDisk =
         plato::functional::optimizer::rol_parameter_list(tData.optimizationParameters());
 

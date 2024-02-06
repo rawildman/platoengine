@@ -50,11 +50,12 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
     const main::library::ValidatedInput tData =
         main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
-    const core::ValidatedInputTypeWrapper<Plato::objective> tValidatedObjective = tData.objectives().rawInput().front();
+    const core::ValidatedInputTypeWrapper<input_parser::objective> tValidatedObjective =
+        tData.objectives().rawInput().front();
 
     const criteria::library::CriterionInput tCriterionInput =
         criteria::library::to_criterion_input(tValidatedObjective);
-    const Plato::objective& tObjective = tValidatedObjective.rawInput();
+    const input_parser::objective& tObjective = tValidatedObjective.rawInput();
 
     ASSERT_TRUE(tObjective.shared_library_path.has_value());
     EXPECT_EQ(tObjective.shared_library_path->mName, tCriterionInput.mSharedLibraryPath.mName);
@@ -79,12 +80,12 @@ TEST(CriterionRegistration, ConvertConstraintInput)
     const main::library::ValidatedInput tData =
         main::library::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
-    const core::ValidatedInputTypeWrapper<Plato::constraint> tValidatedConstraint =
+    const core::ValidatedInputTypeWrapper<input_parser::constraint> tValidatedConstraint =
         tData.constraints().rawInput().front();
 
     const criteria::library::CriterionInput tCriterionInput =
         criteria::library::to_criterion_input(tValidatedConstraint);
-    const Plato::constraint& tConstraint = tValidatedConstraint.rawInput();
+    const input_parser::constraint& tConstraint = tValidatedConstraint.rawInput();
 
     EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mName.empty());
     EXPECT_EQ(tConstraint.number_of_processors, tCriterionInput.mNumberOfProcessors);

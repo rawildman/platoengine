@@ -10,7 +10,7 @@ namespace plato::functional::criteria::library::unittest
 TEST(ConstraintValidation, ValidateEqualTo)
 {
     namespace pfcd = plato::functional::criteria::library::detail;
-    Plato::constraint tConstraint;
+    input_parser::constraint tConstraint;
     EXPECT_TRUE(pfcd::validate_equal_to(tConstraint).has_value());
     tConstraint.equal_to = 1.0;  // has only 1 : valid
     EXPECT_FALSE(pfcd::validate_equal_to(tConstraint).has_value());
@@ -18,7 +18,7 @@ TEST(ConstraintValidation, ValidateEqualTo)
 
 TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
 {
-    Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
+    input_parser::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
     tMessages = core::validate(tConstraint, std::move(tMessages));
@@ -28,11 +28,11 @@ TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
 TEST(ConstraintValidation, ErrorMessagesTwoInvalidInput)
 {
     namespace pfc = plato::functional::criteria::library;
-    Plato::constraint tConstraint;
+    input_parser::constraint tConstraint;
     auto tConstraintTwo = tConstraint;
     tConstraint.name = "bad-one";
     tConstraintTwo.name = "bad-two";
-    const std::vector<Plato::constraint> tInput{tConstraint, tConstraintTwo};
+    const std::vector<input_parser::constraint> tInput{tConstraint, tConstraintTwo};
 
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
@@ -43,7 +43,7 @@ TEST(ConstraintValidation, NoErrorMessagesTwoValidConstraints)
 {
     namespace pfc = plato::functional::criteria::library;
     const auto tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
-    const std::vector<Plato::constraint> tInput{tConstraint, tConstraint};
+    const std::vector<input_parser::constraint> tInput{tConstraint, tConstraint};
 
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
@@ -58,10 +58,10 @@ TEST(ConstraintValidation, ErrorMessagesTwoInvalidConstraints)
     auto tConstraintTwo = tConstraint;
     tConstraint.name = "bad-one";
     tConstraintTwo.name = "bad-two";
-    const std::vector<Plato::constraint> tInput{tConstraint, tConstraintTwo};
+    const std::vector<input_parser::constraint> tInput{tConstraint, tConstraintTwo};
 
     std::vector<std::string> tMessages;
     tMessages = pfc::validate_constraints(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 2u);
 }
-}
+}  // namespace plato::functional::criteria::library::unittest

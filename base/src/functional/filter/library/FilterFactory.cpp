@@ -8,9 +8,9 @@
 
 namespace plato::functional::filter::library
 {
-FilterFunction make_filter_function(const Plato::density_topology& aInput)
+FilterFunction make_filter_function(const input_parser::density_topology& aInput)
 {
-    const std::string tFilterName = Plato::kFilterTypesTable.toString(aInput.filter_type.value()).value();
+    const std::string tFilterName = input_parser::kFilterTypesTable.toString(aInput.filter_type.value()).value();
     const std::optional<FilterFunction> tFilter =
         core::create_object_from_factory<FilterFunction, FilterInput>(tFilterName, aInput);
 

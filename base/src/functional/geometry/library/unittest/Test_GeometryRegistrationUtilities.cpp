@@ -29,7 +29,7 @@ TEST(GeometryRegistrationUtilities, MakeVariantRightTypeEmpty)
 {
     namespace pfgl = plato::functional::geometry::library;
     namespace pfgld = plato::functional::geometry::library::detail;
-    using ValidOptional = boost::optional<Plato::density_topology>;
+    using ValidOptional = boost::optional<input_parser::density_topology>;
     const std::optional<pfgl::GeometryInput> tResult = pfgld::make_variant_if_geometry(ValidOptional{boost::none});
     EXPECT_FALSE(tResult.has_value());
 }
@@ -38,9 +38,9 @@ TEST(GeometryRegistrationUtilities, MakeVariantRightTypeNotEmpty)
 {
     namespace pfgl = plato::functional::geometry::library;
     namespace pfgld = plato::functional::geometry::library::detail;
-    using ValidOptional = boost::optional<Plato::density_topology>;
+    using ValidOptional = boost::optional<input_parser::density_topology>;
     const std::optional<pfgl::GeometryInput> tResult =
-        pfgld::make_variant_if_geometry(ValidOptional{Plato::density_topology{}});
+        pfgld::make_variant_if_geometry(ValidOptional{input_parser::density_topology{}});
     EXPECT_TRUE(tResult.has_value());
 }
 
@@ -48,7 +48,7 @@ TEST(GeometryRegistrationUtilities, GeometryBlockAllEmpty)
 {
     namespace pfgl = plato::functional::geometry::library;
     namespace pfgld = plato::functional::geometry::library::detail;
-    const std::optional<pfgl::GeometryInput> tGeometryInput = pfgld::first_geometry_block(Plato::PlatoInput{});
+    const std::optional<pfgl::GeometryInput> tGeometryInput = pfgld::first_geometry_block(input_parser::PlatoInput{});
     EXPECT_FALSE(tGeometryInput.has_value());
 }
 
@@ -56,7 +56,7 @@ TEST(GeometryRegistrationUtilities, GeometryBlockHasDensityTopology)
 {
     namespace pfgl = plato::functional::geometry::library;
     namespace pfgld = plato::functional::geometry::library::detail;
-    auto tInput = Plato::PlatoInput{};
+    auto tInput = input_parser::PlatoInput{};
     tInput.mDensityTopology.emplace();
     const std::optional<pfgl::GeometryInput> tGeometryInput = pfgld::first_geometry_block(tInput);
     EXPECT_TRUE(tGeometryInput.has_value());
@@ -66,7 +66,7 @@ TEST(GeometryRegistrationUtilities, GeometryInputHasDensityTopology)
 {
     namespace pfgl = plato::functional::geometry::library;
     namespace pfgld = plato::functional::geometry::library::detail;
-    auto tInput = Plato::PlatoInput{};
+    auto tInput = input_parser::PlatoInput{};
     tInput.mDensityTopology.emplace();
     EXPECT_NO_THROW(auto tGeometryInput = pfgld::first_geometry_block(tInput));
 }
@@ -75,11 +75,11 @@ TEST(GeometryRegistrationUtilities, BlockName)
 {
     namespace pfgl = plato::functional::geometry::library;
     {
-        const auto tGeometryInput = pfgl::GeometryInput{Plato::density_topology{}};
+        const auto tGeometryInput = pfgl::GeometryInput{input_parser::density_topology{}};
         EXPECT_EQ(pfgl::detail::block_name(tGeometryInput), "density_topology");
     }
     {
-        const auto tGeometryInput = pfgl::GeometryInput{Plato::brick_shape_geometry{}};
+        const auto tGeometryInput = pfgl::GeometryInput{input_parser::brick_shape_geometry{}};
         EXPECT_EQ(pfgl::detail::block_name(tGeometryInput), "brick_shape_geometry");
     }
 }
@@ -88,18 +88,18 @@ TEST(GeometryRegistrationUtilities, GeometryBlocksVector)
 {
     namespace pfgl = plato::functional::geometry::library;
     {
-        Plato::PlatoInput tInput;
+        input_parser::PlatoInput tInput;
         EXPECT_EQ(pfgl::detail::geometry_blocks(tInput).size(), 0u);
     }
     {
-        Plato::PlatoInput tInput;
-        tInput.mDensityTopology = Plato::density_topology{};
+        input_parser::PlatoInput tInput;
+        tInput.mDensityTopology = input_parser::density_topology{};
         EXPECT_EQ(pfgl::detail::geometry_blocks(tInput).size(), 1u);
     }
     {
-        Plato::PlatoInput tInput;
-        tInput.mDensityTopology = Plato::density_topology{};
-        tInput.mBrickShapeGeometry = Plato::brick_shape_geometry{};
+        input_parser::PlatoInput tInput;
+        tInput.mDensityTopology = input_parser::density_topology{};
+        tInput.mBrickShapeGeometry = input_parser::brick_shape_geometry{};
         EXPECT_EQ(pfgl::detail::geometry_blocks(tInput).size(), 2u);
     }
 }

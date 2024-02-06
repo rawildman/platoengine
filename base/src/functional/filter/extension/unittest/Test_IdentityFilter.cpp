@@ -24,8 +24,8 @@ const auto kV = linear_algebra::DynamicVector<double>{-2.0, -1.0, 42.0};
 
 TEST(FilterFactory, ValidIdentityFilter)
 {
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.filter_type = Plato::FilterTypes::kIdentity;
+    auto tDensityTopology = input_parser::density_topology{};
+    tDensityTopology.filter_type = input_parser::FilterTypes::kIdentity;
     EXPECT_NO_THROW(auto tFunction = library::make_filter_function(tDensityTopology));
 }
 

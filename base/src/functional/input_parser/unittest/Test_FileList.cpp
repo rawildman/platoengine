@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "FileList.hpp"
-
+namespace plato::functional::input_parser::unittest
+{
 TEST(FileName, Insert)
 {
-    Plato::FileName tFileName;
+    FileName tFileName;
     EXPECT_TRUE(tFileName.mName.empty());
 
     // Check insert
@@ -19,7 +20,7 @@ TEST(FileName, Insert)
 TEST(FileName, Iterators)
 {
     constexpr std::string_view tTestString = "foo_bar";
-    Plato::FileName tFileName{std::string{tTestString}};
+    FileName tFileName{std::string{tTestString}};
     EXPECT_EQ(tFileName.mName, tTestString.data());
 
     std::string tCopy;
@@ -30,7 +31,7 @@ TEST(FileName, Iterators)
 TEST(FileName, ConstIterators)
 {
     constexpr std::string_view tTestString = "const_foo_bar";
-    const Plato::FileName tFileNameConst{std::string{tTestString}};
+    const FileName tFileNameConst{std::string{tTestString}};
     EXPECT_EQ(tFileNameConst.mName, tTestString.data());
 
     std::string tCopy;
@@ -40,7 +41,7 @@ TEST(FileName, ConstIterators)
 
 TEST(FileList, Insert)
 {
-    Plato::FileList tFileList;
+    FileList tFileList;
     EXPECT_TRUE(tFileList.mList.empty());
 
     // Check insert
@@ -60,7 +61,7 @@ TEST(FileList, Insert)
 
 TEST(FileList, Iterators)
 {
-    Plato::FileList tFileList{{"r", "a", "w", "r"}};
+    FileList tFileList{{"r", "a", "w", "r"}};
     std::vector<std::string> tCopy;
     std::copy(tFileList.begin(), tFileList.end(), std::back_inserter(tCopy));
     ASSERT_EQ(tCopy.size(), 4);
@@ -72,7 +73,7 @@ TEST(FileList, Iterators)
 
 TEST(FileList, ConstIterators)
 {
-    const Plato::FileList tFileList{{"r", "a", "w", "r"}};
+    const FileList tFileList{{"r", "a", "w", "r"}};
     std::vector<std::string> tCopy;
     std::copy(tFileList.begin(), tFileList.end(), std::back_inserter(tCopy));
     ASSERT_EQ(tCopy.size(), 4);
@@ -81,3 +82,4 @@ TEST(FileList, ConstIterators)
     EXPECT_EQ(tFileList.mList.at(2), "w");
     EXPECT_EQ(tFileList.mList.at(3), "r");
 }
+}  // namespace plato::functional::input_parser::unittest

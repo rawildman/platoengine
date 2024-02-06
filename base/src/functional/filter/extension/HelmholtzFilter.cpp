@@ -15,24 +15,25 @@ namespace
 const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctionalInterface.so"};
 
 [[maybe_unused]] static auto kHelmholtzFilterRegistration = library::FilterRegistration{
-    Plato::kFilterTypesTable.toString(Plato::FilterTypes::kHelmholtz).value(), [](const Plato::density_topology& aInput)
+    input_parser::kFilterTypesTable.toString(input_parser::FilterTypes::kHelmholtz).value(),
+    [](const input_parser::density_topology& aInput)
     { return library::make_filter_function_from_interface(library::load_filter(aInput, kHelmholtzFilterLibName)); }};
 
 [[maybe_unused]] static auto kHelmholtzFilterValidationRegistration =
-    core::ValidationRegistration<Plato::density_topology>{
-        [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
-        [](const Plato::density_topology& aInput)
+    core::ValidationRegistration<input_parser::density_topology>{
+        [](const input_parser::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
+        [](const input_parser::density_topology& aInput)
         { return validate_helmholtz_filter_boundary_sticking_penalty(aInput); }};
 }  // namespace
 
-std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density_topology& aInput)
+std::optional<std::string> validate_helmholtz_filter_radius(const input_parser::density_topology& aInput)
 {
     namespace pfu = plato::functional::utilities;
-    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kHelmholtz)
+    if (aInput.filter_type && aInput.filter_type.value() == input_parser::FilterTypes::kHelmholtz)
     {
-        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
-                                                               aInput.filter_radius, "filter_radius",
-                                                               pfu::lower_bounded(pfu::Exclusive{0.0}));
+        return core::error_message_for_parameter_out_of_bounds(
+            input_parser::block_name<input_parser::density_topology>(), aInput.filter_radius, "filter_radius",
+            pfu::lower_bounded(pfu::Exclusive{0.0}));
     }
     else
     {
@@ -41,16 +42,16 @@ std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density
 }
 
 [[nodiscard]] std::optional<std::string> validate_helmholtz_filter_boundary_sticking_penalty(
-    const Plato::density_topology& aInput)
+    const input_parser::density_topology& aInput)
 {
     namespace pfu = plato::functional::utilities;
-    if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kHelmholtz &&
+    if (aInput.filter_type && aInput.filter_type.value() == input_parser::FilterTypes::kHelmholtz &&
         aInput.boundary_sticking_penalty)
     {
         // boundary_sticking_penalty is optional, so only validate bounds if it exists
-        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
-                                                               aInput.boundary_sticking_penalty,
-                                                               "boundary_sticking_penalty", pfu::unit_bounded());
+        return core::error_message_for_parameter_out_of_bounds(
+            input_parser::block_name<input_parser::density_topology>(), aInput.boundary_sticking_penalty,
+            "boundary_sticking_penalty", pfu::unit_bounded());
     }
     else
     {

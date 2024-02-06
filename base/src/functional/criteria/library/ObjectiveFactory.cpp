@@ -16,8 +16,7 @@ namespace
 {
 template <typename AggregateType, typename... Args>
 AggregateType make_aggregate_impl(
-    const std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
-    Args&&... aArgs)
+    const std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>& tObjectives, Args&&... aArgs)
 {
     using ObjectiveAndWeight = std::pair<ObjectiveFunction, double>;
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
@@ -32,9 +31,9 @@ AggregateType make_aggregate_impl(
     return AggregateType{std::move(tFunctionsAndWeights), std::forward<Args>(aArgs)...};
 }
 
-auto rank_split_vector(const std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
+auto rank_split_vector(const std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>& aInputs,
                        const boost::mpi::communicator& aComm)
-    -> std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>
+    -> std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>
 {
     return plato::functional::utilities::rank_split_vector(aInputs,
                                                            plato::functional::utilities::RankNamedType{aComm.rank()},

@@ -4,7 +4,7 @@
 #include "FilterInterface.hpp"
 #include "Function.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 struct density_topology;
 }
@@ -12,7 +12,6 @@ namespace plato::functional::core
 {
 struct MeshProxy;
 }
-
 namespace plato::functional::filter::library
 {
 struct FilterJacobian;
@@ -36,7 +35,7 @@ class IdentityFilter : public library::FilterInterface
 [[nodiscard]] auto make_identity_filter_function()
     -> core::Function<core::MeshProxy, library::FilterJacobian, const core::MeshProxy&>;
 
-[[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput);
+[[nodiscard]] std::optional<std::string> validate_identity_filter(const input_parser::density_topology& aInput);
 
 }  // namespace plato::functional::filter::extension
 

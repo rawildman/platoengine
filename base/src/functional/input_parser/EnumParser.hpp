@@ -5,11 +5,10 @@
 
 #include "EnumTable.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 template <typename Enum>
-auto make_enum_symbols(const plato::functional::utilities::EnumTable<Enum>& aTable)
-    -> boost::spirit::qi::symbols<char, Enum>
+auto make_enum_symbols(const utilities::EnumTable<Enum>& aTable) -> boost::spirit::qi::symbols<char, Enum>
 {
     boost::spirit::qi::symbols<char, Enum> tSymbols;
     for (const auto& entry : aTable)
@@ -19,6 +18,6 @@ auto make_enum_symbols(const plato::functional::utilities::EnumTable<Enum>& aTab
     return tSymbols;
 }
 
-}  // namespace Plato
+}  // namespace plato::functional::input_parser
 
 #endif

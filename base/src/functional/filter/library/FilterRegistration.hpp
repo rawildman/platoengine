@@ -7,7 +7,7 @@
 #include "FactoryRegistration.hpp"
 #include "Function.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 struct density_topology;
 }
@@ -23,7 +23,7 @@ class FilterInterface;
 struct FilterJacobian;
 
 using FilterFunction = core::Function<core::MeshProxy, FilterJacobian, const core::MeshProxy&>;
-using FilterInput = Plato::density_topology;
+using FilterInput = input_parser::density_topology;
 using FilterRegistration = core::FactoryRegistration<FilterFunction, FilterInput>;
 
 [[nodiscard]] auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction;
@@ -31,7 +31,7 @@ using FilterRegistration = core::FactoryRegistration<FilterFunction, FilterInput
 /// @brief Loads a filter from a shared library.
 /// @param aInput The input parameters defining the filter's properties.
 /// @param aSharedLibraryPath The path at which the shared library is located.
-[[nodiscard]] std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
+[[nodiscard]] std::unique_ptr<FilterInterface> load_filter(const input_parser::density_topology& aInput,
                                                            const std::filesystem::path& aSharedLibraryPath);
 
 [[nodiscard]] bool is_filter_function_registered(std::string_view aFunctionName);

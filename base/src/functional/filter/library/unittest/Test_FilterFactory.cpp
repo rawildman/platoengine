@@ -9,8 +9,8 @@ namespace plato::functional::filter::extension::unittest
 {
 TEST(FilterFactory, KernelFilterThrows)
 {
-    auto tDensityTopology = Plato::density_topology{};
-    tDensityTopology.filter_type = Plato::FilterTypes::kKernel;
+    auto tDensityTopology = input_parser::density_topology{};
+    tDensityTopology.filter_type = input_parser::FilterTypes::kKernel;
     EXPECT_THROW(auto tFunction = plato::functional::filter::library::make_filter_function(tDensityTopology),
                  plato::functional::utilities::Exception);
 }

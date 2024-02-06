@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 /// @brief Helper for parsing a single file with a path
 /// Use this type in the input structs for a file name
@@ -48,28 +48,36 @@ struct FileList
     std::vector<std::string> mList;
 };
 
-std::ostream& operator<<(std::ostream& stream, const Plato::FileList& aFileList);
-std::ostream& operator<<(std::ostream& stream, const Plato::FileName& aFileName);
-}  // namespace Plato
+std::ostream& operator<<(std::ostream& stream, const FileList& aFileList);
+std::ostream& operator<<(std::ostream& stream, const FileName& aFileName);
+}  // namespace plato::functional::input_parser
 
 namespace boost::spirit::traits
 {
 template <>
-struct create_parser<Plato::FileList>
+struct create_parser<plato::functional::input_parser::FileList>
 {
     typedef proto::result_of::deep_copy<BOOST_TYPEOF(
-        (qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ','))>::type type;
+        (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())] % ','))>::type type;
 
-    static type call() { return proto::deep_copy((qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())] % ',')); }
+    static type call()
+    {
+        return proto::deep_copy(
+            (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())] % ','));
+    }
 };
 
 template <>
-struct create_parser<Plato::FileName>
+struct create_parser<plato::functional::input_parser::FileName>
 {
     typedef proto::result_of::deep_copy<BOOST_TYPEOF(
-        (qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())]))>::type type;
+        (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())]))>::type type;
 
-    static type call() { return proto::deep_copy((qi::lexeme[+qi::char_(Plato::FileName::kValidChars.data())])); }
+    static type call()
+    {
+        return proto::deep_copy(
+            (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())]));
+    }
 };
 
 }  // namespace boost::spirit::traits

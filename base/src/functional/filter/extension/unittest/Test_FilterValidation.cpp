@@ -32,7 +32,7 @@ TEST(FilterValidation, CheckFilterValuesIdentity)
 TEST(FilterValidation, CheckFilterValuesHelmholtzRadius)
 {
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
-    tDensityTopology.filter_type = Plato::FilterTypes::kHelmholtz;
+    tDensityTopology.filter_type = input_parser::FilterTypes::kHelmholtz;
     tDensityTopology.filter_radius = 1;
     tDensityTopology.boundary_sticking_penalty = 1;
     EXPECT_FALSE(validate_helmholtz_filter_radius(tDensityTopology).has_value());  // valid
@@ -52,7 +52,7 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzRadius)
 TEST(FilterValidation, CheckFilterValuesHelmholtzBoundaryStickingPenalty)
 {
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
-    tDensityTopology.filter_type = Plato::FilterTypes::kHelmholtz;
+    tDensityTopology.filter_type = input_parser::FilterTypes::kHelmholtz;
     tDensityTopology.filter_radius = 1;
     tDensityTopology.boundary_sticking_penalty = 1;
     EXPECT_FALSE(validate_helmholtz_filter_boundary_sticking_penalty(tDensityTopology).has_value());  // valid

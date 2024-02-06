@@ -13,7 +13,7 @@
 
 namespace plato::functional::main::library
 {
-ValidatedInput::ValidatedInput(Plato::PlatoInput aInput, Key) : mInput{std::move(aInput)} {}
+ValidatedInput::ValidatedInput(input_parser::PlatoInput aInput, Key) : mInput{std::move(aInput)} {}
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
@@ -46,8 +46,7 @@ ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() 
 }
 
 template <typename T>
-std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
-    const std::vector<T>& aInputs)
+std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(const std::vector<T>& aInputs)
 {
     std::vector<core::ValidatedInputTypeWrapper<T>> tValidatedInputs;
     std::transform(aInputs.cbegin(), aInputs.cend(), std::back_inserter(tValidatedInputs),
@@ -55,7 +54,7 @@ std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
     return tValidatedInputs;
 }
 
-ValidatedInput make_validated_input(Plato::PlatoInput aInput)
+ValidatedInput make_validated_input(input_parser::PlatoInput aInput)
 {
     std::vector<std::string> tMessages;
     tMessages = plato::functional::geometry::library::validate_geometry(aInput, std::move(tMessages));
@@ -66,20 +65,19 @@ ValidatedInput make_validated_input(Plato::PlatoInput aInput)
     if (!tMessages.empty())
     {
         throw plato::functional::utilities::Exception(
-            "Error: Could not validate input, the following errors were found: \n" +
-            core::all_messages(tMessages));
+            "Error: Could not validate input, the following errors were found: \n" + core::all_messages(tMessages));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }
 
 ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName)
 {
-    return make_validated_input(Plato::Functional::parse_input_from_file(aFileName));
+    return make_validated_input(input_parser::parse_input_from_file(aFileName));
 }
 
 ValidatedInput parse_and_validate(const std::string_view aInput)
 {
-    return make_validated_input(Plato::Functional::parse_input(aInput));
+    return make_validated_input(input_parser::parse_input(aInput));
 }
 
 }  // namespace plato::functional::main::library

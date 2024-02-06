@@ -9,22 +9,22 @@
 #include "Exception.hpp"
 #include "InputParser.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::input_parser
 {
-Plato::PlatoInput parse_input(const std::string_view aInput)
+PlatoInput parse_input(const std::string_view aInput)
 {
-    Plato::InputParser<std::string_view::const_iterator> tParser;
-    Plato::PlatoInput tData;
+    InputParser<std::string_view::const_iterator> tParser;
+    PlatoInput tData;
     auto tIter = aInput.cbegin();
     const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
     if (!tParseResult || tIter != aInput.cend())
     {
-        throw plato::functional::utilities::Exception("Could not parse input deck.");
+        throw utilities::Exception("Could not parse input deck.");
     }
     return tData;
 }
 
-Plato::PlatoInput parse_input_from_file(const std::filesystem::path& aFileName)
+PlatoInput parse_input_from_file(const std::filesystem::path& aFileName)
 {
     std::ifstream tInputStream(aFileName);
     const std::string tInputFileString((std::istreambuf_iterator<char>(tInputStream)),
@@ -32,4 +32,4 @@ Plato::PlatoInput parse_input_from_file(const std::filesystem::path& aFileName)
     return parse_input(tInputFileString);
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::input_parser

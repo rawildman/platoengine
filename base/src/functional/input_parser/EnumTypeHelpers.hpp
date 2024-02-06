@@ -34,7 +34,7 @@ BOOST_PP_SEQ_FOR_EACH(ENUM_TABLE_ENTRY, ENUM_NAME, SEQ)                         
 });
 
 #define PLATO_ENUM_STRUCT_TABLE_AND_OUTPUT_OPERATOR(ENUM_NAME, SEQ)                             \
-namespace Plato                                                                                 \
+namespace plato::functional::input_parser                                                       \
 {                                                                                               \
     ENUM_STRUCT_DEFINE(ENUM_NAME, SEQ)                                                          \
     ENUM_TABLE_DEFINE(ENUM_NAME, SEQ)                                                           \
@@ -45,9 +45,10 @@ namespace Plato                                                                 
 namespace boost::spirit::traits                                                                 \
 {                                                                                               \
 template <>                                                                                     \
-struct create_parser<Plato::ENUM_NAME>                                                          \
+struct create_parser<plato::functional::input_parser::ENUM_NAME>                                \
 {                                                                                               \
-    static const boost::spirit::qi::symbols<char, Plato::ENUM_NAME> mSymbolTable;               \
+    static const boost::spirit::qi::symbols<char, plato::functional::input_parser::ENUM_NAME>   \
+                                            mSymbolTable;                                       \
     using type = typename boost::proto::result_of::deep_copy<BOOST_TYPEOF(mSymbolTable)>::type; \
     static type call()                                                                          \
     {                                                                                           \
@@ -83,10 +84,12 @@ BOOST_SPIRIT_TRAITS_CREATE_PARSER(ENUM_NAME)
 /// and `NewEnum` must have a matching DECLARE_ENUM_SYMBOL_TABLE.
 #define DEFINE_ENUM_SYMBOL_TABLE(ENUM_NAME)                                                                     \
 namespace boost::spirit::traits {                                                                               \
-const boost::spirit::qi::symbols<char, Plato::ENUM_NAME> create_parser<Plato::ENUM_NAME>::mSymbolTable =        \
-            Plato::make_enum_symbols<Plato::ENUM_NAME>(Plato::TABLE_NAME_FROM_ENUM_NAME(ENUM_NAME));            \
+const boost::spirit::qi::symbols<char, plato::functional::input_parser::ENUM_NAME>                              \
+    create_parser<plato::functional::input_parser::ENUM_NAME>::mSymbolTable =                                   \
+            plato::functional::input_parser::make_enum_symbols<plato::functional::input_parser::ENUM_NAME>      \
+            (plato::functional::input_parser::TABLE_NAME_FROM_ENUM_NAME(ENUM_NAME));                            \
 }                                                                                                               \
-namespace Plato                                                                                                 \
+namespace plato::functional::input_parser                                                                       \
 {                                                                                                               \
     std::ostream& operator<<(std::ostream& aStream, const ENUM_NAME aOption)                                    \
     {                                                                                                           \

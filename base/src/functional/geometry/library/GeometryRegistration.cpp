@@ -9,7 +9,7 @@ bool is_geometry_function_registered(const std::string_view aFunctionName)
     return core::is_factory_function_registered<FactoryTypes, ValidatedGeometryInput>(aFunctionName);
 }
 
-library::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput)
+library::GeometryInput first_geometry_input(const input_parser::PlatoInput& aInput)
 {
     const std::optional<library::GeometryInput> tGeometryInput = detail::first_geometry_block(aInput);
     if (!tGeometryInput)

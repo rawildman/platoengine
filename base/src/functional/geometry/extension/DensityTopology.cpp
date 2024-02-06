@@ -24,9 +24,10 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 
 /// Static registration for library
 [[maybe_unused]] static auto kDensityTopologyRegistration = plato::functional::geometry::library::GeometryRegistration{
-    Plato::block_name<Plato::density_topology>(), [](const library::ValidatedGeometryInput& aGeometryInput)
+    input_parser::block_name<input_parser::density_topology>(),
+    [](const library::ValidatedGeometryInput& aGeometryInput)
     {
-        const auto& tInput = library::geometry_raw_input<Plato::density_topology>(aGeometryInput);
+        const auto& tInput = library::geometry_raw_input<input_parser::density_topology>(aGeometryInput);
         return library::FactoryTypes{
             make_topology_geometry(DensityTopology{tInput}),
             DensityTopology::initialGuess(tInput.mesh_name.value().mName),
@@ -36,12 +37,12 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 
 /// Static registration for input validation functions
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration =
-    core::ValidationRegistration<Plato::density_topology>{
-        [](const Plato::density_topology& aInput) { return library::detail::validate_mesh_name(aInput); },
-        [](const Plato::density_topology& aInput) { return detail::validate_output_name(aInput); }};
+    core::ValidationRegistration<input_parser::density_topology>{
+        [](const input_parser::density_topology& aInput) { return library::detail::validate_mesh_name(aInput); },
+        [](const input_parser::density_topology& aInput) { return detail::validate_output_name(aInput); }};
 }  // namespace
 
-DensityTopology::DensityTopology(const Plato::density_topology& aInput)
+DensityTopology::DensityTopology(const input_parser::density_topology& aInput)
     : mFileName(aInput.mesh_name.value().mName),
       mNumDesignParameters(plato::functional::utilities::read_mesh_node_size(mFileName)),
       mFilter(plato::functional::filter::library::make_filter_function(aInput))
@@ -93,10 +94,10 @@ auto make_topology_geometry(const DensityTopology& aDensityTopology)
 
 namespace detail
 {
-std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
+std::optional<std::string> validate_output_name(const input_parser::density_topology& aInput)
 {
-    return core::error_message_for_empty_parameter(Plato::block_name<Plato::density_topology>(), aInput.output_name,
-                                                   "output_name");
+    return core::error_message_for_empty_parameter(input_parser::block_name<input_parser::density_topology>(),
+                                                   aInput.output_name, "output_name");
 }
 
 }  // namespace detail

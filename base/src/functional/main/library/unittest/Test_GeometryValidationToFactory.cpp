@@ -10,7 +10,7 @@ namespace plato::functional::main::library::unittest
 TEST(GeometryFactory, ValidBrickShapeGeometry)
 {
     namespace pf = plato::functional;
-    Plato::PlatoInput tInput;
+    input_parser::PlatoInput tInput;
     tInput.mBrickShapeGeometry = pf::test_utilities::create_valid_brick_shape_geometry();
     tInput.mObjectives = {pf::test_utilities::create_valid_example_objective()};
     tInput.mOptimizationParameters = pf::test_utilities::create_valid_example_optimization_parameters();
@@ -23,7 +23,7 @@ TEST(GeometryFactory, ValidTopology)
 {
     namespace pf = plato::functional;
 
-    Plato::PlatoInput tInput;
+    input_parser::PlatoInput tInput;
     tInput.mDensityTopology = pf::test_utilities::create_valid_density_topology_geometry();
     tInput.mObjectives = {pf::test_utilities::create_valid_example_objective()};
     tInput.mOptimizationParameters = pf::test_utilities::create_valid_example_optimization_parameters();

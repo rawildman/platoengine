@@ -1,6 +1,6 @@
 #include "FileList.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 std::string::const_iterator FileName::begin() const { return mName.begin(); }
 
@@ -12,7 +12,7 @@ std::string::iterator FileName::end() { return mName.end(); }
 
 void FileName::insert(const std::string::iterator aIter, const char aVal) { mName.insert(aIter, aVal); }
 
-std::ostream& operator<<(std::ostream& stream, const Plato::FileName& aFileName)
+std::ostream& operator<<(std::ostream& stream, const FileName& aFileName)
 {
     stream << aFileName.mName << ", ";
     return stream;
@@ -31,7 +31,7 @@ void FileList::insert(const std::vector<std::string>::iterator aIter, std::strin
     mList.insert(aIter, std::move(aVal));
 }
 
-std::ostream& operator<<(std::ostream& stream, const Plato::FileList& aFileList)
+std::ostream& operator<<(std::ostream& stream, const FileList& aFileList)
 {
     for (const std::string& tFileName : aFileList.mList)
     {
@@ -40,4 +40,4 @@ std::ostream& operator<<(std::ostream& stream, const Plato::FileList& aFileList)
     return stream;
 }
 
-}  // namespace Plato
+}  // namespace plato::functional::input_parser

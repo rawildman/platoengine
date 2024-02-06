@@ -83,7 +83,7 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?
     constexpr bool tLumpConstraints =
-        false;  //( mAlgorithmType == Plato::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        false;  //( mAlgorithmType == input_parser::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
     tROLProblem->finalize(tLumpConstraints);  //, tPrintToStream, mOutputFile);
     return tROLProblem;
 }

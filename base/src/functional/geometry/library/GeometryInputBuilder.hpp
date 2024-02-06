@@ -26,7 +26,7 @@ template <typename T>
 auto tuple_if_geometry_input()
 {
     using InputType = typename TypeOrOptional<T>::type;
-    if constexpr (Plato::Input::kIsGeometryInput<InputType>)
+    if constexpr (input_parser::kIsGeometryInput<InputType>)
     {
         return std::tuple<InputType>{};
     }

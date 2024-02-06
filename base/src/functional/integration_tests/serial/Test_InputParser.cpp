@@ -16,7 +16,7 @@ namespace plato::functional::integration_tests::serial
 TEST(InputParser, ParseFromFile)
 {
     plato::functional::test_utilities::create_input_file(kTestFileName);
-    const Plato::PlatoInput tInput = Plato::Functional::parse_input_from_file(kTestFileName);
+    const input_parser::PlatoInput tInput = input_parser::parse_input_from_file(kTestFileName);
 
     EXPECT_FALSE(tInput.mOptimizationParameters.max_iterations.has_value());
     ASSERT_TRUE(tInput.mOptimizationParameters.gradient_tolerance.has_value());
@@ -25,11 +25,11 @@ TEST(InputParser, ParseFromFile)
     EXPECT_EQ(tInput.mOptimizationParameters.step_tolerance.value(), 10.0);
 
     ASSERT_EQ(tInput.mObjectives.size(), 1);
-    const Plato::objective& tObjective = tInput.mObjectives.front();
+    const input_parser::objective& tObjective = tInput.mObjectives.front();
     ASSERT_TRUE(tObjective.active.has_value());
     EXPECT_TRUE(tObjective.active.value());
     ASSERT_TRUE(tObjective.app.has_value());
-    EXPECT_EQ(tObjective.app.value(), Plato::CodeOptions::kNodalSum);
+    EXPECT_EQ(tObjective.app.value(), input_parser::CodeOptions::kNodalSum);
     ASSERT_TRUE(tObjective.number_of_processors.has_value());
     EXPECT_EQ(tObjective.number_of_processors.value(), 4);
     ASSERT_TRUE(tObjective.input_files.has_value());
@@ -38,7 +38,7 @@ TEST(InputParser, ParseFromFile)
     ASSERT_TRUE(tObjective.aggregation_weight.has_value());
     EXPECT_EQ(tObjective.aggregation_weight.value(), 42.0);
     ASSERT_TRUE(tObjective.objective_type.has_value());
-    EXPECT_EQ(tObjective.objective_type.value(), Plato::ObjectiveTypes::kMinimize);
+    EXPECT_EQ(tObjective.objective_type.value(), input_parser::ObjectiveTypes::kMinimize);
 
     EXPECT_EQ(tInput.mConstraints.size(), 0);
 

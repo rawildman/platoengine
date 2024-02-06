@@ -24,8 +24,8 @@ using ValidationFunction = std::function<std::optional<std::string>(const Input&
 /// @code
 /// namespace{
 /// [[maybe_unused]] static auto kNewValidationRegistration =
-///   plato::functional::core::ValidationRegistration<Plato::density_topology>{
-///    [](const Plato::density_topology& aInput){ return validate_foo_parameter(aInput); }
+///   plato::functional::core::ValidationRegistration<input_parser::density_topology>{
+///    [](const input_parser::density_topology& aInput){ return validate_foo_parameter(aInput); }
 /// };
 /// }
 /// @endcode

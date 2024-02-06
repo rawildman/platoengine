@@ -29,13 +29,15 @@ TEST(CriterionRegistration, PhonyCriterion)
 
 TEST(CriterionRegistration, NodalSum)
 {
-    const std::string_view tNodalSumName = Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kNodalSum).value();
+    const std::string_view tNodalSumName =
+        input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kNodalSum).value();
     EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tNodalSumName));
 }
 
 TEST(CriterionRegistration, CustomApp)
 {
-    const std::string_view tCustomAppName = Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kCustomApp).value();
+    const std::string_view tCustomAppName =
+        input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
     EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tCustomAppName));
 }
 }  // namespace plato::functional::criteria::library::unittest

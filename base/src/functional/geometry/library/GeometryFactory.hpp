@@ -8,7 +8,7 @@
 #include "MeshProxy.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato
+namespace input_parser
 {
 struct PlatoInput;
 }
@@ -16,9 +16,8 @@ struct PlatoInput;
 namespace plato::functional::geometry::library
 {
 using DesignParameters = linear_algebra::DynamicVector<double>;
-using GeometryFunction = core::Function<core::MeshProxy,
-                                                     linear_algebra::JacobianMultiplier,
-                                                     const linear_algebra::DynamicVector<double>&>;
+using GeometryFunction =
+    core::Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>;
 
 /// @brief Factory function for creating all geometry data, including a GeometryFunction, an initial guess,
 ///  the bound constraints, and an output function.

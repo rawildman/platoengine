@@ -13,7 +13,7 @@ class ValidatedInput;
 
 struct Key
 {
-    friend ValidatedInput make_validated_input(Plato::PlatoInput input);
+    friend ValidatedInput make_validated_input(input_parser::PlatoInput input);
 
    private:
     Key() {}
@@ -24,14 +24,14 @@ class ValidatedInput
 {
    public:
     using Geometry = plato::functional::geometry::library::ValidatedGeometryInput;
-    using Objectives = core::ValidatedInputTypeWrapper<
-        std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>>;
-    using Constraints = core::ValidatedInputTypeWrapper<
-        std::vector<core::ValidatedInputTypeWrapper<Plato::constraint>>>;
-    using OptimizationParameters = core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+    using Objectives =
+        core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>>;
+    using Constraints =
+        core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
+    using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
 
    public:
-    ValidatedInput(Plato::PlatoInput aInput, Key);
+    ValidatedInput(input_parser::PlatoInput aInput, Key);
 
     [[nodiscard]] auto geometry() const -> Geometry;
     [[nodiscard]] auto objectives() const -> Objectives;
@@ -40,14 +40,13 @@ class ValidatedInput
 
    private:
     template <typename T>
-    static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(
-        const std::vector<T>& aInputs);
+    static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(const std::vector<T>& aInputs);
 
    private:
-    Plato::PlatoInput mInput;
+    input_parser::PlatoInput mInput;
 };
 
-[[nodiscard]] ValidatedInput make_validated_input(Plato::PlatoInput aInput);
+[[nodiscard]] ValidatedInput make_validated_input(input_parser::PlatoInput aInput);
 
 /// @brief Parse input from file @a aInputFile and then validate the input
 [[nodiscard]] ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName);

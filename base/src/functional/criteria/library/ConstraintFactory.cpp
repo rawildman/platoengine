@@ -13,7 +13,7 @@ std::vector<Constraint<const core::MeshProxy&>> make_constraints(const Validated
 {
     std::vector<Constraint<const core::MeshProxy&>> tConstraints;
     std::transform(aInput.rawInput().cbegin(), aInput.rawInput().cend(), std::back_inserter(tConstraints),
-                   [](const core::ValidatedInputTypeWrapper<Plato::constraint>& aValidatedInput)
+                   [](const core::ValidatedInputTypeWrapper<input_parser::constraint>& aValidatedInput)
                    { return detail::make_constraint(aValidatedInput); });
     return tConstraints;
 }
@@ -23,9 +23,9 @@ linear_algebra::DynamicVector<double> make_dual_vector() { return linear_algebra
 namespace detail
 {
 Constraint<const core::MeshProxy&> make_constraint(
-    const core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput)
+    const core::ValidatedInputTypeWrapper<input_parser::constraint>& aConstraintInput)
 {
-    const Plato::constraint& tRawInput = aConstraintInput.rawInput();
+    const input_parser::constraint& tRawInput = aConstraintInput.rawInput();
     const double tValue = tRawInput.equal_to.value();
     const bool tIsLinear = tRawInput.is_linear.value_or(false);
     return Constraint<const core::MeshProxy&>{tRawInput.name.value_or("Unnamed Constraint"),

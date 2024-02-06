@@ -37,14 +37,14 @@ struct FactoryTypes
 
 /// A `std::variant` with alternatives corresponding to input blocks
 /// created using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
-using GeometryInput = detail::GeometryInputVariant<Plato::PlatoInput>;
+using GeometryInput = detail::GeometryInputVariant<input_parser::PlatoInput>;
 using ValidatedGeometryInput =
-    core::ValidatedInputTypeWrapper<detail::ValidatedGeometryInputVariant<Plato::PlatoInput>>;
+    core::ValidatedInputTypeWrapper<detail::ValidatedGeometryInputVariant<input_parser::PlatoInput>>;
 using GeometryRegistration = core::FactoryRegistration<FactoryTypes, ValidatedGeometryInput>;
 
 /// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
 /// @throw Exception If no geometry block was defined in @a aInput.
-[[nodiscard]] library::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput);
+[[nodiscard]] library::GeometryInput first_geometry_input(const input_parser::PlatoInput& aInput);
 
 bool is_geometry_function_registered(const std::string_view aFunctionName);
 

@@ -15,25 +15,26 @@ namespace plato::functional::criteria::library
 using CriterionFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
 /// @brief Converts either objective or constraint input objects to a common CriterionInput struct
-/// @tparam Input Must be either Plato::objective or Plato::constraint input structs
+/// @tparam Input Must be either input_parser::objective or input_parser::constraint input structs
 template <typename Input>
 [[nodiscard]] CriterionInput to_criterion_input(const Input& aInput);
 
 /// @brief Creates a criterion Function object from either objective or constraint input objects.
-/// @tparam Input Must be either Plato::objective or Plato::constraint input structs
+/// @tparam Input Must be either input_parser::objective or input_parser::constraint input structs
 template <typename Input>
 [[nodiscard]] CriterionFunction make_criterion_function(const Input& aInput);
 
 template <typename Input>
 CriterionFunction make_criterion_function(const Input& aValidatedInput)
 {
-    static_assert(std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::objective>> ||
-                      std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::constraint>>,
-                  "make_criterion_function must only be called with Plato::objective or Plato::constraint wrapped in "
+    static_assert(std::is_same_v<Input, core::ValidatedInputTypeWrapper<input_parser::objective>> ||
+                      std::is_same_v<Input, core::ValidatedInputTypeWrapper<input_parser::constraint>>,
+                  "make_criterion_function must only be called with input_parser::objective or "
+                  "input_parser::constraint wrapped in "
                   "ValidatedInputTypeWrapper");
 
     const auto& tRawInput = aValidatedInput.rawInput();
-    const std::string tAppName = Plato::kCodeOptionsTable.toString(tRawInput.app.value()).value();
+    const std::string tAppName = input_parser::kCodeOptionsTable.toString(tRawInput.app.value()).value();
     const std::optional<CriterionFunction> tCriterion =
         core::create_object_from_factory<CriterionFunction, CriterionInput>(tAppName,
                                                                             to_criterion_input(aValidatedInput));
@@ -50,13 +51,15 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput)
 template <typename Input>
 CriterionInput to_criterion_input(const Input& aInput)
 {
-    static_assert(std::is_same_v<Input,core::ValidatedInputTypeWrapper<Plato::objective>> ||
-                      std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::constraint>>,
-                  "to_criterion_input must only be called with Plato::objective or Plato::constraint wrapped in "
-                  "ValidatedInputTypeWrapper");
-    return CriterionInput{/*.mSharedLibraryPath=*/aInput.rawInput().shared_library_path.value_or(Plato::FileName{}),
-                          /*.mNumberOfProcessors=*/aInput.rawInput().number_of_processors.value_or(1),
-                          /*.mInputFiles=*/aInput.rawInput().input_files.value_or(Plato::FileList{})};
+    static_assert(
+        std::is_same_v<Input, core::ValidatedInputTypeWrapper<input_parser::objective>> ||
+            std::is_same_v<Input, core::ValidatedInputTypeWrapper<input_parser::constraint>>,
+        "to_criterion_input must only be called with input_parser::objective or input_parser::constraint wrapped in "
+        "ValidatedInputTypeWrapper");
+    return CriterionInput{
+        /*.mSharedLibraryPath=*/aInput.rawInput().shared_library_path.value_or(input_parser::FileName{}),
+        /*.mNumberOfProcessors=*/aInput.rawInput().number_of_processors.value_or(1),
+        /*.mInputFiles=*/aInput.rawInput().input_files.value_or(input_parser::FileList{})};
 }
 
 }  // namespace plato::functional::criteria::library

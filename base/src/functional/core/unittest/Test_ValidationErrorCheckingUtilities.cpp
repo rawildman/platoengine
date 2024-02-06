@@ -7,7 +7,7 @@ namespace plato::functional::core::unittest
 {
 TEST(ValidateUtilities, ActiveConstraint)
 {
-    Plato::constraint tConstraintInput;
+    input_parser::constraint tConstraintInput;
     EXPECT_TRUE(is_active(tConstraintInput));
     tConstraintInput.active = true;
     EXPECT_TRUE(is_active(tConstraintInput));
@@ -17,7 +17,7 @@ TEST(ValidateUtilities, ActiveConstraint)
 
 TEST(ValidateUtilities, ActiveObjective)
 {
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     EXPECT_TRUE(is_active(tObjectiveInput));
     tObjectiveInput.active = true;
     EXPECT_TRUE(is_active(tObjectiveInput));
@@ -27,7 +27,7 @@ TEST(ValidateUtilities, ActiveObjective)
 
 TEST(ValidateUtilities, ValidateParameterExistsWhenParameterDoesNotExist)
 {
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     EXPECT_TRUE(
         error_message_for_empty_parameter("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight")
             .has_value());
@@ -35,7 +35,7 @@ TEST(ValidateUtilities, ValidateParameterExistsWhenParameterDoesNotExist)
 
 TEST(ValidateUtilities, ValidateParameterExistsDoesExist)
 {
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     tObjectiveInput.aggregation_weight = 23;
     EXPECT_FALSE(
         error_message_for_empty_parameter("Objective: ", tObjectiveInput.aggregation_weight, "aggregation_weight")
@@ -45,7 +45,7 @@ TEST(ValidateUtilities, ValidateParameterExistsDoesExist)
 TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 {
     namespace pfu = plato::functional::utilities;
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     EXPECT_TRUE(error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
                                                           "aggregation_weight", pfu::unbounded<double>())
                     .has_value());
@@ -54,7 +54,7 @@ TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 {
     namespace pfu = plato::functional::utilities;
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
     tObjectiveInput.aggregation_weight = 23;
@@ -67,7 +67,7 @@ TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 TEST(ValidateUtilities, ValidateParameterExistsOutOfBounds)
 {
     namespace pfu = plato::functional::utilities;
-    Plato::objective tObjectiveInput;
+    input_parser::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
     tObjectiveInput.aggregation_weight = -23;

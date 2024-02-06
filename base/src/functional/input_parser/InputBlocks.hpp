@@ -34,45 +34,45 @@
 ///  defined with DEFINE_ENUM_SYMBOL_TABLE.
 // clang-format off
 PLATO_INPUT_BLOCK_STRUCT(
-    (Plato), optimization_parameters,
-    (Plato::FileName, input_file_name)
+    (plato)(functional)(input_parser), optimization_parameters,
+    (plato::functional::input_parser::FileName, input_file_name)
     (unsigned int, max_iterations)
     (double, step_tolerance)
     (double, gradient_tolerance)
 )
 
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
-    (Plato), objective,
+    (plato)(functional)(input_parser), objective,
     (bool, active)
-    (Plato::CodeOptions, app) 
-    (Plato::FileName, shared_library_path)
+    (plato::functional::input_parser::CodeOptions, app) 
+    (plato::functional::input_parser::FileName, shared_library_path)
     (unsigned int, number_of_processors)
-    (Plato::FileList, input_files)
+    (plato::functional::input_parser::FileList, input_files)
     (double, aggregation_weight)
-    (Plato::ObjectiveTypes, objective_type)
+    (plato::functional::input_parser::ObjectiveTypes, objective_type)
 )
 
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
-    (Plato), constraint,
+    (plato)(functional)(input_parser), constraint,
     (bool, active)
-    (Plato::CodeOptions, app) 
-    (Plato::FileName, shared_library_path)
+    (plato::functional::input_parser::CodeOptions, app) 
+    (plato::functional::input_parser::FileName, shared_library_path)
     (unsigned int, number_of_processors)
-    (Plato::FileList, input_files)
+    (plato::functional::input_parser::FileList, input_files)
     (double, equal_to)
     (bool, is_linear)
 )
 
 PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
-    (Plato), brick_shape_geometry,
-    (Plato::FileName, mesh_name)
+    (plato)(functional)(input_parser), brick_shape_geometry,
+    (plato::functional::input_parser::FileName, mesh_name)
 )
 
 PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
-    (Plato), density_topology,
-    (Plato::FileName, mesh_name)
-    (Plato::FileName, output_name)
-    (Plato::FilterTypes, filter_type)
+    (plato)(functional)(input_parser), density_topology,
+    (plato::functional::input_parser::FileName, mesh_name)
+    (plato::functional::input_parser::FileName, output_name)
+    (plato::functional::input_parser::FilterTypes, filter_type)
     (double, filter_radius)
     (double, boundary_sticking_penalty)
 )
@@ -82,21 +82,21 @@ PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
 /// macros. The `NAMED` version is for blocks that can have multiple instantiations
 /// identified with a name. Those must be added here wrapped in `std::vector`.
 BOOST_FUSION_DEFINE_STRUCT(
-    (Plato), PlatoInput,
-    (std::vector<Plato::objective>, mObjectives)
-    (std::vector<Plato::constraint>, mConstraints)
-    (boost::optional<Plato::brick_shape_geometry>, mBrickShapeGeometry)
-    (boost::optional<Plato::density_topology>, mDensityTopology)
-    (Plato::optimization_parameters, mOptimizationParameters)
+    (plato)(functional)(input_parser), PlatoInput,
+    (std::vector<plato::functional::input_parser::objective>, mObjectives)
+    (std::vector<plato::functional::input_parser::constraint>, mConstraints)
+    (boost::optional<plato::functional::input_parser::brick_shape_geometry>, mBrickShapeGeometry)
+    (boost::optional<plato::functional::input_parser::density_topology>, mDensityTopology)
+    (plato::functional::input_parser::optimization_parameters, mOptimizationParameters)
 )
 // clang-format on
-namespace Plato
+namespace plato::functional::input_parser
 {
 template <typename BlockStruct>
 std::string block_name()
 {
-    return Input::InputTypeName<BlockStruct>::name;
+    return InputTypeName<BlockStruct>::name;
 }
-}  // namespace Plato
+}  // namespace plato::functional::input_parser
 
 #endif

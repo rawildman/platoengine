@@ -13,16 +13,16 @@
 #include "InputBlocks.hpp"
 #include "InputEnumTypes.hpp"
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 namespace bsq = boost::spirit::qi;
 namespace bsa = boost::spirit::ascii;
 
 template <typename Iterator>
 const bsq::rule<Iterator, std::string(), bsa::space_type> kIdentifierRule = bsq::lexeme[+bsq::graph];
-}  // namespace Plato
+}  // namespace plato::functional::input_parser
 
-namespace Plato
+namespace plato::functional::input_parser
 {
 namespace detail
 {
@@ -74,7 +74,7 @@ auto block_or_rule_impl(const AllBlockRules& aAllBlockRules, std::integer_sequen
     -> bsq::rule<Iterator, BlockStruct(), bsa::space_type>
 {
     namespace bp = boost::phoenix;
-    if constexpr (Plato::Input::kIsNamedBlock<BlockStruct>)
+    if constexpr (kIsNamedBlock<BlockStruct>)
     {
         bsq::rule<Iterator, BlockStruct(), bsa::space_type> tRule =
             kIdentifierRule<Iterator>[bp::at_c<0>(bsq::_val) = bsq::_1] >
@@ -103,9 +103,9 @@ auto block_or_rule(const AllBlockRules& aAllBlockRules) -> bsq::rule<Iterator, B
 template <typename Iterator, typename BlockStruct>
 struct BlockStructRule
 {
-    static constexpr bool kIsNamedBlockStructRule = Plato::Input::kIsNamedBlock<BlockStruct>;
+    static constexpr bool kIsNamedBlockStructRule = kIsNamedBlock<BlockStruct>;
 
-    std::string mBlockType = Input::InputTypeName<BlockStruct>::name;
+    std::string mBlockType = InputTypeName<BlockStruct>::name;
 
     bsq::rule<Iterator, void(), bsa::space_type> mPreambleRule = bsq::lit("begin") >> bsq::lit(mBlockType);
     bsq::rule<Iterator, void(), bsa::space_type> mPostambleRule = bsq::lit("end");
@@ -117,6 +117,6 @@ struct BlockStructRule
         mPreambleRule > mBlockOrRule[bsq::_val = bsq::_1] > mPostambleRule;
 };
 
-}  // namespace Plato
+}  // namespace plato::functional::input_parser
 
 #endif

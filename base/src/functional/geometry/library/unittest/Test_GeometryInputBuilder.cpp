@@ -11,10 +11,10 @@ BOOST_FUSION_DEFINE_STRUCT((plato)(functional)(geometry)(library)(detail),
 
 BOOST_FUSION_DEFINE_STRUCT((plato)(functional)(geometry)(library)(detail),
                            TestStructWithGeometryTypes,
-                           (Plato::density_topology, mDensityTopology1)
+                           (plato::functional::input_parser::density_topology, mDensityTopology1)
                            (double, mDouble)
-                           (Plato::brick_shape_geometry, mBrickShapeGeometry)
-                           (boost::optional<Plato::density_topology>, mDensityTopology2))
+                           (plato::functional::input_parser::brick_shape_geometry, mBrickShapeGeometry)
+                           (boost::optional<plato::functional::input_parser::density_topology>, mDensityTopology2))
 // clang-format on
 namespace plato::functional::geometry::library::unittest
 {
@@ -26,8 +26,8 @@ TEST(GeometryInputBuilder, TupleIfGeometryInput)
         EXPECT_EQ(std::tuple_size_v<decltype(tEmptyTuple)>, 0);
     }  // namespace plato::functional::geometry::library::detail;
     {
-        [[maybe_unused]] const std::tuple<Plato::density_topology> tTuple =
-            pfgld::tuple_if_geometry_input<Plato::density_topology>();
+        [[maybe_unused]] const std::tuple<input_parser::density_topology> tTuple =
+            pfgld::tuple_if_geometry_input<input_parser::density_topology>();
         EXPECT_EQ(std::tuple_size_v<decltype(tTuple)>, 1);
     }
 }
@@ -62,9 +62,12 @@ TEST(GeometryInputBuilder, MakeGeometryInputTuple)
         [[maybe_unused]] const auto tResult = pfgld::make_geometry_input_tuple{}(detail::TestStructWithGeometryTypes{});
         EXPECT_EQ(std::tuple_size_v<decltype(tResult)>, 3);
         using ResultType = decltype(tResult);
-        static_assert(std::is_same_v<std::decay_t<std::tuple_element_t<0, ResultType>>, Plato::density_topology>);
-        static_assert(std::is_same_v<std::decay_t<std::tuple_element_t<1, ResultType>>, Plato::brick_shape_geometry>);
-        static_assert(std::is_same_v<std::decay_t<std::tuple_element_t<2, ResultType>>, Plato::density_topology>);
+        static_assert(
+            std::is_same_v<std::decay_t<std::tuple_element_t<0, ResultType>>, input_parser::density_topology>);
+        static_assert(
+            std::is_same_v<std::decay_t<std::tuple_element_t<1, ResultType>>, input_parser::brick_shape_geometry>);
+        static_assert(
+            std::is_same_v<std::decay_t<std::tuple_element_t<2, ResultType>>, input_parser::density_topology>);
     }
 }
 
@@ -80,27 +83,28 @@ TEST(GeometryInputBuilder, GeometryInputVariant)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
     using TestInput = pfgld::GeometryInputVariant<pfgld::TestStructWithGeometryTypes>;
-    using ExpectedType = std::variant<Plato::density_topology, Plato::brick_shape_geometry, Plato::density_topology>;
+    using ExpectedType = std::variant<input_parser::density_topology, input_parser::brick_shape_geometry,
+                                      input_parser::density_topology>;
     static_assert(std::is_same_v<TestInput, ExpectedType>);
 }
 
 TEST(GeometryInputBuilder, GeometryInput)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
-    using TestInput = pfgld::GeometryInputVariant<Plato::PlatoInput>;
+    using TestInput = pfgld::GeometryInputVariant<input_parser::PlatoInput>;
     static_assert(std::variant_size_v<TestInput> == 2);
-    static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, Plato::density_topology>);
-    static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, Plato::brick_shape_geometry>);
+    static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, input_parser::density_topology>);
+    static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, input_parser::brick_shape_geometry>);
 }
 
 TEST(GeometryInputBuilder, ValidatedGeometryInput)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
-    using TestInput = pfgld::ValidatedGeometryInputVariant<Plato::PlatoInput>;
+    using TestInput = pfgld::ValidatedGeometryInputVariant<input_parser::PlatoInput>;
     static_assert(std::variant_size_v<TestInput> == 2);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
-                                 core::ValidatedInputTypeWrapper<Plato::density_topology>>);
+                                 core::ValidatedInputTypeWrapper<input_parser::density_topology>>);
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>,
-                                 core::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>);
+                                 core::ValidatedInputTypeWrapper<input_parser::brick_shape_geometry>>);
 }
 }  // namespace plato::functional::geometry::library::unittest

@@ -10,7 +10,7 @@
 #include "JacobianMultiplier.hpp"
 #include "MeshProxy.hpp"
 
-namespace Plato
+namespace input_parser
 {
 struct brick_shape_geometry;
 }
@@ -64,10 +64,8 @@ class BrickShapeGeometry
 };
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
-[[nodiscard]] auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> core::Function<core::MeshProxy,
-                                   linear_algebra::JacobianMultiplier,
-                                   const linear_algebra::DynamicVector<double>&>;
+[[nodiscard]] auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry) -> core::
+    Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>;
 
 namespace detail
 {
