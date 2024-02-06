@@ -11,7 +11,7 @@ create_plato_library(PlatoFunctionalFilter "${FOLDERS}" "${LINK_LIBS}")
 
 if( UNIT_TESTING )
   # Build test filter shared lib
-  add_subdirectory(./testutilities)
+  create_plato_library(PlatoIdentityFilter test_utilities PlatoFunctionalFilter)
 
   # Build unit tester
   set(FOLDERS library/unittest

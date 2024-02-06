@@ -9,7 +9,7 @@ namespace plato::functional::core
 struct MeshProxy;
 }
 
-namespace plato::functional::filter::testutilities
+namespace plato::functional::filter::test_utilities
 {
 /// @brief The purpose of this filter is to test the shared library interface.
 ///
@@ -23,6 +23,6 @@ class SharedLibIdentityFilter : public library::FilterInterface
     [[nodiscard]] linear_algebra::DynamicVector<double> jacobianTimesVector(
         const core::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const override;
 };
-}  // namespace plato::functional::filter::testutilities
+}  // namespace plato::functional::filter::test_utilities
 
 #endif

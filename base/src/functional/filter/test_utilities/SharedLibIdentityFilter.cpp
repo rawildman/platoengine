@@ -2,12 +2,9 @@
 
 #include "MeshProxy.hpp"
 
-namespace plato::functional::filter::testutilities
+namespace plato::functional::filter::test_utilities
 {
-core::MeshProxy SharedLibIdentityFilter::filter(const core::MeshProxy& aMeshProxy) const
-{
-    return aMeshProxy;
-}
+core::MeshProxy SharedLibIdentityFilter::filter(const core::MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
 linear_algebra::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVector(
     const core::MeshProxy&, const linear_algebra::DynamicVector<double>& aV) const
@@ -15,12 +12,12 @@ linear_algebra::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVect
     return aV;
 }
 
-}  // namespace plato::functional::filter::testutilities
+}  // namespace plato::functional::filter::test_utilities
 
 namespace plato::functional
 {
 std::unique_ptr<filter::library::FilterInterface> plato_create_filter(const filter::library::FilterParameters&)
 {
-    return std::make_unique<filter::testutilities::SharedLibIdentityFilter>();
+    return std::make_unique<filter::test_utilities::SharedLibIdentityFilter>();
 }
 }  // namespace plato::functional
