@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <memory>
 
-#include "FactoryRegistration.hpp"
-#include "Function.hpp"
+#include "core/FactoryRegistration.hpp"
+#include "core/Function.hpp"
 
 namespace plato::functional::input_parser
 {

@@ -4,13 +4,13 @@
 #include <filesystem>
 #include <optional>
 
-#include "DynamicVector.hpp"
-#include "FilterFactory.hpp"
-#include "Function.hpp"
-#include "InputBlocks.hpp"
-#include "JacobianMultiplier.hpp"
-#include "MeshProxy.hpp"
-#include "ValidationRegistration.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "filter/library/FilterFactory.hpp"
+#include "core/Function.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/JacobianMultiplier.hpp"
+#include "core/MeshProxy.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace input_parser
 {

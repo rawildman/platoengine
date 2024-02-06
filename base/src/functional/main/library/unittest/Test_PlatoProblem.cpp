@@ -4,15 +4,15 @@
 #include <ROL_Solver.hpp>
 #include <ROL_StdVector.hpp>
 
-#include "BrickShapeGeometry.hpp"
-#include "Exception.hpp"
-#include "GeometryFactory.hpp"
-#include "InputGeneration.hpp"
-#include "MeshProxy.hpp"
-#include "ObjectiveFactory.hpp"
-#include "OptimizerFactory.hpp"
-#include "PlatoProblem.hpp"
-#include "ValidatedInput.hpp"
+#include "geometry/extension/BrickShapeGeometry.hpp"
+#include "utilities/Exception.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "core/MeshProxy.hpp"
+#include "criteria/library/ObjectiveFactory.hpp"
+#include "optimizer/OptimizerFactory.hpp"
+#include "main/library/PlatoProblem.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library::unittest
 {

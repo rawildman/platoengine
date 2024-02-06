@@ -2,11 +2,11 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "DynamicVector.hpp"
-#include "DynamicVectorRosenbrockFunction.hpp"
-#include "DynamicVectorSerialization.hpp"
-#include "ParallelAggregate.hpp"
-#include "Rosenbrock.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
+#include "linear_algebra/DynamicVectorSerialization.hpp"
+#include "core/ParallelAggregate.hpp"
+#include "test_utilities/Rosenbrock.hpp"
 
 namespace plato::functional::integration_tests::parallel
 {

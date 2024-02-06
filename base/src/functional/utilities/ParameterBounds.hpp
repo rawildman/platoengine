@@ -5,7 +5,7 @@
 #include <string>
 #include <type_traits>
 
-#include "BoundClusivity.hpp"
+#include "utilities/BoundClusivity.hpp"
 
 namespace plato::functional::utilities
 {

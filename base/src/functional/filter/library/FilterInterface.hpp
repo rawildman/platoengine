@@ -5,7 +5,7 @@
 #include <optional>
 #include <string_view>
 
-#include "DynamicVector.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::core
 {

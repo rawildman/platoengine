@@ -2,14 +2,14 @@
 
 #include <string_view>
 
-#include "DynamicVector.hpp"
-#include "Exception.hpp"
-#include "FilterFactory.hpp"
-#include "FilterJacobian.hpp"
-#include "IdentityFilter.hpp"
-#include "InputBlocks.hpp"
-#include "InputEnumTypes.hpp"
-#include "MeshProxy.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "utilities/Exception.hpp"
+#include "filter/library/FilterFactory.hpp"
+#include "filter/library/FilterJacobian.hpp"
+#include "filter/extension/IdentityFilter.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "input_parser/InputEnumTypes.hpp"
+#include "core/MeshProxy.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {

@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "DynamicVectorRosenbrockFunction.hpp"
-#include "ROLConstraintFunction.hpp"
+#include "rol_integration/unittest/DynamicVectorRosenbrockFunction.hpp"
+#include "rol_integration/ROLConstraintFunction.hpp"
 
 namespace plato::functional::rol_integration::unittest
 {

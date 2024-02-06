@@ -4,9 +4,9 @@
 #include <boost/mpi/communicator.hpp>
 #include <string_view>
 
-#include "PlatoProblem.hpp"
+#include "main/library/PlatoProblem.hpp"
 #include "ROL_Problem.hpp"
-#include "ValidationRegistration.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::main::library
 {

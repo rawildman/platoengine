@@ -1,4 +1,4 @@
-#include "OptimizerFactory.hpp"
+#include "optimizer/OptimizerFactory.hpp"
 
 #include <ROL_LineSearchStep.hpp>
 #include <ROL_StatusTest.hpp>

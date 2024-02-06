@@ -6,10 +6,10 @@
 #include <stk_util/parallel/Parallel.hpp>
 #include <string_view>
 
-#include "BrickShapeGeometry.hpp"
-#include "JacobianColumnEvaluator.hpp"
-#include "MeshProxy.hpp"
-#include "STKUtilities.hpp"
+#include "geometry/extension/BrickShapeGeometry.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "core/MeshProxy.hpp"
+#include "utilities/STKUtilities.hpp"
 
 namespace plato::functional::geometry::extension::unittest
 {

@@ -4,13 +4,13 @@
 #include <memory>
 #include <vector>
 
-#include "ConstraintFactory.hpp"
-#include "GeometryFactory.hpp"
-#include "ObjectiveFactory.hpp"
-#include "OptimizerFactory.hpp"
-#include "ROLConstraintFunction.hpp"
-#include "ROLObjectiveFunction.hpp"
-#include "ValidatedInput.hpp"
+#include "criteria/library/ConstraintFactory.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "criteria/library/ObjectiveFactory.hpp"
+#include "optimizer/OptimizerFactory.hpp"
+#include "rol_integration/ROLConstraintFunction.hpp"
+#include "rol_integration/ROLObjectiveFunction.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library
 {

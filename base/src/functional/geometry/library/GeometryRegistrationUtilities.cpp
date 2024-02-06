@@ -1,4 +1,4 @@
-#include "GeometryRegistrationUtilities.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
 
 namespace plato::functional::geometry::library::detail
 {

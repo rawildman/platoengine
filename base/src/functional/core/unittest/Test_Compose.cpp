@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include "Compose.hpp"
-#include "Function.hpp"
-#include "TwoDTestTypes.hpp"
+#include "core/Compose.hpp"
+#include "core/Function.hpp"
+#include "test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::core::unittest
 {

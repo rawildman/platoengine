@@ -3,12 +3,12 @@
 
 #include <string>
 
-#include "CriterionRegistration.hpp"
-#include "DynamicVector.hpp"
-#include "Exception.hpp"
-#include "Function.hpp"
-#include "InputBlocks.hpp"
-#include "ValidatedInputTypeWrapper.hpp"
+#include "criteria/library/CriterionRegistration.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "utilities/Exception.hpp"
+#include "core/Function.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/ValidatedInputTypeWrapper.hpp"
 
 namespace plato::functional::criteria::library
 {

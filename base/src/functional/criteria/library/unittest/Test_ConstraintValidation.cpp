@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "ConstraintValidation.hpp"
-#include "CriterionValidation.hpp"
-#include "InputBlocks.hpp"
-#include "InputGeneration.hpp"
+#include "criteria/library/ConstraintValidation.hpp"
+#include "criteria/library/CriterionValidation.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "test_utilities/InputGeneration.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

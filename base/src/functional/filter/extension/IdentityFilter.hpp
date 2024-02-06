@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_FILTER_EXTENSION_IDENTITYFILTER
 #define PLATO_FUNCTIONAL_FILTER_EXTENSION_IDENTITYFILTER
 
-#include "FilterInterface.hpp"
-#include "Function.hpp"
+#include "filter/library/FilterInterface.hpp"
+#include "core/Function.hpp"
 
 namespace plato::functional::input_parser
 {

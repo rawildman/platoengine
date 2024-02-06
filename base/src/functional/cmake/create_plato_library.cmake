@@ -14,10 +14,7 @@ function( create_plato_library LIBRARY_NAME DIRECTORIES TARGET_LINK_LIST)
     endforeach(curDir)
 
     add_library(${LIBRARY_NAME} SHARED ${LIB_SRCS} ${LIB_HDRS} )
-
-    foreach( curDir ${DIRECTORIES} )
-        target_include_directories(${LIBRARY_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${curDir}>)
-    endforeach(curDir)
+    target_include_directories(${LIBRARY_NAME} PUBLIC $<BUILD_INTERFACE:${FUNCTIONAL_BASE_DIR}>)
 
     target_link_libraries(${LIBRARY_NAME} PUBLIC ${TARGET_LINK_LIST})
 

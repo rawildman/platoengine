@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_INTEGRATION_TESTS_TEST_MASS_OBJECTIVE_MASSOBJECTIVEINTERFACE
 #define PLATO_FUNCTIONAL_INTEGRATION_TESTS_TEST_MASS_OBJECTIVE_MASSOBJECTIVEINTERFACE
 
-#include "CriterionInterface.hpp"
+#include "criteria/library/CriterionInterface.hpp"
 
 namespace plato::functional::integration_tests::test_mass_objective
 {

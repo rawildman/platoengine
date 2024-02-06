@@ -1,10 +1,10 @@
 #ifndef PLATO_FUNCTIONAL_CORE_TEST_UTILITIES_UTILITIES
 #define PLATO_FUNCTIONAL_CORE_TEST_UTILITIES_UTILITIES
 
-#include "Function.hpp"
-#include "Penalty.hpp"
-#include "Rosenbrock.hpp"
-#include "TwoDTestTypes.hpp"
+#include "core/Function.hpp"
+#include "test_utilities/Penalty.hpp"
+#include "test_utilities/Rosenbrock.hpp"
+#include "test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::core::test_utilities
 {

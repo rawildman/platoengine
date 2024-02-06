@@ -1,12 +1,12 @@
-#include "HelmholtzFilter.hpp"
+#include "filter/extension/HelmholtzFilter.hpp"
 
 #include <filesystem>
 
-#include "FilterInterface.hpp"
-#include "FilterRegistration.hpp"
-#include "InputEnumTypes.hpp"
-#include "ValidationRegistration.hpp"
-#include "ValidationUtilities.hpp"
+#include "filter/library/FilterInterface.hpp"
+#include "filter/library/FilterRegistration.hpp"
+#include "input_parser/InputEnumTypes.hpp"
+#include "core/ValidationRegistration.hpp"
+#include "core/ValidationUtilities.hpp"
 
 namespace plato::functional::filter::extension
 {

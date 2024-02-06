@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "NamedType.hpp"
+#include "utilities/NamedType.hpp"
 
 namespace plato::functional::utilities
 {

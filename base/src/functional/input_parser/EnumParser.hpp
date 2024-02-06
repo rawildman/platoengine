@@ -3,7 +3,7 @@
 
 #include <boost/spirit/include/qi.hpp>
 
-#include "EnumTable.hpp"
+#include "utilities/EnumTable.hpp"
 
 namespace plato::functional::input_parser
 {

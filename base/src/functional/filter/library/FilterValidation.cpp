@@ -1,8 +1,8 @@
-#include "FilterValidation.hpp"
+#include "filter/library/FilterValidation.hpp"
 
-#include "InputBlocks.hpp"
-#include "ValidationRegistration.hpp"
-#include "ValidationUtilities.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/ValidationRegistration.hpp"
+#include "core/ValidationUtilities.hpp"
 
 namespace plato::functional::filter::library
 {

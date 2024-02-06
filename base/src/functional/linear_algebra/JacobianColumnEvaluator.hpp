@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "DynamicVector.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::linear_algebra
 {

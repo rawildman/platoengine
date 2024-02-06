@@ -9,9 +9,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "EnumParser.hpp"
-#include "InputBlocks.hpp"
-#include "InputEnumTypes.hpp"
+#include "input_parser/EnumParser.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "input_parser/InputEnumTypes.hpp"
 
 namespace plato::functional::input_parser
 {

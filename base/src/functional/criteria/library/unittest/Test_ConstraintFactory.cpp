@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ConstraintFactory.hpp"
+#include "criteria/library/ConstraintFactory.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

@@ -1,13 +1,12 @@
 #define BOOST_PHOENIX_STL_TUPLE_H_  // Work-around for ODR violation in boost phoenix.
                                     // https://github.com/boostorg/phoenix/issues/111
 
-#include "InputParser.hpp"
+#include "input_parser/InputParser.hpp"
 
 #include <fstream>
 #include <streambuf>
 
-#include "Exception.hpp"
-#include "InputParser.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::input_parser
 {

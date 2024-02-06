@@ -2,8 +2,8 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "InputBlocks.hpp"
-#include "ObjectiveValidation.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "criteria/library/ObjectiveValidation.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

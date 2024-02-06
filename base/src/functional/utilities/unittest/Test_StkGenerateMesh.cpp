@@ -8,7 +8,7 @@
 #include <stk_util/parallel/Parallel.hpp>
 #include <string_view>
 
-#include "STKUtilities.hpp"
+#include "utilities/STKUtilities.hpp"
 namespace plato::functional::utilities::unittest
 {
 

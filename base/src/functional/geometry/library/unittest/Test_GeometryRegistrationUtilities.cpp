@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "GeometryRegistrationUtilities.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
 
 namespace plato::functional::geometry::library::unittest
 {

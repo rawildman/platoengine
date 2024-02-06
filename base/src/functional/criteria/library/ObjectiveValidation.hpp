@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEVALIDATION
 #define PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEVALIDATION
 
-#include "InputBlocks.hpp"
-#include "ValidationRegistration.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::criteria::library
 {

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "GeometryValidation.hpp"
-#include "InputGeneration.hpp"
-#include "ValidationRegistration.hpp"
+#include "geometry/library/GeometryValidation.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::geometry::library::unittest
 {

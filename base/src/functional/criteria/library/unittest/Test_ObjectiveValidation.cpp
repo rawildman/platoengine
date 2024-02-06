@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "CriterionValidation.hpp"
-#include "InputBlocks.hpp"
-#include "InputGeneration.hpp"
-#include "ObjectiveValidation.hpp"
+#include "criteria/library/CriterionValidation.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "criteria/library/ObjectiveValidation.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

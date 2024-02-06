@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Exception.hpp"
-#include "FilterFactory.hpp"
-#include "InputBlocks.hpp"
+#include "utilities/Exception.hpp"
+#include "filter/library/FilterFactory.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {

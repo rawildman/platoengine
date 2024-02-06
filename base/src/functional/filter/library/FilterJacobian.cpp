@@ -1,8 +1,8 @@
-#include "FilterJacobian.hpp"
+#include "filter/library/FilterJacobian.hpp"
 
 #include <cassert>
 
-#include "FilterInterface.hpp"
+#include "filter/library/FilterInterface.hpp"
 
 namespace plato::functional::filter::library
 {

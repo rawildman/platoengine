@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
-#include "InputGeneration.hpp"
-#include "InputParser.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "input_parser/InputParser.hpp"
 
 namespace
 {

@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-#include "FactoryRegistration.hpp"
+#include "core/FactoryRegistration.hpp"
 
 namespace plato::functional::core::unittest
 {

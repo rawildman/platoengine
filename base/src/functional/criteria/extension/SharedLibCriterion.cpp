@@ -1,9 +1,9 @@
-#include "SharedLibCriterion.hpp"
+#include "criteria/extension/SharedLibCriterion.hpp"
 
-#include "CriterionRegistration.hpp"
-#include "Exception.hpp"
-#include "InputEnumTypes.hpp"
-#include "SharedLibraryUtilities.hpp"
+#include "criteria/library/CriterionRegistration.hpp"
+#include "utilities/Exception.hpp"
+#include "input_parser/InputEnumTypes.hpp"
+#include "utilities/SharedLibraryUtilities.hpp"
 
 namespace plato::functional::criteria::extension
 {

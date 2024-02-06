@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "BrickShapeGeometry.hpp"
-#include "Exception.hpp"
-#include "GeometryValidation.hpp"
-#include "InputGeneration.hpp"
+#include "geometry/extension/BrickShapeGeometry.hpp"
+#include "utilities/Exception.hpp"
+#include "geometry/library/GeometryValidation.hpp"
+#include "test_utilities/InputGeneration.hpp"
 namespace plato::functional::geometry::extension::unittest
 {
 TEST(BrickShapeGeometryValidation, BrickShapeMeshName)

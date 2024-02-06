@@ -1,4 +1,4 @@
-#include "STKUtilities.hpp"
+#include "utilities/STKUtilities.hpp"
 
 #include <stk_io/FillMesh.hpp>
 #include <stk_io/StkMeshIoBroker.hpp>

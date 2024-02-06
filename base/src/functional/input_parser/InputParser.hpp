@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <type_traits>
 
-#include "BlockStructRule.hpp"
+#include "input_parser/BlockStructRule.hpp"
 
 namespace plato::functional::input_parser
 {

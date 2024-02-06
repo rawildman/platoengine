@@ -7,10 +7,10 @@
 #include <type_traits>
 #include <vector>
 
-#include "CriterionInterface.hpp"
-#include "DynamicVector.hpp"
-#include "Function.hpp"
-#include "MeshProxy.hpp"
+#include "criteria/library/CriterionInterface.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "core/Function.hpp"
+#include "core/MeshProxy.hpp"
 
 namespace plato::functional::criteria::extension
 {

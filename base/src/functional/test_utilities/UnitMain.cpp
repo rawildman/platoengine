@@ -1,4 +1,4 @@
-#include "UnitMain.hpp"
+#include "test_utilities/UnitMain.hpp"
 
 #include <gtest/gtest.h>
 #include <mpi.h>

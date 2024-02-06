@@ -4,9 +4,9 @@
 #include <ROL_Constraint.hpp>
 #include <ROL_Vector.hpp>
 
-#include "ConstraintFactory.hpp"
-#include "DynamicVector.hpp"
-#include "Function.hpp"
+#include "criteria/library/ConstraintFactory.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "core/Function.hpp"
 
 namespace plato::functional::rol_integration
 {

@@ -2,9 +2,9 @@
 
 #include <boost/optional/optional_io.hpp>
 
-#include "CriterionFactory.hpp"
-#include "InputGeneration.hpp"
-#include "ValidatedInput.hpp"
+#include "criteria/library/CriterionFactory.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

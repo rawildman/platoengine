@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "JacobianColumnEvaluator.hpp"
-#include "JacobianMultiplier.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "linear_algebra/JacobianMultiplier.hpp"
 
 namespace plato::functional::linear_algebra::unittest
 {

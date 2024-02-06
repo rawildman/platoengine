@@ -1,8 +1,8 @@
-#include "ROLObjectiveFunction.hpp"
+#include "rol_integration/ROLObjectiveFunction.hpp"
 
 #include <ROL_StdVector.hpp>
 
-#include "ROLHelpers.hpp"
+#include "rol_integration/ROLHelpers.hpp"
 
 namespace plato::functional::rol_integration
 {

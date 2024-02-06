@@ -1,11 +1,9 @@
-#include "GeometryFactory.hpp"
+#include "geometry/library/GeometryFactory.hpp"
 
-#include "BrickShapeGeometry.hpp"
-#include "DensityTopology.hpp"
-#include "Exception.hpp"
-#include "GeometryRegistration.hpp"
-#include "GeometryRegistrationUtilities.hpp"
-#include "InputBlocks.hpp"
+#include "utilities/Exception.hpp"
+#include "geometry/library/GeometryRegistration.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::geometry::library
 {

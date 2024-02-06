@@ -1,6 +1,6 @@
-#include "ConstraintValidation.hpp"
+#include "criteria/library/ConstraintValidation.hpp"
 
-#include "CriterionValidation.hpp"
+#include "criteria/library/CriterionValidation.hpp"
 
 namespace plato::functional::criteria::library
 {

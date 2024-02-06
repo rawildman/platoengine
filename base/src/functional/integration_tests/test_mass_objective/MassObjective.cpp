@@ -1,4 +1,4 @@
-#include "MassObjective.hpp"
+#include "integration_tests/test_mass_objective/MassObjective.hpp"
 
 #include <numeric>
 #include <stk_io/FillMesh.hpp>
@@ -10,7 +10,7 @@
 #include <stk_mesh/base/MetaData.hpp>
 #include <stk_mesh/base/Types.hpp>
 
-#include "STKUtilities.hpp"
+#include "utilities/STKUtilities.hpp"
 
 namespace plato::functional::integration_tests::test_mass_objective
 {

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "InputBlocks.hpp"
-#include "ParameterBounds.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "utilities/ParameterBounds.hpp"
 
 namespace plato::functional::core
 {

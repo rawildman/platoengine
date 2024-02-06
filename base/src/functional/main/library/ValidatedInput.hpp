@@ -3,9 +3,9 @@
 
 #include <filesystem>
 
-#include "GeometryRegistration.hpp"
-#include "InputBlocks.hpp"
-#include "ValidatedInputTypeWrapper.hpp"
+#include "geometry/library/GeometryRegistration.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/ValidatedInputTypeWrapper.hpp"
 
 namespace plato::functional::main::library
 {

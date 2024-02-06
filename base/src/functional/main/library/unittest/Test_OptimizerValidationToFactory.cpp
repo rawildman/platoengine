@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "InputGeneration.hpp"
-#include "InputParser.hpp"
-#include "OptimizerFactory.hpp"
-#include "ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "input_parser/InputParser.hpp"
+#include "optimizer/OptimizerFactory.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library::unittest
 {

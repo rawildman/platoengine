@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-#include "InputBlocks.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::core
 {

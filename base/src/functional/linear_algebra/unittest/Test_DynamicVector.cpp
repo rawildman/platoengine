@@ -4,8 +4,8 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <sstream>
 
-#include "DynamicVector.hpp"
-#include "DynamicVectorSerialization.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "linear_algebra/DynamicVectorSerialization.hpp"
 
 namespace plato::functional::linear_algebra::unittest
 {

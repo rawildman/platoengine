@@ -1,6 +1,6 @@
-#include "GeometryRegistration.hpp"
+#include "geometry/library/GeometryRegistration.hpp"
 
-#include "GeometryRegistrationUtilities.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
 
 namespace plato::functional::geometry::library
 {

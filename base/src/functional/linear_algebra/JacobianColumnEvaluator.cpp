@@ -1,6 +1,6 @@
-#include "JacobianColumnEvaluator.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
 
-#include "JacobianMultiplier.hpp"
+#include "linear_algebra/JacobianMultiplier.hpp"
 
 namespace plato::functional::linear_algebra
 {

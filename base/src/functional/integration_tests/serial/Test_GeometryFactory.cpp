@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "GeometryFactory.hpp"
-#include "GeometryRegistrationUtilities.hpp"
-#include "InputGeneration.hpp"
-#include "ValidatedInput.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

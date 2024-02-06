@@ -1,6 +1,6 @@
-#include "SharedLibIdentityFilter.hpp"
+#include "filter/test_utilities/SharedLibIdentityFilter.hpp"
 
-#include "MeshProxy.hpp"
+#include "core/MeshProxy.hpp"
 
 namespace plato::functional::filter::test_utilities
 {

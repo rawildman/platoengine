@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "ConstraintFactory.hpp"
-#include "ConstraintValidation.hpp"
-#include "Exception.hpp"
-#include "InputGeneration.hpp"
-#include "ValidatedInput.hpp"
+#include "criteria/library/ConstraintFactory.hpp"
+#include "criteria/library/ConstraintValidation.hpp"
+#include "utilities/Exception.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

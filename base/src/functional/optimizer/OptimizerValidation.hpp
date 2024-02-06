@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "InputBlocks.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::optimizer
 {

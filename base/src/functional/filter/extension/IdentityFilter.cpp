@@ -1,12 +1,12 @@
-#include "IdentityFilter.hpp"
+#include "filter/extension/IdentityFilter.hpp"
 
-#include "DynamicVector.hpp"
-#include "Exception.hpp"
-#include "FilterJacobian.hpp"
-#include "FilterRegistration.hpp"
-#include "InputEnumTypes.hpp"
-#include "MeshProxy.hpp"
-#include "ValidationRegistration.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "utilities/Exception.hpp"
+#include "filter/library/FilterJacobian.hpp"
+#include "filter/library/FilterRegistration.hpp"
+#include "input_parser/InputEnumTypes.hpp"
+#include "core/MeshProxy.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::filter::extension
 {

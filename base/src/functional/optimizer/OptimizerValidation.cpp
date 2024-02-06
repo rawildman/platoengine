@@ -1,8 +1,8 @@
-#include "OptimizerValidation.hpp"
+#include "optimizer/OptimizerValidation.hpp"
 
-#include "InputBlocks.hpp"
-#include "ValidationRegistration.hpp"
-#include "ValidationUtilities.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/ValidationRegistration.hpp"
+#include "core/ValidationUtilities.hpp"
 
 namespace plato::functional::optimizer
 {

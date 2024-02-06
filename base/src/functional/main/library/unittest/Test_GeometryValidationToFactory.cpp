@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "GeometryFactory.hpp"
-#include "InputGeneration.hpp"
-#include "STKUtilities.hpp"
-#include "ValidatedInput.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "utilities/STKUtilities.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library::unittest
 {

@@ -9,12 +9,12 @@
 #include <string_view>
 #include <vector>
 
-#include "DensityTopology.hpp"
-#include "InputBlocks.hpp"
-#include "InputGeneration.hpp"
-#include "JacobianColumnEvaluator.hpp"
-#include "MeshProxy.hpp"
-#include "STKUtilities.hpp"
+#include "geometry/extension/DensityTopology.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "core/MeshProxy.hpp"
+#include "utilities/STKUtilities.hpp"
 namespace plato::functional::geometry::extension::unittest
 {
 namespace

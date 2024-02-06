@@ -1,17 +1,17 @@
-#include "BrickShapeGeometry.hpp"
+#include "geometry/extension/BrickShapeGeometry.hpp"
 
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
 
-#include "DynamicVector.hpp"
-#include "Exception.hpp"
-#include "GeometryRegistration.hpp"
-#include "GeometryValidation.hpp"
-#include "InputBlocks.hpp"
-#include "JacobianColumnEvaluator.hpp"
-#include "STKUtilities.hpp"
-#include "ValidationRegistration.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "utilities/Exception.hpp"
+#include "geometry/library/GeometryRegistration.hpp"
+#include "geometry/library/GeometryValidation.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "utilities/STKUtilities.hpp"
+#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::geometry::extension
 {

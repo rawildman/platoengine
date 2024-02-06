@@ -1,11 +1,11 @@
-#include "NodalSumObjective.hpp"
+#include "criteria/extension/NodalSumObjective.hpp"
 
 #include <numeric>
 #include <vector>
 
-#include "CriterionRegistration.hpp"
-#include "InputEnumTypes.hpp"
-#include "STKUtilities.hpp"
+#include "criteria/library/CriterionRegistration.hpp"
+#include "input_parser/InputEnumTypes.hpp"
+#include "utilities/STKUtilities.hpp"
 
 namespace plato::functional::criteria::extension
 {

@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "Function.hpp"
+#include "core/Function.hpp"
 
 namespace plato::functional::core
 {

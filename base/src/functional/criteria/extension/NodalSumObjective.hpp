@@ -1,9 +1,9 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIA_EXTENSION_NODALSUMOBJECTIVE
 #define PLATO_FUNCTIONAL_CRITERIA_EXTENSION_NODALSUMOBJECTIVE
 
-#include "DynamicVector.hpp"
-#include "Function.hpp"
-#include "MeshProxy.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "core/Function.hpp"
+#include "core/MeshProxy.hpp"
 
 namespace plato::functional::criteria::extension
 {

@@ -4,11 +4,11 @@
 #include <filesystem>
 #include <optional>
 
-#include "DynamicVector.hpp"
-#include "Function.hpp"
-#include "JacobianColumnEvaluator.hpp"
-#include "JacobianMultiplier.hpp"
-#include "MeshProxy.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "core/Function.hpp"
+#include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "linear_algebra/JacobianMultiplier.hpp"
+#include "core/MeshProxy.hpp"
 
 namespace input_parser
 {

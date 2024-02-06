@@ -1,6 +1,6 @@
-#include "CriterionRegistration.hpp"
+#include "criteria/library/CriterionRegistration.hpp"
 
-#include "InputBlocks.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::criteria::library
 {

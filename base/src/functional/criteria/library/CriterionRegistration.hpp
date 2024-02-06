@@ -3,10 +3,10 @@
 
 #include <string_view>
 
-#include "DynamicVector.hpp"
-#include "FactoryRegistration.hpp"
-#include "FileList.hpp"
-#include "Function.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "core/FactoryRegistration.hpp"
+#include "input_parser/FileList.hpp"
+#include "core/Function.hpp"
 
 namespace plato::functional::core
 {

@@ -1,16 +1,16 @@
-#include "OptimizationProblem.hpp"
+#include "main/library/OptimizationProblem.hpp"
 
 #include <ROL_Algorithm.hpp>
 #include <fstream>
 #include <string_view>
 
-#include "DynamicVector.hpp"
-#include "GeometryFactory.hpp"
-#include "MeshProxy.hpp"
-#include "ObjectiveFactory.hpp"
-#include "PlatoProblem.hpp"
-#include "ROLHelpers.hpp"
-#include "ValidatedInput.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "core/MeshProxy.hpp"
+#include "criteria/library/ObjectiveFactory.hpp"
+#include "main/library/PlatoProblem.hpp"
+#include "rol_integration/ROLHelpers.hpp"
+#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library
 {

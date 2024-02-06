@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Function.hpp"
-#include "TwoDTestTypes.hpp"
+#include "core/Function.hpp"
+#include "test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::core::unittest
 {

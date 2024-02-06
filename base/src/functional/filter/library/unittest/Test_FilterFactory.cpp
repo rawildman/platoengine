@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "Exception.hpp"
-#include "FilterFactory.hpp"
-#include "InputBlocks.hpp"
-#include "InputEnumTypes.hpp"
+#include "utilities/Exception.hpp"
+#include "filter/library/FilterFactory.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "input_parser/InputEnumTypes.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {

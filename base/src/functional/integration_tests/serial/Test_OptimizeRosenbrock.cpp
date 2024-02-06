@@ -7,10 +7,10 @@
 #include <ROL_Stream.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
 
-#include "Compose.hpp"
-#include "DynamicVectorPenaltyFunction.hpp"
-#include "DynamicVectorRosenbrockFunction.hpp"
-#include "ROLObjectiveFunction.hpp"
+#include "core/Compose.hpp"
+#include "integration_tests/utilities/DynamicVectorPenaltyFunction.hpp"
+#include "integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
+#include "rol_integration/ROLObjectiveFunction.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

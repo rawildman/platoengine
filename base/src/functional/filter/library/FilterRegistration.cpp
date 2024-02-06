@@ -1,12 +1,12 @@
-#include "FilterRegistration.hpp"
+#include "filter/library/FilterRegistration.hpp"
 
 #include <optional>
 
-#include "FilterInterface.hpp"
-#include "FilterJacobian.hpp"
-#include "InputBlocks.hpp"
-#include "MeshProxy.hpp"
-#include "SharedLibraryUtilities.hpp"
+#include "filter/library/FilterInterface.hpp"
+#include "filter/library/FilterJacobian.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "core/MeshProxy.hpp"
+#include "utilities/SharedLibraryUtilities.hpp"
 
 namespace plato::functional::filter::library
 {

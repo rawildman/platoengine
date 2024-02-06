@@ -1,6 +1,6 @@
-#include "ROLConstraintFunction.hpp"
+#include "rol_integration/ROLConstraintFunction.hpp"
 
-#include "ROLHelpers.hpp"
+#include "rol_integration/ROLHelpers.hpp"
 
 namespace plato::functional::rol_integration
 {

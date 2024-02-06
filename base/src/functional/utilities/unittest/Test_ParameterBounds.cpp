@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ParameterBounds.hpp"
+#include "utilities/ParameterBounds.hpp"
 namespace plato::functional::utilities::unittest
 {
 TEST(ParameterBounds, DirectConstructionAllInclusive)

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "NodalSumObjective.hpp"
-#include "STKUtilities.hpp"
+#include "criteria/extension/NodalSumObjective.hpp"
+#include "utilities/STKUtilities.hpp"
 
 namespace plato::functional::criteria::extension::unittest
 {

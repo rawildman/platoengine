@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "InputBlocks.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::test_utilities
 {
