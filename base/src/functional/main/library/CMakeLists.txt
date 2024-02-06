@@ -8,5 +8,5 @@ set(LINK_LIBS PlatoFunctionalGeometry
 create_plato_library(PlatoFunctional "." "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-    create_plato_unittester(PlatoFunctional_UnitTester unittest PlatoFunctional)
+    create_plato_unittester(PlatoFunctional unittest)
 endif()

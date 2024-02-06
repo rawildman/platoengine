@@ -5,5 +5,5 @@ set(LINK_LIBS Boost::headers)
 create_plato_library(PlatoFunctionalLinearAlgebra "." "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-  create_plato_unittester(PlatoFunctionalLinearAlgebra_UnitTester unittest PlatoFunctionalLinearAlgebra)
+  create_plato_unittester(PlatoFunctionalLinearAlgebra unittest)
 endif()

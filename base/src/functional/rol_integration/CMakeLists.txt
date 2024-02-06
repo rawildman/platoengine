@@ -7,5 +7,5 @@ set(LINK_LIBS ROL::rol
 create_plato_library(PlatoFunctionalROLIntegration "." "${LINK_LIBS}")
 
 if(UNIT_TESTING)
-    create_plato_unittester(PlatoFunctionalROLIntegration_UnitTester unittest PlatoFunctionalROLIntegration)
+    create_plato_unittester(PlatoFunctionalROLIntegration unittest)
 endif()

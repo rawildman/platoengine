@@ -14,10 +14,10 @@ set(LINK_LIBS TeuchosCore::teuchoscore
               PlatoFunctional
               PlatoFunctionalIntegrationTestUtilities
               PlatoTestMassObjective)
-create_plato_unittester(PlatoFunctional_IntegrationUnitTester serial "${LINK_LIBS}")
+create_plato_integration_tester(PlatoFunctional_IntegrationUnitTester serial "${LINK_LIBS}")
 
 # Parallel tests
 set(LINK_LIBS PlatoFunctional 
               PlatoFunctionalIntegrationTestUtilities)
 set(NUM_RANKS_FOR_TEST 4)
-create_plato_parallel_unittester(PlatoFunctional_IntegrationParallelUnitTester parallel "${LINK_LIBS}" ${NUM_RANKS_FOR_TEST})
+create_plato_parallel_integration_tester(PlatoFunctional_IntegrationParallelUnitTester parallel "${LINK_LIBS}" ${NUM_RANKS_FOR_TEST})

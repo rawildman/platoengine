@@ -13,5 +13,5 @@ if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
 endif()
 
 if( UNIT_TESTING )
-  create_plato_unittester(PlatoFunctionalInputParser_UnitTester unittest PlatoFunctionalInputParser)
+  create_plato_unittester(PlatoFunctionalInputParser unittest)
 endif()

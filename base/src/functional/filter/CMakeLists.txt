@@ -16,6 +16,6 @@ if( UNIT_TESTING )
   # Build unit tester
   set(FOLDERS library/unittest
               extension/unittest)
-  create_plato_unittester(PlatoFunctional_FilterUnitTester "${FOLDERS}" PlatoFunctionalFilter)
+  create_plato_unittester(PlatoFunctionalFilter "${FOLDERS}")
 
 endif()

@@ -6,5 +6,5 @@ set(LINK_LIBS ROL::rol
 create_plato_library(PlatoFunctionalOptimizer "." "${LINK_LIBS}")
 
 if( UNIT_TESTING )
-  create_plato_unittester(PlatoFunctional_OptimizerUnitTester unittest PlatoFunctionalOptimizer)
+  create_plato_unittester(PlatoFunctionalOptimizer unittest)
 endif()
