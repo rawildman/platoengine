@@ -10,7 +10,7 @@ namespace plato::functional::core
 {
 /// @brief Generates a new Function that is the composition of @a f and @a g, i.e. \f$f(g(x))\f$
 template <typename fR, typename dFR, typename fArg, typename gR, typename dGR, typename gArg>
-[[nodiscard]] auto compose(Function<fR, dFR, fArg> aF, core::Function<gR, dGR, gArg> aG)
+[[nodiscard]] auto compose(Function<fR, dFR, fArg> aF, Function<gR, dGR, gArg> aG)
 {
     static_assert(std::is_convertible_v<gR, fArg>,
                   "The return type of aG must be convertible to the argument type of aF.");
