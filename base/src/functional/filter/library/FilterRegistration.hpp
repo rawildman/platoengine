@@ -12,20 +12,19 @@ namespace Plato
 struct density_topology;
 }
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
-}  // namespace Plato::Functional
+}
 
 namespace plato::functional::filter::library
 {
 class FilterInterface;
 struct FilterJacobian;
 
-using FilterFunction =
-    Plato::Functional::Function<Plato::Functional::MeshProxy, FilterJacobian, const Plato::Functional::MeshProxy&>;
+using FilterFunction = core::Function<core::MeshProxy, FilterJacobian, const core::MeshProxy&>;
 using FilterInput = Plato::density_topology;
-using FilterRegistration = Plato::Functional::Registration<FilterFunction, FilterInput>;
+using FilterRegistration = core::FactoryRegistration<FilterFunction, FilterInput>;
 
 [[nodiscard]] auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction;
 

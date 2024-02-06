@@ -43,7 +43,7 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
     std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
     std::transform(
         aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const plato::functional::criteria::library::Constraint<const Plato::Functional::MeshProxy&>&
+        [&aProblem](const plato::functional::criteria::library::Constraint<const core::MeshProxy&>&
                         aConstraintData)
         {
             plato::functional::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>

@@ -70,7 +70,7 @@ template <typename... Ts>
 struct VariantFromTuple<std::tuple<Ts...>>
 {
     using type = std::variant<Ts...>;
-    using validated_type = std::variant<Plato::Functional::Core::ValidatedInputTypeWrapper<Ts>...>;
+    using validated_type = std::variant<core::ValidatedInputTypeWrapper<Ts>...>;
 };
 
 template <typename FusionStruct>

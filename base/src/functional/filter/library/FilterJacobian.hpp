@@ -14,7 +14,7 @@ class FilterInterface;
 struct FilterJacobian
 {
     std::shared_ptr<FilterInterface> mFilter;
-    Plato::Functional::MeshProxy mMeshProxy;
+    core::MeshProxy mMeshProxy;
 };
 
 /// @pre `FilterJacobian::mFilter` must not be `nullptr`.

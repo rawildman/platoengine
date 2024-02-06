@@ -17,7 +17,6 @@ namespace plato::functional::main::library::unittest
 {
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 {
-    namespace pf = Plato::Functional;
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
                                test_utilities::create_valid_example_optimization_parameters_string();
@@ -29,8 +28,8 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 
     // Test Geometry
     const auto tBoundingBox = linear_algebra::DynamicVector{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
-    const pf::MeshProxy tGeomProxy = tGeometry.mCompute.f(tBoundingBox);
-    const pf::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometry.mCompute.f(tBoundingBox);
+    const core::MeshProxy tGeomProxy = tGeometry.mCompute.f(tBoundingBox);
+    const core::MeshProxy tPlatoProblemGeomProxy = tProblem.mGeometry.mCompute.f(tBoundingBox);
     EXPECT_EQ(tGeomProxy.mFileName, tPlatoProblemGeomProxy.mFileName);
 
     // Test Objective
@@ -42,7 +41,6 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 
 TEST(PlatoProblem, InputFileToROLObjective)
 {
-    namespace pf = Plato::Functional;
     constexpr double tWeight = 42.0;
 
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
@@ -74,7 +72,6 @@ TEST(PlatoProblem, InputFileToROLObjective)
 
 TEST(PlatoProblem, InputFileToROLConstraint)
 {
-    namespace pf = Plato::Functional;
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
                                R"(
@@ -106,8 +103,6 @@ TEST(PlatoProblem, InputFileToROLConstraint)
 
 TEST(PlatoProblem, InputFileToROLSolver)
 {
-    namespace pf = Plato::Functional;
-
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
                                R"(

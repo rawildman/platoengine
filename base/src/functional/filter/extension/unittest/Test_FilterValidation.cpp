@@ -8,7 +8,6 @@
 
 namespace plato::functional::filter::extension::unittest
 {
-
 TEST(FilterValidation, CheckFilterValuesIdentity)
 {
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
@@ -26,7 +25,7 @@ TEST(FilterValidation, CheckFilterValuesIdentity)
     // Check in registered function list
     tDensityTopology.filter_radius = 1;  // Make invalid
     auto tErrorMessages = std::vector<std::string>{};
-    tErrorMessages = Plato::Functional::Validation::validate(tDensityTopology, std::move(tErrorMessages));
+    tErrorMessages = core::validate(tDensityTopology, std::move(tErrorMessages));
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 
@@ -46,7 +45,7 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzRadius)
     // Check in registered function list
     tDensityTopology.filter_radius = boost::none;  // Make invalid
     auto tErrorMessages = std::vector<std::string>{};
-    tErrorMessages = Plato::Functional::Validation::validate(tDensityTopology, std::move(tErrorMessages));
+    tErrorMessages = core::validate(tDensityTopology, std::move(tErrorMessages));
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 
@@ -65,7 +64,7 @@ TEST(FilterValidation, CheckFilterValuesHelmholtzBoundaryStickingPenalty)
     // Check in registered function list
     tDensityTopology.boundary_sticking_penalty = -1;  // Make invalid
     auto tErrorMessages = std::vector<std::string>{};
-    tErrorMessages = Plato::Functional::Validation::validate(tDensityTopology, std::move(tErrorMessages));
+    tErrorMessages = core::validate(tDensityTopology, std::move(tErrorMessages));
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 

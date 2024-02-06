@@ -96,12 +96,11 @@ TEST(GeometryInputBuilder, GeometryInput)
 TEST(GeometryInputBuilder, ValidatedGeometryInput)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
-    namespace pfc = Plato::Functional::Core;
     using TestInput = pfgld::ValidatedGeometryInputVariant<Plato::PlatoInput>;
     static_assert(std::variant_size_v<TestInput> == 2);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
-                                 pfc::ValidatedInputTypeWrapper<Plato::density_topology>>);
+                                 core::ValidatedInputTypeWrapper<Plato::density_topology>>);
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>,
-                                 pfc::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>);
+                                 core::ValidatedInputTypeWrapper<Plato::brick_shape_geometry>>);
 }
 }  // namespace plato::functional::geometry::library::unittest

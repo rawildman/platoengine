@@ -24,11 +24,11 @@ class ValidatedInput
 {
    public:
     using Geometry = plato::functional::geometry::library::ValidatedGeometryInput;
-    using Objectives = Plato::Functional::Core::ValidatedInputTypeWrapper<
-        std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>>;
-    using Constraints = Plato::Functional::Core::ValidatedInputTypeWrapper<
-        std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
-    using OptimizationParameters = Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+    using Objectives = core::ValidatedInputTypeWrapper<
+        std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>>;
+    using Constraints = core::ValidatedInputTypeWrapper<
+        std::vector<core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+    using OptimizationParameters = core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
    public:
     ValidatedInput(Plato::PlatoInput aInput, Key);
@@ -40,7 +40,7 @@ class ValidatedInput
 
    private:
     template <typename T>
-    static std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<T>> validatedVector(
+    static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(
         const std::vector<T>& aInputs);
 
    private:

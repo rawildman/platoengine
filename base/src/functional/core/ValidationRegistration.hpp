@@ -4,10 +4,9 @@
 #include <optional>
 #include <string>
 
-#include "FactoryRegistration.hpp"
 #include "InputBlocks.hpp"
 
-namespace Plato::Functional::Validation
+namespace plato::functional::core
 {
 template <typename Input>
 using ValidationFunction = std::function<std::optional<std::string>(const Input&)>;
@@ -25,7 +24,7 @@ using ValidationFunction = std::function<std::optional<std::string>(const Input&
 /// @code
 /// namespace{
 /// [[maybe_unused]] static auto kNewValidationRegistration =
-///   Plato::Functonal::Validation::Registration<Plato::density_topology>{
+///   plato::functional::core::ValidationRegistration<Plato::density_topology>{
 ///    [](const Plato::density_topology& aInput){ return validate_foo_parameter(aInput); }
 /// };
 /// }
@@ -33,10 +32,10 @@ using ValidationFunction = std::function<std::optional<std::string>(const Input&
 ///
 /// @tparam ValidationInput The type of the input data needed by the validation function as an argument.
 template <typename ValidationInput>
-struct Registration
+struct ValidationRegistration
 {
-    Registration(ValidationFunction<ValidationInput> aFunction);
-    Registration(std::initializer_list<ValidationFunction<ValidationInput>> aFunctions);
+    ValidationRegistration(ValidationFunction<ValidationInput> aFunction);
+    ValidationRegistration(std::initializer_list<ValidationFunction<ValidationInput>> aFunctions);
 };
 
 /// @brief Validates @a aInput, appending any error messages to @a aCurrentMessageList and returning
@@ -48,7 +47,7 @@ template <typename ValidationInput>
 namespace detail
 {
 template <typename ValidationInput>
-[[nodiscard]] auto registered_functions() -> std::vector<ValidationFunction<ValidationInput>>&
+[[nodiscard]] auto registered_validation_functions() -> std::vector<ValidationFunction<ValidationInput>>&
 {
     static auto tFunctions = std::vector<ValidationFunction<ValidationInput>>{};
     return tFunctions;
@@ -57,23 +56,24 @@ template <typename ValidationInput>
 }  // namespace detail
 
 template <typename ValidationInput>
-Registration<ValidationInput>::Registration(ValidationFunction<ValidationInput> aFunction)
+ValidationRegistration<ValidationInput>::ValidationRegistration(ValidationFunction<ValidationInput> aFunction)
 {
-    detail::registered_functions<ValidationInput>().push_back(std::move(aFunction));
+    detail::registered_validation_functions<ValidationInput>().push_back(std::move(aFunction));
 }
 
 template <typename ValidationInput>
-Registration<ValidationInput>::Registration(std::initializer_list<ValidationFunction<ValidationInput>> aFunctions)
+ValidationRegistration<ValidationInput>::ValidationRegistration(
+    std::initializer_list<ValidationFunction<ValidationInput>> aFunctions)
 {
     std::move(aFunctions.begin(), aFunctions.end(),
-              std::back_inserter(detail::registered_functions<ValidationInput>()));
+              std::back_inserter(detail::registered_validation_functions<ValidationInput>()));
 }
 
 template <typename ValidationInput>
 [[nodiscard]] std::vector<std::string> validate(const ValidationInput& aInput,
                                                 std::vector<std::string>&& aCurrentMessageList)
 {
-    const auto tTests = detail::registered_functions<ValidationInput>();
+    const auto tTests = detail::registered_validation_functions<ValidationInput>();
     for (const auto& iTest : tTests)
     {
         std::optional<std::string> tMessage = iTest(aInput);
@@ -85,6 +85,6 @@ template <typename ValidationInput>
     return std::move(aCurrentMessageList);
 }
 
-}  // namespace Plato::Functional::Validation
+}  // namespace plato::functional::core
 
 #endif

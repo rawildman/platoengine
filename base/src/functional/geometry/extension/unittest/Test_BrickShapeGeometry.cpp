@@ -134,7 +134,7 @@ TEST(Brick, ABrick)
     constexpr double tDiscretizationSize = 1.0;
     BrickShapeGeometry tBrick(tFileName, tDiscretizationSize);
 
-    const Plato::Functional::MeshProxy tMP = tBrick.generateMesh(tDesignParameters);
+    const core::MeshProxy tMP = tBrick.generateMesh(tDesignParameters);
     EXPECT_EQ(tMP.mFileName, tFileName);
 
     constexpr unsigned tExpectedNumElements = 2 * 4 * 6;

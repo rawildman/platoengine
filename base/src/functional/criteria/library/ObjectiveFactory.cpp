@@ -16,14 +16,14 @@ namespace
 {
 template <typename AggregateType, typename... Args>
 AggregateType make_aggregate_impl(
-    const std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
+    const std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>& tObjectives,
     Args&&... aArgs)
 {
     using ObjectiveAndWeight = std::pair<ObjectiveFunction, double>;
     std::vector<ObjectiveAndWeight> tFunctionsAndWeights;
     for (const auto& tObjective : tObjectives)
     {
-        if (Plato::Functional::Validation::is_active(tObjective.rawInput()))
+        if (core::is_active(tObjective.rawInput()))
         {
             const double tWeight = tObjective.rawInput().aggregation_weight.value();
             tFunctionsAndWeights.emplace_back(make_criterion_function(tObjective), tWeight);
@@ -32,9 +32,9 @@ AggregateType make_aggregate_impl(
     return AggregateType{std::move(tFunctionsAndWeights), std::forward<Args>(aArgs)...};
 }
 
-auto rank_split_vector(const std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
+auto rank_split_vector(const std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>& aInputs,
                        const boost::mpi::communicator& aComm)
-    -> std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>
+    -> std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>
 {
     return plato::functional::utilities::rank_split_vector(aInputs,
                                                            plato::functional::utilities::RankNamedType{aComm.rank()},

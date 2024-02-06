@@ -11,14 +11,13 @@ namespace plato::functional::criteria::extension
 ///  class is for implementing a geometry sensitivity check.
 struct NodalSumObjective
 {
-    [[nodiscard]] double f(const Plato::Functional::MeshProxy& aMeshProxy) const;
-    [[nodiscard]] linear_algebra::DynamicVector<double> df(
-        const Plato::Functional::MeshProxy& aMeshProxy) const;
+    [[nodiscard]] double f(const core::MeshProxy& aMeshProxy) const;
+    [[nodiscard]] linear_algebra::DynamicVector<double> df(const core::MeshProxy& aMeshProxy) const;
 };
 
 /// @brief Creates a Function object from a NodalSumObjective
-[[nodiscard]] auto make_nodal_sum_function() -> Plato::Functional::
-    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+[[nodiscard]] auto make_nodal_sum_function()
+    -> core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
 }  // namespace plato::functional::criteria::extension
 

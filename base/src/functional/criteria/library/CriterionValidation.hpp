@@ -19,7 +19,7 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_app(const Criteria& aInput)
 {
-    return Plato::Functional::Validation::error_message_for_empty_parameter(criterion_name(aInput), aInput.app, "app");
+    return core::error_message_for_empty_parameter(criterion_name(aInput), aInput.app, "app");
 }
 
 template <typename Criteria>
@@ -27,8 +27,8 @@ template <typename Criteria>
 {
     if (aInput.app.has_value() && aInput.app.value() == Plato::CodeOptions::kCustomApp)
     {
-        return Plato::Functional::Validation::error_message_for_empty_parameter(
-            criterion_name(aInput), aInput.shared_library_path, "shared_library_path");
+        return core::error_message_for_empty_parameter(criterion_name(aInput), aInput.shared_library_path,
+                                                       "shared_library_path");
     }
     else
     {
@@ -39,12 +39,12 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_number_of_processors(const Criteria& aInput)
 {
-    namespace pfv = Plato::Functional::Validation;
     namespace pfu = plato::functional::utilities;
     if (aInput.number_of_processors.has_value())
     {
-        return pfv::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.number_of_processors,
-                                                              "num_processors", pfu::lower_bounded(pfu::Inclusive{1u}));
+        return core::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.number_of_processors,
+                                                               "num_processors",
+                                                               pfu::lower_bounded(pfu::Inclusive{1u}));
     }
     else
     {
@@ -56,10 +56,10 @@ template <typename Criteria>
 [[nodiscard]] std::vector<std::string> validate_criteria(const std::vector<Criteria>& aInput,
                                                          std::vector<std::string>&& aCurrentMessageList)
 {
-    aCurrentMessageList = Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
+    aCurrentMessageList = core::validate(aInput, std::move(aCurrentMessageList));
     for (const auto& iCriterionInput : aInput)
     {
-        aCurrentMessageList = Plato::Functional::Validation::validate(iCriterionInput, std::move(aCurrentMessageList));
+        aCurrentMessageList = core::validate(iCriterionInput, std::move(aCurrentMessageList));
     }
     return std::move(aCurrentMessageList);
 }

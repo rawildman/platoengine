@@ -33,23 +33,20 @@ SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPa
     mCriterionFunction = tCreateCriterionFunction(aFileNames);
 }
 
-double SharedLibCriterion::f(const Plato::Functional::MeshProxy& aMesh) const
-{
-    return mCriterionFunction->value(aMesh);
-}
+double SharedLibCriterion::f(const core::MeshProxy& aMesh) const { return mCriterionFunction->value(aMesh); }
 
-linear_algebra::DynamicVector<double> SharedLibCriterion::df(const Plato::Functional::MeshProxy& aMesh) const
+linear_algebra::DynamicVector<double> SharedLibCriterion::df(const core::MeshProxy& aMesh) const
 {
     std::vector<double> tGradient = mCriterionFunction->gradient(aMesh);
     return linear_algebra::DynamicVector<double>(std::move(tGradient));
 }
 
 auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
-    -> Plato::Functional::Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>
+    -> core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>
 {
-    return Plato::Functional::make_function(
-        [aSharedLibCriterion](const Plato::Functional::MeshProxy& mesh) { return aSharedLibCriterion.f(mesh); },
-        [aSharedLibCriterion](const Plato::Functional::MeshProxy& mesh) { return aSharedLibCriterion.df(mesh); });
+    return core::make_function(
+        [aSharedLibCriterion](const core::MeshProxy& mesh) { return aSharedLibCriterion.f(mesh); },
+        [aSharedLibCriterion](const core::MeshProxy& mesh) { return aSharedLibCriterion.df(mesh); });
 }
 
 }  // namespace plato::functional::criteria::extension

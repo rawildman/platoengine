@@ -16,7 +16,7 @@ struct PlatoInput;
 namespace plato::functional::geometry::library
 {
 using DesignParameters = linear_algebra::DynamicVector<double>;
-using GeometryFunction = Plato::Functional::Function<Plato::Functional::MeshProxy,
+using GeometryFunction = core::Function<core::MeshProxy,
                                                      linear_algebra::JacobianMultiplier,
                                                      const linear_algebra::DynamicVector<double>&>;
 

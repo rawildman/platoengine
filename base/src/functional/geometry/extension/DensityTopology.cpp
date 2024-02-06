@@ -36,7 +36,7 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 
 /// Static registration for input validation functions
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::density_topology>{
+    core::ValidationRegistration<Plato::density_topology>{
         [](const Plato::density_topology& aInput) { return library::detail::validate_mesh_name(aInput); },
         [](const Plato::density_topology& aInput) { return detail::validate_output_name(aInput); }};
 }  // namespace
@@ -48,20 +48,19 @@ DensityTopology::DensityTopology(const Plato::density_topology& aInput)
 {
 }
 
-Plato::Functional::MeshProxy DensityTopology::generateMesh(
-    const linear_algebra::DynamicVector<double>& aDesignParameters) const
+core::MeshProxy DensityTopology::generateMesh(const linear_algebra::DynamicVector<double>& aDesignParameters) const
 {
-    return mFilter.f(Plato::Functional::MeshProxy{mFileName, aDesignParameters.stdVector()});
+    return mFilter.f(core::MeshProxy{mFileName, aDesignParameters.stdVector()});
 }
 
 linear_algebra::JacobianMultiplier DensityTopology::jacobian(
     const linear_algebra::DynamicVector<double>& aDesignParameters) const
 {
-    return linear_algebra::JacobianMultiplier{
-        /*.mNumColumns=*/mNumDesignParameters,
-        /*.mJacobianTimesVectorFunction=*/
-        [tMeshProxy = Plato::Functional::MeshProxy{mFileName, aDesignParameters.stdVector()},
-         this](const linear_algebra::DynamicVector<double>& x) { return x * mFilter.df(tMeshProxy); }};
+    return linear_algebra::JacobianMultiplier{/*.mNumColumns=*/mNumDesignParameters,
+                                              /*.mJacobianTimesVectorFunction=*/
+                                              [tMeshProxy = core::MeshProxy{mFileName, aDesignParameters.stdVector()},
+                                               this](const linear_algebra::DynamicVector<double>& x)
+                                              { return x * mFilter.df(tMeshProxy); }};
 }
 
 linear_algebra::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
@@ -84,23 +83,20 @@ void DensityTopology::output(const std::filesystem::path& aInputMeshName,
 }
 
 auto make_topology_geometry(const DensityTopology& aDensityTopology)
-    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                   linear_algebra::JacobianMultiplier,
-                                   const linear_algebra::DynamicVector<double>&>
+    -> core::Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>
 {
-    return Plato::Functional::make_function(
-        [tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
-        { return tDensityTopology.generateMesh(x); },
-        [tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
-        { return tDensityTopology.jacobian(x); });
+    return core::make_function([tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
+                               { return tDensityTopology.generateMesh(x); },
+                               [tDensityTopology = aDensityTopology](const linear_algebra::DynamicVector<double>& x)
+                               { return tDensityTopology.jacobian(x); });
 }
 
 namespace detail
 {
 std::optional<std::string> validate_output_name(const Plato::density_topology& aInput)
 {
-    return Plato::Functional::Validation::error_message_for_empty_parameter(
-        Plato::block_name<Plato::density_topology>(), aInput.output_name, "output_name");
+    return core::error_message_for_empty_parameter(Plato::block_name<Plato::density_topology>(), aInput.output_name,
+                                                   "output_name");
 }
 
 }  // namespace detail

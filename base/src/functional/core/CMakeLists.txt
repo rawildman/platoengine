@@ -8,11 +8,11 @@ create_plato_library(PlatoFunctionalCore "." "${LINK_LIBS}")
 
 if( UNIT_TESTING )
   # Build serial unit tester
-  set(FOLDERS testutilities
+  set(FOLDERS test_utilities
               unittest)
   create_plato_unittester(PlatoFunctionalCore_UnitTester "${FOLDERS}" PlatoFunctionalCore)
 
-  set(FOLDERS testutilities
+  set(FOLDERS test_utilities
               parallel_unittest)
   set(NUM_RANKS_FOR_TEST 2)
   create_plato_parallel_unittester(PlatoFunctionalCore_ParallelUnitTester "${FOLDERS}" PlatoFunctionalCore ${NUM_RANKS_FOR_TEST})

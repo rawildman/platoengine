@@ -9,7 +9,6 @@ namespace plato::functional::main::library::unittest
 {
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
-    namespace pf = Plato::Functional;
     Plato::PlatoInput tInput = plato::functional::test_utilities::create_valid_example_input();
     Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.name = "eq";

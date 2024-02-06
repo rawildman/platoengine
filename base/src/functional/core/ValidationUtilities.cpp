@@ -2,7 +2,7 @@
 
 #include <numeric>
 
-namespace Plato::Functional::Validation
+namespace plato::functional::core
 {
 std::string all_messages(const std::vector<std::string>& aMessages)
 {
@@ -10,4 +10,4 @@ std::string all_messages(const std::vector<std::string>& aMessages)
                            [](std::string aCurrentMessages, std::string aMessage)
                            { return std::move(aCurrentMessages) + std::move(aMessage) + "\n"; });
 }
-}  // namespace Plato::Functional::Validation
+}  // namespace plato::functional::core

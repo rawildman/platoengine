@@ -41,7 +41,6 @@ TEST(CriterionFactory, ValidConstraint)
 
 TEST(CriterionRegistration, ConvertObjectiveInput)
 {
-    namespace pf = Plato::Functional;
     namespace pftu = plato::functional::test_utilities;
 
     const std::string tObjectiveInput = pftu::create_valid_example_custom_app_objective_string();
@@ -51,8 +50,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
     const main::library::ValidatedInput tData =
         main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
-    const pf::Core::ValidatedInputTypeWrapper<Plato::objective> tValidatedObjective =
-        tData.objectives().rawInput().front();
+    const core::ValidatedInputTypeWrapper<Plato::objective> tValidatedObjective = tData.objectives().rawInput().front();
 
     const criteria::library::CriterionInput tCriterionInput =
         criteria::library::to_criterion_input(tValidatedObjective);
@@ -71,7 +69,6 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
 
 TEST(CriterionRegistration, ConvertConstraintInput)
 {
-    namespace pf = Plato::Functional;
     namespace pftu = plato::functional::test_utilities;
 
     const std::string tConstraintInput = pftu::create_valid_example_constraint_string();
@@ -82,7 +79,7 @@ TEST(CriterionRegistration, ConvertConstraintInput)
     const main::library::ValidatedInput tData =
         main::library::parse_and_validate(tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
-    const pf::Core::ValidatedInputTypeWrapper<Plato::constraint> tValidatedConstraint =
+    const core::ValidatedInputTypeWrapper<Plato::constraint> tValidatedConstraint =
         tData.constraints().rawInput().front();
 
     const criteria::library::CriterionInput tCriterionInput =

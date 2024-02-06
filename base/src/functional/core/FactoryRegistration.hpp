@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 template <typename Return, typename Input>
 using FactoryFunction = std::function<Return(const Input&)>;
@@ -15,7 +15,7 @@ using FactoryFunction = std::function<Return(const Input&)>;
 ///
 /// The purpose of this struct is to enable static registration of the functions
 /// used in factories to create objects that require parsed user input.
-/// The ctor for a Registration object is a key-value pair, mapping a string to a function that
+/// The ctor for a FactoryRegistration object is a key-value pair, mapping a string to a function that
 /// creates the object the factory is responsible for.
 ///
 /// Client code should provide a type alias specializing this template. For example, registering
@@ -32,21 +32,21 @@ using FactoryFunction = std::function<Return(const Input&)>;
 /// @tparam FactoryReturn The object type created by the factory.
 /// @tparam FactoryInput The type of the input data needed by the factory function as an argument.
 template <typename FactoryReturn, typename FactoryInput>
-struct Registration
+struct FactoryRegistration
 {
-    Registration(std::string aName, FactoryFunction<FactoryReturn, FactoryInput> aFunction);
+    FactoryRegistration(std::string aName, FactoryFunction<FactoryReturn, FactoryInput> aFunction);
 };
 
 /// @brief Checks if the function labeled with name @a aFunctionName is registered with the
 ///  factory associated with template types @a FactoryReturn and @a FactoryInput.
 template <typename FactoryReturn, typename FactoryInput>
-[[nodiscard]] bool is_function_registered(const std::string_view aFunctionName);
+[[nodiscard]] bool is_factory_function_registered(const std::string_view aFunctionName);
 
 namespace detail
 {
 /// @return Map holding registered functions used to create CriterionFunction objects in the factory.
 template <typename FactoryReturn, typename FactoryInput>
-[[nodiscard]] auto registered_functions()
+[[nodiscard]] auto registered_factory_functions()
     -> std::unordered_map<std::string, FactoryFunction<FactoryReturn, FactoryInput>>&
 {
     static auto tFunctions = std::unordered_map<std::string, FactoryFunction<FactoryReturn, FactoryInput>>{};
@@ -56,18 +56,19 @@ template <typename FactoryReturn, typename FactoryInput>
 }  // namespace detail
 
 template <typename FactoryReturn, typename FactoryInput>
-Registration<FactoryReturn, FactoryInput>::Registration(std::string aName,
-                                                        FactoryFunction<FactoryReturn, FactoryInput> aFunction)
+FactoryRegistration<FactoryReturn, FactoryInput>::FactoryRegistration(
+    std::string aName, FactoryFunction<FactoryReturn, FactoryInput> aFunction)
 {
-    detail::registered_functions<FactoryReturn, FactoryInput>().try_emplace(std::move(aName), std::move(aFunction));
+    detail::registered_factory_functions<FactoryReturn, FactoryInput>().try_emplace(std::move(aName),
+                                                                                    std::move(aFunction));
 }
 
 template <typename FactoryReturn, typename FactoryInput>
-bool is_function_registered(const std::string_view aFunctionName)
+bool is_factory_function_registered(const std::string_view aFunctionName)
 {
-    return detail::registered_functions<FactoryReturn, FactoryInput>().count(std::string{aFunctionName}) == 1;
+    return detail::registered_factory_functions<FactoryReturn, FactoryInput>().count(std::string{aFunctionName}) == 1;
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::core
 
 #endif

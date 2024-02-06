@@ -7,7 +7,7 @@
 
 #include "DynamicVector.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
 }
@@ -36,13 +36,12 @@ class FilterInterface
     virtual ~FilterInterface() = default;
 
     /// @brief Appies the filter to the density field held in @a aMeshProxy
-    [[nodiscard]] virtual Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
+    [[nodiscard]] virtual core::MeshProxy filter(const core::MeshProxy& aMeshProxy) const = 0;
 
     /// @brief Implements multiplication of row vector @a aV and the Jacobian of the
     ///  filter computed at the argument @a aMeshProxy.
     [[nodiscard]] virtual linear_algebra::DynamicVector<double> jacobianTimesVector(
-        const Plato::Functional::MeshProxy& aMeshProxy,
-        const linear_algebra::DynamicVector<double>& aV) const = 0;
+        const core::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const = 0;
 
     FilterInterface(const FilterInterface&) = delete;
     FilterInterface& operator=(const FilterInterface&) = delete;

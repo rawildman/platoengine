@@ -88,9 +88,8 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
     tOptimizationParameters.max_iterations = 0;
     tOptimizationParameters.step_tolerance = boost::none;
 
-    namespace pfv = Plato::Functional::Validation;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate(tOptimizationParameters, std::move(tMessages));
+    tMessages = core::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
 }
 }  // namespace plato::functional::optimizer::unittest

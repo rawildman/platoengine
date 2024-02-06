@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "Penalty.hpp"
-#include "testutilities/Utilities.hpp"
+#include "test_utilities/Utilities.hpp"
 
+namespace plato::functional::core::unittest
+{
 TEST(Penalty, Penalty)
 {
     namespace pft = Plato::Functional::Test;
@@ -30,7 +32,7 @@ TEST(Penalty, MakePenalty)
     constexpr double tXMin = 0.5e-2;
     constexpr double tExponent = 2.0;
     const auto tPenalty = pft::Penalty{tXMin, tExponent};
-    const auto tPenaltyFunction = pft::make_penalty_function(tPenalty);
+    const auto tPenaltyFunction = test_utilities::make_penalty_function(tPenalty);
 
     {
         const auto tX = pft::TwoDVector{0.5, 10.0};
@@ -42,4 +44,5 @@ TEST(Penalty, MakePenalty)
         EXPECT_EQ(tPenalty.f(tX(0), tX(1)), tPenaltyFunction.f(tX));
         EXPECT_EQ(tPenalty.df(tX(0), tX(1)), tPenaltyFunction.df(tX));
     }
+}
 }

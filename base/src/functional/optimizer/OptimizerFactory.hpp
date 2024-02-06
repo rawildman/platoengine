@@ -9,7 +9,7 @@
 
 namespace plato::functional::optimizer
 {
-using ValidOptimizationParameters = Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
+using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<Plato::optimization_parameters>;
 
 ///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
 ///

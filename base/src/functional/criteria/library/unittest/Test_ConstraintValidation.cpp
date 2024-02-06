@@ -18,11 +18,10 @@ TEST(ConstraintValidation, ValidateEqualTo)
 
 TEST(ConstraintValidation, ErrorMessagesInvalidConstraint)
 {
-    namespace pfv = Plato::Functional::Validation;
     Plato::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
     tConstraint.app = boost::none;
     std::vector<std::string> tMessages;
-    tMessages = pfv::validate(tConstraint, std::move(tMessages));
+    tMessages = core::validate(tConstraint, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
 }
 

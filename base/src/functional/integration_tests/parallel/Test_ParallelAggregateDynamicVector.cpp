@@ -3,8 +3,8 @@
 #include <boost/mpi/communicator.hpp>
 
 #include "DynamicVector.hpp"
-#include "DynamicVectorSerialization.hpp"
 #include "DynamicVectorRosenbrockFunction.hpp"
+#include "DynamicVectorSerialization.hpp"
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
 
@@ -23,8 +23,7 @@ TEST(ParallelAggregateDynamicVector, MPISize)
 
 TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
 {
-    namespace pf = Plato::Functional;
-    namespace pft = pf::Test;
+    namespace pft = Plato::Functional::Test;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
@@ -35,9 +34,9 @@ TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
     constexpr auto tWeight = double{0.5};
 
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate =
-        pf::ParallelAggregate<double, linear_algebra::DynamicVector<double>, const linear_algebra::DynamicVector<double>&>(
-            FunctionAndWeight{std::make_pair(tRosenbrockFunction, tWeight)}, boost::mpi::communicator{});
+    const auto tAggregate = core::ParallelAggregate<double, linear_algebra::DynamicVector<double>,
+                                                    const linear_algebra::DynamicVector<double>&>(
+        FunctionAndWeight{std::make_pair(tRosenbrockFunction, tWeight)}, boost::mpi::communicator{});
 
     const auto tControl = linear_algebra::DynamicVector{1.0, -2.0};
     const double tExpectedF = kNumRanks * tWeight * tRosenbrockFunction.f(tControl);
@@ -47,4 +46,4 @@ TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
     const linear_algebra::DynamicVector<double> tComputedDF = tAggregate.df(tControl);
     EXPECT_EQ(tComputedDF, tExpectedDF);
 }
-}
+}  // namespace plato::functional::integration_tests::parallel

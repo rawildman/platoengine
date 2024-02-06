@@ -43,8 +43,8 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
         }};
 
 [[maybe_unused]] static auto kBrickShapeValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::brick_shape_geometry>{
-        [](const Plato::brick_shape_geometry& aInput) { return library::detail::validate_mesh_name(aInput); }};
+    core::ValidationRegistration<Plato::brick_shape_geometry>{[](const Plato::brick_shape_geometry& aInput)
+                                                              { return library::detail::validate_mesh_name(aInput); }};
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)
@@ -52,11 +52,11 @@ BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const st
 {
 }
 
-Plato::Functional::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
+core::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {
     std::shared_ptr<stk::mesh::BulkData> tMesh = detail::create_mesh(aDesignParameters, mDiscretizationSize);
     plato::functional::utilities::write_mesh(mFileName, tMesh);
-    return Plato::Functional::MeshProxy{mFileName, {}};
+    return core::MeshProxy{mFileName, {}};
 }
 
 linear_algebra::JacobianColumnEvaluator BrickShapeGeometry::jacobian(const BrickDesign& aDesignParameters) const
@@ -86,11 +86,9 @@ void BrickShapeGeometry::output(const linear_algebra::DynamicVector<double>& aSo
 }
 
 auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                   linear_algebra::JacobianMultiplier,
-                                   const linear_algebra::DynamicVector<double>&>
+    -> core::Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>
 {
-    return Plato::Functional::make_function(
+    return core::make_function(
         [tBrickShapeGeometry = aBrickShapeGeometry](const linear_algebra::DynamicVector<double>& x)
         { return tBrickShapeGeometry.generateMesh(detail::to_design_parameters(x)); },
         [tBrickShapeGeometry = aBrickShapeGeometry](const linear_algebra::DynamicVector<double>& x)

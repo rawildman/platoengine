@@ -5,7 +5,7 @@
 #include "InputBlocks.hpp"
 #include "ParameterBounds.hpp"
 
-namespace Plato::Functional::Validation
+namespace plato::functional::core
 {
 /// @brief Creates a string by concatenating each entry of @a aMessages, with a newline between each.
 [[nodiscard]] std::string all_messages(const std::vector<std::string>& aMessages);
@@ -68,4 +68,4 @@ bool is_active(const Parameter& aParameter)
     return !aParameter.active.has_value() || aParameter.active.value();
 }
 
-}  // namespace Plato::Functional::Validation
+}  // namespace plato::functional::core

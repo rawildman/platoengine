@@ -12,8 +12,7 @@
 
 namespace plato::functional::criteria::library
 {
-using CriterionFunction = Plato::Functional::
-    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+using CriterionFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
 /// @brief Converts either objective or constraint input objects to a common CriterionInput struct
 /// @tparam Input Must be either Plato::objective or Plato::constraint input structs
@@ -28,29 +27,29 @@ template <typename Input>
 template <typename Input>
 CriterionFunction make_criterion_function(const Input& aValidatedInput)
 {
-    static_assert(std::is_same_v<Input, Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>> ||
-                      std::is_same_v<Input, Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>,
+    static_assert(std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::objective>> ||
+                      std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::constraint>>,
                   "make_criterion_function must only be called with Plato::objective or Plato::constraint wrapped in "
                   "ValidatedInputTypeWrapper");
 
     const auto& tRawInput = aValidatedInput.rawInput();
     const std::string tAppName = Plato::kCodeOptionsTable.toString(tRawInput.app.value()).value();
-    if (const auto tIter = Plato::Functional::detail::registered_functions<CriterionFunction, CriterionInput>().find(tAppName);
-        tIter != Plato::Functional::detail::registered_functions<CriterionFunction, CriterionInput>().end())
+    if (const auto tIter = core::detail::registered_factory_functions<CriterionFunction, CriterionInput>().find(tAppName);
+        tIter != core::detail::registered_factory_functions<CriterionFunction, CriterionInput>().end())
     {
         return tIter->second(to_criterion_input(aValidatedInput));
     }
     else
     {
-        throw plato::functional::utilities::Exception("App not supported.");
+        throw utilities::Exception("App not supported.");
     }
 }
 
 template <typename Input>
 CriterionInput to_criterion_input(const Input& aInput)
 {
-    static_assert(std::is_same_v<Input,Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>> ||
-                      std::is_same_v<Input, Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>,
+    static_assert(std::is_same_v<Input,core::ValidatedInputTypeWrapper<Plato::objective>> ||
+                      std::is_same_v<Input, core::ValidatedInputTypeWrapper<Plato::constraint>>,
                   "to_criterion_input must only be called with Plato::objective or Plato::constraint wrapped in "
                   "ValidatedInputTypeWrapper");
     return CriterionInput{/*.mSharedLibraryPath=*/aInput.rawInput().shared_library_path.value_or(Plato::FileName{}),

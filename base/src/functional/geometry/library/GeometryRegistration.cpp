@@ -6,7 +6,7 @@ namespace plato::functional::geometry::library
 {
 bool is_geometry_function_registered(const std::string_view aFunctionName)
 {
-    return Plato::Functional::is_function_registered<FactoryTypes, ValidatedGeometryInput>(aFunctionName);
+    return core::is_factory_function_registered<FactoryTypes, ValidatedGeometryInput>(aFunctionName);
 }
 
 library::GeometryInput first_geometry_input(const Plato::PlatoInput& aInput)

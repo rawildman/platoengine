@@ -5,7 +5,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 /// @brief A helper class for evaluating a function and its derivative.
 /// @tparam R The return type of the function.
@@ -70,7 +70,7 @@ auto make_function(F aF, G aG)
 
     using R = std::invoke_result_t<F, ArgF>;
     using dR = std::invoke_result_t<G, ArgG>;
-    return Plato::Functional::Function<R, dR, ArgF>{std::move(aF), std::move(aG)};
+    return core::Function<R, dR, ArgF>{std::move(aF), std::move(aG)};
 }
 
 template <typename R, typename dR, typename Arg>
@@ -91,6 +91,6 @@ dR Function<R, dR, Arg>::df(const Arg& arg) const
     return mDF(arg);
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::core
 
 #endif

@@ -8,10 +8,10 @@
 #include "FileList.hpp"
 #include "Function.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
-}  // namespace Plato::Functional
+}  // namespace plato::functional::core
 
 namespace plato::functional::criteria::library
 {
@@ -22,9 +22,8 @@ struct CriterionInput
     Plato::FileList mInputFiles;
 };
 
-using CriterionFunction = Plato::Functional::
-    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
-using CriterionRegistration = Plato::Functional::Registration<CriterionFunction, CriterionInput>;
+using CriterionFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
+using CriterionRegistration = core::FactoryRegistration<CriterionFunction, CriterionInput>;
 
 bool is_criterion_function_registered(const std::string_view aFunctionName);
 

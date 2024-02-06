@@ -17,7 +17,7 @@ namespace plato::functional::integration_tests::utilities
 [[nodiscard]] inline auto make_rosenbrock_dynamic_vector_function(
     const Plato::Functional::Test::Rosenbrock& aRosenbrock)
 {
-    return Plato::Functional::make_function(
+    return core::make_function(
         [rosenbrock = aRosenbrock](const linear_algebra::DynamicVector<double>& x)
         { return rosenbrock.f(x[0], x[1]); },
         [rosenbrock = aRosenbrock](const linear_algebra::DynamicVector<double>& x)

@@ -13,7 +13,7 @@ namespace
 const std::filesystem::path kSharedLibPath = "libPlatoIdentityFilter.so";
 constexpr std::string_view kMeshName = "the-mesh-is-a-lie.exo";
 const auto kRho = std::vector{-1.0, 0.0, 1.0};
-const auto kMeshArgument = Plato::Functional::MeshProxy{kMeshName, kRho};
+const auto kMeshArgument = core::MeshProxy{kMeshName, kRho};
 }  // namespace
 
 TEST(SharedLibFilter, LoadAndValue)

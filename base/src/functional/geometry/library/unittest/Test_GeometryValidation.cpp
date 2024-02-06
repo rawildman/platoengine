@@ -3,6 +3,7 @@
 #include "GeometryValidation.hpp"
 #include "InputGeneration.hpp"
 #include "ValidationRegistration.hpp"
+
 namespace plato::functional::geometry::library::unittest
 {
 namespace
@@ -20,13 +21,12 @@ std::optional<std::string> bogus_error(const Plato::density_topology& aInput)
 }
 
 [[maybe_unused]] static auto kDensityTopologyValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::density_topology>{[](const Plato::density_topology& aInput)
-                                                                         { return bogus_error(aInput); }};
+    core::ValidationRegistration<Plato::density_topology>{[](const Plato::density_topology& aInput)
+                                                          { return bogus_error(aInput); }};
 
 // create some registered tests on geometry to make sure the right test is called for the right variant
-[[maybe_unused]] static auto kBrickValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::brick_shape_geometry>{[](const Plato::brick_shape_geometry&)
-                                                                             { return std::nullopt; }};
+[[maybe_unused]] static auto kBrickValidationRegistration = core::ValidationRegistration<Plato::brick_shape_geometry>{
+    [](const Plato::brick_shape_geometry&) { return std::nullopt; }};
 }  // namespace
 
 TEST(GeometryValidation, InValidPlatoInputNoGeometry)
@@ -52,7 +52,6 @@ TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
 
 TEST(GeometryValidation, MeshName)
 {
-    namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
     tInput.mBrickShapeGeometry = plato::functional::test_utilities::create_valid_brick_shape_geometry();
 
@@ -66,7 +65,6 @@ TEST(GeometryValidation, MeshName)
 
 TEST(GeometryValidation, ValidInputCallsRightVariantTest)
 {
-    namespace pf = Plato::Functional;
     auto tInput = Plato::PlatoInput{};
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
     tDensityTopology.mesh_name = Plato::FileName{"trigger_bogus_test"};

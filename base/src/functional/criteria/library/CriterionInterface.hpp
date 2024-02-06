@@ -23,8 +23,8 @@ class CriterionInterface
 
     /// @note When implementing a constraint, the target value will be subtracted in the optimizer interface.
     /// A criterion that is a constraint should then just evaluate without considering any target value.
-    virtual double value(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
-    virtual std::vector<double> gradient(const Plato::Functional::MeshProxy& aMeshProxy) const = 0;
+    virtual double value(const core::MeshProxy& aMeshProxy) const = 0;
+    virtual std::vector<double> gradient(const core::MeshProxy& aMeshProxy) const = 0;
 
     CriterionInterface(const CriterionInterface&) = delete;
     CriterionInterface& operator=(const CriterionInterface&) = delete;

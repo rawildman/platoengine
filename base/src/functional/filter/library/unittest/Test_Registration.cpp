@@ -12,14 +12,12 @@ struct density_topology;
 
 namespace plato::functional::filter::library::unittest
 {
-
 namespace
 {
 [[nodiscard]] auto make_test_filter_function() -> FilterFunction
 {
-    return Plato::Functional::make_function([](const Plato::Functional::MeshProxy&)
-                                            { return Plato::Functional::MeshProxy{}; },
-                                            [](const Plato::Functional::MeshProxy&) { return FilterJacobian{}; });
+    return core::make_function([](const core::MeshProxy&) { return core::MeshProxy{}; },
+                               [](const core::MeshProxy&) { return FilterJacobian{}; });
 }
 
 [[maybe_unused]] static auto kTestFilterRegistration =

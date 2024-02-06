@@ -17,7 +17,7 @@ struct DynamicVectorJacobian
     const linear_algebra::DynamicVector<double>& aX, const DynamicVectorJacobian& aJacobian);
 
 [[nodiscard]] auto make_penalty_dynamic_vector_function(const Plato::Functional::Test::Penalty& aPenalty)
-    -> Plato::Functional::Function<linear_algebra::DynamicVector<double>,
+    -> core::Function<linear_algebra::DynamicVector<double>,
                                    DynamicVectorJacobian,
                                    const linear_algebra::DynamicVector<double>&>;
 

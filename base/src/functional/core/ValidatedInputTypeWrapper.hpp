@@ -8,7 +8,7 @@ namespace plato::functional::main::library
 class ValidatedInput;
 }
 
-namespace Plato::Functional::Core
+namespace plato::functional::core
 {
 template <typename InputType>
 class ValidatedInputTypeWrapper
@@ -24,6 +24,6 @@ class ValidatedInputTypeWrapper
     InputType mRawInput;
 };
 
-}  // namespace Plato::Functional::Core
+}  // namespace plato::functional::core
 
 #endif

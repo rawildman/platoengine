@@ -50,13 +50,12 @@ TEST(PenaltyFunction, Multiplication)
 
 TEST(PenaltyFunction, Composition)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
     namespace pfitu = plato::functional::integration_tests::utilities;
 
     const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});
     const auto tRosenbrock = pfitu::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
-    const auto tComposition = pf::compose(tRosenbrock, tPenalty);
+    const auto tComposition = core::compose(tRosenbrock, tPenalty);
 
     const auto tControl = linear_algebra::DynamicVector<double>{std::vector{1.0, 1.0}};
     const double tCompositionOfX = tComposition.f(tControl);

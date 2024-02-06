@@ -13,7 +13,7 @@ namespace plato::functional::rol_integration
 class ROLConstraintFunction : public ROL::Constraint<double>
 {
    public:
-    using ROLPlatoFunction = Plato::Functional::Function<double,
+    using ROLPlatoFunction = core::Function<double,
                                                          linear_algebra::DynamicVector<double>,
                                                          const linear_algebra::DynamicVector<double>&>;
 

@@ -5,8 +5,10 @@
 #include "ParallelAggregate.hpp"
 #include "Rosenbrock.hpp"
 #include "TwoDTestTypesSerialization.hpp"
-#include "testutilities/Utilities.hpp"
+#include "test_utilities/Utilities.hpp"
 
+namespace plato::functional::core::parallel_unittest
+{
 namespace
 {
 constexpr auto kNumRanks = int{2};
@@ -20,18 +22,17 @@ TEST(ParallelAggregate, MPISize)
 
 TEST(ParallelAggregate, EvaluateSame)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
     // the resulting aggregation should be the evaluation of one function times the number
     // of ranks.
-    const auto tF = make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const double tW = 0.5;
     using RosenbrockF = std::decay_t<decltype(tF)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate = pf::ParallelAggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
+    const auto tAggregate = ParallelAggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
         FunctionAndWeight{std::make_pair(tF, tW)}, boost::mpi::communicator{});
 
     EXPECT_EQ(tAggregate.size(), 1);
@@ -45,14 +46,13 @@ TEST(ParallelAggregate, EvaluateSame)
 
 TEST(ParallelAggregate, EvaluateDifferent)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
     const auto tCommunicator = boost::mpi::communicator{};
     constexpr double tA = 2.0;
     constexpr double tB = 50.0;
-    const auto tFNonDefault = make_rosenbrock_function(pft::Rosenbrock{tA, tB});
-    const auto tFDefault = make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tFNonDefault = test_utilities::make_rosenbrock_function(pft::Rosenbrock{tA, tB});
+    const auto tFDefault = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
 
     using RosenbrockF = std::decay_t<decltype(tFNonDefault)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
@@ -60,7 +60,7 @@ TEST(ParallelAggregate, EvaluateDifferent)
     const auto tFunctionAndWeight = tCommunicator.rank() == 0 ? FunctionAndWeight{std::make_pair(tFDefault, tW)}
                                                               : FunctionAndWeight{std::make_pair(tFNonDefault, tW)};
     const auto tAggregate =
-        pf::ParallelAggregate<double, pft::TwoDVector, const pft::TwoDVector&>(tFunctionAndWeight, tCommunicator);
+        ParallelAggregate<double, pft::TwoDVector, const pft::TwoDVector&>(tFunctionAndWeight, tCommunicator);
 
     EXPECT_EQ(tAggregate.size(), 1);
 
@@ -70,3 +70,4 @@ TEST(ParallelAggregate, EvaluateDifferent)
     const pft::TwoDVector tExpectedDF = tW * (tFNonDefault.df(tArg) + tFDefault.df(tArg));
     EXPECT_EQ(tAggregate.df(tArg), tExpectedDF);
 }
+}  // namespace plato::functional::core::parallel_unittest

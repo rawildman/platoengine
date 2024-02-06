@@ -25,7 +25,7 @@ MassObjectiveInterface::MassObjectiveInterface()
     }
 }
 
-double MassObjectiveInterface::value(const Plato::Functional::MeshProxy& aMeshProxy) const
+double MassObjectiveInterface::value(const core::MeshProxy& aMeshProxy) const
 {
     constexpr double tDensity = 1.0;
     constexpr double tTarget = 0.0;
@@ -33,7 +33,7 @@ double MassObjectiveInterface::value(const Plato::Functional::MeshProxy& aMeshPr
     return tMassObjective.mass(aMeshProxy.mFileName.string());
 }
 
-std::vector<double> MassObjectiveInterface::gradient(const Plato::Functional::MeshProxy& aMeshProxy) const
+std::vector<double> MassObjectiveInterface::gradient(const core::MeshProxy& aMeshProxy) const
 {
     ///@todo Populate the gradient with actual values
     constexpr double tDensity = 1.0;

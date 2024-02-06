@@ -5,14 +5,11 @@
 
 namespace plato::functional::geometry::library
 {
-
-[[maybe_unused]] static auto kGeometryValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::PlatoInput>{
-        [](const Plato::PlatoInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
+[[maybe_unused]] static auto kGeometryValidationRegistration = core::ValidationRegistration<Plato::PlatoInput>{
+    [](const Plato::PlatoInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
 
 namespace detail
 {
-
 std::optional<std::string> validate_only_one_geometry(const Plato::PlatoInput& aInput)
 {
     if (const unsigned int tTally = plato::functional::geometry::library::detail::geometry_blocks(aInput).size();
@@ -35,12 +32,13 @@ std::vector<std::string> validate_geometry(const Plato::PlatoInput& aInput,
     for (const library::GeometryInput& iBlockEntry : tGeometryBlocks)
     {
         aCurrentMessageList = std::visit(
-            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string>
-            { return Plato::Functional::Validation::validate(aGeometryInput, std::move(tList)); },
+            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string> {
+                return core::validate(aGeometryInput, std::move(tList));
+            },
             iBlockEntry);
     }
 
-    return Plato::Functional::Validation::validate(aInput, std::move(aCurrentMessageList));
+    return core::validate(aInput, std::move(aCurrentMessageList));
 }
 
 }  // namespace plato::functional::geometry::library

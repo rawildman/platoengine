@@ -18,7 +18,7 @@ namespace
 {
 constexpr std::string_view kMeshName = "the-mesh-is-a-lie.exo";
 const auto kRho = std::vector{-1.0, 0.0, 1.0};
-const auto kMeshArgument = Plato::Functional::MeshProxy{kMeshName, kRho};
+const auto kMeshArgument = core::MeshProxy{kMeshName, kRho};
 const auto kV = linear_algebra::DynamicVector<double>{-2.0, -1.0, 42.0};
 }  // namespace
 

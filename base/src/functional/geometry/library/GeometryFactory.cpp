@@ -9,18 +9,17 @@
 
 namespace plato::functional::geometry::library
 {
-
 FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
-    if (const auto tIter = Plato::Functional::detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().find(
+    if (const auto tIter = core::detail::registered_factory_functions<FactoryTypes, ValidatedGeometryInput>().find(
             detail::block_name(aGeometryInput));
-        tIter != Plato::Functional::detail::registered_functions<FactoryTypes, ValidatedGeometryInput>().end())
+        tIter != core::detail::registered_factory_functions<FactoryTypes, ValidatedGeometryInput>().end())
     {
         return tIter->second(aGeometryInput);
     }
     else
     {
-        throw plato::functional::utilities::Exception{"Unknown geometry"};
+        throw utilities::Exception{"Unknown geometry"};
     }
 }
 }  // namespace plato::functional::geometry::library

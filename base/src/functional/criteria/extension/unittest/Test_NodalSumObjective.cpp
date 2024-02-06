@@ -18,7 +18,7 @@ TEST(NodalSumObjective, Value111)
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1"));
 
     constexpr double tExpectedValue = 12.0;
-    EXPECT_EQ(NodalSumObjective{}.f(Plato::Functional::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -29,7 +29,7 @@ TEST(NodalSumObjective, Value211)
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:2x1x1|bbox:0,0,0,1,1,1"));
 
     constexpr double tExpectedValue = 18.0;
-    EXPECT_EQ(NodalSumObjective{}.f(Plato::Functional::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -40,7 +40,7 @@ TEST(NodalSumObjective, Value0)
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:1x1x1|bbox:-2,-1,-3,2,1,3"));
 
     constexpr double tExpectedValue = 0.0;
-    EXPECT_EQ(NodalSumObjective{}.f(Plato::Functional::MeshProxy{tFileName, {}}), tExpectedValue);
+    EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{tFileName, {}}), tExpectedValue);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
@@ -56,7 +56,7 @@ TEST(NodalSumObjective, Gradient111)
     constexpr int tNumCoordsPerNode = 3;
     constexpr int tNumNodes = 24;
     const auto tExpected = std::vector<double>(tNumCoordsPerNode * tNumNodes, 1.0);
-    const std::vector tComputed = tNodalSum.df(Plato::Functional::MeshProxy{tFileName, {}}).stdVector();
+    const std::vector tComputed = tNodalSum.df(core::MeshProxy{tFileName, {}}).stdVector();
     EXPECT_EQ(tComputed, tExpected);
     EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
@@ -65,7 +65,7 @@ TEST(NodalSumObjective, Value)
 {
     namespace pfu = plato::functional::utilities;
     pfu::write_mesh(kBrickFile, pfu::create_mesh(kOneBlockCommand));
-    Plato::Functional::MeshProxy tMeshProxy{kBrickFile, {}};
+    core::MeshProxy tMeshProxy{kBrickFile, {}};
 
     const NodalSumObjective tPass;
     EXPECT_EQ(tPass.f(tMeshProxy), 12);
@@ -77,7 +77,7 @@ TEST(NodalSumObjective, Gradient)
 {
     namespace pfu = plato::functional::utilities;
     pfu::write_mesh(kBrickFile, pfu::create_mesh(kOneBlockCommand));
-    Plato::Functional::MeshProxy tMeshProxy{kBrickFile, {}};
+    core::MeshProxy tMeshProxy{kBrickFile, {}};
 
     const NodalSumObjective tPass;
     const std::vector<double> tGold(24, 1);

@@ -36,11 +36,11 @@ FilterParameters to_filter_parameters(const Plato::density_topology& aInput)
 auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilter) -> FilterFunction
 {
     auto tFilterAsShared = std::shared_ptr<FilterInterface>(std::move(aFilter));
-    return Plato::Functional::make_function([tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy)
-                                            { return tFilterAsShared->filter(aMeshProxy); },
-                                            [tFilterAsShared](const Plato::Functional::MeshProxy& aMeshProxy) {
-                                                return FilterJacobian{tFilterAsShared, aMeshProxy};
-                                            });
+    return core::make_function([tFilterAsShared](const core::MeshProxy& aMeshProxy)
+                               { return tFilterAsShared->filter(aMeshProxy); },
+                               [tFilterAsShared](const core::MeshProxy& aMeshProxy) {
+                                   return FilterJacobian{tFilterAsShared, aMeshProxy};
+                               });
 }
 
 std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInput,
@@ -56,7 +56,7 @@ std::unique_ptr<FilterInterface> load_filter(const Plato::density_topology& aInp
 
 bool is_filter_function_registered(const std::string_view aFunctionName)
 {
-    return Plato::Functional::is_function_registered<FilterFunction, FilterInput>(aFunctionName);
+    return core::is_factory_function_registered<FilterFunction, FilterInput>(aFunctionName);
 }
 
 }  // namespace plato::functional::filter::library

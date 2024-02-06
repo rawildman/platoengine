@@ -17,23 +17,20 @@ namespace
                                 [](const Plato::density_topology&) { return make_identity_filter_function(); }};
 
 [[maybe_unused]] static auto kIdentityFilterValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::density_topology>{[](const Plato::density_topology& aInput)
-                                                                         { return validate_identity_filter(aInput); }};
+    core::ValidationRegistration<Plato::density_topology>{[](const Plato::density_topology& aInput)
+                                                          { return validate_identity_filter(aInput); }};
 }  // namespace
 
-Plato::Functional::MeshProxy IdentityFilter::filter(const Plato::Functional::MeshProxy& aMeshProxy) const
-{
-    return aMeshProxy;
-}
+core::MeshProxy IdentityFilter::filter(const core::MeshProxy& aMeshProxy) const { return aMeshProxy; }
 
 linear_algebra::DynamicVector<double> IdentityFilter::jacobianTimesVector(
-    const Plato::Functional::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const
+    const core::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const
 {
     const auto tVectorDimension = static_cast<std::size_t>(aV.size());
     const std::size_t tDensityDimension = aMeshProxy.mNodalDensities.size();
     if (tVectorDimension != tDensityDimension)
     {
-        throw plato::functional::utilities::Exception{
+        throw utilities::Exception{
             "IdentityFilter jacobian multiplication: Dimensions of vector and nodal density field don't match. Vector "
             "dimension: " +
             std::to_string(tVectorDimension) + ", density dimension: " + std::to_string(tDensityDimension)};
@@ -41,14 +38,12 @@ linear_algebra::DynamicVector<double> IdentityFilter::jacobianTimesVector(
     return aV;
 }
 
-auto make_identity_filter_function() -> Plato::Functional::
-    Function<Plato::Functional::MeshProxy, library::FilterJacobian, const Plato::Functional::MeshProxy&>
+auto make_identity_filter_function() -> core::Function<core::MeshProxy, library::FilterJacobian, const core::MeshProxy&>
 {
-    return Plato::Functional::make_function(
-        [](const Plato::Functional::MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
-        [](const Plato::Functional::MeshProxy& aMeshProxy) {
-            return library::FilterJacobian{std::make_unique<IdentityFilter>(), aMeshProxy};
-        });
+    return core::make_function([](const core::MeshProxy& aMeshProxy) { return IdentityFilter{}.filter(aMeshProxy); },
+                               [](const core::MeshProxy& aMeshProxy) {
+                                   return library::FilterJacobian{std::make_unique<IdentityFilter>(), aMeshProxy};
+                               });
 }
 
 [[nodiscard]] std::optional<std::string> validate_identity_filter(const Plato::density_topology& aInput)

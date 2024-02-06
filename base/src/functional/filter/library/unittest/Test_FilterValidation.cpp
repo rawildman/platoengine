@@ -19,7 +19,7 @@ TEST(FilterValidation, TypeExists)
 
     // Check in registered function list
     auto tErrorMessages = std::vector<std::string>{};
-    tErrorMessages = Plato::Functional::Validation::validate(tDensityTopology, std::move(tErrorMessages));
+    tErrorMessages = core::validate(tDensityTopology, std::move(tErrorMessages));
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 

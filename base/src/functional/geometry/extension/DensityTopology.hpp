@@ -30,7 +30,7 @@ class DensityTopology
    public:
     explicit DensityTopology(const Plato::density_topology& aInput);
 
-    [[nodiscard]] Plato::Functional::MeshProxy generateMesh(
+    [[nodiscard]] core::MeshProxy generateMesh(
         const linear_algebra::DynamicVector<double>& aDesignParameter) const;
 
     [[nodiscard]] linear_algebra::JacobianMultiplier jacobian(
@@ -54,7 +54,7 @@ class DensityTopology
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_topology_geometry(const DensityTopology& aDensityTopology)
-    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
+    -> core::Function<core::MeshProxy,
                                    linear_algebra::JacobianMultiplier,
                                    const linear_algebra::DynamicVector<double>&>;
 

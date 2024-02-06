@@ -9,7 +9,6 @@ namespace plato::functional::integration_tests::serial
 {
 TEST(GeometryFactory, BrickGeometry)
 {
-    namespace pf = Plato::Functional;
     namespace pftu = plato::functional::test_utilities;
 
     const auto tRawInput =
@@ -30,7 +29,6 @@ TEST(GeometryFactory, BrickGeometry)
 
 TEST(GeometryFactory, BlockName)
 {
-    namespace pf = Plato::Functional;
     namespace pftu = plato::functional::test_utilities;
 
     const main::library::ValidatedInput tValidatedInput =

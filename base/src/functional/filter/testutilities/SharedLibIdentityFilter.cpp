@@ -4,13 +4,13 @@
 
 namespace plato::functional::filter::testutilities
 {
-Plato::Functional::MeshProxy SharedLibIdentityFilter::filter(const Plato::Functional::MeshProxy& aMeshProxy) const
+core::MeshProxy SharedLibIdentityFilter::filter(const core::MeshProxy& aMeshProxy) const
 {
     return aMeshProxy;
 }
 
 linear_algebra::DynamicVector<double> SharedLibIdentityFilter::jacobianTimesVector(
-    const Plato::Functional::MeshProxy&, const linear_algebra::DynamicVector<double>& aV) const
+    const core::MeshProxy&, const linear_algebra::DynamicVector<double>& aV) const
 {
     return aV;
 }

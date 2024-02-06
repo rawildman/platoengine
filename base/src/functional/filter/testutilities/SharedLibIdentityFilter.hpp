@@ -4,7 +4,7 @@
 #include "DynamicVector.hpp"
 #include "FilterInterface.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
 }
@@ -18,10 +18,10 @@ namespace plato::functional::filter::testutilities
 class SharedLibIdentityFilter : public library::FilterInterface
 {
    public:
-    [[nodiscard]] Plato::Functional::MeshProxy filter(const Plato::Functional::MeshProxy& aMeshProxy) const override;
+    [[nodiscard]] core::MeshProxy filter(const core::MeshProxy& aMeshProxy) const override;
 
-    [[nodiscard]] linear_algebra::DynamicVector<double> jacobianTimesVector(const Plato::Functional::MeshProxy& aMeshProxy,
-                                                                  const linear_algebra::DynamicVector<double>& aV) const override;
+    [[nodiscard]] linear_algebra::DynamicVector<double> jacobianTimesVector(
+        const core::MeshProxy& aMeshProxy, const linear_algebra::DynamicVector<double>& aV) const override;
 };
 }  // namespace plato::functional::filter::testutilities
 

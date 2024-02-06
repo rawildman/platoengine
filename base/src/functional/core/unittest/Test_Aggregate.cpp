@@ -2,20 +2,21 @@
 
 #include "Aggregate.hpp"
 #include "Rosenbrock.hpp"
-#include "testutilities/Utilities.hpp"
+#include "test_utilities/Utilities.hpp"
 
+namespace plato::functional::core::unittest
+{
 TEST(Aggregate, DirectConstruction)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
-    const auto tF1 = make_rosenbrock_function(pft::Rosenbrock{});
-    const auto tF2 = make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const double tW1 = 0.5;
     const double tW2 = 0.5;
     using RosenbrockF = std::decay_t<decltype(tF1)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate = pf::Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
+    const auto tAggregate = Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
         FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
     {
         const auto tArg = pft::TwoDVector{1.0, 1.0};
@@ -35,17 +36,16 @@ TEST(Aggregate, DirectConstruction)
 
 TEST(Aggregate, UsingMakeFunction)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
-    const auto tF1 = make_rosenbrock_function(pft::Rosenbrock{});
-    const auto tF2 = make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const double tW1 = 2.0;
     const double tW2 = 3.0;
     using RosenbrockF = std::decay_t<decltype(tF1)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
     const auto tAggregate =
-        pf::make_aggregate_function(FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
+        make_aggregate_function(FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
     {
         const auto tArg = pft::TwoDVector{1.0, 1.0};
         constexpr double tExpected = 0.0;
@@ -65,16 +65,15 @@ TEST(Aggregate, UsingMakeFunction)
 
 TEST(Aggregate, FunctionDifferentParameters)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
-    const auto tF1 = make_rosenbrock_function(pft::Rosenbrock{});
-    const auto tF2 = make_rosenbrock_function(pft::Rosenbrock{2.0, 200.0});
+    const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{2.0, 200.0});
     const double tW1 = 2.0;
     const double tW2 = 3.0;
     using RosenbrockF = std::decay_t<decltype(tF1)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate = pf::Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
+    const auto tAggregate = Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(
         FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
     const auto tArg = pft::TwoDVector{-2.0, 1.0};
     const double tExpectedF = tW1 * tF1.f(tArg) + tW2 * tF2.f(tArg);
@@ -86,15 +85,14 @@ TEST(Aggregate, FunctionDifferentParameters)
 
 TEST(Aggregate, OneFunction)
 {
-    namespace pf = Plato::Functional;
     namespace pft = Plato::Functional::Test;
 
-    const auto tF1 = make_rosenbrock_function(pft::Rosenbrock{});
+    const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const double tW1 = 1.0;
     using RosenbrockF = std::decay_t<decltype(tF1)>;
     using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
     const auto tAggregate =
-        pf::Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(FunctionAndWeight{std::make_pair(tF1, tW1)});
+        Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(FunctionAndWeight{std::make_pair(tF1, tW1)});
     {
         const auto tArg = pft::TwoDVector{1.0, 1.0};
         EXPECT_EQ(tAggregate.f(tArg), 0.0);
@@ -103,3 +101,4 @@ TEST(Aggregate, OneFunction)
         EXPECT_EQ(tDfdx(1), 0.0);
     }
 }
+}  // namespace plato::functional::core::unittest

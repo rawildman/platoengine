@@ -15,7 +15,7 @@ TEST(RankSplitVector, NumElementsPerRank)
         const auto [tQuotient, tRemainder] = detail::num_elements_per_rank(10, 2);
         EXPECT_EQ(tQuotient, 5);
         EXPECT_EQ(tRemainder, 0);
-    }  // namespace Plato::Functional::Utilities;
+    }
     {
         const auto [tQuotient, tRemainder] = detail::num_elements_per_rank(10, 3);
         EXPECT_EQ(tQuotient, 3);

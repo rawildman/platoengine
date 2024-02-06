@@ -19,7 +19,7 @@ const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctional
     { return library::make_filter_function_from_interface(library::load_filter(aInput, kHelmholtzFilterLibName)); }};
 
 [[maybe_unused]] static auto kHelmholtzFilterValidationRegistration =
-    Plato::Functional::Validation::Registration<Plato::density_topology>{
+    core::ValidationRegistration<Plato::density_topology>{
         [](const Plato::density_topology& aInput) { return validate_helmholtz_filter_radius(aInput); },
         [](const Plato::density_topology& aInput)
         { return validate_helmholtz_filter_boundary_sticking_penalty(aInput); }};
@@ -27,13 +27,12 @@ const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctional
 
 std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density_topology& aInput)
 {
-    namespace pfv = Plato::Functional::Validation;
     namespace pfu = plato::functional::utilities;
     if (aInput.filter_type && aInput.filter_type.value() == Plato::FilterTypes::kHelmholtz)
     {
-        return pfv::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
-                                                              aInput.filter_radius, "filter_radius",
-                                                              pfu::lower_bounded(pfu::Exclusive{0.0}));
+        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
+                                                               aInput.filter_radius, "filter_radius",
+                                                               pfu::lower_bounded(pfu::Exclusive{0.0}));
     }
     else
     {
@@ -49,9 +48,9 @@ std::optional<std::string> validate_helmholtz_filter_radius(const Plato::density
         aInput.boundary_sticking_penalty)
     {
         // boundary_sticking_penalty is optional, so only validate bounds if it exists
-        return Plato::Functional::Validation::error_message_for_parameter_out_of_bounds(
-            Plato::block_name<Plato::density_topology>(), aInput.boundary_sticking_penalty, "boundary_sticking_penalty",
-            pfu::unit_bounded());
+        return core::error_message_for_parameter_out_of_bounds(Plato::block_name<Plato::density_topology>(),
+                                                               aInput.boundary_sticking_penalty,
+                                                               "boundary_sticking_penalty", pfu::unit_bounded());
     }
     else
     {

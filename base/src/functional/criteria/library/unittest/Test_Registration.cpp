@@ -11,10 +11,10 @@ namespace
 {
 [[nodiscard]] auto make_test_criterion_function() -> plato::functional::criteria::library::CriterionFunction
 {
-    return Plato::Functional::make_function([](const Plato::Functional::MeshProxy&) { return 0.0; },
-                                            [](const Plato::Functional::MeshProxy&) {
-                                                return linear_algebra::DynamicVector<double>{1.0, 2.0};
-                                            });
+    return core::make_function([](const core::MeshProxy&) { return 0.0; },
+                               [](const core::MeshProxy&) {
+                                   return linear_algebra::DynamicVector<double>{1.0, 2.0};
+                               });
 }
 
 [[maybe_unused]] static auto kTestCriterionRegistration = plato::functional::criteria::library::CriterionRegistration{
@@ -38,4 +38,4 @@ TEST(CriterionRegistration, CustomApp)
     const std::string_view tCustomAppName = Plato::kCodeOptionsTable.toString(Plato::CodeOptions::kCustomApp).value();
     EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tCustomAppName));
 }
-}
+}  // namespace plato::functional::criteria::library::unittest

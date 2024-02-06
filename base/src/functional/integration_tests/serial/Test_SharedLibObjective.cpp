@@ -19,7 +19,7 @@ void generate_bad_library_and_do_nothing()
     // This function should throw an exception
     namespace pfu = plato::functional::utilities;
     const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
-    std::cout << tBad.f(Plato::Functional::MeshProxy{"dne.exo", {}}) << std::endl;
+    std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
 }
 }  // namespace
 
@@ -35,7 +35,7 @@ TEST(SharedLibObjective, CallValue)
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const double tMass = tSharedLib.f(Plato::Functional::MeshProxy{tMeshName, {}});
+    const double tMass = tSharedLib.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
 
@@ -46,7 +46,7 @@ TEST(SharedLibObjective, CallGradient)
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const auto tGrad = tSharedLib.df(Plato::Functional::MeshProxy{tMeshName, {}});
+    const auto tGrad = tSharedLib.df(core::MeshProxy{tMeshName, {}});
 
     const std::vector<double> tGold(24, 0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
@@ -60,7 +60,7 @@ TEST(SharedLibObjective, ValueUsingFunction)
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const double tMass = tFunction.f(Plato::Functional::MeshProxy{tMeshName, {}});
+    const double tMass = tFunction.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
 }  // namespace plato::functional::integration_tests::serial

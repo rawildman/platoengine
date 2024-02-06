@@ -11,7 +11,6 @@ TEST(FilterFactory, HelmholtzFilterThrows)
     // For the Helmholtz filter, the filter may be loaded depending on whether
     // or not the PA shared library is available. This checks if we can load it,
     // and if not, checks that we get the right exception type.
-    namespace pf = Plato::Functional;
     namespace pff = plato::functional::filter;
 
     auto tDensityTopology = Plato::density_topology{};

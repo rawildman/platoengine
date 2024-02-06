@@ -20,7 +20,7 @@ struct PlatoProblem
 {
     plato::functional::geometry::library::FactoryTypes mGeometry;
     plato::functional::criteria::library::ObjectiveFunction mObjective;
-    std::vector<plato::functional::criteria::library::Constraint<const Plato::Functional::MeshProxy&>> mConstraints;
+    std::vector<plato::functional::criteria::library::Constraint<const core::MeshProxy&>> mConstraints;
     Teuchos::ParameterList mROLOptions;
 };
 

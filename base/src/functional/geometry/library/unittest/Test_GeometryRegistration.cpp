@@ -13,9 +13,9 @@ namespace
 {
 [[nodiscard]] auto make_test_geometry_function() -> FactoryTypes::Compute
 {
-    return Plato::Functional::make_function(
-        [](const linear_algebra::DynamicVector<double>&) { return Plato::Functional::MeshProxy{}; },
-        [](const linear_algebra::DynamicVector<double>&) { return linear_algebra::JacobianMultiplier{}; });
+    return core::make_function([](const linear_algebra::DynamicVector<double>&) { return core::MeshProxy{}; },
+                               [](const linear_algebra::DynamicVector<double>&)
+                               { return linear_algebra::JacobianMultiplier{}; });
 }
 
 [[maybe_unused]] static auto kTestGeometryRegistration =

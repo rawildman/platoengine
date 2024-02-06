@@ -12,7 +12,7 @@ namespace plato::functional::rol_integration::unittest
 TEST(ROLConstraintFunction, ConstraintValue)
 {
     namespace pft = Plato::Functional::Test;
-    namespace pf = Plato::Functional;
+
     pft::Rosenbrock tRosenbrock{};
 
     constexpr double tTarget = 5;
@@ -36,7 +36,7 @@ TEST(ROLConstraintFunction, ConstraintValue)
 TEST(ROLConstraintFunction, JacobianTimesDirection)
 {
     namespace pft = Plato::Functional::Test;
-    namespace pf = Plato::Functional;
+
     pft::Rosenbrock tRosenbrock{};
 
     constexpr double tTarget = 5;
@@ -67,7 +67,6 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
 TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
 {
     namespace pft = Plato::Functional::Test;
-    namespace pf = Plato::Functional;
 
     pft::Rosenbrock tRosenbrock{};
 
@@ -100,4 +99,4 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     EXPECT_EQ(tROLConstraintFunction.name(), std::string{tConstraintName});
 }
 
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::functional::rol_integration::unittest

@@ -36,8 +36,7 @@ constexpr bool tPrintFlag = true;
 
 TEST(Optimize, Rosenbrock)
 {
-    namespace pf = Plato::Functional;
-    namespace pft = pf::Test;
+    namespace pft = Plato::Functional::Test;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{-1.2, 1.0};
@@ -53,16 +52,15 @@ TEST(Optimize, Rosenbrock)
 
 TEST(Optimize, RosenbrockPenaltyComposition)
 {
-    namespace pf = Plato::Functional;
-    namespace pft = pf::Test;
+    namespace pft = Plato::Functional::Test;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{1.5, 0.5};
     constexpr double tXMin = 0.0;
     constexpr double tPower = 3.0;
     auto tObjective = plato::functional::rol_integration::ROLObjectiveFunction{
-        pf::compose(utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
-                    utilities::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};
+        core::compose(utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
+                      utilities::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};
 
     rol_algorithm().run(tControl, tObjective, tPrintFlag, *tOutStream);
 

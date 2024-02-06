@@ -9,15 +9,15 @@
 #include "InputBlocks.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
 }
 
 namespace plato::functional::criteria::library
 {
-using ValidatedConstraints = Plato::Functional::Core::ValidatedInputTypeWrapper<
-    std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>>>;
+using ValidatedConstraints = core::ValidatedInputTypeWrapper<
+    std::vector<core::ValidatedInputTypeWrapper<Plato::constraint>>>;
 
 /// @brief Holds members for defining a Constraint
 /// @tparam FunctionArg The argument of the function used to define the constraint.
@@ -26,7 +26,7 @@ template <typename FunctionArg>
 struct Constraint
 {
     using ConstraintFunction =
-        Plato::Functional::Function<double, linear_algebra::DynamicVector<double>, FunctionArg>;
+        core::Function<double, linear_algebra::DynamicVector<double>, FunctionArg>;
 
     std::string mName;
     ConstraintFunction mConstraintFunction;
@@ -36,7 +36,7 @@ struct Constraint
 
 /// @brief Factory to create Constraint objects from input data.
 /// @post The return vector will have the same size as @a aInput.
-[[nodiscard]] std::vector<Constraint<const Plato::Functional::MeshProxy&>> make_constraints(const ValidatedConstraints& aInput);
+[[nodiscard]] std::vector<Constraint<const core::MeshProxy&>> make_constraints(const ValidatedConstraints& aInput);
 
 /// @brief Helper for providing ROL a dual vector for constraints.
 /// @note Currently, constraints are scalar, and so the dual vector always has dimension 1.
@@ -44,8 +44,8 @@ struct Constraint
 
 namespace detail
 {
-[[nodiscard]] Constraint<const Plato::Functional::MeshProxy&> make_constraint(
-    const Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
+[[nodiscard]] Constraint<const core::MeshProxy&> make_constraint(
+    const core::ValidatedInputTypeWrapper<Plato::constraint>& aConstraintInput);
 
 }  // namespace detail
 }  // namespace plato::functional::criteria::library

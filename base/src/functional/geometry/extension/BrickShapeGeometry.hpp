@@ -48,7 +48,7 @@ class BrickShapeGeometry
     explicit BrickShapeGeometry(std::filesystem::path aFileName,
                                 std::optional<double> aDiscretizationSize = std::nullopt);
 
-    [[nodiscard]] Plato::Functional::MeshProxy generateMesh(const BrickDesign& aDesignParameters) const;
+    [[nodiscard]] core::MeshProxy generateMesh(const BrickDesign& aDesignParameters) const;
 
     [[nodiscard]] linear_algebra::JacobianColumnEvaluator jacobian(const BrickDesign& aDesignParameters) const;
 
@@ -65,7 +65,7 @@ class BrickShapeGeometry
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
 [[nodiscard]] auto make_brick_shape_geometry(const BrickShapeGeometry& aBrickShapeGeometry)
-    -> Plato::Functional::Function<Plato::Functional::MeshProxy,
+    -> core::Function<core::MeshProxy,
                                    linear_algebra::JacobianMultiplier,
                                    const linear_algebra::DynamicVector<double>&>;
 

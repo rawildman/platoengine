@@ -9,13 +9,10 @@
 #include "Function.hpp"
 #include "GeometryInputBuilder.hpp"
 
-namespace Plato
-{
-namespace Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
-}  // namespace Functional
-}  // namespace Plato
+}
 
 namespace plato::functional::linear_algebra
 {
@@ -26,9 +23,8 @@ namespace plato::functional::geometry::library
 {
 struct FactoryTypes
 {
-    using Compute = Plato::Functional::Function<Plato::Functional::MeshProxy,
-                                                linear_algebra::JacobianMultiplier,
-                                                const linear_algebra::DynamicVector<double>&>;
+    using Compute = core::
+        Function<core::MeshProxy, linear_algebra::JacobianMultiplier, const linear_algebra::DynamicVector<double>&>;
     using InitialGuess = linear_algebra::DynamicVector<double>;
     using Bounds = std::pair<std::vector<double>, std::vector<double>>;
     using Output = std::function<void(const linear_algebra::DynamicVector<double>&)>;
@@ -43,8 +39,8 @@ struct FactoryTypes
 /// created using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 using GeometryInput = detail::GeometryInputVariant<Plato::PlatoInput>;
 using ValidatedGeometryInput =
-    Plato::Functional::Core::ValidatedInputTypeWrapper<detail::ValidatedGeometryInputVariant<Plato::PlatoInput>>;
-using GeometryRegistration = Plato::Functional::Registration<FactoryTypes, ValidatedGeometryInput>;
+    core::ValidatedInputTypeWrapper<detail::ValidatedGeometryInputVariant<Plato::PlatoInput>>;
+using GeometryRegistration = core::FactoryRegistration<FactoryTypes, ValidatedGeometryInput>;
 
 /// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
 /// @throw Exception If no geometry block was defined in @a aInput.
@@ -56,8 +52,7 @@ bool is_geometry_function_registered(const std::string_view aFunctionName);
 template <typename Geometry>
 [[nodiscard]] const Geometry& geometry_raw_input(const ValidatedGeometryInput& aValidatedInput)
 {
-    return std::get<Plato::Functional::Core::ValidatedInputTypeWrapper<Geometry>>(aValidatedInput.rawInput())
-        .rawInput();
+    return std::get<core::ValidatedInputTypeWrapper<Geometry>>(aValidatedInput.rawInput()).rawInput();
 }
 }  // namespace plato::functional::geometry::library
 

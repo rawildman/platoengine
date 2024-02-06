@@ -7,22 +7,20 @@
 #include "ParallelAggregate.hpp"
 #include "ValidatedInputTypeWrapper.hpp"
 
-namespace Plato::Functional
+namespace plato::functional::core
 {
 struct MeshProxy;
 }
 
 namespace plato::functional::criteria::library
 {
-using ValidatedObjectives = Plato::Functional::Core::ValidatedInputTypeWrapper<
-    std::vector<Plato::Functional::Core::ValidatedInputTypeWrapper<Plato::objective>>>;
+using ValidatedObjectives =
+    core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<Plato::objective>>>;
 
-using ObjectiveFunction = Plato::Functional::
-    Function<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
-using AggregateObjective = Plato::Functional::
-    Aggregate<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
-using ParallelAggregateObjective = Plato::Functional::
-    ParallelAggregate<double, linear_algebra::DynamicVector<double>, const Plato::Functional::MeshProxy&>;
+using ObjectiveFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
+using AggregateObjective = core::Aggregate<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
+using ParallelAggregateObjective =
+    core::ParallelAggregate<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
 namespace detail
 {
