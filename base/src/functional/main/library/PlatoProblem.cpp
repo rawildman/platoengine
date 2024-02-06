@@ -43,13 +43,11 @@ std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFun
     std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
     std::transform(
         aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const plato::functional::criteria::library::Constraint<const core::MeshProxy&>&
-                        aConstraintData)
+        [&aProblem](const plato::functional::criteria::library::Constraint<const core::MeshProxy&>& aConstraintData)
         {
-            plato::functional::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&>
-                tConstraint{aConstraintData.mName,
-                            compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
-                            aConstraintData.mConstraintTarget, aConstraintData.mLinear};
+            plato::functional::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> tConstraint{
+                aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
+                aConstraintData.mConstraintTarget, aConstraintData.mLinear};
             return std::make_unique<plato::functional::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
         });
     return tROLConstraints;
@@ -67,22 +65,20 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
 {
     auto tROLProblem =
         std::make_unique<ROL::Problem<double>>(ROL::Ptr<ROL::Objective<double>>(make_rol_objective(aProblem).release()),
-                                               linear_algebra::make_rol_vector(aProblem.mGeometry.mInitialGuess));
+                                               rol_integration::make_rol_vector(aProblem.mGeometry.mInitialGuess));
     tROLProblem->addBoundConstraint(make_rol_bound_constraint(aProblem.mGeometry.mBounds));
     for (auto& tConstraint : make_rol_constraints(aProblem))
     {
         const std::string& tName = tConstraint->name();
         if (tConstraint->linear())
         {
-            tROLProblem->addLinearConstraint(
-                tName, Teuchos::rcp(tConstraint.release()),
-                Teuchos::rcp(plato::functional::criteria::library::make_dual_vector().release()));
+            tROLProblem->addLinearConstraint(tName, Teuchos::rcp(tConstraint.release()),
+                                             rol_integration::make_rol_vector(criteria::library::make_dual_vector()));
         }
         else
         {
-            tROLProblem->addConstraint(
-                tName, Teuchos::rcp(tConstraint.release()),
-                Teuchos::rcp(plato::functional::criteria::library::make_dual_vector().release()));
+            tROLProblem->addConstraint(tName, Teuchos::rcp(tConstraint.release()),
+                                       rol_integration::make_rol_vector(criteria::library::make_dual_vector()));
         }
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?

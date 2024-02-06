@@ -1,7 +1,6 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CONSTRAINTFACTORY
 #define PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CONSTRAINTFACTORY
 
-#include <ROL_StdVector.hpp>
 #include <string>
 
 #include "DynamicVector.hpp"
@@ -40,7 +39,7 @@ struct Constraint
 
 /// @brief Helper for providing ROL a dual vector for constraints.
 /// @note Currently, constraints are scalar, and so the dual vector always has dimension 1.
-[[nodiscard]] std::unique_ptr<ROL::StdVector<double>> make_dual_vector();
+[[nodiscard]] linear_algebra::DynamicVector<double> make_dual_vector();
 
 namespace detail
 {

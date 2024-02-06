@@ -2,6 +2,7 @@
 
 #include <ROL_Algorithm.hpp>
 #include <ROL_Solver.hpp>
+#include <ROL_StdVector.hpp>
 
 #include "BrickShapeGeometry.hpp"
 #include "Exception.hpp"

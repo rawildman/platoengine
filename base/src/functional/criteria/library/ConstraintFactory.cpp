@@ -18,7 +18,7 @@ std::vector<Constraint<const core::MeshProxy&>> make_constraints(const Validated
     return tConstraints;
 }
 
-std::unique_ptr<ROL::StdVector<double>> make_dual_vector() { return std::make_unique<ROL::StdVector<double>>(1, 1.0); }
+linear_algebra::DynamicVector<double> make_dual_vector() { return linear_algebra::DynamicVector<double>{1.0}; }
 
 namespace detail
 {
@@ -28,8 +28,8 @@ Constraint<const core::MeshProxy&> make_constraint(
     const Plato::constraint& tRawInput = aConstraintInput.rawInput();
     const double tValue = tRawInput.equal_to.value();
     const bool tIsLinear = tRawInput.is_linear.value_or(false);
-    return Constraint<const core::MeshProxy&>{
-        tRawInput.name.value_or("Unnamed Constraint"), make_criterion_function(aConstraintInput), tValue, tIsLinear};
+    return Constraint<const core::MeshProxy&>{tRawInput.name.value_or("Unnamed Constraint"),
+                                              make_criterion_function(aConstraintInput), tValue, tIsLinear};
 }
 
 }  // namespace detail
