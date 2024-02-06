@@ -8,6 +8,8 @@
 #include "EnumParser.hpp"
 #include "EnumTable.hpp"
 
+namespace plato::functional::input_parser::unittest
+{
 namespace
 {
 enum struct Pizza
@@ -17,9 +19,9 @@ enum struct Pizza
     kPepperoni
 };
 
-const Plato::EnumTable<Pizza> kPizzaTable({{Pizza::kCheese, "cheese"},
-                                           {Pizza::kSupreme, "supreme"},
-                                           {Pizza::kPepperoni, "pepperoni"}});
+const utilities::EnumTable<Pizza> kPizzaTable({{Pizza::kCheese, "cheese"},
+                                               {Pizza::kSupreme, "supreme"},
+                                               {Pizza::kPepperoni, "pepperoni"}});
 
 template <typename Iterator>
 bool parse_pizza_list(Iterator aBegin, Iterator aEnd, std::vector<Pizza>& aPizzas)
@@ -49,3 +51,4 @@ TEST(BoostSpirit, ParseEnum)
     EXPECT_TRUE(parse_pizza_list(validPizzas.begin(), validPizzas.end(), parsedPizzas));
     EXPECT_EQ(parsedPizzas.size(), 4);
 }
+}  // namespace plato::functional::input_parser::unittest

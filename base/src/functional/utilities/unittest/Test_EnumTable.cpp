@@ -2,7 +2,7 @@
 
 #include "EnumTable.hpp"
 
-namespace PlatoTestEnumTable
+namespace plato::functional::utilities::unittest
 {
 TEST(EnumTable, Conversion)
 {
@@ -14,10 +14,10 @@ TEST(EnumTable, Conversion)
         kClyde,
         kArbitraryEnumWithNoGhostlyRelation
     };
-    const Plato::EnumTable<TestEnum> kTestTable = {{TestEnum::kInky, "Inky"},
-                                                   {TestEnum::kPinky, "Pinky"},
-                                                   {TestEnum::kBlinky, "Blinky"},
-                                                   {TestEnum::kClyde, "Clyde"}};
+    const EnumTable<TestEnum> kTestTable = {{TestEnum::kInky, "Inky"},
+                                            {TestEnum::kPinky, "Pinky"},
+                                            {TestEnum::kBlinky, "Blinky"},
+                                            {TestEnum::kClyde, "Clyde"}};
 
     // String to enum
     ASSERT_TRUE(kTestTable.toEnum("Inky"));
@@ -47,4 +47,4 @@ TEST(EnumTable, Conversion)
 
     EXPECT_FALSE(kTestTable.toString(TestEnum::kArbitraryEnumWithNoGhostlyRelation));
 }
-}  // namespace PlatoTestEnumTable
+}  // namespace plato::functional::utilities::unittest

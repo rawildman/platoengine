@@ -27,7 +27,7 @@ BOOST_PP_SEQ_FOR_EACH(ENUMERATE_WITH_COMMA, _, SEQ)                             
 {ENUM_NAME::ENUMERATE(tuple), ENUM_STRING(tuple)},
 
 #define ENUM_TABLE_DEFINE(ENUM_NAME, SEQ)                                                       \
-static const EnumTable<ENUM_NAME>                                                               \
+static const plato::functional::utilities::EnumTable<ENUM_NAME>                                 \
 TABLE_NAME_FROM_ENUM_NAME(ENUM_NAME)                                                            \
 ({                                                                                              \
 BOOST_PP_SEQ_FOR_EACH(ENUM_TABLE_ENTRY, ENUM_NAME, SEQ)                                         \

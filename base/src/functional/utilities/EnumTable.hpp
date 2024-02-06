@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace Plato
+namespace plato::functional::utilities
 {
 /// A convenience type for mapping enums to strings.
 ///
@@ -96,6 +96,6 @@ auto EnumTable<Enum>::end() const -> typename EnumTable<Enum>::MapType::left_map
     return mMap.left.end();
 }
 
-}  // namespace Plato
+}  // namespace plato::functional::utilities
 
 #endif
