@@ -16,7 +16,7 @@ namespace plato::functional::integration_tests::serial
 TEST(InputParser, ParseFromFile)
 {
     plato::functional::test_utilities::create_input_file(kTestFileName);
-    const input_parser::PlatoInput tInput = input_parser::parse_input_from_file(kTestFileName);
+    const input_parser::ParsedInput tInput = input_parser::parse_input_from_file(kTestFileName);
 
     EXPECT_FALSE(tInput.mOptimizationParameters.max_iterations.has_value());
     ASSERT_TRUE(tInput.mOptimizationParameters.gradient_tolerance.has_value());

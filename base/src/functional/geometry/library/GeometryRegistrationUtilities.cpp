@@ -12,13 +12,13 @@ void emplace_back_if_has_value(std::vector<library::GeometryInput>& aGeometryInp
     }
 }
 
-std::vector<library::GeometryInput> geometry_blocks(const input_parser::PlatoInput& aInput)
+std::vector<library::GeometryInput> geometry_blocks(const input_parser::ParsedInput& aInput)
 {
-    constexpr auto tNumInputFields = boost::fusion::result_of::size<input_parser::PlatoInput>::value;
+    constexpr auto tNumInputFields = boost::fusion::result_of::size<input_parser::ParsedInput>::value;
     return geometry_blocks_impl(aInput, std::make_index_sequence<tNumInputFields>{});
 }
 
-std::optional<library::GeometryInput> first_geometry_block(const input_parser::PlatoInput& aInput)
+std::optional<library::GeometryInput> first_geometry_block(const input_parser::ParsedInput& aInput)
 {
     const std::vector<library::GeometryInput> tGeometryBlocks = geometry_blocks(aInput);
     if (tGeometryBlocks.empty())

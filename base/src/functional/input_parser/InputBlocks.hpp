@@ -23,7 +23,7 @@
 /// Each declaration starts with the namespace the struct is declared in.
 /// The second argument is the struct name, and the third argument is a
 /// sequence of type/name pairs for each struct field. Any new input blocks
-/// must also be added to the main PlatoInput struct.
+/// must also be added to the main ParsedInput struct.
 ///
 /// Importantly, each field type is wrapped in boost::optional, which is used
 /// to indicate if the field was actually present and parsed in the input deck.
@@ -77,12 +77,12 @@ PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (double, boundary_sticking_penalty)
 )
 
-/// PlatoInput is the in-memory representation of a parsed input deck.
+/// ParsedInput is the in-memory representation of a parsed input deck.
 /// To add new blocks, use PLATO_INPUT_BLOCK_STRUCT or PLATO_NAMED_INPUT_BLOCK_STRUCT
 /// macros. The `NAMED` version is for blocks that can have multiple instantiations
 /// identified with a name. Those must be added here wrapped in `std::vector`.
 BOOST_FUSION_DEFINE_STRUCT(
-    (plato)(functional)(input_parser), PlatoInput,
+    (plato)(functional)(input_parser), ParsedInput,
     (std::vector<plato::functional::input_parser::objective>, mObjectives)
     (std::vector<plato::functional::input_parser::constraint>, mConstraints)
     (boost::optional<plato::functional::input_parser::brick_shape_geometry>, mBrickShapeGeometry)

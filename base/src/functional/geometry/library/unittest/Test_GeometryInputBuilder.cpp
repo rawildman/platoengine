@@ -91,7 +91,7 @@ TEST(GeometryInputBuilder, GeometryInputVariant)
 TEST(GeometryInputBuilder, GeometryInput)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
-    using TestInput = pfgld::GeometryInputVariant<input_parser::PlatoInput>;
+    using TestInput = pfgld::GeometryInputVariant<input_parser::ParsedInput>;
     static_assert(std::variant_size_v<TestInput> == 2);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, input_parser::density_topology>);
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, input_parser::brick_shape_geometry>);
@@ -100,7 +100,7 @@ TEST(GeometryInputBuilder, GeometryInput)
 TEST(GeometryInputBuilder, ValidatedGeometryInput)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
-    using TestInput = pfgld::ValidatedGeometryInputVariant<input_parser::PlatoInput>;
+    using TestInput = pfgld::ValidatedGeometryInputVariant<input_parser::ParsedInput>;
     static_assert(std::variant_size_v<TestInput> == 2);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
                                  core::ValidatedInputTypeWrapper<input_parser::density_topology>>);

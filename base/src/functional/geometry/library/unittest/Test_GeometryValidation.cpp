@@ -30,22 +30,22 @@ std::optional<std::string> bogus_error(const input_parser::density_topology& aIn
                                                                      { return std::nullopt; }};
 }  // namespace
 
-TEST(GeometryValidation, InValidPlatoInputNoGeometry)
+TEST(GeometryValidation, InValidParsedInputNoGeometry)
 {
-    const auto tInput = input_parser::PlatoInput{};
+    const auto tInput = input_parser::ParsedInput{};
     EXPECT_TRUE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
 }
 
-TEST(GeometryValidation, ValidPlatoInputOneGeometry)
+TEST(GeometryValidation, ValidParsedInputOneGeometry)
 {
-    auto tInput = input_parser::PlatoInput{};
+    auto tInput = input_parser::ParsedInput{};
     tInput.mBrickShapeGeometry = input_parser::brick_shape_geometry{};
     EXPECT_FALSE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
 }
 
-TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
+TEST(GeometryValidation, InValidParsedInputTwoGeometry)
 {
-    auto tInput = input_parser::PlatoInput{};
+    auto tInput = input_parser::ParsedInput{};
     tInput.mBrickShapeGeometry = input_parser::brick_shape_geometry{};
     tInput.mDensityTopology = input_parser::density_topology{};
     EXPECT_TRUE(plato::functional::geometry::library::detail::validate_only_one_geometry(tInput).has_value());
@@ -53,7 +53,7 @@ TEST(GeometryValidation, InValidPlatoInputTwoGeometry)
 
 TEST(GeometryValidation, MeshName)
 {
-    auto tInput = input_parser::PlatoInput{};
+    auto tInput = input_parser::ParsedInput{};
     tInput.mBrickShapeGeometry = plato::functional::test_utilities::create_valid_brick_shape_geometry();
 
     std::vector<std::string> tMessages;
@@ -66,7 +66,7 @@ TEST(GeometryValidation, MeshName)
 
 TEST(GeometryValidation, ValidInputCallsRightVariantTest)
 {
-    auto tInput = input_parser::PlatoInput{};
+    auto tInput = input_parser::ParsedInput{};
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
     tDensityTopology.mesh_name = input_parser::FileName{"trigger_bogus_test"};
     auto tBrickShapeGeometry = plato::functional::test_utilities::create_valid_brick_shape_geometry();

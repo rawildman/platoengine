@@ -5,12 +5,12 @@
 
 namespace plato::functional::geometry::library
 {
-[[maybe_unused]] static auto kGeometryValidationRegistration = core::ValidationRegistration<input_parser::PlatoInput>{
-    [](const input_parser::PlatoInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
+[[maybe_unused]] static auto kGeometryValidationRegistration = core::ValidationRegistration<input_parser::ParsedInput>{
+    [](const input_parser::ParsedInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
 
 namespace detail
 {
-std::optional<std::string> validate_only_one_geometry(const input_parser::PlatoInput& aInput)
+std::optional<std::string> validate_only_one_geometry(const input_parser::ParsedInput& aInput)
 {
     if (const unsigned int tTally = plato::functional::geometry::library::detail::geometry_blocks(aInput).size();
         tTally != 1)
@@ -25,7 +25,7 @@ std::optional<std::string> validate_only_one_geometry(const input_parser::PlatoI
 
 }  // namespace detail
 
-std::vector<std::string> validate_geometry(const input_parser::PlatoInput& aInput,
+std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInput,
                                            std::vector<std::string>&& aCurrentMessageList)
 {
     const std::vector<library::GeometryInput> tGeometryBlocks = library::detail::geometry_blocks(aInput);

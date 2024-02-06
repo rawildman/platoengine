@@ -10,7 +10,7 @@
 
 namespace input_parser
 {
-struct PlatoInput;
+struct ParsedInput;
 }
 
 namespace plato::functional::geometry::library

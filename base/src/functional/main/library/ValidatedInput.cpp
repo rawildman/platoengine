@@ -13,7 +13,7 @@
 
 namespace plato::functional::main::library
 {
-ValidatedInput::ValidatedInput(input_parser::PlatoInput aInput, Key) : mInput{std::move(aInput)} {}
+ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, Key) : mInput{std::move(aInput)} {}
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
@@ -54,7 +54,7 @@ std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
     return tValidatedInputs;
 }
 
-ValidatedInput make_validated_input(input_parser::PlatoInput aInput)
+ValidatedInput make_validated_input(input_parser::ParsedInput aInput)
 {
     std::vector<std::string> tMessages;
     tMessages = plato::functional::geometry::library::validate_geometry(aInput, std::move(tMessages));

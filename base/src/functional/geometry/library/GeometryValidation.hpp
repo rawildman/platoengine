@@ -10,7 +10,7 @@ namespace plato::functional::geometry::library
 {
 namespace detail
 {
-[[nodiscard]] std::optional<std::string> validate_only_one_geometry(const input_parser::PlatoInput& aInput);
+[[nodiscard]] std::optional<std::string> validate_only_one_geometry(const input_parser::ParsedInput& aInput);
 
 template <typename Geometry>
 [[nodiscard]] std::optional<std::string> validate_mesh_name(const Geometry& aInput)
@@ -20,7 +20,7 @@ template <typename Geometry>
 
 }  // namespace detail
 
-[[nodiscard]] std::vector<std::string> validate_geometry(const input_parser::PlatoInput& aInput,
+[[nodiscard]] std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInput,
                                                          std::vector<std::string>&& aCurrentMessageList);
 
 }  // namespace plato::functional::geometry::library

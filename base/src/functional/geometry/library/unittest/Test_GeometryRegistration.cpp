@@ -35,7 +35,7 @@ TEST(GeometryRegistration, DensityTopology) { EXPECT_TRUE(is_geometry_function_r
 
 TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
 {
-    EXPECT_THROW(auto tGeometryInput = first_geometry_input(input_parser::PlatoInput{}),
+    EXPECT_THROW(auto tGeometryInput = first_geometry_input(input_parser::ParsedInput{}),
                  plato::functional::utilities::Exception);
 }
 }  // namespace plato::functional::geometry::library::unittest

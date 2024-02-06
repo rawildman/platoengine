@@ -9,7 +9,7 @@ namespace plato::functional::main::library::unittest
 {
 TEST(ValidatedInput, MakeValidInputWithInvalidInput)
 {
-    EXPECT_THROW(const auto tValidatedInput = make_validated_input(input_parser::PlatoInput{}), utilities::Exception);
+    EXPECT_THROW(const auto tValidatedInput = make_validated_input(input_parser::ParsedInput{}), utilities::Exception);
 }
 
 TEST(ValidatedInput, MakeValidInputWithValidInput)

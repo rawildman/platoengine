@@ -32,13 +32,13 @@ void create_input_file(const std::filesystem::path aTestFileName)
     tOutFile.close();
 }
 
-input_parser::PlatoInput create_valid_example_input()
+input_parser::ParsedInput create_valid_example_input()
 {
-    return input_parser::PlatoInput{/*.mObjectives=*/{create_valid_example_objective()},
-                                    /*.mConstraints=*/{create_valid_example_constraint()},
-                                    /*.mBrickShapeGeometry=*/boost::none,
-                                    /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                    /*.mOptimizationParameters = */ create_valid_example_optimization_parameters()};
+    return input_parser::ParsedInput{/*.mObjectives=*/{create_valid_example_objective()},
+                                     /*.mConstraints=*/{create_valid_example_constraint()},
+                                     /*.mBrickShapeGeometry=*/boost::none,
+                                     /*.mDensityTopology = */ create_valid_density_topology_geometry(),
+                                     /*.mOptimizationParameters = */ create_valid_example_optimization_parameters()};
 }
 
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()

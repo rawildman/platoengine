@@ -18,16 +18,16 @@ constexpr bool kIsBoostOptional = false;
 template <typename T>
 constexpr bool kIsBoostOptional<boost::optional<T>> = true;
 
-auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, PlatoInput>
+auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, ParsedInput>
 {
     InputParser<std::string::const_iterator> tParser;
-    PlatoInput tData;
+    ParsedInput tData;
     auto tIter = aInput.cbegin();
     const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
     return {tParseResult, tIter, tData};
 }
 
-void check_nothing_parsed(const PlatoInput& aInput)
+void check_nothing_parsed(const ParsedInput& aInput)
 {
     EXPECT_TRUE(aInput.mObjectives.empty());
     EXPECT_TRUE(aInput.mConstraints.empty());

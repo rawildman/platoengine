@@ -12,7 +12,7 @@ namespace plato::functional::test_utilities
 
 void create_input_file(const std::filesystem::path aTestFileName);
 
-[[nodiscard]] input_parser::PlatoInput create_valid_example_input();
+[[nodiscard]] input_parser::ParsedInput create_valid_example_input();
 
 [[nodiscard]] input_parser::brick_shape_geometry create_valid_brick_shape_geometry();
 [[nodiscard]] std::string create_valid_brick_shape_geometry_string();

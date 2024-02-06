@@ -13,7 +13,7 @@ class ValidatedInput;
 
 struct Key
 {
-    friend ValidatedInput make_validated_input(input_parser::PlatoInput input);
+    friend ValidatedInput make_validated_input(input_parser::ParsedInput input);
 
    private:
     Key() {}
@@ -31,7 +31,7 @@ class ValidatedInput
     using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
 
    public:
-    ValidatedInput(input_parser::PlatoInput aInput, Key);
+    ValidatedInput(input_parser::ParsedInput aInput, Key);
 
     [[nodiscard]] auto geometry() const -> Geometry;
     [[nodiscard]] auto objectives() const -> Objectives;
@@ -43,10 +43,10 @@ class ValidatedInput
     static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(const std::vector<T>& aInputs);
 
    private:
-    input_parser::PlatoInput mInput;
+    input_parser::ParsedInput mInput;
 };
 
-[[nodiscard]] ValidatedInput make_validated_input(input_parser::PlatoInput aInput);
+[[nodiscard]] ValidatedInput make_validated_input(input_parser::ParsedInput aInput);
 
 /// @brief Parse input from file @a aInputFile and then validate the input
 [[nodiscard]] ValidatedInput parse_and_validate_from_file(const std::filesystem::path& aFileName);

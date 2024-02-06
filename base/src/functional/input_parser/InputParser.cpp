@@ -11,10 +11,10 @@
 
 namespace plato::functional::input_parser
 {
-PlatoInput parse_input(const std::string_view aInput)
+ParsedInput parse_input(const std::string_view aInput)
 {
     InputParser<std::string_view::const_iterator> tParser;
-    PlatoInput tData;
+    ParsedInput tData;
     auto tIter = aInput.cbegin();
     const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
     if (!tParseResult || tIter != aInput.cend())
@@ -24,7 +24,7 @@ PlatoInput parse_input(const std::string_view aInput)
     return tData;
 }
 
-PlatoInput parse_input_from_file(const std::filesystem::path& aFileName)
+ParsedInput parse_input_from_file(const std::filesystem::path& aFileName)
 {
     std::ifstream tInputStream(aFileName);
     const std::string tInputFileString((std::istreambuf_iterator<char>(tInputStream)),

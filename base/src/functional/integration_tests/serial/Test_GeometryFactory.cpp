@@ -12,11 +12,11 @@ TEST(GeometryFactory, BrickGeometry)
     namespace pftu = plato::functional::test_utilities;
 
     const auto tRawInput =
-        input_parser::PlatoInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
-                                 /*.mConstraints=*/{pftu::create_valid_example_constraint()},
-                                 /*.mBrickShapeGeometry=*/pftu::create_valid_brick_shape_geometry(),
-                                 /*.mDensityTopology = */ boost::none,
-                                 /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters()};
+        input_parser::ParsedInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
+                                  /*.mConstraints=*/{pftu::create_valid_example_constraint()},
+                                  /*.mBrickShapeGeometry=*/pftu::create_valid_brick_shape_geometry(),
+                                  /*.mDensityTopology = */ boost::none,
+                                  /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters()};
 
     const main::library::ValidatedInput tInput = main::library::make_validated_input(tRawInput);
     const auto tData = geometry::library::make_geometry_data(tInput.geometry());
