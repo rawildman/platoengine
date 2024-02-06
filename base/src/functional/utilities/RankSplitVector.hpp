@@ -8,7 +8,7 @@
 
 #include "NamedType.hpp"
 
-namespace Plato::Functional::Utilities
+namespace plato::functional::utilities
 {
 using RankType = decltype(std::declval<const boost::mpi::communicator&>().rank());
 using SizeType = decltype(std::declval<const boost::mpi::communicator&>().size());
@@ -49,7 +49,6 @@ bool assign_remainder_element_to_rank(const RankNamedType aRank, const T aRemain
 }
 }  // namespace detail
 
-
 template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize)
 {
@@ -68,6 +67,6 @@ std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedT
     }
     return tDistributedVector;
 }
-}  // namespace Plato::Functional::Utilities
+}  // namespace plato::functional::utilities
 
 #endif

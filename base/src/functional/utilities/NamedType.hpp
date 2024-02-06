@@ -3,14 +3,14 @@
 
 #include <utility>
 
-namespace Plato::Functional::Utilities
+namespace plato::functional::utilities
 {
 
-/// @brief A strongly-typed wrapper for clarifying interfaces. 
-/// 
-/// The purpose of this class is to facilitate using strong types for making 
+/// @brief A strongly-typed wrapper for clarifying interfaces.
+///
+/// The purpose of this class is to facilitate using strong types for making
 /// function signatures clear. This can help catch errors at compile time that would
-/// normally be caught at run time. For example, if we have a function for loading an 
+/// normally be caught at run time. For example, if we have a function for loading an
 /// xml file into an object, we might need the file name and a node name as string arguments:
 /// @code{.cpp}
 /// void loadXML(const std::string& aFileName, const std::string& aNodeName);
@@ -27,7 +27,7 @@ namespace Plato::Functional::Utilities
 /// @code{.cpp}
 /// loadXML(XMLFileName{"myXmlFile.xml"}, XMLNodeName{"TopNode"});
 /// @endcode
-/// 
+///
 /// @tparam T The wrapped type.
 /// @tparam NamedTag A tag to associate with the type, typically an empty struct with a meaningful
 ///  name shown in the example. This prevents copying two NamedType with the same wrapped type T.
@@ -40,5 +40,5 @@ struct NamedType
     T mValue;
 };
 
-}  // namespace Plato::Functional::Core
+}  // namespace plato::functional::utilities
 #endif
