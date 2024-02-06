@@ -25,10 +25,10 @@ constexpr int kExpectedDensitySize = 8;  // Based on mesh generation command bel
 
 void create_small_mesh(const std::string& aFileName)
 {
-    namespace pf = Plato::Functional;
+    namespace pf = plato::functional;
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);
-    auto bulk = pf::create_mesh("generated:1x1x1|bbox:-1,-2,-1,2,1,2");
-    pf::write_mesh(aFileName, bulk);
+    auto bulk = pf::utilities::create_mesh("generated:1x1x1|bbox:-1,-2,-1,2,1,2");
+    pf::utilities::write_mesh(aFileName, bulk);
 }
 }  // namespace
 
@@ -75,7 +75,8 @@ TEST(DensityTopology, InitialGuess)
 {
     create_small_mesh(kDensityInput.mesh_name->mName);
 
-    const linear_algebra::DynamicVector<double> tInitialGuess = DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
+    const linear_algebra::DynamicVector<double> tInitialGuess =
+        DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
 
     EXPECT_EQ(tInitialGuess.size(), kExpectedDensitySize);
 

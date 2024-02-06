@@ -15,7 +15,7 @@ namespace plato::functional::geometry::extension::unittest
 {
 TEST(Brick, CenterAndDims)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);
 
     constexpr std::string_view tFileName = "test.exo";
@@ -24,15 +24,15 @@ TEST(Brick, CenterAndDims)
     {
         constexpr double tDiscretizationSize = 1.0;
         auto mesh = detail::create_mesh(tDesignParameters, tDiscretizationSize);
-        pf::write_mesh(tFileName, mesh);
+        pfu::write_mesh(tFileName, mesh);
         constexpr unsigned tExpectedNumElements = 2 * 4 * 6;
-        EXPECT_EQ(tExpectedNumElements, pf::element_size(tFileName));
+        EXPECT_EQ(tExpectedNumElements, pfu::element_size(tFileName));
     }
     {
         auto mesh = detail::create_mesh(tDesignParameters);
-        pf::write_mesh(tFileName, mesh);
+        pfu::write_mesh(tFileName, mesh);
         constexpr unsigned tExpectedNumElements = 1;
-        EXPECT_EQ(tExpectedNumElements, pf::element_size(tFileName));
+        EXPECT_EQ(tExpectedNumElements, pfu::element_size(tFileName));
     }
 
     EXPECT_TRUE(std::filesystem::exists(tFileName));
@@ -121,7 +121,7 @@ TEST(BrickSensitivities, JacobianEvaluator)
 
 TEST(Brick, ABrick)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     const std::string tFileName = "brick.exo";
 
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
@@ -134,11 +134,11 @@ TEST(Brick, ABrick)
     constexpr double tDiscretizationSize = 1.0;
     BrickShapeGeometry tBrick(tFileName, tDiscretizationSize);
 
-    const pf::MeshProxy tMP = tBrick.generateMesh(tDesignParameters);
+    const Plato::Functional::MeshProxy tMP = tBrick.generateMesh(tDesignParameters);
     EXPECT_EQ(tMP.mFileName, tFileName);
 
     constexpr unsigned tExpectedNumElements = 2 * 4 * 6;
-    EXPECT_EQ(tExpectedNumElements, pf::element_size(tFileName));
+    EXPECT_EQ(tExpectedNumElements, pfu::element_size(tFileName));
 
     EXPECT_TRUE(std::filesystem::exists(tFileName));
     EXPECT_TRUE(std::filesystem::remove(tFileName));
@@ -146,7 +146,7 @@ TEST(Brick, ABrick)
 
 TEST(Brick, ConvertDesignParametersToROLStdVector)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
                                                /*.center_y = */ -2,
                                                /*.center_z = */ -3,
@@ -189,7 +189,7 @@ TEST(Brick, Jacobian)
 
 TEST(Brick, ToROLStdVector)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
                                                /*.center_y = */ -2,
                                                /*.center_z = */ -3,

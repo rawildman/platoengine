@@ -30,8 +30,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 
 [[nodiscard]] std::function<void(const linear_algebra::DynamicVector<double>&)> make_output()
 {
-    return [](const linear_algebra::DynamicVector<double>& aSolution)
-    { return BrickShapeGeometry::output(aSolution); };
+    return [](const linear_algebra::DynamicVector<double>& aSolution) { return BrickShapeGeometry::output(aSolution); };
 }
 
 [[maybe_unused]] static auto kBrickShapeGeometryRegistration =
@@ -56,7 +55,7 @@ BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const st
 Plato::Functional::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {
     std::shared_ptr<stk::mesh::BulkData> tMesh = detail::create_mesh(aDesignParameters, mDiscretizationSize);
-    Plato::Functional::write_mesh(mFileName, tMesh);
+    plato::functional::utilities::write_mesh(mFileName, tMesh);
     return Plato::Functional::MeshProxy{mFileName, {}};
 }
 
@@ -128,7 +127,7 @@ std::shared_ptr<stk::mesh::BulkData> create_mesh(const BrickDesign& aDesign,
     generationCommand << xmax << "," << ymax << "," << zmax;
     generationCommand << "|sideset:Z|nodeset:Y";
     std::cout << generationCommand.str() << std::endl;
-    return Plato::Functional::create_mesh(generationCommand.str());
+    return plato::functional::utilities::create_mesh(generationCommand.str());
 }
 
 std::vector<double> sensitivities(const unsigned int aParameterIndex)
@@ -168,8 +167,8 @@ std::vector<double> sensitivities(const unsigned int aParameterIndex)
 linear_algebra::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters)
 {
     return linear_algebra::DynamicVector<double>{aDesignParameters.center_x,    aDesignParameters.center_y,
-                                                          aDesignParameters.center_z,    aDesignParameters.dimension_x,
-                                                          aDesignParameters.dimension_y, aDesignParameters.dimension_z};
+                                                 aDesignParameters.center_z,    aDesignParameters.dimension_x,
+                                                 aDesignParameters.dimension_y, aDesignParameters.dimension_z};
 }
 
 BrickDesign to_design_parameters(const linear_algebra::DynamicVector<double>& aDesignParameter)

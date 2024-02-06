@@ -11,7 +11,7 @@ namespace stk::mesh
 class BulkData;
 }
 
-namespace Plato::Functional
+namespace plato::functional::utilities
 {
 [[nodiscard]] std::shared_ptr<stk::mesh::BulkData> create_mesh(const std::string_view aGenerationCommand);
 
@@ -37,6 +37,6 @@ void write_mesh_density(const std::filesystem::path& aInputMeshName,
                         const std::vector<double>& aDensity,
                         const std::filesystem::path& aOutputMeshName);
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::utilities
 
 #endif

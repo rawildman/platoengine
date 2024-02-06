@@ -17,37 +17,36 @@ constexpr std::string_view kLibPath = "libPlatoTestMassObjective.so";
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
-    std::cout << tBad.f(pf::MeshProxy{"dne.exo", {}}) << std::endl;
+    std::cout << tBad.f(Plato::Functional::MeshProxy{"dne.exo", {}}) << std::endl;
 }
 }  // namespace
 
 TEST(SharedLibObjective, BadLibraryPath)
 {
-    namespace pf = Plato::Functional;
     EXPECT_THROW(generate_bad_library_and_do_nothing(), Plato::Functional::Exception);
 }
 
 TEST(SharedLibObjective, CallValue)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const double tMass = tSharedLib.f(pf::MeshProxy{tMeshName, {}});
+    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    const double tMass = tSharedLib.f(Plato::Functional::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
 
 TEST(SharedLibObjective, CallGradient)
 {
-    namespace pf = Plato::Functional;
+    namespace pfu = plato::functional::utilities;
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const auto tGrad = tSharedLib.df(pf::MeshProxy{tMeshName, {}});
+    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    const auto tGrad = tSharedLib.df(Plato::Functional::MeshProxy{tMeshName, {}});
 
     const std::vector<double> tGold(24, 0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
@@ -55,13 +54,13 @@ TEST(SharedLibObjective, CallGradient)
 
 TEST(SharedLibObjective, ValueUsingFunction)
 {
-    namespace pf = Plato::Functional;
-    const auto tFunction =
-        criteria::extension::make_shared_lib_function(criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
+    namespace pfu = plato::functional::utilities;
+    const auto tFunction = criteria::extension::make_shared_lib_function(
+        criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pf::write_mesh(tMeshName, pf::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
-    const double tMass = tFunction.f(pf::MeshProxy{tMeshName, {}});
+    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    const double tMass = tFunction.f(Plato::Functional::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
 }  // namespace plato::functional::integration_tests::serial

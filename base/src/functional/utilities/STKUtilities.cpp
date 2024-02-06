@@ -13,7 +13,7 @@
 #include "Ioss_IOFactory.h"  // for IOFactory
 #include "Ioss_NodeBlock.h"  // for NodeBlock
 
-namespace Plato::Functional
+namespace plato::functional::utilities
 {
 namespace
 {
@@ -82,13 +82,13 @@ std::vector<double> read_mesh_density(const std::filesystem::path& aMeshName)
 
 unsigned int element_size(const std::filesystem::path& aMeshName)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulkData = Plato::Functional::read_mesh_bulk_data(aMeshName);
+    std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
     return element_size(tBulkData);
 }
 
 unsigned int read_mesh_node_size(const std::filesystem::path& aMeshName)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulkData = Plato::Functional::read_mesh_bulk_data(aMeshName);
+    std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
     return node_size(tBulkData);
 }
 
@@ -163,4 +163,4 @@ void write_mesh_density(const std::filesystem::path& aInputMeshName,
     write_defined_output_fields(*tIOBroker, tOutputFileIndex, tTime);
 }
 
-}  // namespace Plato::Functional
+}  // namespace plato::functional::utilities
