@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "utilities/Exception.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "criteria/library/ObjectiveFactory.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::integration_tests::serial
 {
@@ -51,8 +51,7 @@ TEST(ObjectiveFactory, ValidParallelAggregate)
     const main::library::ValidatedInput tData = create_two_objective_test_input();
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
-    const core::ParallelAggregate tAggregate =
-        criteria::library::detail::make_parallel_aggregate(tData.objectives());
+    const core::ParallelAggregate tAggregate = criteria::library::detail::make_parallel_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 2);
 }
 

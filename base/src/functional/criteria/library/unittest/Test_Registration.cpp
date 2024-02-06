@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "criteria/library/CriterionRegistration.hpp"
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/Function.hpp"
+#include "criteria/library/CriterionRegistration.hpp"
 #include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

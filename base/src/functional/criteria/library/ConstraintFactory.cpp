@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "core/MeshProxy.hpp"
 #include "criteria/library/CriterionFactory.hpp"
 #include "utilities/Exception.hpp"
-#include "core/MeshProxy.hpp"
 
 namespace plato::functional::criteria::library
 {

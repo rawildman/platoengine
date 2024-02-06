@@ -11,7 +11,6 @@
 #include "utilities/STKUtilities.hpp"
 namespace plato::functional::utilities::unittest
 {
-
 TEST(STKGenerateMesh, Box)
 {
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);

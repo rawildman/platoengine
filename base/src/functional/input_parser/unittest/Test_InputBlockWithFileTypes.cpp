@@ -14,7 +14,6 @@ PLATO_INPUT_BLOCK_STRUCT(
 
 namespace plato::functional::input_parser::unittest
 {
-
 TEST(ParseFileTypes, FileName)
 {
     TestFileTypes tTestBlock;

@@ -2,8 +2,8 @@
 #include <boost/mpi/environment.hpp>
 #include <iostream>
 
-#include "utilities/Exception.hpp"
 #include "main/library/OptimizationProblem.hpp"
+#include "utilities/Exception.hpp"
 
 namespace
 {

@@ -2,8 +2,8 @@
 
 #include "criteria/library/ConstraintFactory.hpp"
 #include "criteria/library/ConstraintValidation.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
 
 namespace plato::functional::main::library::unittest
 {

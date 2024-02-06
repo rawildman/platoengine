@@ -4,22 +4,20 @@
 #include <ROL_Constraint.hpp>
 #include <ROL_Vector.hpp>
 
+#include "core/Function.hpp"
 #include "criteria/library/ConstraintFactory.hpp"
 #include "linear_algebra/DynamicVector.hpp"
-#include "core/Function.hpp"
 
 namespace plato::functional::rol_integration
 {
 class ROLConstraintFunction : public ROL::Constraint<double>
 {
    public:
-    using ROLPlatoFunction = core::Function<double,
-                                                         linear_algebra::DynamicVector<double>,
-                                                         const linear_algebra::DynamicVector<double>&>;
+    using ROLPlatoFunction =
+        core::Function<double, linear_algebra::DynamicVector<double>, const linear_algebra::DynamicVector<double>&>;
 
     ///@brief Construct a new ROLConstraintFunction object
-    ROLConstraintFunction(
-        criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> aConstraint);
+    ROLConstraintFunction(criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> aConstraint);
 
     ///@brief Evaluate and populate aConstraints with the constraints at a given control vector and tolerance
     void value(ROL::Vector<double>& aConstraints, const ROL::Vector<double>& aControl, double& aTolerance) override;

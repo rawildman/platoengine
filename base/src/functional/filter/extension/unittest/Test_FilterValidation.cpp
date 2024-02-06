@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "filter/library/FilterValidation.hpp"
+#include "core/ValidationRegistration.hpp"
 #include "filter/extension/HelmholtzFilter.hpp"
 #include "filter/extension/IdentityFilter.hpp"
+#include "filter/library/FilterValidation.hpp"
 #include "test_utilities/InputGeneration.hpp"
-#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {

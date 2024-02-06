@@ -1,9 +1,9 @@
 #include "geometry/library/GeometryFactory.hpp"
 
-#include "utilities/Exception.hpp"
 #include "geometry/library/GeometryRegistration.hpp"
 #include "geometry/library/GeometryRegistrationUtilities.hpp"
 #include "input_parser/InputBlocks.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::geometry::library
 {

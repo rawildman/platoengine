@@ -9,11 +9,11 @@
 #include <string_view>
 #include <vector>
 
+#include "core/MeshProxy.hpp"
 #include "geometry/extension/DensityTopology.hpp"
 #include "input_parser/InputBlocks.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "linear_algebra/JacobianColumnEvaluator.hpp"
-#include "core/MeshProxy.hpp"
+#include "test_utilities/InputGeneration.hpp"
 #include "utilities/STKUtilities.hpp"
 namespace plato::functional::geometry::extension::unittest
 {

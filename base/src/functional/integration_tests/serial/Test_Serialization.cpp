@@ -21,4 +21,4 @@ TEST(Serialization, TwoDTestTypes)
     tLoadArchive >> tLoadedVector;
     EXPECT_EQ(tLoadedVector, tStoredVector);
 }
-}
+}  // namespace plato::functional::integration_tests::serial

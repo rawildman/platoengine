@@ -4,7 +4,6 @@
 
 namespace plato::functional::geometry::library::unittest
 {
-
 TEST(GeometryRegistrationUtilities, IsVariant)
 {
     namespace pfgld = plato::functional::geometry::library::detail;
@@ -77,7 +76,7 @@ TEST(GeometryRegistrationUtilities, BlockName)
     {
         const auto tGeometryInput = pfgl::GeometryInput{input_parser::density_topology{}};
         EXPECT_EQ(pfgl::detail::block_name(tGeometryInput), "density_topology");
-    }
+    }  // namespace plato::functional::geometry::library;
     {
         const auto tGeometryInput = pfgl::GeometryInput{input_parser::brick_shape_geometry{}};
         EXPECT_EQ(pfgl::detail::block_name(tGeometryInput), "brick_shape_geometry");
@@ -90,7 +89,7 @@ TEST(GeometryRegistrationUtilities, GeometryBlocksVector)
     {
         input_parser::ParsedInput tInput;
         EXPECT_EQ(pfgl::detail::geometry_blocks(tInput).size(), 0u);
-    }
+    }  // namespace plato::functional::geometry::library;
     {
         input_parser::ParsedInput tInput;
         tInput.mDensityTopology = input_parser::density_topology{};

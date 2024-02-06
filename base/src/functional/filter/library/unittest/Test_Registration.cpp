@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "filter/library/FilterJacobian.hpp"
-#include "filter/library/FilterRegistration.hpp"
 #include "core/Function.hpp"
 #include "core/MeshProxy.hpp"
+#include "filter/library/FilterJacobian.hpp"
+#include "filter/library/FilterRegistration.hpp"
 
 namespace input_parser
 {

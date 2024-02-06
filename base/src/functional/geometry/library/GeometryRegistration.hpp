@@ -4,10 +4,10 @@
 #include <memory>
 #include <string_view>
 
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/FactoryRegistration.hpp"
 #include "core/Function.hpp"
 #include "geometry/library/GeometryInputBuilder.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::core
 {

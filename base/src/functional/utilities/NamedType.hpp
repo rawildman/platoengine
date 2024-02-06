@@ -5,7 +5,6 @@
 
 namespace plato::functional::utilities
 {
-
 /// @brief A strongly-typed wrapper for clarifying interfaces.
 ///
 /// The purpose of this class is to facilitate using strong types for making

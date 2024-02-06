@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "test_utilities/Penalty.hpp"
 #include "core/test_utilities/Utilities.hpp"
+#include "test_utilities/Penalty.hpp"
 
 namespace plato::functional::core::unittest
 {
@@ -45,4 +45,4 @@ TEST(Penalty, MakePenalty)
         EXPECT_EQ(tPenalty.df(tX(0), tX(1)), tPenaltyFunction.df(tX));
     }
 }
-}
+}  // namespace plato::functional::core::unittest

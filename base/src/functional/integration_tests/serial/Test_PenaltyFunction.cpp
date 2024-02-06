@@ -65,4 +65,4 @@ TEST(PenaltyFunction, Composition)
     EXPECT_EQ(tDCompositionOfX[0], 0.0);
     EXPECT_EQ(tDCompositionOfX[1], 0.0);
 }
-}
+}  // namespace plato::functional::integration_tests::serial

@@ -2,11 +2,11 @@
 
 #include <filesystem>
 
+#include "core/ValidationRegistration.hpp"
+#include "core/ValidationUtilities.hpp"
 #include "filter/library/FilterInterface.hpp"
 #include "filter/library/FilterRegistration.hpp"
 #include "input_parser/InputEnumTypes.hpp"
-#include "core/ValidationRegistration.hpp"
-#include "core/ValidationUtilities.hpp"
 
 namespace plato::functional::filter::extension
 {

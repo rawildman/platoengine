@@ -4,14 +4,14 @@
 #include <iomanip>
 #include <sstream>
 
-#include "linear_algebra/DynamicVector.hpp"
-#include "utilities/Exception.hpp"
+#include "core/ValidationRegistration.hpp"
 #include "geometry/library/GeometryRegistration.hpp"
 #include "geometry/library/GeometryValidation.hpp"
 #include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 #include "linear_algebra/JacobianColumnEvaluator.hpp"
+#include "utilities/Exception.hpp"
 #include "utilities/STKUtilities.hpp"
-#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::geometry::extension
 {

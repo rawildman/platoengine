@@ -4,13 +4,13 @@
 #include <fstream>
 #include <string_view>
 
-#include "linear_algebra/DynamicVector.hpp"
-#include "geometry/library/GeometryFactory.hpp"
 #include "core/MeshProxy.hpp"
 #include "criteria/library/ObjectiveFactory.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 #include "main/library/PlatoProblem.hpp"
-#include "rol_integration/ROLHelpers.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "rol_integration/ROLHelpers.hpp"
 
 namespace plato::functional::main::library
 {

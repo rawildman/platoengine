@@ -2,9 +2,9 @@
 
 #include <type_traits>
 
-#include "utilities/Exception.hpp"
 #include "filter/library/FilterRegistration.hpp"
 #include "input_parser/InputBlocks.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::filter::library
 {

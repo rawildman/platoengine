@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORTESTUTILITIES
 #define PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORTESTUTILITIES
 
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/Function.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 #include "test_utilities/Rosenbrock.hpp"
 #include "test_utilities/TwoDTestTypes.hpp"
 

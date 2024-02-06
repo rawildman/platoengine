@@ -2,10 +2,10 @@
 
 #include <optional>
 
+#include "core/MeshProxy.hpp"
 #include "filter/library/FilterInterface.hpp"
 #include "filter/library/FilterJacobian.hpp"
 #include "input_parser/InputBlocks.hpp"
-#include "core/MeshProxy.hpp"
 #include "utilities/SharedLibraryUtilities.hpp"
 
 namespace plato::functional::filter::library

@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "core/Aggregate.hpp"
-#include "rol_integration/unittest/DynamicVectorRosenbrockFunction.hpp"
 #include "rol_integration/ROLObjectiveFunction.hpp"
+#include "rol_integration/unittest/DynamicVectorRosenbrockFunction.hpp"
 #include "test_utilities/Rosenbrock.hpp"
 
 namespace plato::functional::rol_integration::unittest

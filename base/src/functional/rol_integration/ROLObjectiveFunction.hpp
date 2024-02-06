@@ -4,17 +4,16 @@
 #include <ROL_Objective.hpp>
 #include <ROL_Vector.hpp>
 
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/Function.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::rol_integration
 {
 class ROLObjectiveFunction : public ROL::Objective<double>
 {
    public:
-    using ROLPlatoFunction = core::Function<double,
-                                                         linear_algebra::DynamicVector<double>,
-                                                         const linear_algebra::DynamicVector<double> &>;
+    using ROLPlatoFunction =
+        core::Function<double, linear_algebra::DynamicVector<double>, const linear_algebra::DynamicVector<double> &>;
 
     ///@brief Construct a new ROLObjectiveFunction object
     explicit ROLObjectiveFunction(ROLPlatoFunction aROLPlatoFunction);
@@ -29,6 +28,6 @@ class ROLObjectiveFunction : public ROL::Objective<double>
    private:
     ROLPlatoFunction mFunction;
 };
-}  // namespace glato::functional::rol_integration
+}  // namespace plato::functional::rol_integration
 
 #endif

@@ -4,12 +4,12 @@
 #include <string_view>
 
 #include "criteria/library/ConstraintValidation.hpp"
-#include "utilities/Exception.hpp"
+#include "criteria/library/ObjectiveValidation.hpp"
 #include "geometry/library/GeometryRegistration.hpp"
 #include "geometry/library/GeometryValidation.hpp"
 #include "input_parser/InputParser.hpp"
-#include "criteria/library/ObjectiveValidation.hpp"
 #include "optimizer/OptimizerValidation.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::main::library
 {

@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORPENALTYFUNCTION
 #define PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORPENALTYFUNCTION
 
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/Function.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 #include "test_utilities/Penalty.hpp"
 
 namespace plato::functional::integration_tests::utilities

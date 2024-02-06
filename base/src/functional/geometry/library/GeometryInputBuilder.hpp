@@ -5,8 +5,8 @@
 #include <tuple>
 #include <variant>
 
-#include "input_parser/InputBlocks.hpp"
 #include "core/ValidatedInputTypeWrapper.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::geometry::library::detail
 {

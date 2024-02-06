@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "core/Aggregate.hpp"
-#include "test_utilities/Rosenbrock.hpp"
 #include "core/test_utilities/Utilities.hpp"
+#include "test_utilities/Rosenbrock.hpp"
 
 namespace plato::functional::core::unittest
 {

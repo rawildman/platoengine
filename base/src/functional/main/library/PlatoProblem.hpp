@@ -5,12 +5,12 @@
 #include <vector>
 
 #include "criteria/library/ConstraintFactory.hpp"
-#include "geometry/library/GeometryFactory.hpp"
 #include "criteria/library/ObjectiveFactory.hpp"
+#include "geometry/library/GeometryFactory.hpp"
+#include "main/library/ValidatedInput.hpp"
 #include "optimizer/OptimizerFactory.hpp"
 #include "rol_integration/ROLConstraintFunction.hpp"
 #include "rol_integration/ROLObjectiveFunction.hpp"
-#include "main/library/ValidatedInput.hpp"
 
 namespace plato::functional::main::library
 {

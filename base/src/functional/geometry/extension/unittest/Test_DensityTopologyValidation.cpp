@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "geometry/extension/DensityTopology.hpp"
-#include "utilities/Exception.hpp"
 #include "geometry/library/GeometryValidation.hpp"
 #include "test_utilities/InputGeneration.hpp"
+#include "utilities/Exception.hpp"
 namespace plato::functional::geometry::extension::unittest
 {
 TEST(DensityTopologyValidation, ValidateMeshName)

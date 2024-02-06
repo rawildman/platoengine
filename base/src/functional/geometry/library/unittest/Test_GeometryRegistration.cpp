@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "linear_algebra/DynamicVector.hpp"
-#include "utilities/Exception.hpp"
 #include "core/Function.hpp"
+#include "core/MeshProxy.hpp"
 #include "geometry/library/GeometryRegistration.hpp"
 #include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 #include "linear_algebra/JacobianMultiplier.hpp"
-#include "core/MeshProxy.hpp"
+#include "utilities/Exception.hpp"
 namespace plato::functional::geometry::library::unittest
 {
 namespace

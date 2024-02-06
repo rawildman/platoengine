@@ -24,7 +24,6 @@ PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
 // clang-format on
 namespace plato::functional::input_parser::unittest
 {
-
 TEST(InputBlockStruct, Named)
 {
     // These are mostly compile-time checks

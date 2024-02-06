@@ -2,18 +2,17 @@
 
 #include <string_view>
 
-#include "linear_algebra/DynamicVector.hpp"
-#include "utilities/Exception.hpp"
+#include "core/MeshProxy.hpp"
+#include "filter/extension/IdentityFilter.hpp"
 #include "filter/library/FilterFactory.hpp"
 #include "filter/library/FilterJacobian.hpp"
-#include "filter/extension/IdentityFilter.hpp"
 #include "input_parser/InputBlocks.hpp"
 #include "input_parser/InputEnumTypes.hpp"
-#include "core/MeshProxy.hpp"
+#include "linear_algebra/DynamicVector.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {
-
 namespace
 {
 constexpr std::string_view kMeshName = "the-mesh-is-a-lie.exo";

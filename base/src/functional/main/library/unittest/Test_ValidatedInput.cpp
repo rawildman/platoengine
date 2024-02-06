@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "utilities/Exception.hpp"
 #include "input_parser/InputBlocks.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::main::library::unittest
 {

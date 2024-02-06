@@ -2,9 +2,9 @@
 
 #include "criteria/library/ConstraintFactory.hpp"
 #include "criteria/library/ConstraintValidation.hpp"
-#include "utilities/Exception.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
+#include "utilities/Exception.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

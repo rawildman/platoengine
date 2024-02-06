@@ -4,7 +4,6 @@
 
 namespace plato::functional::utilities::unittest
 {
-
 namespace
 {
 struct Input

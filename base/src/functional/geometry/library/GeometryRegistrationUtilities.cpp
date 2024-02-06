@@ -2,7 +2,6 @@
 
 namespace plato::functional::geometry::library::detail
 {
-
 void emplace_back_if_has_value(std::vector<library::GeometryInput>& aGeometryInput,
                                std::optional<library::GeometryInput>&& aOptionalGeometry)
 {

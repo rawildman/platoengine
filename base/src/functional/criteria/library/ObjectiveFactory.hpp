@@ -1,11 +1,11 @@
 #ifndef PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEFACTORY
 #define PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEFACTORY
 
-#include "linear_algebra/DynamicVector.hpp"
 #include "core/Function.hpp"
-#include "input_parser/InputBlocks.hpp"
 #include "core/ParallelAggregate.hpp"
 #include "core/ValidatedInputTypeWrapper.hpp"
+#include "input_parser/InputBlocks.hpp"
+#include "linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::core
 {

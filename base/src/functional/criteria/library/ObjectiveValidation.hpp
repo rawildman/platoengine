@@ -1,12 +1,11 @@
 #ifndef PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEVALIDATION
 #define PLATO_FUNCTIONAL_CRITERION_LIBRARY_OBJECTIVEVALIDATION
 
-#include "input_parser/InputBlocks.hpp"
 #include "core/ValidationRegistration.hpp"
+#include "input_parser/InputBlocks.hpp"
 
 namespace plato::functional::criteria::library
 {
-
 namespace detail
 {
 [[nodiscard]] std::optional<std::string> validate_aggregation_weight(const input_parser::objective& aInput);

@@ -27,8 +27,7 @@ void ROLConstraintFunction::applyJacobian(ROL::Vector<double>& aJacobianTimesDir
                                           const ROL::Vector<double>& aControl,
                                           double& /*aTolerance*/)
 {
-    const double tJacobianTimesDirection = mFunction.df(to_dynamic_vector(aControl))
-                                               .dot(to_dynamic_vector(aDirection));
+    const double tJacobianTimesDirection = mFunction.df(to_dynamic_vector(aControl)).dot(to_dynamic_vector(aDirection));
     assign_vector(aJacobianTimesDirection, {tJacobianTimesDirection});
 }
 

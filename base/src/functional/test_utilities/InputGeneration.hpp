@@ -9,7 +9,6 @@
 
 namespace plato::functional::test_utilities
 {
-
 void create_input_file(const std::filesystem::path aTestFileName);
 
 [[nodiscard]] input_parser::ParsedInput create_valid_example_input();

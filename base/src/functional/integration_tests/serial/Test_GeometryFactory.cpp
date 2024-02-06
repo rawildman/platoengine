@@ -2,8 +2,8 @@
 
 #include "geometry/library/GeometryFactory.hpp"
 #include "geometry/library/GeometryRegistrationUtilities.hpp"
-#include "test_utilities/InputGeneration.hpp"
 #include "main/library/ValidatedInput.hpp"
+#include "test_utilities/InputGeneration.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

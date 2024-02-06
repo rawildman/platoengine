@@ -1,14 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "filter/library/FilterValidation.hpp"
+#include "core/ValidationRegistration.hpp"
 #include "filter/extension/HelmholtzFilter.hpp"
 #include "filter/extension/IdentityFilter.hpp"
+#include "filter/library/FilterValidation.hpp"
 #include "test_utilities/InputGeneration.hpp"
-#include "core/ValidationRegistration.hpp"
 
 namespace plato::functional::filter::library::unittest
 {
-
 TEST(FilterValidation, TypeExists)
 {
     auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();

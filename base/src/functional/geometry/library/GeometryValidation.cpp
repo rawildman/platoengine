@@ -1,7 +1,7 @@
 #include "geometry/library/GeometryValidation.hpp"
 
-#include "geometry/library/GeometryRegistrationUtilities.hpp"
 #include "core/ValidationRegistration.hpp"
+#include "geometry/library/GeometryRegistrationUtilities.hpp"
 
 namespace plato::functional::geometry::library
 {
@@ -32,8 +32,9 @@ std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInp
     for (const library::GeometryInput& iBlockEntry : tGeometryBlocks)
     {
         aCurrentMessageList = std::visit(
-            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string>
-            { return core::validate(aGeometryInput, std::move(tList)); },
+            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string> {
+                return core::validate(aGeometryInput, std::move(tList));
+            },
             iBlockEntry);
     }
 
