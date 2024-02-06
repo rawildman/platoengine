@@ -1,3 +1,6 @@
+#ifndef PLATO_FUNCTIONAL_CORE_VALIDATIONUTILITIES
+#define PLATO_FUNCTIONAL_CORE_VALIDATIONUTILITIES
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -69,3 +72,5 @@ bool is_active(const Parameter& aParameter)
 }
 
 }  // namespace plato::functional::core
+
+#endif

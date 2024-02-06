@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_FUNCTION
-#define PLATO_FUNCTIONAL_FUNCTION
+#ifndef PLATO_FUNCTIONAL_CORE_FUNCTION
+#define PLATO_FUNCTIONAL_CORE_FUNCTION
 
 #include <functional>
 #include <tuple>

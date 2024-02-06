@@ -1,5 +1,5 @@
-#ifndef PLATO_MESH_PROXY
-#define PLATO_MESH_PROXY
+#ifndef PLATO_FUNCTIONAL_CORE_MESHPROXY
+#define PLATO_FUNCTIONAL_CORE_MESHPROXY
 
 #include <filesystem>
 #include <string_view>
