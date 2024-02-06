@@ -34,10 +34,12 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput)
 
     const auto& tRawInput = aValidatedInput.rawInput();
     const std::string tAppName = Plato::kCodeOptionsTable.toString(tRawInput.app.value()).value();
-    if (const auto tIter = core::detail::registered_factory_functions<CriterionFunction, CriterionInput>().find(tAppName);
-        tIter != core::detail::registered_factory_functions<CriterionFunction, CriterionInput>().end())
+    const std::optional<CriterionFunction> tCriterion =
+        core::create_object_from_factory<CriterionFunction, CriterionInput>(tAppName,
+                                                                            to_criterion_input(aValidatedInput));
+    if (tCriterion)
     {
-        return tIter->second(to_criterion_input(aValidatedInput));
+        return std::move(tCriterion).value();
     }
     else
     {

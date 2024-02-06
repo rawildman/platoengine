@@ -37,6 +37,12 @@ struct FactoryRegistration
     FactoryRegistration(std::string aName, FactoryFunction<FactoryReturn, FactoryInput> aFunction);
 };
 
+/// @brief Constructs the object registered with @a aFunctionName, using @a aInput.
+/// @return If the function is not registered, returns `std::nullopt`.
+template <typename FactoryReturn, typename FactoryInput, typename Input>
+[[nodiscard]] std::optional<FactoryReturn> create_object_from_factory(const std::string_view aFunctionName,
+                                                                      Input&& aInput);
+
 /// @brief Checks if the function labeled with name @a aFunctionName is registered with the
 ///  factory associated with template types @a FactoryReturn and @a FactoryInput.
 template <typename FactoryReturn, typename FactoryInput>
@@ -61,6 +67,22 @@ FactoryRegistration<FactoryReturn, FactoryInput>::FactoryRegistration(
 {
     detail::registered_factory_functions<FactoryReturn, FactoryInput>().try_emplace(std::move(aName),
                                                                                     std::move(aFunction));
+}
+
+template <typename FactoryReturn, typename FactoryInput, typename Input>
+[[nodiscard]] std::optional<FactoryReturn> create_object_from_factory(const std::string_view aFunctionName,
+                                                                      Input&& aInput)
+{
+    if (const auto tIter =
+            detail::registered_factory_functions<FactoryReturn, FactoryInput>().find(std::string{aFunctionName});
+        tIter != core::detail::registered_factory_functions<FactoryReturn, FactoryInput>().end())
+    {
+        return tIter->second(std::forward<Input>(aInput));
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }
 
 template <typename FactoryReturn, typename FactoryInput>

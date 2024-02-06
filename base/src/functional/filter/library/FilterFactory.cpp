@@ -10,11 +10,13 @@ namespace plato::functional::filter::library
 {
 FilterFunction make_filter_function(const Plato::density_topology& aInput)
 {
-    if (const auto tIter = core::detail::registered_factory_functions<FilterFunction, FilterInput>().find(
-            Plato::kFilterTypesTable.toString(aInput.filter_type.value()).value());
-        tIter != core::detail::registered_factory_functions<FilterFunction, FilterInput>().end())
+    const std::string tFilterName = Plato::kFilterTypesTable.toString(aInput.filter_type.value()).value();
+    const std::optional<FilterFunction> tFilter =
+        core::create_object_from_factory<FilterFunction, FilterInput>(tFilterName, aInput);
+
+    if (tFilter)
     {
-        return tIter->second(aInput);
+        return std::move(tFilter).value();
     }
     else
     {

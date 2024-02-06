@@ -11,11 +11,13 @@ namespace plato::functional::geometry::library
 {
 FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
-    if (const auto tIter = core::detail::registered_factory_functions<FactoryTypes, ValidatedGeometryInput>().find(
-            detail::block_name(aGeometryInput));
-        tIter != core::detail::registered_factory_functions<FactoryTypes, ValidatedGeometryInput>().end())
+    const std::optional<FactoryTypes> tGeometry =
+        core::create_object_from_factory<FactoryTypes, ValidatedGeometryInput>(detail::block_name(aGeometryInput),
+                                                                               aGeometryInput);
+
+    if (tGeometry)
     {
-        return tIter->second(aGeometryInput);
+        return std::move(tGeometry).value();
     }
     else
     {
