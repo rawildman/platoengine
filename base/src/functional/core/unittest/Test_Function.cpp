@@ -30,7 +30,7 @@ TEST(PlatoFunctional, MakeFunction)
 
 TEST(PlatoFunctional, TwoD)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
     const auto tF = make_function(pft::TwoDVectorFunction{}, pft::TwoDVectorFunctionJacobian{});
 
     {

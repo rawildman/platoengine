@@ -23,7 +23,7 @@ TEST(ParallelAggregateDynamicVector, MPISize)
 
 TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that

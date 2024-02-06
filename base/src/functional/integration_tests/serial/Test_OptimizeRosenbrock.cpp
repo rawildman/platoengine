@@ -36,7 +36,7 @@ constexpr bool tPrintFlag = true;
 
 TEST(Optimize, Rosenbrock)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{-1.2, 1.0};
@@ -52,7 +52,7 @@ TEST(Optimize, Rosenbrock)
 
 TEST(Optimize, RosenbrockPenaltyComposition)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{1.5, 0.5};

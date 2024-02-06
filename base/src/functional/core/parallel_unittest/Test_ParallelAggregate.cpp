@@ -22,7 +22,7 @@ TEST(ParallelAggregate, MPISize)
 
 TEST(ParallelAggregate, EvaluateSame)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
@@ -46,7 +46,7 @@ TEST(ParallelAggregate, EvaluateSame)
 
 TEST(ParallelAggregate, EvaluateDifferent)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     const auto tCommunicator = boost::mpi::communicator{};
     constexpr double tA = 2.0;

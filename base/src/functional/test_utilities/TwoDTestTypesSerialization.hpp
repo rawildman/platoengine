@@ -5,13 +5,13 @@
 
 #include "TwoDTestTypes.hpp"
 
-namespace Plato::Functional::Test
+namespace plato::functional::test_utilities
 {
 template <typename Archive>
 void serialize(Archive& aArchive, TwoDVector& aVector, const unsigned int /*version*/)
 {
-    aArchive & aVector.mData;
+    aArchive& aVector.mData;
 }
-}
+}  // namespace plato::functional::test_utilities
 
 #endif

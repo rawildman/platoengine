@@ -9,7 +9,9 @@ namespace plato::functional::core::unittest
 {
 TEST(Rosenbrock, Rosenbrock)
 {
-    const auto tRosenbrock = Plato::Functional::Test::Rosenbrock{1.0, 100.0};
+    namespace pft = plato::functional::test_utilities;
+
+    const auto tRosenbrock = pft::Rosenbrock{1.0, 100.0};
     EXPECT_EQ(tRosenbrock.f(1.0, 1.0), 0.0);
     EXPECT_EQ(tRosenbrock.df(1.0, 1.0)(0), 0.0);
     EXPECT_EQ(tRosenbrock.df(1.0, 1.0)(1), 0.0);
@@ -17,7 +19,7 @@ TEST(Rosenbrock, Rosenbrock)
 
 TEST(Rosenbrock, MakeRosenbrock)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     constexpr double tA = 2.0;
     constexpr double tB = 50.0;
@@ -38,7 +40,7 @@ TEST(Rosenbrock, MakeRosenbrock)
 
 TEST(Rosenbrock, RosenbrockAndPenalty)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     const auto tRosenbrock = pft::Rosenbrock{1.0, 100.0};
     const auto tPenalty = pft::Penalty{0.5 - 3, 3.0};

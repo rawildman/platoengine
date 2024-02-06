@@ -5,7 +5,7 @@
 
 #include "TwoDTestTypes.hpp"
 
-namespace Plato::Functional::Test
+namespace plato::functional::test_utilities
 {
 class Rosenbrock
 {
@@ -30,6 +30,6 @@ class Rosenbrock
     double mB = 100.0;
 };
 
-}  // namespace Plato::Functional::Test
+}  // namespace plato::functional::test_utilities
 
 #endif

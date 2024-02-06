@@ -9,7 +9,7 @@ namespace plato::functional::integration_tests::serial
 {
 TEST(PenaltyFunction, ValueAndJacobian)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
     namespace pfitu = plato::functional::integration_tests::utilities;
 
     constexpr double tXMin = 0.5e-2;
@@ -39,7 +39,7 @@ TEST(PenaltyFunction, ValueAndJacobian)
 
 TEST(PenaltyFunction, Multiplication)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     const auto tX = linear_algebra::DynamicVector{1.0, 2.0};
     const auto tA = utilities::DynamicVectorJacobian{pft::makeTwoDMatrix(1.0, 2.0, 3.0, 4.0)};
@@ -50,7 +50,7 @@ TEST(PenaltyFunction, Multiplication)
 
 TEST(PenaltyFunction, Composition)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
     namespace pfitu = plato::functional::integration_tests::utilities;
 
     const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});

@@ -7,11 +7,11 @@ namespace plato::functional::core::unittest
 {
 TEST(Penalty, Penalty)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tExponent = 2.0;
-    const auto tPenalty = Plato::Functional::Test::Penalty{tXMin, tExponent};
+    const auto tPenalty = pft::Penalty{tXMin, tExponent};
 
     // Function and derivative at 1 and 0
     const pft::TwoDVector tFx = tPenalty.f(1.0, 0.0);
@@ -27,7 +27,7 @@ TEST(Penalty, Penalty)
 
 TEST(Penalty, MakePenalty)
 {
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tExponent = 2.0;

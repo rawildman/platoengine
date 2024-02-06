@@ -59,7 +59,7 @@ TEST(Composer, TwoDFunctions)
 {
     // Tests composition of a vector function and scalar function:
     // f(G(tX)), with X in R^2, G: R^2 -> R^2, f: R^2 -> R
-    namespace pft = Plato::Functional::Test;
+    namespace pft = plato::functional::test_utilities;
 
     const auto tF = make_function(pft::TwoDScalarFunction{}, pft::TwoDScalarFunctionGradient{});
     const auto tG = make_function(pft::TwoDVectorFunction{}, pft::TwoDVectorFunctionJacobian{});
