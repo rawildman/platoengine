@@ -12,7 +12,7 @@
 #include "plato/main/library/ValidatedInput.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 namespace
 {
@@ -34,7 +34,7 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
     : mProblem(make_plato_problem(parse_and_validate_from_file(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
-      mROLSolver(plato::functional::optimizer::make_rol_solver(mProblem.mROLOptions, mROLProblem))
+      mROLSolver(plato::optimizer::make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
 }
 
@@ -104,4 +104,4 @@ void OptimizationProblem::outputResult() const
 
 int OptimizationProblem::dimension() const { return mProblem.mGeometry.mInitialGuess.size(); }
 
-}  // namespace plato::functional::main::library
+}  // namespace plato::main::library

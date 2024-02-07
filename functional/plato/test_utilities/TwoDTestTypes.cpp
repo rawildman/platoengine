@@ -1,6 +1,6 @@
 #include "plato/test_utilities/TwoDTestTypes.hpp"
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 double TwoDVector::operator()(const unsigned int index) const { return mData[index]; }
 
@@ -39,4 +39,4 @@ std::ostream& operator<<(std::ostream& stream, const TwoDMatrix& x)
     return stream;
 }
 
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities

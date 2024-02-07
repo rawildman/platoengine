@@ -2,7 +2,7 @@
 
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::functional::rol_integration::unittest
+namespace plato::rol_integration::unittest
 {
 TEST(ROLHelpers, ToDynamicVector)
 {
@@ -34,4 +34,4 @@ TEST(ROLHelpers, AssignVector)
     assign_vector(tROLStdVector, tVector);
     EXPECT_EQ(*tROLStdVector.getVector(), tVector);
 }
-}  // namespace plato::functional::rol_integration::unittest
+}  // namespace plato::rol_integration::unittest

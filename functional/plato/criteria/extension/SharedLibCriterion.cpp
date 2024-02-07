@@ -5,18 +5,18 @@
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/SharedLibraryUtilities.hpp"
 
-namespace plato::functional::criteria::extension
+namespace plato::criteria::extension
 {
 namespace
 {
-SharedLibCriterion make_shared_lib_criterion(const plato::functional::criteria::library::CriterionInput& aInput)
+SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput)
 {
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
 }
 
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
     input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
-    [](const plato::functional::criteria::library::CriterionInput& aInput)
+    [](const plato::criteria::library::CriterionInput& aInput)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
 }  // namespace
 
@@ -27,8 +27,8 @@ SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPa
     using CreateCriterionFunction =
         std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
 
-    void* const tSharedLibInterface = plato::functional::utilities::load_shared_library(aSharedLibPath);
-    const auto tCreateCriterionFunction = plato::functional::utilities::load_function<CreateCriterionFunction>(
+    void* const tSharedLibInterface = plato::utilities::load_shared_library(aSharedLibPath);
+    const auto tCreateCriterionFunction = plato::utilities::load_function<CreateCriterionFunction>(
         tSharedLibInterface, library::kCreateCriterionFunctionName, aSharedLibPath);
     mCriterionFunction = tCreateCriterionFunction(aFileNames);
 }
@@ -49,4 +49,4 @@ auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
         [aSharedLibCriterion](const core::MeshProxy& mesh) { return aSharedLibCriterion.df(mesh); });
 }
 
-}  // namespace plato::functional::criteria::extension
+}  // namespace plato::criteria::extension

@@ -5,7 +5,7 @@
 #include "plato/core/MeshProxy.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::criteria::extension
+namespace plato::criteria::extension
 {
 /// @brief Computes the sum of all nodal coordinates. The main purpose of this
 ///  class is for implementing a geometry sensitivity check.
@@ -19,6 +19,6 @@ struct NodalSumObjective
 [[nodiscard]] auto make_nodal_sum_function()
     -> core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
-}  // namespace plato::functional::criteria::extension
+}  // namespace plato::criteria::extension
 
 #endif

@@ -4,7 +4,7 @@
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 namespace detail
 {
@@ -15,6 +15,6 @@ namespace detail
 [[nodiscard]] std::vector<std::string> validate_constraints(const std::vector<input_parser::constraint>& aInput,
                                                             std::vector<std::string>&& aCurrentMessageList);
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
 #endif

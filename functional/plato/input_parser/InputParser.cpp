@@ -8,7 +8,7 @@
 
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 ParsedInput parse_input(const std::string_view aInput)
 {
@@ -31,4 +31,4 @@ ParsedInput parse_input_from_file(const std::filesystem::path& aFileName)
     return parse_input(tInputFileString);
 }
 
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser

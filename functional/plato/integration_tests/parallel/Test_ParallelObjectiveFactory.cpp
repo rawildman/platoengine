@@ -5,7 +5,7 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::integration_tests::parallel
+namespace plato::integration_tests::parallel
 {
 namespace
 {
@@ -13,7 +13,7 @@ constexpr auto kNumRanks = int{4};
 
 main::library::ValidatedInput create_one_objective_test_input()
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
@@ -40,6 +40,6 @@ TEST(ObjectiveFactory, MPISize)
 TEST(ObjectiveFactory, InvalidParallelAggregate)
 {
     EXPECT_THROW(const main::library::ValidatedInput tData = create_one_objective_test_input(),
-                 plato::functional::utilities::Exception);
+                 plato::utilities::Exception);
 }
-}  // namespace plato::functional::integration_tests::parallel
+}  // namespace plato::integration_tests::parallel

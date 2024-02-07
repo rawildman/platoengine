@@ -6,13 +6,13 @@
 
 // clang-format off
 PLATO_INPUT_BLOCK_STRUCT(
-    (plato)(functional)(input_parser), TestFileTypes,
-    (plato::functional::input_parser::FileName, file_name)
-    (plato::functional::input_parser::FileList, file_list)
+    (plato)(input_parser), TestFileTypes,
+    (plato::input_parser::FileName, file_name)
+    (plato::input_parser::FileList, file_list)
 )
 // clang-format on
 
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 TEST(ParseFileTypes, FileName)
 {
@@ -27,4 +27,4 @@ TEST(ParseFileTypes, ParseFileList)
     tTestBlock.file_list = FileList{{"storm", "cyclops"}};
     test_existence_and_equality(tTestBlock.file_list, std::vector<std::string>{"storm", "cyclops"});
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

@@ -3,12 +3,12 @@
 
 #include <utility>
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 class ValidatedInput;
 }
 
-namespace plato::functional::core
+namespace plato::core
 {
 template <typename InputType>
 class ValidatedInputTypeWrapper
@@ -19,11 +19,11 @@ class ValidatedInputTypeWrapper
     const InputType& rawInput() const { return mRawInput; }
 
    private:
-    friend class plato::functional::main::library::ValidatedInput;
+    friend class plato::main::library::ValidatedInput;
     ValidatedInputTypeWrapper(InputType aRawInput) : mRawInput(std::move(aRawInput)) {}
     InputType mRawInput;
 };
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

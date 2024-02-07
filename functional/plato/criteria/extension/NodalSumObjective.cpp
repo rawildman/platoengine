@@ -7,7 +7,7 @@
 #include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::criteria::extension
+namespace plato::criteria::extension
 {
 namespace
 {
@@ -18,15 +18,15 @@ namespace
 
 double NodalSumObjective::f(const core::MeshProxy& aMeshProxy) const
 {
-    auto tBulk = plato::functional::utilities::read_mesh_bulk_data(aMeshProxy.mFileName.string());
-    const std::vector<double> tCoordinates = plato::functional::utilities::nodal_coordinates(tBulk);
+    auto tBulk = plato::utilities::read_mesh_bulk_data(aMeshProxy.mFileName.string());
+    const std::vector<double> tCoordinates = plato::utilities::nodal_coordinates(tBulk);
     return std::accumulate(tCoordinates.begin(), tCoordinates.end(), 0.0);
 }
 
 linear_algebra::DynamicVector<double> NodalSumObjective::df(const core::MeshProxy& aMeshProxy) const
 {
-    auto tBulk = plato::functional::utilities::read_mesh_bulk_data(aMeshProxy.mFileName.string());
-    std::vector<double> tCoordinates = plato::functional::utilities::nodal_coordinates(tBulk);
+    auto tBulk = plato::utilities::read_mesh_bulk_data(aMeshProxy.mFileName.string());
+    std::vector<double> tCoordinates = plato::utilities::nodal_coordinates(tBulk);
     std::fill(tCoordinates.begin(), tCoordinates.end(), 1.0);
     return linear_algebra::DynamicVector<double>(std::move(tCoordinates));
 }
@@ -36,4 +36,4 @@ auto make_nodal_sum_function() -> core::Function<double, linear_algebra::Dynamic
     return core::make_function([](const core::MeshProxy& mesh) { return NodalSumObjective{}.f(mesh); },
                                [](const core::MeshProxy& mesh) { return NodalSumObjective{}.df(mesh); });
 }
-}  // namespace plato::functional::criteria::extension
+}  // namespace plato::criteria::extension

@@ -3,7 +3,7 @@
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(ValidateUtilities, ActiveConstraint)
 {
@@ -44,7 +44,7 @@ TEST(ValidateUtilities, ValidateParameterExistsDoesExist)
 
 TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     input_parser::objective tObjectiveInput;
     EXPECT_TRUE(error_message_for_parameter_out_of_bounds("Objective: ", tObjectiveInput.aggregation_weight,
                                                           "aggregation_weight", pfu::unbounded<double>())
@@ -53,7 +53,7 @@ TEST(ValidateUtilities, ValidateParameterWhenParameterDoesNotExistWithinBounds)
 
 TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     input_parser::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
@@ -66,7 +66,7 @@ TEST(ValidateUtilities, ValidateParameterExistsWithinBounds)
 
 TEST(ValidateUtilities, ValidateParameterExistsOutOfBounds)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     input_parser::objective tObjectiveInput;
     constexpr double tLowerBound = 0;
 
@@ -86,4 +86,4 @@ TEST(ValidateUtilities, AllMessages)
     const auto tExpected = tMessage1 + "\n" + tMessage2 + "\n";
     EXPECT_EQ(tExpected, tAllMessages);
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

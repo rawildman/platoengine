@@ -5,24 +5,24 @@
 
 // clang-format off
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
-    (plato)(functional)(input_parser), TestNamedBlock, 
+    (plato)(input_parser), TestNamedBlock, 
     (int, field1)
     (double, field2)
 )
 
 PLATO_INPUT_BLOCK_STRUCT(
-    (plato)(functional)(input_parser), TestUnnamedBlock, 
+    (plato)(input_parser), TestUnnamedBlock, 
     (bool, field1)
     (int, field2)
     (double, field3)
 )
 
 PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
-    (plato)(functional)(input_parser), TestGeometryBlock, 
+    (plato)(input_parser), TestGeometryBlock, 
     (bool, field1)
 )
 // clang-format on
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 TEST(InputBlockStruct, Named)
 {
@@ -60,4 +60,4 @@ TEST(InputBlockStruct, Geometry)
     constexpr bool tIsNotGeometry = kIsGeometryInput<int>;
     EXPECT_FALSE(tIsNotGeometry);
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

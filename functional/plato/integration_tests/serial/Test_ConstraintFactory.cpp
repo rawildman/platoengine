@@ -6,11 +6,11 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(ConstraintFactory, ValidConstraint)
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     const std::string tConstraintInput = pftu::create_valid_example_constraint_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
@@ -24,4 +24,4 @@ TEST(ConstraintFactory, ValidConstraint)
     EXPECT_TRUE(tConstraint.mLinear);
     EXPECT_EQ(tConstraint.mConstraintTarget, 13.0);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

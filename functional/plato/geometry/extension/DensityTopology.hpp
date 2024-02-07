@@ -17,7 +17,7 @@ namespace input_parser
 struct density_topology;
 }
 
-namespace plato::functional::geometry::extension
+namespace plato::geometry::extension
 {
 /// @brief Density-based topology representation of a geometry.
 ///
@@ -47,7 +47,7 @@ class DensityTopology
    private:
     std::filesystem::path mFileName;
     unsigned int mNumDesignParameters = 0;
-    plato::functional::filter::library::FilterFunction mFilter;
+    plato::filter::library::FilterFunction mFilter;
 };
 
 /// @brief Generate a geometry function, that can be composed with an objective function.
@@ -59,6 +59,6 @@ namespace detail
 [[nodiscard]] std::optional<std::string> validate_output_name(const input_parser::density_topology& aInput);
 }  // namespace detail
 
-}  // namespace plato::functional::geometry::extension
+}  // namespace plato::geometry::extension
 
 #endif

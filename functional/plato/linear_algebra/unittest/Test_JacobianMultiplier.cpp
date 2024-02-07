@@ -2,7 +2,7 @@
 
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace plato::functional::linear_algebra::unittest
+namespace plato::linear_algebra::unittest
 {
 TEST(JacobianMultiplier, Identity)
 {
@@ -15,4 +15,4 @@ TEST(JacobianMultiplier, Identity)
     EXPECT_EQ(tRes.stdVector(), tVec.stdVector());
 }
 
-}  // namespace plato::functional::linear_algebra::unittest
+}  // namespace plato::linear_algebra::unittest

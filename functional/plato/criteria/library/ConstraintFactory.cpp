@@ -7,7 +7,7 @@
 #include "plato/criteria/library/CriterionFactory.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 std::vector<Constraint<const core::MeshProxy&>> make_constraints(const ValidatedConstraints& aInput)
 {
@@ -33,4 +33,4 @@ Constraint<const core::MeshProxy&> make_constraint(
 }
 
 }  // namespace detail
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library

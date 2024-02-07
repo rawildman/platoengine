@@ -5,11 +5,11 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::main::library::unittest
+namespace plato::main::library::unittest
 {
 TEST(GeometryFactory, ValidBrickShapeGeometry)
 {
-    namespace pf = plato::functional;
+    namespace pf = plato;
     input_parser::ParsedInput tInput;
     tInput.mBrickShapeGeometry = pf::test_utilities::create_valid_brick_shape_geometry();
     tInput.mObjectives = {pf::test_utilities::create_valid_example_objective()};
@@ -21,7 +21,7 @@ TEST(GeometryFactory, ValidBrickShapeGeometry)
 
 TEST(GeometryFactory, ValidTopology)
 {
-    namespace pf = plato::functional;
+    namespace pf = plato;
 
     input_parser::ParsedInput tInput;
     tInput.mDensityTopology = pf::test_utilities::create_valid_density_topology_geometry();
@@ -37,4 +37,4 @@ TEST(GeometryFactory, ValidTopology)
 
     std::filesystem::remove(tMeshFileName);
 }
-}  // namespace plato::functional::main::library::unittest
+}  // namespace plato::main::library::unittest

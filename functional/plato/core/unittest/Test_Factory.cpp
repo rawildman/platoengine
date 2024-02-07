@@ -4,7 +4,7 @@
 
 #include "plato/core/FactoryRegistration.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 namespace
 {
@@ -58,4 +58,4 @@ TEST(FactoryRegistration, CreateObjectB)
     EXPECT_EQ(tTestObjectB->mName, tName);
 }
 
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

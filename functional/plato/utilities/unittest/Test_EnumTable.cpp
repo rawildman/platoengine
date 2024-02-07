@@ -2,7 +2,7 @@
 
 #include "plato/utilities/EnumTable.hpp"
 
-namespace plato::functional::utilities::unittest
+namespace plato::utilities::unittest
 {
 TEST(EnumTable, Conversion)
 {
@@ -47,4 +47,4 @@ TEST(EnumTable, Conversion)
 
     EXPECT_FALSE(kTestTable.toString(TestEnum::kArbitraryEnumWithNoGhostlyRelation));
 }
-}  // namespace plato::functional::utilities::unittest
+}  // namespace plato::utilities::unittest

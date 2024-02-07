@@ -8,7 +8,7 @@
 #include "plato/linear_algebra/DynamicVectorSerialization.hpp"
 #include "plato/utilities/RankSplitVector.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 namespace detail
 {
@@ -35,9 +35,9 @@ auto rank_split_vector(const std::vector<core::ValidatedInputTypeWrapper<input_p
                        const boost::mpi::communicator& aComm)
     -> std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>
 {
-    return plato::functional::utilities::rank_split_vector(aInputs,
-                                                           plato::functional::utilities::RankNamedType{aComm.rank()},
-                                                           plato::functional::utilities::SizeNamedType{aComm.size()});
+    return plato::utilities::rank_split_vector(aInputs,
+                                                           plato::utilities::RankNamedType{aComm.rank()},
+                                                           plato::utilities::SizeNamedType{aComm.size()});
 }
 }  // namespace
 
@@ -60,4 +60,4 @@ ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& a
     return make_aggregate_function(detail::make_parallel_aggregate(aInput));
 }
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library

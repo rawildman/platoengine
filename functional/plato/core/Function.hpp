@@ -5,7 +5,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace plato::functional::core
+namespace plato::core
 {
 /// @brief A helper class for evaluating a function and its derivative.
 /// @tparam R The return type of the function.
@@ -91,6 +91,6 @@ dR Function<R, dR, Arg>::df(const Arg& arg) const
     return mDF(arg);
 }
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

@@ -8,12 +8,12 @@
 #include "plato/input_parser/FileList.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 struct CriterionInput
 {
@@ -27,6 +27,6 @@ using CriterionRegistration = core::FactoryRegistration<CriterionFunction, Crite
 
 bool is_criterion_function_registered(const std::string_view aFunctionName);
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
 #endif

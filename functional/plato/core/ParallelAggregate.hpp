@@ -6,7 +6,7 @@
 #include "plato/core/Aggregate.hpp"
 #include "plato/core/Function.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 /// @brief Implements a weighted sum of Function objects computed via MPI parallelization.
 ///
@@ -76,6 +76,6 @@ std::size_t ParallelAggregate<R, dR, Arg>::size() const
     return mAggregateFunction.size();
 }
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

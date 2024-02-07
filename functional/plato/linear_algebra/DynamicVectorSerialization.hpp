@@ -5,7 +5,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 template <typename Archive, typename U>
 void serialize(Archive& aArchive, DynamicVector<U>& aVector, const unsigned int /*aVersion*/)
@@ -13,6 +13,6 @@ void serialize(Archive& aArchive, DynamicVector<U>& aVector, const unsigned int 
     aArchive& aVector.mVector;
 }
 
-}  // namespace plato::functional::linear_algebra
+}  // namespace plato::linear_algebra
 
 #endif

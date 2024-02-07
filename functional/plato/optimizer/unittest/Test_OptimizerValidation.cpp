@@ -7,11 +7,11 @@
 #include "plato/optimizer/OptimizerValidation.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::optimizer::unittest
+namespace plato::optimizer::unittest
 {
 TEST(OptimizerValidation, ValidateMaxIterations)
 {
-    namespace pfod = plato::functional::optimizer::detail;
+    namespace pfod = plato::optimizer::detail;
     input_parser::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_max_iterations(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
@@ -31,7 +31,7 @@ TEST(OptimizerValidation, ValidateMaxIterations)
 
 TEST(OptimizerValidation, ValidateStepTolerance)
 {
-    namespace pfod = plato::functional::optimizer::detail;
+    namespace pfod = plato::optimizer::detail;
     input_parser::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_step_tolerance(tOptimizationParameters).has_value());  // Empty
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
@@ -52,7 +52,7 @@ TEST(OptimizerValidation, ValidateStepTolerance)
 
 TEST(OptimizerValidation, ValidateGradientTolerance)
 {
-    namespace pfod = plato::functional::optimizer::detail;
+    namespace pfod = plato::optimizer::detail;
     input_parser::optimization_parameters tOptimizationParameters;
     EXPECT_TRUE(pfod::validate_gradient_tolerance(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
@@ -73,7 +73,7 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
 TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 {
     input_parser::optimization_parameters tOptimizationParameters =
-        plato::functional::test_utilities::create_valid_example_optimization_parameters();
+        plato::test_utilities::create_valid_example_optimization_parameters();
 
     std::vector<std::string> tMessages;
     tMessages = validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
@@ -83,7 +83,7 @@ TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 {
     input_parser::optimization_parameters tOptimizationParameters =
-        plato::functional::test_utilities::create_valid_example_optimization_parameters();
+        plato::test_utilities::create_valid_example_optimization_parameters();
     tOptimizationParameters.gradient_tolerance = -1;
     tOptimizationParameters.max_iterations = 0;
     tOptimizationParameters.step_tolerance = boost::none;
@@ -92,4 +92,4 @@ TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
     tMessages = core::validate(tOptimizationParameters, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 3u);
 }
-}  // namespace plato::functional::optimizer::unittest
+}  // namespace plato::optimizer::unittest

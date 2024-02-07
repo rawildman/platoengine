@@ -11,7 +11,7 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::geometry::library::detail
+namespace plato::geometry::library::detail
 {
 /// @brief A type trait specifying if a type @a T is an alternative of variant @a VariantT
 template <typename T, typename VariantT>
@@ -61,6 +61,6 @@ template <std::size_t... Is>
 /// @return The name of the geometry input held by the variant @a aInput
 [[nodiscard]] std::string block_name(const library::ValidatedGeometryInput& aInput);
 
-}  // namespace plato::functional::geometry::library::detail
+}  // namespace plato::geometry::library::detail
 
 #endif

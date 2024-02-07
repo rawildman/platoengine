@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 /// @brief Helper for parsing a single file with a path
 /// Use this type in the input structs for a file name
@@ -50,33 +50,33 @@ struct FileList
 
 std::ostream& operator<<(std::ostream& stream, const FileList& aFileList);
 std::ostream& operator<<(std::ostream& stream, const FileName& aFileName);
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
 namespace boost::spirit::traits
 {
 template <>
-struct create_parser<plato::functional::input_parser::FileList>
+struct create_parser<plato::input_parser::FileList>
 {
     typedef proto::result_of::deep_copy<BOOST_TYPEOF(
-        (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())] % ','))>::type type;
+        (qi::lexeme[+qi::char_(plato::input_parser::FileName::kValidChars.data())] % ','))>::type type;
 
     static type call()
     {
         return proto::deep_copy(
-            (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())] % ','));
+            (qi::lexeme[+qi::char_(plato::input_parser::FileName::kValidChars.data())] % ','));
     }
 };
 
 template <>
-struct create_parser<plato::functional::input_parser::FileName>
+struct create_parser<plato::input_parser::FileName>
 {
     typedef proto::result_of::deep_copy<BOOST_TYPEOF(
-        (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())]))>::type type;
+        (qi::lexeme[+qi::char_(plato::input_parser::FileName::kValidChars.data())]))>::type type;
 
     static type call()
     {
         return proto::deep_copy(
-            (qi::lexeme[+qi::char_(plato::functional::input_parser::FileName::kValidChars.data())]));
+            (qi::lexeme[+qi::char_(plato::input_parser::FileName::kValidChars.data())]));
     }
 };
 

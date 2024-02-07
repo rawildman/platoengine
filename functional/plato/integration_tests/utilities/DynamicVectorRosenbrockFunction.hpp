@@ -6,7 +6,7 @@
 #include "plato/test_utilities/Rosenbrock.hpp"
 #include "plato/test_utilities/TwoDTestTypes.hpp"
 
-namespace plato::functional::integration_tests::utilities
+namespace plato::integration_tests::utilities
 {
 [[nodiscard]] inline auto to_dynamic_vector(const test_utilities::TwoDVector& aX)
     -> linear_algebra::DynamicVector<double>
@@ -22,6 +22,6 @@ namespace plato::functional::integration_tests::utilities
                                { return to_dynamic_vector(rosenbrock.df(x[0], x[1])); });
 }
 
-}  // namespace plato::functional::integration_tests::utilities
+}  // namespace plato::integration_tests::utilities
 
 #endif

@@ -11,11 +11,11 @@
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::geometry::extension::unittest
+namespace plato::geometry::extension::unittest
 {
 TEST(Brick, CenterAndDims)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);
 
     constexpr std::string_view tFileName = "test.exo";
@@ -121,7 +121,7 @@ TEST(BrickSensitivities, JacobianEvaluator)
 
 TEST(Brick, ABrick)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     const std::string tFileName = "brick.exo";
 
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
@@ -146,7 +146,7 @@ TEST(Brick, ABrick)
 
 TEST(Brick, ConvertDesignParametersToROLStdVector)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
                                                /*.center_y = */ -2,
                                                /*.center_z = */ -3,
@@ -189,7 +189,7 @@ TEST(Brick, Jacobian)
 
 TEST(Brick, ToROLStdVector)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr BrickDesign tDesignParameters = {/*.center_x = */ 1,
                                                /*.center_y = */ -2,
                                                /*.center_z = */ -3,
@@ -205,4 +205,4 @@ TEST(Brick, ToROLStdVector)
     EXPECT_EQ(tDesignParameters.dimension_y, tAsDynamicVector.stdVector().at(4));
     EXPECT_EQ(tDesignParameters.dimension_z, tAsDynamicVector.stdVector().at(5));
 }
-}  // namespace plato::functional::geometry::extension::unittest
+}  // namespace plato::geometry::extension::unittest

@@ -6,7 +6,7 @@
 
 #include "plato/core/Function.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 /// @brief Generates a new Function that is the composition of @a f and @a g, i.e. \f$f(g(x))\f$
 template <typename fR, typename dFR, typename fArg, typename gR, typename dGR, typename gArg>
@@ -22,6 +22,6 @@ template <typename fR, typename dFR, typename fArg, typename gR, typename dGR, t
     return core::Function<fR, dfOfGR, gArg>{std::move(tFOfG), std::move(tDfOfG)};
 }
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

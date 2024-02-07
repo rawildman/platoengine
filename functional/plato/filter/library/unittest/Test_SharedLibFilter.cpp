@@ -6,7 +6,7 @@
 #include "plato/filter/library/FilterRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::filter::extension::unittest
+namespace plato::filter::extension::unittest
 {
 namespace
 {
@@ -23,4 +23,4 @@ TEST(SharedLibFilter, LoadAndValue)
     EXPECT_EQ(tFilter->filter(kMeshArgument).mNodalDensities, kRho);
 }
 
-}  // namespace plato::functional::filter::extension::unittest
+}  // namespace plato::filter::extension::unittest

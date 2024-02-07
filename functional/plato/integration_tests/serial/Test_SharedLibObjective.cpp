@@ -6,7 +6,7 @@
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 namespace
 {
@@ -17,7 +17,7 @@ constexpr std::string_view kLibPath = "libPlatoTestMassObjective.so";
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
     std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
 }
@@ -25,12 +25,12 @@ void generate_bad_library_and_do_nothing()
 
 TEST(SharedLibObjective, BadLibraryPath)
 {
-    EXPECT_THROW(generate_bad_library_and_do_nothing(), plato::functional::utilities::Exception);
+    EXPECT_THROW(generate_bad_library_and_do_nothing(), plato::utilities::Exception);
 }
 
 TEST(SharedLibObjective, CallValue)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
@@ -41,7 +41,7 @@ TEST(SharedLibObjective, CallValue)
 
 TEST(SharedLibObjective, CallGradient)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
@@ -54,7 +54,7 @@ TEST(SharedLibObjective, CallGradient)
 
 TEST(SharedLibObjective, ValueUsingFunction)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     const auto tFunction = criteria::extension::make_shared_lib_function(
         criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
 
@@ -63,4 +63,4 @@ TEST(SharedLibObjective, ValueUsingFunction)
     const double tMass = tFunction.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

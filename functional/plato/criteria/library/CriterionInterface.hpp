@@ -7,7 +7,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 static constexpr std::string_view kCreateCriterionFunctionName = "plato_create_criterion";
 
@@ -32,9 +32,9 @@ class CriterionInterface
     CriterionInterface& operator=(CriterionInterface&&) = delete;
 };
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
-namespace plato::functional
+namespace plato
 {
 extern "C" std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(
     const std::vector<std::string>& aFileNames);

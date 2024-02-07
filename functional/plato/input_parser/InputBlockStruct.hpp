@@ -9,7 +9,7 @@
 #include <boost/preprocessor/seq/variadic_seq_to_seq.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 /// @brief Provides the name of an input block parsed into @a InputStruct as a static `name` member.
 /// @note The actual implementation is via template specializations generated from the macros.
@@ -28,7 +28,7 @@ constexpr inline bool kIsNamedBlock = false;
 /// This is specialized to using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 template <typename T>
 constexpr inline bool kIsGeometryInput = false;
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
 // clang-format off
 #define OPTIONAL_TYPE(r, data, elem) boost::optional<BOOST_PP_TUPLE_ELEM(0, elem)>, BOOST_PP_TUPLE_ELEM(1, elem)
@@ -58,7 +58,7 @@ BOOST_FUSION_DEFINE_STRUCT(                                                     
     STRUCT_NAME,                                                                               \
     TYPES_AS_OPTIONAL(BOOST_PP_VARIADIC_SEQ_TO_SEQ(ATTRIBUTES))                                \
 )                                                                                              \
-namespace plato::functional::input_parser{                                                     \
+namespace plato::input_parser{                                                     \
 template<>                                                                                     \
 struct InputTypeName<STRUCT_NAME>                                                              \
 {   static constexpr const char* name = #STRUCT_NAME;                                          \
@@ -67,7 +67,7 @@ struct InputTypeName<STRUCT_NAME>                                               
 
 #define PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)              \
 PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
-namespace plato::functional::input_parser{                                                     \
+namespace plato::input_parser{                                                     \
 template<>                                                                                     \
 constexpr inline bool kIsGeometryInput<STRUCT_NAME> = true;                                    \
 }
@@ -94,7 +94,7 @@ BOOST_FUSION_DEFINE_STRUCT(                                                     
     STRUCT_NAME,                                                                      \
     TYPES_AS_OPTIONAL(ATTRIBUTES_WITH_NAME(BOOST_PP_VARIADIC_SEQ_TO_SEQ(ATTRIBUTES))) \
 )                                                                                     \
-namespace plato::functional::input_parser{                                            \
+namespace plato::input_parser{                                            \
 template<>                                                                            \
 struct InputTypeName<STRUCT_NAME>                                                     \
 {   static constexpr const char* name = #STRUCT_NAME;                                 \

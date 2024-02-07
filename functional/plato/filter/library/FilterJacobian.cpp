@@ -4,7 +4,7 @@
 
 #include "plato/filter/library/FilterInterface.hpp"
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVector<double>& aV,
                                                 const FilterJacobian& aJacobian)
@@ -12,4 +12,4 @@ linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVec
     assert(aJacobian.mFilter);
     return aJacobian.mFilter->jacobianTimesVector(aJacobian.mMeshProxy, aV);
 }
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library

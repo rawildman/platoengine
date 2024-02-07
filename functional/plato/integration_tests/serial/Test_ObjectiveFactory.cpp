@@ -5,13 +5,13 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 namespace
 {
 main::library::ValidatedInput create_two_objective_test_input()
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
@@ -57,7 +57,7 @@ TEST(ObjectiveFactory, ValidParallelAggregate)
 
 TEST(ObjectiveFactory, ValidAggregateOneObjective)
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     // Input for the actual test
     const std::string tObjectiveInput =
@@ -87,4 +87,4 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

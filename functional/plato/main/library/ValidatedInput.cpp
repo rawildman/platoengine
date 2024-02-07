@@ -11,16 +11,16 @@
 #include "plato/optimizer/OptimizerValidation.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, Key) : mInput{std::move(aInput)} {}
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
-    plato::functional::geometry::library::GeometryInput tGeometryInput =
-        plato::functional::geometry::library::first_geometry_input(mInput);
+    plato::geometry::library::GeometryInput tGeometryInput =
+        plato::geometry::library::first_geometry_input(mInput);
     using ValidatedGeometryVariant =
-        typename plato::functional::geometry::library::ValidatedGeometryInput::RawInputType;
+        typename plato::geometry::library::ValidatedGeometryInput::RawInputType;
     // Use visit with a return value in c++20
     std::optional<ValidatedGeometryVariant> tValidatedGeometry;
     std::visit([&tValidatedGeometry](auto&& tGeometry)
@@ -57,14 +57,14 @@ std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
 ValidatedInput make_validated_input(input_parser::ParsedInput aInput)
 {
     std::vector<std::string> tMessages;
-    tMessages = plato::functional::geometry::library::validate_geometry(aInput, std::move(tMessages));
-    tMessages = plato::functional::criteria::library::validate_objectives(aInput.mObjectives, std::move(tMessages));
-    tMessages = plato::functional::criteria::library::validate_constraints(aInput.mConstraints, std::move(tMessages));
-    tMessages = plato::functional::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters,
+    tMessages = plato::geometry::library::validate_geometry(aInput, std::move(tMessages));
+    tMessages = plato::criteria::library::validate_objectives(aInput.mObjectives, std::move(tMessages));
+    tMessages = plato::criteria::library::validate_constraints(aInput.mConstraints, std::move(tMessages));
+    tMessages = plato::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters,
                                                                                std::move(tMessages));
     if (!tMessages.empty())
     {
-        throw plato::functional::utilities::Exception(
+        throw plato::utilities::Exception(
             "Error: Could not validate input, the following errors were found: \n" + core::all_messages(tMessages));
     }
     return ValidatedInput{std::move(aInput), Key{}};
@@ -80,4 +80,4 @@ ValidatedInput parse_and_validate(const std::string_view aInput)
     return make_validated_input(input_parser::parse_input(aInput));
 }
 
-}  // namespace plato::functional::main::library
+}  // namespace plato::main::library

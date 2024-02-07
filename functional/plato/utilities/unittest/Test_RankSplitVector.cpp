@@ -2,7 +2,7 @@
 
 #include "plato/utilities/RankSplitVector.hpp"
 
-namespace plato::functional::utilities::unittest
+namespace plato::utilities::unittest
 {
 namespace
 {
@@ -102,4 +102,4 @@ TEST(RankSplitVector, MoreRanksThanElements)
         EXPECT_TRUE(tDistributedValues.empty());
     }
 }
-}  // namespace plato::functional::utilities::unittest
+}  // namespace plato::utilities::unittest

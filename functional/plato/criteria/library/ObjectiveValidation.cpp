@@ -4,7 +4,7 @@
 
 #include "plato/criteria/library/CriterionValidation.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 [[maybe_unused]] static auto kObjectiveValidationRegistration = core::ValidationRegistration<input_parser::objective>{
     [](const input_parser::objective& aInput) { return detail::validate_app(aInput); },
@@ -29,7 +29,7 @@ namespace detail
 {
 std::optional<std::string> validate_aggregation_weight(const input_parser::objective& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     return core::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.aggregation_weight,
                                                            "aggregation_weight",
                                                            pfu::lower_bounded(pfu::Exclusive{0.0}));
@@ -65,4 +65,4 @@ std::optional<std::string> validate_number_of_ranks_vs_objectives(const std::vec
 }
 
 }  // namespace detail
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library

@@ -8,12 +8,12 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 using ValidatedConstraints =
     core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
@@ -46,6 +46,6 @@ namespace detail
     const core::ValidatedInputTypeWrapper<input_parser::constraint>& aConstraintInput);
 
 }  // namespace detail
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
 #endif

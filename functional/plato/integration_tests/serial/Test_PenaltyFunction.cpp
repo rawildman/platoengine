@@ -5,12 +5,12 @@
 #include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
 #include "plato/test_utilities/Penalty.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(PenaltyFunction, ValueAndJacobian)
 {
-    namespace pft = plato::functional::test_utilities;
-    namespace pfitu = plato::functional::integration_tests::utilities;
+    namespace pft = plato::test_utilities;
+    namespace pfitu = plato::integration_tests::utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tPower = 2.0;
@@ -39,7 +39,7 @@ TEST(PenaltyFunction, ValueAndJacobian)
 
 TEST(PenaltyFunction, Multiplication)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tX = linear_algebra::DynamicVector{1.0, 2.0};
     const auto tA = utilities::DynamicVectorJacobian{pft::makeTwoDMatrix(1.0, 2.0, 3.0, 4.0)};
@@ -50,8 +50,8 @@ TEST(PenaltyFunction, Multiplication)
 
 TEST(PenaltyFunction, Composition)
 {
-    namespace pft = plato::functional::test_utilities;
-    namespace pfitu = plato::functional::integration_tests::utilities;
+    namespace pft = plato::test_utilities;
+    namespace pfitu = plato::integration_tests::utilities;
 
     const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});
     const auto tRosenbrock = pfitu::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
@@ -65,4 +65,4 @@ TEST(PenaltyFunction, Composition)
     EXPECT_EQ(tDCompositionOfX[0], 0.0);
     EXPECT_EQ(tDCompositionOfX[1], 0.0);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace plato::functional::integration_tests::test_mass_objective
+namespace plato::integration_tests::test_mass_objective
 {
 class MassObjective
 {
@@ -22,6 +22,6 @@ class MassObjective
     double mTarget = 0.0;
 };
 
-}  // namespace plato::functional::integration_tests::test_mass_objective
+}  // namespace plato::integration_tests::test_mass_objective
 
 #endif

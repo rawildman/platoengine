@@ -6,7 +6,7 @@
 
 #include "plato/test_utilities/TwoDTestTypesSerialization.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(Serialization, TwoDTestTypes)
 {
@@ -21,4 +21,4 @@ TEST(Serialization, TwoDTestTypes)
     tLoadArchive >> tLoadedVector;
     EXPECT_EQ(tLoadedVector, tStoredVector);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

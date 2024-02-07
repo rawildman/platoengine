@@ -5,7 +5,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/test_utilities/Penalty.hpp"
 
-namespace plato::functional::integration_tests::utilities
+namespace plato::integration_tests::utilities
 {
 struct DynamicVectorJacobian
 {
@@ -21,6 +21,6 @@ struct DynamicVectorJacobian
                       DynamicVectorJacobian,
                       const linear_algebra::DynamicVector<double>&>;
 
-}  // namespace plato::functional::integration_tests::utilities
+}  // namespace plato::integration_tests::utilities
 
 #endif

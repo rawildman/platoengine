@@ -7,7 +7,7 @@
 #include "plato/criteria/extension/NodalSumObjective.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 namespace
 {
@@ -24,40 +24,40 @@ namespace
 
 PlatoProblem make_plato_problem(const ValidatedInput& aData)
 {
-    return PlatoProblem{plato::functional::geometry::library::make_geometry_data(aData.geometry()),
-                        plato::functional::criteria::library::make_aggregate_objective_function(aData.objectives()),
-                        plato::functional::criteria::library::make_constraints(aData.constraints()),
-                        plato::functional::optimizer::rol_parameter_list(aData.optimizationParameters())};
+    return PlatoProblem{plato::geometry::library::make_geometry_data(aData.geometry()),
+                        plato::criteria::library::make_aggregate_objective_function(aData.objectives()),
+                        plato::criteria::library::make_constraints(aData.constraints()),
+                        plato::optimizer::rol_parameter_list(aData.optimizationParameters())};
 }
 
-std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_objective(
+std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_objective(
     const PlatoProblem& aProblem)
 {
-    return std::make_unique<plato::functional::rol_integration::ROLObjectiveFunction>(
+    return std::make_unique<plato::rol_integration::ROLObjectiveFunction>(
         compose(aProblem.mObjective, aProblem.mGeometry.mCompute));
 }
 
-std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> make_rol_constraints(
+std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>> make_rol_constraints(
     const PlatoProblem& aProblem)
 {
-    std::vector<std::unique_ptr<plato::functional::rol_integration::ROLConstraintFunction>> tROLConstraints;
+    std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>> tROLConstraints;
     std::transform(
         aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const plato::functional::criteria::library::Constraint<const core::MeshProxy&>& aConstraintData)
+        [&aProblem](const plato::criteria::library::Constraint<const core::MeshProxy&>& aConstraintData)
         {
-            plato::functional::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> tConstraint{
+            plato::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> tConstraint{
                 aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
                 aConstraintData.mConstraintTarget, aConstraintData.mLinear};
-            return std::make_unique<plato::functional::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
+            return std::make_unique<plato::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
         });
     return tROLConstraints;
 }
 
-std::unique_ptr<plato::functional::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
+std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
     const PlatoProblem& aProblem)
 {
-    auto tSimpleObjectiveFunction = plato::functional::criteria::extension::make_nodal_sum_function();
-    return std::make_unique<plato::functional::rol_integration::ROLObjectiveFunction>(
+    auto tSimpleObjectiveFunction = plato::criteria::extension::make_nodal_sum_function();
+    return std::make_unique<plato::rol_integration::ROLObjectiveFunction>(
         compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
 }
 
@@ -88,4 +88,4 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-}  // namespace plato::functional::main::library
+}  // namespace plato::main::library

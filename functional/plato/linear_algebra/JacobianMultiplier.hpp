@@ -3,7 +3,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 /// @brief An object representing the multiplication of a row vector and a Jacobian matrix.
 struct JacobianMultiplier
@@ -21,6 +21,6 @@ template <typename Arg>
     return aA.mJacobianTimesVectorFunction(aX);
 }
 
-}  // namespace plato::functional::linear_algebra
+}  // namespace plato::linear_algebra
 
 #endif

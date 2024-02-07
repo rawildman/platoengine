@@ -5,7 +5,7 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::geometry::library
+namespace plato::geometry::library
 {
 FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
@@ -22,4 +22,4 @@ FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
         throw utilities::Exception{"Unknown geometry"};
     }
 }
-}  // namespace plato::functional::geometry::library
+}  // namespace plato::geometry::library

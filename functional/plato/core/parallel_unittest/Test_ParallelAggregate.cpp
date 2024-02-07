@@ -7,7 +7,7 @@
 #include "plato/test_utilities/Rosenbrock.hpp"
 #include "plato/test_utilities/TwoDTestTypesSerialization.hpp"
 
-namespace plato::functional::core::parallel_unittest
+namespace plato::core::parallel_unittest
 {
 namespace
 {
@@ -22,7 +22,7 @@ TEST(ParallelAggregate, MPISize)
 
 TEST(ParallelAggregate, EvaluateSame)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
@@ -46,7 +46,7 @@ TEST(ParallelAggregate, EvaluateSame)
 
 TEST(ParallelAggregate, EvaluateDifferent)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tCommunicator = boost::mpi::communicator{};
     constexpr double tA = 2.0;
@@ -70,4 +70,4 @@ TEST(ParallelAggregate, EvaluateDifferent)
     const pft::TwoDVector tExpectedDF = tW * (tFNonDefault.df(tArg) + tFDefault.df(tArg));
     EXPECT_EQ(tAggregate.df(tArg), tExpectedDF);
 }
-}  // namespace plato::functional::core::parallel_unittest
+}  // namespace plato::core::parallel_unittest

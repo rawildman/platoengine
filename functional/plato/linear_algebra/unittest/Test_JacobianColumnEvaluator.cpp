@@ -3,7 +3,7 @@
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace plato::functional::linear_algebra::unittest
+namespace plato::linear_algebra::unittest
 {
 TEST(JacobianColumnEvaluator, MultiplicationOperatorOverload)
 {
@@ -33,4 +33,4 @@ TEST(JacobianColumnEvaluator, ToJacobianMultiplier)
     EXPECT_EQ(tResult.stdVector(), tGold);
 }
 
-}  // namespace plato::functional::linear_algebra::unittest
+}  // namespace plato::linear_algebra::unittest

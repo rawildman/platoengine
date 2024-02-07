@@ -2,7 +2,7 @@
 
 #include "plato/criteria/library/ConstraintFactory.hpp"
 
-namespace plato::functional::criteria::library::unittest
+namespace plato::criteria::library::unittest
 {
 TEST(ConstraintFactory, DualVector)
 {
@@ -10,4 +10,4 @@ TEST(ConstraintFactory, DualVector)
     ASSERT_EQ(tDualVector.size(), 1);
     EXPECT_EQ(tDualVector.stdVector().front(), 1.0);
 }
-}  // namespace plato::functional::criteria::library::unittest
+}  // namespace plato::criteria::library::unittest

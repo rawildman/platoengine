@@ -7,7 +7,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/DynamicVectorSerialization.hpp"
 
-namespace plato::functional::linear_algebra::unittest
+namespace plato::linear_algebra::unittest
 {
 TEST(DynamicVector, VectorConstructor)
 {
@@ -165,4 +165,4 @@ TEST(DynamicVector, Serialization)
         EXPECT_EQ(tStoredVector[k], tLoadedVector[k]);
     }
 }
-}  // namespace plato::functional::linear_algebra::unittest
+}  // namespace plato::linear_algebra::unittest

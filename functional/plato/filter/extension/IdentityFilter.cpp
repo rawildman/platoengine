@@ -8,7 +8,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::filter::extension
+namespace plato::filter::extension
 {
 namespace
 {
@@ -59,4 +59,4 @@ auto make_identity_filter_function() -> core::Function<core::MeshProxy, library:
     return std::nullopt;
 }
 
-}  // namespace plato::functional::filter::extension
+}  // namespace plato::filter::extension

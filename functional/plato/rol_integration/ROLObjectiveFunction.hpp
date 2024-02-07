@@ -7,7 +7,7 @@
 #include "plato/core/Function.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::rol_integration
 {
 class ROLObjectiveFunction : public ROL::Objective<double>
 {
@@ -28,6 +28,6 @@ class ROLObjectiveFunction : public ROL::Objective<double>
    private:
     ROLPlatoFunction mFunction;
 };
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::rol_integration
 
 #endif

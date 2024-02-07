@@ -8,11 +8,11 @@
 #include "plato/rol_integration/unittest/DynamicVectorRosenbrockFunction.hpp"
 #include "plato/test_utilities/Rosenbrock.hpp"
 
-namespace plato::functional::rol_integration::unittest
+namespace plato::rol_integration::unittest
 {
 TEST(ROLObjectiveFunction, RosenbrockObjectiveValueAndGradient)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     auto tObjective = ROLObjectiveFunction{make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{})};
     const auto tControl = ROL::StdVector<double>{1.0, 1.0};
@@ -27,7 +27,7 @@ TEST(ROLObjectiveFunction, RosenbrockObjectiveValueAndGradient)
 
 TEST(ROLObjectiveFunction, AggregateTwoRosenbrockObjectives)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     auto tRosenbrockFunction = make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
     using RosenbrockF = std::decay_t<decltype(tRosenbrockFunction)>;
@@ -42,4 +42,4 @@ TEST(ROLObjectiveFunction, AggregateTwoRosenbrockObjectives)
     EXPECT_EQ(tGradient[0], 0.0);
     EXPECT_EQ(tGradient[1], 0.0);
 }
-}  // namespace plato::functional::rol_integration::unittest
+}  // namespace plato::rol_integration::unittest

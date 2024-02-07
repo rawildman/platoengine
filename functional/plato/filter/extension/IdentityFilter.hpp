@@ -4,20 +4,20 @@
 #include "plato/core/Function.hpp"
 #include "plato/filter/library/FilterInterface.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 struct density_topology;
 }
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 struct FilterJacobian;
 }
 
-namespace plato::functional::filter::extension
+namespace plato::filter::extension
 {
 /// @brief A Filter that does not alter the density field, mostly used for testing.
 ///
@@ -37,6 +37,6 @@ class IdentityFilter : public library::FilterInterface
 
 [[nodiscard]] std::optional<std::string> validate_identity_filter(const input_parser::density_topology& aInput);
 
-}  // namespace plato::functional::filter::extension
+}  // namespace plato::filter::extension
 
 #endif

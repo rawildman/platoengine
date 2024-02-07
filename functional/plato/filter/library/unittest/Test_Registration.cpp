@@ -10,7 +10,7 @@ namespace input_parser
 struct density_topology;
 }
 
-namespace plato::functional::filter::library::unittest
+namespace plato::filter::library::unittest
 {
 namespace
 {
@@ -27,4 +27,4 @@ namespace
 TEST(FilterRegistration, PhonyFilter) { EXPECT_TRUE(is_filter_function_registered("test")); }
 
 TEST(FilterRegistration, Identity) { EXPECT_TRUE(is_filter_function_registered("identity")); }
-}  // namespace plato::functional::filter::library::unittest
+}  // namespace plato::filter::library::unittest

@@ -4,7 +4,7 @@
 
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::rol_integration
 {
 ROLObjectiveFunction::ROLObjectiveFunction(ROLPlatoFunction aROLPlatoFunction) : mFunction(std::move(aROLPlatoFunction))
 {
@@ -21,4 +21,4 @@ void ROLObjectiveFunction::gradient(ROL::Vector<double>& aGradient, const ROL::V
     assign_vector(aGradient, std::move(tLocalGradient).stdVector());
 }
 
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::rol_integration

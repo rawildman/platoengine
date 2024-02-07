@@ -10,7 +10,7 @@
 
 #include "plato/input_parser/FileList.hpp"
 
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 /// @brief Tests that @a aOptionalValue contains a value via assertion, and that it is equal to @a aVal.
 template <typename T, typename U>
@@ -34,6 +34,6 @@ inline void test_existence_and_equality(const boost::optional<FileList>& aOption
     ASSERT_TRUE(aOptionalVal);
     EXPECT_EQ(aOptionalVal.value().mList, aVal);
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest
 
 #endif

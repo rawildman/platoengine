@@ -3,7 +3,7 @@
 
 #include "plato/criteria/library/CriterionInterface.hpp"
 
-namespace plato::functional::integration_tests::test_mass_objective
+namespace plato::integration_tests::test_mass_objective
 {
 class MassObjectiveInterface : public criteria::library::CriterionInterface
 {
@@ -19,6 +19,6 @@ class MassObjectiveInterface : public criteria::library::CriterionInterface
     /// specified by the MeshProxy
     std::vector<double> gradient(const core::MeshProxy& aMeshProxy) const override;
 };
-}  // namespace plato::functional::integration_tests::test_mass_objective
+}  // namespace plato::integration_tests::test_mass_objective
 
 #endif

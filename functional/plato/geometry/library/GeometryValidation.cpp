@@ -3,7 +3,7 @@
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/geometry/library/GeometryRegistrationUtilities.hpp"
 
-namespace plato::functional::geometry::library
+namespace plato::geometry::library
 {
 [[maybe_unused]] static auto kGeometryValidationRegistration = core::ValidationRegistration<input_parser::ParsedInput>{
     [](const input_parser::ParsedInput& aInput) { return detail::validate_only_one_geometry(aInput); }};
@@ -12,7 +12,7 @@ namespace detail
 {
 std::optional<std::string> validate_only_one_geometry(const input_parser::ParsedInput& aInput)
 {
-    if (const unsigned int tTally = plato::functional::geometry::library::detail::geometry_blocks(aInput).size();
+    if (const unsigned int tTally = plato::geometry::library::detail::geometry_blocks(aInput).size();
         tTally != 1)
     {
         return "Only define exactly one geometry block. There were " + std::to_string(tTally) + " found.";
@@ -41,4 +41,4 @@ std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInp
     return core::validate(aInput, std::move(aCurrentMessageList));
 }
 
-}  // namespace plato::functional::geometry::library
+}  // namespace plato::geometry::library

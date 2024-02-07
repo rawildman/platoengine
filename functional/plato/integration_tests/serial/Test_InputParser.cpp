@@ -11,11 +11,11 @@ namespace
 const std::filesystem::path kTestFileName = "testInput.i";
 }
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(InputParser, ParseFromFile)
 {
-    plato::functional::test_utilities::create_input_file(kTestFileName);
+    plato::test_utilities::create_input_file(kTestFileName);
     const input_parser::ParsedInput tInput = input_parser::parse_input_from_file(kTestFileName);
 
     EXPECT_FALSE(tInput.mOptimizationParameters.max_iterations.has_value());
@@ -48,4 +48,4 @@ TEST(InputParser, ParseFromFile)
 
     std::filesystem::remove(kTestFileName);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

@@ -4,7 +4,7 @@
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::optimizer
+namespace plato::optimizer
 {
 [[maybe_unused]] static auto kOptimizerValidationRegistration =
     core::ValidationRegistration<input_parser::optimization_parameters>{
@@ -23,7 +23,7 @@ namespace detail
 {
 std::optional<std::string> validate_max_iterations(const input_parser::optimization_parameters& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.max_iterations))
     {
         return core::error_message_for_parameter_out_of_bounds(
@@ -38,7 +38,7 @@ std::optional<std::string> validate_max_iterations(const input_parser::optimizat
 
 [[nodiscard]] std::optional<std::string> validate_step_tolerance(const input_parser::optimization_parameters& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.step_tolerance))
     {
         return core::error_message_for_parameter_out_of_bounds(
@@ -54,7 +54,7 @@ std::optional<std::string> validate_max_iterations(const input_parser::optimizat
 [[nodiscard]] std::optional<std::string> validate_gradient_tolerance(
     const input_parser::optimization_parameters& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     if (!aInput.input_file_name || (aInput.input_file_name && aInput.gradient_tolerance))
     {
         return core::error_message_for_parameter_out_of_bounds(
@@ -68,4 +68,4 @@ std::optional<std::string> validate_max_iterations(const input_parser::optimizat
 }
 
 }  // namespace detail
-}  // namespace plato::functional::optimizer
+}  // namespace plato::optimizer

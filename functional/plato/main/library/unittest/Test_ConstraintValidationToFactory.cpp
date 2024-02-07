@@ -5,12 +5,12 @@
 #include "plato/main/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::main::library::unittest
+namespace plato::main::library::unittest
 {
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
-    input_parser::ParsedInput tInput = plato::functional::test_utilities::create_valid_example_input();
-    input_parser::constraint tConstraint = plato::functional::test_utilities::create_valid_example_constraint();
+    input_parser::ParsedInput tInput = plato::test_utilities::create_valid_example_input();
+    input_parser::constraint tConstraint = plato::test_utilities::create_valid_example_constraint();
     tConstraint.name = "eq";
     tConstraint.app = input_parser::CodeOptions::kNodalSum;
     tConstraint.equal_to = 13;
@@ -27,7 +27,7 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     tInput.mConstraints.push_back(tConstraint);
 
     const ValidatedInput tData = make_validated_input(tInput);
-    auto tCons = plato::functional::criteria::library::make_constraints(tData.constraints());
+    auto tCons = plato::criteria::library::make_constraints(tData.constraints());
     ASSERT_EQ(tCons.size(), 3);
 
     EXPECT_TRUE(tCons[0].mLinear);
@@ -37,4 +37,4 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     EXPECT_FALSE(tCons[2].mLinear);
     EXPECT_EQ(tCons[2].mConstraintTarget, 10);
 }
-}  // namespace plato::functional::main::library::unittest
+}  // namespace plato::main::library::unittest

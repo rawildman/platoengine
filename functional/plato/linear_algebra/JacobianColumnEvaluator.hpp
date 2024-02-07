@@ -5,7 +5,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 struct JacobianMultiplier;
 
@@ -31,6 +31,6 @@ struct JacobianColumnEvaluator
 /// @brief Creates a JacobianMultiplier from @a aJacobianColumnEvaluator
 JacobianMultiplier to_jacobian_multiplier(JacobianColumnEvaluator aJacobianColumnEvaluator);
 
-}  // namespace plato::functional::linear_algebra
+}  // namespace plato::linear_algebra
 
 #endif

@@ -5,7 +5,7 @@
 
 #include "plato/test_utilities/TwoDTestTypes.hpp"
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 class Penalty
 {
@@ -29,6 +29,6 @@ class Penalty
     double mPower = 3.0;
 };
 
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities
 
 #endif

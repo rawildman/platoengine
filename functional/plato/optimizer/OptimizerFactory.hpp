@@ -7,7 +7,7 @@
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::optimizer
+namespace plato::optimizer
 {
 using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
 
@@ -26,6 +26,6 @@ using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser
 ///@return ROL::ParameterList
 [[nodiscard]] ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimizationParameters);
 
-}  // namespace plato::functional::optimizer
+}  // namespace plato::optimizer
 
 #endif

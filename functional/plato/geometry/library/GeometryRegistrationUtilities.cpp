@@ -1,6 +1,6 @@
 #include "plato/geometry/library/GeometryRegistrationUtilities.hpp"
 
-namespace plato::functional::geometry::library::detail
+namespace plato::geometry::library::detail
 {
 void emplace_back_if_has_value(std::vector<library::GeometryInput>& aGeometryInput,
                                std::optional<library::GeometryInput>&& aOptionalGeometry)
@@ -53,4 +53,4 @@ std::string block_name(const library::ValidatedGeometryInput& aInput)
         aInput.rawInput());
 }
 
-}  // namespace plato::functional::geometry::library::detail
+}  // namespace plato::geometry::library::detail

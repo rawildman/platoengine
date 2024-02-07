@@ -8,7 +8,7 @@
 #include "plato/criteria/library/ConstraintFactory.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::rol_integration
 {
 class ROLConstraintFunction : public ROL::Constraint<double>
 {
@@ -53,6 +53,6 @@ class ROLConstraintFunction : public ROL::Constraint<double>
     double mConstraintTarget = 0;
     bool mLinear = false;
 };
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::rol_integration
 
 #endif

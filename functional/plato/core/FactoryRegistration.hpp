@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace plato::functional::core
+namespace plato::core
 {
 template <typename Return, typename Input>
 using FactoryFunction = std::function<Return(const Input&)>;
@@ -92,6 +92,6 @@ bool is_factory_function_registered(const std::string_view aFunctionName)
     return detail::registered_factory_functions<FactoryReturn, FactoryInput>().count(std::string{aFunctionName}) == 1;
 }
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

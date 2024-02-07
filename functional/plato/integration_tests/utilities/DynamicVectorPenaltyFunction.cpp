@@ -4,7 +4,7 @@
 
 #include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
 
-namespace plato::functional::integration_tests::utilities
+namespace plato::integration_tests::utilities
 {
 linear_algebra::DynamicVector<double> DynamicVectorJacobian::column(const int aIndex) const
 {
@@ -27,4 +27,4 @@ auto make_penalty_dynamic_vector_function(const test_utilities::Penalty& aPenalt
                                { return DynamicVectorJacobian{p.df(x[0], x[1])}; });
 }
 
-}  // namespace plato::functional::integration_tests::utilities
+}  // namespace plato::integration_tests::utilities

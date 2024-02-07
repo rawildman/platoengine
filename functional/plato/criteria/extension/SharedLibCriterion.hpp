@@ -12,7 +12,7 @@
 #include "plato/criteria/library/CriterionInterface.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::criteria::extension
+namespace plato::criteria::extension
 {
 /// @brief for a criterion that is loaded from a shared library.
 ///
@@ -35,6 +35,6 @@ class SharedLibCriterion
 [[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
     -> core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
-}  // namespace plato::functional::criteria::extension
+}  // namespace plato::criteria::extension
 
 #endif

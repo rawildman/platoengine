@@ -2,7 +2,7 @@
 
 #include "plato/utilities/NamedType.hpp"
 
-namespace plato::functional::utilities::unittest
+namespace plato::utilities::unittest
 {
 namespace
 {
@@ -21,4 +21,4 @@ TEST(NamedType, Creation)
     EXPECT_EQ(tValid.mValue.mValue, tInput.mValue);
     EXPECT_EQ(tValid.mValue.mName, tInput.mName);
 }
-}  // namespace plato::functional::utilities::unittest
+}  // namespace plato::utilities::unittest

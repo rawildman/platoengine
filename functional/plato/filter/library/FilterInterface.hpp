@@ -7,12 +7,12 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 static constexpr std::string_view kCreateFilterFunctionName = "plato_create_filter";
 
@@ -49,9 +49,9 @@ class FilterInterface
     FilterInterface& operator=(FilterInterface&&) = delete;
 };
 
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library
 
-namespace plato::functional
+namespace plato
 {
 extern "C" std::unique_ptr<filter::library::FilterInterface> plato_create_filter(
     const filter::library::FilterParameters& aFilterParameters);

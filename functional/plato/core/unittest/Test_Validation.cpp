@@ -5,7 +5,7 @@
 
 #include "plato/core/ValidationRegistration.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 namespace
 {
@@ -58,4 +58,4 @@ TEST(Validation, ValidateInputObjectiveList_EmptyNoneDefined)
     tMessages = validate<char>('c', std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 0u);
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

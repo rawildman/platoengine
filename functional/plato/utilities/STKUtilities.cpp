@@ -13,7 +13,7 @@
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_NodeBlock.h>  // for NodeBlock
 
-namespace plato::functional::utilities
+namespace plato::utilities
 {
 namespace
 {
@@ -163,4 +163,4 @@ void write_mesh_density(const std::filesystem::path& aInputMeshName,
     write_defined_output_fields(*tIOBroker, tOutputFileIndex, tTime);
 }
 
-}  // namespace plato::functional::utilities
+}  // namespace plato::utilities

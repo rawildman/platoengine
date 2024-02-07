@@ -7,11 +7,11 @@
 #include "plato/rol_integration/ROLConstraintFunction.hpp"
 #include "plato/rol_integration/unittest/DynamicVectorRosenbrockFunction.hpp"
 
-namespace plato::functional::rol_integration::unittest
+namespace plato::rol_integration::unittest
 {
 TEST(ROLConstraintFunction, ConstraintValue)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     pft::Rosenbrock tRosenbrock{};
 
@@ -35,7 +35,7 @@ TEST(ROLConstraintFunction, ConstraintValue)
 
 TEST(ROLConstraintFunction, JacobianTimesDirection)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     pft::Rosenbrock tRosenbrock{};
 
@@ -66,7 +66,7 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
 
 TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     pft::Rosenbrock tRosenbrock{};
 
@@ -99,4 +99,4 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     EXPECT_EQ(tROLConstraintFunction.name(), std::string{tConstraintName});
 }
 
-}  // namespace plato::functional::rol_integration::unittest
+}  // namespace plato::rol_integration::unittest

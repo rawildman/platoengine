@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "plato/input_parser/FileList.hpp"
-namespace plato::functional::input_parser::unittest
+
+namespace plato::input_parser::unittest
 {
 TEST(FileName, Insert)
 {
@@ -82,4 +83,4 @@ TEST(FileList, ConstIterators)
     EXPECT_EQ(tFileList.mList.at(2), "w");
     EXPECT_EQ(tFileList.mList.at(3), "r");
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

@@ -7,12 +7,12 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 using ValidatedObjectives =
     core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>>;
@@ -30,6 +30,6 @@ namespace detail
 
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
 #endif

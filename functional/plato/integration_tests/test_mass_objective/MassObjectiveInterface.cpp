@@ -6,7 +6,7 @@
 
 #include "plato/integration_tests/test_mass_objective/MassObjective.hpp"
 
-namespace plato::functional::integration_tests::test_mass_objective
+namespace plato::integration_tests::test_mass_objective
 {
 MassObjectiveInterface::MassObjectiveInterface()
 {
@@ -43,12 +43,12 @@ std::vector<double> MassObjectiveInterface::gradient(const core::MeshProxy& aMes
     const unsigned int tGradientSize = tMassObjective.numMeshNodes(aMeshProxy.mFileName.string()) * tNumDimensions;
     return std::vector<double>(tGradientSize, 0.0);
 }
-}  // namespace plato::functional::integration_tests::test_mass_objective
+}  // namespace plato::integration_tests::test_mass_objective
 
-namespace plato::functional
+namespace plato
 {
 std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(const std::vector<std::string>&)
 {
     return std::make_unique<integration_tests::test_mass_objective::MassObjectiveInterface>();
 }
-}  // namespace plato::functional
+}  // namespace plato

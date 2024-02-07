@@ -2,7 +2,7 @@
 
 #include "plato/criteria/library/CriterionValidation.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 [[maybe_unused]] static auto kConstraintValidationRegistration = core::ValidationRegistration<input_parser::constraint>{
     [](const input_parser::constraint& aInput) { return detail::validate_app(aInput); },
@@ -25,4 +25,4 @@ std::optional<std::string> validate_equal_to(const input_parser::constraint& aIn
 
 }  // namespace detail
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library

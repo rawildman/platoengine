@@ -7,7 +7,7 @@
 #include "plato/geometry/library/GeometryRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 class ValidatedInput;
 
@@ -23,7 +23,7 @@ struct Key
 class ValidatedInput
 {
    public:
-    using Geometry = plato::functional::geometry::library::ValidatedGeometryInput;
+    using Geometry = plato::geometry::library::ValidatedGeometryInput;
     using Objectives =
         core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>>;
     using Constraints =
@@ -54,6 +54,6 @@ class ValidatedInput
 /// @brief Parse input from input string @a aInput and then validate the input
 [[nodiscard]] ValidatedInput parse_and_validate(const std::string_view aInput);
 
-}  // namespace plato::functional::main::library
+}  // namespace plato::main::library
 
 #endif

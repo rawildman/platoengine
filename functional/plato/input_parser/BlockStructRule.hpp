@@ -13,16 +13,16 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 namespace bsq = boost::spirit::qi;
 namespace bsa = boost::spirit::ascii;
 
 template <typename Iterator>
 const bsq::rule<Iterator, std::string(), bsa::space_type> kIdentifierRule = bsq::lexeme[+bsq::graph];
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 namespace detail
 {
@@ -117,6 +117,6 @@ struct BlockStructRule
         mPreambleRule > mBlockOrRule[bsq::_val = bsq::_1] > mPostambleRule;
 };
 
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
 #endif

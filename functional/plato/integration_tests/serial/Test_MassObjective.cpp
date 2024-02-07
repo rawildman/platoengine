@@ -4,12 +4,12 @@
 #include "plato/integration_tests/test_mass_objective/MassObjective.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(MassObjective, Value)
 {
-    namespace pfu = plato::functional::utilities;
-    namespace pfittmo = plato::functional::integration_tests::test_mass_objective;
+    namespace pfu = plato::utilities;
+    namespace pfittmo = plato::integration_tests::test_mass_objective;
 
     constexpr double tDensity = 2.0;
     constexpr double tTarget = 1.0;
@@ -24,8 +24,8 @@ TEST(MassObjective, Value)
 
 TEST(MassObjective, NumMeshNodes)
 {
-    namespace pfu = plato::functional::utilities;
-    namespace pfittmo = plato::functional::integration_tests::test_mass_objective;
+    namespace pfu = plato::utilities;
+    namespace pfittmo = plato::integration_tests::test_mass_objective;
 
     const auto tMassObjective = pfittmo::MassObjective{0.0, 0.0};
 
@@ -35,4 +35,4 @@ TEST(MassObjective, NumMeshNodes)
     constexpr unsigned int tExpectedNumNodes = 12;
     EXPECT_DOUBLE_EQ(tMassObjective.numMeshNodes(tMeshName), tExpectedNumNodes);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

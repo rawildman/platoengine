@@ -8,7 +8,7 @@
 #include "plato/linear_algebra/DynamicVectorSerialization.hpp"
 #include "plato/test_utilities/Rosenbrock.hpp"
 
-namespace plato::functional::integration_tests::parallel
+namespace plato::integration_tests::parallel
 {
 namespace
 {
@@ -23,7 +23,7 @@ TEST(ParallelAggregateDynamicVector, MPISize)
 
 TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     // This assumes this test is running in parallel w/ `kNumRanks` number of ranks.
     // Each rank constructs a `ParallelAggregate` object with a single function, so that
@@ -46,4 +46,4 @@ TEST(ParallelAggregateDynamicVector, ParallelAggregateTwoRosenbrockObjectives)
     const linear_algebra::DynamicVector<double> tComputedDF = tAggregate.df(tControl);
     EXPECT_EQ(tComputedDF, tExpectedDF);
 }
-}  // namespace plato::functional::integration_tests::parallel
+}  // namespace plato::integration_tests::parallel

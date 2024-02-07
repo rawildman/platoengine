@@ -11,7 +11,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::filter::extension::unittest
+namespace plato::filter::extension::unittest
 {
 namespace
 {
@@ -47,7 +47,7 @@ TEST(IdentityFilter, JacobianMultiplication)
 
 TEST(IdentityFilter, JacobianBadDimensions)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
 
     const auto tFilterJacobian = library::FilterJacobian{/*.mFilter=*/std::make_unique<IdentityFilter>(),
                                                          /*.mMeshProxy=*/kMeshArgument};
@@ -65,4 +65,4 @@ TEST(IdentityFilter, Function)
     const linear_algebra::DynamicVector<double> tResult = kV * tFilterFunction.df(kMeshArgument);
     EXPECT_EQ(tResult.stdVector(), kV.stdVector());
 }
-}  // namespace plato::functional::filter::extension::unittest
+}  // namespace plato::filter::extension::unittest

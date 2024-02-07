@@ -8,7 +8,7 @@
 #include "plato/filter/library/FilterRegistration.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 
-namespace plato::functional::filter::extension
+namespace plato::filter::extension
 {
 namespace
 {
@@ -28,7 +28,7 @@ const auto kHelmholtzFilterLibName = std::filesystem::path{"libAnalyzeFunctional
 
 std::optional<std::string> validate_helmholtz_filter_radius(const input_parser::density_topology& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     if (aInput.filter_type && aInput.filter_type.value() == input_parser::FilterTypes::kHelmholtz)
     {
         return core::error_message_for_parameter_out_of_bounds(
@@ -44,7 +44,7 @@ std::optional<std::string> validate_helmholtz_filter_radius(const input_parser::
 [[nodiscard]] std::optional<std::string> validate_helmholtz_filter_boundary_sticking_penalty(
     const input_parser::density_topology& aInput)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     if (aInput.filter_type && aInput.filter_type.value() == input_parser::FilterTypes::kHelmholtz &&
         aInput.boundary_sticking_penalty)
     {
@@ -58,4 +58,4 @@ std::optional<std::string> validate_helmholtz_filter_radius(const input_parser::
         return std::nullopt;
     }
 }
-}  // namespace plato::functional::filter::extension
+}  // namespace plato::filter::extension

@@ -15,17 +15,17 @@
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/STKUtilities.hpp"
-namespace plato::functional::geometry::extension::unittest
+namespace plato::geometry::extension::unittest
 {
 namespace
 {
-const auto kDensityInput = plato::functional::test_utilities::create_valid_density_topology_geometry();
+const auto kDensityInput = plato::test_utilities::create_valid_density_topology_geometry();
 
 constexpr int kExpectedDensitySize = 8;  // Based on mesh generation command below (1x1x1)
 
 void create_small_mesh(const std::string& aFileName)
 {
-    namespace pf = plato::functional;
+    namespace pf = plato;
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);
     auto bulk = pf::utilities::create_mesh("generated:1x1x1|bbox:-1,-2,-1,2,1,2");
     pf::utilities::write_mesh(aFileName, bulk);
@@ -102,4 +102,4 @@ TEST(DensityTopology, Bounds)
 
     EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
 }
-}  // namespace plato::functional::geometry::extension::unittest
+}  // namespace plato::geometry::extension::unittest

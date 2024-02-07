@@ -6,7 +6,7 @@
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::geometry::library
+namespace plato::geometry::library
 {
 namespace detail
 {
@@ -23,6 +23,6 @@ template <typename Geometry>
 [[nodiscard]] std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInput,
                                                          std::vector<std::string>&& aCurrentMessageList);
 
-}  // namespace plato::functional::geometry::library
+}  // namespace plato::geometry::library
 
 #endif

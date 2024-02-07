@@ -8,7 +8,7 @@
 #include "plato/input_parser/InputParser.hpp"
 #include "plato/input_parser/unittest/Test_Helpers.hpp"
 
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 namespace
 {
@@ -315,4 +315,4 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
     test_existence_and_equality(tConstraint2.number_of_processors, 10);
     test_existence_and_equality(tConstraint2.equal_to, -10.0);
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

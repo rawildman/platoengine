@@ -2,7 +2,7 @@
 
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 DynamicVector<double> JacobianColumnEvaluator::column(const unsigned int aIndex) const
 {
@@ -26,4 +26,4 @@ JacobianMultiplier to_jacobian_multiplier(JacobianColumnEvaluator aJacobianColum
                                                             const DynamicVector<double>& aX)
                               { return aX * tColumnEvaluator; }};
 }
-}  // namespace plato::functional::linear_algebra
+}  // namespace plato::linear_algebra

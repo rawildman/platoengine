@@ -6,7 +6,7 @@
 #include <numeric>
 #include <vector>
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 template <typename T>
 class DynamicVector;
@@ -158,6 +158,6 @@ template <typename T>
     return mVector == aRight.mVector;
 }
 
-}  // namespace plato::functional::linear_algebra
+}  // namespace plato::linear_algebra
 
 #endif

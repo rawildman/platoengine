@@ -4,7 +4,7 @@
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 namespace
 {
@@ -25,4 +25,4 @@ std::optional<std::string> validate_filter_type(const input_parser::density_topo
         return std::nullopt;
     }
 }
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library

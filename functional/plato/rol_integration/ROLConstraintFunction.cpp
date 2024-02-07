@@ -2,7 +2,7 @@
 
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::rol_integration
 {
 ROLConstraintFunction::ROLConstraintFunction(
     criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> aConstraint)
@@ -61,4 +61,4 @@ bool ROLConstraintFunction::linear() const { return mLinear; }
 
 const std::string& ROLConstraintFunction::name() const { return mName; }
 
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::rol_integration

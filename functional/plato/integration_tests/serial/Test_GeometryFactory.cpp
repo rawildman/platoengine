@@ -5,11 +5,11 @@
 #include "plato/main/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 TEST(GeometryFactory, BrickGeometry)
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     const auto tRawInput =
         input_parser::ParsedInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
@@ -29,10 +29,10 @@ TEST(GeometryFactory, BrickGeometry)
 
 TEST(GeometryFactory, BlockName)
 {
-    namespace pftu = plato::functional::test_utilities;
+    namespace pftu = plato::test_utilities;
 
     const main::library::ValidatedInput tValidatedInput =
         main::library::make_validated_input(pftu::create_valid_example_input());
-    EXPECT_EQ(plato::functional::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
+    EXPECT_EQ(plato::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

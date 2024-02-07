@@ -3,7 +3,7 @@
 #include "plato/criteria/extension/NodalSumObjective.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::criteria::extension::unittest
+namespace plato::criteria::extension::unittest
 {
 namespace
 {
@@ -13,7 +13,7 @@ constexpr std::string_view kOneBlockCommand = "generated:1x1x1|bbox:0,0,0,1,1,1"
 
 TEST(NodalSumObjective, Value111)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr std::string_view tFileName = "test.exo";
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1"));
 
@@ -24,7 +24,7 @@ TEST(NodalSumObjective, Value111)
 
 TEST(NodalSumObjective, Value211)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr std::string_view tFileName = "test.exo";
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:2x1x1|bbox:0,0,0,1,1,1"));
 
@@ -35,7 +35,7 @@ TEST(NodalSumObjective, Value211)
 
 TEST(NodalSumObjective, Value0)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr std::string_view tFileName = "test.exo";
     pfu::write_mesh(tFileName, pfu::create_mesh("generated:1x1x1|bbox:-2,-1,-3,2,1,3"));
 
@@ -46,7 +46,7 @@ TEST(NodalSumObjective, Value0)
 
 TEST(NodalSumObjective, Gradient111)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     constexpr std::string_view tFileName = "test.exo";
     auto tBulk = pfu::create_mesh("generated:1x2x3|bbox:0,0,0,1,1,1");
     pfu::write_mesh(tFileName, tBulk);
@@ -63,7 +63,7 @@ TEST(NodalSumObjective, Gradient111)
 
 TEST(NodalSumObjective, Value)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     pfu::write_mesh(kBrickFile, pfu::create_mesh(kOneBlockCommand));
     core::MeshProxy tMeshProxy{kBrickFile, {}};
 
@@ -75,7 +75,7 @@ TEST(NodalSumObjective, Value)
 
 TEST(NodalSumObjective, Gradient)
 {
-    namespace pfu = plato::functional::utilities;
+    namespace pfu = plato::utilities;
     pfu::write_mesh(kBrickFile, pfu::create_mesh(kOneBlockCommand));
     core::MeshProxy tMeshProxy{kBrickFile, {}};
 
@@ -85,4 +85,4 @@ TEST(NodalSumObjective, Gradient)
     EXPECT_TRUE(std::filesystem::exists(kBrickFile));
     EXPECT_TRUE(std::filesystem::remove(kBrickFile));
 }
-}  // namespace plato::functional::criteria::extension::unittest
+}  // namespace plato::criteria::extension::unittest

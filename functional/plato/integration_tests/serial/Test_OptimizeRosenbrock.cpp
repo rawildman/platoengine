@@ -12,7 +12,7 @@
 #include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
 #include "plato/rol_integration/ROLObjectiveFunction.hpp"
 
-namespace plato::functional::integration_tests::serial
+namespace plato::integration_tests::serial
 {
 namespace
 {
@@ -36,11 +36,11 @@ constexpr bool tPrintFlag = true;
 
 TEST(Optimize, Rosenbrock)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{-1.2, 1.0};
-    auto tObjective = plato::functional::rol_integration::ROLObjectiveFunction{
+    auto tObjective = plato::rol_integration::ROLObjectiveFunction{
         utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{})};
 
     rol_algorithm().run(tControl, tObjective, tPrintFlag, *tOutStream);
@@ -52,13 +52,13 @@ TEST(Optimize, Rosenbrock)
 
 TEST(Optimize, RosenbrockPenaltyComposition)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{1.5, 0.5};
     constexpr double tXMin = 0.0;
     constexpr double tPower = 3.0;
-    auto tObjective = plato::functional::rol_integration::ROLObjectiveFunction{
+    auto tObjective = plato::rol_integration::ROLObjectiveFunction{
         core::compose(utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
                       utilities::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};
 
@@ -68,4 +68,4 @@ TEST(Optimize, RosenbrockPenaltyComposition)
     EXPECT_EQ(tControl[0], tXMinValue);
     EXPECT_EQ(tControl[1], tXMinValue);
 }
-}  // namespace plato::functional::integration_tests::serial
+}  // namespace plato::integration_tests::serial

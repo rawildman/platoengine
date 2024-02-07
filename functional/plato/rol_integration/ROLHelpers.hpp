@@ -5,7 +5,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::rol_integration
+namespace plato::rol_integration
 {
 /// @brief Converts @a aROLVector to a DynamicVector using a `dynamic_cast` to `ROL::StdVector`.
 template <typename T>
@@ -48,6 +48,6 @@ void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector)
     auto& tROLStdVector = dynamic_cast<ROL::StdVector<T>&>(aROLVector);
     *tROLStdVector.getVector() = std::move(aVector);
 }
-}  // namespace plato::functional::rol_integration
+}  // namespace plato::rol_integration
 
 #endif

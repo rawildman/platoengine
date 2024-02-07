@@ -1,6 +1,6 @@
 #include "plato/input_parser/FileList.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 std::string::const_iterator FileName::begin() const { return mName.begin(); }
 
@@ -40,4 +40,4 @@ std::ostream& operator<<(std::ostream& stream, const FileList& aFileList)
     return stream;
 }
 
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser

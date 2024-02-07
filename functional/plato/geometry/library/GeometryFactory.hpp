@@ -13,7 +13,7 @@ namespace input_parser
 struct ParsedInput;
 }
 
-namespace plato::functional::geometry::library
+namespace plato::geometry::library
 {
 using DesignParameters = linear_algebra::DynamicVector<double>;
 using GeometryFunction =
@@ -30,6 +30,6 @@ using GeometryFunction =
 /// all 0 lower bounds and all 1 upper bounds for density topology optimization.
 [[nodiscard]] FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput);
 
-}  // namespace plato::functional::geometry::library
+}  // namespace plato::geometry::library
 
 #endif

@@ -8,7 +8,7 @@
 #include "plato/input_parser/EnumParser.hpp"
 #include "plato/utilities/EnumTable.hpp"
 
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 namespace
 {
@@ -51,4 +51,4 @@ TEST(BoostSpirit, ParseEnum)
     EXPECT_TRUE(parse_pizza_list(validPizzas.begin(), validPizzas.end(), parsedPizzas));
     EXPECT_EQ(parsedPizzas.size(), 4);
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

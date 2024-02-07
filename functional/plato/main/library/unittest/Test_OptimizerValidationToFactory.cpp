@@ -5,12 +5,12 @@
 #include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::main::library::unittest
+namespace plato::main::library::unittest
 {
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
-                               plato::functional::test_utilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::test_utilities::create_valid_example_objective_string() +
                                R"(
                                   begin optimization_parameters
                                     step_tolerance 10
@@ -22,7 +22,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
     const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
 
     const auto tOPData = tData.optimizationParameters();
-    ROL::ParameterList tParlist = plato::functional::optimizer::rol_parameter_list(tOPData);
+    ROL::ParameterList tParlist = plato::optimizer::rol_parameter_list(tOPData);
 
     constexpr int kDefaultIterationLimit = 10;
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"), kDefaultIterationLimit);
@@ -41,15 +41,15 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     tParameterListToWrite.sublist("Status Test").set<double>("Step Tolerance", 0.25);
     Teuchos::writeParameterListToXmlFile(tParameterListToWrite, kFileName);
 
-    const std::string tInput = plato::functional::test_utilities::create_valid_brick_shape_geometry_string() +
-                               plato::functional::test_utilities::create_valid_example_objective_string() +
+    const std::string tInput = plato::test_utilities::create_valid_brick_shape_geometry_string() +
+                               plato::test_utilities::create_valid_example_objective_string() +
                                "begin optimization_parameters"
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";
 
     const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
     ROL::ParameterList tParameterListFromDisk =
-        plato::functional::optimizer::rol_parameter_list(tData.optimizationParameters());
+        plato::optimizer::rol_parameter_list(tData.optimizationParameters());
 
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<int>("Iteration Limit"),
               tParameterListToWrite.sublist("Status Test").get<int>("Iteration Limit"));
@@ -61,4 +61,4 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     std::filesystem::remove(kFileName);
 }
 
-}  // namespace plato::functional::main::library::unittest
+}  // namespace plato::main::library::unittest

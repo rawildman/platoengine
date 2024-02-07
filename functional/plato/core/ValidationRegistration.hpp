@@ -6,7 +6,7 @@
 
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 template <typename Input>
 using ValidationFunction = std::function<std::optional<std::string>(const Input&)>;
@@ -24,7 +24,7 @@ using ValidationFunction = std::function<std::optional<std::string>(const Input&
 /// @code
 /// namespace{
 /// [[maybe_unused]] static auto kNewValidationRegistration =
-///   plato::functional::core::ValidationRegistration<input_parser::density_topology>{
+///   plato::core::ValidationRegistration<input_parser::density_topology>{
 ///    [](const input_parser::density_topology& aInput){ return validate_foo_parameter(aInput); }
 /// };
 /// }
@@ -85,6 +85,6 @@ template <typename ValidationInput>
     return std::move(aCurrentMessageList);
 }
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

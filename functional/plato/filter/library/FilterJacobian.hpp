@@ -6,7 +6,7 @@
 #include "plato/core/MeshProxy.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 class FilterInterface;
 
@@ -21,5 +21,5 @@ struct FilterJacobian
 linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVector<double>& aV,
                                                 const FilterJacobian& aJacobian);
 
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library
 #endif

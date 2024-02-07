@@ -3,17 +3,17 @@
 
 #include "plato/core/Function.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 struct density_topology;
 }
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 struct FilterJacobian;
 
@@ -23,6 +23,6 @@ using FilterFunction = core::Function<core::MeshProxy, FilterJacobian, const cor
 /// @param aInput The input parameters parsed from an input deck.
 [[nodiscard]] FilterFunction make_filter_function(const input_parser::density_topology& aInput);
 
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library
 
 #endif

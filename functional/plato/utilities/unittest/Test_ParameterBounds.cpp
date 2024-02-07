@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "plato/utilities/ParameterBounds.hpp"
-namespace plato::functional::utilities::unittest
+namespace plato::utilities::unittest
 {
 TEST(ParameterBounds, DirectConstructionAllInclusive)
 {
@@ -94,4 +94,4 @@ TEST(ParameterBounds, Description)
     EXPECT_EQ((ParameterBounds{Inclusive{0}, Inclusive{10}}.description()), "[0, 10]");
     EXPECT_EQ((ParameterBounds{Exclusive{-42}, Exclusive{0}}.description()), "(-42, 0)");
 }
-}  // namespace plato::functional::utilities::unittest
+}  // namespace plato::utilities::unittest

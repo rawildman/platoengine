@@ -3,14 +3,14 @@
 #include "plato/criteria/library/CriterionValidation.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::criteria::library::unittest
+namespace plato::criteria::library::unittest
 {
 namespace
 {
 template <typename Criteria>
 void check_validation_app_and_custom_app()
 {
-    namespace pfcd = plato::functional::criteria::library::detail;
+    namespace pfcd = plato::criteria::library::detail;
     Criteria tCriteria;
     EXPECT_TRUE(pfcd::validate_app(tCriteria).has_value());
     tCriteria.app = input_parser::CodeOptions::kCustomApp;
@@ -37,4 +37,4 @@ TEST(CriterionValidation, CheckValidationAppAndCustomAppOnConstraint)
 {
     check_validation_app_and_custom_app<input_parser::constraint>();
 }
-}  // namespace plato::functional::criteria::library::unittest
+}  // namespace plato::criteria::library::unittest

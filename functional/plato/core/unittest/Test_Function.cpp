@@ -3,7 +3,7 @@
 #include "plato/core/Function.hpp"
 #include "plato/test_utilities/TwoDTestTypes.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(PlatoFunctional, Evaluate)
 {
@@ -30,7 +30,7 @@ TEST(PlatoFunctional, MakeFunction)
 
 TEST(PlatoFunctional, TwoD)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
     const auto tF = make_function(pft::TwoDVectorFunction{}, pft::TwoDVectorFunctionJacobian{});
 
     {
@@ -48,4 +48,4 @@ TEST(PlatoFunctional, TwoD)
         EXPECT_EQ(tF.df(tX), tExpectedDF);
     }
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

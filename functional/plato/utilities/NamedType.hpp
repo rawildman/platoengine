@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace plato::functional::utilities
+namespace plato::utilities
 {
 /// @brief A strongly-typed wrapper for clarifying interfaces.
 ///
@@ -39,5 +39,5 @@ struct NamedType
     T mValue;
 };
 
-}  // namespace plato::functional::utilities
+}  // namespace plato::utilities
 #endif

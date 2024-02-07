@@ -7,7 +7,7 @@
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::geometry::extension
+namespace plato::geometry::extension
 {
 namespace
 {
@@ -23,7 +23,7 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 }
 
 /// Static registration for library
-[[maybe_unused]] static auto kDensityTopologyRegistration = plato::functional::geometry::library::GeometryRegistration{
+[[maybe_unused]] static auto kDensityTopologyRegistration = plato::geometry::library::GeometryRegistration{
     input_parser::block_name<input_parser::density_topology>(),
     [](const library::ValidatedGeometryInput& aGeometryInput)
     {
@@ -44,8 +44,8 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 
 DensityTopology::DensityTopology(const input_parser::density_topology& aInput)
     : mFileName(aInput.mesh_name.value().mName),
-      mNumDesignParameters(plato::functional::utilities::read_mesh_node_size(mFileName)),
-      mFilter(plato::functional::filter::library::make_filter_function(aInput))
+      mNumDesignParameters(plato::utilities::read_mesh_node_size(mFileName)),
+      mFilter(plato::filter::library::make_filter_function(aInput))
 {
 }
 
@@ -66,13 +66,13 @@ linear_algebra::JacobianMultiplier DensityTopology::jacobian(
 
 linear_algebra::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
 {
-    const unsigned int tNumNodes = plato::functional::utilities::read_mesh_node_size(aMeshFileName);
+    const unsigned int tNumNodes = plato::utilities::read_mesh_node_size(aMeshFileName);
     return linear_algebra::DynamicVector<double>(tNumNodes, kInitialDensity);
 }
 
 std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(const std::filesystem::path& aMeshFileName)
 {
-    const unsigned int tNumNodes = plato::functional::utilities::read_mesh_node_size(aMeshFileName);
+    const unsigned int tNumNodes = plato::utilities::read_mesh_node_size(aMeshFileName);
     return {std::vector<double>(tNumNodes, kDensityLowerBound), std::vector<double>(tNumNodes, kDensityUpperBound)};
 }
 
@@ -80,7 +80,7 @@ void DensityTopology::output(const std::filesystem::path& aInputMeshName,
                              const linear_algebra::DynamicVector<double>& aSolution,
                              const std::filesystem::path& aOutputMeshName)
 {
-    plato::functional::utilities::write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
+    plato::utilities::write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
 }
 
 auto make_topology_geometry(const DensityTopology& aDensityTopology)
@@ -102,4 +102,4 @@ std::optional<std::string> validate_output_name(const input_parser::density_topo
 
 }  // namespace detail
 
-}  // namespace plato::functional::geometry::extension
+}  // namespace plato::geometry::extension

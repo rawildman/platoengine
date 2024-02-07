@@ -9,17 +9,17 @@
 #include "plato/geometry/library/GeometryInputBuilder.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::linear_algebra
+namespace plato::linear_algebra
 {
 struct JacobianMultiplier;
 }
 
-namespace plato::functional::geometry::library
+namespace plato::geometry::library
 {
 struct FactoryTypes
 {
@@ -54,6 +54,6 @@ template <typename Geometry>
 {
     return std::get<core::ValidatedInputTypeWrapper<Geometry>>(aValidatedInput.rawInput()).rawInput();
 }
-}  // namespace plato::functional::geometry::library
+}  // namespace plato::geometry::library
 
 #endif

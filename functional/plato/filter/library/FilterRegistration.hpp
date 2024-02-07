@@ -7,17 +7,17 @@
 #include "plato/core/FactoryRegistration.hpp"
 #include "plato/core/Function.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 struct density_topology;
 }
 
-namespace plato::functional::core
+namespace plato::core
 {
 struct MeshProxy;
 }
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 class FilterInterface;
 struct FilterJacobian;
@@ -35,6 +35,6 @@ using FilterRegistration = core::FactoryRegistration<FilterFunction, FilterInput
                                                            const std::filesystem::path& aSharedLibraryPath);
 
 [[nodiscard]] bool is_filter_function_registered(std::string_view aFunctionName);
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library
 
 #endif

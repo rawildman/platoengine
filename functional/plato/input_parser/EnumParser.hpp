@@ -5,7 +5,7 @@
 
 #include "plato/utilities/EnumTable.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 template <typename Enum>
 auto make_enum_symbols(const utilities::EnumTable<Enum>& aTable) -> boost::spirit::qi::symbols<char, Enum>
@@ -18,6 +18,6 @@ auto make_enum_symbols(const utilities::EnumTable<Enum>& aTable) -> boost::spiri
     return tSymbols;
 }
 
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
 #endif

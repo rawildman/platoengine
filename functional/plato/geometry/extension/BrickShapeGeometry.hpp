@@ -20,7 +20,7 @@ namespace stk::mesh
 class BulkData;
 }
 
-namespace plato::functional::geometry::extension
+namespace plato::geometry::extension
 {
 /// @brief Design parameters for BrickShapeGeometry
 struct BrickDesign
@@ -79,5 +79,5 @@ namespace detail
 [[nodiscard]] linear_algebra::DynamicVector<double> to_dynamic_vector(const BrickDesign& aDesignParameters);
 }  // namespace detail
 
-}  // namespace plato::functional::geometry::extension
+}  // namespace plato::geometry::extension
 #endif

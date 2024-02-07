@@ -7,7 +7,7 @@
 
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 void create_input_file(const std::filesystem::path aTestFileName);
 
@@ -29,5 +29,5 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] input_parser::optimization_parameters create_valid_example_optimization_parameters();
 [[nodiscard]] std::string create_valid_example_optimization_parameters_string();
 
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities
 #endif

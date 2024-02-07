@@ -5,11 +5,11 @@
 #include "plato/test_utilities/Penalty.hpp"
 #include "plato/test_utilities/Rosenbrock.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(Rosenbrock, Rosenbrock)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tRosenbrock = pft::Rosenbrock{1.0, 100.0};
     EXPECT_EQ(tRosenbrock.f(1.0, 1.0), 0.0);
@@ -19,7 +19,7 @@ TEST(Rosenbrock, Rosenbrock)
 
 TEST(Rosenbrock, MakeRosenbrock)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     constexpr double tA = 2.0;
     constexpr double tB = 50.0;
@@ -40,7 +40,7 @@ TEST(Rosenbrock, MakeRosenbrock)
 
 TEST(Rosenbrock, RosenbrockAndPenalty)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tRosenbrock = pft::Rosenbrock{1.0, 100.0};
     const auto tPenalty = pft::Penalty{0.5 - 3, 3.0};
@@ -53,4 +53,4 @@ TEST(Rosenbrock, RosenbrockAndPenalty)
     EXPECT_EQ(tH.df(tX)(0), 0.0);
     EXPECT_EQ(tH.df(tX)(1), 0.0);
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

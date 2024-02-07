@@ -25,10 +25,10 @@ int main(int argc, char** argv)
     {
         try
         {
-            auto tOptimizationProblem = plato::functional::main::library::OptimizationProblem{argv[1]};
+            auto tOptimizationProblem = plato::main::library::OptimizationProblem{argv[1]};
             tOptimizationProblem.optimize();
         }
-        catch (const plato::functional::utilities::Exception& tError)
+        catch (const plato::utilities::Exception& tError)
         {
             printMessage(tError.what());
         }

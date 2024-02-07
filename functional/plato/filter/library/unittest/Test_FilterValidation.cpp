@@ -6,11 +6,11 @@
 #include "plato/filter/library/FilterValidation.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::filter::library::unittest
+namespace plato::filter::library::unittest
 {
 TEST(FilterValidation, TypeExists)
 {
-    auto tDensityTopology = plato::functional::test_utilities::create_valid_density_topology_geometry();
+    auto tDensityTopology = plato::test_utilities::create_valid_density_topology_geometry();
 
     EXPECT_FALSE(validate_filter_type(tDensityTopology).has_value());
     tDensityTopology.filter_type = boost::none;
@@ -22,4 +22,4 @@ TEST(FilterValidation, TypeExists)
     EXPECT_EQ(tErrorMessages.size(), 1);
 }
 
-}  // namespace plato::functional::filter::library::unittest
+}  // namespace plato::filter::library::unittest

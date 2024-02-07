@@ -5,7 +5,7 @@
 #include "plato/criteria/library/ObjectiveValidation.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::criteria::library::unittest
+namespace plato::criteria::library::unittest
 {
 namespace
 {
@@ -20,7 +20,7 @@ TEST(ParallelObjectiveValidation, MPISize)
 
 TEST(ParallelObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
-    namespace pfcd = plato::functional::criteria::library::detail;
+    namespace pfcd = plato::criteria::library::detail;
 
     // One objective and three ranks
     const input_parser::objective tObjective;
@@ -33,4 +33,4 @@ TEST(ParallelObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
     EXPECT_FALSE(
         pfcd::validate_number_of_ranks_vs_objectives({tObjective, tObjective, tObjective, tObjective}).has_value());
 }
-}  // namespace plato::functional::criteria::library::unittest
+}  // namespace plato::criteria::library::unittest

@@ -7,7 +7,7 @@
 
 #include "plato/core/Function.hpp"
 
-namespace plato::functional::core
+namespace plato::core
 {
 /// @brief Implements a weighted sum of Function objects.
 ///
@@ -109,6 +109,6 @@ std::vector<double> Aggregate<R, dR, Arg>::weights() const
                    [](const FunctionAndWeight& aElement) { return aElement.second; });
     return tWeights;
 }
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

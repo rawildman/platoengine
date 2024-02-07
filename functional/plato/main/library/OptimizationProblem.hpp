@@ -8,7 +8,7 @@
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/main/library/PlatoProblem.hpp"
 
-namespace plato::functional::main::library
+namespace plato::main::library
 {
 class OptimizationProblem
 {
@@ -43,6 +43,6 @@ class OptimizationProblem
     boost::mpi::communicator mCommunicator{};
 };
 
-}  // namespace plato::functional::main::library
+}  // namespace plato::main::library
 
 #endif

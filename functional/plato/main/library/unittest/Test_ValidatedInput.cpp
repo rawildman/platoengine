@@ -5,7 +5,7 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::main::library::unittest
+namespace plato::main::library::unittest
 {
 TEST(ValidatedInput, MakeValidInputWithInvalidInput)
 {
@@ -16,4 +16,4 @@ TEST(ValidatedInput, MakeValidInputWithValidInput)
 {
     EXPECT_NO_THROW(const auto tValidatedInput = make_validated_input(test_utilities::create_valid_example_input()));
 }
-}  // namespace plato::functional::main::library::unittest
+}  // namespace plato::main::library::unittest

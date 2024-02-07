@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "plato/input_parser/InputEnumTypes.hpp"
-namespace plato::functional::input_parser::unittest
+namespace plato::input_parser::unittest
 {
 namespace
 {
@@ -57,4 +57,4 @@ TEST(ObjectiveTypes, SymbolParser)
     EXPECT_EQ(tParsedObjectiveTypes.front(), ObjectiveTypes::kMinimize);
     EXPECT_EQ(tParsedObjectiveTypes.back(), ObjectiveTypes::kMaximize);
 }
-}  // namespace plato::functional::input_parser::unittest
+}  // namespace plato::input_parser::unittest

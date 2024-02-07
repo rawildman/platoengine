@@ -10,7 +10,7 @@ namespace stk::mesh
 class BulkData;
 }
 
-namespace plato::functional::core
+namespace plato::core
 {
 /// @brief Represents a mesh on disk as well as a nodal density field.
 ///
@@ -22,6 +22,6 @@ struct MeshProxy
     std::vector<double> mNodalDensities;
 };
 
-}  // namespace plato::functional::core
+}  // namespace plato::core
 
 #endif

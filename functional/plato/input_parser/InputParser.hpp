@@ -11,7 +11,7 @@
 
 #include "plato/input_parser/BlockStructRule.hpp"
 
-namespace plato::functional::input_parser
+namespace plato::input_parser
 {
 namespace detail
 {
@@ -133,6 +133,6 @@ struct InputParser : boost::spirit::qi::grammar<Iterator, ParsedInput(), boost::
 
 /// @brief Parses all content of the file @a aFileName.
 [[nodiscard]] ParsedInput parse_input_from_file(const std::filesystem::path& aFileName);
-}  // namespace plato::functional::input_parser
+}  // namespace plato::input_parser
 
 #endif

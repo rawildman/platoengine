@@ -5,11 +5,11 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::functional::criteria::library::unittest
+namespace plato::criteria::library::unittest
 {
 TEST(ObjectiveValidation, ValidateAggregationWeight)
 {
-    namespace pfcd = plato::functional::criteria::library::detail;
+    namespace pfcd = plato::criteria::library::detail;
     input_parser::objective tObjective;
     EXPECT_TRUE(pfcd::validate_aggregation_weight(tObjective).has_value());
     tObjective.aggregation_weight = 13.0;
@@ -20,7 +20,7 @@ TEST(ObjectiveValidation, ValidateAggregationWeight)
 
 TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
 {
-    namespace pfcd = plato::functional::criteria::library::detail;
+    namespace pfcd = plato::criteria::library::detail;
     EXPECT_TRUE(pfcd::validate_at_least_one_objective({}).has_value());
     input_parser::objective tObjective;
     EXPECT_FALSE(pfcd::validate_at_least_one_objective({tObjective}).has_value());
@@ -36,7 +36,7 @@ TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
 
 TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
-    namespace pfcd = plato::functional::criteria::library::detail;
+    namespace pfcd = plato::criteria::library::detail;
 
     // One objective and one rank
     input_parser::objective tObjective;
@@ -45,7 +45,7 @@ TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
 {
-    input_parser::objective tObjective = plato::functional::test_utilities::create_valid_example_objective();
+    input_parser::objective tObjective = plato::test_utilities::create_valid_example_objective();
     tObjective.app = boost::none;
     std::vector<std::string> tMessages;
     tMessages = core::validate(tObjective, std::move(tMessages));
@@ -54,7 +54,7 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 {
-    namespace pfc = plato::functional::criteria::library;
+    namespace pfc = plato::criteria::library;
     const input_parser::objective tObjective;
     const std::vector<input_parser::objective> tInput{tObjective, tObjective};
 
@@ -65,8 +65,8 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidInput)
 
 TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 {
-    namespace pfc = plato::functional::criteria::library;
-    const auto tObjective = plato::functional::test_utilities::create_valid_example_objective();
+    namespace pfc = plato::criteria::library;
+    const auto tObjective = plato::test_utilities::create_valid_example_objective();
     const std::vector<input_parser::objective> tInput{tObjective, tObjective};
 
     std::vector<std::string> tMessages;
@@ -76,8 +76,8 @@ TEST(ObjectiveValidation, NoErrorMessagesValidObjective)
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
 {
-    namespace pfc = plato::functional::criteria::library;
-    auto tObjective = plato::functional::test_utilities::create_valid_example_objective();
+    namespace pfc = plato::criteria::library;
+    auto tObjective = plato::test_utilities::create_valid_example_objective();
     tObjective.active = false;
     const std::vector<input_parser::objective> tInput{tObjective, tObjective};
 
@@ -85,4 +85,4 @@ TEST(ObjectiveValidation, ErrorMessagesInvalidObjectives)
     tMessages = pfc::validate_objectives(tInput, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 1u);
 }
-}  // namespace plato::functional::criteria::library::unittest
+}  // namespace plato::criteria::library::unittest

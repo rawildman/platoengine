@@ -6,7 +6,7 @@
 #include <Kokkos_Core.hpp>
 #include <string_view>
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 namespace
 {
@@ -121,4 +121,4 @@ int parallel_unit_main(int argc, char** argv, unsigned int aNumRanks)
     return tExitStatus;
 }
 
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities

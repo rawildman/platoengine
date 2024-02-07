@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_TEST_UTILITIES_UNITMAIN
 #define PLATO_FUNCTIONAL_TEST_UTILITIES_UNITMAIN
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 /// @brief A unit test main for gtest.
 ///
@@ -21,6 +21,6 @@ int unit_main(int argc, char **argv);
 /// that no special launch commands are needed, while also allowing the use of different
 /// number of ranks during development.
 int parallel_unit_main(int argc, char **argv, unsigned int aNumRanks);
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities
 
 #endif

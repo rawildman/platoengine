@@ -13,7 +13,7 @@
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::functional::geometry::extension
+namespace plato::geometry::extension
 {
 namespace
 {
@@ -34,7 +34,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 }
 
 [[maybe_unused]] static auto kBrickShapeGeometryRegistration =
-    plato::functional::geometry::library::GeometryRegistration{
+    plato::geometry::library::GeometryRegistration{
         input_parser::block_name<input_parser::brick_shape_geometry>(),
         [](const library::ValidatedGeometryInput& aGeometryInput)
         {
@@ -56,7 +56,7 @@ BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const st
 core::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {
     std::shared_ptr<stk::mesh::BulkData> tMesh = detail::create_mesh(aDesignParameters, mDiscretizationSize);
-    plato::functional::utilities::write_mesh(mFileName, tMesh);
+    plato::utilities::write_mesh(mFileName, tMesh);
     return core::MeshProxy{mFileName, {}};
 }
 
@@ -126,7 +126,7 @@ std::shared_ptr<stk::mesh::BulkData> create_mesh(const BrickDesign& aDesign,
     generationCommand << xmax << "," << ymax << "," << zmax;
     generationCommand << "|sideset:Z|nodeset:Y";
     std::cout << generationCommand.str() << std::endl;
-    return plato::functional::utilities::create_mesh(generationCommand.str());
+    return plato::utilities::create_mesh(generationCommand.str());
 }
 
 std::vector<double> sensitivities(const unsigned int aParameterIndex)
@@ -182,4 +182,4 @@ BrickDesign to_design_parameters(const linear_algebra::DynamicVector<double>& aD
 }
 }  // namespace detail
 
-}  // namespace plato::functional::geometry::extension
+}  // namespace plato::geometry::extension

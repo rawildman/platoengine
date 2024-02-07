@@ -6,7 +6,7 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::filter::library
+namespace plato::filter::library
 {
 FilterFunction make_filter_function(const input_parser::density_topology& aInput)
 {
@@ -20,7 +20,7 @@ FilterFunction make_filter_function(const input_parser::density_topology& aInput
     }
     else
     {
-        throw plato::functional::utilities::Exception{"Unknown filter_type"};
+        throw plato::utilities::Exception{"Unknown filter_type"};
     }
 }
-}  // namespace plato::functional::filter::library
+}  // namespace plato::filter::library

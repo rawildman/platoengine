@@ -6,7 +6,7 @@
 #include "plato/core/Function.hpp"
 #include "plato/test_utilities/TwoDTestTypes.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(Composer, EvaluateComposition)
 {
@@ -59,7 +59,7 @@ TEST(Composer, TwoDFunctions)
 {
     // Tests composition of a vector function and scalar function:
     // f(G(tX)), with X in R^2, G: R^2 -> R^2, f: R^2 -> R
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tF = make_function(pft::TwoDScalarFunction{}, pft::TwoDScalarFunctionGradient{});
     const auto tG = make_function(pft::TwoDVectorFunction{}, pft::TwoDVectorFunctionJacobian{});
@@ -86,4 +86,4 @@ TEST(Composer, TwoDFunctions)
         EXPECT_EQ(tH.df(tX), tExpectedDF);
     }
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

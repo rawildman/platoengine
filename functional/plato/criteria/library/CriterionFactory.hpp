@@ -10,7 +10,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::criteria::library
+namespace plato::criteria::library
 {
 using CriterionFunction = core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
 
@@ -62,6 +62,6 @@ CriterionInput to_criterion_input(const Input& aInput)
         /*.mInputFiles=*/aInput.rawInput().input_files.value_or(input_parser::FileList{})};
 }
 
-}  // namespace plato::functional::criteria::library
+}  // namespace plato::criteria::library
 
 #endif

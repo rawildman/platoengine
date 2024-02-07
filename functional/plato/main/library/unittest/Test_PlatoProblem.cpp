@@ -14,7 +14,7 @@
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::functional::main::library::unittest
+namespace plato::main::library::unittest
 {
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 {
@@ -129,4 +129,4 @@ TEST(PlatoProblem, ParseAndValidateInvalidInput)
     const std::string tInput;
     EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), utilities::Exception);
 }
-}  // namespace plato::functional::main::library::unittest
+}  // namespace plato::main::library::unittest

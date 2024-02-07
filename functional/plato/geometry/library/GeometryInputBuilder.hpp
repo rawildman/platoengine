@@ -8,7 +8,7 @@
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::functional::geometry::library::detail
+namespace plato::geometry::library::detail
 {
 template <typename T>
 struct TypeOrOptional
@@ -81,6 +81,6 @@ template <typename FusionStruct>
 using ValidatedGeometryInputVariant =
     typename VariantFromTuple<std::invoke_result_t<make_geometry_input_tuple, FusionStruct>>::validated_type;
 
-}  // namespace plato::functional::geometry::library::detail
+}  // namespace plato::geometry::library::detail
 
 #endif

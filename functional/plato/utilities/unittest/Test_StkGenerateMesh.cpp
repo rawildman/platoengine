@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "plato/utilities/STKUtilities.hpp"
-namespace plato::functional::utilities::unittest
+namespace plato::utilities::unittest
 {
 TEST(STKGenerateMesh, Box)
 {
@@ -63,4 +63,4 @@ TEST(STKUtilities, WriteDensityField)
     EXPECT_TRUE(std::filesystem::remove(tInputFileName));
     EXPECT_TRUE(std::filesystem::remove(tOutputFileName));
 }
-}  // namespace plato::functional::utilities::unittest
+}  // namespace plato::utilities::unittest

@@ -3,11 +3,11 @@
 #include "plato/core/test_utilities/Utilities.hpp"
 #include "plato/test_utilities/Penalty.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(Penalty, Penalty)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tExponent = 2.0;
@@ -27,7 +27,7 @@ TEST(Penalty, Penalty)
 
 TEST(Penalty, MakePenalty)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     constexpr double tXMin = 0.5e-2;
     constexpr double tExponent = 2.0;
@@ -45,4 +45,4 @@ TEST(Penalty, MakePenalty)
         EXPECT_EQ(tPenalty.df(tX(0), tX(1)), tPenaltyFunction.df(tX));
     }
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest

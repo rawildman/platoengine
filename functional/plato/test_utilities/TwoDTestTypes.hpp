@@ -4,7 +4,7 @@
 #include <array>
 #include <ostream>
 
-namespace plato::functional::test_utilities
+namespace plato::test_utilities
 {
 struct TwoDVector
 {
@@ -59,6 +59,6 @@ struct TwoDScalarFunctionGradient
     }
 };
 
-}  // namespace plato::functional::test_utilities
+}  // namespace plato::test_utilities
 
 #endif

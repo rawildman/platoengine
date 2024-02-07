@@ -5,11 +5,11 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
-namespace plato::functional::criteria::library::unittest
+namespace plato::criteria::library::unittest
 {
 namespace
 {
-[[nodiscard]] auto make_test_criterion_function() -> plato::functional::criteria::library::CriterionFunction
+[[nodiscard]] auto make_test_criterion_function() -> plato::criteria::library::CriterionFunction
 {
     return core::make_function([](const core::MeshProxy&) { return 0.0; },
                                [](const core::MeshProxy&) {
@@ -17,27 +17,27 @@ namespace
                                });
 }
 
-[[maybe_unused]] static auto kTestCriterionRegistration = plato::functional::criteria::library::CriterionRegistration{
-    "test", [](const plato::functional::criteria::library::CriterionInput&) { return make_test_criterion_function(); }};
+[[maybe_unused]] static auto kTestCriterionRegistration = plato::criteria::library::CriterionRegistration{
+    "test", [](const plato::criteria::library::CriterionInput&) { return make_test_criterion_function(); }};
 
 }  // namespace
 
 TEST(CriterionRegistration, PhonyCriterion)
 {
-    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered("test"));
+    EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered("test"));
 }
 
 TEST(CriterionRegistration, NodalSum)
 {
     const std::string_view tNodalSumName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kNodalSum).value();
-    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tNodalSumName));
+    EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tNodalSumName));
 }
 
 TEST(CriterionRegistration, CustomApp)
 {
     const std::string_view tCustomAppName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
-    EXPECT_TRUE(plato::functional::criteria::library::is_criterion_function_registered(tCustomAppName));
+    EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tCustomAppName));
 }
-}  // namespace plato::functional::criteria::library::unittest
+}  // namespace plato::criteria::library::unittest

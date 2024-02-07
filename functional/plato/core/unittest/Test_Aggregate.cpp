@@ -4,11 +4,11 @@
 #include "plato/core/test_utilities/Utilities.hpp"
 #include "plato/test_utilities/Rosenbrock.hpp"
 
-namespace plato::functional::core::unittest
+namespace plato::core::unittest
 {
 TEST(Aggregate, DirectConstruction)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
@@ -36,7 +36,7 @@ TEST(Aggregate, DirectConstruction)
 
 TEST(Aggregate, UsingMakeFunction)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
@@ -65,7 +65,7 @@ TEST(Aggregate, UsingMakeFunction)
 
 TEST(Aggregate, FunctionDifferentParameters)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const auto tF2 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{2.0, 200.0});
@@ -85,7 +85,7 @@ TEST(Aggregate, FunctionDifferentParameters)
 
 TEST(Aggregate, OneFunction)
 {
-    namespace pft = plato::functional::test_utilities;
+    namespace pft = plato::test_utilities;
 
     const auto tF1 = test_utilities::make_rosenbrock_function(pft::Rosenbrock{});
     const double tW1 = 1.0;
@@ -101,4 +101,4 @@ TEST(Aggregate, OneFunction)
         EXPECT_EQ(tDfdx(1), 0.0);
     }
 }
-}  // namespace plato::functional::core::unittest
+}  // namespace plato::core::unittest
