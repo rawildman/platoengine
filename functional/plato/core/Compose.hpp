@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_CORE_COMPOSE
-#define PLATO_FUNCTIONAL_CORE_COMPOSE
+#ifndef PLATO_CORE_COMPOSE
+#define PLATO_CORE_COMPOSE
 
 #include <type_traits>
 #include <utility>

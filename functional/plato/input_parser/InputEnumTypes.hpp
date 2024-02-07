@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_INPUTENUMTYPES
-#define PLATO_FUNCTIONAL_INPUT_PARSER_INPUTENUMTYPES
+#ifndef PLATO_INPUT_PARSER_INPUTENUMTYPES
+#define PLATO_INPUT_PARSER_INPUTENUMTYPES
 
 #include "plato/input_parser/EnumTypeHelpers.hpp"
 #include "plato/utilities/EnumTable.hpp"

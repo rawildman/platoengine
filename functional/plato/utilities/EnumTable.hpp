@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_UTILITIES_ENUMTABLE
-#define PLATO_FUNCTIONAL_UTILITIES_ENUMTABLE
+#ifndef PLATO_UTILITIES_ENUMTABLE
+#define PLATO_UTILITIES_ENUMTABLE
 
 #include <boost/bimap.hpp>
 #include <boost/bimap/unordered_set_of.hpp>

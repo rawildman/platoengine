@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_CORE_AGGREGATE
-#define PLATO_FUNCTIONAL_CORE_AGGREGATE
+#ifndef PLATO_CORE_AGGREGATE
+#define PLATO_CORE_AGGREGATE
 
 #include <numeric>
 #include <utility>

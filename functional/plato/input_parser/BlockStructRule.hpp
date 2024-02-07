@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_BLOCKSTRUCTRULE
-#define PLATO_FUNCTIONAL_INPUT_PARSER_BLOCKSTRUCTRULE
+#ifndef PLATO_INPUT_PARSER_BLOCKSTRUCTRULE
+#define PLATO_INPUT_PARSER_BLOCKSTRUCTRULE
 
 #include <boost/fusion/include/at_c.hpp>
 #include <boost/fusion/include/at_key.hpp>

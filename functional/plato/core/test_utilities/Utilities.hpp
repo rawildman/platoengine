@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_CORE_TEST_UTILITIES_UTILITIES
-#define PLATO_FUNCTIONAL_CORE_TEST_UTILITIES_UTILITIES
+#ifndef PLATO_CORE_TEST_UTILITIES_UTILITIES
+#define PLATO_CORE_TEST_UTILITIES_UTILITIES
 
 #include "plato/core/Function.hpp"
 #include "plato/test_utilities/Penalty.hpp"

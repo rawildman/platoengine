@@ -1,5 +1,5 @@
-#ifndef PLATO_FUNCTIONAL_INPUT_PARSER_INPUTBLOCKSTRUCT
-#define PLATO_FUNCTIONAL_INPUT_PARSER_INPUTBLOCKSTRUCT
+#ifndef PLATO_INPUT_PARSER_INPUTBLOCKSTRUCT
+#define PLATO_INPUT_PARSER_INPUTBLOCKSTRUCT
 
 #include <boost/fusion/adapted/struct/define_struct.hpp>
 #include <boost/fusion/include/define_struct.hpp>
