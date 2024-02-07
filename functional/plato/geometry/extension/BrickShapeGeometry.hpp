@@ -4,11 +4,11 @@
 #include <filesystem>
 #include <optional>
 
-#include "core/Function.hpp"
-#include "core/MeshProxy.hpp"
-#include "linear_algebra/DynamicVector.hpp"
-#include "linear_algebra/JacobianColumnEvaluator.hpp"
-#include "linear_algebra/JacobianMultiplier.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
+#include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
+#include "plato/linear_algebra/JacobianMultiplier.hpp"
 
 namespace input_parser
 {

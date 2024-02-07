@@ -3,8 +3,8 @@
 
 #include <boost/mpi.hpp>
 
-#include "core/Aggregate.hpp"
-#include "core/Function.hpp"
+#include "plato/core/Aggregate.hpp"
+#include "plato/core/Function.hpp"
 
 namespace plato::functional::core
 {

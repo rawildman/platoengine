@@ -4,8 +4,8 @@
 #include <ROL_Algorithm.hpp>
 #include <ROL_Solver.hpp>
 
-#include "core/ValidatedInputTypeWrapper.hpp"
-#include "input_parser/InputBlocks.hpp"
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::functional::optimizer
 {

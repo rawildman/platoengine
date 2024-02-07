@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "core/MeshProxy.hpp"
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::filter::library
 {

@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_INPUT_PARSER_INPUTENUMTYPES
 #define PLATO_FUNCTIONAL_INPUT_PARSER_INPUTENUMTYPES
 
-#include "input_parser/EnumTypeHelpers.hpp"
-#include "utilities/EnumTable.hpp"
+#include "plato/input_parser/EnumTypeHelpers.hpp"
+#include "plato/utilities/EnumTable.hpp"
 
 // clang-format off
 DECLARE_ENUM_SYMBOL_TABLE(CodeOptions,

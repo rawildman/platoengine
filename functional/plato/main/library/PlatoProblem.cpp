@@ -1,11 +1,11 @@
-#include "main/library/PlatoProblem.hpp"
+#include "plato/main/library/PlatoProblem.hpp"
 
 #include <ROL_Bounds.hpp>
 
-#include "core/Compose.hpp"
-#include "core/MeshProxy.hpp"
-#include "criteria/extension/NodalSumObjective.hpp"
-#include "rol_integration/ROLHelpers.hpp"
+#include "plato/core/Compose.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/criteria/extension/NodalSumObjective.hpp"
+#include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::functional::main::library
 {

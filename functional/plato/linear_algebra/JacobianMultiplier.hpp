@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_LINEAR_ALGEBRA_JACOBIANMULTIPLIER
 #define PLATO_FUNCTIONAL_LINEAR_ALGEBRA_JACOBIANMULTIPLIER
 
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::linear_algebra
 {

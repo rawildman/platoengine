@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "test_utilities/TwoDTestTypes.hpp"
+#include "plato/test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::test_utilities
 {

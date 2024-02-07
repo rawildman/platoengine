@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "core/Compose.hpp"
-#include "core/test_utilities/Utilities.hpp"
-#include "test_utilities/Penalty.hpp"
-#include "test_utilities/Rosenbrock.hpp"
+#include "plato/core/Compose.hpp"
+#include "plato/core/test_utilities/Utilities.hpp"
+#include "plato/test_utilities/Penalty.hpp"
+#include "plato/test_utilities/Rosenbrock.hpp"
 
 namespace plato::functional::core::unittest
 {

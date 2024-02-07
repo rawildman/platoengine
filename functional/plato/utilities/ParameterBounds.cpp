@@ -1,4 +1,4 @@
-#include "utilities/ParameterBounds.hpp"
+#include "plato/utilities/ParameterBounds.hpp"
 
 namespace plato::functional::utilities
 {

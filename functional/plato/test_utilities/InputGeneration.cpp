@@ -1,4 +1,4 @@
-#include "test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/InputGeneration.hpp"
 
 #include <fstream>
 

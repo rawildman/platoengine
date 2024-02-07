@@ -1,4 +1,4 @@
-#include "utilities/SharedLibraryUtilities.hpp"
+#include "plato/utilities/SharedLibraryUtilities.hpp"
 
 namespace plato::functional::utilities
 {

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "utilities/EnumTable.hpp"
+#include "plato/utilities/EnumTable.hpp"
 
 namespace plato::functional::utilities::unittest
 {

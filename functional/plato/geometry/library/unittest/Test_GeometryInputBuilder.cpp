@@ -2,7 +2,7 @@
 
 #include <boost/fusion/adapted/struct/define_struct.hpp>
 
-#include "geometry/library/GeometryInputBuilder.hpp"
+#include "plato/geometry/library/GeometryInputBuilder.hpp"
 // clang-format off
 BOOST_FUSION_DEFINE_STRUCT((plato)(functional)(geometry)(library)(detail),
                            TestStructNoGeometryTypes,

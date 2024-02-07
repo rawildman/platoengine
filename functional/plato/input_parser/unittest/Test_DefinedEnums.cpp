@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "input_parser/InputEnumTypes.hpp"
+#include "plato/input_parser/InputEnumTypes.hpp"
 namespace plato::functional::input_parser::unittest
 {
 namespace

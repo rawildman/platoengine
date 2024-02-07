@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "utilities/RankSplitVector.hpp"
+#include "plato/utilities/RankSplitVector.hpp"
 
 namespace plato::functional::utilities::unittest
 {

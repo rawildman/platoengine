@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "utilities/NamedType.hpp"
+#include "plato/utilities/NamedType.hpp"
 
 namespace plato::functional::utilities::unittest
 {

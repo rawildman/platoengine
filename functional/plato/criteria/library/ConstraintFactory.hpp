@@ -3,10 +3,10 @@
 
 #include <string>
 
-#include "core/Function.hpp"
-#include "core/ValidatedInputTypeWrapper.hpp"
-#include "input_parser/InputBlocks.hpp"
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::core
 {

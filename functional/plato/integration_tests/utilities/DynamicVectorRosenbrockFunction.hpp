@@ -1,10 +1,10 @@
 #ifndef PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORTESTUTILITIES
 #define PLATO_FUNCTIONAL_INTEGRATION_TESTS_UTILITIES_DYNAMICVECTORTESTUTILITIES
 
-#include "core/Function.hpp"
-#include "linear_algebra/DynamicVector.hpp"
-#include "test_utilities/Rosenbrock.hpp"
-#include "test_utilities/TwoDTestTypes.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
+#include "plato/test_utilities/Rosenbrock.hpp"
+#include "plato/test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::integration_tests::utilities
 {

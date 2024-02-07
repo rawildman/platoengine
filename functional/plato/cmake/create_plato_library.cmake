@@ -22,7 +22,7 @@ function( create_plato_library LIBRARY_NAME DIRECTORIES TARGET_LINK_LIST)
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)
     cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME FUNCTIONAL_SUB_DIR)
-    target_include_directories(${LIBRARY_NAME} INTERFACE $<INSTALL_INTERFACE:include/${FUNCTIONAL_SUB_DIR}>)
-    install( FILES ${LIB_HDRS} DESTINATION include/${FUNCTIONAL_SUB_DIR})
+    target_include_directories(${LIBRARY_NAME} INTERFACE $<INSTALL_INTERFACE:include/plato/${FUNCTIONAL_SUB_DIR}>)
+    install( FILES ${LIB_HDRS} DESTINATION include/plato/${FUNCTIONAL_SUB_DIR})
 
 endfunction(create_plato_library)

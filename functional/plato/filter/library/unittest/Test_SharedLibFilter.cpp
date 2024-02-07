@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "core/MeshProxy.hpp"
-#include "filter/library/FilterFactory.hpp"
-#include "filter/library/FilterInterface.hpp"
-#include "filter/library/FilterRegistration.hpp"
-#include "input_parser/InputBlocks.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/filter/library/FilterFactory.hpp"
+#include "plato/filter/library/FilterInterface.hpp"
+#include "plato/filter/library/FilterRegistration.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::functional::filter::extension::unittest
 {

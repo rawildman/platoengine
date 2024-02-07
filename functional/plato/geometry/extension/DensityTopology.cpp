@@ -1,11 +1,11 @@
-#include "geometry/extension/DensityTopology.hpp"
+#include "plato/geometry/extension/DensityTopology.hpp"
 
-#include "filter/library/FilterInterface.hpp"
-#include "filter/library/FilterJacobian.hpp"
-#include "geometry/library/GeometryRegistration.hpp"
-#include "geometry/library/GeometryValidation.hpp"
-#include "utilities/Exception.hpp"
-#include "utilities/STKUtilities.hpp"
+#include "plato/filter/library/FilterInterface.hpp"
+#include "plato/filter/library/FilterJacobian.hpp"
+#include "plato/geometry/library/GeometryRegistration.hpp"
+#include "plato/geometry/library/GeometryValidation.hpp"
+#include "plato/utilities/Exception.hpp"
+#include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::functional::geometry::extension
 {

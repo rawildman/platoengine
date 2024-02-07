@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "core/Compose.hpp"
-#include "integration_tests/utilities/DynamicVectorPenaltyFunction.hpp"
-#include "integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
-#include "test_utilities/Penalty.hpp"
+#include "plato/core/Compose.hpp"
+#include "plato/integration_tests/utilities/DynamicVectorPenaltyFunction.hpp"
+#include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
+#include "plato/test_utilities/Penalty.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

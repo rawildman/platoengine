@@ -3,7 +3,7 @@
 
 #include <ROL_StdVector.hpp>
 
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::rol_integration
 {

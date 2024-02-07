@@ -3,10 +3,10 @@
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 #include <type_traits>
 
-#include "input_parser/BlockStructRule.hpp"
-#include "input_parser/InputBlocks.hpp"
-#include "input_parser/InputParser.hpp"
-#include "input_parser/unittest/Test_Helpers.hpp"
+#include "plato/input_parser/BlockStructRule.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
+#include "plato/input_parser/InputParser.hpp"
+#include "plato/input_parser/unittest/Test_Helpers.hpp"
 
 namespace plato::functional::input_parser::unittest
 {

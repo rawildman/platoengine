@@ -1,12 +1,12 @@
 #ifndef PLATO_FUNCTIONAL_GEOMETRY_LIBRARY_GEOMETRYFACTORY
 #define PLATO_FUNCTIONAL_GEOMETRY_LIBRARY_GEOMETRYFACTORY
 
-#include "core/Function.hpp"
-#include "core/MeshProxy.hpp"
-#include "core/ValidatedInputTypeWrapper.hpp"
-#include "geometry/library/GeometryRegistration.hpp"
-#include "linear_algebra/DynamicVector.hpp"
-#include "linear_algebra/JacobianMultiplier.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
+#include "plato/geometry/library/GeometryRegistration.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
+#include "plato/linear_algebra/JacobianMultiplier.hpp"
 
 namespace input_parser
 {

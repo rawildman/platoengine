@@ -1,15 +1,15 @@
-#include "main/library/ValidatedInput.hpp"
+#include "plato/main/library/ValidatedInput.hpp"
 
 #include <string>
 #include <string_view>
 
-#include "criteria/library/ConstraintValidation.hpp"
-#include "criteria/library/ObjectiveValidation.hpp"
-#include "geometry/library/GeometryRegistration.hpp"
-#include "geometry/library/GeometryValidation.hpp"
-#include "input_parser/InputParser.hpp"
-#include "optimizer/OptimizerValidation.hpp"
-#include "utilities/Exception.hpp"
+#include "plato/criteria/library/ConstraintValidation.hpp"
+#include "plato/criteria/library/ObjectiveValidation.hpp"
+#include "plato/geometry/library/GeometryRegistration.hpp"
+#include "plato/geometry/library/GeometryValidation.hpp"
+#include "plato/input_parser/InputParser.hpp"
+#include "plato/optimizer/OptimizerValidation.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace plato::functional::main::library
 {

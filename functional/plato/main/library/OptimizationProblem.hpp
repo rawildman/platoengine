@@ -1,12 +1,12 @@
 #ifndef PLATO_FUNCTIONAL_MAIN_LIBRARY_OPTIMIZATIONPROBLEM
 #define PLATO_FUNCTIONAL_MAIN_LIBRARY_OPTIMIZATIONPROBLEM
 
+#include <ROL_Problem.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <string_view>
 
-#include "ROL_Problem.hpp"
-#include "core/ValidationRegistration.hpp"
-#include "main/library/PlatoProblem.hpp"
+#include "plato/core/ValidationRegistration.hpp"
+#include "plato/main/library/PlatoProblem.hpp"
 
 namespace plato::functional::main::library
 {

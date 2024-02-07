@@ -7,9 +7,9 @@
 #include <utility>
 #include <variant>
 
-#include "geometry/library/GeometryRegistration.hpp"
-#include "input_parser/InputBlocks.hpp"
-#include "utilities/Exception.hpp"
+#include "plato/geometry/library/GeometryRegistration.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace plato::functional::geometry::library::detail
 {

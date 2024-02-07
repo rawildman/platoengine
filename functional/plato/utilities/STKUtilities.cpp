@@ -1,4 +1,4 @@
-#include "utilities/STKUtilities.hpp"
+#include "plato/utilities/STKUtilities.hpp"
 
 #include <stk_io/FillMesh.hpp>
 #include <stk_io/StkMeshIoBroker.hpp>
@@ -8,10 +8,10 @@
 #include <stk_mesh/base/MetaData.hpp>
 #include <stk_util/parallel/Parallel.hpp>
 
-#include "Ioss_DBUsage.h"    // for DatabaseUsage::READ_MODEL
-#include "Ioss_Field.h"      // for Field, etc
-#include "Ioss_IOFactory.h"  // for IOFactory
-#include "Ioss_NodeBlock.h"  // for NodeBlock
+#include <Ioss_DBUsage.h>    // for DatabaseUsage::READ_MODEL
+#include <Ioss_Field.h>      // for Field, etc
+#include <Ioss_IOFactory.h>  // for IOFactory
+#include <Ioss_NodeBlock.h>  // for NodeBlock
 
 namespace plato::functional::utilities
 {

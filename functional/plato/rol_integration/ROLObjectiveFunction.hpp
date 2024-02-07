@@ -4,8 +4,8 @@
 #include <ROL_Objective.hpp>
 #include <ROL_Vector.hpp>
 
-#include "core/Function.hpp"
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::rol_integration
 {

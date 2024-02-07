@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "core/MeshProxy.hpp"
-#include "criteria/extension/SharedLibCriterion.hpp"
-#include "geometry/extension/BrickShapeGeometry.hpp"
-#include "utilities/Exception.hpp"
-#include "utilities/STKUtilities.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/criteria/extension/SharedLibCriterion.hpp"
+#include "plato/geometry/extension/BrickShapeGeometry.hpp"
+#include "plato/utilities/Exception.hpp"
+#include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "input_parser/FileList.hpp"
-#include "input_parser/InputBlockStruct.hpp"
-#include "input_parser/InputEnumTypes.hpp"
+#include "plato/input_parser/FileList.hpp"
+#include "plato/input_parser/InputBlockStruct.hpp"
+#include "plato/input_parser/InputEnumTypes.hpp"
 
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs.

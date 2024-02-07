@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "core/test_utilities/Utilities.hpp"
-#include "test_utilities/Penalty.hpp"
+#include "plato/core/test_utilities/Utilities.hpp"
+#include "plato/test_utilities/Penalty.hpp"
 
 namespace plato::functional::core::unittest
 {

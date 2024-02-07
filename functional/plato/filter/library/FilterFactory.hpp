@@ -1,7 +1,7 @@
 #ifndef PLATO_FUNCTIONAL_FILTER_LIBRARY_FILTERFACTORY
 #define PLATO_FUNCTIONAL_FILTER_LIBRARY_FILTERFACTORY
 
-#include "core/Function.hpp"
+#include "plato/core/Function.hpp"
 
 namespace plato::functional::input_parser
 {

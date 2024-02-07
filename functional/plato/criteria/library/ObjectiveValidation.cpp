@@ -1,8 +1,8 @@
-#include "criteria/library/ObjectiveValidation.hpp"
+#include "plato/criteria/library/ObjectiveValidation.hpp"
 
 #include <boost/mpi/communicator.hpp>
 
-#include "criteria/library/CriterionValidation.hpp"
+#include "plato/criteria/library/CriterionValidation.hpp"
 
 namespace plato::functional::criteria::library
 {

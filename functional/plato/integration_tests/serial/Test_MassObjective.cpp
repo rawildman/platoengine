@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "geometry/extension/BrickShapeGeometry.hpp"
-#include "integration_tests/test_mass_objective/MassObjective.hpp"
-#include "utilities/STKUtilities.hpp"
+#include "plato/geometry/extension/BrickShapeGeometry.hpp"
+#include "plato/integration_tests/test_mass_objective/MassObjective.hpp"
+#include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

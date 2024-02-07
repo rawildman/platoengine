@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "criteria/library/CriterionValidation.hpp"
-#include "input_parser/InputBlocks.hpp"
+#include "plato/criteria/library/CriterionValidation.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::functional::criteria::library::unittest
 {

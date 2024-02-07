@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <string_view>
 
-#include "utilities/Exception.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace plato::functional::utilities
 {

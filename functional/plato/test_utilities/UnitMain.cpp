@@ -1,4 +1,4 @@
-#include "test_utilities/UnitMain.hpp"
+#include "plato/test_utilities/UnitMain.hpp"
 
 #include <gtest/gtest.h>
 #include <mpi.h>

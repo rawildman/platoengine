@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "core/Function.hpp"
+#include "plato/core/Function.hpp"
 
 namespace plato::functional::core
 {

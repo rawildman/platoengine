@@ -2,8 +2,8 @@
 #include <boost/mpi/environment.hpp>
 #include <iostream>
 
-#include "main/library/OptimizationProblem.hpp"
-#include "utilities/Exception.hpp"
+#include "plato/main/library/OptimizationProblem.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace
 {

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "core/MeshProxy.hpp"
+#include "plato/core/MeshProxy.hpp"
 
 namespace plato::functional::criteria::library
 {

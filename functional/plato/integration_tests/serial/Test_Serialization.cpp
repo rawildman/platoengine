@@ -4,7 +4,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <sstream>
 
-#include "test_utilities/TwoDTestTypesSerialization.hpp"
+#include "plato/test_utilities/TwoDTestTypesSerialization.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

@@ -3,9 +3,9 @@
 #include <cmath>
 #include <functional>
 
-#include "core/ValidationRegistration.hpp"
-#include "optimizer/OptimizerValidation.hpp"
-#include "test_utilities/InputGeneration.hpp"
+#include "plato/core/ValidationRegistration.hpp"
+#include "plato/optimizer/OptimizerValidation.hpp"
+#include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::functional::optimizer::unittest
 {

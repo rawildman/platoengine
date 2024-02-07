@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "core/Function.hpp"
-#include "core/MeshProxy.hpp"
-#include "filter/library/FilterJacobian.hpp"
-#include "filter/library/FilterRegistration.hpp"
+#include "plato/core/Function.hpp"
+#include "plato/core/MeshProxy.hpp"
+#include "plato/filter/library/FilterJacobian.hpp"
+#include "plato/filter/library/FilterRegistration.hpp"
 
 namespace input_parser
 {

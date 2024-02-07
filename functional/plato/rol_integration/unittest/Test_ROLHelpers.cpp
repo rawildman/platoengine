@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "rol_integration/ROLHelpers.hpp"
+#include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::functional::rol_integration::unittest
 {

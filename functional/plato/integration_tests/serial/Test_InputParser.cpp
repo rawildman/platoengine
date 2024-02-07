@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
-#include "input_parser/InputParser.hpp"
-#include "test_utilities/InputGeneration.hpp"
+#include "plato/input_parser/InputParser.hpp"
+#include "plato/test_utilities/InputGeneration.hpp"
 
 namespace
 {

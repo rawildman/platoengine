@@ -3,7 +3,7 @@
 
 #include <boost/serialization/vector.hpp>
 
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::linear_algebra
 {

@@ -1,10 +1,10 @@
-#include "integration_tests/test_mass_objective/MassObjectiveInterface.hpp"
+#include "plato/integration_tests/test_mass_objective/MassObjectiveInterface.hpp"
 
 #include <mpi.h>
 
 #include <iostream>
 
-#include "integration_tests/test_mass_objective/MassObjective.hpp"
+#include "plato/integration_tests/test_mass_objective/MassObjective.hpp"
 
 namespace plato::functional::integration_tests::test_mass_objective
 {

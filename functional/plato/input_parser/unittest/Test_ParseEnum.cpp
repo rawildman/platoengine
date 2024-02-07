@@ -5,8 +5,8 @@
 #include <boost/phoenix/stl/algorithm.hpp>
 #include <boost/phoenix/stl/container.hpp>
 
-#include "input_parser/EnumParser.hpp"
-#include "utilities/EnumTable.hpp"
+#include "plato/input_parser/EnumParser.hpp"
+#include "plato/utilities/EnumTable.hpp"
 
 namespace plato::functional::input_parser::unittest
 {

@@ -1,12 +1,12 @@
-#include "criteria/library/ObjectiveFactory.hpp"
+#include "plato/criteria/library/ObjectiveFactory.hpp"
 
 #include <boost/mpi/communicator.hpp>
 
-#include "core/ValidatedInputTypeWrapper.hpp"
-#include "core/ValidationUtilities.hpp"
-#include "criteria/library/CriterionFactory.hpp"
-#include "linear_algebra/DynamicVectorSerialization.hpp"
-#include "utilities/RankSplitVector.hpp"
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
+#include "plato/core/ValidationUtilities.hpp"
+#include "plato/criteria/library/CriterionFactory.hpp"
+#include "plato/linear_algebra/DynamicVectorSerialization.hpp"
+#include "plato/utilities/RankSplitVector.hpp"
 
 namespace plato::functional::criteria::library
 {

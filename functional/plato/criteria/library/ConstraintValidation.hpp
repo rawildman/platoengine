@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CONSTRAINTVALIDATION
 #define PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CONSTRAINTVALIDATION
 
-#include "core/ValidationRegistration.hpp"
-#include "input_parser/InputBlocks.hpp"
+#include "plato/core/ValidationRegistration.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::functional::criteria::library
 {

@@ -1,9 +1,9 @@
 #ifndef PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CRITERIONVALIDATION
 #define PLATO_FUNCTIONAL_CRITERIA_LIBRARY_CRITERIONVALIDATION
 
-#include "core/ValidationRegistration.hpp"
-#include "core/ValidationUtilities.hpp"
-#include "input_parser/InputBlocks.hpp"
+#include "plato/core/ValidationRegistration.hpp"
+#include "plato/core/ValidationUtilities.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::functional::criteria::library
 {

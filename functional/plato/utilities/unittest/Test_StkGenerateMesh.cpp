@@ -8,7 +8,7 @@
 #include <stk_util/parallel/Parallel.hpp>
 #include <string_view>
 
-#include "utilities/STKUtilities.hpp"
+#include "plato/utilities/STKUtilities.hpp"
 namespace plato::functional::utilities::unittest
 {
 TEST(STKGenerateMesh, Box)

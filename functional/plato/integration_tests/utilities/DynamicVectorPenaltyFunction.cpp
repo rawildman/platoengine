@@ -1,8 +1,8 @@
-#include "integration_tests/utilities/DynamicVectorPenaltyFunction.hpp"
+#include "plato/integration_tests/utilities/DynamicVectorPenaltyFunction.hpp"
 
 #include <cassert>
 
-#include "integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
+#include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
 
 namespace plato::functional::integration_tests::utilities
 {

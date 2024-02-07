@@ -3,7 +3,7 @@
 #include <exception>
 #include <iostream>
 
-#include "core/ValidationRegistration.hpp"
+#include "plato/core/ValidationRegistration.hpp"
 
 namespace plato::functional::core::unittest
 {

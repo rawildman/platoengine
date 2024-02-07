@@ -8,8 +8,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <iostream>
 
-#include "input_parser/EnumParser.hpp"
-#include "utilities/EnumTable.hpp"
+#include "plato/input_parser/EnumParser.hpp"
+#include "plato/utilities/EnumTable.hpp"
 
 // clang-format off
 #define ENUMERATE(a) BOOST_PP_TUPLE_ELEM(2, 0, a)

@@ -2,10 +2,10 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "core/ParallelAggregate.hpp"
-#include "core/test_utilities/Utilities.hpp"
-#include "test_utilities/Rosenbrock.hpp"
-#include "test_utilities/TwoDTestTypesSerialization.hpp"
+#include "plato/core/ParallelAggregate.hpp"
+#include "plato/core/test_utilities/Utilities.hpp"
+#include "plato/test_utilities/Rosenbrock.hpp"
+#include "plato/test_utilities/TwoDTestTypesSerialization.hpp"
 
 namespace plato::functional::core::parallel_unittest
 {

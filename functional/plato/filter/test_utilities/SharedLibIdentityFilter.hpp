@@ -1,8 +1,8 @@
 #ifndef PLATO_FUNCTIONAL_FILTER_TESTUTILITIES_SHAREDLIBIDENTITYFILTER
 #define PLATO_FUNCTIONAL_FILTER_TESTUTILITIES_SHAREDLIBIDENTITYFILTER
 
-#include "filter/library/FilterInterface.hpp"
-#include "linear_algebra/DynamicVector.hpp"
+#include "plato/filter/library/FilterInterface.hpp"
+#include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::functional::core
 {

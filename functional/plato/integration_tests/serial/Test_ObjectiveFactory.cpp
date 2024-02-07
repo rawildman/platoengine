@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "criteria/library/ObjectiveFactory.hpp"
-#include "main/library/ValidatedInput.hpp"
-#include "test_utilities/InputGeneration.hpp"
-#include "utilities/Exception.hpp"
+#include "plato/criteria/library/ObjectiveFactory.hpp"
+#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace plato::functional::integration_tests::serial
 {

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "linear_algebra/JacobianMultiplier.hpp"
+#include "plato/linear_algebra/JacobianMultiplier.hpp"
 
 namespace plato::functional::linear_algebra::unittest
 {

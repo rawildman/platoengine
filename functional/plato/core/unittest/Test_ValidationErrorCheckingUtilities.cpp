@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "core/ValidationUtilities.hpp"
-#include "utilities/Exception.hpp"
+#include "plato/core/ValidationUtilities.hpp"
+#include "plato/utilities/Exception.hpp"
 
 namespace plato::functional::core::unittest
 {

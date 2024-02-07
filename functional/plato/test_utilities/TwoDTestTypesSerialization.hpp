@@ -3,7 +3,7 @@
 
 #include <boost/serialization/array.hpp>
 
-#include "test_utilities/TwoDTestTypes.hpp"
+#include "plato/test_utilities/TwoDTestTypes.hpp"
 
 namespace plato::functional::test_utilities
 {

@@ -1,7 +1,7 @@
-#include "geometry/library/GeometryValidation.hpp"
+#include "plato/geometry/library/GeometryValidation.hpp"
 
-#include "core/ValidationRegistration.hpp"
-#include "geometry/library/GeometryRegistrationUtilities.hpp"
+#include "plato/core/ValidationRegistration.hpp"
+#include "plato/geometry/library/GeometryRegistrationUtilities.hpp"
 
 namespace plato::functional::geometry::library
 {
