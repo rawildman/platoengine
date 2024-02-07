@@ -47,7 +47,6 @@ if( DAKOTADRIVER )
 endif()
 
 if( STK_ENABLED )
-  add_subdirectory(src/functional)
   add_subdirectory(src/support_structure)
   add_subdirectory(src/support_structure/main)
   add_subdirectory(src/DecomposeMesh)
