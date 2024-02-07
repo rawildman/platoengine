@@ -2,6 +2,7 @@
 #define PLATO_FUNCTIONAL_CORE_FACTORYREGISTRATION
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
