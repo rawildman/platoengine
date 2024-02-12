@@ -171,6 +171,7 @@ endif()
 
 add_subdirectory(base)
 add_subdirectory(apps)
+add_subdirectory(functional)
 
 include(CMakePackageConfigHelpers)
 install(EXPORT PlatoEngine NAMESPACE PlatoEngine FILE PlatoEngineTargets.cmake DESTINATION cmake)
