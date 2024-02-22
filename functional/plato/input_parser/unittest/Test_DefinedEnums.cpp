@@ -34,7 +34,7 @@ TEST(CodeOptions, SymbolParser)
 
     const std::string tValidApps = "sierra_mass_app, sierra_mass_app";
     EXPECT_TRUE(parse_symbol_table(tValidApps.begin(), tValidApps.end(), tParsedCodeOptions));
-    ASSERT_EQ(tParsedCodeOptions.size(), 2);
+    ASSERT_EQ(tParsedCodeOptions.size(), 2u);
     EXPECT_EQ(tParsedCodeOptions.front(), CodeOptions::kSierraMassApp);
     EXPECT_EQ(tParsedCodeOptions.back(), CodeOptions::kSierraMassApp);
 }
@@ -53,7 +53,7 @@ TEST(ObjectiveTypes, SymbolParser)
 
     const std::string tValidEnums = "minimize, maximize";
     EXPECT_TRUE(parse_symbol_table(tValidEnums.begin(), tValidEnums.end(), tParsedObjectiveTypes));
-    ASSERT_EQ(tParsedObjectiveTypes.size(), 2);
+    ASSERT_EQ(tParsedObjectiveTypes.size(), 2u);
     EXPECT_EQ(tParsedObjectiveTypes.front(), ObjectiveTypes::kMinimize);
     EXPECT_EQ(tParsedObjectiveTypes.back(), ObjectiveTypes::kMaximize);
 }

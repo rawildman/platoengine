@@ -21,7 +21,7 @@ namespace
 {
 const auto kDensityInput = plato::test_utilities::create_valid_density_topology_geometry();
 
-constexpr int kExpectedDensitySize = 8;  // Based on mesh generation command below (1x1x1)
+constexpr unsigned int kExpectedDensitySize = 8;  // Based on mesh generation command below (1x1x1)
 
 void create_small_mesh(const std::string& aFileName)
 {

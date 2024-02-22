@@ -57,7 +57,7 @@ TEST(ROLConstraintFunction, JacobianTimesDirection)
     double tTolerance;
 
     tROLConstraintFunction.applyJacobian(tJacobianTimesDirection, tDirection, tControls, tTolerance);
-    ASSERT_EQ(tJacobianTimesDirection.getVector()->size(), 1);
+    ASSERT_EQ(tJacobianTimesDirection.getVector()->size(), 1u);
 
     const double tResult = tJacobianTimesDirection.getVector()->front();
     EXPECT_EQ(tGoldValue, tResult);
@@ -91,7 +91,7 @@ TEST(ROLConstraintFunction, AdjointJacobianTimesDirection)
     double tTolerance;
 
     tROLConstraintFunction.applyAdjointJacobian(tAdjointJacobianTimesDirection, tDirection, tControls, tTolerance);
-    ASSERT_EQ(tAdjointJacobianTimesDirection.getVector()->size(), 2);
+    ASSERT_EQ(tAdjointJacobianTimesDirection.getVector()->size(), 2u);
 
     const auto tResult = *tAdjointJacobianTimesDirection.getVector();
     EXPECT_EQ(tGoldVec, tResult);

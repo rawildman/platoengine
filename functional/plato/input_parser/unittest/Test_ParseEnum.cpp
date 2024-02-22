@@ -49,6 +49,6 @@ TEST(BoostSpirit, ParseEnum)
 
     const std::string validPizzas = "cheese, pepperoni,  supreme,    cheese";
     EXPECT_TRUE(parse_pizza_list(validPizzas.begin(), validPizzas.end(), parsedPizzas));
-    EXPECT_EQ(parsedPizzas.size(), 4);
+    EXPECT_EQ(parsedPizzas.size(), 4u);
 }
 }  // namespace plato::input_parser::unittest
