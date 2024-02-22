@@ -88,7 +88,7 @@ TEST(PlatoProblem, InputFileToROLConstraint)
 
     PlatoProblem tProblem = make_plato_problem(tData);
     const auto tConstraints = make_rol_constraints(tProblem);
-    ASSERT_EQ(tConstraints.size(), 1);
+    ASSERT_EQ(tConstraints.size(), 1u);
 
     const ROL::StdVector<double> tBoundingBox{0, 0, 0, 1, 1, 1};
     ROL::StdVector<double> tResult{0};

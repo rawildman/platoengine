@@ -14,7 +14,7 @@ linear_algebra::DynamicVector<double> DynamicVectorJacobian::column(const int aI
 linear_algebra::DynamicVector<double> operator*(const linear_algebra::DynamicVector<double>& aX,
                                                 const DynamicVectorJacobian& aJacobian)
 {
-    assert(aX.size() == 2);
+    assert(aX.size() == 2u);
     return linear_algebra::DynamicVector<double>{aX.dot(aJacobian.column(0)), aX.dot(aJacobian.column(1))};
 }
 

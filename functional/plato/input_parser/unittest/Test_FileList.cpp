@@ -48,14 +48,14 @@ TEST(FileList, Insert)
 
     // Check insert
     tFileList.insert(tFileList.mList.end(), "a");
-    ASSERT_EQ(tFileList.mList.size(), 1);
+    ASSERT_EQ(tFileList.mList.size(), 1u);
     EXPECT_EQ(tFileList.mList.front(), "a");
     tFileList.insert(tFileList.mList.end(), "b");
-    ASSERT_EQ(tFileList.mList.size(), 2);
+    ASSERT_EQ(tFileList.mList.size(), 2u);
     EXPECT_EQ(tFileList.mList.front(), "a");
     EXPECT_EQ(tFileList.mList.back(), "b");
     tFileList.insert(tFileList.mList.begin(), "b");
-    ASSERT_EQ(tFileList.mList.size(), 3);
+    ASSERT_EQ(tFileList.mList.size(), 3u);
     EXPECT_EQ(tFileList.mList.at(0), "b");
     EXPECT_EQ(tFileList.mList.at(1), "a");
     EXPECT_EQ(tFileList.mList.at(2), "b");
@@ -69,7 +69,13 @@ TEST(FileList, Iterators)
 
 TEST(FileList, ConstIterators)
 {
-    FileList tFileList{{"r", "a", "w", "r"}};
-    copy_test<const FileList>(tFileList);
+    const FileList tFileList{{"r", "a", "w", "r"}};
+    std::vector<std::string> tCopy;
+    std::copy(tFileList.begin(), tFileList.end(), std::back_inserter(tCopy));
+    ASSERT_EQ(tCopy.size(), 4u);
+    EXPECT_EQ(tFileList.mList.at(0), "r");
+    EXPECT_EQ(tFileList.mList.at(1), "a");
+    EXPECT_EQ(tFileList.mList.at(2), "w");
+    EXPECT_EQ(tFileList.mList.at(3), "r");
 }
 }  // namespace plato::input_parser::unittest

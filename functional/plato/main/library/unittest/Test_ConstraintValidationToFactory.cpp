@@ -28,7 +28,7 @@ TEST(ConstraintFactory, MultipleValidConstraints)
 
     const ValidatedInput tData = make_validated_input(tInput);
     auto tCons = plato::criteria::library::make_constraints(tData.constraints());
-    ASSERT_EQ(tCons.size(), 3);
+    ASSERT_EQ(tCons.size(), 3u);
 
     EXPECT_TRUE(tCons[0].mLinear);
     EXPECT_EQ(tCons[0].mConstraintTarget, 13);

@@ -23,12 +23,12 @@ TEST(GeometryInputBuilder, TupleIfGeometryInput)
     namespace pfgld = plato::geometry::library::detail;
     {
         [[maybe_unused]] const std::tuple<> tEmptyTuple = pfgld::tuple_if_geometry_input<int>();
-        EXPECT_EQ(std::tuple_size_v<decltype(tEmptyTuple)>, 0);
+        EXPECT_EQ(std::tuple_size_v<decltype(tEmptyTuple)>, 0u);
     }  // namespace plato::geometry::library::detail;
     {
         [[maybe_unused]] const std::tuple<input_parser::density_topology> tTuple =
             pfgld::tuple_if_geometry_input<input_parser::density_topology>();
-        EXPECT_EQ(std::tuple_size_v<decltype(tTuple)>, 1);
+        EXPECT_EQ(std::tuple_size_v<decltype(tTuple)>, 1u);
     }
 }
 
@@ -40,14 +40,14 @@ TEST(GeometryInputBuilder, CatIfIsGeometryInput)
         constexpr std::size_t tNumFields = boost::fusion::result_of::size<detail::TestStructNoGeometryTypes>::value;
         [[maybe_unused]] const std::tuple<> tEmptyTuple =
             pfgld::cat_if_is_geometry_input<detail::TestStructNoGeometryTypes, tNumFields - 1>(tInitial);
-        EXPECT_EQ(std::tuple_size_v<decltype(tEmptyTuple)>, 0);
+        EXPECT_EQ(std::tuple_size_v<decltype(tEmptyTuple)>, 0u);
     }  // namespace plato::geometry::library::detail;
     {
         auto tInitial = std::tuple<>{};
         constexpr std::size_t tNumFields = boost::fusion::result_of::size<detail::TestStructWithGeometryTypes>::value;
         [[maybe_unused]] const auto tResultTuple =
             pfgld::cat_if_is_geometry_input<detail::TestStructWithGeometryTypes, tNumFields - 1>(tInitial);
-        EXPECT_EQ(std::tuple_size_v<decltype(tResultTuple)>, 3);
+        EXPECT_EQ(std::tuple_size_v<decltype(tResultTuple)>, 3u);
     }
 }
 
@@ -56,11 +56,11 @@ TEST(GeometryInputBuilder, MakeGeometryInputTuple)
     namespace pfgld = plato::geometry::library::detail;
     {
         [[maybe_unused]] const auto tResult = pfgld::make_geometry_input_tuple{}(detail::TestStructNoGeometryTypes{});
-        EXPECT_EQ(std::tuple_size_v<decltype(tResult)>, 0);
+        EXPECT_EQ(std::tuple_size_v<decltype(tResult)>, 0u);
     }  // namespace plato::geometry::library::detail;
     {
         [[maybe_unused]] const auto tResult = pfgld::make_geometry_input_tuple{}(detail::TestStructWithGeometryTypes{});
-        EXPECT_EQ(std::tuple_size_v<decltype(tResult)>, 3);
+        EXPECT_EQ(std::tuple_size_v<decltype(tResult)>, 3u);
         using ResultType = decltype(tResult);
         static_assert(
             std::is_same_v<std::decay_t<std::tuple_element_t<0, ResultType>>, input_parser::density_topology>);

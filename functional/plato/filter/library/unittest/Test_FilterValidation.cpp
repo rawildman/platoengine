@@ -19,7 +19,7 @@ TEST(FilterValidation, TypeExists)
     // Check in registered function list
     auto tErrorMessages = std::vector<std::string>{};
     tErrorMessages = core::validate(tDensityTopology, std::move(tErrorMessages));
-    EXPECT_EQ(tErrorMessages.size(), 1);
+    EXPECT_EQ(tErrorMessages.size(), 1u);
 }
 
 }  // namespace plato::filter::library::unittest
