@@ -4,10 +4,11 @@ namespace plato::utilities
 {
 void* load_shared_library(const std::filesystem::path& aSharedLibPath)
 {
-    void* tSharedLibInterface = dlopen(aSharedLibPath.c_str(), RTLD_LAZY);
+    void* const tSharedLibInterface = dlopen(aSharedLibPath.c_str(), RTLD_LAZY | RTLD_DEEPBIND);
     if (tSharedLibInterface == nullptr)
     {
-        throw Exception{"Couldn't load shared lib at " + aSharedLibPath.string()};
+        char* const tErrorMessage = dlerror();
+        throw Exception{"Couldn't load shared lib at " + aSharedLibPath.string() + ". Error: " + std::string{tErrorMessage}};
     }
     return tSharedLibInterface;
 }
