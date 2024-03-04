@@ -13,6 +13,20 @@
 
 namespace plato::geometry::extension::unittest
 {
+
+namespace
+{
+auto create_iota_dynamic_vector() -> linear_algebra::DynamicVector<double>
+{
+    constexpr unsigned int tNumNodes = 8;
+    constexpr unsigned int tNumCoordinates = 3;
+    std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
+    std::iota(tVec.begin(), tVec.end(), 1.0);
+    return linear_algebra::DynamicVector<double>{tVec};
+}
+
+}  // namespace
+
 TEST(Brick, CenterAndDims)
 {
     namespace pfu = plato::utilities;
@@ -110,9 +124,7 @@ TEST(BrickSensitivities, JacobianEvaluator)
             return linear_algebra::DynamicVector<double>(detail::sensitivities(i));
         }};
 
-    std::vector<double> tVec(24, 0.0);
-    std::iota(tVec.begin(), tVec.end(), 1.0);
-    const linear_algebra::DynamicVector<double> tRolvec(tVec);
+    const linear_algebra::DynamicVector<double> tRolvec = create_iota_dynamic_vector();
 
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
     const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
@@ -176,12 +188,7 @@ TEST(Brick, Jacobian)
     const BrickShapeGeometry tBrick(tFileName);
     const linear_algebra::JacobianColumnEvaluator tJacobian = tBrick.jacobian(tDesignParameters);
 
-    constexpr unsigned int tNumNodes = 8;
-    constexpr unsigned int tNumCoordinates = 3;
-    std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
-    std::iota(tVec.begin(), tVec.end(), 1.0);
-    const linear_algebra::DynamicVector<double> tRolvec(tVec);
-
+    const linear_algebra::DynamicVector<double> tRolvec = create_iota_dynamic_vector();
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
     const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
     EXPECT_EQ(tRes.stdVector(), tGold);
