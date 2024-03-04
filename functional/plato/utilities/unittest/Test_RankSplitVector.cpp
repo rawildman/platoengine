@@ -7,6 +7,14 @@ namespace plato::utilities::unittest
 namespace
 {
 constexpr auto kMPISize = int{3};
+
+void split_vector_and_check(const std::vector<int>& aVector, int aRankNamedTypeNumber, const std::vector<int>& tGold)
+{
+    const std::vector<int> tDistributedValues =
+        rank_split_vector(aVector, RankNamedType{aRankNamedTypeNumber}, SizeNamedType{kMPISize});
+    EXPECT_EQ(tDistributedValues, tGold);
+}
+
 }  // namespace
 
 TEST(RankSplitVector, NumElementsPerRank)
@@ -26,80 +34,32 @@ TEST(RankSplitVector, NumElementsPerRank)
 TEST(RankSplitVector, DividesEvenly)
 {
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6};
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{0}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{1}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{2}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
-    }
+    split_vector_and_check(tValues, 0, {1, 2});
+    split_vector_and_check(tValues, 1, {3, 4});
+    split_vector_and_check(tValues, 2, {5, 6});
 }
 
 TEST(RankSplitVector, DividesUnevenlyOneRemaining)
 {
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6, 7};
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{0}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2, 7}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{1}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{2}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
-    }
+    split_vector_and_check(tValues, 0, {1, 2, 7});
+    split_vector_and_check(tValues, 1, {3, 4});
+    split_vector_and_check(tValues, 2, {5, 6});
 }
 
 TEST(RankSplitVector, DividesUnevenlyTwoRemaining)
 {
     const auto tValues = std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8};
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{0}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{1, 2, 7}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{1}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{3, 4, 8}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{2}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{5, 6}));
-    }
+    split_vector_and_check(tValues, 0, {1, 2, 7});
+    split_vector_and_check(tValues, 1, {3, 4, 8});
+    split_vector_and_check(tValues, 2, {5, 6});
 }
 
 TEST(RankSplitVector, MoreRanksThanElements)
 {
     const auto tValues = std::vector<int>{1, 2};
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{0}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{1}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{1}, SizeNamedType{kMPISize});
-        EXPECT_EQ(tDistributedValues, (std::vector<int>{2}));
-    }
-    {
-        const std::vector<int> tDistributedValues =
-            rank_split_vector(tValues, RankNamedType{2}, SizeNamedType{kMPISize});
-        EXPECT_TRUE(tDistributedValues.empty());
-    }
+    split_vector_and_check(tValues, 0, {1});
+    split_vector_and_check(tValues, 1, {2});
+    split_vector_and_check(tValues, 2, {});
 }
 }  // namespace plato::utilities::unittest
