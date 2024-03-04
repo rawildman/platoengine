@@ -31,6 +31,16 @@ void create_input_file(const std::filesystem::path aTestFileName)
     tOutFile.close();
 }
 
+[[nodiscard]] std::string create_valid_example_input_string()
+{
+    const std::string tConstraintInput = create_valid_example_constraint_string();
+    const std::string tObjectiveInput = create_valid_example_objective_string();
+    const std::string tGeometryInput = create_valid_density_topology_geometry_string();
+    const std::string tOptimizerInput = create_valid_example_optimization_parameters_string();
+
+    return tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput;
+}
+
 input_parser::ParsedInput create_valid_example_input()
 {
     return input_parser::ParsedInput{/*.mObjectives=*/{create_valid_example_objective()},
