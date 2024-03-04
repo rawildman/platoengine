@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "Test_Helpers.hpp"
 #include "plato/input_parser/FileList.hpp"
 
 namespace plato::input_parser::unittest
