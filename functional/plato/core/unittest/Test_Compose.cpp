@@ -8,30 +8,37 @@
 
 namespace plato::core::unittest
 {
-TEST(Composer, EvaluateComposition)
+
+namespace
 {
-    // Tests f(g(tX)) and g(f(x)), with f(x) = x^2 and g(x) = 2x
+// Tests f(g(tX)) and g(f(x)), with f(x) = x^2 and g(x) = 2x
+auto create_pair_of_compositions_of_quadratic_and_linear()
+    -> std::pair<Function<double, double, double>, Function<double, double, double>>
+{
     const auto tF = make_function([](const double aX) { return aX * aX; }, [](const double aX) { return 2.0 * aX; });
     const auto tG = make_function([](const double aX) { return 2.0 * aX; }, [](const double) { return 2.0; });
-    const auto tFOfG = compose(tF, tG);
+
+    return {compose(tF, tG), compose(tG, tF)};
+}
+
+}  // namespace
+
+TEST(Composer, EvaluateComposition)
+{
+    const auto [tFOfG, tGOfF] = create_pair_of_compositions_of_quadratic_and_linear();
     EXPECT_EQ(tFOfG.f(1.0), 4.0);
     EXPECT_EQ(tFOfG.f(2.0), 16.0);
 
-    const auto tGOfF = compose(tG, tF);
     EXPECT_EQ(tGOfF.f(1.0), 2.0);
     EXPECT_EQ(tGOfF.f(2.0), 8.0);
 }
 
 TEST(Composer, EvaluateCompositionGradient)
 {
-    // Tests derivative of f(g(tX)) and g(f(x)), with f(x) = x^2 and g(x) = 2x
-    const auto tF = make_function([](const double aX) { return aX * aX; }, [](const double aX) { return 2.0 * aX; });
-    const auto tG = make_function([](const double aX) { return 2.0 * aX; }, [](const double) { return 2.0; });
-    const auto tFOfG = compose(tF, tG);
+    const auto [tFOfG, tGOfF] = create_pair_of_compositions_of_quadratic_and_linear();
     EXPECT_EQ(tFOfG.df(1.0), 8.0);
     EXPECT_EQ(tFOfG.df(2.0), 16.0);
 
-    const auto tGOfF = compose(tG, tF);
     EXPECT_EQ(tGOfF.df(1.0), 4.0);
     EXPECT_EQ(tGOfF.df(2.0), 8.0);
 }
