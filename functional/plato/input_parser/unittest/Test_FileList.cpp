@@ -70,12 +70,6 @@ TEST(FileList, Iterators)
 TEST(FileList, ConstIterators)
 {
     const FileList tFileList{{"r", "a", "w", "r"}};
-    std::vector<std::string> tCopy;
-    std::copy(tFileList.begin(), tFileList.end(), std::back_inserter(tCopy));
-    ASSERT_EQ(tCopy.size(), 4u);
-    EXPECT_EQ(tFileList.mList.at(0), "r");
-    EXPECT_EQ(tFileList.mList.at(1), "a");
-    EXPECT_EQ(tFileList.mList.at(2), "w");
-    EXPECT_EQ(tFileList.mList.at(3), "r");
+    copy_test<const FileList>(tFileList);
 }
 }  // namespace plato::input_parser::unittest
