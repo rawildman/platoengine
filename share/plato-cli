@@ -141,6 +141,8 @@ def esp_action(args):
     argsDict['precision'] = args.precision
   if args.morph != None:
     argsDict['meshMorph'] = args.morph
+  if args.mesh_settings_file != None:
+    argsDict['meshSettingsFileName'] = args.mesh_settings_file
   if args.parameters != None:
     argsDict['parameters'] = args.parameters
   if args.workflow != None:
@@ -257,6 +259,9 @@ esp_parser.add_argument('--precision', dest='precision', \
 
 esp_parser.add_argument('--morph', dest='morph', type=bool, \
   help='Turn on mesh morph to generate new mesh by moving surface coordinates of old mesh. Default value is \'False\'.')
+
+esp_parser.add_argument('--mesh-settings-file', dest='mesh_settings_file', \
+  help='Optional mesh settings file (only implemented for aflr2 workflow). Default value is \'None\'.')
 
 esp_parser.add_argument('--parameters', dest='parameters', nargs='*', \
   help='List of parameter values to construct the mesh')

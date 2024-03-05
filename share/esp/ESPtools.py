@@ -7,6 +7,7 @@ import pyCAPS
 from shutil import copyfile
 from pyCAPS import capsProblem
 from contextlib import contextmanager
+import json
 
 ##############################################################################
 ## define functionality that redirects console output to a file
@@ -257,6 +258,21 @@ def parseMeshLength(modelName):
     raise Exception("Error reading CSM file: multiple 'MeshLength' keywords found. 'MeshLength' variable should appear once.")
 
   return str(response)
+
+##############################################################################
+## define function that parses a mesh settings file if it exists
+##############################################################################
+def parseMeshSettingsFile(fileName):
+  if fileName == None:
+    return None
+
+  if not os.path.exists(fileName):
+    raise Exception("Error mesh settings json file not found.")
+
+  with open(fileName) as json_file:
+    data = json.load(json_file)
+
+  return data
 
 def insertCurrentParameterVals(modelName, paramVals):
   # If paramVals were provided, set them in the model file
@@ -537,7 +553,7 @@ def aflr4_tetgen_meshing(modelNameOut, meshName, minScale, maxScale, meshLengthF
 ##############################################################################
 ## define function for running aflr2 meshing workflow
 ##############################################################################
-def aflr2_meshing(modelNameOut, meshName, meshMorph, quiet=False):
+def aflr2_meshing(modelNameOut, meshName, meshMorph, meshSettingsFileName=None, quiet=False):
   outLevel = 0 if quiet else 1
 
   problem = pyCAPS.Problem(problemName = "ESP_Mesh",
@@ -551,6 +567,7 @@ def aflr2_meshing(modelNameOut, meshName, meshMorph, quiet=False):
   aflr2 = problem.analysis.create(aim='aflr2AIM', name='aflr2')
   aflr2.input.Mesh_Quiet_Flag = quiet
   aflr2.input.Tess_Params = [problem.geometry.outpmtr.MeshLength, 1.0, 20.0]
+  aflr2.input.Mesh_Sizing = parseMeshSettingsFile(meshSettingsFileName)
 
   plato = problem.analysis.create(aim='platoAIM', name='plato')
   plato.input["Mesh"].link(aflr2.output["Area_Mesh"])
@@ -572,7 +589,7 @@ def aflr2_meshing(modelNameOut, meshName, meshMorph, quiet=False):
 ##############################################################################
 ## define function that generates exodus mesh from csm file
 ##############################################################################
-def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", meshMorph=False, parameters=None ):
+def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1.0, meshLengthFactor=1.0, etoName=None, mesh=True, geom=None, url=None, precision=8, workflow="aflr4_aflr3", meshMorph=False, meshSettingsFileName=None, parameters=None ):
 
   deleteOnExit = False
   if modelNameOut == None:
@@ -646,7 +663,7 @@ def mesh(modelNameIn, modelNameOut=None, meshName=None, minScale=0.2, maxScale=1
 
     elif workflow == "aflr2":
       with redirected('aflr2.console'):
-        aflr2_meshing(modelNameOut, meshName, meshMorph)
+        aflr2_meshing(modelNameOut, meshName, meshMorph, meshSettingsFileName)
 
   if deleteOnExit:
     subprocess.call(['rm', modelNameOut])
