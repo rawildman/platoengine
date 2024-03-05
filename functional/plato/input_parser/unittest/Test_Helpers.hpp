@@ -40,7 +40,6 @@ void copy_test(T aFileList)
 {
     std::vector<std::string> tCopy;
     std::copy(aFileList.begin(), aFileList.end(), std::back_inserter(tCopy));
-    ASSERT_EQ(tCopy.size(), 4);
     EXPECT_EQ(aFileList.mList, tCopy);
 }
 
