@@ -29,7 +29,7 @@ TEST(CriterionRegistration, PhonyCriterion)
 
 TEST(CriterionRegistration, CustomApp)
 {
-    const std::string_view tCustomAppName =
+    const std::string tCustomAppName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
     EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tCustomAppName));
 }
