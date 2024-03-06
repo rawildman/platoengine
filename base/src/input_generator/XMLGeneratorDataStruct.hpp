@@ -494,7 +494,7 @@ public:
     std::vector<XMLGen::Uncertainty> uncertainties;
     std::vector<XMLGen::Output> mOutputMetaData;
     XMLGen::Arch m_Arch;
-    bool m_UseLaunch;
+    bool m_UseLaunch = false;
     XMLGen::RandomMetaData mRandomMetaData;
     XMLGen::UncertaintyMetaData m_UncertaintyMetaData;
     std::vector<XMLGen::Service> mPerformerServices;
