@@ -7,33 +7,20 @@
 
 namespace plato::core::unittest
 {
-namespace
-{
-
-}  // namespace
 
 TEST(Aggregate, DirectConstruction)
 {
-    run_rosenbrock_aggregator_test<Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>>(
-        [](const FunctionAndWeight& tFunctionAndWeight)
+    namespace pft = plato::test_utilities;
+    run_rosenbrock_aggregator_test(
+        [](const detail::FunctionAndWeight& tFunctionAndWeight)
         { return Aggregate<double, pft::TwoDVector, const pft::TwoDVector&>(tFunctionAndWeight); });
 }
 
 TEST(Aggregate, UsingMakeFunction)
 {
-    using MakeType = std::decay_t<decltype(make_aggregate_function(
-        FunctionAndWeight{std::make_pair(test_utilities::make_rosenbrock_function(pft::Rosenbrock{}), 3.3)}))>;
-    run_rosenbrock_aggregator_test<MakeType>([](const FunctionAndWeight& tFunctionAndWeight)
-                                             { return make_aggregate_function(tFunctionAndWeight); });
+    run_rosenbrock_aggregator_test([](const detail::FunctionAndWeight& tFunctionAndWeight)
+                                   { return make_aggregate_function(tFunctionAndWeight); });
 }
-
-/*
-
-    using RosenbrockF = std::decay_t<decltype(tF1)>;
-    using FunctionAndWeight = std::vector<std::pair<RosenbrockF, double>>;
-    const auto tAggregate =
-        make_aggregate_function(FunctionAndWeight{std::make_pair(tF1, tW1), std::make_pair(tF2, tW2)});
-*/
 
 TEST(Aggregate, OneFunction)
 {
