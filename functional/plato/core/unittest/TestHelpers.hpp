@@ -8,19 +8,7 @@
 
 namespace plato::core::unittest
 {
-/*
-template <typename R, typename dR, typename Arg>
-void verify_aggregation_at_point(const Aggregate<R, dR, Arg>& aAggregate,
-                             const Function<R, dR, Arg>& aF1,
-                             const double aW1,
-                             const Function<R, dR, Arg>& aF2,
-                             const double aW2,
-                             const Arg& aTestPoint)
-{
-EXPECT_EQ(aAggregate.f(aTestPoint), aW1 * aF1.f(aTestPoint) + aW2 * aF2.f(aTestPoint));
-EXPECT_EQ(aAggregate.df(aTestPoint), aW1 * aF1.df(aTestPoint) + aW2 * aF2.df(aTestPoint));
-}
-*/
+
 namespace
 {
 namespace pft = plato::test_utilities;
