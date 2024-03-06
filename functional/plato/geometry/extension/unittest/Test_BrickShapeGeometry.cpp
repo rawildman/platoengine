@@ -25,6 +25,12 @@ auto create_iota_dynamic_vector() -> linear_algebra::DynamicVector<double>
     return linear_algebra::DynamicVector<double>{tVec};
 }
 
+void run_test_of_sensitivities_by_index(unsigned int aIndex, const std::vector<double>& aGold)
+{
+    const auto tSensitivities = detail::sensitivities(aIndex);
+    EXPECT_EQ(tSensitivities.size(), aGold.size());
+    EXPECT_EQ(tSensitivities, aGold);
+}
 }  // namespace
 
 TEST(Brick, CenterAndDims)
@@ -55,29 +61,23 @@ TEST(Brick, CenterAndDims)
 
 TEST(Brick, SensitivityCenterX)
 {
-    constexpr int tCenterXIndex = 0;
-    const auto tSensitivities = detail::sensitivities(tCenterXIndex);
+    constexpr unsigned int tCenterIndex = 0;
     const std::vector<double> tGold = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityCenterY)
 {
-    constexpr int tCenterYIndex = 1;
-    const auto tSensitivities = detail::sensitivities(tCenterYIndex);
+    constexpr unsigned int tCenterIndex = 1;
     const std::vector<double> tGold = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityCenterZ)
 {
-    constexpr int tCenterZIndex = 2;
-    const auto tSensitivities = detail::sensitivities(tCenterZIndex);
+    constexpr unsigned int tCenterIndex = 2;
     const std::vector<double> tGold = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityLengthX)
