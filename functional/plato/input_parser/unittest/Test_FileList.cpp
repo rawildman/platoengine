@@ -64,12 +64,12 @@ TEST(FileList, Insert)
 TEST(FileList, Iterators)
 {
     FileList tFileList{{"r", "a", "w", "r"}};
-    copy_test<FileList>(tFileList);
+    copy_test(tFileList);
 }
 
 TEST(FileList, ConstIterators)
 {
     const FileList tFileList{{"r", "a", "w", "r"}};
-    copy_test<const FileList>(tFileList);
+    copy_test(tFileList);
 }
 }  // namespace plato::input_parser::unittest
