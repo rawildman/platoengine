@@ -4,6 +4,7 @@ import ESPtools
 import csmFileGenerator
 
 csmFileName = "dummy_despmtrs.csm"
+meshSettingsFileName = "dummy_mesh_settings.json"
 writer = csmFileGenerator.csmFileGenerator(csmFileName)
 
 def constructCAPSProblem(csmFilename):
@@ -316,6 +317,22 @@ class parseMeshLength(unittest.TestCase):
         meshLength = ESPtools.parseMeshLength(csmFileName)
         self.assertIsInstance(meshLength, str)
         self.assertEqual(meshLength, "0.25\n")
+
+class parseMeshSettingsFile(unittest.TestCase):
+    def test_errorNoJsonFile(self):
+        with self.assertRaises(Exception) as errMsg:
+            ESPtools.parseMeshSettingsFile("not_a_real_file.json")
+
+        self.assertEqual(str(errMsg.exception), "Error mesh settings json file not found.")
+
+    def test_meshSettingsFileNone(self):
+        settings = ESPtools.parseMeshSettingsFile(None)
+        self.assertEqual(settings, None)
+
+    def test_jsonParsedIntoDict(self):
+        settings = ESPtools.parseMeshSettingsFile(meshSettingsFileName)
+        self.assertIs(type(settings), dict)
+        self.assertEqual(settings, {"circumference":{"edgeDistribution":"Even","numEdgePoints":10}})
 
 class insertCurrentParameterVals(unittest.TestCase):
     def test_emptyParameterValsChangesNothing(self):
