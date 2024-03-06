@@ -5,7 +5,7 @@
 
 namespace plato::rol_integration::unittest
 {
-namespace
+namespace detail
 {
 
 constexpr double kControlX = 1.2;
@@ -29,11 +29,12 @@ constexpr double kGoldValue = himmelblau_value(kControlX, kControlY);
 constexpr double kGoldGradientX = himmelblau_derivative_x(kControlX, kControlY);
 constexpr double kGoldGradientY = himmelblau_derivative_y(kControlX, kControlY);
 
-}  // namespace
+}  // namespace detail
 
 template <typename Argument>
 void run_himmelblau_objective_test(const Argument& aObjectiveFunctionArgument)
 {
+    using namespace detail;
     auto tObjective = ROLObjectiveFunction{aObjectiveFunctionArgument};
 
     const auto tControl = ROL::StdVector<double>{kControlX, kControlY};
