@@ -22,7 +22,7 @@ auto create_iota_dynamic_vector() -> linear_algebra::DynamicVector<double>
     constexpr unsigned int tNumCoordinates = 3;
     std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
     std::iota(tVec.begin(), tVec.end(), 1.0);
-    return linear_algebra::DynamicVector<double>{tVec};
+    return linear_algebra::DynamicVector<double>{std::move(tVec)};
 }
 
 void run_test_of_sensitivities_by_index(const unsigned int aIndex, const std::vector<double>& aGold)
