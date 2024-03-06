@@ -25,7 +25,7 @@ auto create_iota_dynamic_vector() -> linear_algebra::DynamicVector<double>
     return linear_algebra::DynamicVector<double>{tVec};
 }
 
-void run_test_of_sensitivities_by_index(unsigned int aIndex, const std::vector<double>& aGold)
+void run_test_of_sensitivities_by_index(const unsigned int aIndex, const std::vector<double>& aGold)
 {
     const auto tSensitivities = detail::sensitivities(aIndex);
     EXPECT_EQ(tSensitivities.size(), aGold.size());
