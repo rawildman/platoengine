@@ -22,7 +22,7 @@ struct Himmelblau
         return tParensOne * tParensOne + tParensTwo * tParensTwo;
     }
 
-    [[nodiscard]] TwoDVector df(const double aX, const double aY) const
+    [[nodiscard]] constexpr TwoDVector df(const double aX, const double aY) const
     {
         const double tParensOne = aX * aX + aY - detail::kA;
         const double tParensTwo = aX + aY * aY - detail::kB;
