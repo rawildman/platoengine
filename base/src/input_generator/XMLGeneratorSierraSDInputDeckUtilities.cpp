@@ -118,9 +118,7 @@ void writeOptimizationBlock(std::ostream &outfile)
     outfile << "END" << std::endl;
 }
 
-void writeFRFInverseBlocks(const XMLGen::InputData &aMetaData,
-                           const XMLGen::Criterion &aCriterion,
-                           const XMLGen::Scenario &aScenario,
+void writeFRFInverseBlocks(const XMLGen::Scenario &aScenario,
                            std::ostream &outfile)
 {
     outfile << "INVERSE-PROBLEM" << std::endl;
@@ -212,8 +210,7 @@ void writeDummyModalFiles(const XMLGen::Scenario &aScenario, const XMLGen::Crite
     dummy.close();
 }
 
-void writeModalInverseBlocks(const XMLGen::InputData &/*aMetaData*/,
-                             const XMLGen::Criterion &aCriterion,
+void writeModalInverseBlocks(const XMLGen::Criterion &aCriterion,
                              const XMLGen::Scenario &aScenario,
                              std::ostream &outfile)
 {
@@ -236,18 +233,17 @@ void writeModalInverseBlocks(const XMLGen::InputData &/*aMetaData*/,
 
 /**************************************************************************/
 void append_inverse_problem_blocks
-(const XMLGen::InputData& aMetaData,
- const XMLGen::Criterion &aCriterion,
+(const XMLGen::Criterion &aCriterion,
  const XMLGen::Scenario &aScenario,
  std::ostream &outfile)
 {
     if(isFrfMismatch(aCriterion))
     {
-        writeFRFInverseBlocks(aMetaData, aCriterion, aScenario, outfile);
+        writeFRFInverseBlocks(aScenario, outfile);
     }
     else if (isModalCriterion(aCriterion))
     {
-        writeModalInverseBlocks(aMetaData, aCriterion, aScenario, outfile);
+        writeModalInverseBlocks(aCriterion, aScenario, outfile);
     }
 }
 /**************************************************************************/
@@ -932,7 +928,7 @@ void add_input_deck_blocks
     append_solution_block(aMetaData, tCriterion, outfile);
     append_parameters_block(tScenario, tCriterion, outfile);
     append_camp_block(tScenario, tCriterion, outfile);
-    append_inverse_problem_blocks(aMetaData, tCriterion, tScenario, outfile);
+    append_inverse_problem_blocks(tCriterion, tScenario, outfile);
     append_gdsw_block(tCriterion, tScenario, outfile);
     append_outputs_block(tCriterion, outfile);
     append_echo_block(tCriterion, outfile);
