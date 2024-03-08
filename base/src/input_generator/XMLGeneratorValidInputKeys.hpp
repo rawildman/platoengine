@@ -743,7 +743,7 @@ public:
     {
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
-    std::vector<std::string> mKeys = {"plato_analyze", "sierra_tf", "sierra_sd", "lightmp", "platomain", "plato_esp", "xtk", "gemma"};
+    std::vector<std::string> mKeys = {"plato_analyze", "sierra_tf", "sierra_sd", "lightmp", "platomain", "plato_esp", "gemma"};
 };
 // struct ValidCodeKeys
 
@@ -751,7 +751,7 @@ struct ValidDiscretizationKeys
 {
 private:
     /*!< valid abstract design variables supported in plato, i.e. control variables discretization */
-    std::vector<std::string> mKeys = {"density", "levelset"};
+    std::vector<std::string> mKeys = {"density"};
 
 public:
     /******************************************************************************//**
@@ -765,14 +765,6 @@ public:
         return (XMLGen::return_supported_value(aKey, mKeys));
     }
 };
-// struct ValidLevelSetInitKeys
-
-struct ValidLevelSetInitKeys
-{
-    /*!< valid level set initialization methods */
-    std::vector<std::string> mKeys = {"primitives", "swiss_cheese"};
-};
-// struct ValidLevelSetInitKeys
 
 struct ValidLayoutKeys
 {
@@ -1571,19 +1563,12 @@ struct ValidOptimizationParameterKeys
      "initial_density_value",
      "restart_iteration",
      "csm_file",
-     "create_levelset_spheres",
-     "levelset_material_box_min",
-     "levelset_material_box_max",
-     "levelset_sphere_radius",
-     "levelset_sphere_packing_factor",
-     "levelset_initialization_method",
      "fixed_block_ids",
      "fixed_sideset_ids",
      "fixed_nodeset_ids",
      "fixed_block_domain_values",
      "fixed_block_boundary_values",
      "fixed_block_material_states",
-     "levelset_nodesets",
      "number_prune_and_refine_processors",
      "prune_and_refine_path",
      "number_buffer_layers",
