@@ -64,8 +64,6 @@ SET(XMLGenerator_SRCS XMLGenerator_Main.cpp
                       XMLGeneratorRunMetadata.cpp
                       XMLGeneratorUtilities.cpp
                       XMLGeneratorParseRun.cpp
-                      XMLGeneratorPlatoXTKInputFile.cpp
-                      XMLGeneratorPlatoXTKOperationFile.cpp
                       )
                       
 SET(XMLGenerator_HDRS XMLGenerator.hpp 
@@ -142,8 +140,6 @@ SET(XMLGenerator_HDRS XMLGenerator.hpp
                       XMLGeneratorParseServices.hpp 
                       XMLGeneratorParseConstraint.hpp 
                       XMLGeneratorParseUncertainty.hpp
-                      XMLGeneratorPlatoXTKInputFile.hpp
-                      XMLGeneratorPlatoXTKOperationFile.hpp
                       XMLGeneratorRunMetadata.hpp
                       XMLGeneratorParseRun.hpp
                       )

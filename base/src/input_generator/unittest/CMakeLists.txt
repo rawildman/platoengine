@@ -17,10 +17,8 @@ SET(SRCS XMLGenerator_UnitMain.cpp
           XMLGeneratorSierraSDInputFile_UnitTester.cpp
           XMLGeneratorSierraTFOperationsFile_UnitTester.cpp
           XMLGeneratorSierraSDOperationsFile_UnitTester.cpp
-          XMLGeneratorXTKInputDeck_UnitTester.cpp
           XMLGeneratorStageOperationsUtilities_UnitTester.cpp
           XMLGeneratorUtilities_UnitTester.cpp
-          XMLGeneratorXTKOperationFile_UnitTester.cpp
           XMLGeneratorOptimizationParametersInput_UnitTester.cpp
           ../XMLGenerator.cpp
           ../XMLGeneratorProblem.cpp
@@ -48,13 +46,11 @@ SET(SRCS XMLGenerator_UnitMain.cpp
           ../XMLGeneratorParseUncertainty.cpp
           ../XMLGeneratorScenarioMetadata.cpp
           ../XMLGeneratorSierraSDUtilities.cpp
-          ../XMLGeneratorPlatoXTKInputFile.cpp
           ../XMLGeneratorConstraintMetadata.cpp
           ../XMLGeneratorSharedDataUtilities.cpp
           ../XMLGeneratorPerformersUtilities.cpp
           ../XMLGeneratorUncertaintyMetadata.cpp
           ../XMLGeneratorDefinesFileUtilities.cpp
-          ../XMLGeneratorPlatoXTKOperationFile.cpp
           ../XMLGeneratorPlatoAnalyzeUtilities.cpp
           ../XMLGeneratorLaunchUtilities.cpp
           ../XMLGeneratorInterfaceFileUtilities.cpp
