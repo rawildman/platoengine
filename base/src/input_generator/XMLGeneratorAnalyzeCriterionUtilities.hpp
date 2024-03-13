@@ -407,7 +407,7 @@ inline pugi::xml_node append_stress_constrained_mass_minimization_criterion
  * \param [in] aCriterion criterion metadata
  * \param [in/out] aParentNode  pugi::xml_node
  **********************************************************************************/
-inline void append_stress_constraint_quadratic_criterion
+inline pugi::xml_node append_stress_constraint_quadratic_criterion
 (const XMLGen::Criterion& aCriterion,
  pugi::xml_node& aParentNode)
 {
@@ -449,6 +449,8 @@ inline void append_stress_constraint_quadratic_criterion
     auto tPropertyValue = XMLGen::set_value_keyword_to_ignore_if_empty(aCriterion.minErsatzMaterialConstant());
     tValues = {"Min. Ersatz Material", "double", tPropertyValue};
     XMLGen::append_parameter_plus_attributes(tKeys, tValues, tObjective);
+
+    return tObjective;
 }
 
 /******************************************************************************//**

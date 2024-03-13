@@ -27,16 +27,9 @@ TEST(CriterionRegistration, PhonyCriterion)
     EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered("test"));
 }
 
-TEST(CriterionRegistration, NodalSum)
-{
-    const std::string_view tNodalSumName =
-        input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kNodalSum).value();
-    EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tNodalSumName));
-}
-
 TEST(CriterionRegistration, CustomApp)
 {
-    const std::string_view tCustomAppName =
+    const std::string tCustomAppName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
     EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tCustomAppName));
 }

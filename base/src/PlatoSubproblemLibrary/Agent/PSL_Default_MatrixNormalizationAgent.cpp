@@ -154,7 +154,10 @@ void Default_MatrixNormalizationAgent::normalizeBlockRow_bySolveClassicalRowNorm
     // compute 1/sums
     for(size_t row = 0; row < num_rows; row++)
     {
-        row_sums[row] = 1. / row_sums[row];
+	if(row_sums[row] != 0)
+	{
+	        row_sums[row] = 1. / row_sums[row];
+	}
     }
 
     // local normalization
