@@ -63,12 +63,12 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
 
-    ASSERT_EQ(tData.mObjectives.size(), 1);
+    ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
     test_existence_and_equality(tObjective.app, CodeOptions::kSierraMassApp);
     test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
-    test_existence_and_equality(tObjective.number_of_processors, 10);
+    test_existence_and_equality(tObjective.number_of_processors, 10u);
     test_existence_and_equality(tObjective.active, true);
     test_existence_and_equality(tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
     test_existence_and_equality(tObjective.objective_type, ObjectiveTypes::kMinimize);
@@ -112,12 +112,12 @@ TEST(MassAppInput, ConstraintAllValidInputs)
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
 
-    ASSERT_EQ(tData.mConstraints.size(), 1);
+    ASSERT_EQ(tData.mConstraints.size(), 1u);
     const auto& tConstraint = tData.mConstraints.front();
     test_existence_and_equality(tConstraint.name, "mp_constraint");
     test_existence_and_equality(tConstraint.active, true);
     test_existence_and_equality(tConstraint.app, CodeOptions::kSierraMassApp);
-    test_existence_and_equality(tConstraint.number_of_processors, 10);
+    test_existence_and_equality(tConstraint.number_of_processors, 10u);
     test_existence_and_equality(tConstraint.input_files, std::vector<std::string>{"test.txt"});
     test_existence_and_equality(tConstraint.equal_to, 1.0);
     test_existence_and_equality(tConstraint.is_linear, false);
@@ -164,11 +164,11 @@ TEST(MassAppInput, ObjectiveNotAllInputs)
     // Parse
     const auto [tParseResult, tIter, tData] = parse_string(tInput);
 
-    ASSERT_EQ(tData.mObjectives.size(), 1);
+    ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
     test_existence_and_equality(tObjective.app, CodeOptions::kSierraMassApp);
-    test_existence_and_equality(tObjective.number_of_processors, 10);
+    test_existence_and_equality(tObjective.number_of_processors, 10u);
     EXPECT_FALSE(tObjective.active);
     EXPECT_FALSE(tObjective.input_files);
     EXPECT_FALSE(tObjective.objective_type);
@@ -281,7 +281,7 @@ TEST(MassAppInput, MissingValue)
     // Tests
     EXPECT_FALSE(tData.mConstraints.front().active);
     EXPECT_TRUE(tData.mConstraints.front().number_of_processors);
-    EXPECT_EQ(tData.mConstraints.front().number_of_processors.value(), 10);
+    EXPECT_EQ(tData.mConstraints.front().number_of_processors.value(), 10u);
 }
 
 TEST(MassAppInput, ConstraintMultipleBlocks)
@@ -306,13 +306,13 @@ TEST(MassAppInput, ConstraintMultipleBlocks)
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.cend());
 
-    ASSERT_EQ(tData.mConstraints.size(), 2);
+    ASSERT_EQ(tData.mConstraints.size(), 2u);
     const auto& tConstraint1 = tData.mConstraints.front();
     test_existence_and_equality(tConstraint1.name, "mp_constraint_1");
     test_existence_and_equality(tConstraint1.active, true);
     const auto& tConstraint2 = tData.mConstraints.back();
     test_existence_and_equality(tConstraint2.name, "mp_constraint_2");
-    test_existence_and_equality(tConstraint2.number_of_processors, 10);
+    test_existence_and_equality(tConstraint2.number_of_processors, 10u);
     test_existence_and_equality(tConstraint2.equal_to, -10.0);
 }
 }  // namespace plato::input_parser::unittest

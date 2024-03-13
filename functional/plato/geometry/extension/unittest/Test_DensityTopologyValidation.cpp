@@ -40,6 +40,6 @@ TEST(DensityTopologyValidation, InvalidDensityTopologyInput)
 
     std::vector<std::string> tMessages;
     tMessages = library::validate_geometry(tInput, std::move(tMessages));
-    EXPECT_EQ(tMessages.size(), 1);
+    EXPECT_EQ(tMessages.size(), 1u);
 }
 }  // namespace plato::geometry::extension::unittest

@@ -18,7 +18,7 @@ struct TwoDMatrix
     std::array<std::array<double, 2>, 2> mData = {std::array<double, 2>{0.0, 0.0}, std::array<double, 2>{0.0, 0.0}};
 };
 
-[[nodiscard]] TwoDVector makeTwoDVector(const double x0, const double x1);
+[[nodiscard]] constexpr TwoDVector makeTwoDVector(const double x0, const double x1) { return TwoDVector{{x0, x1}}; }
 [[nodiscard]] TwoDMatrix makeTwoDMatrix(const double x00, const double x01, const double x10, const double x11);
 
 [[nodiscard]] TwoDVector operator*(const TwoDVector& x, const TwoDMatrix& A);

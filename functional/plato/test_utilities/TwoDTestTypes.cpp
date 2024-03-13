@@ -6,8 +6,6 @@ double TwoDVector::operator()(const unsigned int index) const { return mData[ind
 
 double TwoDMatrix::operator()(const unsigned int i, const unsigned int j) const { return mData[i][j]; }
 
-TwoDVector makeTwoDVector(const double x0, const double x1) { return TwoDVector{{x0, x1}}; }
-
 TwoDMatrix makeTwoDMatrix(const double x00, const double x01, const double x10, const double x11)
 {
     return TwoDMatrix{std::array<double, 2>{x00, x01}, std::array<double, 2>{x10, x11}};

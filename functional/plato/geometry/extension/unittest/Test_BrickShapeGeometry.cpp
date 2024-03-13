@@ -13,6 +13,34 @@
 
 namespace plato::geometry::extension::unittest
 {
+
+namespace
+{
+auto create_iota_dynamic_vector() -> linear_algebra::DynamicVector<double>
+{
+    constexpr unsigned int tNumNodes = 8;
+    constexpr unsigned int tNumCoordinates = 3;
+    std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
+    std::iota(tVec.begin(), tVec.end(), 1.0);
+    return linear_algebra::DynamicVector<double>{std::move(tVec)};
+}
+
+void run_test_of_sensitivities_by_index(const unsigned int aIndex, const std::vector<double>& aGold)
+{
+    const auto tSensitivities = detail::sensitivities(aIndex);
+    EXPECT_EQ(tSensitivities.size(), aGold.size());
+    EXPECT_EQ(tSensitivities, aGold);
+}
+
+void run_test_of_iota_vector_result(const linear_algebra::JacobianColumnEvaluator& aJacobian,
+                                    const std::vector<double>& aGold)
+{
+    const linear_algebra::DynamicVector<double> tRolvec = create_iota_dynamic_vector();
+    const linear_algebra::DynamicVector<double> tRes = tRolvec * aJacobian;
+    EXPECT_EQ(tRes.stdVector(), aGold);
+}
+}  // namespace
+
 TEST(Brick, CenterAndDims)
 {
     namespace pfu = plato::utilities;
@@ -41,64 +69,52 @@ TEST(Brick, CenterAndDims)
 
 TEST(Brick, SensitivityCenterX)
 {
-    constexpr int tCenterXIndex = 0;
-    const auto tSensitivities = detail::sensitivities(tCenterXIndex);
+    constexpr unsigned int tCenterIndex = 0;
     const std::vector<double> tGold = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityCenterY)
 {
-    constexpr int tCenterYIndex = 1;
-    const auto tSensitivities = detail::sensitivities(tCenterYIndex);
+    constexpr unsigned int tCenterIndex = 1;
     const std::vector<double> tGold = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityCenterZ)
 {
-    constexpr int tCenterZIndex = 2;
-    const auto tSensitivities = detail::sensitivities(tCenterZIndex);
+    constexpr unsigned int tCenterIndex = 2;
     const std::vector<double> tGold = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tCenterIndex, tGold);
 }
 
 TEST(Brick, SensitivityLengthX)
 {
     // Nodes 1,3,5,7 should be negative (alternating x)
-    constexpr int tLengthXIndex = 3;
-    const auto tSensitivities = detail::sensitivities(tLengthXIndex);
+    constexpr unsigned int tLengthIndex = 3;
     const std::vector<double> tGold = {-0.5, 0, 0, 0.5, 0, 0, -0.5, 0, 0, 0.5, 0, 0,
                                        -0.5, 0, 0, 0.5, 0, 0, -0.5, 0, 0, 0.5, 0, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tLengthIndex, tGold);
 }
 
 TEST(Brick, SensitivityLengthY)
 {
     // Nodes 1,2,5,6 should be negative
     // Nodes 3,4,7,8 positive
-    constexpr int tLengthYIndex = 4;
-    const auto tSensitivities = detail::sensitivities(tLengthYIndex);
+    constexpr unsigned int tLengthIndex = 4;
     const std::vector<double> tGold = {0, -0.5, 0, 0, -0.5, 0, 0, 0.5, 0, 0, 0.5, 0,
                                        0, -0.5, 0, 0, -0.5, 0, 0, 0.5, 0, 0, 0.5, 0};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tLengthIndex, tGold);
 }
 
 TEST(Brick, SensitivityLengthZ)
 {
     // Nodes 1,2,3,4 should be negative
     // Nodes 5,6,7,8 positive
-    constexpr int tLengthZIndex = 5;
-    const auto tSensitivities = detail::sensitivities(tLengthZIndex);
+    constexpr unsigned int tLengthIndex = 5;
     const std::vector<double> tGold = {0, 0, -0.5, 0, 0, -0.5, 0, 0, -0.5, 0, 0, -0.5,
                                        0, 0, 0.5,  0, 0, 0.5,  0, 0, 0.5,  0, 0, 0.5};
-    EXPECT_EQ(tSensitivities.size(), tGold.size());
-    EXPECT_EQ(tSensitivities, tGold);
+    run_test_of_sensitivities_by_index(tLengthIndex, tGold);
 }
 
 TEST(BrickSensitivities, JacobianEvaluator)
@@ -110,13 +126,8 @@ TEST(BrickSensitivities, JacobianEvaluator)
             return linear_algebra::DynamicVector<double>(detail::sensitivities(i));
         }};
 
-    std::vector<double> tVec(24, 0.0);
-    std::iota(tVec.begin(), tVec.end(), 1.0);
-    const linear_algebra::DynamicVector<double> tRolvec(tVec);
-
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
-    EXPECT_EQ(tRes.stdVector(), tGold);
+    run_test_of_iota_vector_result(tJacobian, tGold);
 }
 
 TEST(Brick, ABrick)
@@ -176,15 +187,8 @@ TEST(Brick, Jacobian)
     const BrickShapeGeometry tBrick(tFileName);
     const linear_algebra::JacobianColumnEvaluator tJacobian = tBrick.jacobian(tDesignParameters);
 
-    constexpr unsigned int tNumNodes = 8;
-    constexpr unsigned int tNumCoordinates = 3;
-    std::vector<double> tVec(tNumNodes * tNumCoordinates, 0.0);
-    std::iota(tVec.begin(), tVec.end(), 1.0);
-    const linear_algebra::DynamicVector<double> tRolvec(tVec);
-
     const std::vector<double> tGold{92, 100, 108, 6, 12, 24};
-    const linear_algebra::DynamicVector<double> tRes = tRolvec * tJacobian;
-    EXPECT_EQ(tRes.stdVector(), tGold);
+    run_test_of_iota_vector_result(tJacobian, tGold);
 }
 
 TEST(Brick, ToROLStdVector)
