@@ -47,7 +47,8 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mConstraints=*/{create_valid_example_constraint()},
                                      /*.mBrickShapeGeometry=*/boost::none,
                                      /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                     /*.mOptimizationParameters = */ create_valid_example_optimization_parameters()};
+                                     /*.mOptimizationParameters = */ create_valid_example_optimization_parameters(),
+                                     /*.mGradientCheck=*/{}};
 }
 
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()

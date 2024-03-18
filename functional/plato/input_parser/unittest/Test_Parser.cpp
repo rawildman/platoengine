@@ -150,6 +150,29 @@ TEST(MassAppInput, OptimizationParametersAllValidInputs)
     test_existence_and_equality(tData.mOptimizationParameters.gradient_tolerance, 100.0);
 }
 
+TEST(MassAppInput, GradientCheckAllValidInputs)
+{
+    const std::string tInput =
+        R"(
+          begin gradient_check
+            output_file_name its-a_file.txt
+            iterations 100
+            step_size 10
+          end
+       )";
+
+    // Parse
+    const auto [tParseResult, tIter, tData] = parse_string(tInput);
+
+    // Tests
+    EXPECT_TRUE(tParseResult);
+    EXPECT_EQ(tIter, tInput.end());
+    // ASSERT_TRUE(tData.mGradientCheck);
+    test_existence_and_equality(tData.mGradientCheck.output_file_name, std::string{"its-a_file.txt"});
+    //   test_existence_and_equality(tData.mGradientCheck->iterations, 100u);
+    //  test_existence_and_equality(tData.mGradientCheck->step_size, 10.0);
+}
+
 TEST(MassAppInput, ObjectiveNotAllInputs)
 {
     const std::string tInput =
