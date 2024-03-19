@@ -20,7 +20,7 @@ constexpr bool kIsVariantMember = false;
 template <typename T, typename... Ts>
 constexpr bool kIsVariantMember<T, std::variant<Ts...>> = std::disjunction_v<std::is_same<T, Ts>...>;
 
-template <typename T>
+template <typename T, typename = void>
 [[nodiscard]] std::optional<library::GeometryInput> make_variant_if_geometry(const T&)
 {
     return std::nullopt;
@@ -28,10 +28,10 @@ template <typename T>
 
 /// @return If @a aT is an alternative of variant GeometryInput, and is non-empty, returns an optional-wrapped copy of
 /// @a aT.
-template <typename T>
+template <typename T, typename = std::enable_if_t<kIsVariantMember<T, library::GeometryInput>>>
 [[nodiscard]] std::optional<library::GeometryInput> make_variant_if_geometry(const boost::optional<T>& aT)
 {
-    if (kIsVariantMember<T, library::GeometryInput> && aT)
+    if (aT)
     {
         return std::make_optional(library::GeometryInput{aT.value()});
     }

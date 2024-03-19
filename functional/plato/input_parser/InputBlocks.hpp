@@ -44,8 +44,10 @@ PLATO_INPUT_BLOCK_STRUCT(
 PLATO_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), gradient_check,
     (plato::input_parser::FileName, output_file_name)
-    (unsigned int, iterations)
-    (double, step_size)
+    (unsigned int, number_of_steps)
+    (double, initial_direction_magnitude)
+    (double, step_size_reduction_factor)
+    (unsigned int, random_direction_seed)
 )
 
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
@@ -95,7 +97,7 @@ BOOST_FUSION_DEFINE_STRUCT(
     (boost::optional<plato::input_parser::brick_shape_geometry>, mBrickShapeGeometry)
     (boost::optional<plato::input_parser::density_topology>, mDensityTopology)
     (plato::input_parser::optimization_parameters, mOptimizationParameters)
-    (plato::input_parser::gradient_check, mGradientCheck)
+    (boost::optional<plato::input_parser::gradient_check>, mGradientCheck)
 )
 // clang-format on
 namespace plato::input_parser

@@ -41,7 +41,7 @@ void check_nothing_parsed(const ParsedInput& aInput)
 }
 }  // namespace
 
-TEST(MassAppInput, ObjectiveAllValidInputs)
+TEST(ParsedInput, ObjectiveAllValidInputs)
 {
     const std::string tInput =
         R"(
@@ -91,7 +91,7 @@ TEST(InputBlockStruct, BlockName)
     EXPECT_EQ(tResult, "brick_shape_geometry");
 }
 
-TEST(MassAppInput, ConstraintAllValidInputs)
+TEST(ParsedInput, ConstraintAllValidInputs)
 {
     const std::string tInput =
         R"(
@@ -123,7 +123,7 @@ TEST(MassAppInput, ConstraintAllValidInputs)
     test_existence_and_equality(tConstraint.is_linear, false);
 }
 
-TEST(MassAppInput, OptimizationParametersAllValidInputs)
+TEST(ParsedInput, OptimizationParametersAllValidInputs)
 {
     const std::string tInput =
         R"(
@@ -150,14 +150,16 @@ TEST(MassAppInput, OptimizationParametersAllValidInputs)
     test_existence_and_equality(tData.mOptimizationParameters.gradient_tolerance, 100.0);
 }
 
-TEST(MassAppInput, GradientCheckAllValidInputs)
+TEST(ParsedInput, GradientCheckAllValidInputs)
 {
     const std::string tInput =
         R"(
           begin gradient_check
             output_file_name its-a_file.txt
-            iterations 100
-            step_size 10
+            number_of_steps 10
+            step_size_reduction_factor 0.5
+            random_direction_seed 1
+            initial_direction_magnitude 0.5
           end
        )";
 
@@ -167,13 +169,15 @@ TEST(MassAppInput, GradientCheckAllValidInputs)
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.end());
-    // ASSERT_TRUE(tData.mGradientCheck);
-    test_existence_and_equality(tData.mGradientCheck.output_file_name, std::string{"its-a_file.txt"});
-    //   test_existence_and_equality(tData.mGradientCheck->iterations, 100u);
-    //  test_existence_and_equality(tData.mGradientCheck->step_size, 10.0);
+    ASSERT_TRUE(tData.mGradientCheck);
+    test_existence_and_equality(tData.mGradientCheck->output_file_name, std::string{"its-a_file.txt"});
+    test_existence_and_equality(tData.mGradientCheck->number_of_steps, 10u);
+    test_existence_and_equality(tData.mGradientCheck->step_size_reduction_factor, 0.5);
+    test_existence_and_equality(tData.mGradientCheck->random_direction_seed, 1u);
+    test_existence_and_equality(tData.mGradientCheck->initial_direction_magnitude, 0.5);
 }
 
-TEST(MassAppInput, ObjectiveNotAllInputs)
+TEST(ParsedInput, ObjectiveNotAllInputs)
 {
     const std::string tInput =
         R"(
@@ -198,7 +202,7 @@ TEST(MassAppInput, ObjectiveNotAllInputs)
     test_existence_and_equality(tObjective.aggregation_weight, 10.0);
 }
 
-TEST(MassAppInput, MisspelledBegin)
+TEST(ParsedInput, MisspelledBegin)
 {
     const std::string tInput =
         R"(
@@ -216,7 +220,7 @@ TEST(MassAppInput, MisspelledBegin)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledEnd)
+TEST(ParsedInput, MisspelledEnd)
 {
     const std::string tInput =
         R"(
@@ -234,7 +238,7 @@ TEST(MassAppInput, MisspelledEnd)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledBlockType)
+TEST(ParsedInput, MisspelledBlockType)
 {
     const std::string tInput =
         R"(
@@ -252,7 +256,7 @@ TEST(MassAppInput, MisspelledBlockType)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledToken)
+TEST(ParsedInput, MisspelledToken)
 {
     const std::string tInput =
         R"(
@@ -270,7 +274,7 @@ TEST(MassAppInput, MisspelledToken)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledValue)
+TEST(ParsedInput, MisspelledValue)
 {
     const std::string tInput =
         R"(
@@ -288,7 +292,7 @@ TEST(MassAppInput, MisspelledValue)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MissingValue)
+TEST(ParsedInput, MissingValue)
 {
     const std::string tInput =
         R"(
@@ -307,7 +311,7 @@ TEST(MassAppInput, MissingValue)
     EXPECT_EQ(tData.mConstraints.front().number_of_processors.value(), 10u);
 }
 
-TEST(MassAppInput, ConstraintMultipleBlocks)
+TEST(ParsedInput, ConstraintMultipleBlocks)
 {
     const std::string tInput =
         R"(
