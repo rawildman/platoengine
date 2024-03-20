@@ -171,4 +171,26 @@ std::string create_valid_example_optimization_parameters_string()
        )";
 }
 
+input_parser::gradient_check create_valid_example_gradient_check()
+{
+    return input_parser::gradient_check{/*.output_file_name=*/input_parser::FileName{"gradient_check.txt"},
+                                        /*.number_of_steps=*/12,
+                                        /*.initial_direction_magnitude=*/0.5,
+                                        /*.step_size_reduction_factor = */ 0.5,
+                                        /*.random_direction_seed = */ 42};
+}
+
+std::string create_valid_example_gradient_check_string()
+{
+    return R"(
+          begin gradient_check
+            output_file_name gradient_check_file.txt
+            number_of_steps 12
+            step_size_reduction_factor 0.5
+            random_direction_seed 123
+            initial_direction_magnitude 0.5
+          end
+       )";
+}
+
 }  // namespace plato::test_utilities
