@@ -60,18 +60,18 @@ TEST(InputBlockStruct, UnNamed)
 TEST(InputBlockStruct, Geometry)
 {
     const TestGeometryBlock tTestBlock;
-    constexpr bool tIsGeometry = kIsGeometryInput<TestGeometryBlock>;
+    constexpr bool tIsGeometry = IsGeometryInput<TestGeometryBlock>::value;
     EXPECT_TRUE(tIsGeometry);
-    constexpr bool tIsNotGeometry = kIsGeometryInput<int>;
+    constexpr bool tIsNotGeometry = IsGeometryInput<int>::value;
     EXPECT_FALSE(tIsNotGeometry);
 }
 
 TEST(InputBlockStruct, Process)
 {
     auto tTestBlock = TestProcessManagerBlock{};
-    constexpr bool tIsProcessManager = kIsProcessManagerInput<TestProcessManagerBlock>;
+    constexpr bool tIsProcessManager = IsProcessManagerInput<TestProcessManagerBlock>::value;
     EXPECT_TRUE(tIsProcessManager);
-    constexpr bool tIsNotProcessManager = kIsProcessManagerInput<TestGeometryBlock>;
+    constexpr bool tIsNotProcessManager = IsProcessManagerInput<TestGeometryBlock>::value;
     EXPECT_FALSE(tIsNotProcessManager);
 
     tTestBlock.field1 = 42;

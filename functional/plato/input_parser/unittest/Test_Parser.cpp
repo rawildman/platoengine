@@ -77,11 +77,11 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
 
 TEST(InputBlockStruct, GeometryBlocks)
 {
-    constexpr bool tDensityTopologyIsGeometry = kIsGeometryInput<density_topology>;
+    constexpr bool tDensityTopologyIsGeometry = IsGeometryInput<density_topology>::value;
     EXPECT_TRUE(tDensityTopologyIsGeometry);
-    constexpr bool tBrickShapeIsGeometry = kIsGeometryInput<brick_shape_geometry>;
+    constexpr bool tBrickShapeIsGeometry = IsGeometryInput<brick_shape_geometry>::value;
     EXPECT_TRUE(tBrickShapeIsGeometry);
-    constexpr bool tOptimizationIsNotGeometry = kIsGeometryInput<optimization_parameters>;
+    constexpr bool tOptimizationIsNotGeometry = IsGeometryInput<optimization_parameters>::value;
     EXPECT_FALSE(tOptimizationIsNotGeometry);
 }
 

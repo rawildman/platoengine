@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <variant>
+
 #include "plato/core/Function.hpp"
 #include "plato/core/MeshProxy.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
@@ -7,6 +9,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 #include "plato/utilities/Exception.hpp"
+
 namespace plato::geometry::library::unittest
 {
 namespace
@@ -35,7 +38,25 @@ TEST(GeometryRegistration, DensityTopology) { EXPECT_TRUE(is_geometry_function_r
 
 TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
 {
-    EXPECT_THROW(auto tGeometryInput = first_geometry_input(input_parser::ParsedInput{}),
-                 plato::utilities::Exception);
+    EXPECT_THROW(auto tGeometryInput = first_geometry_input(input_parser::ParsedInput{}), plato::utilities::Exception);
 }
+
+TEST(GeometryRegistration, GeometryInput)
+{
+    using TestInput = GeometryInput;
+    static_assert(std::variant_size_v<TestInput> == 2);
+    static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, input_parser::density_topology>);
+    static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, input_parser::brick_shape_geometry>);
+}
+
+TEST(GeometryRegistration, ValidatedGeometryInput)
+{
+    using TestInput = ValidatedGeometryInput::RawInputType;
+    static_assert(std::variant_size_v<TestInput> == 2);
+    static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
+                                 core::ValidatedInputTypeWrapper<input_parser::density_topology>>);
+    static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>,
+                                 core::ValidatedInputTypeWrapper<input_parser::brick_shape_geometry>>);
+}
+
 }  // namespace plato::geometry::library::unittest

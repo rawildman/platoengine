@@ -27,7 +27,10 @@ constexpr inline bool kIsNamedBlock = false;
 ///
 /// This is specialized to using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 template <typename T>
-constexpr inline bool kIsGeometryInput = false;
+struct IsGeometryInput
+{
+    constexpr static bool value = false;
+};
 
 /// @brief Type trait specifying if a type is a process_manager input type.
 ///
@@ -35,7 +38,10 @@ constexpr inline bool kIsGeometryInput = false;
 /// gradient checkers, constraint checkers, etc.
 /// This is specialized to using the PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT macro.
 template <typename T>
-constexpr inline bool kIsProcessManagerInput = false;
+struct IsProcessManagerInput
+{
+    constexpr static bool value = false;
+};
 }  // namespace plato::input_parser
 
 // clang-format off
@@ -77,14 +83,20 @@ struct InputTypeName<STRUCT_NAME>                                               
 PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
 namespace plato::input_parser{                                                                 \
 template<>                                                                                     \
-constexpr inline bool kIsGeometryInput<STRUCT_NAME> = true;                                    \
+struct IsGeometryInput<STRUCT_NAME>                                                            \
+{                                                                                              \
+    constexpr static bool value = true;                                                        \
+};                                                                                             \
 }
 
 #define PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)       \
 PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
 namespace plato::input_parser{                                                                 \
 template<>                                                                                     \
-constexpr inline bool kIsProcessManagerInput<STRUCT_NAME> = true;                              \
+struct IsProcessManagerInput<STRUCT_NAME>                                                      \
+{                                                                                              \
+    constexpr static bool value = true;                                                        \
+};                                                                                             \
 }
 
 /// Macro for generating an adapted struct that can be used for input parsing. The format
