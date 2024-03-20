@@ -21,6 +21,11 @@ PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), TestGeometryBlock, 
     (bool, field1)
 )
+
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
+    (plato)(input_parser), TestProcessManagerBlock, 
+    (int, field1)
+)
 // clang-format on
 namespace plato::input_parser::unittest
 {
@@ -59,5 +64,17 @@ TEST(InputBlockStruct, Geometry)
     EXPECT_TRUE(tIsGeometry);
     constexpr bool tIsNotGeometry = kIsGeometryInput<int>;
     EXPECT_FALSE(tIsNotGeometry);
+}
+
+TEST(InputBlockStruct, Process)
+{
+    auto tTestBlock = TestProcessManagerBlock{};
+    constexpr bool tIsProcessManager = kIsProcessManagerInput<TestProcessManagerBlock>;
+    EXPECT_TRUE(tIsProcessManager);
+    constexpr bool tIsNotProcessManager = kIsProcessManagerInput<TestGeometryBlock>;
+    EXPECT_FALSE(tIsNotProcessManager);
+
+    tTestBlock.field1 = 42;
+    test_existence_and_equality(tTestBlock.field1, 42);
 }
 }  // namespace plato::input_parser::unittest

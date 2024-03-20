@@ -33,7 +33,7 @@
 /// @note Enumerations may be used, but must be declared with DECLARE_ENUM_SYMBOL_TABLE and
 ///  defined with DEFINE_ENUM_SYMBOL_TABLE.
 // clang-format off
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), optimization_parameters,
     (plato::input_parser::FileName, input_file_name)
     (unsigned int, max_iterations)
@@ -41,7 +41,7 @@ PLATO_INPUT_BLOCK_STRUCT(
     (double, gradient_tolerance)
 )
 
-PLATO_INPUT_BLOCK_STRUCT(
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), gradient_check,
     (plato::input_parser::FileName, output_file_name)
     (unsigned int, number_of_steps)
