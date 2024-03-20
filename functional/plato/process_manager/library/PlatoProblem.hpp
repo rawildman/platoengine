@@ -1,5 +1,5 @@
-#ifndef PLATO_MAIN_LIBRARY_PLATOPROBLEM
-#define PLATO_MAIN_LIBRARY_PLATOPROBLEM
+#ifndef PLATO_PROCESSMANAGER_LIBRARY_PLATOPROBLEM
+#define PLATO_PROCESSMANAGER_LIBRARY_PLATOPROBLEM
 
 #include <memory>
 #include <vector>
@@ -7,12 +7,12 @@
 #include "plato/criteria/library/ConstraintFactory.hpp"
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/rol_integration/ROLConstraintFunction.hpp"
 #include "plato/rol_integration/ROLObjectiveFunction.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 ///@brief The struct that contains the functions used to create a ROL objective, as well as the ROL parameters to create
 /// a ROL problem
@@ -43,6 +43,6 @@ make_rol_constraints(const PlatoProblem& aProblem);
 /// Apply bound constraints, constraints, and finalize the ROL problem
 [[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem);
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library
 
 #endif

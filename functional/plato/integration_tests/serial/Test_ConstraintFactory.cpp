@@ -2,7 +2,7 @@
 
 #include "plato/criteria/library/ConstraintFactory.hpp"
 #include "plato/criteria/library/ConstraintValidation.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
@@ -16,8 +16,8 @@ TEST(ConstraintFactory, ValidConstraint)
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
     const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
-    const main::library::ValidatedInput tData =
-        main::library::parse_and_validate(tConstraintInput + tGeometryInput + tOptimizerInput + tObjectiveInput);
+    const process_manager::library::ValidatedInput tData =
+        process_manager::library::parse_and_validate(tConstraintInput + tGeometryInput + tOptimizerInput + tObjectiveInput);
 
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     const auto tConstraint = criteria::library::detail::make_constraint(tData.constraints().rawInput().front());

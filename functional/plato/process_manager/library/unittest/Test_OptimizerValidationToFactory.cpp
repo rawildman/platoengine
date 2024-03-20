@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "plato/input_parser/InputParser.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::main::library::unittest
+namespace plato::process_manager::library::unittest
 {
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
@@ -61,4 +61,4 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     std::filesystem::remove(kFileName);
 }
 
-}  // namespace plato::main::library::unittest
+}  // namespace plato::process_manager::library::unittest

@@ -1,4 +1,4 @@
-#include "plato/main/library/PlatoProblem.hpp"
+#include "plato/process_manager/library/PlatoProblem.hpp"
 
 #include <ROL_Bounds.hpp>
 
@@ -7,7 +7,7 @@
 #include "plato/criteria/extension/NodalSumObjective.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 namespace
 {
@@ -88,4 +88,4 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProb
     return tROLProblem;
 }
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library

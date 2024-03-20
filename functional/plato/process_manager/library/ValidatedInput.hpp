@@ -1,5 +1,5 @@
-#ifndef PLATO_MAIN_LIBRARY_VALIDATEDINPUT
-#define PLATO_MAIN_LIBRARY_VALIDATEDINPUT
+#ifndef PLATO_PROCESSMANAGER_LIBRARY_VALIDATEDINPUT
+#define PLATO_PROCESSMANAGER_LIBRARY_VALIDATEDINPUT
 
 #include <filesystem>
 
@@ -7,7 +7,7 @@
 #include "plato/geometry/library/GeometryRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 class ValidatedInput;
 
@@ -54,6 +54,6 @@ class ValidatedInput
 /// @brief Parse input from input string @a aInput and then validate the input
 [[nodiscard]] ValidatedInput parse_and_validate(const std::string_view aInput);
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library
 
 #endif

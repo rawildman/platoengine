@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
-namespace plato::main::library::unittest
+namespace plato::process_manager::library::unittest
 {
 TEST(GeometryFactory, ValidBrickShapeGeometry)
 {
@@ -37,4 +37,4 @@ TEST(GeometryFactory, ValidTopology)
 
     std::filesystem::remove(tMeshFileName);
 }
-}  // namespace plato::main::library::unittest
+}  // namespace plato::process_manager::library::unittest

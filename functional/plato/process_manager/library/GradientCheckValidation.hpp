@@ -1,12 +1,12 @@
-#ifndef PLATO_MAIN_LIBRARY_GRADIENTCHECKVALIDATION
-#define PLATO_MAIN_LIBRARY_GRADIENTCHECKVALIDATION
+#ifndef PLATO_PROCESSMANAGER_LIBRARY_GRADIENTCHECKVALIDATION
+#define PLATO_PROCESSMANAGER_LIBRARY_GRADIENTCHECKVALIDATION
 
 #include <optional>
 
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 [[nodiscard]] std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,
                                                                std::vector<std::string>&& aCurrentMessageList);
@@ -23,6 +23,6 @@ namespace detail
 
 }  // namespace detail
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library
 
 #endif

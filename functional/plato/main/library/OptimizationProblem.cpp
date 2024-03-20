@@ -8,8 +8,6 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
-#include "plato/main/library/PlatoProblem.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::main::library
@@ -32,7 +30,8 @@ ROL::StdVector<double> generatePerturbation(const int aDimension)
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
-    : mProblem(make_plato_problem(parse_and_validate_from_file(aInputFile))),
+    : mProblem(process_manager::library::make_plato_problem(
+          process_manager::library::parse_and_validate_from_file(aInputFile))),
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(plato::optimizer::make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
@@ -82,7 +81,7 @@ void OptimizationProblem::sensitivityCheck() const
     std::ofstream tOutFile(std::string{kROLSensitivityCheckFileName});
     constexpr bool tPrintOutput = true;
 
-    auto tSensitivityObjective = make_rol_sensitivity_objective(mProblem);
+    auto tSensitivityObjective = process_manager::library::make_rol_sensitivity_objective(mProblem);
     tSensitivityObjective->checkGradient(rol_integration::to_rol_vector(mProblem.mGeometry.mInitialGuess),
                                          generatePerturbation(dimension()), tPrintOutput, tOutFile);
 }

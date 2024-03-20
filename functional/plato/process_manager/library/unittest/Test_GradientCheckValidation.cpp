@@ -1,17 +1,17 @@
 #include <gtest/gtest.h>
 
 #include "plato/core/ValidationUtilities.hpp"
-#include "plato/main/library/GradientCheckValidation.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/GradientCheckValidation.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::main::library::unittest
+namespace plato::process_manager::library::unittest
 {
 
 TEST(ValidateGradientCheck, ValidateNumberOfSteps)
 {
-    namespace pfmld = plato::main::library::detail;
+    namespace pfmld = plato::process_manager::library::detail;
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(pfmld::validate_number_of_steps(tGradientCheck).has_value());
     tGradientCheck.number_of_steps = 0;  // out of bounds
@@ -22,7 +22,7 @@ TEST(ValidateGradientCheck, ValidateNumberOfSteps)
 
 TEST(ValidateGradientCheck, ValidateInitialDirectionMagnitude)
 {
-    namespace pfmld = plato::main::library::detail;
+    namespace pfmld = plato::process_manager::library::detail;
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(pfmld::validate_initial_direction_magnitude(tGradientCheck).has_value());
     tGradientCheck.initial_direction_magnitude = 0;  // out of bounds
@@ -33,7 +33,7 @@ TEST(ValidateGradientCheck, ValidateInitialDirectionMagnitude)
 
 TEST(ValidateGradientCheck, ValidateStepSizeReductionFactor)
 {
-    namespace pfmld = plato::main::library::detail;
+    namespace pfmld = plato::process_manager::library::detail;
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(pfmld::validate_step_size_reduction_factor(tGradientCheck).has_value());
     tGradientCheck.initial_direction_magnitude = 0;  // out of bounds
@@ -46,7 +46,7 @@ TEST(ValidateGradientCheck, ValidateStepSizeReductionFactor)
 
 TEST(ValidateGradientCheck, ValidateRandomDirectionSeed)
 {
-    namespace pfmld = plato::main::library::detail;
+    namespace pfmld = plato::process_manager::library::detail;
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(pfmld::validate_random_direction_seed(tGradientCheck).has_value());
     tGradientCheck.initial_direction_magnitude = 0;  // out of bounds
@@ -74,4 +74,4 @@ TEST(ValidateGradientCheck, ErrorMessagesInvalidGradientCheck)
     std::cout << plato::core::all_messages(tMessages) << std::endl;
 }
 
-}  // namespace plato::main::library::unittest
+}  // namespace plato::process_manager::library::unittest

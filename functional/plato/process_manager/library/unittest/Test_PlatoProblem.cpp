@@ -8,13 +8,13 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/main/library/PlatoProblem.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/PlatoProblem.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::main::library::unittest
+namespace plato::process_manager::library::unittest
 {
 TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 {
@@ -129,4 +129,4 @@ TEST(PlatoProblem, ParseAndValidateInvalidInput)
     const std::string tInput;
     EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), utilities::Exception);
 }
-}  // namespace plato::main::library::unittest
+}  // namespace plato::process_manager::library::unittest

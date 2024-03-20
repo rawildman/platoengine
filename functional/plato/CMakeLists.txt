@@ -10,6 +10,7 @@ add_subdirectory(./filter)
 add_subdirectory(./criteria)
 add_subdirectory(./optimizer)
 add_subdirectory(./rol_integration)
+add_subdirectory(./process_manager)
 add_subdirectory(./main)
 
 if( UNIT_TESTING )

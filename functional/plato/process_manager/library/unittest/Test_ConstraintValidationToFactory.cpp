@@ -2,10 +2,10 @@
 
 #include "plato/criteria/library/ConstraintFactory.hpp"
 #include "plato/criteria/library/ConstraintValidation.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::main::library::unittest
+namespace plato::process_manager::library::unittest
 {
 TEST(ConstraintFactory, MultipleValidConstraints)
 {
@@ -37,4 +37,4 @@ TEST(ConstraintFactory, MultipleValidConstraints)
     EXPECT_FALSE(tCons[2].mLinear);
     EXPECT_EQ(tCons[2].mConstraintTarget, 10);
 }
-}  // namespace plato::main::library::unittest
+}  // namespace plato::process_manager::library::unittest

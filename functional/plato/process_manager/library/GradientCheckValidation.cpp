@@ -1,10 +1,10 @@
-#include "plato/main/library/GradientCheckValidation.hpp"
+#include "plato/process_manager/library/GradientCheckValidation.hpp"
 
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 [[maybe_unused]] static auto kGradientCheckValidationRegistration =
     core::ValidationRegistration<input_parser::gradient_check>{
@@ -63,4 +63,4 @@ std::optional<std::string> validate_random_direction_seed(const input_parser::gr
 
 }  // namespace detail
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library

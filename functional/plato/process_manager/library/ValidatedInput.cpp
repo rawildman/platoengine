@@ -1,4 +1,4 @@
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 
 #include <string>
 #include <string_view>
@@ -11,7 +11,7 @@
 #include "plato/optimizer/OptimizerValidation.hpp"
 #include "plato/utilities/Exception.hpp"
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, Key) : mInput{std::move(aInput)} {}
 
@@ -80,4 +80,4 @@ ValidatedInput parse_and_validate(const std::string_view aInput)
     return make_validated_input(input_parser::parse_input(aInput));
 }
 
-}  // namespace plato::main::library
+}  // namespace plato::process_manager::library
