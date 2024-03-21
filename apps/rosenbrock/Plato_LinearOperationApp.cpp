@@ -96,7 +96,7 @@ void LinearOperationApp::computeCriterionHessianTimesVector()
 
 void LinearOperationApp::inputData(const std::string & aArgumentName, const Plato::SharedData & aImportData)
 {
-    const auto tSetImportData = [&aImportData, this](Vector<ScalarType, OrdinalType>& aData)
+    const auto tSetImportData = [&aImportData](Vector<ScalarType, OrdinalType>& aData)
     {
         assert(aData.size() == static_cast<OrdinalType>(aImportData.size()));
         Plato::StandardVector<ScalarType, OrdinalType> tInputData(aData.size());
@@ -108,7 +108,7 @@ void LinearOperationApp::inputData(const std::string & aArgumentName, const Plat
 
 void LinearOperationApp::outputData(const std::string & aArgumentName, Plato::SharedData & aExportData)
 {
-    const auto tSetExportData = [&aExportData, this](const Vector<ScalarType, OrdinalType>& aData)
+    const auto tSetExportData = [&aExportData](const Vector<ScalarType, OrdinalType>& aData)
     {
         assert(aData.size() == static_cast<OrdinalType>(aExportData.size()));
         Plato::StandardVector<ScalarType, OrdinalType> tOutputData(aData.size());

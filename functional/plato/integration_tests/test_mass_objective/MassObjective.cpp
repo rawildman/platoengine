@@ -121,7 +121,7 @@ double element_mass(const stk::mesh::Entity& aElement, const stk::mesh::BulkData
 
 }  // namespace
 
-MassObjective::MassObjective(const double aDensity, const double aTarget) : mDensity(aDensity), mTarget(aTarget) {}
+MassObjective::MassObjective(const double aDensity) : mDensity(aDensity) {}
 
 double MassObjective::mass(const std::string_view aMeshFileName) const
 {

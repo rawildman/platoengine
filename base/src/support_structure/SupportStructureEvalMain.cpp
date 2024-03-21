@@ -35,7 +35,7 @@ int main(int argc,  char **argv)
     if(!comm)
     {
         std::cout << "Failed to initialize the parallel machine." << std::endl;
-        return false;
+        return 1;
     }
 
     Kokkos::initialize(argc, argv);
@@ -57,7 +57,7 @@ int main(int argc,  char **argv)
     catch (const std::exception& exc)
     {
         std::cout << "Failed to parse the command line arguments." << std::endl;
-        return false;
+        return 1;
     }
 
     // Initialize stk::mesh data
@@ -85,7 +85,7 @@ int main(int argc,  char **argv)
     if(node_buckets.size() == 0)
     {
         std::cout << "Failed to find any nodes." << std::endl;
-        return false;
+        return 1;
     }
     double totalSum = 0.0;
     for ( stk::mesh::BucketVector::const_iterator bucket_iter = node_buckets.begin();

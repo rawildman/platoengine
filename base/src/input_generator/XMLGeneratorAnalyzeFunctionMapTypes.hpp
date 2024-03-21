@@ -11,8 +11,8 @@
 
 namespace XMLGen
 {
-class EssentialBoundaryCondition;
-class Load;
+struct EssentialBoundaryCondition;
+struct Load;
 
 namespace Analyze
 {

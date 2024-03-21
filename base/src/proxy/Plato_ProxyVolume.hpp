@@ -104,8 +104,8 @@ public:
         tEpetraOutput.vector().SCAL(tLength, tValue, tEpetraOutput.vector().A());
         mSolver->computeVolumeGradient(tEpetraControl.vector(), tEpetraOutput.vector());
     }
-    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & aControl,
-                 const Plato::MultiVector<ScalarType, OrdinalType> & aVector,
+    void hessian(const Plato::MultiVector<ScalarType, OrdinalType> & /*aControl*/,
+                 const Plato::MultiVector<ScalarType, OrdinalType> & /*aVector*/,
                  Plato::MultiVector<ScalarType, OrdinalType> & aOutput)
     {
         Plato::fill(static_cast<ScalarType>(0), aOutput);
