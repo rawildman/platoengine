@@ -47,7 +47,7 @@ using GeometryRegistration = core::FactoryRegistration<FactoryTypes, ValidatedGe
 /// @throw Exception If no geometry block was defined in @a aInput.
 [[nodiscard]] library::GeometryInput first_geometry_input(const input_parser::ParsedInput& aInput);
 
-bool is_geometry_function_registered(const std::string_view aFunctionName);
+[[nodiscard]] bool is_geometry_function_registered(const std::string_view aFunctionName);
 
 /// @brief Helper to get the raw input from a validated geometry variant.
 template <typename Geometry>

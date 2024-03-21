@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/geometry/library/GeometryRegistrationUtilities.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
@@ -28,12 +27,4 @@ TEST(GeometryFactory, BrickGeometry)
     EXPECT_EQ(tData.mBounds.second.size(), tExpectedBrickShapeDimensions);
 }
 
-TEST(GeometryFactory, BlockName)
-{
-    namespace pftu = plato::test_utilities;
-
-    const process_manager::library::ValidatedInput tValidatedInput =
-        process_manager::library::make_validated_input(pftu::create_valid_example_input());
-    EXPECT_EQ(plato::geometry::library::detail::block_name(tValidatedInput.geometry()), "density_topology");
-}
 }  // namespace plato::integration_tests::serial

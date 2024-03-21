@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <fstream>
 
+#include "plato/core/InputVariantUtilities.hpp"
 #include "plato/input_parser/InputParser.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace
@@ -47,5 +49,12 @@ TEST(InputParser, ParseFromFile)
     EXPECT_EQ(tInput.mBrickShapeGeometry->mesh_name->mName, "my_mesh.exo");
 
     std::filesystem::remove(kTestFileName);
+}
+
+TEST(ParsedInputVariant, BlockName)
+{
+    const process_manager::library::ValidatedInput tValidatedInput =
+        process_manager::library::make_validated_input(plato::test_utilities::create_valid_example_input());
+    EXPECT_EQ(core::block_name(tValidatedInput.geometry()), "density_topology");
 }
 }  // namespace plato::integration_tests::serial

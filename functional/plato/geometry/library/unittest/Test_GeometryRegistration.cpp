@@ -36,7 +36,7 @@ TEST(GeometryRegistration, BrickGeometry) { EXPECT_TRUE(is_geometry_function_reg
 
 TEST(GeometryRegistration, DensityTopology) { EXPECT_TRUE(is_geometry_function_registered("density_topology")); }
 
-TEST(GeometryRegistrationUtilities, GeometryInputAllEmpty)
+TEST(GeometryRegistration, GeometryInputAllEmpty)
 {
     EXPECT_THROW(auto tGeometryInput = first_geometry_input(input_parser::ParsedInput{}), plato::utilities::Exception);
 }
