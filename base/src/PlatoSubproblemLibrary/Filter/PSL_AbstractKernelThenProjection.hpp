@@ -38,8 +38,6 @@ public:
 
 private:
 
-    bool m_built;
-    bool m_announce_radius;
     AbstractAuthority* m_authority;
     ParameterData* m_input_data;
     AbstractInterface::PointCloud* m_original_points;

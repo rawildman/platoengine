@@ -97,13 +97,36 @@ find_package(Boost REQUIRED COMPONENTS serialization filesystem system program_o
 
 ###########################  Compiler setup ###################################
 ####################### (post 'project()' command) ############################
-set(GCC_ADDITIONAL_WARNINGS "-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wsuggest-override -pedantic")
+set(GCC_ADDITIONAL_WARNINGS -Wall 
+                            -Wextra
+                            -Wshadow
+                            -Wnon-virtual-dtor
+                            -Wsuggest-override
+                            -pedantic
+                            -Wno-return-type-c-linkage)
+
+if(BUILD_WITH_SANITIZER_FLAGS)
+  message(STATUS "Compiling with sanitizer flags turned on")
+  set(SANITIZER_FLAGS -fsanitize=address 
+                      -fno-omit-frame-pointer 
+                      -fsanitize=undefined 
+                      -fno-sanitize-recover=all 
+                      -fsanitize=float-divide-by-zero 
+                      -fsanitize=float-cast-overflow  
+                      -fsanitize=null 
+                      -fno-sanitize=alignment
+                      -fsanitize=enum)
+  message(STATUS "Sanitizer flags: ${SANITIZER_FLAGS}")
+  add_compile_options(${SANITIZER_FLAGS})
+  add_link_options(${SANITIZER_FLAGS})
+endif()
 
 message("Trilinos_CXX_COMPILER_FLAGS: ${Trilinos_CXX_COMPILER_FLAGS}")
 # set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -fopenmp")
 # set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -fopenmp")
 set(CMAKE_C_FLAGS "${Trilinos_C_COMPILER_FLAGS} -fPIC -Werror")
-set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -Werror ${GCC_ADDITIONAL_WARNINGS}")
+set(CMAKE_CXX_FLAGS "${Trilinos_CXX_COMPILER_FLAGS} -fPIC -Werror ")
+add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${GCC_ADDITIONAL_WARNINGS}>")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 

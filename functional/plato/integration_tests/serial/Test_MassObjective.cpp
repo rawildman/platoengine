@@ -12,8 +12,7 @@ TEST(MassObjective, Value)
     namespace pfittmo = plato::integration_tests::test_mass_objective;
 
     constexpr double tDensity = 2.0;
-    constexpr double tTarget = 1.0;
-    const auto tMassObjective = pfittmo::MassObjective{tDensity, tTarget};
+    const auto tMassObjective = pfittmo::MassObjective{tDensity};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
@@ -27,7 +26,7 @@ TEST(MassObjective, NumMeshNodes)
     namespace pfu = plato::utilities;
     namespace pfittmo = plato::integration_tests::test_mass_objective;
 
-    const auto tMassObjective = pfittmo::MassObjective{0.0, 0.0};
+    const auto tMassObjective = pfittmo::MassObjective{0.0};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x2x1|bbox:-1,-1,-1,1,1,1"));

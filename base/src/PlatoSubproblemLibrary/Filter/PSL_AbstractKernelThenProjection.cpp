@@ -57,8 +57,6 @@ AbstractKernelThenProjection::AbstractKernelThenProjection(AbstractAuthority* au
                            AbstractInterface::PointCloud* points,
                            AbstractInterface::ParallelExchanger* exchanger) :
         AbstractKernelThenFilter(authority, data, points, exchanger),
-        m_built(false),
-        m_announce_radius(false),
         m_authority(authority),
         m_input_data(data),
         m_original_points(points),

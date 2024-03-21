@@ -9,7 +9,7 @@ class MassObjective
 {
    public:
     ///@brief Construct a new Mass Objective object
-    MassObjective(const double aDensity, const double aTarget);
+    explicit MassObjective(const double aDensity);
 
     ///@brief return the total mass of the mesh
     [[nodiscard]] double mass(std::string_view aMeshFileName) const;
@@ -19,7 +19,6 @@ class MassObjective
 
    private:
     double mDensity = 1.0;
-    double mTarget = 0.0;
 };
 
 }  // namespace plato::integration_tests::test_mass_objective

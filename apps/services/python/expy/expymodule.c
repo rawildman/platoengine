@@ -155,7 +155,7 @@ static void int_array_from_list(PyObject* list, int* array) {
 
 /******************************************************************************/
 static PyObject*
-expy_open(PyObject *self, PyObject *args)
+expy_open(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   const char* path;
@@ -182,7 +182,7 @@ expy_open(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_create(PyObject *self, PyObject *args)
+expy_create(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   const char* path;
@@ -199,7 +199,7 @@ expy_create(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_close(PyObject *self, PyObject *args)
+expy_close(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -214,7 +214,7 @@ expy_close(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_update(PyObject *self, PyObject *args)
+expy_update(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -230,7 +230,7 @@ expy_update(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_init(PyObject *self, PyObject *args)
+expy_get_init(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -258,7 +258,7 @@ expy_get_init(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_init(PyObject *self, PyObject *args)
+expy_put_init(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -283,7 +283,7 @@ expy_put_init(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_get_names(PyObject *self, PyObject *args)
+expy_get_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int i, exoid;
@@ -313,7 +313,7 @@ expy_get_names(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_names(PyObject *self, PyObject *args)
+expy_put_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int i;
@@ -349,7 +349,7 @@ expy_put_names(PyObject *self, PyObject *args)
 }
 /******************************************************************************/
 static PyObject *
-expy_put_info(PyObject *self, PyObject *args)
+expy_put_info(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int i;
@@ -383,7 +383,7 @@ expy_put_info(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_coord(PyObject *self, PyObject *args)
+expy_get_coord(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_dim, num_nodes;
@@ -417,7 +417,7 @@ expy_get_coord(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_coord(PyObject *self, PyObject *args)
+expy_put_coord(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -460,7 +460,7 @@ expy_put_coord(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_get_var_param(PyObject *self, PyObject *args)
+expy_get_var_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -480,7 +480,7 @@ expy_get_var_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_var_param(PyObject *self, PyObject *args)
+expy_put_var_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -501,7 +501,7 @@ expy_put_var_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_elem_var(PyObject *self, PyObject *args)
+expy_get_elem_var(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_elems;
@@ -525,7 +525,7 @@ expy_get_elem_var(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_nodal_var(PyObject *self, PyObject *args)
+expy_get_nodal_var(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_nodes;
@@ -549,7 +549,7 @@ expy_get_nodal_var(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_node_num_map(PyObject *self, PyObject *args)
+expy_get_node_num_map(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_nodes;
@@ -571,7 +571,7 @@ expy_get_node_num_map(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_elem_num_map(PyObject *self, PyObject *args)
+expy_get_elem_num_map(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_elems;
@@ -594,7 +594,7 @@ expy_get_elem_num_map(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_all_times(PyObject *self, PyObject *args)
+expy_get_all_times(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_times;
@@ -620,7 +620,7 @@ expy_get_all_times(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_get_var_names(PyObject *self, PyObject *args)
+expy_get_var_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int i, exoid;
@@ -650,7 +650,7 @@ expy_get_var_names(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_var_names(PyObject *self, PyObject *args)
+expy_put_var_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -675,7 +675,7 @@ expy_put_var_names(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_time(PyObject *self, PyObject *args)
+expy_put_time(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -693,7 +693,7 @@ expy_put_time(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_elem_var(PyObject *self, PyObject *args)
+expy_put_elem_var(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, time_step, elem_var_index, return_status;
@@ -716,7 +716,7 @@ expy_put_elem_var(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_nodal_var(PyObject *self, PyObject *args)
+expy_put_nodal_var(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, time_step, node_var_index, return_status;
@@ -739,7 +739,7 @@ expy_put_nodal_var(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject*
-expy_put_elem_attr(PyObject *self, PyObject *args)
+expy_put_elem_attr(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, return_status;
@@ -764,7 +764,7 @@ expy_put_elem_attr(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_coord_names(PyObject *self, PyObject *args)
+expy_get_coord_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int i;
@@ -794,7 +794,7 @@ expy_get_coord_names(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_coord_names(PyObject *self, PyObject *args)
+expy_put_coord_names(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -819,7 +819,7 @@ expy_put_coord_names(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_elem_block(PyObject *self, PyObject *args)
+expy_get_elem_block(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, elem_blk_id;
@@ -845,7 +845,7 @@ expy_get_elem_block(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_elem_block(PyObject *self, PyObject *args)
+expy_put_elem_block(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -869,7 +869,7 @@ expy_put_elem_block(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_elem_blk_ids(PyObject *self, PyObject *args)
+expy_get_elem_blk_ids(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
  
@@ -892,7 +892,7 @@ expy_get_elem_blk_ids(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_elem_conn(PyObject *self, PyObject *args)
+expy_get_elem_conn(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int *connect;
@@ -918,7 +918,7 @@ expy_get_elem_conn(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_elem_conn(PyObject *self, PyObject *args)
+expy_put_elem_conn(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -947,7 +947,7 @@ expy_put_elem_conn(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_node_set_param(PyObject *self, PyObject *args)
+expy_put_node_set_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, node_set_id, num_nodes_in_set, num_dist_in_set;
@@ -965,7 +965,7 @@ expy_put_node_set_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_node_set_param(PyObject *self, PyObject *args)
+expy_get_node_set_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, node_set_id, num_nodes_in_set, num_dist_in_set;
@@ -984,7 +984,7 @@ expy_get_node_set_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_node_set_ids(PyObject *self, PyObject *args)
+expy_get_node_set_ids(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_node_sets;
@@ -1007,7 +1007,7 @@ expy_get_node_set_ids(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_node_set(PyObject *self, PyObject *args)
+expy_put_node_set(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, return_status, node_set_id, num_nodes;
@@ -1028,7 +1028,7 @@ expy_put_node_set(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_node_set(PyObject *self, PyObject *args)
+expy_get_node_set(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, node_set_id, num_nodes_in_set;
@@ -1051,7 +1051,7 @@ expy_get_node_set(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_side_set_param(PyObject *self, PyObject *args)
+expy_get_side_set_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, side_set_id, num_side_in_set, num_dist_in_set;
@@ -1070,7 +1070,7 @@ expy_get_side_set_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_side_set_ids(PyObject *self, PyObject *args)
+expy_get_side_set_ids(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, num_side_sets;
@@ -1093,7 +1093,7 @@ expy_get_side_set_ids(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_get_side_set(PyObject *self, PyObject *args)
+expy_get_side_set(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid, side_set_id, num_sides_in_set;
@@ -1120,7 +1120,7 @@ expy_get_side_set(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_side_set_param(PyObject *self, PyObject *args)
+expy_put_side_set_param(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
@@ -1141,7 +1141,7 @@ expy_put_side_set_param(PyObject *self, PyObject *args)
 
 /******************************************************************************/
 static PyObject *
-expy_put_side_set(PyObject *self, PyObject *args)
+expy_put_side_set(__attribute__((unused)) PyObject *self, PyObject *args)
 /******************************************************************************/
 {
   int exoid;
