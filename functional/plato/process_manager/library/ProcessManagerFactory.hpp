@@ -5,4 +5,5 @@ namespace plato::process_manager::library
 {
 
 }  // namespace plato::process_manager::library
+
 #endif

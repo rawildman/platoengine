@@ -7,6 +7,20 @@
 
 namespace plato::process_manager::library::unittest
 {
+namespace
+{
+void checkParameterList(
+    const core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>& aOptimizationParameters)
+{
+    const ROL::ParameterList tParlist = plato::optimizer::rol_parameter_list(aOptimizationParameters);
+    EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"),
+              aOptimizationParameters.rawInput().max_iterations.value());
+    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
+              aOptimizationParameters.rawInput().gradient_tolerance.value());
+    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
+              aOptimizationParameters.rawInput().step_tolerance.value());
+}
+}  // namespace
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
     const std::string tInput = plato::test_utilities::create_valid_brick_shape_geometry_string() +
@@ -21,14 +35,13 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
 
     const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
 
-    const auto tOPData = tData.optimizationParameters();
-    ROL::ParameterList tParlist = plato::optimizer::rol_parameter_list(tOPData);
+    checkParameterList(tData.optimizationParameters());
 
-    constexpr int kDefaultIterationLimit = 10;
-    EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"), kDefaultIterationLimit);
-    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
-              tOPData.rawInput().gradient_tolerance.value());
-    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"), tOPData.rawInput().step_tolerance.value());
+    const auto tProcessManagerData = tData.processManagers();
+    ASSERT_EQ(tProcessManagerData.rawInput().size(), 1);
+    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+    ASSERT_TRUE(std::holds_alternative<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
+    checkParameterList(std::get<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
 }
 
 TEST(OptimizerFactory, ParlistGenerationFromFile)

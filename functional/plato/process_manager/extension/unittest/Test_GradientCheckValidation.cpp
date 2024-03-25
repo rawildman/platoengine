@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "plato/core/ValidationUtilities.hpp"
-#include "plato/process_manager/library/GradientCheckValidation.hpp"
+#include "plato/process_manager/extension/GradientCheckValidation.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
@@ -49,9 +49,7 @@ TEST(ValidateGradientCheck, ValidateRandomDirectionSeed)
     namespace pfmld = plato::process_manager::library::detail;
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(pfmld::validate_random_direction_seed(tGradientCheck).has_value());
-    tGradientCheck.initial_direction_magnitude = 0;  // out of bounds
-    EXPECT_TRUE(pfmld::validate_random_direction_seed(tGradientCheck).has_value());
-    tGradientCheck.initial_direction_magnitude = 10;  // in bounds
+    tGradientCheck.random_direction_seed = 0;  // out of bounds
     EXPECT_TRUE(pfmld::validate_random_direction_seed(tGradientCheck).has_value());
 }
 
@@ -71,7 +69,6 @@ TEST(ValidateGradientCheck, ErrorMessagesInvalidGradientCheck)
     std::vector<std::string> tMessages;
     tMessages = validate_gradient_check(tGradientCheck, std::move(tMessages));
     EXPECT_EQ(tMessages.size(), 5u);
-    std::cout << plato::core::all_messages(tMessages) << std::endl;
 }
 
 }  // namespace plato::process_manager::library::unittest

@@ -1,4 +1,4 @@
-#include "plato/process_manager/library/GradientCheckValidation.hpp"
+#include "plato/process_manager/extension/GradientCheckValidation.hpp"
 
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/core/ValidationUtilities.hpp"

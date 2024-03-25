@@ -5,6 +5,7 @@
 
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
+#include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
 namespace plato::process_manager::library
@@ -29,6 +30,7 @@ class ValidatedInput
     using Constraints =
         core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
     using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+    using ProcessManagers = plato::process_manager::library::ValidatedProcessManagerInput;
 
    public:
     ValidatedInput(input_parser::ParsedInput aInput, Key);
@@ -37,10 +39,14 @@ class ValidatedInput
     [[nodiscard]] auto objectives() const -> Objectives;
     [[nodiscard]] auto constraints() const -> Constraints;
     [[nodiscard]] auto optimizationParameters() const -> OptimizationParameters;
+    [[nodiscard]] auto processManagers() const -> ProcessManagers;
 
    private:
     template <typename T>
-    static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(const std::vector<T>& aInputs);
+    [[nodiscard]] static std::vector<core::ValidatedInputTypeWrapper<T>> validatedVector(const std::vector<T>& aInputs);
+
+    template <typename ValidatedInputVariant, typename InputVariant>
+    [[nodiscard]] static ValidatedInputVariant validatedVariant(InputVariant aInputVariant);
 
    private:
     input_parser::ParsedInput mInput;

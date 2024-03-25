@@ -2,6 +2,7 @@
 
 #include "plato/core/InputVariantUtilities.hpp"
 #include "plato/core/ValidationRegistration.hpp"
+#include "plato/core/ValidationUtilities.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
 
 namespace plato::geometry::library
@@ -29,16 +30,7 @@ std::optional<std::string> validate_only_one_geometry(const input_parser::Parsed
 std::vector<std::string> validate_geometry(const input_parser::ParsedInput& aInput,
                                            std::vector<std::string>&& aCurrentMessageList)
 {
-    const std::vector<library::GeometryInput> tGeometryBlocks =
-        core::all_input_blocks_in_variant<library::GeometryInput>(aInput);
-    for (const library::GeometryInput& iBlockEntry : tGeometryBlocks)
-    {
-        aCurrentMessageList = std::visit(
-            [tList = std::move(aCurrentMessageList)](const auto& aGeometryInput) mutable -> std::vector<std::string>
-            { return core::validate(aGeometryInput, std::move(tList)); },
-            iBlockEntry);
-    }
-
+    aCurrentMessageList = core::validate_all_variants<GeometryInput>(aInput, std::move(aCurrentMessageList));
     return core::validate(aInput, std::move(aCurrentMessageList));
 }
 

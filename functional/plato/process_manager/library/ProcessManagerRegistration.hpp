@@ -14,7 +14,7 @@ using ProcessManager = std::function<void(const PlatoProblem&)>;
 
 using ProcessManagerInput = core::InputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>;
 using ValidatedProcessManagerInput = core::ValidatedInputTypeWrapper<
-    core::ValidatedInputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>>;
+    std::vector<core::ValidatedInputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>>>;
 using ProcessManagerRegistration = core::FactoryRegistration<ProcessManager, ValidatedProcessManagerInput>;
 
 [[nodiscard]] std::vector<ProcessManagerInput> process_manager_input(const input_parser::ParsedInput& aInput);

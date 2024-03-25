@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <variant>
 
 #include "plato/core/InputVariantUtilities.hpp"
 
@@ -73,4 +74,14 @@ TEST(InputVariantUtilities, GeometryBlocksVector)
         EXPECT_EQ(all_input_blocks_in_variant<TestVariant>(tInput).size(), 2u);
     }
 }
+
+TEST(InputVariantUtilities, AllBlockNamesInVariant)
+{
+    using TestVariant = std::variant<input_parser::density_topology, input_parser::brick_shape_geometry>;
+    const std::vector<std::string> tAllVariantBlockNames = all_variant_block_names<TestVariant>();
+    ASSERT_EQ(tAllVariantBlockNames.size(), std::variant_size_v<TestVariant>);
+    EXPECT_EQ(tAllVariantBlockNames.front(), input_parser::block_name<input_parser::density_topology>());
+    EXPECT_EQ(tAllVariantBlockNames.back(), input_parser::block_name<input_parser::brick_shape_geometry>());
+}
+
 }  // namespace plato::core::unittest

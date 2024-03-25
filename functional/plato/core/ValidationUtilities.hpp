@@ -5,14 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "plato/core/InputVariantUtilities.hpp"
+#include "plato/core/ValidationRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/utilities/ParameterBounds.hpp"
 
 namespace plato::core
 {
-/// @brief Creates a string by concatenating each entry of @a aMessages, with a newline between each.
-[[nodiscard]] std::string all_messages(const std::vector<std::string>& aMessages);
-
 /// @return an optional error message if @a aParameter does not contain a value.
 template <typename T>
 [[nodiscard]] std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
@@ -31,6 +30,12 @@ template <typename T>
 /// @tparam Must have a public field `active` that is a `boost` or `std::optional`.
 template <typename Parameter>
 [[nodiscard]] bool is_active(const Parameter& aParameter);
+
+/// @brief Calls the registered validation functions on all input blocks in @a aInput for
+///  the input block types contained in @a InputVariant.
+template <typename InputVariant>
+[[nodiscard]] std::vector<std::string> validate_all_variants(const input_parser::ParsedInput& aInput,
+                                                             std::vector<std::string>&& aCurrentMessageList);
 
 template <typename T>
 std::optional<std::string> error_message_for_empty_parameter(const std::string_view aPrependString,
@@ -69,6 +74,22 @@ template <typename Parameter>
 bool is_active(const Parameter& aParameter)
 {
     return !aParameter.active.has_value() || aParameter.active.value();
+}
+
+template <typename InputVariant>
+std::vector<std::string> validate_all_variants(const input_parser::ParsedInput& aInput,
+                                               std::vector<std::string>&& aCurrentMessageList)
+{
+    const std::vector<InputVariant> tInputBlocks = core::all_input_blocks_in_variant<InputVariant>(aInput);
+    for (const InputVariant& tBlockEntry : tInputBlocks)
+    {
+        aCurrentMessageList = std::visit(
+            [tList = std::move(aCurrentMessageList)](const auto& aVariantInput) mutable -> std::vector<std::string> {
+                return core::validate(aVariantInput, std::move(tList));
+            },
+            tBlockEntry);
+    }
+    return std::move(aCurrentMessageList);
 }
 
 }  // namespace plato::core

@@ -30,6 +30,11 @@ template <typename InputVariant>
 template <typename T>
 [[nodiscard]] std::string block_name(const ValidatedInputTypeWrapper<T>& aInput);
 
+/// @return All input block names for all alternatives held in @a InputVariant
+/// @tparam InputVariant A std::variant of input structs.
+template <typename InputVariant>
+[[nodiscard]] std::vector<std::string> all_variant_block_names();
+
 namespace detail
 {
 /// @brief A type trait specifying if a type @a T is an alternative of variant @a VariantT
@@ -40,8 +45,12 @@ template <typename T, typename... Ts>
 constexpr bool kIsVariantMember<T, std::variant<Ts...>> = std::disjunction_v<std::is_same<T, Ts>...>;
 
 template <typename InputVariant, typename T, typename = void>
-[[nodiscard]] std::optional<InputVariant> to_variant(const T&)
+[[nodiscard]] std::optional<InputVariant> to_variant(const T& aT)
 {
+    if constexpr (kIsVariantMember<T, InputVariant>)
+    {
+        return aT;
+    }
     return std::nullopt;
 }
 
@@ -73,6 +82,15 @@ template <typename InputVariant, std::size_t... Is>
     std::vector<InputVariant> tInput;
     (emplace_back_if_has_value(tInput, to_variant<InputVariant>(boost::fusion::at_c<Is>(aInput))), ...);
     return tInput;
+}
+
+template <typename InputVariant, std::size_t... Is>
+[[nodiscard]] std::vector<std::string> all_variant_block_names_impl(std::integer_sequence<std::size_t, Is...>)
+{
+    std::vector<std::string> tBlockNames;
+    tBlockNames.reserve(sizeof...(Is));
+    (tBlockNames.push_back(input_parser::block_name<std::variant_alternative_t<Is, InputVariant>>()), ...);
+    return tBlockNames;
 }
 
 }  // namespace detail
@@ -110,6 +128,14 @@ std::string block_name(const ValidatedInputTypeWrapper<T>& aInput)
         },
         aInput.rawInput());
 }
+
+template <typename InputVariant>
+std::vector<std::string> all_variant_block_names()
+{
+    return detail::all_variant_block_names_impl<InputVariant>(
+        std::make_index_sequence<std::variant_size_v<InputVariant>>());
+}
+
 }  // namespace plato::core
 
 #endif

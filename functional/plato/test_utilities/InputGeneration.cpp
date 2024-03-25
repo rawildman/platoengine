@@ -51,6 +51,13 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mGradientCheck=*/{}};
 }
 
+input_parser::ParsedInput create_valid_example_input_with_gradient_check()
+{
+    auto tInput = create_valid_example_input();
+    tInput.mGradientCheck = create_valid_example_gradient_check();
+    return tInput;
+}
+
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
 {
     return input_parser::brick_shape_geometry{/*.mesh_name=*/input_parser::FileName{"my_mesh.exo"}};

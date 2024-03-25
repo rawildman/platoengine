@@ -16,4 +16,9 @@ TEST(ValidatedInput, MakeValidInputWithValidInput)
 {
     EXPECT_NO_THROW(const auto tValidatedInput = make_validated_input(test_utilities::create_valid_example_input()));
 }
+
+TEST(ValidatedInput, MakeValidInputWithGradientCheck)
+{
+    EXPECT_NO_THROW(const auto tValidatedInput = make_validated_input(test_utilities::create_valid_example_input_with_gradient_check()));
+}
 }  // namespace plato::process_manager::library::unittest

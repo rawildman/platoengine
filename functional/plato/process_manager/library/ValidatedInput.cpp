@@ -1,15 +1,19 @@
 #include "plato/process_manager/library/ValidatedInput.hpp"
 
+#include <iterator>
 #include <string>
 #include <string_view>
 
+#include "plato/core/InputVariantUtilities.hpp"
 #include "plato/criteria/library/ConstraintValidation.hpp"
 #include "plato/criteria/library/ObjectiveValidation.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
 #include "plato/geometry/library/GeometryValidation.hpp"
 #include "plato/input_parser/InputParser.hpp"
 #include "plato/optimizer/OptimizerValidation.hpp"
+#include "plato/process_manager/library/ProcessManagerValidation.hpp"
 #include "plato/utilities/Exception.hpp"
+#include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::process_manager::library
 {
@@ -17,17 +21,8 @@ ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, Key) : mInput{s
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
-    plato::geometry::library::GeometryInput tGeometryInput =
-        plato::geometry::library::first_geometry_input(mInput);
-    using ValidatedGeometryVariant =
-        typename plato::geometry::library::ValidatedGeometryInput::RawInputType;
-    // Use visit with a return value in c++20
-    std::optional<ValidatedGeometryVariant> tValidatedGeometry;
-    std::visit([&tValidatedGeometry](auto&& tGeometry)
-               { tValidatedGeometry = core::ValidatedInputTypeWrapper{std::move(tGeometry)}; },
-               std::move(tGeometryInput));
-    assert(tValidatedGeometry);
-    return core::ValidatedInputTypeWrapper{*tValidatedGeometry};
+    return core::ValidatedInputTypeWrapper{
+        validatedVariant<typename Geometry::RawInputType>(geometry::library::first_geometry_input(mInput))};
 }
 
 ValidatedInput::Objectives ValidatedInput::objectives() const
@@ -45,6 +40,19 @@ ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() 
     return core::ValidatedInputTypeWrapper{mInput.mOptimizationParameters};
 }
 
+ValidatedInput::ProcessManagers ValidatedInput::processManagers() const
+{
+    auto tRawProcessManagerInputs = core::all_input_blocks_in_variant<ProcessManagerInput>(mInput);
+    using ProcessManagersRawInput = typename process_manager::library::ValidatedProcessManagerInput::RawInputType;
+    using ProcessManagerValidatedVariant = typename ProcessManagersRawInput::value_type;
+    auto tValidatedInputs = ProcessManagersRawInput{};
+    std::transform(tRawProcessManagerInputs.begin(), tRawProcessManagerInputs.end(),
+                   std::back_inserter(tValidatedInputs),
+                   [](ProcessManagerInput& aRawInput)
+                   { return validatedVariant<ProcessManagerValidatedVariant>(std::move(aRawInput)); });
+    return core::ValidatedInputTypeWrapper{tValidatedInputs};
+}
+
 template <typename T>
 std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(const std::vector<T>& aInputs)
 {
@@ -54,18 +62,30 @@ std::vector<core::ValidatedInputTypeWrapper<T>> ValidatedInput::validatedVector(
     return tValidatedInputs;
 }
 
+template <typename ValidatedInputVariant, typename InputVariant>
+ValidatedInputVariant ValidatedInput::validatedVariant(InputVariant aInputVariant)
+{
+    std::optional<ValidatedInputVariant> tValidatedInput;
+    std::visit([&tValidatedInput](auto&& tInput)
+               { tValidatedInput = core::ValidatedInputTypeWrapper{std::move(tInput)}; },
+               std::move(aInputVariant));
+    assert(tValidatedInput);
+    return *tValidatedInput;
+}
+
 ValidatedInput make_validated_input(input_parser::ParsedInput aInput)
 {
-    std::vector<std::string> tMessages;
-    tMessages = plato::geometry::library::validate_geometry(aInput, std::move(tMessages));
+    auto tMessages = plato::geometry::library::validate_geometry(aInput, std::vector<std::string>{});
     tMessages = plato::criteria::library::validate_objectives(aInput.mObjectives, std::move(tMessages));
     tMessages = plato::criteria::library::validate_constraints(aInput.mConstraints, std::move(tMessages));
-    tMessages = plato::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters,
-                                                                               std::move(tMessages));
+    tMessages =
+        plato::optimizer::validate_optimization_parameters(aInput.mOptimizationParameters, std::move(tMessages));
+    tMessages = plato::process_manager::library::validate_process_managers(aInput, std::move(tMessages));
+
     if (!tMessages.empty())
     {
-        throw plato::utilities::Exception(
-            "Error: Could not validate input, the following errors were found: \n" + core::all_messages(tMessages));
+        throw plato::utilities::Exception("Error: Could not validate input, the following errors were found: \n" +
+                                          utilities::concatenate_vector(tMessages, "\n"));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }

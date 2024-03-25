@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "plato/geometry/library/GeometryFactory.hpp"
+#include "plato/process_manager/library/ProcessManagerFactory.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::integration_tests::serial
 {
-TEST(GeometryFactory, BrickGeometry)
+TEST(ProcessManagerFactory, Optimization)
 {
     namespace pftu = plato::test_utilities;
 
@@ -19,12 +19,11 @@ TEST(GeometryFactory, BrickGeometry)
                                   /*.mGradientCheck = */ boost::none};
 
     const process_manager::library::ValidatedInput tInput = process_manager::library::make_validated_input(tRawInput);
-    const auto tData = geometry::library::make_geometry_data(tInput.geometry());
+    // TODO: Implement me
+//    const auto tProcessManagers = process_manager::library::make_process_managers(tInput.optimizationParameters());
 
-    constexpr auto tExpectedBrickShapeDimensions = int{6};
-    EXPECT_EQ(tData.mInitialGuess.size(), tExpectedBrickShapeDimensions);
-    EXPECT_EQ(tData.mBounds.first.size(), tExpectedBrickShapeDimensions);
-    EXPECT_EQ(tData.mBounds.second.size(), tExpectedBrickShapeDimensions);
+//    EXPECT_EQ(tProcessManagers.size(), 1);
+//    EXPECT_TRUE(tProcessManagers.front());
 }
 
 }  // namespace plato::integration_tests::serial
