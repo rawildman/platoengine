@@ -51,7 +51,7 @@ void GradientCheck::run(const library::ProcessManagerData& aProblem) const
 {
     std::ofstream tOutFile(mOutputFileName);
     constexpr bool tPrintOutput = true;
-    ROL::Ptr<ROL::Problem<double>> tROLProblem(library::make_rol_problem(aProblem).release());
+    auto tROLProblem = ROL::Ptr<ROL::Problem<double>>{library::make_rol_problem(aProblem).release()};
     tROLProblem->getObjective()->checkGradient(
         rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
         rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
@@ -62,9 +62,9 @@ std::vector<std::string> validate_gradient_check(const input_parser::gradient_ch
 {
     return core::validate(aInput, std::move(aCurrentMessageList));
 }
+
 namespace detail
 {
-
 std::optional<std::string> validate_output_file_name(const input_parser::gradient_check& aInput)
 {
     return core::error_message_for_empty_parameter(input_parser::block_name<input_parser::gradient_check>(),
