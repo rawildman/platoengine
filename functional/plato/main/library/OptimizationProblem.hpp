@@ -6,7 +6,7 @@
 #include <string_view>
 
 #include "plato/core/ValidationRegistration.hpp"
-#include "plato/process_manager/library/PlatoProblem.hpp"
+#include "plato/process_manager/library/ProcessManagerData.hpp"
 
 namespace plato::main::library
 {
@@ -37,7 +37,7 @@ class OptimizationProblem
     void outputResult() const;
 
    private:
-    process_manager::library::PlatoProblem mProblem;
+    process_manager::library::ProcessManagerData mProblem;
     ROL::Ptr<ROL::Problem<double>> mROLProblem;
     ROL::Solver<double> mROLSolver;
     boost::mpi::communicator mCommunicator{};
