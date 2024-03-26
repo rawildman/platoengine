@@ -5,7 +5,7 @@
 #include "plato/rol_integration/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
-namespace plato::process_manager::library::unittest
+namespace plato::process_manager::extension::unittest
 {
 namespace
 {
@@ -33,7 +33,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
                                   end
                               )";
 
-    const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
+    const library::ValidatedInput tData{library::make_validated_input(input_parser::parse_input(tInput))};
 
     checkParameterList(tData.optimizationParameters());
 
@@ -60,7 +60,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";
 
-    const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
+    const library::ValidatedInput tData{library::make_validated_input(input_parser::parse_input(tInput))};
     ROL::ParameterList tParameterListFromDisk =
         plato::rol_integration::rol_parameter_list(tData.optimizationParameters());
 
@@ -74,4 +74,4 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
     std::filesystem::remove(kFileName);
 }
 
-}  // namespace plato::process_manager::library::unittest
+}  // namespace plato::process_manager::extension::unittest
