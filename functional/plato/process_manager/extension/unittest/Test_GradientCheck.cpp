@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 #include "plato/process_manager/extension/GradientCheck.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
@@ -16,6 +18,9 @@ TEST(GradientCheck, CreateGradientCheckRun)
     const library::ProcessManagerData tProblem = library::make_process_manager_data(tValidatedInput);
     const auto tGradientCheck = GradientCheck{tInputDeck.mGradientCheck.value()};
     tGradientCheck.run(tProblem);
+    const auto tFileName = tInputDeck.mGradientCheck.value().output_file_name.value().mName;
+    EXPECT_TRUE(std::filesystem::exists(tFileName));
+    EXPECT_TRUE(std::filesystem::remove(tFileName));
 }
 
 TEST(GradientCheck, UnwrapValidatedGradientCheckInput)

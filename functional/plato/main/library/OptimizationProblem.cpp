@@ -19,14 +19,6 @@ constexpr std::string_view kROLSensitivityCheckFileName = "ROL_Sensitivity_Check
 constexpr std::string_view kROLOptimizerFileName = "ROL_Optimizer.txt";
 constexpr std::string_view kROLConstraintCheckFileName = "ROL_Constraint_Check.txt";
 
-///@brief Helper function that creates a perturbation of the initial value for use in diagnostic checks
-ROL::StdVector<double> generatePerturbation(const int aDimension)
-{
-    ROL::StdVector<double> tPerturbation(aDimension);
-    tPerturbation.randomize();
-    return tPerturbation;
-}
-
 }  // namespace
 
 OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
@@ -43,7 +35,8 @@ void OptimizationProblem::gradientCheck() const
     constexpr bool tPrintOutput = true;
 
     mROLProblem->getObjective()->checkGradient(rol_integration::to_rol_vector(mProblem.mGeometry.mInitialGuess),
-                                               generatePerturbation(dimension()), tPrintOutput, tOutFile);
+                                               rol_integration::generate_perturbation(dimension()), tPrintOutput,
+                                               tOutFile);
 }
 
 void OptimizationProblem::constraintCheck() const
@@ -83,7 +76,7 @@ void OptimizationProblem::sensitivityCheck() const
 
     auto tSensitivityObjective = process_manager::library::make_rol_sensitivity_objective(mProblem);
     tSensitivityObjective->checkGradient(rol_integration::to_rol_vector(mProblem.mGeometry.mInitialGuess),
-                                         generatePerturbation(dimension()), tPrintOutput, tOutFile);
+                                         rol_integration::generate_perturbation(dimension()), tPrintOutput, tOutFile);
 }
 
 void OptimizationProblem::optimize()

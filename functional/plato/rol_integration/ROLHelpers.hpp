@@ -23,6 +23,9 @@ template <typename T>
 template <typename T>
 void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector);
 
+///@brief Helper function that creates a perturbation of the initial value for use in diagnostic checks
+[[nodiscard]] ROL::StdVector<double> generate_perturbation(const int aDimension);
+
 template <typename T>
 linear_algebra::DynamicVector<T> to_dynamic_vector(const ROL::Vector<T>& aROLVector)
 {
@@ -48,6 +51,7 @@ void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector)
     auto& tROLStdVector = dynamic_cast<ROL::StdVector<T>&>(aROLVector);
     *tROLStdVector.getVector() = std::move(aVector);
 }
+
 }  // namespace plato::rol_integration
 
 #endif

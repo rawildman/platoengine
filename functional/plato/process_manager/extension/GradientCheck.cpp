@@ -1,7 +1,10 @@
 #include "plato/process_manager/extension/GradientCheck.hpp"
 
+#include <fstream>
+
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
+#include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::process_manager::extension
 {
@@ -44,9 +47,14 @@ GradientCheck::GradientCheck(const input_parser::gradient_check& aInput)
 {
 }
 
-void GradientCheck::run(const library::ProcessManagerData&) const
+void GradientCheck::run(const library::ProcessManagerData& aProblem) const
 {
-    std::cout << "This is me running a gradient check.. beep beep boop." << std::endl;
+    std::ofstream tOutFile(mOutputFileName);
+    constexpr bool tPrintOutput = true;
+    ROL::Ptr<ROL::Problem<double>> tROLProblem(library::make_rol_problem(aProblem).release());
+    tROLProblem->getObjective()->checkGradient(
+        rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
+        rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
 }
 
 std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,

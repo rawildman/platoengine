@@ -34,4 +34,12 @@ TEST(ROLHelpers, AssignVector)
     assign_vector(tROLStdVector, tVector);
     EXPECT_EQ(*tROLStdVector.getVector(), tVector);
 }
+
+TEST(ROLHelpers, GeneratePerturbation)
+{
+    constexpr int tDimensions = 3;
+    const auto tVector = generate_perturbation(tDimensions);
+    EXPECT_EQ(tVector.dimension(), tDimensions);
+}
+
 }  // namespace plato::rol_integration::unittest
