@@ -8,9 +8,9 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
+#include "plato/rol_integration/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
@@ -119,7 +119,7 @@ TEST(ProcessManagerData, InputFileToROLSolver)
     const ProcessManagerData tPlatoProblem = make_process_manager_data(tData);
     Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
     const auto tROLProblem = Teuchos::RCP{make_rol_problem(tPlatoProblem).release()};
-    const ROL::Solver<double> tSolver = optimizer::make_rol_solver(tROLOptions, std::move(tROLProblem));
+    const ROL::Solver<double> tSolver = rol_integration::make_rol_solver(tROLOptions, std::move(tROLProblem));
 
     EXPECT_EQ(tSolver.getAlgorithmState()->iter, 0);
 }

@@ -2,7 +2,7 @@
 
 #include "plato/input_parser/InputParser.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
-#include "plato/optimizer/OptimizerFactory.hpp"
+#include "plato/rol_integration/OptimizerFactory.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::process_manager::library::unittest
@@ -12,7 +12,7 @@ namespace
 void checkParameterList(
     const core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>& aOptimizationParameters)
 {
-    const ROL::ParameterList tParlist = plato::optimizer::rol_parameter_list(aOptimizationParameters);
+    const ROL::ParameterList tParlist = plato::rol_integration::rol_parameter_list(aOptimizationParameters);
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"),
               aOptimizationParameters.rawInput().max_iterations.value());
     EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
@@ -62,7 +62,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
 
     const ValidatedInput tData{make_validated_input(input_parser::parse_input(tInput))};
     ROL::ParameterList tParameterListFromDisk =
-        plato::optimizer::rol_parameter_list(tData.optimizationParameters());
+        plato::rol_integration::rol_parameter_list(tData.optimizationParameters());
 
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<int>("Iteration Limit"),
               tParameterListToWrite.sublist("Status Test").get<int>("Iteration Limit"));

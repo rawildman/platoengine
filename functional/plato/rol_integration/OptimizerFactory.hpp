@@ -1,5 +1,5 @@
-#ifndef PLATO_OPTIMIZER_OPTIMIZERFACTORY
-#define PLATO_OPTIMIZER_OPTIMIZERFACTORY
+#ifndef PLATO_ROL_INTEGRATION_OPTIMIZERFACTORY
+#define PLATO_ROL_INTEGRATION_OPTIMIZERFACTORY
 
 #include <ROL_Algorithm.hpp>
 #include <ROL_Solver.hpp>
@@ -7,7 +7,7 @@
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::optimizer
+namespace plato::rol_integration
 {
 using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
 
@@ -26,6 +26,6 @@ using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser
 ///@return ROL::ParameterList
 [[nodiscard]] ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimizationParameters);
 
-}  // namespace plato::optimizer
+}  // namespace plato::rol_integration
 
 #endif

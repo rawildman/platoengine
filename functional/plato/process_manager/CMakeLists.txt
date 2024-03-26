@@ -3,7 +3,6 @@ include(${CMAKE_UTIL_DIR}/create_plato_unittester.cmake)
 
 set(DIRECTORIES library extension)
 set(LINK_LIBS PlatoFunctionalGeometry 
-              PlatoFunctionalOptimizer
               PlatoFunctionalROLIntegration)
 
 create_plato_library(PlatoFunctionalProcessManager "${DIRECTORIES}" "${LINK_LIBS}")

@@ -1,9 +1,9 @@
-#include "plato/optimizer/OptimizerFactory.hpp"
+#include "plato/rol_integration/OptimizerFactory.hpp"
 
 #include <ROL_LineSearchStep.hpp>
 #include <ROL_StatusTest.hpp>
 
-namespace plato::optimizer
+namespace plato::rol_integration
 {
 namespace
 {
@@ -56,4 +56,4 @@ ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Pt
     return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
 }
 
-}  // namespace plato::optimizer
+}  // namespace plato::rol_integration

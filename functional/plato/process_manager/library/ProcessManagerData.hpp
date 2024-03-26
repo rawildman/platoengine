@@ -1,14 +1,15 @@
 #ifndef PLATO_PROCESSMANAGER_LIBRARY_PROCESSMANAGERDATA
 #define PLATO_PROCESSMANAGER_LIBRARY_PROCESSMANAGERDATA
 
+#include <Teuchos_ParameterList.hpp>
 #include <memory>
 #include <vector>
 
 #include "plato/criteria/library/ConstraintFactory.hpp"
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/optimizer/OptimizerFactory.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
+#include "plato/rol_integration/OptimizerFactory.hpp"
 #include "plato/rol_integration/ROLConstraintFunction.hpp"
 #include "plato/rol_integration/ROLObjectiveFunction.hpp"
 

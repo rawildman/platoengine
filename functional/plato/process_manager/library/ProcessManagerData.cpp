@@ -27,7 +27,7 @@ ProcessManagerData make_process_manager_data(const ValidatedInput& aData)
     return ProcessManagerData{plato::geometry::library::make_geometry_data(aData.geometry()),
                               plato::criteria::library::make_aggregate_objective_function(aData.objectives()),
                               plato::criteria::library::make_constraints(aData.constraints()),
-                              plato::optimizer::rol_parameter_list(aData.optimizationParameters())};
+                              plato::rol_integration::rol_parameter_list(aData.optimizationParameters())};
 }
 
 std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_objective(const ProcessManagerData& aProblem)
@@ -82,7 +82,8 @@ std::unique_ptr<ROL::Problem<double>> make_rol_problem(const ProcessManagerData&
     }
     ///@todo Determine how ROL lumps constraints - should this only be false if they are all linear constraints?
     constexpr bool tLumpConstraints =
-        false;  //( mAlgorithmType == input_parser::optimizer::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true );
+        false;  //( mAlgorithmType == input_parser::rol_integration::algorithm_t::ROL_LINEAR_CONSTRAINT ? false : true
+                //);
     tROLProblem->finalize(tLumpConstraints);  //, tPrintToStream, mOutputFile);
     return tROLProblem;
 }
