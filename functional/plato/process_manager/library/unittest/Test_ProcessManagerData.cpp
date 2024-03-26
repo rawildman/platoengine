@@ -8,15 +8,15 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/geometry/library/GeometryFactory.hpp"
-#include "plato/process_manager/library/PlatoProblem.hpp"
-#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/optimizer/OptimizerFactory.hpp"
+#include "plato/process_manager/library/ProcessManagerData.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
 
 namespace plato::process_manager::library::unittest
 {
-TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
+TEST(ProcessManagerData, ParsePlatoProblemEvaluateObjective)
 {
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
@@ -24,7 +24,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
 
     const ValidatedInput tData{parse_and_validate(tInput)};
 
-    const PlatoProblem tProblem = make_plato_problem(tData);
+    const ProcessManagerData tProblem = make_process_manager_data(tData);
     const auto tGeometry = geometry::library::make_geometry_data(tData.geometry());
 
     // Test Geometry
@@ -40,7 +40,7 @@ TEST(PlatoProblem, ParsePlatoProblemEvaluateObjective)
     std::filesystem::remove(tGeomProxy.mFileName);
 }
 
-TEST(PlatoProblem, InputFileToROLObjective)
+TEST(ProcessManagerData, InputFileToROLObjective)
 {
     constexpr double tWeight = 42.0;
 
@@ -56,7 +56,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
 
     const ValidatedInput tData{parse_and_validate(tInput)};
 
-    PlatoProblem tProblem = make_plato_problem(tData);
+    ProcessManagerData tProblem = make_process_manager_data(tData);
     std::unique_ptr<rol_integration::ROLObjectiveFunction> tObjectiveFunction = make_rol_objective(tProblem);
     const ROL::StdVector<double> tBoundingBox{0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
     double tTolerance = 1e-8;
@@ -71,7 +71,7 @@ TEST(PlatoProblem, InputFileToROLObjective)
     std::filesystem::remove("my_mesh.exo");
 }
 
-TEST(PlatoProblem, InputFileToROLConstraint)
+TEST(ProcessManagerData, InputFileToROLConstraint)
 {
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
@@ -86,7 +86,7 @@ TEST(PlatoProblem, InputFileToROLConstraint)
 
     const ValidatedInput tData{parse_and_validate(tInput)};
 
-    PlatoProblem tProblem = make_plato_problem(tData);
+    ProcessManagerData tProblem = make_process_manager_data(tData);
     const auto tConstraints = make_rol_constraints(tProblem);
     ASSERT_EQ(tConstraints.size(), 1u);
 
@@ -102,7 +102,7 @@ TEST(PlatoProblem, InputFileToROLConstraint)
     std::filesystem::remove("my_mesh.exo");
 }
 
-TEST(PlatoProblem, InputFileToROLSolver)
+TEST(ProcessManagerData, InputFileToROLSolver)
 {
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
@@ -116,7 +116,7 @@ TEST(PlatoProblem, InputFileToROLSolver)
                                test_utilities::create_valid_example_optimization_parameters_string();
 
     const ValidatedInput tData{parse_and_validate(tInput)};
-    const PlatoProblem tPlatoProblem = make_plato_problem(tData);
+    const ProcessManagerData tPlatoProblem = make_process_manager_data(tData);
     Teuchos::ParameterList tROLOptions = tPlatoProblem.mROLOptions;
     const auto tROLProblem = Teuchos::RCP{make_rol_problem(tPlatoProblem).release()};
     const ROL::Solver<double> tSolver = optimizer::make_rol_solver(tROLOptions, std::move(tROLProblem));
@@ -124,7 +124,7 @@ TEST(PlatoProblem, InputFileToROLSolver)
     EXPECT_EQ(tSolver.getAlgorithmState()->iter, 0);
 }
 
-TEST(PlatoProblem, ParseAndValidateInvalidInput)
+TEST(ProcessManagerData, ParseAndValidateInvalidInput)
 {
     const std::string tInput;
     EXPECT_THROW(const ValidatedInput tData = parse_and_validate(""), utilities::Exception);

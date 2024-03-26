@@ -43,7 +43,7 @@ ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() 
 ValidatedInput::ProcessManagers ValidatedInput::processManagers() const
 {
     auto tRawProcessManagerInputs = core::all_input_blocks_in_variant<ProcessManagerInput>(mInput);
-    using ProcessManagersRawInput = typename process_manager::library::ValidatedProcessManagerInput::RawInputType;
+    using ProcessManagersRawInput = typename process_manager::library::ValidatedProcessManagerInputVector::RawInputType;
     using ProcessManagerValidatedVariant = typename ProcessManagersRawInput::value_type;
     auto tValidatedInputs = ProcessManagersRawInput{};
     std::transform(tRawProcessManagerInputs.begin(), tRawProcessManagerInputs.end(),

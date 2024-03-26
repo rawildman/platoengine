@@ -1,4 +1,4 @@
-#include "plato/process_manager/library/PlatoProblem.hpp"
+#include "plato/process_manager/library/ProcessManagerData.hpp"
 
 #include <ROL_Bounds.hpp>
 
@@ -22,46 +22,45 @@ namespace
 }
 }  // namespace
 
-PlatoProblem make_plato_problem(const ValidatedInput& aData)
+ProcessManagerData make_process_manager_data(const ValidatedInput& aData)
 {
-    return PlatoProblem{plato::geometry::library::make_geometry_data(aData.geometry()),
-                        plato::criteria::library::make_aggregate_objective_function(aData.objectives()),
-                        plato::criteria::library::make_constraints(aData.constraints()),
-                        plato::optimizer::rol_parameter_list(aData.optimizationParameters())};
+    return ProcessManagerData{plato::geometry::library::make_geometry_data(aData.geometry()),
+                              plato::criteria::library::make_aggregate_objective_function(aData.objectives()),
+                              plato::criteria::library::make_constraints(aData.constraints()),
+                              plato::optimizer::rol_parameter_list(aData.optimizationParameters())};
 }
 
-std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_objective(
-    const PlatoProblem& aProblem)
+std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_objective(const ProcessManagerData& aProblem)
 {
     return std::make_unique<plato::rol_integration::ROLObjectiveFunction>(
         compose(aProblem.mObjective, aProblem.mGeometry.mCompute));
 }
 
 std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>> make_rol_constraints(
-    const PlatoProblem& aProblem)
+    const ProcessManagerData& aProblem)
 {
     std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>> tROLConstraints;
-    std::transform(
-        aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
-        [&aProblem](const plato::criteria::library::Constraint<const core::MeshProxy&>& aConstraintData)
-        {
-            plato::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> tConstraint{
-                aConstraintData.mName, compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
-                aConstraintData.mConstraintTarget, aConstraintData.mLinear};
-            return std::make_unique<plato::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
-        });
+    std::transform(aProblem.mConstraints.cbegin(), aProblem.mConstraints.cend(), std::back_inserter(tROLConstraints),
+                   [&aProblem](const plato::criteria::library::Constraint<const core::MeshProxy&>& aConstraintData)
+                   {
+                       plato::criteria::library::Constraint<const linear_algebra::DynamicVector<double>&> tConstraint{
+                           aConstraintData.mName,
+                           compose(aConstraintData.mConstraintFunction, aProblem.mGeometry.mCompute),
+                           aConstraintData.mConstraintTarget, aConstraintData.mLinear};
+                       return std::make_unique<plato::rol_integration::ROLConstraintFunction>(std::move(tConstraint));
+                   });
     return tROLConstraints;
 }
 
 std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
-    const PlatoProblem& aProblem)
+    const ProcessManagerData& aProblem)
 {
     auto tSimpleObjectiveFunction = plato::criteria::extension::make_nodal_sum_function();
     return std::make_unique<plato::rol_integration::ROLObjectiveFunction>(
         compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
 }
 
-std::unique_ptr<ROL::Problem<double>> make_rol_problem(const PlatoProblem& aProblem)
+std::unique_ptr<ROL::Problem<double>> make_rol_problem(const ProcessManagerData& aProblem)
 {
     auto tROLProblem =
         std::make_unique<ROL::Problem<double>>(ROL::Ptr<ROL::Objective<double>>(make_rol_objective(aProblem).release()),

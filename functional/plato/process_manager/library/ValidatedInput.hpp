@@ -5,8 +5,8 @@
 
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
-#include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
+#include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 
 namespace plato::process_manager::library
 {
@@ -30,7 +30,7 @@ class ValidatedInput
     using Constraints =
         core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
     using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
-    using ProcessManagers = plato::process_manager::library::ValidatedProcessManagerInput;
+    using ProcessManagers = plato::process_manager::library::ValidatedProcessManagerInputVector;
 
    public:
     ValidatedInput(input_parser::ParsedInput aInput, Key);
