@@ -5,7 +5,7 @@
 
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::optimizer
+namespace plato::process_manager::extension
 {
 [[nodiscard]] std::vector<std::string> validate_optimization_parameters(
     const input_parser::optimization_parameters& aInput, std::vector<std::string>&& aCurrentMessageList);
@@ -19,6 +19,6 @@ namespace detail
 
 }  // namespace detail
 
-}  // namespace plato::optimizer
+}  // namespace plato::process_manager::extension
 
 #endif

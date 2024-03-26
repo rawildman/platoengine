@@ -1,10 +1,10 @@
-#include "plato/optimizer/OptimizerValidation.hpp"
+#include "plato/process_manager/extension/OptimizerValidation.hpp"
 
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
-namespace plato::optimizer
+namespace plato::process_manager::extension
 {
 [[maybe_unused]] static auto kOptimizerValidationRegistration =
     core::ValidationRegistration<input_parser::optimization_parameters>{
@@ -68,4 +68,4 @@ std::optional<std::string> validate_max_iterations(const input_parser::optimizat
 }
 
 }  // namespace detail
-}  // namespace plato::optimizer
+}  // namespace plato::process_manager::extension
