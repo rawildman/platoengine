@@ -17,9 +17,6 @@ class OptimizationProblem
     ///@param aInputFile filename of the block structured plato input file
     explicit OptimizationProblem(const std::string_view aInputFile);
 
-    ///@brief Run gradient check on the parsed/defined ROL problem
-    void gradientCheck() const;
-
     ///@brief Run constraint check on the parsed/defined ROL problem
     void constraintCheck() const;
 

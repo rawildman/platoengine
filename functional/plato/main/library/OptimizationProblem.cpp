@@ -14,7 +14,7 @@ namespace plato::main::library
 {
 namespace
 {
-constexpr std::string_view kROLGradientCheckFileName = "ROL_Gradient_Check.txt";
+
 constexpr std::string_view kROLSensitivityCheckFileName = "ROL_Sensitivity_Check.txt";
 constexpr std::string_view kROLOptimizerFileName = "ROL_Optimizer.txt";
 constexpr std::string_view kROLConstraintCheckFileName = "ROL_Constraint_Check.txt";
@@ -27,16 +27,6 @@ OptimizationProblem::OptimizationProblem(const std::string_view aInputFile)
       mROLProblem(make_rol_problem(mProblem).release()),
       mROLSolver(plato::rol_integration::make_rol_solver(mProblem.mROLOptions, mROLProblem))
 {
-}
-
-void OptimizationProblem::gradientCheck() const
-{
-    std::ofstream tOutFile(std::string{kROLGradientCheckFileName});
-    constexpr bool tPrintOutput = true;
-
-    mROLProblem->getObjective()->checkGradient(rol_integration::to_rol_vector(mProblem.mGeometry.mInitialGuess),
-                                               rol_integration::generate_perturbation(dimension()), tPrintOutput,
-                                               tOutFile);
 }
 
 void OptimizationProblem::constraintCheck() const
