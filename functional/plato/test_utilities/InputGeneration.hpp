@@ -15,6 +15,8 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] input_parser::ParsedInput create_valid_example_input_with_gradient_check();
 [[nodiscard]] std::string create_valid_example_input_string();
 
+[[nodiscard]] input_parser::ParsedInput create_valid_shape_geometry_example_input_with_gradient_check();
+
 [[nodiscard]] input_parser::brick_shape_geometry create_valid_brick_shape_geometry();
 [[nodiscard]] std::string create_valid_brick_shape_geometry_string();
 
