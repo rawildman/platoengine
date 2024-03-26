@@ -55,6 +55,6 @@ TEST(ParsedInputVariant, BlockName)
 {
     const process_manager::library::ValidatedInput tValidatedInput =
         process_manager::library::make_validated_input(plato::test_utilities::create_valid_example_input());
-    EXPECT_EQ(core::block_name(tValidatedInput.geometry()), "density_topology");
+    EXPECT_EQ(core::block_name(tValidatedInput.geometry().rawInput()), "density_topology");
 }
 }  // namespace plato::integration_tests::serial
