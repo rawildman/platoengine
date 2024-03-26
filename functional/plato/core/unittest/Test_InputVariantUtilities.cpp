@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <variant>
 
 #include "plato/core/InputVariantUtilities.hpp"

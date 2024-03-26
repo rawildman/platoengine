@@ -28,7 +28,7 @@ template <typename InputVariant>
 /// @return The name of the input held by the variant @a aInput
 /// @tparam InputVariant A `std::variant` with alternatives corresponding to input types in the ParsedInput struct.
 template <typename T>
-[[nodiscard]] std::string block_name(const ValidatedInputTypeWrapper<T>& aInput);
+[[nodiscard]] std::string block_name(const T& aInput);
 
 /// @return All input block names for all alternatives held in @a InputVariant
 /// @tparam InputVariant A std::variant of input structs.
@@ -117,7 +117,7 @@ std::optional<InputVariant> first_input_block_in_variant(const input_parser::Par
 }
 
 template <typename T>
-std::string block_name(const ValidatedInputTypeWrapper<T>& aInput)
+std::string block_name(const T& aInput)
 {
     return std::visit(
         [](const auto& aObj) -> std::string
@@ -126,7 +126,7 @@ std::string block_name(const ValidatedInputTypeWrapper<T>& aInput)
             using RawInputType = typename ValidatedInputType::RawInputType;
             return input_parser::block_name<RawInputType>();
         },
-        aInput.rawInput());
+        aInput);
 }
 
 template <typename InputVariant>
