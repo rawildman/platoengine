@@ -11,8 +11,8 @@ namespace plato::geometry::library
 FactoryTypes make_geometry_data(const ValidatedGeometryInput& aGeometryInput)
 {
     const std::optional<FactoryTypes> tGeometry =
-        core::create_object_from_factory<FactoryTypes, ValidatedGeometryInput>(core::block_name(aGeometryInput),
-                                                                               aGeometryInput);
+        core::create_object_from_factory<FactoryTypes, ValidatedGeometryInput>(
+            core::block_name(aGeometryInput.rawInput()), aGeometryInput);
 
     if (tGeometry)
     {
