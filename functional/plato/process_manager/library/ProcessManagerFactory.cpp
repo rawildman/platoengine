@@ -10,6 +10,7 @@ namespace plato::process_manager::library
 {
     std::vector<ProcessManager> tProcessManagers;
     const auto& tRawInputVector = aValidatedProcessManagerInput.rawInput();
+    tProcessManagers.reserve(tRawInputVector.size());
 
     for (auto& tValidatedProcessInput : tRawInputVector)
     {
