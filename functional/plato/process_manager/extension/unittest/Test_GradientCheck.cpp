@@ -20,7 +20,7 @@ TEST(GradientCheck, CreateGradientCheckRun)
     const library::ValidatedProcessManagerInputVector tAllProcessManagerInputs = tValidatedInput.processManagers();
     ASSERT_EQ(tAllProcessManagerInputs.rawInput().size(), 2);
     const auto tGradientCheck = GradientCheck{
-        library::process_manager_input<input_parser::gradient_check>(tAllProcessManagerInputs.rawInput().at(1))};
+        library::process_manager_input<input_parser::gradient_check>(tAllProcessManagerInputs.rawInput().back())};
     tGradientCheck.run(tProblem);
 
     test_utilities::test_for_existence_and_delete({tInputDeck.mGradientCheck.value().output_file_name.value().mName,

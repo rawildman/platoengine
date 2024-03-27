@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string_view>
 
+#include "plato/process_manager/extension/ROLUtilities.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/rol_integration/OptimizerFactory.hpp"
@@ -38,8 +39,8 @@ ROLOptimization::ROLOptimization(const ValidatedOptimizationParameters& aInput)
 
 void ROLOptimization::run(const library::ProcessManagerData& aProblem) const
 {
-    auto tROLProblem = ROL::Ptr<ROL::Problem<double>>{library::make_rol_problem(aProblem).release()};
-    auto tROLInputs = aProblem.mROLOptions;
+    auto tROLProblem = ROL::Ptr<ROL::Problem<double>>{make_rol_problem(aProblem).release()};
+    auto tROLInputs = mROLOptions;
     auto tROLSolver = rol_integration::make_rol_solver(tROLInputs, tROLProblem);
 
     auto tOutFile = std::ofstream{std::string{kROLOptimizerFileName}};

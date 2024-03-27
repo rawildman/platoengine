@@ -3,8 +3,11 @@
 #include <fstream>
 #include <string_view>
 
+#include "plato/core/Compose.hpp"
 #include "plato/core/ValidationUtilities.hpp"
+#include "plato/criteria/extension/NodalSumObjective.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
+#include "plato/process_manager/extension/ROLUtilities.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/rol_integration/OptimizerFactory.hpp"
@@ -14,7 +17,6 @@ namespace plato::process_manager::extension
 {
 namespace
 {
-
 [[nodiscard]] library::ProcessManager make_rol_sensitivity_check_process_manager(
     const library::ValidatedProcessManagerInput& aValidInput)
 
@@ -35,6 +37,15 @@ namespace
 [[maybe_unused]] static auto kSensitivityCheckValidationRegistration =
     core::ValidationRegistration<input_parser::sensitivity_check>{
         [](const input_parser::sensitivity_check& aInput) { return detail::validate_output_file_name(aInput); }};
+
+std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
+    const library::ProcessManagerData& aProblem)
+{
+    auto tSimpleObjectiveFunction = criteria::extension::make_nodal_sum_function();
+    return std::make_unique<plato::rol_integration::ROLObjectiveFunction>(
+        core::compose(tSimpleObjectiveFunction, aProblem.mGeometry.mCompute));
+}
+
 }  // namespace
 
 SensitivityCheck::SensitivityCheck(const ValidatedSensitivityCheckInput& aInput)
@@ -47,7 +58,7 @@ void SensitivityCheck::run(const library::ProcessManagerData& aProblem) const
     std::ofstream tOutFile(mOutputFileName);
     constexpr bool tPrintOutput = true;
 
-    auto tSensitivityObjective = process_manager::library::make_rol_sensitivity_objective(aProblem);
+    auto tSensitivityObjective = make_rol_sensitivity_objective(aProblem);
     tSensitivityObjective->checkGradient(
         rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
         rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
