@@ -34,7 +34,7 @@ using ProcessManagerRegistration = core::FactoryRegistration<ProcessManager, Val
 [[nodiscard]] bool is_process_manager_function_registered(const std::string_view aFunctionName);
 
 /// @brief Helper to get the validated input from a validated process_manager variant.
-/// @throw std::bad_variant_access If @a aValidatedInput does not hold alternative @a ProcessManagerRawInputType, 
+/// @throw std::bad_variant_access If @a aValidatedInput does not hold alternative @a ProcessManagerRawInputType,
 ///  wrapped with ValidatedInputTypeWrapper.
 template <typename ProcessManagerRawInputType>
 [[nodiscard]] const core::ValidatedInputTypeWrapper<ProcessManagerRawInputType>& process_manager_input(

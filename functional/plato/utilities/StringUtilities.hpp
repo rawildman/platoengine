@@ -9,5 +9,5 @@ namespace plato::utilities
 {
 /// @brief Concatenates all messages in @a aStrings with a delimeter @a aDelimiter in between each string.
 std::string concatenate_vector(const std::vector<std::string>& aStrings, std::string_view aDelimiter = " ");
-}
+}  // namespace plato::utilities
 #endif
