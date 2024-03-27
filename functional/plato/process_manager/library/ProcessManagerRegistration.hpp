@@ -7,29 +7,40 @@
 
 namespace plato::process_manager::library
 {
-
 struct ProcessManagerData;
-
-using ProcessManager = std::function<void(const ProcessManagerData&)>;
-using ProcessManagerInput = core::InputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>;
-
-using ValidatedProcessManagerInputVector = core::ValidatedInputTypeWrapper<
-    std::vector<core::ValidatedInputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>>>;
-using ValidatedProcessManagerInput = typename ValidatedProcessManagerInputVector::RawInputType::value_type;
-
-using ProcessManagerRegistration = core::FactoryRegistration<ProcessManager, ValidatedProcessManagerInput>;
-
-[[nodiscard]] std::vector<ProcessManagerInput> process_manager_input(const input_parser::ParsedInput& aInput);
-
-[[nodiscard]] bool is_process_manager_function_registered(const std::string_view aFunctionName);
-
-/// @brief Helper to get the raw input from a validated process_manager variant.
-template <typename ProcessManagerRawInputType>
-[[nodiscard]] const ProcessManagerRawInputType& process_manager_raw_input(
-    const ValidatedProcessManagerInput& aValidatedInput)
-{
-    return std::get<core::ValidatedInputTypeWrapper<ProcessManagerRawInputType>>(aValidatedInput).rawInput();
 }
 
+namespace plato::process_manager::library
+{
+/// @brief ProcessManager is the object that is used to run some process on ProcessManagerData.
+///  This could be a full optimization run or a gradient check.
+using ProcessManager = std::function<void(const ProcessManagerData&)>;
+
+/// @brief The input for a single ProcessManager, which is a variant with alternatives corresponding to
+/// input blocks satisfying IsProcessManagerInput.
+using ProcessManagerInput = core::InputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>;
+
+/// @brief Fully validated ProcessManager input vector
+using ValidatedProcessManagerInputVector = core::ValidatedInputTypeWrapper<
+    std::vector<core::ValidatedInputVariant<input_parser::ParsedInput, input_parser::IsProcessManagerInput>>>;
+
+/// @brief A single validated ProcessManager input variant
+using ValidatedProcessManagerInput = typename ValidatedProcessManagerInputVector::RawInputType::value_type;
+
+/// @brief Factory registration type
+using ProcessManagerRegistration = core::FactoryRegistration<ProcessManager, ValidatedProcessManagerInput>;
+
+/// @brief Checks if a ProcessManager creation function is registered with name @a aFunctionName.
+[[nodiscard]] bool is_process_manager_function_registered(const std::string_view aFunctionName);
+
+/// @brief Helper to get the validated input from a validated process_manager variant.
+/// @throw std::bad_variant_access If @a aValidatedInput does not hold alternative @a ProcessManagerRawInputType, 
+///  wrapped with ValidatedInputTypeWrapper.
+template <typename ProcessManagerRawInputType>
+[[nodiscard]] const core::ValidatedInputTypeWrapper<ProcessManagerRawInputType>& process_manager_input(
+    const ValidatedProcessManagerInput& aValidatedInput)
+{
+    return std::get<core::ValidatedInputTypeWrapper<ProcessManagerRawInputType>>(aValidatedInput);
+}
 }  // namespace plato::process_manager::library
 #endif

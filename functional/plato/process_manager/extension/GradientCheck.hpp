@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/core/ValidationUtilities.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 
@@ -19,11 +20,12 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::extension
 {
-
 class GradientCheck
 {
    public:
-    explicit GradientCheck(const input_parser::gradient_check& aInput);
+    using ValidatedGradientCheckInput = core::ValidatedInputTypeWrapper<input_parser::gradient_check>;
+
+    explicit GradientCheck(const ValidatedGradientCheckInput& aInput);
 
     void run(const library::ProcessManagerData& aProcessManagerData) const;
 
@@ -39,7 +41,6 @@ class GradientCheck
                                                                std::vector<std::string>&& aCurrentMessageList);
 namespace detail
 {
-
 [[nodiscard]] std::optional<std::string> validate_output_file_name(const input_parser::gradient_check& aInput);
 [[nodiscard]] std::optional<std::string> validate_number_of_steps(const input_parser::gradient_check& aInput);
 [[nodiscard]] std::optional<std::string> validate_initial_direction_magnitude(

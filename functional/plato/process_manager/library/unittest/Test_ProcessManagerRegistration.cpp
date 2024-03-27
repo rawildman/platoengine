@@ -26,10 +26,4 @@ TEST(ProcessManagerRegistration, NonexistantProcessManager)
 {
     EXPECT_FALSE(is_process_manager_function_registered("flem"));
 }
-
-TEST(ProcessManagerRegistration, ProcessManagerOptimizationByDefaultNotEmpty)
-{
-    EXPECT_EQ(process_manager_input(input_parser::ParsedInput{}).size(), 1u);
-}
-
 }  // namespace plato::process_manager::library::unittest

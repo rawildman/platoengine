@@ -17,9 +17,8 @@ namespace
 {
     return [aValidInput](const library::ProcessManagerData& aProcessManangerData)
     {
-        const auto& tInput = library::process_manager_raw_input<input_parser::gradient_check>(aValidInput);
-        const GradientCheck tGradientCheck(tInput);
-        tGradientCheck.run(aProcessManangerData);
+        const auto& tInput = library::process_manager_input<input_parser::gradient_check>(aValidInput);
+        GradientCheck{tInput}.run(aProcessManangerData);
     };
 }
 
@@ -38,12 +37,12 @@ namespace
 
 }  // namespace
 
-GradientCheck::GradientCheck(const input_parser::gradient_check& aInput)
-    : mOutputFileName(aInput.output_file_name.value().mName),
-      mNumberOfSteps(aInput.number_of_steps.value()),
-      mInitialDirectionMagnitude(aInput.initial_direction_magnitude.value()),
-      mStepSizeReductionFactor(aInput.step_size_reduction_factor.value()),
-      mRandomDirectionSeed(aInput.random_direction_seed.value())
+GradientCheck::GradientCheck(const ValidatedGradientCheckInput& aInput)
+    : mOutputFileName(aInput.rawInput().output_file_name.value().mName),
+      mNumberOfSteps(aInput.rawInput().number_of_steps.value()),
+      mInitialDirectionMagnitude(aInput.rawInput().initial_direction_magnitude.value()),
+      mStepSizeReductionFactor(aInput.rawInput().step_size_reduction_factor.value()),
+      mRandomDirectionSeed(aInput.rawInput().random_direction_seed.value())
 {
 }
 
