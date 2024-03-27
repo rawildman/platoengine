@@ -21,13 +21,13 @@ constexpr std::string_view kROLOptimizerFileName = "ROL_Optimizer.txt";
 {
     return [aValidInput](const library::ProcessManagerData& aProcessManangerData)
     {
-        const auto& tInput = library::process_manager_input<input_parser::optimization_parameters>(aValidInput);
+        const auto& tInput = library::process_manager_input<input_parser::rol_optimization>(aValidInput);
         ROLOptimization{tInput}.run(aProcessManangerData);
     };
 }
 
 [[maybe_unused]] static auto kROLOptimizerProcessManagerRegistration =
-    library::ProcessManagerRegistration{input_parser::block_name<input_parser::optimization_parameters>(),
+    library::ProcessManagerRegistration{input_parser::block_name<input_parser::rol_optimization>(),
                                         [](const library::ValidatedProcessManagerInput& aValidInput)
                                         { return make_rol_optimization_process_manager(aValidInput); }};
 }  // namespace

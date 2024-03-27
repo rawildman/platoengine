@@ -10,7 +10,7 @@ namespace plato::process_manager::extension::unittest
 namespace
 {
 void checkParameterList(
-    const core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>& aOptimizationParameters)
+    const core::ValidatedInputTypeWrapper<input_parser::rol_optimization>& aOptimizationParameters)
 {
     const ROL::ParameterList tParlist = plato::rol_integration::rol_parameter_list(aOptimizationParameters);
     EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"),
@@ -26,7 +26,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
     const std::string tInput = plato::test_utilities::create_valid_brick_shape_geometry_string() +
                                plato::test_utilities::create_valid_example_objective_string() +
                                R"(
-                                  begin optimization_parameters
+                                  begin rol_optimization
                                     step_tolerance 10
                                     gradient_tolerance 100.0
                                     max_iterations 10
@@ -39,7 +39,7 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
 
     const auto tProcessManagerData = tData.processManagers();
     ASSERT_EQ(tProcessManagerData.rawInput().size(), 1);
-    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
     ASSERT_TRUE(std::holds_alternative<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
     checkParameterList(std::get<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
 }
@@ -56,7 +56,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
 
     const std::string tInput = plato::test_utilities::create_valid_brick_shape_geometry_string() +
                                plato::test_utilities::create_valid_example_objective_string() +
-                               "begin optimization_parameters"
+                               "begin rol_optimization"
                                " input_file_name" +
                                kFileName + " step_tolerance 10" + " end";
 

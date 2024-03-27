@@ -81,7 +81,7 @@ TEST(InputBlockStruct, GeometryBlocks)
     EXPECT_TRUE(tDensityTopologyIsGeometry);
     constexpr bool tBrickShapeIsGeometry = IsGeometryInput<brick_shape_geometry>::value;
     EXPECT_TRUE(tBrickShapeIsGeometry);
-    constexpr bool tOptimizationIsNotGeometry = IsGeometryInput<optimization_parameters>::value;
+    constexpr bool tOptimizationIsNotGeometry = IsGeometryInput<rol_optimization>::value;
     EXPECT_FALSE(tOptimizationIsNotGeometry);
 }
 
@@ -127,7 +127,7 @@ TEST(ParsedInput, OptimizationParametersAllValidInputs)
 {
     const std::string tInput =
         R"(
-          begin optimization_parameters
+          begin rol_optimization
             input_file_name its-a_file.txt
             max_iterations 100
             step_tolerance 

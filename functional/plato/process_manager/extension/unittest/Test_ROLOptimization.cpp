@@ -24,7 +24,7 @@ TEST(ROLOptimization, Create)
     const library::ValidatedProcessManagerInputVector tAllProcessManagerInputs = tValidatedInput.processManagers();
     ASSERT_EQ(tAllProcessManagerInputs.rawInput().size(), 2);
     const auto tROLOptimization = ROLOptimization{
-        library::process_manager_input<input_parser::optimization_parameters>(tAllProcessManagerInputs.rawInput().front())};
+        library::process_manager_input<input_parser::rol_optimization>(tAllProcessManagerInputs.rawInput().front())};
     tROLOptimization.run(tProblem);
     EXPECT_TRUE(std::filesystem::exists(kROLOptimizerFileName));
     EXPECT_TRUE(std::filesystem::remove(kROLOptimizerFileName));

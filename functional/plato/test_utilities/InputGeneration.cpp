@@ -20,7 +20,7 @@ void create_input_file(const std::filesystem::path aTestFileName)
             aggregation_weight 42.0
             objective_type minimize
           end
-          begin optimization_parameters
+          begin rol_optimization
             input_file_name its-a_file.txt
             step_tolerance 10
             gradient_tolerance 100.0
@@ -168,9 +168,9 @@ std::string create_valid_example_custom_app_objective_string()
        )";
 }
 
-input_parser::optimization_parameters create_valid_example_optimization_parameters()
+input_parser::rol_optimization create_valid_example_optimization_parameters()
 {
-    return input_parser::optimization_parameters{/*.input_file_name=*/boost::none,
+    return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
                                                  /*.max_iterations =  */ 42,
                                                  /*.step_tolerance = */ 1e-7,
                                                  /*.gradient_tolerance = */ 1e-9};
@@ -179,7 +179,7 @@ input_parser::optimization_parameters create_valid_example_optimization_paramete
 std::string create_valid_example_optimization_parameters_string()
 {
     return R"(
-          begin optimization_parameters
+          begin rol_optimization
             max_iterations 666
             step_tolerance 1e-4
             gradient_tolerance 1e-6

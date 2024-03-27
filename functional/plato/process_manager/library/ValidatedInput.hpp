@@ -29,7 +29,7 @@ class ValidatedInput
         core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>>;
     using Constraints =
         core::ValidatedInputTypeWrapper<std::vector<core::ValidatedInputTypeWrapper<input_parser::constraint>>>;
-    using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+    using OptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
     using ProcessManagers = plato::process_manager::library::ValidatedProcessManagerInputVector;
 
    public:

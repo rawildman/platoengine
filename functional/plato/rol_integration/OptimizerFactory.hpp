@@ -9,7 +9,7 @@
 
 namespace plato::rol_integration
 {
-using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
 
 ///@brief Create a ROL solver based on the ROL problem and the ROL options specified in the solver parameter list
 ///

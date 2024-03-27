@@ -13,7 +13,7 @@ TEST(ProcessManagerRegistration, ProcessManagerInput)
     using TestInput = ProcessManagerInput;
     static_assert(std::variant_size_v<TestInput> == 3);
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>, input_parser::gradient_check>);
-    static_assert(std::is_same_v<std::variant_alternative_t<2, TestInput>, input_parser::optimization_parameters>);
+    static_assert(std::is_same_v<std::variant_alternative_t<2, TestInput>, input_parser::rol_optimization>);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>, input_parser::sensitivity_check>);
 }
 
@@ -24,7 +24,7 @@ TEST(ProcessManagerRegistration, ValidatedProcessManagerInputVector)
     static_assert(std::is_same_v<std::variant_alternative_t<1, TestInput>,
                                  core::ValidatedInputTypeWrapper<input_parser::gradient_check>>);
     static_assert(std::is_same_v<std::variant_alternative_t<2, TestInput>,
-                                 core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>>);
+                                 core::ValidatedInputTypeWrapper<input_parser::rol_optimization>>);
     static_assert(std::is_same_v<std::variant_alternative_t<0, TestInput>,
                                  core::ValidatedInputTypeWrapper<input_parser::sensitivity_check>>);
 }

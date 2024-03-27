@@ -34,7 +34,7 @@
 ///  defined with DEFINE_ENUM_SYMBOL_TABLE.
 // clang-format off
 PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
-    (plato)(input_parser), optimization_parameters,
+    (plato)(input_parser), rol_optimization,
     (plato::input_parser::FileName, input_file_name)
     (unsigned int, max_iterations)
     (double, step_tolerance)
@@ -101,7 +101,7 @@ BOOST_FUSION_DEFINE_STRUCT(
     (std::vector<plato::input_parser::constraint>, mConstraints)
     (boost::optional<plato::input_parser::brick_shape_geometry>, mBrickShapeGeometry)
     (boost::optional<plato::input_parser::density_topology>, mDensityTopology)
-    (plato::input_parser::optimization_parameters, mOptimizationParameters)
+    (plato::input_parser::rol_optimization, mOptimizationParameters)
     (boost::optional<plato::input_parser::gradient_check>, mGradientCheck)
     (boost::optional<plato::input_parser::sensitivity_check>, mSensitivityCheck)
 )

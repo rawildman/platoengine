@@ -8,7 +8,7 @@
 
 namespace plato::input_parser
 {
-struct optimization_parameters;
+struct rol_optimization;
 }
 
 namespace plato::process_manager::library
@@ -21,7 +21,7 @@ namespace plato::process_manager::extension
 class ROLOptimization
 {
    public:
-    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::optimization_parameters>;
+    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
 
     explicit ROLOptimization(const ValidatedOptimizationParameters& aInput);
 

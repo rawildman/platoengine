@@ -11,7 +11,7 @@ namespace plato::process_manager::extension::unittest
 {
 TEST(OptimizerValidation, ValidateMaxIterations)
 {
-    input_parser::optimization_parameters tOptimizationParameters;
+    input_parser::rol_optimization tOptimizationParameters;
     EXPECT_TRUE(detail::validate_max_iterations(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
     EXPECT_FALSE(detail::validate_max_iterations(tOptimizationParameters).has_value());
@@ -30,7 +30,7 @@ TEST(OptimizerValidation, ValidateMaxIterations)
 
 TEST(OptimizerValidation, ValidateStepTolerance)
 {
-    input_parser::optimization_parameters tOptimizationParameters;
+    input_parser::rol_optimization tOptimizationParameters;
     EXPECT_TRUE(detail::validate_step_tolerance(tOptimizationParameters).has_value());  // Empty
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
     EXPECT_FALSE(
@@ -50,7 +50,7 @@ TEST(OptimizerValidation, ValidateStepTolerance)
 
 TEST(OptimizerValidation, ValidateGradientTolerance)
 {
-    input_parser::optimization_parameters tOptimizationParameters;
+    input_parser::rol_optimization tOptimizationParameters;
     EXPECT_TRUE(detail::validate_gradient_tolerance(tOptimizationParameters).has_value());
     tOptimizationParameters.input_file_name = input_parser::FileName{"filler"};
     EXPECT_FALSE(detail::validate_gradient_tolerance(tOptimizationParameters).has_value());
@@ -69,7 +69,7 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
 
 TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 {
-    input_parser::optimization_parameters tOptimizationParameters =
+    input_parser::rol_optimization tOptimizationParameters =
         plato::test_utilities::create_valid_example_optimization_parameters();
 
     std::vector<std::string> tMessages;
@@ -79,7 +79,7 @@ TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 {
-    input_parser::optimization_parameters tOptimizationParameters =
+    input_parser::rol_optimization tOptimizationParameters =
         plato::test_utilities::create_valid_example_optimization_parameters();
     tOptimizationParameters.gradient_tolerance = -1;
     tOptimizationParameters.max_iterations = 0;
