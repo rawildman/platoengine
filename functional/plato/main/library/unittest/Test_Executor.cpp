@@ -19,7 +19,7 @@ TEST(Executor, DoubleDummyProcessManager)
     static auto tDummyFunctionCallCount = int{0};
     const auto tDummyProcessManager = DummyFunctionConstArg{[](const int&) { ++tDummyFunctionCallCount; }};
 
-    const auto tExecutor = Executor{{tDummyProcessManager, tDummyProcessManager}};
+    const auto tExecutor = Executor{std::vector{tDummyProcessManager, tDummyProcessManager}};
     const auto tDummyArg = int{0};
     tExecutor.execute(tDummyArg);
     EXPECT_EQ(tDummyFunctionCallCount, 2);
@@ -29,7 +29,7 @@ TEST(Executor, DummyProcessManagerNonConstArg)
 {
     const auto tDummyProcessManager = DummyFunctionNonConstArg{[](int& aArg) { ++aArg; }};
 
-    const auto tExecutor = Executor{{tDummyProcessManager}};
+    const auto tExecutor = Executor{std::vector{tDummyProcessManager}};
     auto tDummyArg = int{0};
     tExecutor.execute(tDummyArg);
     EXPECT_EQ(tDummyArg, 1);

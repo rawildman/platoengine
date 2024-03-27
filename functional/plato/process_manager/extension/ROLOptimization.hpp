@@ -2,6 +2,7 @@
 #define PLATO_PROCESSMANAGER_EXTENSION_ROLOPTIMIZATION
 
 #include <Teuchos_ParameterList.hpp>
+#include <boost/mpi/communicator.hpp>
 
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 
@@ -28,6 +29,7 @@ class ROLOptimization
 
    private:
     Teuchos::ParameterList mROLOptions;
+    boost::mpi::communicator mCommunicator{};
 };
 
 }  // namespace plato::process_manager::extension

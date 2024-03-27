@@ -18,7 +18,7 @@ class Executor
    public:
     using FunctionType = std::function<void(Data&)>;
 
-    explicit Executor(std::initializer_list<FunctionType> tProcessManagers);
+    explicit Executor(std::vector<FunctionType> tProcessManagers);
 
     void execute(Data& aProcessManagerData) const;
 
@@ -27,7 +27,7 @@ class Executor
 };
 
 template <typename Data>
-Executor<Data>::Executor(std::initializer_list<FunctionType> tProcessManagers)
+Executor<Data>::Executor(std::vector<FunctionType> tProcessManagers)
     : mProcessManagers{std::move(tProcessManagers)}
 {
 }

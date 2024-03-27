@@ -6,6 +6,7 @@
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/rol_integration/OptimizerFactory.hpp"
+#include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::process_manager::extension
 {
@@ -43,6 +44,11 @@ void ROLOptimization::run(const library::ProcessManagerData& aProblem) const
 
     auto tOutFile = std::ofstream{std::string{kROLOptimizerFileName}};
     tROLSolver.solve(tOutFile);
+
+    if (mCommunicator.rank() == 0)
+    {
+        aProblem.mGeometry.mOutput(rol_integration::to_dynamic_vector(*tROLProblem->getPrimalOptimizationVector()));
+    }
 }
 
 }  // namespace plato::process_manager::extension
