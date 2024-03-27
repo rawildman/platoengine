@@ -7,21 +7,21 @@
 #include "plato/process_manager/extension/ROLUtilities.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
+#include "plato/process_manager/library/StageOrdering.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
 namespace plato::process_manager::extension
 {
 namespace
 {
-[[nodiscard]] library::ProcessManager make_gradient_check_process_manager(
+[[nodiscard]] library::StageAndProcessManager make_gradient_check_process_manager(
     const library::ValidatedProcessManagerInput& aValidInput)
-
 {
-    return [aValidInput](const library::ProcessManagerData& aProcessManangerData)
-    {
-        const auto& tInput = library::process_manager_input<input_parser::gradient_check>(aValidInput);
-        GradientCheck{tInput}.run(aProcessManangerData);
-    };
+    return {library::RunStage::kValidate, [aValidInput](const library::ProcessManagerData& aProcessManangerData)
+            {
+                const auto& tInput = library::process_manager_input<input_parser::gradient_check>(aValidInput);
+                GradientCheck{tInput}.run(aProcessManangerData);
+            }};
 }
 
 [[maybe_unused]] static auto kGradientCheckProcessManagerRegistration =

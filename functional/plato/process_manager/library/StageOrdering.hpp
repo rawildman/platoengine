@@ -25,6 +25,7 @@ template <typename T>
 std::vector<T> to_stage_ordered_vector(std::multimap<RunStage, T> aStageMap)
 {
     std::vector<T> tResult;
+    tResult.reserve(aStageMap.size());
     std::transform(aStageMap.begin(), aStageMap.end(), std::back_inserter(tResult),
                    [](auto& tStageAndItem) { return std::move(tStageAndItem.second); });
     return tResult;

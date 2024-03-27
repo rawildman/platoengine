@@ -11,7 +11,7 @@
 
 namespace plato::process_manager::library
 {
-///@brief The struct that contains the functions used in a ProcessManager, 
+///@brief Sef of functions used in a ProcessManager to evaluate geometries, objectives, and constraints.
 struct ProcessManagerData
 {
     plato::geometry::library::FactoryTypes mGeometry;

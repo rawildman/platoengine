@@ -7,6 +7,7 @@
 #include "plato/process_manager/extension/ROLUtilities.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
+#include "plato/process_manager/library/StageOrdering.hpp"
 #include "plato/rol_integration/OptimizerFactory.hpp"
 #include "plato/rol_integration/ROLHelpers.hpp"
 
@@ -16,15 +17,14 @@ namespace
 {
 constexpr std::string_view kROLOptimizerFileName = "ROL_Optimizer.txt";
 
-[[nodiscard]] library::ProcessManager make_rol_optimization_process_manager(
+[[nodiscard]] library::StageAndProcessManager make_rol_optimization_process_manager(
     const library::ValidatedProcessManagerInput& aValidInput)
-
 {
-    return [aValidInput](const library::ProcessManagerData& aProcessManangerData)
-    {
-        const auto& tInput = library::process_manager_input<input_parser::rol_optimization>(aValidInput);
-        ROLOptimization{tInput}.run(aProcessManangerData);
-    };
+    return {library::RunStage::kExecute, [aValidInput](const library::ProcessManagerData& aProcessManangerData)
+            {
+                const auto& tInput = library::process_manager_input<input_parser::rol_optimization>(aValidInput);
+                ROLOptimization{tInput}.run(aProcessManangerData);
+            }};
 }
 
 [[maybe_unused]] static auto kROLOptimizerProcessManagerRegistration =

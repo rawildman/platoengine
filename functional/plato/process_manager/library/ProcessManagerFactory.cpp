@@ -1,28 +1,28 @@
 #include "plato/process_manager/library/ProcessManagerFactory.hpp"
 
+#include <iterator>
+
 #include "plato/core/InputVariantUtilities.hpp"
+#include "plato/process_manager/library/StageOrdering.hpp"
 
 namespace plato::process_manager::library
 {
-
 [[nodiscard]] std::vector<ProcessManager> make_process_managers(
     const ValidatedProcessManagerInputVector& aValidatedProcessManagerInput)
 {
-    std::vector<ProcessManager> tProcessManagers;
     const auto& tRawInputVector = aValidatedProcessManagerInput.rawInput();
-    tProcessManagers.reserve(tRawInputVector.size());
-
-    for (auto& tValidatedProcessInput : tRawInputVector)
+    auto tProcessManagerMap = std::multimap<RunStage, ProcessManager>{};
+    for (const auto& tValidatedProcessInput : tRawInputVector)
     {
-        const auto tProcessName = core::block_name(tValidatedProcessInput);
-        auto tProcess = core::create_object_from_factory<ProcessManager, ValidatedProcessManagerInput>(
-            tProcessName, tValidatedProcessInput);
-        if (tProcess.has_value())
+        const auto tProcessManagerName = core::block_name(tValidatedProcessInput);
+        auto tStageAndProcess = core::create_object_from_factory<StageAndProcessManager, ValidatedProcessManagerInput>(
+            tProcessManagerName, tValidatedProcessInput);
+        if (tStageAndProcess.has_value())
         {
-            tProcessManagers.push_back(std::move(tProcess).value());
+            tProcessManagerMap.insert(std::move(tStageAndProcess).value());
         }
     }
-    return tProcessManagers;
+    return to_stage_ordered_vector(tProcessManagerMap);
 }
 
 }  // namespace plato::process_manager::library

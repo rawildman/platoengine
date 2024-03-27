@@ -4,6 +4,7 @@
 #include "plato/core/FactoryRegistration.hpp"
 #include "plato/core/VariantInputBuilder.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
+#include "plato/process_manager/library/StageOrdering.hpp"
 
 namespace plato::process_manager::library
 {
@@ -15,6 +16,10 @@ namespace plato::process_manager::library
 /// @brief ProcessManager is the object that is used to run some process on ProcessManagerData.
 ///  This could be a full optimization run or a gradient check.
 using ProcessManager = std::function<void(const ProcessManagerData&)>;
+
+/// @brief This associates a ProcessManager with a stage in which to run it.
+/// This is the return type of the factory so that each ProcessManager can be run in the correct order.
+using StageAndProcessManager = std::pair<RunStage, ProcessManager>;
 
 /// @brief The input for a single ProcessManager, which is a variant with alternatives corresponding to
 /// input blocks satisfying IsProcessManagerInput.
@@ -28,7 +33,7 @@ using ValidatedProcessManagerInputVector = core::ValidatedInputTypeWrapper<
 using ValidatedProcessManagerInput = typename ValidatedProcessManagerInputVector::RawInputType::value_type;
 
 /// @brief Factory registration type
-using ProcessManagerRegistration = core::FactoryRegistration<ProcessManager, ValidatedProcessManagerInput>;
+using ProcessManagerRegistration = core::FactoryRegistration<StageAndProcessManager, ValidatedProcessManagerInput>;
 
 /// @brief Checks if a ProcessManager creation function is registered with name @a aFunctionName.
 [[nodiscard]] bool is_process_manager_function_registered(const std::string_view aFunctionName);
