@@ -19,12 +19,12 @@ TEST(InputParser, ParseFromFile)
 {
     plato::test_utilities::create_input_file(kTestFileName);
     const input_parser::ParsedInput tInput = input_parser::parse_input_from_file(kTestFileName);
-
-    EXPECT_FALSE(tInput.mROLOptimization.max_iterations.has_value());
-    ASSERT_TRUE(tInput.mROLOptimization.gradient_tolerance.has_value());
-    EXPECT_EQ(tInput.mROLOptimization.gradient_tolerance.value(), 100.0);
-    ASSERT_TRUE(tInput.mROLOptimization.step_tolerance.has_value());
-    EXPECT_EQ(tInput.mROLOptimization.step_tolerance.value(), 10.0);
+    ASSERT_TRUE(tInput.mROLOptimization);
+    EXPECT_FALSE(tInput.mROLOptimization->max_iterations.has_value());
+    ASSERT_TRUE(tInput.mROLOptimization->gradient_tolerance.has_value());
+    EXPECT_EQ(tInput.mROLOptimization->gradient_tolerance.value(), 100.0);
+    ASSERT_TRUE(tInput.mROLOptimization->step_tolerance.has_value());
+    EXPECT_EQ(tInput.mROLOptimization->step_tolerance.value(), 10.0);
 
     ASSERT_EQ(tInput.mObjectives.size(), 1);
     const input_parser::objective& tObjective = tInput.mObjectives.front();

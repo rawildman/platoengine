@@ -31,13 +31,7 @@ void check_nothing_parsed(const ParsedInput& aInput)
 {
     EXPECT_TRUE(aInput.mObjectives.empty());
     EXPECT_TRUE(aInput.mConstraints.empty());
-    const auto check_value_empty = [](const auto& aValue)
-    {
-        static_assert(kIsBoostOptional<std::decay_t<decltype(aValue)>>,
-                      "Only boost::optional values should be in an input struct");
-        EXPECT_FALSE(aValue);
-    };
-    boost::fusion::for_each(aInput.mROLOptimization, check_value_empty);
+    EXPECT_FALSE(aInput.mROLOptimization);
 }
 }  // namespace
 
@@ -143,11 +137,11 @@ TEST(ParsedInput, OptimizationParametersAllValidInputs)
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.end());
-
-    test_existence_and_equality(tData.mROLOptimization.input_file_name, std::string{"its-a_file.txt"});
-    test_existence_and_equality(tData.mROLOptimization.max_iterations, 100u);
-    test_existence_and_equality(tData.mROLOptimization.step_tolerance, 10.0);
-    test_existence_and_equality(tData.mROLOptimization.gradient_tolerance, 100.0);
+    ASSERT_TRUE(tData.mROLOptimization);
+    test_existence_and_equality(tData.mROLOptimization->input_file_name, std::string{"its-a_file.txt"});
+    test_existence_and_equality(tData.mROLOptimization->max_iterations, 100u);
+    test_existence_and_equality(tData.mROLOptimization->step_tolerance, 10.0);
+    test_existence_and_equality(tData.mROLOptimization->gradient_tolerance, 100.0);
 }
 
 TEST(ParsedInput, GradientCheckAllValidInputs)
