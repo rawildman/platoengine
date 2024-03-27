@@ -28,7 +28,7 @@ process_manager::library::ValidatedInput create_two_objective_test_input()
        )";
     // Other inputs to make sure we have valid input
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
 
     return process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
@@ -75,7 +75,7 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
        )";
     // Other inputs to make sure we have valid input
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
 
     const process_manager::library::ValidatedInput tData =
         process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);

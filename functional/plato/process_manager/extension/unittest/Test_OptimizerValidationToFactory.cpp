@@ -9,17 +9,18 @@ namespace plato::process_manager::extension::unittest
 {
 namespace
 {
-void checkParameterList(
-    const core::ValidatedInputTypeWrapper<input_parser::rol_optimization>& aOptimizationParameters)
+auto rol_parameter_list(const library::ValidatedInput& aData)
+    -> std::pair<ROL::ParameterList, input_parser::rol_optimization>
 {
-    const ROL::ParameterList tParlist = plato::rol_integration::rol_parameter_list(aOptimizationParameters);
-    EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"),
-              aOptimizationParameters.rawInput().max_iterations.value());
-    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
-              aOptimizationParameters.rawInput().gradient_tolerance.value());
-    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
-              aOptimizationParameters.rawInput().step_tolerance.value());
+    const auto tProcessManagerData = aData.processManagers();
+    EXPECT_EQ(tProcessManagerData.rawInput().size(), 1);
+    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
+    EXPECT_TRUE(std::holds_alternative<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
+    const auto& tOptimizationParameters =
+        std::get<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front());
+    return {plato::rol_integration::rol_parameter_list(tOptimizationParameters), tOptimizationParameters.rawInput()};
 }
+
 }  // namespace
 TEST(OptimizerFactory, ParlistGenerationFromInput)
 {
@@ -34,14 +35,13 @@ TEST(OptimizerFactory, ParlistGenerationFromInput)
                               )";
 
     const library::ValidatedInput tData{library::make_validated_input(input_parser::parse_input(tInput))};
-
-    checkParameterList(tData.optimizationParameters());
-
-    const auto tProcessManagerData = tData.processManagers();
-    ASSERT_EQ(tProcessManagerData.rawInput().size(), 1);
-    using ValidatedOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser::rol_optimization>;
-    ASSERT_TRUE(std::holds_alternative<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
-    checkParameterList(std::get<ValidatedOptimizationParameters>(tProcessManagerData.rawInput().front()));
+    const auto [tParlist, tOptimizationParameters] = rol_parameter_list(tData);
+    EXPECT_EQ(tParlist.sublist("Status Test").get<int>("Iteration Limit"),
+              tOptimizationParameters.max_iterations.value());
+    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Gradient Tolerance"),
+              tOptimizationParameters.gradient_tolerance.value());
+    EXPECT_EQ(tParlist.sublist("Status Test").get<double>("Step Tolerance"),
+              tOptimizationParameters.step_tolerance.value());
 }
 
 TEST(OptimizerFactory, ParlistGenerationFromFile)
@@ -61,9 +61,7 @@ TEST(OptimizerFactory, ParlistGenerationFromFile)
                                kFileName + " step_tolerance 10" + " end";
 
     const library::ValidatedInput tData{library::make_validated_input(input_parser::parse_input(tInput))};
-    ROL::ParameterList tParameterListFromDisk =
-        plato::rol_integration::rol_parameter_list(tData.optimizationParameters());
-
+    const auto [tParameterListFromDisk, tOptimizationParameters] = rol_parameter_list(tData);
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<int>("Iteration Limit"),
               tParameterListToWrite.sublist("Status Test").get<int>("Iteration Limit"));
     EXPECT_EQ(tParameterListFromDisk.sublist("Status Test").get<double>("Gradient Tolerance"),

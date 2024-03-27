@@ -38,7 +38,6 @@ class ValidatedInput
     [[nodiscard]] auto geometry() const -> Geometry;
     [[nodiscard]] auto objectives() const -> Objectives;
     [[nodiscard]] auto constraints() const -> Constraints;
-    [[nodiscard]] auto optimizationParameters() const -> OptimizationParameters;
     [[nodiscard]] auto processManagers() const -> ProcessManagers;
 
    private:

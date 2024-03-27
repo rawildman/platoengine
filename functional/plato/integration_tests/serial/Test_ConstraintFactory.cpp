@@ -14,7 +14,7 @@ TEST(ConstraintFactory, ValidConstraint)
 
     const std::string tConstraintInput = pftu::create_valid_example_constraint_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
     const process_manager::library::ValidatedInput tData =
         process_manager::library::parse_and_validate(tConstraintInput + tGeometryInput + tOptimizerInput + tObjectiveInput);

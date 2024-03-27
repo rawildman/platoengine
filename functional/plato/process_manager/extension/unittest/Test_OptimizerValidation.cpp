@@ -4,7 +4,7 @@
 #include <functional>
 
 #include "plato/core/ValidationRegistration.hpp"
-#include "plato/process_manager/extension/OptimizerValidation.hpp"
+#include "plato/process_manager/extension/ROLOptimization.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::process_manager::extension::unittest
@@ -70,17 +70,16 @@ TEST(OptimizerValidation, ValidateGradientTolerance)
 TEST(OptimizerValidation, ErrorMessagesValidOptimizationParameters)
 {
     input_parser::rol_optimization tOptimizationParameters =
-        plato::test_utilities::create_valid_example_optimization_parameters();
+        plato::test_utilities::create_valid_example_rol_optimization();
 
-    std::vector<std::string> tMessages;
-    tMessages = validate_optimization_parameters(tOptimizationParameters, std::move(tMessages));
+    const auto tMessages = core::validate(tOptimizationParameters, std::vector<std::string>{});
     EXPECT_EQ(tMessages.size(), 0u);
 }
 
 TEST(OptimizerValidation, ErrorMessagesInvalidOptimizationParameters)
 {
     input_parser::rol_optimization tOptimizationParameters =
-        plato::test_utilities::create_valid_example_optimization_parameters();
+        plato::test_utilities::create_valid_example_rol_optimization();
     tOptimizationParameters.gradient_tolerance = -1;
     tOptimizationParameters.max_iterations = 0;
     tOptimizationParameters.step_tolerance = boost::none;

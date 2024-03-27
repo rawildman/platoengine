@@ -30,8 +30,8 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] input_parser::constraint create_valid_example_constraint();
 [[nodiscard]] std::string create_valid_example_constraint_string();
 
-[[nodiscard]] input_parser::rol_optimization create_valid_example_optimization_parameters();
-[[nodiscard]] std::string create_valid_example_optimization_parameters_string();
+[[nodiscard]] input_parser::rol_optimization create_valid_example_rol_optimization();
+[[nodiscard]] std::string create_valid_example_rol_optimization_string();
 
 [[nodiscard]] input_parser::gradient_check create_valid_example_gradient_check();
 [[nodiscard]] std::string create_valid_example_gradient_check_string();

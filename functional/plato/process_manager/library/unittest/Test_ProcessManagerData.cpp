@@ -12,7 +12,7 @@ TEST(ProcessManagerData, ParsePlatoProblemEvaluateObjective)
 {
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                test_utilities::create_valid_example_objective_string() +
-                               test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_rol_optimization_string();
 
     const ValidatedInput tData{parse_and_validate(tInput)};
 

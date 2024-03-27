@@ -101,7 +101,7 @@ BOOST_FUSION_DEFINE_STRUCT(
     (std::vector<plato::input_parser::constraint>, mConstraints)
     (boost::optional<plato::input_parser::brick_shape_geometry>, mBrickShapeGeometry)
     (boost::optional<plato::input_parser::density_topology>, mDensityTopology)
-    (plato::input_parser::rol_optimization, mOptimizationParameters)
+    (plato::input_parser::rol_optimization, mROLOptimization)
     (boost::optional<plato::input_parser::gradient_check>, mGradientCheck)
     (boost::optional<plato::input_parser::sensitivity_check>, mSensitivityCheck)
 )

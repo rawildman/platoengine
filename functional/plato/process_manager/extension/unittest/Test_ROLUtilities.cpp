@@ -26,7 +26,7 @@ TEST(ProcessManagerData, InputFileToROLObjective)
                                " input_files test-input.inp"
                                " aggregation_weight " +
                                std::to_string(tWeight) + " objective_type minimize" + " end" +
-                               test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_rol_optimization_string();
 
     const library::ValidatedInput tData{library::parse_and_validate(tInput)};
 
@@ -56,7 +56,7 @@ TEST(ProcessManagerData, InputFileToROLConstraint)
                                   equal_to 2
                                 end
                               )" +
-                               test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_rol_optimization_string();
 
     const library::ValidatedInput tData{library::parse_and_validate(tInput)};
 
@@ -87,7 +87,7 @@ TEST(ProcessManagerData, InputFileToROLSolver)
                                   equal_to 2
                                 end
                               )" +
-                               test_utilities::create_valid_example_optimization_parameters_string();
+                               test_utilities::create_valid_example_rol_optimization_string();
 
     const library::ValidatedInput tData{library::parse_and_validate(tInput)};
     const library::ProcessManagerData tPlatoProblem = library::make_process_manager_data(tData);

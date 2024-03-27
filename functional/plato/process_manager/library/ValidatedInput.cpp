@@ -10,7 +10,6 @@
 #include "plato/geometry/library/GeometryRegistration.hpp"
 #include "plato/geometry/library/GeometryValidation.hpp"
 #include "plato/input_parser/InputParser.hpp"
-#include "plato/process_manager/extension/OptimizerValidation.hpp"
 #include "plato/process_manager/library/ProcessManagerValidation.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/StringUtilities.hpp"
@@ -33,11 +32,6 @@ ValidatedInput::Objectives ValidatedInput::objectives() const
 ValidatedInput::Constraints ValidatedInput::constraints() const
 {
     return core::ValidatedInputTypeWrapper{validatedVector(mInput.mConstraints)};
-}
-
-ValidatedInput::OptimizationParameters ValidatedInput::optimizationParameters() const
-{
-    return core::ValidatedInputTypeWrapper{mInput.mOptimizationParameters};
 }
 
 ValidatedInput::ProcessManagers ValidatedInput::processManagers() const
@@ -78,8 +72,6 @@ ValidatedInput make_validated_input(input_parser::ParsedInput aInput)
     auto tMessages = plato::geometry::library::validate_geometry(aInput, std::vector<std::string>{});
     tMessages = plato::criteria::library::validate_objectives(aInput.mObjectives, std::move(tMessages));
     tMessages = plato::criteria::library::validate_constraints(aInput.mConstraints, std::move(tMessages));
-    tMessages = plato::process_manager::extension::validate_optimization_parameters(aInput.mOptimizationParameters,
-                                                                                    std::move(tMessages));
     tMessages = plato::process_manager::library::validate_process_managers(aInput, std::move(tMessages));
 
     if (!tMessages.empty())

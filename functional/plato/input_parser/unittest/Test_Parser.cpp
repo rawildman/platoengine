@@ -37,7 +37,7 @@ void check_nothing_parsed(const ParsedInput& aInput)
                       "Only boost::optional values should be in an input struct");
         EXPECT_FALSE(aValue);
     };
-    boost::fusion::for_each(aInput.mOptimizationParameters, check_value_empty);
+    boost::fusion::for_each(aInput.mROLOptimization, check_value_empty);
 }
 }  // namespace
 
@@ -144,10 +144,10 @@ TEST(ParsedInput, OptimizationParametersAllValidInputs)
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.end());
 
-    test_existence_and_equality(tData.mOptimizationParameters.input_file_name, std::string{"its-a_file.txt"});
-    test_existence_and_equality(tData.mOptimizationParameters.max_iterations, 100u);
-    test_existence_and_equality(tData.mOptimizationParameters.step_tolerance, 10.0);
-    test_existence_and_equality(tData.mOptimizationParameters.gradient_tolerance, 100.0);
+    test_existence_and_equality(tData.mROLOptimization.input_file_name, std::string{"its-a_file.txt"});
+    test_existence_and_equality(tData.mROLOptimization.max_iterations, 100u);
+    test_existence_and_equality(tData.mROLOptimization.step_tolerance, 10.0);
+    test_existence_and_equality(tData.mROLOptimization.gradient_tolerance, 100.0);
 }
 
 TEST(ParsedInput, GradientCheckAllValidInputs)

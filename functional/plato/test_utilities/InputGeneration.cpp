@@ -36,7 +36,7 @@ void create_input_file(const std::filesystem::path aTestFileName)
     const std::string tConstraintInput = create_valid_example_constraint_string();
     const std::string tObjectiveInput = create_valid_example_objective_string();
     const std::string tGeometryInput = create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = create_valid_example_rol_optimization_string();
 
     return tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput;
 }
@@ -47,7 +47,7 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mConstraints=*/{create_valid_example_constraint()},
                                      /*.mBrickShapeGeometry=*/boost::none,
                                      /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                     /*.mOptimizationParameters = */ create_valid_example_optimization_parameters(),
+                                     /*.mROLOptimization = */ create_valid_example_rol_optimization(),
                                      /*.mGradientCheck=*/boost::none,
                                      /*.mSensitivityCheck=*/boost::none};
 }
@@ -168,7 +168,7 @@ std::string create_valid_example_custom_app_objective_string()
        )";
 }
 
-input_parser::rol_optimization create_valid_example_optimization_parameters()
+input_parser::rol_optimization create_valid_example_rol_optimization()
 {
     return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
                                                  /*.max_iterations =  */ 42,
@@ -176,7 +176,7 @@ input_parser::rol_optimization create_valid_example_optimization_parameters()
                                                  /*.gradient_tolerance = */ 1e-9};
 }
 
-std::string create_valid_example_optimization_parameters_string()
+std::string create_valid_example_rol_optimization_string()
 {
     return R"(
           begin rol_optimization
