@@ -55,7 +55,6 @@ PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
     (plato::input_parser::FileName, output_file_name)
 )
 
-
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), objective,
     (bool, active)

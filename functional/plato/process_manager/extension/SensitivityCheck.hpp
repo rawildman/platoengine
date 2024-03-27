@@ -5,6 +5,8 @@
 #include <optional>
 #include <vector>
 
+#include "plato/core/ValidatedInputTypeWrapper.hpp"
+
 namespace plato::input_parser
 {
 struct sensitivity_check;
@@ -17,11 +19,12 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::extension
 {
-
 class SensitivityCheck
 {
    public:
-    explicit SensitivityCheck(const input_parser::sensitivity_check& aInput);
+    using ValidatedSensitivityCheckInput = core::ValidatedInputTypeWrapper<input_parser::sensitivity_check>;
+
+    explicit SensitivityCheck(const ValidatedSensitivityCheckInput& aInput);
 
     void run(const library::ProcessManagerData& aProcessManagerData) const;
 
@@ -33,7 +36,6 @@ class SensitivityCheck
                                                                   std::vector<std::string>&& aCurrentMessageList);
 namespace detail
 {
-
 [[nodiscard]] std::optional<std::string> validate_output_file_name(const input_parser::sensitivity_check& aInput);
 }
 

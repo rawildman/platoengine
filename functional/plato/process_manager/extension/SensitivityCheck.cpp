@@ -21,7 +21,7 @@ namespace
 {
     return [aValidInput](const library::ProcessManagerData& aProcessManangerData)
     {
-        const auto& tInput = library::process_manager_raw_input<input_parser::sensitivity_check>(aValidInput);
+        const auto& tInput = library::process_manager_input<input_parser::sensitivity_check>(aValidInput);
         const SensitivityCheck tSensitivityCheck(tInput);
         tSensitivityCheck.run(aProcessManangerData);
     };
@@ -37,8 +37,8 @@ namespace
         [](const input_parser::sensitivity_check& aInput) { return detail::validate_output_file_name(aInput); }};
 }  // namespace
 
-SensitivityCheck::SensitivityCheck(const input_parser::sensitivity_check& aInput)
-    : mOutputFileName(aInput.output_file_name.value().mName)
+SensitivityCheck::SensitivityCheck(const ValidatedSensitivityCheckInput& aInput)
+    : mOutputFileName(aInput.rawInput().output_file_name.value().mName)
 {
 }
 

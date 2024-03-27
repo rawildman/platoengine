@@ -29,20 +29,20 @@ struct ProcessManagerData
 [[nodiscard]] ProcessManagerData make_process_manager_data(const ValidatedInput& aData);
 
 ///@brief Create a ROL objective object from a ProcessManagerData by composing the mGeometryFunction with the mObjective
-[[nodiscard]] std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_objective(
-    const ProcessManagerData& aProblem);
+[[nodiscard]] auto make_rol_objective(const ProcessManagerData& aProblem)
+    -> std::unique_ptr<plato::rol_integration::ROLObjectiveFunction>;
 
 ///@brief Create a ROL constraint from a ProcessManagerData by looping through the constraints
-[[nodiscard]] std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>> make_rol_constraints(
-    const ProcessManagerData& aProblem);
+[[nodiscard]] auto make_rol_constraints(const ProcessManagerData& aProblem)
+    -> std::vector<std::unique_ptr<plato::rol_integration::ROLConstraintFunction>>;
 
 ///@brief Create a specialized ROL objective that helps facilitate testing of the parameter sensitivities
-[[nodiscard]] std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_sensitivity_objective(
-    const ProcessManagerData& aProblem);
+[[nodiscard]] auto make_rol_sensitivity_objective(const ProcessManagerData& aProblem)
+    -> std::unique_ptr<plato::rol_integration::ROLObjectiveFunction>;
 
 ///@brief Create the fully posed ROL problem from the ProcessManagerData struct
 /// Apply bound constraints, constraints, and finalize the ROL problem
-[[nodiscard]] std::unique_ptr<ROL::Problem<double>> make_rol_problem(const ProcessManagerData& aProblem);
+[[nodiscard]] auto make_rol_problem(const ProcessManagerData& aProblem) -> std::unique_ptr<ROL::Problem<double>>;
 
 }  // namespace plato::process_manager::library
 
