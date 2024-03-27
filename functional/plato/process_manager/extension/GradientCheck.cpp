@@ -1,7 +1,9 @@
 #include "plato/process_manager/extension/GradientCheck.hpp"
 
+#include <cstdlib>
 #include <fstream>
 
+#include "plato/process_manager/extension/LinspaceGenerator.hpp"
 #include "plato/process_manager/extension/ROLUtilities.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
@@ -51,9 +53,13 @@ void GradientCheck::run(const library::ProcessManagerData& aProblem) const
     std::ofstream tOutFile(mOutputFileName);
     constexpr bool tPrintOutput = true;
     auto tROLProblem = ROL::Ptr<ROL::Problem<double>>{make_rol_problem(aProblem).release()};
+    const LinspaceGenerator tLinspaceGenerator{mInitialDirectionMagnitude, mStepSizeReductionFactor, mNumberOfSteps};
+
+    std::srand(mRandomDirectionSeed);
     tROLProblem->getObjective()->checkGradient(
         rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
-        rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
+        rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tLinspaceGenerator.steps(),
+        tPrintOutput, tOutFile);
 }
 
 std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,
