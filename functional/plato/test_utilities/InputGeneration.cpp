@@ -48,7 +48,8 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mBrickShapeGeometry=*/boost::none,
                                      /*.mDensityTopology = */ create_valid_density_topology_geometry(),
                                      /*.mOptimizationParameters = */ create_valid_example_optimization_parameters(),
-                                     /*.mGradientCheck=*/{}};
+                                     /*.mGradientCheck=*/boost::none,
+                                     /*.mSensitivityCheck=*/boost::none};
 }
 
 input_parser::ParsedInput create_valid_example_input_with_gradient_check()
@@ -204,6 +205,20 @@ std::string create_valid_example_gradient_check_string()
             step_size_reduction_factor 0.5
             random_direction_seed 123
             initial_direction_magnitude 0.5
+          end
+       )";
+}
+
+input_parser::sensitivity_check create_valid_example_sensitivity_check()
+{
+    return input_parser::sensitivity_check{/*.output_file_name=*/input_parser::FileName{"sensitivity_check.txt"}};
+}
+
+std::string create_valid_example_sensitivity_check_string()
+{
+    return R"(
+          begin sensitivity_check
+            output_file_name sensitivity_check_file.txt
           end
        )";
 }

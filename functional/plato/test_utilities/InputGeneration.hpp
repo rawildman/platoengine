@@ -36,5 +36,8 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] input_parser::gradient_check create_valid_example_gradient_check();
 [[nodiscard]] std::string create_valid_example_gradient_check_string();
 
+[[nodiscard]] input_parser::sensitivity_check create_valid_example_sensitivity_check();
+[[nodiscard]] std::string create_valid_example_sensitivity_check_string();
+
 }  // namespace plato::test_utilities
 #endif

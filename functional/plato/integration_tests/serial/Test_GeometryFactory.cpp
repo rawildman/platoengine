@@ -16,7 +16,8 @@ TEST(GeometryFactory, BrickGeometry)
                                   /*.mBrickShapeGeometry=*/pftu::create_valid_brick_shape_geometry(),
                                   /*.mDensityTopology = */ boost::none,
                                   /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters(),
-                                  /*.mGradientCheck = */ boost::none};
+                                  /*.mGradientCheck = */ boost::none,
+                                  /*.mSensitivityCheck = */ boost::none};
 
     const process_manager::library::ValidatedInput tInput = process_manager::library::make_validated_input(tRawInput);
     const auto tData = geometry::library::make_geometry_data(tInput.geometry());

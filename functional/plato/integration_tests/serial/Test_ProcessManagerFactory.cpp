@@ -6,24 +6,25 @@
 
 namespace plato::integration_tests::serial
 {
-TEST(ProcessManagerFactory, Optimization)
+namespace
 {
-    namespace pftu = plato::test_utilities;
+void verify_number_of_process_managers(const input_parser::ParsedInput& aParsedInput,
+                                       unsigned int aNumberOfProcessManangers)
+{
+    const process_manager::library::ValidatedInput tInput =
+        process_manager::library::make_validated_input(aParsedInput);
+    const auto tProcessManagers = tInput.processManagers().rawInput();
+    EXPECT_EQ(tProcessManagers.size(), aNumberOfProcessManangers);
+}
 
-    const auto tRawInput =
-        input_parser::ParsedInput{/*.mObjectives=*/{pftu::create_valid_example_objective()},
-                                  /*.mConstraints=*/{pftu::create_valid_example_constraint()},
-                                  /*.mBrickShapeGeometry=*/pftu::create_valid_brick_shape_geometry(),
-                                  /*.mDensityTopology = */ boost::none,
-                                  /*.mOptimizationParameters = */ pftu::create_valid_example_optimization_parameters(),
-                                  /*.mGradientCheck = */ boost::none};
+}  // namespace
 
-    const process_manager::library::ValidatedInput tInput = process_manager::library::make_validated_input(tRawInput);
-    // TODO: Implement me
-//    const auto tProcessManagers = process_manager::library::make_process_managers(tInput.optimizationParameters());
-
-//    EXPECT_EQ(tProcessManagers.size(), 1);
-//    EXPECT_TRUE(tProcessManagers.front());
+TEST(ProcessManagerFactory, RightNumberOfProcessManagers)
+{
+    auto tRawInput = test_utilities::create_valid_shape_geometry_example_input_with_gradient_check();
+    verify_number_of_process_managers(tRawInput, 2u);
+    tRawInput.mSensitivityCheck = test_utilities::create_valid_example_sensitivity_check();
+    verify_number_of_process_managers(tRawInput, 3u);
 }
 
 }  // namespace plato::integration_tests::serial
