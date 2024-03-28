@@ -12,12 +12,6 @@ namespace plato::input_parser::unittest
 {
 namespace
 {
-template <typename T>
-constexpr bool kIsBoostOptional = false;
-
-template <typename T>
-constexpr bool kIsBoostOptional<boost::optional<T>> = true;
-
 auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, ParsedInput>
 {
     InputParser<std::string::const_iterator> tParser;
