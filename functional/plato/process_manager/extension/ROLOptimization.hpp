@@ -3,6 +3,7 @@
 
 #include <Teuchos_ParameterList.hpp>
 #include <boost/mpi/communicator.hpp>
+#include <optional>
 
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 
