@@ -62,11 +62,6 @@ void GradientCheck::run(const library::ProcessManagerData& aProblem) const
         tPrintOutput, tOutFile);
 }
 
-std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,
-                                                 std::vector<std::string>&& aCurrentMessageList)
-{
-    return core::validate(aInput, std::move(aCurrentMessageList));
-}
 
 namespace detail
 {

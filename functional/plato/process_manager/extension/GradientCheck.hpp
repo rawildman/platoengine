@@ -20,6 +20,8 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::extension
 {
+/// @brief An implementation of a process manager that performs a gradient check using
+///  ROL's gradient check functionality.
 class GradientCheck
 {
    public:
@@ -37,8 +39,6 @@ class GradientCheck
     unsigned int mRandomDirectionSeed = 42;
 };
 
-[[nodiscard]] std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,
-                                                               std::vector<std::string>&& aCurrentMessageList);
 namespace detail
 {
 [[nodiscard]] std::optional<std::string> validate_output_file_name(const input_parser::gradient_check& aInput);

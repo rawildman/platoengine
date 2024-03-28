@@ -64,12 +64,6 @@ void SensitivityCheck::run(const library::ProcessManagerData& aProblem) const
         rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
 }
 
-std::vector<std::string> validate_sensitivity_check(const input_parser::sensitivity_check& aInput,
-                                                    std::vector<std::string>&& aCurrentMessageList)
-{
-    return core::validate(aInput, std::move(aCurrentMessageList));
-}
-
 namespace detail
 {
 std::optional<std::string> validate_output_file_name(const input_parser::sensitivity_check& aInput)

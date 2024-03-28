@@ -8,6 +8,15 @@
 
 namespace plato::process_manager::extension::unittest
 {
+namespace
+{
+std::vector<std::string> validate_gradient_check(const input_parser::gradient_check& aInput,
+                                                 std::vector<std::string>&& aCurrentMessageList)
+{
+    return core::validate(aInput, std::move(aCurrentMessageList));
+}
+
+}  // namespace
 
 TEST(ValidateGradientCheck, ValidateNumberOfSteps)
 {
@@ -33,11 +42,11 @@ TEST(ValidateGradientCheck, ValidateStepSizeReductionFactor)
 {
     input_parser::gradient_check tGradientCheck;
     EXPECT_TRUE(detail::validate_step_size_reduction_factor(tGradientCheck).has_value());
-    tGradientCheck.initial_direction_magnitude = 0;  // out of bounds
+    tGradientCheck.step_size_reduction_factor = 0;  // out of bounds
     EXPECT_TRUE(detail::validate_step_size_reduction_factor(tGradientCheck).has_value());
-    tGradientCheck.initial_direction_magnitude = 0.5;  // in bounds
-    EXPECT_TRUE(detail::validate_step_size_reduction_factor(tGradientCheck).has_value());
-    tGradientCheck.initial_direction_magnitude = 10;  // out of bounds
+    tGradientCheck.step_size_reduction_factor = 0.5;  // in bounds
+    EXPECT_FALSE(detail::validate_step_size_reduction_factor(tGradientCheck).has_value());
+    tGradientCheck.step_size_reduction_factor = 10;  // out of bounds
     EXPECT_TRUE(detail::validate_step_size_reduction_factor(tGradientCheck).has_value());
 }
 

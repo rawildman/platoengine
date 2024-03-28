@@ -19,6 +19,12 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::extension
 {
+/// @brief An implementation of a process manager that performs a gradient check of mainly the
+///  mapping from design variables to a mesh, using a nodal sum as an objective.
+///
+/// The purpose of this is to isolate the geometry creation step from criteria evaluation for 
+/// gradient checks. For example, it can be useful to gradient check just ESP. This is mainly
+/// useful for shape optimization since the objective is a sum of nodal coordinates.
 class SensitivityCheck
 {
    public:
@@ -32,8 +38,6 @@ class SensitivityCheck
     std::filesystem::path mOutputFileName;
 };
 
-[[nodiscard]] std::vector<std::string> validate_sensitivity_check(const input_parser::sensitivity_check& aInput,
-                                                                  std::vector<std::string>&& aCurrentMessageList);
 namespace detail
 {
 [[nodiscard]] std::optional<std::string> validate_output_file_name(const input_parser::sensitivity_check& aInput);

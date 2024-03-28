@@ -23,7 +23,9 @@ template <typename T>
 template <typename T>
 void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector);
 
-///@brief Helper function that creates a perturbation of the initial value for use in diagnostic checks
+/// @brief Helper function that creates a random direction for use in diagnostic checks.
+///
+/// @post The returned vector has dimension @a aDimension and magnitude 1.
 [[nodiscard]] ROL::StdVector<double> generate_perturbation(const int aDimension);
 
 template <typename T>

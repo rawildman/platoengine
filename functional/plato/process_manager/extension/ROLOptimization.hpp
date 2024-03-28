@@ -19,6 +19,7 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::extension
 {
+/// @brief An implementation of a process manager that performs optimization  using ROL.
 class ROLOptimization
 {
    public:

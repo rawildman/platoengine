@@ -13,7 +13,7 @@ struct ProcessManagerData;
 
 namespace plato::process_manager::library
 {
-/// @brief ProcessManager is the object that is used to run some process on ProcessManagerData.
+/// @brief ProcessManager is the object that is used to peform some operation on ProcessManagerData.
 ///  This could be a full optimization run or a gradient check.
 using ProcessManager = std::function<void(const ProcessManagerData&)>;
 

@@ -8,6 +8,12 @@
 
 namespace plato::process_manager::library
 {
+/// @brief Defines the order in which ProcessManager functions will be executed.
+///
+/// This is used in the factory registration of a ProcessManager to define its
+/// execution order. Earlier stages are guaranteed to be executed before later
+/// stages, but if two ProcessManager functions have the same stage, no order
+/// is specified.
 enum class RunStage
 {
     kValidate,

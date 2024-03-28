@@ -1,6 +1,5 @@
 #include "plato/process_manager/library/ProcessManagerValidation.hpp"
 
-#include <numeric>
 #include <optional>
 
 #include "plato/core/InputVariantUtilities.hpp"
