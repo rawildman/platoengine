@@ -110,7 +110,8 @@ set(GCC_ADDITIONAL_WARNINGS -Wall
                             -Wnon-virtual-dtor
                             -Wsuggest-override
                             -pedantic
-                            -Wno-return-type-c-linkage)
+                            -Wno-return-type-c-linkage
+                            -Wno-unknown-warning-option)
 
 if(BUILD_WITH_SANITIZER_FLAGS)
   message(STATUS "Compiling with sanitizer flags turned on")
