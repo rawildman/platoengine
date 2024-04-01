@@ -58,22 +58,28 @@ TEST(ValidateGradientCheck, ValidateRandomDirectionSeed)
     EXPECT_TRUE(detail::validate_random_direction_seed(tGradientCheck).has_value());
 }
 
+TEST(ValidateGradientCheck, ValidateOuputFileName)
+{
+    auto tGradientCheck = input_parser::gradient_check{};
+    EXPECT_TRUE(detail::validate_output_file_name(tGradientCheck).has_value());
+    tGradientCheck.output_file_name = input_parser::FileName{"file.txt"};  // Requires an input
+    EXPECT_FALSE(detail::validate_output_file_name(tGradientCheck).has_value());
+}
+
 TEST(ValidateGradientCheck, NoErrorMessagesValidGradientCheck)
 {
-    input_parser::gradient_check tGradientCheck = plato::test_utilities::create_valid_example_gradient_check();
-
-    std::vector<std::string> tMessages;
-    tMessages = validate_gradient_check(tGradientCheck, std::move(tMessages));
-    EXPECT_EQ(tMessages.size(), 0u);
+    const input_parser::gradient_check tGradientCheck = plato::test_utilities::create_valid_example_gradient_check();
+    const auto tMessages = validate_gradient_check(tGradientCheck, std::vector<std::string>{});
+    EXPECT_TRUE(tMessages.empty());
 }
 
 TEST(ValidateGradientCheck, ErrorMessagesInvalidGradientCheck)
 {
-    input_parser::gradient_check tGradientCheck;
-
-    std::vector<std::string> tMessages;
-    tMessages = validate_gradient_check(tGradientCheck, std::move(tMessages));
-    EXPECT_EQ(tMessages.size(), 5u);
+    const input_parser::gradient_check tGradientCheck;
+    const auto tMessages = validate_gradient_check(tGradientCheck, std::vector<std::string>{});
+    const auto tNumberOfGradientCheckValidationFunctions =
+        core::detail::registered_validation_functions<input_parser::gradient_check>().size();
+    EXPECT_EQ(tMessages.size(), tNumberOfGradientCheckValidationFunctions);
 }
 
 }  // namespace plato::process_manager::extension::unittest

@@ -11,6 +11,15 @@
 
 namespace plato::process_manager::extension::unittest
 {
+using ProcessManagerInputVector = typename library::ValidatedProcessManagerInputVector::RawInputType;
+template <typename BlockType>
+std::size_t num_blocks_with_type(const ProcessManagerInputVector& aAllProcessManagerInputs)
+{
+    return std::count_if(aAllProcessManagerInputs.cbegin(), aAllProcessManagerInputs.cend(),
+                         [](const auto& aInput)
+                         { return core::block_name(aInput) == input_parser::block_name<BlockType>(); });
+}
+
 TEST(GradientCheck, CreateGradientCheckRun)
 {
     const input_parser::ParsedInput tInputDeck =
@@ -34,7 +43,17 @@ TEST(GradientCheck, UnwrapValidatedGradientCheckInput)
 
     const auto tValidatedInput = library::make_validated_input(tInputDeck);
     const auto tUnwrappedValidatedInput = tValidatedInput.processManagers().rawInput();
-    EXPECT_EQ(tUnwrappedValidatedInput.size(), 2u);
+
+    constexpr auto tExpectedNumGradientCheckInputs = std::size_t{1};
+    EXPECT_EQ(num_blocks_with_type<input_parser::gradient_check>(tUnwrappedValidatedInput),
+              tExpectedNumGradientCheckInputs);
+
+    constexpr auto tExpectedNumROLOptimizerInputs = std::size_t{1};
+    EXPECT_EQ(num_blocks_with_type<input_parser::rol_optimization>(tUnwrappedValidatedInput),
+              tExpectedNumROLOptimizerInputs);
+
+    constexpr auto tExpectedTotalProcessManagerInputs = std::size_t{2};
+    EXPECT_EQ(tUnwrappedValidatedInput.size(), tExpectedTotalProcessManagerInputs);
 }
 
 }  // namespace plato::process_manager::extension::unittest

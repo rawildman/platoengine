@@ -13,7 +13,7 @@ TEST(ProcessManagerOrdering, SingleStage)
     EXPECT_EQ(tVectorResult, tExpected);
 }
 
-TEST(ProcessManagerOrdering, SecondStageTurbineBlade)
+TEST(ProcessManagerOrdering, TwoStages)
 {
     const auto tStageMap = std::multimap<RunStage, int>{
         {RunStage::kExecute, 84},
