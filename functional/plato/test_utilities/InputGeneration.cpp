@@ -4,7 +4,7 @@
 
 namespace plato::test_utilities
 {
-void create_input_file(const std::filesystem::path aTestFileName)
+void create_input_file(const std::filesystem::path& aTestFileName)
 {
     std::ofstream tOutFile(aTestFileName);
     const std::string tInput =

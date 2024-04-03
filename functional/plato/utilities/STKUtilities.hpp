@@ -23,13 +23,13 @@ void write_mesh(const std::filesystem::path& aMeshName, std::shared_ptr<stk::mes
 
 [[nodiscard]] unsigned int read_mesh_node_size(const std::filesystem::path& aMeshName);
 
-[[nodiscard]] unsigned int node_size(std::shared_ptr<stk::mesh::BulkData> aBulk);
+[[nodiscard]] unsigned int node_size(const stk::mesh::BulkData& aBulk);
 
-[[nodiscard]] unsigned int element_size(std::shared_ptr<stk::mesh::BulkData> aBulk);
+[[nodiscard]] unsigned int element_size(const stk::mesh::BulkData& aBulk);
 
-[[nodiscard]] unsigned int spatial_dimensions(std::shared_ptr<stk::mesh::BulkData> aBulk);
+[[nodiscard]] unsigned int spatial_dimensions(const stk::mesh::BulkData& aBulk);
 
-[[nodiscard]] std::vector<double> nodal_coordinates(std::shared_ptr<stk::mesh::BulkData> aBulk);
+[[nodiscard]] std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk);
 
 [[nodiscard]] std::vector<double> read_mesh_density(const std::filesystem::path& aMeshName);
 

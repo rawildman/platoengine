@@ -33,7 +33,7 @@ class ValidatedInput
     using ProcessManagers = plato::process_manager::library::ValidatedProcessManagerInputVector;
 
    public:
-    ValidatedInput(input_parser::ParsedInput aInput, Key);
+    ValidatedInput(input_parser::ParsedInput aInput, const Key&);
 
     [[nodiscard]] auto geometry() const -> Geometry;
     [[nodiscard]] auto objectives() const -> Objectives;

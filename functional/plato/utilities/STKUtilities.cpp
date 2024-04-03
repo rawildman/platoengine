@@ -82,44 +82,46 @@ std::vector<double> read_mesh_density(const std::filesystem::path& aMeshName)
 
 unsigned int element_size(const std::filesystem::path& aMeshName)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
-    return element_size(tBulkData);
+    const std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
+    assert(tBulkData);
+    return element_size(*tBulkData);
 }
 
 unsigned int read_mesh_node_size(const std::filesystem::path& aMeshName)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
-    return node_size(tBulkData);
+    const std::shared_ptr<stk::mesh::BulkData> tBulkData = read_mesh_bulk_data(aMeshName);
+    assert(tBulkData);
+    return node_size(*tBulkData);
 }
 
-unsigned int node_size(std::shared_ptr<stk::mesh::BulkData> aBulk)
+unsigned int node_size(const stk::mesh::BulkData& aBulk)
 {
     std::vector<size_t> tEntityCounts;
-    stk::mesh::comm_mesh_counts(*aBulk, tEntityCounts);
+    stk::mesh::comm_mesh_counts(aBulk, tEntityCounts);
     return tEntityCounts[stk::topology::NODE_RANK];
 }
 
-unsigned int element_size(std::shared_ptr<stk::mesh::BulkData> aBulk)
+unsigned int element_size(const stk::mesh::BulkData& aBulk)
 {
     std::vector<size_t> tEntityCounts;
-    stk::mesh::comm_mesh_counts(*aBulk, tEntityCounts);
+    stk::mesh::comm_mesh_counts(aBulk, tEntityCounts);
     return tEntityCounts[stk::topology::ELEM_RANK];
 }
 
-unsigned int spatial_dimensions(std::shared_ptr<stk::mesh::BulkData> aBulk)
+unsigned int spatial_dimensions(const stk::mesh::BulkData& aBulk)
 {
-    return aBulk->mesh_meta_data().spatial_dimension();
+    return aBulk.mesh_meta_data().spatial_dimension();
 }
 
-std::vector<double> nodal_coordinates(std::shared_ptr<stk::mesh::BulkData> aBulk)
+std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
 {
     const unsigned int tSpatialDim = spatial_dimensions(aBulk);
     const unsigned int tNumberOfNodes = node_size(aBulk);
     std::vector<double> tCoordinates(tNumberOfNodes * tSpatialDim, 0);
 
     stk::mesh::EntityVector tNodeEntity;
-    stk::mesh::get_entities(*aBulk, stk::topology::NODE_RANK, tNodeEntity, true);
-    const stk::mesh::FieldBase* const tCoordsField = aBulk->mesh_meta_data().coordinate_field();
+    stk::mesh::get_entities(aBulk, stk::topology::NODE_RANK, tNodeEntity, true);
+    const stk::mesh::FieldBase* const tCoordsField = aBulk.mesh_meta_data().coordinate_field();
 
     for (size_t tNodeIndex = 0; tNodeIndex < tNodeEntity.size(); tNodeIndex++)
     {

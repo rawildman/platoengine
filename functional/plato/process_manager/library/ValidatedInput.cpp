@@ -16,7 +16,7 @@
 
 namespace plato::process_manager::library
 {
-ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, Key) : mInput{std::move(aInput)} {}
+ValidatedInput::ValidatedInput(input_parser::ParsedInput aInput, const Key&) : mInput{std::move(aInput)} {}
 
 ValidatedInput::Geometry ValidatedInput::geometry() const
 {
