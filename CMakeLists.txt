@@ -86,6 +86,13 @@ if(PLATOENGINE_ENABLE_CUDA)
   enable_language(CUDA)
 endif()
 
+
+########################### Compiler commands setup ###########################
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+  file(CREATE_LINK "${CMAKE_BINARY_DIR}/compile_commands.json" "${CMAKE_SOURCE_DIR}/compile_commands.json" SYMBOLIC )
+endif()
+
 ###############################################################################
 ###############################################################################
 
