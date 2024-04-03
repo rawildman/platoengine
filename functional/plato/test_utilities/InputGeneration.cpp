@@ -20,7 +20,7 @@ void create_input_file(const std::filesystem::path aTestFileName)
             aggregation_weight 42.0
             objective_type minimize
           end
-          begin optimization_parameters
+          begin rol_optimization
             input_file_name its-a_file.txt
             step_tolerance 10
             gradient_tolerance 100.0
@@ -36,7 +36,7 @@ void create_input_file(const std::filesystem::path aTestFileName)
     const std::string tConstraintInput = create_valid_example_constraint_string();
     const std::string tObjectiveInput = create_valid_example_objective_string();
     const std::string tGeometryInput = create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = create_valid_example_rol_optimization_string();
 
     return tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput;
 }
@@ -47,7 +47,24 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mConstraints=*/{create_valid_example_constraint()},
                                      /*.mBrickShapeGeometry=*/boost::none,
                                      /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                     /*.mOptimizationParameters = */ create_valid_example_optimization_parameters()};
+                                     /*.mROLOptimization = */ create_valid_example_rol_optimization(),
+                                     /*.mGradientCheck=*/boost::none,
+                                     /*.mSensitivityCheck=*/boost::none};
+}
+
+input_parser::ParsedInput create_valid_example_input_with_gradient_check()
+{
+    auto tInput = create_valid_example_input();
+    tInput.mGradientCheck = create_valid_example_gradient_check();
+    return tInput;
+}
+
+input_parser::ParsedInput create_valid_shape_geometry_example_input_with_gradient_check()
+{
+    input_parser::ParsedInput tInputDeck = create_valid_example_input_with_gradient_check();
+    tInputDeck.mDensityTopology = boost::none;
+    tInputDeck.mBrickShapeGeometry = create_valid_brick_shape_geometry();
+    return tInputDeck;
 }
 
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
@@ -151,21 +168,57 @@ std::string create_valid_example_custom_app_objective_string()
        )";
 }
 
-input_parser::optimization_parameters create_valid_example_optimization_parameters()
+input_parser::rol_optimization create_valid_example_rol_optimization()
 {
-    return input_parser::optimization_parameters{/*.input_file_name=*/boost::none,
+    return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
                                                  /*.max_iterations =  */ 42,
                                                  /*.step_tolerance = */ 1e-7,
                                                  /*.gradient_tolerance = */ 1e-9};
 }
 
-std::string create_valid_example_optimization_parameters_string()
+std::string create_valid_example_rol_optimization_string()
 {
     return R"(
-          begin optimization_parameters
+          begin rol_optimization
             max_iterations 666
             step_tolerance 1e-4
             gradient_tolerance 1e-6
+          end
+       )";
+}
+
+input_parser::gradient_check create_valid_example_gradient_check()
+{
+    return input_parser::gradient_check{/*.output_file_name=*/input_parser::FileName{"gradient_check.txt"},
+                                        /*.number_of_steps=*/12,
+                                        /*.initial_direction_magnitude=*/0.5,
+                                        /*.step_size_reduction_factor = */ 0.5,
+                                        /*.random_direction_seed = */ 42};
+}
+
+std::string create_valid_example_gradient_check_string()
+{
+    return R"(
+          begin gradient_check
+            output_file_name gradient_check_file.txt
+            number_of_steps 12
+            step_size_reduction_factor 0.5
+            random_direction_seed 123
+            initial_direction_magnitude 0.5
+          end
+       )";
+}
+
+input_parser::sensitivity_check create_valid_example_sensitivity_check()
+{
+    return input_parser::sensitivity_check{/*.output_file_name=*/input_parser::FileName{"sensitivity_check.txt"}};
+}
+
+std::string create_valid_example_sensitivity_check_string()
+{
+    return R"(
+          begin sensitivity_check
+            output_file_name sensitivity_check_file.txt
           end
        )";
 }

@@ -27,7 +27,21 @@ constexpr inline bool kIsNamedBlock = false;
 ///
 /// This is specialized to using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
 template <typename T>
-constexpr inline bool kIsGeometryInput = false;
+struct IsGeometryInput
+{
+    constexpr static bool value = false;
+};
+
+/// @brief Type trait specifying if a type is a process_manager input type.
+///
+/// This should be used for input blocks specifying general drivers like optimizers,
+/// gradient checkers, constraint checkers, etc.
+/// This is specialized to using the PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT macro.
+template <typename T>
+struct IsProcessManagerInput
+{
+    constexpr static bool value = false;
+};
 }  // namespace plato::input_parser
 
 // clang-format off
@@ -58,7 +72,7 @@ BOOST_FUSION_DEFINE_STRUCT(                                                     
     STRUCT_NAME,                                                                               \
     TYPES_AS_OPTIONAL(BOOST_PP_VARIADIC_SEQ_TO_SEQ(ATTRIBUTES))                                \
 )                                                                                              \
-namespace plato::input_parser{                                                     \
+namespace plato::input_parser{                                                                 \
 template<>                                                                                     \
 struct InputTypeName<STRUCT_NAME>                                                              \
 {   static constexpr const char* name = #STRUCT_NAME;                                          \
@@ -67,9 +81,22 @@ struct InputTypeName<STRUCT_NAME>                                               
 
 #define PLATO_GEOMETRY_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)              \
 PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
-namespace plato::input_parser{                                                     \
+namespace plato::input_parser{                                                                 \
 template<>                                                                                     \
-constexpr inline bool kIsGeometryInput<STRUCT_NAME> = true;                                    \
+struct IsGeometryInput<STRUCT_NAME>                                                            \
+{                                                                                              \
+    constexpr static bool value = true;                                                        \
+};                                                                                             \
+}
+
+#define PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)       \
+PLATO_INPUT_BLOCK_STRUCT(NAMESPACE_SEQ, STRUCT_NAME, ATTRIBUTES)                               \
+namespace plato::input_parser{                                                                 \
+template<>                                                                                     \
+struct IsProcessManagerInput<STRUCT_NAME>                                                      \
+{                                                                                              \
+    constexpr static bool value = true;                                                        \
+};                                                                                             \
 }
 
 /// Macro for generating an adapted struct that can be used for input parsing. The format
@@ -94,7 +121,7 @@ BOOST_FUSION_DEFINE_STRUCT(                                                     
     STRUCT_NAME,                                                                      \
     TYPES_AS_OPTIONAL(ATTRIBUTES_WITH_NAME(BOOST_PP_VARIADIC_SEQ_TO_SEQ(ATTRIBUTES))) \
 )                                                                                     \
-namespace plato::input_parser{                                            \
+namespace plato::input_parser{                                                        \
 template<>                                                                            \
 struct InputTypeName<STRUCT_NAME>                                                     \
 {   static constexpr const char* name = #STRUCT_NAME;                                 \

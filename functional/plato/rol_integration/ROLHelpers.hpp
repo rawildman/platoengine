@@ -23,6 +23,11 @@ template <typename T>
 template <typename T>
 void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector);
 
+/// @brief Helper function that creates a random direction for use in diagnostic checks.
+///
+/// @post The returned vector has dimension @a aDimension and magnitude 1.
+[[nodiscard]] ROL::StdVector<double> generate_perturbation(const int aDimension);
+
 template <typename T>
 linear_algebra::DynamicVector<T> to_dynamic_vector(const ROL::Vector<T>& aROLVector)
 {
@@ -48,6 +53,7 @@ void assign_vector(ROL::Vector<T>& aROLVector, std::vector<T> aVector)
     auto& tROLStdVector = dynamic_cast<ROL::StdVector<T>&>(aROLVector);
     *tROLStdVector.getVector() = std::move(aVector);
 }
+
 }  // namespace plato::rol_integration
 
 #endif

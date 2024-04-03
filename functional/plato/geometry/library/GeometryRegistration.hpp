@@ -6,7 +6,8 @@
 
 #include "plato/core/FactoryRegistration.hpp"
 #include "plato/core/Function.hpp"
-#include "plato/geometry/library/GeometryInputBuilder.hpp"
+#include "plato/core/VariantInputBuilder.hpp"
+#include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
 namespace plato::core
@@ -37,16 +38,16 @@ struct FactoryTypes
 
 /// A `std::variant` with alternatives corresponding to input blocks
 /// created using the PLATO_GEOMETRY_INPUT_BLOCK_STRUCT macro.
-using GeometryInput = detail::GeometryInputVariant<input_parser::ParsedInput>;
-using ValidatedGeometryInput =
-    core::ValidatedInputTypeWrapper<detail::ValidatedGeometryInputVariant<input_parser::ParsedInput>>;
+using GeometryInput = core::InputVariant<input_parser::ParsedInput, input_parser::IsGeometryInput>;
+using ValidatedGeometryInput = core::ValidatedInputTypeWrapper<
+    core::ValidatedInputVariant<input_parser::ParsedInput, input_parser::IsGeometryInput>>;
 using GeometryRegistration = core::FactoryRegistration<FactoryTypes, ValidatedGeometryInput>;
 
 /// @return A GeometryInput variant, which is the first non-empty geometry input block found in @a aInput.
 /// @throw Exception If no geometry block was defined in @a aInput.
 [[nodiscard]] library::GeometryInput first_geometry_input(const input_parser::ParsedInput& aInput);
 
-bool is_geometry_function_registered(const std::string_view aFunctionName);
+[[nodiscard]] bool is_geometry_function_registered(const std::string_view aFunctionName);
 
 /// @brief Helper to get the raw input from a validated geometry variant.
 template <typename Geometry>

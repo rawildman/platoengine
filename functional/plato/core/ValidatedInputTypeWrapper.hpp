@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace plato::main::library
+namespace plato::process_manager::library
 {
 class ValidatedInput;
 }
@@ -19,7 +19,7 @@ class ValidatedInputTypeWrapper
     const InputType& rawInput() const { return mRawInput; }
 
    private:
-    friend class plato::main::library::ValidatedInput;
+    friend class plato::process_manager::library::ValidatedInput;
     ValidatedInputTypeWrapper(InputType aRawInput) : mRawInput(std::move(aRawInput)) {}
     InputType mRawInput;
 };

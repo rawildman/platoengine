@@ -3,7 +3,7 @@
 #include <boost/optional/optional_io.hpp>
 
 #include "plato/criteria/library/CriterionFactory.hpp"
-#include "plato/main/library/ValidatedInput.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::integration_tests::serial
@@ -14,9 +14,9 @@ TEST(CriterionFactory, ValidObjective)
 
     const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
-    const main::library::ValidatedInput tData =
-        main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
+    const process_manager::library::ValidatedInput tData =
+        process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction = criteria::library::make_criterion_function(tData.objectives().rawInput().front()));
@@ -25,8 +25,8 @@ TEST(CriterionFactory, ValidObjective)
 TEST(CriterionFactory, ValidConstraint)
 {
     namespace pftu = plato::test_utilities;
-    const main::library::ValidatedInput tData =
-        main::library::parse_and_validate(pftu::create_valid_example_input_string());
+    const process_manager::library::ValidatedInput tData =
+        process_manager::library::parse_and_validate(pftu::create_valid_example_input_string());
 
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction =
@@ -39,10 +39,10 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
 
     const std::string tObjectiveInput = pftu::create_valid_example_custom_app_objective_string();
     const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_optimization_parameters_string();
+    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
 
-    const main::library::ValidatedInput tData =
-        main::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    const process_manager::library::ValidatedInput tData =
+        process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
     const core::ValidatedInputTypeWrapper<input_parser::objective> tValidatedObjective =
         tData.objectives().rawInput().front();
@@ -65,8 +65,8 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
 TEST(CriterionRegistration, ConvertConstraintInput)
 {
     namespace pftu = plato::test_utilities;
-    const main::library::ValidatedInput tData =
-        main::library::parse_and_validate(pftu::create_valid_example_input_string());
+    const process_manager::library::ValidatedInput tData =
+        process_manager::library::parse_and_validate(pftu::create_valid_example_input_string());
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     const core::ValidatedInputTypeWrapper<input_parser::constraint> tValidatedConstraint =
         tData.constraints().rawInput().front();

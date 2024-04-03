@@ -12,7 +12,10 @@ namespace plato::test_utilities
 void create_input_file(const std::filesystem::path aTestFileName);
 
 [[nodiscard]] input_parser::ParsedInput create_valid_example_input();
+[[nodiscard]] input_parser::ParsedInput create_valid_example_input_with_gradient_check();
 [[nodiscard]] std::string create_valid_example_input_string();
+
+[[nodiscard]] input_parser::ParsedInput create_valid_shape_geometry_example_input_with_gradient_check();
 
 [[nodiscard]] input_parser::brick_shape_geometry create_valid_brick_shape_geometry();
 [[nodiscard]] std::string create_valid_brick_shape_geometry_string();
@@ -27,8 +30,14 @@ void create_input_file(const std::filesystem::path aTestFileName);
 [[nodiscard]] input_parser::constraint create_valid_example_constraint();
 [[nodiscard]] std::string create_valid_example_constraint_string();
 
-[[nodiscard]] input_parser::optimization_parameters create_valid_example_optimization_parameters();
-[[nodiscard]] std::string create_valid_example_optimization_parameters_string();
+[[nodiscard]] input_parser::rol_optimization create_valid_example_rol_optimization();
+[[nodiscard]] std::string create_valid_example_rol_optimization_string();
+
+[[nodiscard]] input_parser::gradient_check create_valid_example_gradient_check();
+[[nodiscard]] std::string create_valid_example_gradient_check_string();
+
+[[nodiscard]] input_parser::sensitivity_check create_valid_example_sensitivity_check();
+[[nodiscard]] std::string create_valid_example_sensitivity_check_string();
 
 }  // namespace plato::test_utilities
 #endif

@@ -1,8 +1,12 @@
 #include <Kokkos_Core.hpp>
+#include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
 #include <iostream>
 
-#include "plato/main/library/OptimizationProblem.hpp"
+#include "plato/main/library/Executor.hpp"
+#include "plato/process_manager/library/ProcessManagerData.hpp"
+#include "plato/process_manager/library/ProcessManagerFactory.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/utilities/Exception.hpp"
 
 namespace
@@ -18,6 +22,8 @@ void printMessage(const std::string_view aMessage)
 
 int main(int argc, char** argv)
 {
+    namespace ppml = plato::process_manager::library;
+
     auto tEnvironment = boost::mpi::environment{argc, argv};
     Kokkos::initialize(argc, argv);
 
@@ -25,8 +31,11 @@ int main(int argc, char** argv)
     {
         try
         {
-            auto tOptimizationProblem = plato::main::library::OptimizationProblem{argv[1]};
-            tOptimizationProblem.optimize();
+            const auto tValidatedInput = ppml::parse_and_validate_from_file(argv[1]);
+            const auto tExecutor =
+                plato::main::library::Executor{ppml::make_process_managers(tValidatedInput.processManagers())};
+            const auto tProcessManagerData = ppml::make_process_manager_data(tValidatedInput);
+            tExecutor.execute(tProcessManagerData);
         }
         catch (const plato::utilities::Exception& tError)
         {

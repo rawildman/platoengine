@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <fstream>
 
+#include "plato/core/InputVariantUtilities.hpp"
 #include "plato/input_parser/InputParser.hpp"
+#include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace
@@ -17,12 +19,12 @@ TEST(InputParser, ParseFromFile)
 {
     plato::test_utilities::create_input_file(kTestFileName);
     const input_parser::ParsedInput tInput = input_parser::parse_input_from_file(kTestFileName);
-
-    EXPECT_FALSE(tInput.mOptimizationParameters.max_iterations.has_value());
-    ASSERT_TRUE(tInput.mOptimizationParameters.gradient_tolerance.has_value());
-    EXPECT_EQ(tInput.mOptimizationParameters.gradient_tolerance.value(), 100.0);
-    ASSERT_TRUE(tInput.mOptimizationParameters.step_tolerance.has_value());
-    EXPECT_EQ(tInput.mOptimizationParameters.step_tolerance.value(), 10.0);
+    ASSERT_TRUE(tInput.mROLOptimization);
+    EXPECT_FALSE(tInput.mROLOptimization->max_iterations.has_value());
+    ASSERT_TRUE(tInput.mROLOptimization->gradient_tolerance.has_value());
+    EXPECT_EQ(tInput.mROLOptimization->gradient_tolerance.value(), 100.0);
+    ASSERT_TRUE(tInput.mROLOptimization->step_tolerance.has_value());
+    EXPECT_EQ(tInput.mROLOptimization->step_tolerance.value(), 10.0);
 
     ASSERT_EQ(tInput.mObjectives.size(), 1);
     const input_parser::objective& tObjective = tInput.mObjectives.front();
@@ -47,5 +49,12 @@ TEST(InputParser, ParseFromFile)
     EXPECT_EQ(tInput.mBrickShapeGeometry->mesh_name->mName, "my_mesh.exo");
 
     std::filesystem::remove(kTestFileName);
+}
+
+TEST(ParsedInputVariant, BlockName)
+{
+    const process_manager::library::ValidatedInput tValidatedInput =
+        process_manager::library::make_validated_input(plato::test_utilities::create_valid_example_input());
+    EXPECT_EQ(core::block_name(tValidatedInput.geometry().rawInput()), "density_topology");
 }
 }  // namespace plato::integration_tests::serial

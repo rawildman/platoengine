@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "plato/utilities/STKUtilities.hpp"
+
 namespace plato::utilities::unittest
 {
 TEST(STKGenerateMesh, Box)

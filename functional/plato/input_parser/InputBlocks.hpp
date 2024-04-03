@@ -33,12 +33,26 @@
 /// @note Enumerations may be used, but must be declared with DECLARE_ENUM_SYMBOL_TABLE and
 ///  defined with DEFINE_ENUM_SYMBOL_TABLE.
 // clang-format off
-PLATO_INPUT_BLOCK_STRUCT(
-    (plato)(input_parser), optimization_parameters,
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
+    (plato)(input_parser), rol_optimization,
     (plato::input_parser::FileName, input_file_name)
     (unsigned int, max_iterations)
     (double, step_tolerance)
     (double, gradient_tolerance)
+)
+
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
+    (plato)(input_parser), gradient_check,
+    (plato::input_parser::FileName, output_file_name)
+    (unsigned int, number_of_steps)
+    (double, initial_direction_magnitude)
+    (double, step_size_reduction_factor)
+    (unsigned int, random_direction_seed)
+)
+
+PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
+    (plato)(input_parser), sensitivity_check,
+    (plato::input_parser::FileName, output_file_name)
 )
 
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
@@ -87,7 +101,9 @@ BOOST_FUSION_DEFINE_STRUCT(
     (std::vector<plato::input_parser::constraint>, mConstraints)
     (boost::optional<plato::input_parser::brick_shape_geometry>, mBrickShapeGeometry)
     (boost::optional<plato::input_parser::density_topology>, mDensityTopology)
-    (plato::input_parser::optimization_parameters, mOptimizationParameters)
+    (boost::optional<plato::input_parser::rol_optimization>, mROLOptimization)
+    (boost::optional<plato::input_parser::gradient_check>, mGradientCheck)
+    (boost::optional<plato::input_parser::sensitivity_check>, mSensitivityCheck)
 )
 // clang-format on
 namespace plato::input_parser

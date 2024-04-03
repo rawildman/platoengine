@@ -12,12 +12,6 @@ namespace plato::input_parser::unittest
 {
 namespace
 {
-template <typename T>
-constexpr bool kIsBoostOptional = false;
-
-template <typename T>
-constexpr bool kIsBoostOptional<boost::optional<T>> = true;
-
 auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, ParsedInput>
 {
     InputParser<std::string::const_iterator> tParser;
@@ -31,17 +25,11 @@ void check_nothing_parsed(const ParsedInput& aInput)
 {
     EXPECT_TRUE(aInput.mObjectives.empty());
     EXPECT_TRUE(aInput.mConstraints.empty());
-    const auto check_value_empty = [](const auto& aValue)
-    {
-        static_assert(kIsBoostOptional<std::decay_t<decltype(aValue)>>,
-                      "Only boost::optional values should be in an input struct");
-        EXPECT_FALSE(aValue);
-    };
-    boost::fusion::for_each(aInput.mOptimizationParameters, check_value_empty);
+    EXPECT_FALSE(aInput.mROLOptimization);
 }
 }  // namespace
 
-TEST(MassAppInput, ObjectiveAllValidInputs)
+TEST(ParsedInput, ObjectiveAllValidInputs)
 {
     const std::string tInput =
         R"(
@@ -77,11 +65,11 @@ TEST(MassAppInput, ObjectiveAllValidInputs)
 
 TEST(InputBlockStruct, GeometryBlocks)
 {
-    constexpr bool tDensityTopologyIsGeometry = kIsGeometryInput<density_topology>;
+    constexpr bool tDensityTopologyIsGeometry = IsGeometryInput<density_topology>::value;
     EXPECT_TRUE(tDensityTopologyIsGeometry);
-    constexpr bool tBrickShapeIsGeometry = kIsGeometryInput<brick_shape_geometry>;
+    constexpr bool tBrickShapeIsGeometry = IsGeometryInput<brick_shape_geometry>::value;
     EXPECT_TRUE(tBrickShapeIsGeometry);
-    constexpr bool tOptimizationIsNotGeometry = kIsGeometryInput<optimization_parameters>;
+    constexpr bool tOptimizationIsNotGeometry = IsGeometryInput<rol_optimization>::value;
     EXPECT_FALSE(tOptimizationIsNotGeometry);
 }
 
@@ -91,7 +79,7 @@ TEST(InputBlockStruct, BlockName)
     EXPECT_EQ(tResult, "brick_shape_geometry");
 }
 
-TEST(MassAppInput, ConstraintAllValidInputs)
+TEST(ParsedInput, ConstraintAllValidInputs)
 {
     const std::string tInput =
         R"(
@@ -123,11 +111,11 @@ TEST(MassAppInput, ConstraintAllValidInputs)
     test_existence_and_equality(tConstraint.is_linear, false);
 }
 
-TEST(MassAppInput, OptimizationParametersAllValidInputs)
+TEST(ParsedInput, OptimizationParametersAllValidInputs)
 {
     const std::string tInput =
         R"(
-          begin optimization_parameters
+          begin rol_optimization
             input_file_name its-a_file.txt
             max_iterations 100
             step_tolerance 
@@ -143,14 +131,41 @@ TEST(MassAppInput, OptimizationParametersAllValidInputs)
     // Tests
     EXPECT_TRUE(tParseResult);
     EXPECT_EQ(tIter, tInput.end());
-
-    test_existence_and_equality(tData.mOptimizationParameters.input_file_name, std::string{"its-a_file.txt"});
-    test_existence_and_equality(tData.mOptimizationParameters.max_iterations, 100u);
-    test_existence_and_equality(tData.mOptimizationParameters.step_tolerance, 10.0);
-    test_existence_and_equality(tData.mOptimizationParameters.gradient_tolerance, 100.0);
+    ASSERT_TRUE(tData.mROLOptimization);
+    test_existence_and_equality(tData.mROLOptimization->input_file_name, std::string{"its-a_file.txt"});
+    test_existence_and_equality(tData.mROLOptimization->max_iterations, 100u);
+    test_existence_and_equality(tData.mROLOptimization->step_tolerance, 10.0);
+    test_existence_and_equality(tData.mROLOptimization->gradient_tolerance, 100.0);
 }
 
-TEST(MassAppInput, ObjectiveNotAllInputs)
+TEST(ParsedInput, GradientCheckAllValidInputs)
+{
+    const std::string tInput =
+        R"(
+          begin gradient_check
+            output_file_name its-a_file.txt
+            number_of_steps 10
+            step_size_reduction_factor 0.5
+            random_direction_seed 1
+            initial_direction_magnitude 0.5
+          end
+       )";
+
+    // Parse
+    const auto [tParseResult, tIter, tData] = parse_string(tInput);
+
+    // Tests
+    EXPECT_TRUE(tParseResult);
+    EXPECT_EQ(tIter, tInput.end());
+    ASSERT_TRUE(tData.mGradientCheck);
+    test_existence_and_equality(tData.mGradientCheck->output_file_name, std::string{"its-a_file.txt"});
+    test_existence_and_equality(tData.mGradientCheck->number_of_steps, 10u);
+    test_existence_and_equality(tData.mGradientCheck->step_size_reduction_factor, 0.5);
+    test_existence_and_equality(tData.mGradientCheck->random_direction_seed, 1u);
+    test_existence_and_equality(tData.mGradientCheck->initial_direction_magnitude, 0.5);
+}
+
+TEST(ParsedInput, ObjectiveNotAllInputs)
 {
     const std::string tInput =
         R"(
@@ -175,7 +190,7 @@ TEST(MassAppInput, ObjectiveNotAllInputs)
     test_existence_and_equality(tObjective.aggregation_weight, 10.0);
 }
 
-TEST(MassAppInput, MisspelledBegin)
+TEST(ParsedInput, MisspelledBegin)
 {
     const std::string tInput =
         R"(
@@ -193,7 +208,7 @@ TEST(MassAppInput, MisspelledBegin)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledEnd)
+TEST(ParsedInput, MisspelledEnd)
 {
     const std::string tInput =
         R"(
@@ -211,7 +226,7 @@ TEST(MassAppInput, MisspelledEnd)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledBlockType)
+TEST(ParsedInput, MisspelledBlockType)
 {
     const std::string tInput =
         R"(
@@ -229,7 +244,7 @@ TEST(MassAppInput, MisspelledBlockType)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledToken)
+TEST(ParsedInput, MisspelledToken)
 {
     const std::string tInput =
         R"(
@@ -247,7 +262,7 @@ TEST(MassAppInput, MisspelledToken)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MisspelledValue)
+TEST(ParsedInput, MisspelledValue)
 {
     const std::string tInput =
         R"(
@@ -265,7 +280,7 @@ TEST(MassAppInput, MisspelledValue)
     check_nothing_parsed(tData);
 }
 
-TEST(MassAppInput, MissingValue)
+TEST(ParsedInput, MissingValue)
 {
     const std::string tInput =
         R"(
@@ -284,7 +299,7 @@ TEST(MassAppInput, MissingValue)
     EXPECT_EQ(tData.mConstraints.front().number_of_processors.value(), 10u);
 }
 
-TEST(MassAppInput, ConstraintMultipleBlocks)
+TEST(ParsedInput, ConstraintMultipleBlocks)
 {
     const std::string tInput =
         R"(
