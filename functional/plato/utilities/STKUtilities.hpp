@@ -3,13 +3,9 @@
 
 #include <filesystem>
 #include <memory>
+#include <stk_mesh/base/BulkData.hpp>
 #include <string_view>
 #include <vector>
-
-namespace stk::mesh
-{
-class BulkData;
-}
 
 namespace plato::utilities
 {

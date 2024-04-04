@@ -21,7 +21,7 @@ template <typename FunctionType>
                                          const std::string_view aFunctionName,
                                          const std::filesystem::path& aSharedLibPath)
 {
-    FunctionType tFunction = reinterpret_cast<FunctionType>(dlsym(aSharedLibrary, std::string{aFunctionName}.c_str()));
+    FunctionType tFunction = reinterpret_cast<FunctionType>(dlsym(aSharedLibrary, std::string{aFunctionName}.c_str())); //NOLINT
     if (tFunction == nullptr)
     {
         throw Exception{"Couldn't load function " + std::string{aFunctionName} + " from shared lib at " +

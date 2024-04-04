@@ -1,17 +1,16 @@
 #include "plato/utilities/STKUtilities.hpp"
 
-#include <stk_io/FillMesh.hpp>
-#include <stk_io/StkMeshIoBroker.hpp>
-#include <stk_mesh/base/BulkData.hpp>
-#include <stk_mesh/base/Field.hpp>
-#include <stk_mesh/base/MeshBuilder.hpp>
-#include <stk_mesh/base/MetaData.hpp>
-#include <stk_util/parallel/Parallel.hpp>
-
 #include <Ioss_DBUsage.h>    // for DatabaseUsage::READ_MODEL
 #include <Ioss_Field.h>      // for Field, etc
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_NodeBlock.h>  // for NodeBlock
+
+#include <stk_io/FillMesh.hpp>
+#include <stk_io/StkMeshIoBroker.hpp>
+#include <stk_mesh/base/Field.hpp>
+#include <stk_mesh/base/MeshBuilder.hpp>
+#include <stk_mesh/base/MetaData.hpp>
+#include <stk_util/parallel/Parallel.hpp>
 
 namespace plato::utilities
 {
@@ -108,10 +107,7 @@ unsigned int element_size(const stk::mesh::BulkData& aBulk)
     return tEntityCounts[stk::topology::ELEM_RANK];
 }
 
-unsigned int spatial_dimensions(const stk::mesh::BulkData& aBulk)
-{
-    return aBulk.mesh_meta_data().spatial_dimension();
-}
+unsigned int spatial_dimensions(const stk::mesh::BulkData& aBulk) { return aBulk.mesh_meta_data().spatial_dimension(); }
 
 std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
 {
@@ -128,7 +124,7 @@ std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
         const auto tData = static_cast<const double*>(stk::mesh::field_data(*tCoordsField, tNodeEntity[tNodeIndex]));
         for (unsigned tCoordIndex = 0; tCoordIndex < tSpatialDim; tCoordIndex++)
         {
-            tCoordinates[tNodeIndex * tSpatialDim + tCoordIndex] = tData[tCoordIndex];
+            tCoordinates[tNodeIndex * tSpatialDim + tCoordIndex] = tData[tCoordIndex]; //NOLINT
         }
     }
     return tCoordinates;
