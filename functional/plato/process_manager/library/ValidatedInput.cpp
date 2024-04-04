@@ -60,9 +60,13 @@ template <typename ValidatedInputVariant, typename InputVariant>
 ValidatedInputVariant ValidatedInput::validatedVariant(InputVariant aInputVariant)
 {
     std::optional<ValidatedInputVariant> tValidatedInput;
-    std::visit([&tValidatedInput](auto&& tInput)
-               { tValidatedInput = core::ValidatedInputTypeWrapper{std::move(tInput)}; },
-               std::move(aInputVariant));
+    std::visit(
+        [&tValidatedInput](auto&& tInput)
+        {
+            using InputType = std::decay_t<decltype(tInput)>;
+            tValidatedInput = core::ValidatedInputTypeWrapper{std::forward<InputType>(tInput)};
+        },
+        std::move(aInputVariant));
     assert(tValidatedInput);
     return *tValidatedInput;
 }

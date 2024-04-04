@@ -51,8 +51,8 @@ MPI_Comm setup_children(int argc, char** argv, unsigned int aNumRanks)
         {
             std::cout << "Spawning " << aNumRanks << " new ranks" << std::endl;
             auto [tProgramName, tArguments] = program_name_and_arguments_for_mpi(argc, argv);
-            MPI_Comm_spawn(tProgramName.data(), tArguments.data(), aNumRanks, MPI_INFO_NULL, 0, MPI_COMM_WORLD,
-                           &tInterComm, tErrorCodes.data());
+            MPI_Comm_spawn(tProgramName.data(), tArguments.data(), static_cast<int>(aNumRanks), MPI_INFO_NULL, 0,
+                           MPI_COMM_WORLD, &tInterComm, tErrorCodes.data());
         }
     }
     return tInterComm;

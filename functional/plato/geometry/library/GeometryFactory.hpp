@@ -8,11 +8,6 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace input_parser
-{
-struct ParsedInput;
-}
-
 namespace plato::geometry::library
 {
 using DesignParameters = linear_algebra::DynamicVector<double>;
