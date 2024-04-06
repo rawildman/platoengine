@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <filesystem>
+
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
@@ -37,6 +39,8 @@ TEST(SharedLibObjective, CallValue)
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
     const double tMass = tSharedLib.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
+
+    std::filesystem::remove(tMeshName);
 }
 
 TEST(SharedLibObjective, CallGradient)
@@ -50,6 +54,8 @@ TEST(SharedLibObjective, CallGradient)
 
     const std::vector<double> tGold(24, 0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
+
+    std::filesystem::remove(tMeshName);
 }
 
 TEST(SharedLibObjective, ValueUsingFunction)
@@ -62,5 +68,7 @@ TEST(SharedLibObjective, ValueUsingFunction)
     pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
     const double tMass = tFunction.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
+
+    std::filesystem::remove(tMeshName);
 }
 }  // namespace plato::integration_tests::serial
