@@ -2,7 +2,7 @@ macro(clang_tidy_setup)
   if( BUILD_WITH_CLANG_TIDY )
     find_program(CLANGTIDY clang-tidy)
     if(NOT CLANGTIDY)
-      message(ERROR "Requested to build with clang-tidy, but could not find the executable. Check your path.")
+      message(FATAL_ERROR "Requested to build with clang-tidy, but could not find the executable. Check your path.")
     endif()
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     # It seems like MPI_CXX_INCLUDE_DIRS should work, but it's empty.
