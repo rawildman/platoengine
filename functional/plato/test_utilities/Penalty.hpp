@@ -4,13 +4,17 @@
 #include <cmath>
 
 #include "plato/test_utilities/TwoDTestTypes.hpp"
+#include "plato/utilities/NamedType.hpp"
 
 namespace plato::test_utilities
 {
+using XMin = utilities::NamedType<double, struct XMinTag>;
+using Exponent = utilities::NamedType<double, struct ExponentTag>;
+
 class Penalty
 {
    public:
-    Penalty(const double aXMin, const double aPower) : mXMin(aXMin), mPower(aPower) {}
+    Penalty(const XMin aXMin, const Exponent aPower) : mXMin(aXMin.mValue), mPower(aPower.mValue) {}
 
     [[nodiscard]] TwoDVector f(const double aX, const double aY) const
     {

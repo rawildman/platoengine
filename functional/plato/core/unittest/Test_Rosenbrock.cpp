@@ -43,7 +43,7 @@ TEST(Rosenbrock, RosenbrockAndPenalty)
     namespace pft = plato::test_utilities;
 
     const auto tRosenbrock = pft::Rosenbrock{1.0, 100.0};
-    const auto tPenalty = pft::Penalty{0.5 - 3, 3.0};
+    const auto tPenalty = pft::Penalty{pft::XMin{0.5 - 3}, pft::Exponent{3.0}};
 
     const auto tH = core::compose(test_utilities::make_rosenbrock_function(tRosenbrock),
                                   test_utilities::make_penalty_function(tPenalty));

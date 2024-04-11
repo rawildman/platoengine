@@ -56,8 +56,8 @@ TEST(Optimize, RosenbrockPenaltyComposition)
 
     ROL::Ptr<std::ostream> tOutStream = ROL::makePtrFromRef(std::cout);
     auto tControl = ROL::StdVector<double>{1.5, 0.5};
-    constexpr double tXMin = 0.0;
-    constexpr double tPower = 3.0;
+    constexpr auto tXMin = pft::XMin{0.0};
+    constexpr auto tPower = pft::Exponent{3.0};
     auto tObjective = plato::rol_integration::ROLObjectiveFunction{
         core::compose(utilities::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{}),
                       utilities::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower}))};

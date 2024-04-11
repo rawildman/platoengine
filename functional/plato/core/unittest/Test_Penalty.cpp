@@ -9,17 +9,17 @@ TEST(Penalty, Penalty)
 {
     namespace pft = plato::test_utilities;
 
-    constexpr double tXMin = 0.5e-2;
-    constexpr double tExponent = 2.0;
+    constexpr auto tXMin = pft::XMin{0.5e-2};
+    constexpr auto tExponent = pft::Exponent{2.0};
     const auto tPenalty = pft::Penalty{tXMin, tExponent};
 
     // Function and derivative at 1 and 0
     const pft::TwoDVector tFx = tPenalty.f(1.0, 0.0);
     EXPECT_EQ(tFx(0), 1.0);
-    EXPECT_EQ(tFx(1), tXMin);
+    EXPECT_EQ(tFx(1), tXMin.mValue);
 
     const pft::TwoDMatrix tDfx = tPenalty.df(1.0, 0.0);
-    EXPECT_EQ(tDfx(0, 0), tExponent * (1.0 - tXMin));
+    EXPECT_EQ(tDfx(0, 0), tExponent.mValue * (1.0 - tXMin.mValue));
     EXPECT_EQ(tDfx(0, 1), 0.0);
     EXPECT_EQ(tDfx(1, 0), 0.0);
     EXPECT_EQ(tDfx(1, 1), 0.0);
@@ -29,8 +29,8 @@ TEST(Penalty, MakePenalty)
 {
     namespace pft = plato::test_utilities;
 
-    constexpr double tXMin = 0.5e-2;
-    constexpr double tExponent = 2.0;
+    constexpr auto tXMin = pft::XMin{0.5e-2};
+    constexpr auto tExponent = pft::Exponent{2.0};
     const auto tPenalty = pft::Penalty{tXMin, tExponent};
     const auto tPenaltyFunction = test_utilities::make_penalty_function(tPenalty);
 
