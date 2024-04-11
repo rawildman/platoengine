@@ -113,7 +113,7 @@ std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
 {
     const unsigned int tSpatialDim = spatial_dimensions(aBulk);
     const unsigned int tNumberOfNodes = node_size(aBulk);
-    std::vector<double> tCoordinates(tNumberOfNodes * tSpatialDim, 0);
+    std::vector<double> tCoordinates(static_cast<std::size_t>(tNumberOfNodes) * tSpatialDim, 0.0);
 
     stk::mesh::EntityVector tNodeEntity;
     stk::mesh::get_entities(aBulk, stk::topology::NODE_RANK, tNodeEntity, true);
