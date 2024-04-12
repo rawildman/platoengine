@@ -7,15 +7,14 @@
 
 namespace plato::integration_tests::parallel
 {
-TEST(ParallelTestWrapper, MatchesSerial)
+TEST(ParallelTestFunctionWrapper, MatchesSerialQuadratic)
 {
-    const auto tRosenbrockFunction = utilities::make_rosenbrock_dynamic_vector_function(test_utilities::Rosenbrock{});
-    const auto tParallelRosenbrock = test_utilities::ParallelTestWrapper{tRosenbrockFunction};
+    const auto tQuadraticFunction = [](const double x) { return x * x; };
+    const auto tParallelQuadratic = test_utilities::ParallelTestFunctionWrapper<double, double>{tQuadraticFunction};
 
     const auto tComm = boost::mpi::communicator{};
     EXPECT_GT(tComm.size(), 1);
-    const auto tControl = linear_algebra::DynamicVector{1.0, -2.0};
-    EXPECT_EQ(tParallelRosenbrock.f(tControl, boost::mpi::communicator{}), tRosenbrockFunction.f(tControl));
-    EXPECT_EQ(tParallelRosenbrock.df(tControl, boost::mpi::communicator{}), tRosenbrockFunction.df(tControl));
+    constexpr auto tArg = 42.0;
+    EXPECT_EQ(tQuadraticFunction(tArg), tParallelQuadratic(tArg, tComm));
 }
 }  // namespace plato::integration_tests::parallel

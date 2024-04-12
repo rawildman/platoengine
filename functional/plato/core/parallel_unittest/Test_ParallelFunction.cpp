@@ -32,15 +32,10 @@ TEST(ParallelFunction, Rosenbrock)
     const auto tSerialFunction = make_function(tF, tDF);
 
     // Parallel
-    const auto tParallelWrappedRosenbrockFunction = ptu::ParallelTestWrapper{tSerialFunction};
-    const auto tParallelF =
-        [tParallelWrappedRosenbrockFunction](const ptu::TwoDVector& aVector, const boost::mpi::communicator aComm)
-    { return tParallelWrappedRosenbrockFunction.f(aVector, aComm); };
-    const auto tParallelDF =
-        [tParallelWrappedRosenbrockFunction](const ptu::TwoDVector& aVector, const boost::mpi::communicator aComm)
-    { return tParallelWrappedRosenbrockFunction.df(aVector, aComm); };
     const auto tComm = boost::mpi::communicator{};
-    const auto tParallelFunction = make_parallel_function(tParallelF, tParallelDF, tComm);
+    const auto tParallelFunction =
+        make_parallel_function(ptu::ParallelTestFunctionWrapper<double, const ptu::TwoDVector&>{tF},
+                               ptu::ParallelTestFunctionWrapper<ptu::TwoDVector, const ptu::TwoDVector&>{tDF}, tComm);
 
     EXPECT_GT(tComm.size(), 1);
 
