@@ -17,7 +17,7 @@ using ValidOptimizationParameters = core::ValidatedInputTypeWrapper<input_parser
 ///@param aProblem
 ///@return ROL::Solver<double>
 [[nodiscard]] ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions,
-                                                  ROL::Ptr<ROL::Problem<double>> aProblem);
+                                                  const ROL::Ptr<ROL::Problem<double>>& aProblem);
 
 ///@brief Generate a ROL::ParameterList. Either from input deck or file.
 /// First attempt is to load from a file, but if the file input is not specified the defaults

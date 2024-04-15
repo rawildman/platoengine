@@ -59,9 +59,10 @@ void SensitivityCheck::run(const library::ProcessManagerData& aProblem) const
     constexpr bool tPrintOutput = true;
 
     auto tSensitivityObjective = make_rol_sensitivity_objective(aProblem);
-    tSensitivityObjective->checkGradient(
-        rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
-        rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tPrintOutput, tOutFile);
+    const auto tInitialGuessSize = static_cast<int>(aProblem.mGeometry.mInitialGuess.size());
+    tSensitivityObjective->checkGradient(rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
+                                         rol_integration::generate_perturbation(tInitialGuessSize), tPrintOutput,
+                                         tOutFile);
 }
 
 namespace detail

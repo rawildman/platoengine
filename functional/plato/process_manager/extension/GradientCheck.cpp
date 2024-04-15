@@ -56,12 +56,11 @@ void GradientCheck::run(const library::ProcessManagerData& aProblem) const
     const LogspaceGenerator tLogspaceGenerator{mInitialDirectionMagnitude, mStepSizeReductionFactor, mNumberOfSteps};
 
     std::srand(mRandomDirectionSeed);
-    tROLProblem->getObjective()->checkGradient(
-        rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
-        rol_integration::generate_perturbation(aProblem.mGeometry.mInitialGuess.size()), tLogspaceGenerator.steps(),
-        tPrintOutput, tOutFile);
+    const auto tInitialGuessSize = static_cast<int>(aProblem.mGeometry.mInitialGuess.size());
+    tROLProblem->getObjective()->checkGradient(rol_integration::to_rol_vector(aProblem.mGeometry.mInitialGuess),
+                                               rol_integration::generate_perturbation(tInitialGuessSize),
+                                               tLogspaceGenerator.steps(), tPrintOutput, tOutFile);
 }
-
 
 namespace detail
 {

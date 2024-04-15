@@ -1,5 +1,8 @@
 include(./cmake/plato_functional_setup.cmake)
+include(./cmake/clang_tidy_setup.cmake)
+
 plato_functional_setup()
+clang_tidy_setup()
 
 add_subdirectory(./utilities)
 add_subdirectory(./input_parser)

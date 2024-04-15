@@ -32,22 +32,27 @@ TEST(STKGenerateMesh, Box)
 
 TEST(STKUtilities, NumberOfNodesAndElementsFromBulk)
 {
-    EXPECT_EQ(node_size(create_mesh("generated:2x2x2|bbox:0,0,0,1,1,1")), 27u);
-    EXPECT_EQ(element_size(create_mesh("generated:2x2x2|bbox:0,0,0,1,1,1")), 8u);
+    const auto tMesh = create_mesh("generated:2x2x2|bbox:0,0,0,1,1,1");
+    ASSERT_TRUE(tMesh);
+    EXPECT_EQ(node_size(*tMesh), 27u);
+    EXPECT_EQ(element_size(*tMesh), 8u);
 }
 
 TEST(STKUtilities, SpatialDimensions)
 {
-    EXPECT_EQ(spatial_dimensions(create_mesh("generated:2x2x2|bbox:0,0,0,1,1,1")), 3u);
+    const auto tMesh = create_mesh("generated:2x2x2|bbox:0,0,0,1,1,1");
+    ASSERT_TRUE(tMesh);
+    EXPECT_EQ(spatial_dimensions(*tMesh), 3u);
 }
 
 TEST(STKUtilities, ReadCoordinates)
 {
     const std::vector<double> gold = {0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1};
-    const auto res = nodal_coordinates(create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1"));
-
+    const auto tMesh = create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1");
+    ASSERT_TRUE(tMesh);
+    const auto res = nodal_coordinates(*tMesh);
     EXPECT_EQ(gold, res);
-    EXPECT_EQ(node_size(create_mesh("generated:1x1x1|bbox:0,0,0,1,1,1")), 8u);
+    EXPECT_EQ(node_size(*tMesh), 8u);
 }
 
 TEST(STKUtilities, WriteDensityField)

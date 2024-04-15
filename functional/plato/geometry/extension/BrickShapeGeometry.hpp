@@ -10,11 +10,6 @@
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace input_parser
-{
-struct brick_shape_geometry;
-}
-
 namespace stk::mesh
 {
 class BulkData;

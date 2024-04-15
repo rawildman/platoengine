@@ -8,11 +8,10 @@
 #include "plato/core/MeshProxy.hpp"
 #include "plato/core/ValidationRegistration.hpp"
 #include "plato/filter/library/FilterFactory.hpp"
-#include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
 
-namespace input_parser
+namespace plato::input_parser
 {
 struct density_topology;
 }

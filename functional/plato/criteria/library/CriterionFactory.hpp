@@ -35,9 +35,8 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput)
 
     const auto& tRawInput = aValidatedInput.rawInput();
     const std::string tAppName = input_parser::kCodeOptionsTable.toString(tRawInput.app.value()).value();
-    const std::optional<CriterionFunction> tCriterion =
-        core::create_object_from_factory<CriterionFunction, CriterionInput>(tAppName,
-                                                                            to_criterion_input(aValidatedInput));
+    std::optional<CriterionFunction> tCriterion = core::create_object_from_factory<CriterionFunction, CriterionInput>(
+        tAppName, to_criterion_input(aValidatedInput));
     if (tCriterion)
     {
         return std::move(tCriterion).value();

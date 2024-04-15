@@ -6,16 +6,21 @@
 #include <Kokkos_Core.hpp>
 #include <string_view>
 
+#include "plato/utilities/NamedType.hpp"
+
 namespace plato::test_utilities
 {
 namespace
 {
-void output_xml(const int aMyExitCode, const int aGroupExitCode)
+using RankExitCode = utilities::NamedType<int, struct RankExitCodeTag>;
+using GroupExitCode = utilities::NamedType<int, struct GroupExitCodeTag>;
+
+void output_xml(const RankExitCode aMyExitCode, const GroupExitCode aGroupExitCode)
 {
     int tRank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &tRank);
-    const bool tShouldOutputForSuccess = aGroupExitCode == 0 && tRank == 0;
-    const bool tShouldOutputForFailure = aMyExitCode != 0;
+    const bool tShouldOutputForSuccess = aGroupExitCode.mValue == 0 && tRank == 0;
+    const bool tShouldOutputForFailure = aMyExitCode.mValue != 0;
     const bool tShouldSilenceOutput = !(tShouldOutputForSuccess || tShouldOutputForFailure);
     if (tShouldSilenceOutput)
     {
@@ -51,8 +56,8 @@ MPI_Comm setup_children(int argc, char** argv, unsigned int aNumRanks)
         {
             std::cout << "Spawning " << aNumRanks << " new ranks" << std::endl;
             auto [tProgramName, tArguments] = program_name_and_arguments_for_mpi(argc, argv);
-            MPI_Comm_spawn(tProgramName.data(), tArguments.data(), aNumRanks, MPI_INFO_NULL, 0, MPI_COMM_WORLD,
-                           &tInterComm, tErrorCodes.data());
+            MPI_Comm_spawn(tProgramName.data(), tArguments.data(), static_cast<int>(aNumRanks), MPI_INFO_NULL, 0,
+                           MPI_COMM_WORLD, &tInterComm, tErrorCodes.data());
         }
     }
     return tInterComm;
@@ -107,7 +112,7 @@ int parallel_unit_main(int argc, char** argv, unsigned int aNumRanks)
         testing::InitGoogleTest(&argc, argv);
         const int tMyExitStatus = RUN_ALL_TESTS();
         const int tGroupExitStatus = communicate_exit_code(tInterComm, tMyExitStatus);
-        output_xml(tMyExitStatus, tGroupExitStatus);
+        output_xml(RankExitCode{tMyExitStatus}, GroupExitCode{tGroupExitStatus});
         tExitStatus = tGroupExitStatus;
     }
     else

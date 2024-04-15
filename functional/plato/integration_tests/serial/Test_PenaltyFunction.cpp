@@ -12,24 +12,24 @@ TEST(PenaltyFunction, ValueAndJacobian)
     namespace pft = plato::test_utilities;
     namespace pfitu = plato::integration_tests::utilities;
 
-    constexpr double tXMin = 0.5e-2;
-    constexpr double tPower = 2.0;
+    constexpr auto tXMin = pft::XMin{0.5e-2};
+    constexpr auto tPower = pft::Exponent{2.0};
     const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{tXMin, tPower});
 
     // Function and derivative at 1 and 0
     const auto tControl = linear_algebra::DynamicVector{1.0, 0.0};
     const linear_algebra::DynamicVector tFOfControl = tPenalty.f(tControl);
     EXPECT_EQ(tFOfControl[0], 1.0);
-    EXPECT_EQ(tFOfControl[1], tXMin);
+    EXPECT_EQ(tFOfControl[1], tXMin.mValue);
 
     const auto tdFOfControl = tPenalty.df(tControl);
-    EXPECT_EQ(tdFOfControl.mJacobian(0, 0), tPower * (1.0 - tXMin));
+    EXPECT_EQ(tdFOfControl.mJacobian(0, 0), tPower.mValue * (1.0 - tXMin.mValue));
     EXPECT_EQ(tdFOfControl.mJacobian(0, 1), 0.0);
     EXPECT_EQ(tdFOfControl.mJacobian(1, 0), 0.0);
     EXPECT_EQ(tdFOfControl.mJacobian(1, 1), 0.0);
 
     const linear_algebra::DynamicVector tColumn0 = tdFOfControl.column(0);
-    EXPECT_EQ(tColumn0[0], tPower * (1.0 - tXMin));
+    EXPECT_EQ(tColumn0[0], tPower.mValue * (1.0 - tXMin.mValue));
     EXPECT_EQ(tColumn0[1], 0.0);
 
     const linear_algebra::DynamicVector tColumn1 = tdFOfControl.column(1);
@@ -53,7 +53,7 @@ TEST(PenaltyFunction, Composition)
     namespace pft = plato::test_utilities;
     namespace pfitu = plato::integration_tests::utilities;
 
-    const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{0.0, 2.0});
+    const auto tPenalty = pfitu::make_penalty_dynamic_vector_function(pft::Penalty{pft::XMin{0.0}, pft::Exponent{2.0}});
     const auto tRosenbrock = pfitu::make_rosenbrock_dynamic_vector_function(pft::Rosenbrock{});
     const auto tComposition = core::compose(tRosenbrock, tPenalty);
 

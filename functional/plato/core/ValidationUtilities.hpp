@@ -85,7 +85,7 @@ std::vector<std::string> validate_all_variants(const input_parser::ParsedInput& 
     {
         aCurrentMessageList = std::visit(
             [tList = std::move(aCurrentMessageList)](const auto& aVariantInput) mutable -> std::vector<std::string> {
-                return core::validate(aVariantInput, std::move(tList));
+                return core::validate(aVariantInput, std::move(tList));  // NOLINT
             },
             tBlockEntry);
     }

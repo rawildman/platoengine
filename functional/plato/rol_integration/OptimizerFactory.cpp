@@ -51,9 +51,9 @@ ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimi
     }
 }
 
-ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, ROL::Ptr<ROL::Problem<double>> aROLProblem)
+ROL::Solver<double> make_rol_solver(Teuchos::ParameterList& aROLOptions, const ROL::Ptr<ROL::Problem<double>>& aROLProblem)
 {
-    return ROL::Solver<double>{std::move(aROLProblem), aROLOptions};
+    return ROL::Solver<double>{aROLProblem, aROLOptions};
 }
 
 }  // namespace plato::rol_integration
