@@ -35,9 +35,8 @@ auto rank_split_vector(const std::vector<core::ValidatedInputTypeWrapper<input_p
                        const boost::mpi::communicator& aComm)
     -> std::vector<core::ValidatedInputTypeWrapper<input_parser::objective>>
 {
-    return plato::utilities::rank_split_vector(aInputs,
-                                                           plato::utilities::RankNamedType{aComm.rank()},
-                                                           plato::utilities::SizeNamedType{aComm.size()});
+    return plato::utilities::rank_split_vector(aInputs, plato::utilities::RankNamedType{aComm.rank()},
+                                               plato::utilities::SizeNamedType{aComm.size()});
 }
 }  // namespace
 
