@@ -1,5 +1,7 @@
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 
+#include <boost/mpi/communicator.hpp>
+
 #include "plato/criteria/library/CriterionRegistration.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/utilities/Exception.hpp"
@@ -9,6 +11,12 @@ namespace plato::criteria::extension
 {
 namespace
 {
+using CreateSerialCriterionFunction =
+    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
+
+using CreateParallelCriterionFunction =
+    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&, MPI_Comm)>;
+
 SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput)
 {
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
@@ -18,26 +26,38 @@ SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::Cri
     input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
     [](const plato::criteria::library::CriterionInput& aInput)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
+
+template <typename FunctionPtr, typename... Args>
+std::unique_ptr<library::CriterionInterface> load_criterion_interface(
+    const std::filesystem::path& aSharedLibPath, const std::string_view aCreateCriterionFunctionName, Args&&... aArgs)
+{
+    void* const tSharedLibInterface = plato::utilities::load_shared_library(aSharedLibPath);
+    const auto tCreateCriterionFunction =
+        plato::utilities::load_function<FunctionPtr>(tSharedLibInterface, aCreateCriterionFunctionName, aSharedLibPath);
+    return tCreateCriterionFunction(std::forward<Args>(aArgs)...);
+}
 }  // namespace
 
 SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPath,
                                        const std::vector<std::string>& aFileNames)
-    : mSharedLibPath(aSharedLibPath)
+    : mCriterionInterface{load_criterion_interface<CreateSerialCriterionFunction>(
+          aSharedLibPath, library::kCreateCriterionFunctionName, aFileNames)}
 {
-    using CreateCriterionFunction =
-        std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
-
-    void* const tSharedLibInterface = plato::utilities::load_shared_library(aSharedLibPath);
-    const auto tCreateCriterionFunction = plato::utilities::load_function<CreateCriterionFunction>(
-        tSharedLibInterface, library::kCreateCriterionFunctionName, aSharedLibPath);
-    mCriterionFunction = tCreateCriterionFunction(aFileNames);
 }
 
-double SharedLibCriterion::f(const core::MeshProxy& aMesh) const { return mCriterionFunction->value(aMesh); }
+SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPath,
+                                       const std::vector<std::string>& aFileNames,
+                                       const boost::mpi::communicator& aComm)
+    : mCriterionInterface{load_criterion_interface<CreateParallelCriterionFunction>(
+          aSharedLibPath, library::kCreateParallelCriterionFunctionName, aFileNames, aComm)}
+{
+}
+
+double SharedLibCriterion::f(const core::MeshProxy& aMesh) const { return mCriterionInterface->value(aMesh); }
 
 linear_algebra::DynamicVector<double> SharedLibCriterion::df(const core::MeshProxy& aMesh) const
 {
-    std::vector<double> tGradient = mCriterionFunction->gradient(aMesh);
+    std::vector<double> tGradient = mCriterionInterface->gradient(aMesh);
     return linear_algebra::DynamicVector<double>(std::move(tGradient));
 }
 

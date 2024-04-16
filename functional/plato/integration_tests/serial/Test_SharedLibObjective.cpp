@@ -24,7 +24,6 @@ const std::string kSTKCommand =
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    namespace pfu = plato::utilities;
     const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
     std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
 }

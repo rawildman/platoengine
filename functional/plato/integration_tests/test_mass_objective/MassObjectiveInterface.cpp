@@ -1,31 +1,10 @@
 #include "plato/integration_tests/test_mass_objective/MassObjectiveInterface.hpp"
 
-#include <mpi.h>
-
-#include <iostream>
-
 #include "plato/integration_tests/test_mass_objective/MassObjective.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::integration_tests::test_mass_objective
 {
-MassObjectiveInterface::MassObjectiveInterface()
-{
-    int tMPIInitialized = 0;
-    MPI_Initialized(&tMPIInitialized);
-    if (tMPIInitialized == 0)
-    {
-        std::cout << "Initializing MPI in MassObjective" << std::endl;
-        int tArgc = 0;
-        char** tArgv = nullptr;
-        MPI_Init(&tArgc, &tArgv);
-    }
-    else
-    {
-        std::cout << "MPI already initialized in MassObjective" << std::endl;
-    }
-}
-
 double MassObjectiveInterface::value(const core::MeshProxy& aMeshProxy) const
 {
     constexpr double tDensity = 1.0;
