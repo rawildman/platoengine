@@ -13,25 +13,25 @@ namespace plato::core
 /// communicator. The signatures of @a aFun and @a aDFun should have two arguments, the first
 /// the argument to the function as in Function, and the second a communicator.
 template <typename F, typename DF>
-auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator aComm);
+auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator& aComm);
 
 namespace detail
 {
 template <typename F, typename R, typename Arg>
-struct ArgType<R (F::*)(Arg, boost::mpi::communicator)>
+struct ArgType<R (F::*)(Arg, const boost::mpi::communicator&)>
 {
     using type = Arg;
 };
 
 template <typename F, typename R, typename Arg>
-struct ArgType<R (F::*)(Arg, boost::mpi::communicator) const>
+struct ArgType<R (F::*)(Arg, const boost::mpi::communicator&) const>
 {
     using type = Arg;
 };
 }  // namespace detail
 
 template <typename F, typename DF>
-auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator aComm)
+auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator& aComm)
 {
     using ArgF = typename detail::ArgType<decltype(&F::operator())>::type;
     using ArgDF = typename detail::ArgType<decltype(&DF::operator())>::type;

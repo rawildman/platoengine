@@ -17,7 +17,7 @@ class ParallelTestFunctionWrapper
     template <typename F>
     ParallelTestFunctionWrapper(F aFunction);
 
-    R operator()(const Arg& aArg, boost::mpi::communicator aComm) const;
+    R operator()(const Arg& aArg, const boost::mpi::communicator& aComm) const;
 
    private:
     std::function<R(Arg)> mFunction;
@@ -25,7 +25,7 @@ class ParallelTestFunctionWrapper
 
 namespace detail
 {
-double rank_weight(const boost::mpi::communicator aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
+double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
 }  // namespace detail
 
 template <typename R, typename Arg>
@@ -35,7 +35,7 @@ ParallelTestFunctionWrapper<R, Arg>::ParallelTestFunctionWrapper(F aFunction) : 
 }
 
 template <typename R, typename Arg>
-R ParallelTestFunctionWrapper<R, Arg>::operator()(const Arg& aArg, boost::mpi::communicator aComm) const
+R ParallelTestFunctionWrapper<R, Arg>::operator()(const Arg& aArg, const boost::mpi::communicator& aComm) const
 {
     auto tResult = detail::rank_weight(aComm) * mFunction(aArg);
     boost::mpi::all_reduce(aComm, boost::mpi::inplace(tResult), std::plus<R>());
