@@ -52,13 +52,6 @@ input_parser::ParsedInput create_valid_example_input()
                                      /*.mSensitivityCheck=*/boost::none};
 }
 
-input_parser::ParsedInput create_valid_example_input_with_gradient_check()
-{
-    auto tInput = create_valid_example_input();
-    tInput.mGradientCheck = create_valid_example_gradient_check();
-    return tInput;
-}
-
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
 {
     return input_parser::brick_shape_geometry{/*.mesh_name=*/input_parser::FileName{"my_mesh.exo"}};
@@ -186,19 +179,6 @@ input_parser::gradient_check create_valid_example_gradient_check()
                                         /*.initial_direction_magnitude=*/0.5,
                                         /*.step_size_reduction_factor = */ 0.5,
                                         /*.random_direction_seed = */ 42};
-}
-
-std::string create_valid_example_gradient_check_string()
-{
-    return R"(
-          begin gradient_check
-            output_file_name gradient_check_file.txt
-            number_of_steps 12
-            step_size_reduction_factor 0.5
-            random_direction_seed 123
-            initial_direction_magnitude 0.5
-          end
-       )";
 }
 
 input_parser::sensitivity_check create_valid_example_sensitivity_check()
