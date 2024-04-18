@@ -59,14 +59,6 @@ input_parser::ParsedInput create_valid_example_input_with_gradient_check()
     return tInput;
 }
 
-input_parser::ParsedInput create_valid_shape_geometry_example_input_with_gradient_check()
-{
-    input_parser::ParsedInput tInputDeck = create_valid_example_input_with_gradient_check();
-    tInputDeck.mDensityTopology = boost::none;
-    tInputDeck.mBrickShapeGeometry = create_valid_brick_shape_geometry();
-    return tInputDeck;
-}
-
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
 {
     return input_parser::brick_shape_geometry{/*.mesh_name=*/input_parser::FileName{"my_mesh.exo"}};
@@ -171,9 +163,9 @@ std::string create_valid_example_custom_app_objective_string()
 input_parser::rol_optimization create_valid_example_rol_optimization()
 {
     return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
-                                                 /*.max_iterations =  */ 42,
-                                                 /*.step_tolerance = */ 1e-7,
-                                                 /*.gradient_tolerance = */ 1e-9};
+                                          /*.max_iterations =  */ 42,
+                                          /*.step_tolerance = */ 1e-7,
+                                          /*.gradient_tolerance = */ 1e-9};
 }
 
 std::string create_valid_example_rol_optimization_string()
