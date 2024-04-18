@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "plato/input_parser/InputBlockUtilities.hpp"
+
 namespace plato::test_utilities
 {
 void create_input_file(const std::filesystem::path& aTestFileName)
@@ -43,13 +45,8 @@ void create_input_file(const std::filesystem::path& aTestFileName)
 
 input_parser::ParsedInput create_valid_example_input()
 {
-    return input_parser::ParsedInput{/*.mObjectives=*/{create_valid_example_objective()},
-                                     /*.mConstraints=*/{create_valid_example_constraint()},
-                                     /*.mBrickShapeGeometry=*/boost::none,
-                                     /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                     /*.mROLOptimization = */ create_valid_example_rol_optimization(),
-                                     /*.mGradientCheck=*/boost::none,
-                                     /*.mSensitivityCheck=*/boost::none};
+    return create_valid_example_objective() | create_valid_example_constraint() |
+           create_valid_density_topology_geometry() | create_valid_example_rol_optimization();
 }
 
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
