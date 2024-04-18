@@ -10,30 +10,12 @@
 #include <type_traits>
 
 #include "plato/input_parser/BlockStructRule.hpp"
+#include "plato/input_parser/InputBlockTypeTraits.hpp"
 
 namespace plato::input_parser
 {
 namespace detail
 {
-/// Helper to provide the `value_type` of a std::vector or the type T if it is not a std::vector.
-template <typename T>
-struct TypeOrVectorValueType
-{
-    using type = T;
-};
-
-template <typename T, typename A>
-struct TypeOrVectorValueType<std::vector<T, A>>
-{
-    using type = typename std::vector<T, A>::value_type;
-};
-
-template <typename T>
-struct TypeOrVectorValueType<boost::optional<T>>
-{
-    using type = T;
-};
-
 /// A helper class template for obtaining the block structure type associated with
 /// a given index of ParsedInput. The BlockStruct type will be the `type` alias.
 template <std::size_t Index>
@@ -88,7 +70,6 @@ template <typename Iterator, typename AllBlockRules, std::size_t... Is>
 auto full_block_or_rule_impl(const AllBlockRules& aAllBlockRules, std::integer_sequence<std::size_t, Is...>)
     -> boost::spirit::qi::rule<Iterator, ParsedInput(), boost::spirit::ascii::space_type>
 {
-    namespace bp = boost::phoenix;
     bsq::rule<Iterator, ParsedInput(), bsa::space_type> tRule =
         *((std::get<Is>(aAllBlockRules).mBlockRule[block_semantic_action<BlockRuleTypeAt<Is, AllBlockRules>, Is>()] |
            ...));
