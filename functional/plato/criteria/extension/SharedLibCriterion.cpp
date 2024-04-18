@@ -17,13 +17,13 @@ using CreateSerialCriterionFunction =
 using CreateParallelCriterionFunction =
     std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&, MPI_Comm)>;
 
-SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput)
+[[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput)
 {
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
 }
 
-SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
-                                             const boost::mpi::communicator& aComm)
+[[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
+                                                           const boost::mpi::communicator& aComm)
 {
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList, aComm};
 }

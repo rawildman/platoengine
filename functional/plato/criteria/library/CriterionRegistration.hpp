@@ -28,8 +28,8 @@ using CriterionRegistration = core::FactoryRegistration<CriterionFunction, Crite
 using ParallelCriterionRegistration =
     core::FactoryRegistration<CriterionFunction, CriterionInput, boost::mpi::communicator>;
 
-bool is_criterion_function_registered(const std::string_view aFunctionName);
-bool is_parallel_criterion_function_registered(const std::string_view aFunctionName);
+[[nodiscard]] bool is_criterion_function_registered(const std::string_view aFunctionName);
+[[nodiscard]] bool is_parallel_criterion_function_registered(const std::string_view aFunctionName);
 
 }  // namespace plato::criteria::library
 
