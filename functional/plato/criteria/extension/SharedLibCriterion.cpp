@@ -11,21 +11,11 @@ namespace plato::criteria::extension
 {
 namespace
 {
-using CreateSerialCriterionFunction =
-    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
-
-using CreateParallelCriterionFunction =
-    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&, MPI_Comm)>;
-
-[[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput)
-{
-    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
-}
-
+template <typename... Args>
 [[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
-                                                           const boost::mpi::communicator& aComm)
+                                                           Args&&... aArgs)
 {
-    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList, aComm};
+    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
 }
 
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
@@ -47,6 +37,13 @@ std::unique_ptr<library::CriterionInterface> load_criterion_interface(
         plato::utilities::load_function<FunctionPtr>(tSharedLibInterface, aCreateCriterionFunctionName, aSharedLibPath);
     return tCreateCriterionFunction(std::forward<Args>(aArgs)...);
 }
+
+using CreateSerialCriterionFunction =
+    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&)>;
+
+using CreateParallelCriterionFunction =
+    std::add_pointer_t<std::unique_ptr<library::CriterionInterface>(const std::vector<std::string>&, MPI_Comm)>;
+
 }  // namespace
 
 SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPath,
