@@ -15,18 +15,32 @@ TEST(CriterionRegistration, NodalSum)
     EXPECT_TRUE(library::is_criterion_function_registered(tNodalSumName));
 }
 
-TEST(CriterionRegistration, VolumeConstraint)
+TEST(CriterionRegistration, Volume)
 {
-    const std::string tVolumeConstraintName =
+    const std::string tVolumeName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kVolume).value();
-    EXPECT_TRUE(library::is_criterion_function_registered(tVolumeConstraintName));
+    EXPECT_TRUE(library::is_criterion_function_registered(tVolumeName));
 }
 
-TEST(CriterionRegistration, VolumeFractionConstraint)
+TEST(CriterionRegistration, VolumeFraction)
 {
-    const std::string tVolumeFractionConstraintName =
+    const std::string tVolumeFractionName =
         input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kVolumeFraction).value();
-    EXPECT_TRUE(library::is_criterion_function_registered(tVolumeFractionConstraintName));
+    EXPECT_TRUE(library::is_criterion_function_registered(tVolumeFractionName));
+}
+
+TEST(CriterionRegistration, CustomApp)
+{
+    const std::string tCustomAppName =
+        input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
+    EXPECT_TRUE(plato::criteria::library::is_criterion_function_registered(tCustomAppName));
+}
+
+TEST(CriterionRegistration, ParallelCustomApp)
+{
+    const std::string tCustomAppName =
+        input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value();
+    EXPECT_TRUE(plato::criteria::library::is_parallel_criterion_function_registered(tCustomAppName));
 }
 
 }  // namespace plato::criteria::extension::unittest

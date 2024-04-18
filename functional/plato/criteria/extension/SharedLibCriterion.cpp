@@ -22,10 +22,21 @@ SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::Cri
     return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList};
 }
 
+SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
+                                             const boost::mpi::communicator& aComm)
+{
+    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList, aComm};
+}
+
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
     input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
     [](const plato::criteria::library::CriterionInput& aInput)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
+
+[[maybe_unused]] static auto kParallelCustomAppRegistration = library::ParallelCriterionRegistration{
+    input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
+    [](const plato::criteria::library::CriterionInput& aInput, const boost::mpi::communicator& aComm)
+    { return make_shared_lib_function(make_shared_lib_criterion(aInput, aComm)); }};
 
 template <typename FunctionPtr, typename... Args>
 std::unique_ptr<library::CriterionInterface> load_criterion_interface(

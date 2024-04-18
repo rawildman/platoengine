@@ -52,6 +52,7 @@ TEST(FactoryRegistration, IsRegistered)
     EXPECT_TRUE((is_factory_function_registered<TestFactoryObject, TestFactoryInput>(kBPositive)));
     EXPECT_FALSE((is_factory_function_registered<TestFactoryObject, TestFactoryInput>("ab")));
     EXPECT_TRUE((is_factory_function_registered<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>(kBPositive)));
+    EXPECT_FALSE((is_factory_function_registered<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>(kONegative)));
 }
 
 TEST(FactoryRegistration, CreateObjectO)
