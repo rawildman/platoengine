@@ -1,7 +1,6 @@
 #ifndef PLATO_TEST_UTILITIES_INPUTGENERATION
 #define PLATO_TEST_UTILITIES_INPUTGENERATION
 
-#include <filesystem>
 #include <string>
 #include <string_view>
 
@@ -9,8 +8,6 @@
 
 namespace plato::test_utilities
 {
-void create_input_file(const std::filesystem::path& aTestFileName);
-
 [[nodiscard]] input_parser::ParsedInput create_valid_example_input();
 [[nodiscard]] std::string create_valid_example_input_string();
 
