@@ -9,7 +9,6 @@
 namespace plato::test_utilities
 {
 [[nodiscard]] input_parser::ParsedInput create_valid_example_input();
-[[nodiscard]] std::string create_valid_example_input_string();
 
 [[nodiscard]] input_parser::brick_shape_geometry create_valid_brick_shape_geometry();
 [[nodiscard]] std::string create_valid_brick_shape_geometry_string();
@@ -19,7 +18,6 @@ namespace plato::test_utilities
 
 [[nodiscard]] input_parser::objective create_valid_example_objective();
 [[nodiscard]] std::string create_valid_example_objective_string();
-[[nodiscard]] std::string create_valid_example_custom_app_objective_string();
 
 [[nodiscard]] input_parser::constraint create_valid_example_constraint();
 [[nodiscard]] std::string create_valid_example_constraint_string();
@@ -30,7 +28,6 @@ namespace plato::test_utilities
 [[nodiscard]] input_parser::gradient_check create_valid_example_gradient_check();
 
 [[nodiscard]] input_parser::sensitivity_check create_valid_example_sensitivity_check();
-[[nodiscard]] std::string create_valid_example_sensitivity_check_string();
 
 }  // namespace plato::test_utilities
 #endif

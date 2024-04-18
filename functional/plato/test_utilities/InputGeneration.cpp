@@ -7,16 +7,6 @@
 namespace plato::test_utilities
 {
 
-[[nodiscard]] std::string create_valid_example_input_string()
-{
-    const std::string tConstraintInput = create_valid_example_constraint_string();
-    const std::string tObjectiveInput = create_valid_example_objective_string();
-    const std::string tGeometryInput = create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = create_valid_example_rol_optimization_string();
-
-    return tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput;
-}
-
 input_parser::ParsedInput create_valid_example_input()
 {
     return create_valid_example_objective() | create_valid_example_constraint() |
@@ -109,21 +99,6 @@ std::string create_valid_example_objective_string()
        )";
 }
 
-std::string create_valid_example_custom_app_objective_string()
-{
-    return R"(
-          begin objective test
-            active true
-            app custom_app
-            shared_library_path /path/to/nothing.so
-            number_of_processors 13
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-       )";
-}
-
 input_parser::rol_optimization create_valid_example_rol_optimization()
 {
     return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
@@ -155,15 +130,6 @@ input_parser::gradient_check create_valid_example_gradient_check()
 input_parser::sensitivity_check create_valid_example_sensitivity_check()
 {
     return input_parser::sensitivity_check{/*.output_file_name=*/input_parser::FileName{"sensitivity_check.txt"}};
-}
-
-std::string create_valid_example_sensitivity_check_string()
-{
-    return R"(
-          begin sensitivity_check
-            output_file_name sensitivity_check_file.txt
-          end
-       )";
 }
 
 }  // namespace plato::test_utilities
