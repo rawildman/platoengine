@@ -31,4 +31,50 @@ TEST(Utilities, EmptyVector)
     EXPECT_TRUE(tResult.empty());
 }
 
+TEST(Utilities, ConcatenateStringLValues)
+{
+    const auto str1 = std::string{"one"};
+    const auto str2 = std::string{"fish"};
+    const auto result = concatenate(str1, str2);
+    EXPECT_EQ(result, "onefish");
+}
+
+TEST(Utilities, ConcatenateStringRValues)
+{
+    auto str1 = std::string{"two"};
+    const auto result = concatenate(std::move(str1), std::string{"fish"});
+    EXPECT_EQ(result, "twofish");
+}
+
+TEST(Utilities, ConcatenateStringCharStar)
+{
+    const auto str1 = "red";
+    const auto result = concatenate(str1, "fish");
+    EXPECT_EQ(result, "redfish");
+}
+
+TEST(Utilities, ConcatenateStringView)
+{
+    const auto str1 = std::string_view{"blue"};
+    const auto result = concatenate(str1, std::string_view{"fish"});
+    EXPECT_EQ(result, "bluefish");
+}
+
+TEST(Utilities, ConcatenateStringsAndNumbers)
+{
+    const auto one = int{1};
+    const auto fish = "fish";
+    const auto two = unsigned{2};
+    const auto result = concatenate(one, fish, two, fish);
+    EXPECT_EQ(result, "1fish2fish");
+}
+
+TEST(Utilities, ConcatenateStringsChar)
+{
+    const auto f = char{'f'};
+    const auto i = char{'i'};
+    const auto result = concatenate(f, i, 's', 'h');
+    EXPECT_EQ(result, "fish");
+}
+
 }  // namespace plato::utilities::unittest
