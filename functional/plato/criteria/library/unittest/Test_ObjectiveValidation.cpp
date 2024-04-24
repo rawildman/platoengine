@@ -7,6 +7,34 @@
 
 namespace plato::criteria::library::unittest
 {
+TEST(ObjectiveFactory, ParallelObjectives)
+{
+    auto tInput = test_utilities::create_valid_example_input();
+    {
+        // Check example, which sets number_of_processors to 42
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 42u);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(tInput.mObjectives));
+    }
+    {
+        // Set number_of_processors to boost::none, default is 1
+        tInput.mObjectives.front().number_of_processors = boost::none;
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 1u);
+        EXPECT_FALSE(criteria::library::has_parallel_objective(tInput.mObjectives));
+    }
+    {
+        // Set number_of_processors to 1
+        tInput.mObjectives.front().number_of_processors = 1u;
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 1u);
+        EXPECT_FALSE(criteria::library::has_parallel_objective(tInput.mObjectives));
+    }
+    {
+        // Add another objective with 42 processors
+        tInput.mObjectives.push_back(test_utilities::create_valid_example_objective());
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 43u);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(tInput.mObjectives));
+    }
+}
+
 TEST(ObjectiveValidation, ValidateAggregationWeight)
 {
     namespace pfcd = plato::criteria::library::detail;

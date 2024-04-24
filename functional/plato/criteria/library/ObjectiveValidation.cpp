@@ -1,6 +1,8 @@
 #include "plato/criteria/library/ObjectiveValidation.hpp"
 
+#include <algorithm>
 #include <boost/mpi/communicator.hpp>
+#include <numeric>
 
 #include "plato/criteria/library/CriterionValidation.hpp"
 
@@ -23,6 +25,19 @@ std::vector<std::string> validate_objectives(const std::vector<input_parser::obj
                                              std::vector<std::string>&& aCurrentMessageList)
 {
     return detail::validate_criteria(aInput, std::move(aCurrentMessageList));
+}
+
+bool has_parallel_objective(const std::vector<input_parser::objective>& aInput)
+{
+    return std::any_of(aInput.begin(), aInput.end(),
+                       [](const auto& aObjectiveInput) { return aObjectiveInput.number_of_processors > 1u; });
+}
+
+unsigned int total_number_of_processors(const std::vector<input_parser::objective>& aInput)
+{
+    return std::accumulate(aInput.begin(), aInput.end(), 0u,
+                           [](const unsigned int aTotal, const auto& aObjectiveInput)
+                           { return aTotal + aObjectiveInput.number_of_processors.value_or(1u); });
 }
 
 namespace detail

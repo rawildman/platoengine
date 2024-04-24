@@ -30,15 +30,6 @@ namespace detail
 
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);
 
-/// @brief Returns `true` if any objective input in @a aInput has a value of more than one in its
-///  `number_of_processors` field.
-[[nodiscard]] bool has_parallel_objective(const ValidatedObjectives& aInput);
-
-/// @brief Returns the total number of required ranks for all objectives specified in @a aInput.
-///
-/// Specifically, this sums all `number_of_processors` fields in each objective input.
-[[nodiscard]] unsigned int total_number_of_processors(const ValidatedObjectives& aInput);
-
 }  // namespace plato::criteria::library
 
 #endif
