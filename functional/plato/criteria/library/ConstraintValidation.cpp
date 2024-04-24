@@ -3,6 +3,7 @@
 #include <string>
 
 #include "plato/criteria/library/CriterionValidation.hpp"
+#include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::library
 {
@@ -32,8 +33,8 @@ std::optional<std::string> validate_constraint_number_of_processors(const input_
         aInput.number_of_processors.value() != kSupportedNumberOfProcessorsForConstraint)
     {
         return std::optional<std::string>{
-            "Constraints currently only support serial evaluation. " + criterion_name(aInput) + " requested " +
-            std::to_string(aInput.number_of_processors.value()) + " number_of_processors."};
+            utilities::concatenate("Constraints currently only support serial evaluation. ", criterion_name(aInput),
+                                   " requested ", aInput.number_of_processors.value(), " number_of_processors.")};
     }
     else
     {
