@@ -1,6 +1,7 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 
 #include <boost/mpi/communicator.hpp>
+#include <numeric>
 
 #include "plato/core/ValidatedInputTypeWrapper.hpp"
 #include "plato/core/ValidationUtilities.hpp"
@@ -64,6 +65,13 @@ bool has_parallel_objective(const ValidatedObjectives& aInput)
     return std::any_of(aInput.rawInput().begin(), aInput.rawInput().end(),
                        [](const auto& aObjectiveInput)
                        { return aObjectiveInput.rawInput().number_of_processors > 1u; });
+}
+
+unsigned int total_number_of_processors(const ValidatedObjectives& aInput)
+{
+    return std::accumulate(aInput.rawInput().begin(), aInput.rawInput().end(), 0u,
+                           [](const unsigned int aTotal, const auto& aObjectiveInput)
+                           { return aTotal + aObjectiveInput.rawInput().number_of_processors.value_or(1u); });
 }
 
 }  // namespace plato::criteria::library

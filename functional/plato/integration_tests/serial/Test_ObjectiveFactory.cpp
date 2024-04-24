@@ -88,23 +88,34 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     EXPECT_EQ(tAggregate.weights(), tExpected);
 }
 
-TEST(ObjectiveFactory, HasParallelObjective)
+TEST(ObjectiveFactory, ParallelObjectives)
 {
     auto tInput = test_utilities::create_valid_example_input();
     {
+        // Check example, which sets number_of_processors to 42
         const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
-        EXPECT_TRUE(criteria::library::has_parallel_objective(
-            tValidatedInput.objectives()));  // Example objective asks for 42 processors
+        EXPECT_EQ(criteria::library::total_number_of_processors(tValidatedInput.objectives()), 42u);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
     }
     {
-        tInput.mObjectives.front().number_of_processors = 1u;
+        // Set number_of_processors to boost::none, default is 1
+        tInput.mObjectives.front().number_of_processors = boost::none;
         const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_EQ(criteria::library::total_number_of_processors(tValidatedInput.objectives()), 1u);
         EXPECT_FALSE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
     }
     {
+        // Set number_of_processors to 1
         tInput.mObjectives.front().number_of_processors = 1u;
+        const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_EQ(criteria::library::total_number_of_processors(tValidatedInput.objectives()), 1u);
+        EXPECT_FALSE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
+    }
+    {
+        // Add another objective with 42 processors
         tInput.mObjectives.push_back(test_utilities::create_valid_example_objective());
         const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_EQ(criteria::library::total_number_of_processors(tValidatedInput.objectives()), 43u);
         EXPECT_TRUE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
     }
 }
