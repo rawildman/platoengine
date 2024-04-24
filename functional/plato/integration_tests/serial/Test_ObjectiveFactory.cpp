@@ -87,4 +87,26 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
 }
+
+TEST(ObjectiveFactory, HasParallelObjective)
+{
+    auto tInput = test_utilities::create_valid_example_input();
+    {
+        const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(
+            tValidatedInput.objectives()));  // Example objective asks for 42 processors
+    }
+    {
+        tInput.mObjectives.front().number_of_processors = 1u;
+        const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_FALSE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
+    }
+    {
+        tInput.mObjectives.front().number_of_processors = 1u;
+        tInput.mObjectives.push_back(test_utilities::create_valid_example_objective());
+        const auto tValidatedInput = process_manager::library::make_validated_input(tInput);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(tValidatedInput.objectives()));
+    }
+}
+
 }  // namespace plato::integration_tests::serial
