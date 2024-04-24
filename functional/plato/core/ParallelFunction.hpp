@@ -3,40 +3,33 @@
 
 #include <boost/mpi/communicator.hpp>
 
+#include "plato/core/Compose.hpp"
 #include "plato/core/Function.hpp"
 
 namespace plato::core
 {
-/// @brief Wraps a function and its derivative that require a communicator in a Function.
+/// @brief Wraps a Function so that only rank 0 returns the objective value and gradient.
 ///
-/// The purpose of this function is to create a Function that runs in parallel with a specific
-/// communicator. The signatures of @a aFun and @a aDFun should have two arguments, the first
-/// the argument to the function as in Function, and the second a communicator.
-template <typename F, typename DF>
-auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator& aComm);
+/// The purpose of this function is to help create a Function that runs in parallel with a specific
+/// communicator. The Aggregate classes use all_reduce to sum objectives and gradients, which would
+/// not be correct for parallelized Function objects that return the same value on all ranks. This
+/// uses @a aComm so that only rank 0 on @a aComm returns the value, and the other ranks return 0.
+template <typename F>
+auto adapt_parallel_function(F aFun, const boost::mpi::communicator& aComm);
 
 namespace detail
 {
-template <typename F, typename R, typename Arg>
-struct ArgType<R (F::*)(Arg, const boost::mpi::communicator&)>
-{
-    using type = Arg;
-};
-
-template <typename F, typename R, typename Arg>
-struct ArgType<R (F::*)(Arg, const boost::mpi::communicator&) const>
-{
-    using type = Arg;
-};
+double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
 }  // namespace detail
 
-template <typename F, typename DF>
-auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator& aComm)
+template <typename F>
+auto adapt_parallel_function(F aFun, const boost::mpi::communicator& aComm)
 {
-    using ArgF = typename detail::ArgType<decltype(&F::operator())>::type;
-    using ArgDF = typename detail::ArgType<decltype(&DF::operator())>::type;
-    return make_function([tComm = aComm, tFun = std::move(aFun)](ArgF aArg) { return tFun(aArg, tComm); },
-                         [tComm = aComm, tDFun = std::move(aDFun)](ArgDF aArg) { return tDFun(aArg, tComm); });
+    const auto tParallelAdapter = make_function(
+        [tComm = aComm](const typename F::FunctionReturn& aArg) { return detail::rank_weight(tComm) * aArg; },
+        [tComm = aComm](const typename F::FunctionReturn&) { return detail::rank_weight(tComm); });
+
+    return core::compose(tParallelAdapter, std::move(aFun));
 }
 
 }  // namespace plato::core
