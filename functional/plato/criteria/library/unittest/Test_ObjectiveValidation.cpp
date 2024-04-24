@@ -11,9 +11,9 @@ TEST(ObjectiveFactory, ParallelObjectives)
 {
     auto tInput = test_utilities::create_valid_example_input();
     {
-        // Check example, which sets number_of_processors to 42
-        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 42u);
-        EXPECT_TRUE(criteria::library::has_parallel_objective(tInput.mObjectives));
+        // Check example, which sets number_of_processors to 1
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 1u);
+        EXPECT_FALSE(criteria::library::has_parallel_objective(tInput.mObjectives));
     }
     {
         // Set number_of_processors to boost::none, default is 1
@@ -22,13 +22,13 @@ TEST(ObjectiveFactory, ParallelObjectives)
         EXPECT_FALSE(criteria::library::has_parallel_objective(tInput.mObjectives));
     }
     {
-        // Set number_of_processors to 1
-        tInput.mObjectives.front().number_of_processors = 1u;
-        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 1u);
-        EXPECT_FALSE(criteria::library::has_parallel_objective(tInput.mObjectives));
+        // Set number_of_processors to 42
+        tInput.mObjectives.front().number_of_processors = 42u;
+        EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 42u);
+        EXPECT_TRUE(criteria::library::has_parallel_objective(tInput.mObjectives));
     }
     {
-        // Add another objective with 42 processors
+        // Add another objective with 1 processor
         tInput.mObjectives.push_back(test_utilities::create_valid_example_objective());
         EXPECT_EQ(criteria::library::total_number_of_processors(tInput.mObjectives), 43u);
         EXPECT_TRUE(criteria::library::has_parallel_objective(tInput.mObjectives));
@@ -64,11 +64,12 @@ TEST(ObjectiveValidation, ValidateAtLeastOneObjective)
 
 TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
-    namespace pfcd = plato::criteria::library::detail;
-
     // One objective and one rank
     input_parser::objective tObjective;
-    EXPECT_FALSE(pfcd::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
+    EXPECT_FALSE(detail::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
+    // Change to 2, should now be invalid
+    tObjective.number_of_processors = 2u;
+    EXPECT_TRUE(detail::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
 }
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)

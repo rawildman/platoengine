@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <boost/mpi/communicator.hpp>
 #include <numeric>
+#include <optional>
 
 #include "plato/criteria/library/CriterionValidation.hpp"
+#include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::library
 {
@@ -68,14 +70,34 @@ std::optional<std::string> validate_at_least_one_objective(const std::vector<inp
 
 std::optional<std::string> validate_number_of_ranks_vs_objectives(const std::vector<input_parser::objective>& aInput)
 {
-    const auto tNumRanks = boost::mpi::communicator{}.size();
-    if (tNumRanks < 0 || static_cast<std::size_t>(tNumRanks) > aInput.size())
+    const auto tNumRanks = static_cast<std::size_t>(boost::mpi::communicator{}.size());
+    if (has_parallel_objective(aInput))
     {
-        return "The number of MPI ranks exceeds the number of objectives.";
+        const auto tTotalProcessors = total_number_of_processors(aInput);
+        if (tTotalProcessors != tNumRanks)
+        {
+            return std::optional<std::string>{utilities::concatenate(
+                "The number of MPI ranks must match the number of requested processors for parallelized "
+                "objectives.\n Number of ranks: ",
+                tNumRanks, "\n Number of processors needed for objectives: ", tTotalProcessors)};
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
     else
     {
-        return std::nullopt;
+        if (tNumRanks < 0 || static_cast<std::size_t>(tNumRanks) > aInput.size())
+        {
+            return std::optional<std::string>{utilities::concatenate(
+                "The number of MPI ranks exceeds the number of objectives.\n Number of ranks: ", tNumRanks,
+                "\n Number of processors needed for objectives: ", aInput.size())};
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
 }
 
