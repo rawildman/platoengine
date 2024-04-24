@@ -11,15 +11,16 @@ namespace plato::core
 /// @brief Wraps a Function so that only rank 0 returns the objective value and gradient.
 ///
 /// The purpose of this function is to help create a Function that runs in parallel with a specific
-/// communicator. The Aggregate classes use all_reduce to sum objectives and gradients, which would
-/// not be correct for parallelized Function objects that return the same value on all ranks. This
-/// uses @a aComm so that only rank 0 on @a aComm returns the value, and the other ranks return 0.
+/// communicator and adapt it to the behavior of the Aggregate classes. The Aggregate classes use
+/// all_reduce to sum objectives and gradients, which would not be correct for parallelized Function
+/// objects that return the same value on all ranks. This uses @a aComm so that only rank 0 on @a aComm
+/// returns the value, and the other ranks return 0.
 template <typename F>
-auto adapt_parallel_function(F aFun, const boost::mpi::communicator& aComm);
+[[nodiscard]] auto adapt_parallel_function(F aFun, const boost::mpi::communicator& aComm);
 
 namespace detail
 {
-double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
+[[nodiscard]] double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
 }  // namespace detail
 
 template <typename F>
