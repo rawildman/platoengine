@@ -3,6 +3,9 @@
 
 #include <array>
 #include <boost/mpi/communicator.hpp>
+#include <boost/numeric/conversion/cast.hpp>
+#include <iterator>
+#include <numeric>
 #include <type_traits>
 #include <vector>
 
@@ -12,8 +15,10 @@ namespace plato::utilities
 {
 using RankType = decltype(std::declval<const boost::mpi::communicator&>().rank());
 using SizeType = decltype(std::declval<const boost::mpi::communicator&>().size());
+using ColorType = int;
 using RankNamedType = NamedType<RankType, struct RankTypeTag>;
 using SizeNamedType = NamedType<SizeType, struct SizeTypeTag>;
+using ColorNamedType = NamedType<ColorType, struct ColorTypeTag>;
 
 /// @brief Splits the elements of @a aVector among available ranks on communicator @a aComm.
 ///
@@ -26,8 +31,24 @@ using SizeNamedType = NamedType<SizeType, struct SizeTypeTag>;
 /// more than `ceil(aVector.size() / num_ranks)` elements.
 ///
 /// @note No communication is performed, it is assumed that @a aVector is the same on all ranks.
+/// @pre @a aRank must be less than @a aSize
 template <typename T>
-std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize);
+[[nodiscard]] std::vector<T> rank_split_vector(const std::vector<T>& aVector,
+                                               const RankNamedType aRank,
+                                               const SizeNamedType aSize);
+
+/// @brief Determines the group color (ID) corresponding to @a aRank.
+///
+/// For a given set of group sizes (given in @a aGroupSizes ), the group ID (or color in MPI terminology)
+/// is found by allocating each rank to a group in increasing order of rank. For example, if the group
+/// sizes are `{3, 2, 1}`, then ranks 0, 1, and 2 will have color 0, ranks 3 and 4 will have color 1,
+/// and rank 5 will have color 2.
+///
+/// @pre @a aRank must be less than the sum of the entries of @a aGroupSizes.
+/// @pre All entries of @a aGroupSizes must be 1 or greater.
+/// @post The returned color will be less than the size of @a aGroupSizes
+template <typename T>
+[[nodiscard]] ColorNamedType rank_group_color(const std::vector<unsigned int>& aGroupSizes, const RankNamedType aRank);
 
 namespace detail
 {
@@ -52,6 +73,8 @@ bool assign_remainder_element_to_rank(const RankNamedType aRank, const T aRemain
 template <typename T>
 std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedType aRank, const SizeNamedType aSize)
 {
+    assert(aRank.mValue < aSize.mValue);
+
     auto tDistributedVector = std::vector<T>{};
     const auto [tNumElementsPerRank, tRemainder] = detail::num_elements_per_rank(aVector.size(), aSize.mValue);
     const auto tFirstIndex = aRank.mValue * tNumElementsPerRank;
@@ -67,6 +90,24 @@ std::vector<T> rank_split_vector(const std::vector<T>& aVector, const RankNamedT
     }
     return tDistributedVector;
 }
+
+ColorNamedType rank_group_color(const std::vector<unsigned int>& aGroupSizes, const RankNamedType aRank)
+{
+    const auto tTotalSize = std::accumulate(aGroupSizes.cbegin(), aGroupSizes.cend(), 0u);
+    assert(aRank.mValue >= 0);
+    const auto tUnsignedRank = boost::numeric_cast<unsigned int>(aRank.mValue);
+    assert(tUnsignedRank < tTotalSize);
+
+    auto tPartialSums = std::vector<unsigned int>{};
+    tPartialSums.reserve(aGroupSizes.size());
+    std::partial_sum(aGroupSizes.cbegin(), aGroupSizes.cend(), std::back_inserter(tPartialSums));
+    const auto tGroupIter =
+        std::find_if(tPartialSums.cbegin(), tPartialSums.cend(),
+                     [tUnsignedRank](const auto aGroupTotal) { return tUnsignedRank < aGroupTotal; });
+    const auto tGroupColor = std::distance(tPartialSums.cbegin(), tGroupIter);
+    return ColorNamedType{boost::numeric_cast<ColorType>(tGroupColor)};
+}
+
 }  // namespace plato::utilities
 
 #endif

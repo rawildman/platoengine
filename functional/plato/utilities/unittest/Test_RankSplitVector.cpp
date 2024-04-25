@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <numeric>
+
 #include "plato/utilities/RankSplitVector.hpp"
 
 namespace plato::utilities::unittest
@@ -62,4 +64,37 @@ TEST(RankSplitVector, MoreRanksThanElements)
     split_vector_and_check(tValues, 1, {2});
     split_vector_and_check(tValues, 2, {});
 }
+
+TEST(RankGroupColor, OneRankPerGroup)
+{
+    // Ranks and colors should be identical
+    for (const auto tRank : {0, 1, 2})
+    {
+        const ColorNamedType tColor = utilities::rank_group_color({1, 1, 1}, RankNamedType{tRank});
+        EXPECT_EQ(tColor.mValue, tRank);
+    }
+}
+
+TEST(RankGroupColor, IncreasingGroupSize)
+{
+    const auto tGroups = std::vector{1u, 2u, 3u};
+    {
+        const ColorNamedType tColor = utilities::rank_group_color(tGroups, RankNamedType{0});
+        constexpr auto tExpectedColor = int{0};
+        EXPECT_EQ(tColor.mValue, tExpectedColor);
+    }
+    for (const auto tRank : {1, 2})
+    {
+        constexpr auto tExpectedColor = int{1};
+        const ColorNamedType tColor = utilities::rank_group_color(tGroups, RankNamedType{tRank});
+        EXPECT_EQ(tColor.mValue, tExpectedColor);
+    }
+    for (const auto tRank : {3, 4, 5})
+    {
+        constexpr auto tExpectedColor = int{2};
+        const ColorNamedType tColor = utilities::rank_group_color(tGroups, RankNamedType{tRank});
+        EXPECT_EQ(tColor.mValue, tExpectedColor);
+    }
+}
+
 }  // namespace plato::utilities::unittest
