@@ -5,6 +5,7 @@
 #include "plato/core/Function.hpp"
 #include "plato/core/ParallelFunction.hpp"
 #include "plato/core/test_utilities/Utilities.hpp"
+#include "plato/test_utilities/ParallelFunction.hpp"
 #include "plato/test_utilities/ParallelTestWrapper.hpp"
 #include "plato/test_utilities/Rosenbrock.hpp"
 #include "plato/test_utilities/TwoDTestTypes.hpp"
@@ -12,35 +13,6 @@
 
 namespace plato::core::parallel_unittest
 {
-namespace
-{
-template <typename F>
-struct ParallelArgType
-{
-};
-
-template <typename F, typename R, typename Arg>
-struct ParallelArgType<R (F::*)(Arg, const boost::mpi::communicator&)>
-{
-    using type = Arg;
-};
-
-template <typename F, typename R, typename Arg>
-struct ParallelArgType<R (F::*)(Arg, const boost::mpi::communicator&) const>
-{
-    using type = Arg;
-};
-
-template <typename F, typename DF>
-auto make_parallel_function(F aFun, DF aDFun, const boost::mpi::communicator& aComm)
-{
-    using ArgF = typename ParallelArgType<decltype(&F::operator())>::type;
-    using ArgDF = typename ParallelArgType<decltype(&DF::operator())>::type;
-    return make_function([tComm = aComm, tFun = std::move(aFun)](ArgF aArg) { return tFun(aArg, tComm); },
-                         [tComm = aComm, tDFun = std::move(aDFun)](ArgDF aArg) { return tDFun(aArg, tComm); });
-}
-}  // namespace
-
 TEST(ParallelFunction, AdaptRosenbrock)
 {
     namespace ptu = plato::test_utilities;
@@ -57,9 +29,9 @@ TEST(ParallelFunction, AdaptRosenbrock)
 
     // Parallel
     const auto tComm = boost::mpi::communicator{};
-    const auto tParallelFunction =
-        make_parallel_function(ptu::ParallelTestFunctionWrapper<double, const ptu::TwoDVector&>{tF},
-                               ptu::ParallelTestFunctionWrapper<ptu::TwoDVector, const ptu::TwoDVector&>{tDF}, tComm);
+    const auto tParallelFunction = ptu::make_parallel_function(
+        ptu::ParallelTestFunctionWrapper<double, const ptu::TwoDVector&>{tF},
+        ptu::ParallelTestFunctionWrapper<ptu::TwoDVector, const ptu::TwoDVector&>{tDF}, tComm);
 
     const auto tAdaptedParallelFunction = core::adapt_parallel_function(tParallelFunction, tComm);
 

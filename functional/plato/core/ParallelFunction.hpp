@@ -20,7 +20,7 @@ template <typename F>
 
 namespace detail
 {
-[[nodiscard]] double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
+[[nodiscard]] inline double rank_weight(const boost::mpi::communicator& aComm) { return aComm.rank() == 0 ? 1.0 : 0.0; }
 }  // namespace detail
 
 template <typename F>
