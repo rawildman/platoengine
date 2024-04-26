@@ -4,6 +4,7 @@
 #include <boost/fusion/include/at_c.hpp>
 #include <boost/fusion/include/at_key.hpp>
 #include <boost/phoenix.hpp>
+#include <boost/spirit/home/support/common_terminals.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <tuple>
 #include <type_traits>
@@ -107,7 +108,8 @@ struct BlockStructRule
 
     std::string mBlockType = InputTypeName<BlockStruct>::name;
 
-    bsq::rule<Iterator, void(), bsa::space_type> mPreambleRule = bsq::lit("begin") >> bsq::lit(mBlockType);
+    bsq::rule<Iterator, void(), bsa::space_type> mPreambleRule =
+        bsq::lit("begin") >> bsq::lexeme[bsq::lit(mBlockType) >> !bsq::graph];
     bsq::rule<Iterator, void(), bsa::space_type> mPostambleRule = bsq::lit("end");
     BlockRuleTuple<Iterator, BlockStruct> mAllBlockRules = rule_tuple<Iterator, BlockStruct>();
     bsq::rule<Iterator, BlockStruct(), bsa::space_type> mBlockOrRule =
