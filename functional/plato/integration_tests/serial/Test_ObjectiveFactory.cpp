@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "plato/criteria/library/ObjectiveFactory.hpp"
+#include "plato/integration_tests/utilities/CheckProcessorsMatchObjectives.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/utilities/Exception.hpp"
+#include "plato/utilities/Zip.hpp"
 
 namespace plato::integration_tests::serial
 {
@@ -86,6 +88,24 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
 
     const std::vector tExpected = {13.0};
     EXPECT_EQ(tAggregate.weights(), tExpected);
+}
+
+TEST(ObjectiveFactory, NumberOfProcessors)
+{
+    auto tInput = test_utilities::create_valid_example_input();
+    {
+        // Check example, which sets number_of_processors to 1
+        auto tValidInput = process_manager::library::make_validated_input(tInput);
+        utilities::check_processors_match_objectives(
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+    }
+    {
+        // Set number_of_processors to boost::none, default is 1
+        tInput.mObjectives.front().number_of_processors = boost::none;
+        auto tValidInput = process_manager::library::make_validated_input(tInput);
+        utilities::check_processors_match_objectives(
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+    }
 }
 
 }  // namespace plato::integration_tests::serial

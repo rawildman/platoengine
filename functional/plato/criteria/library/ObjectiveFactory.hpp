@@ -30,6 +30,11 @@ namespace detail
 
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);
 
+/// @brief Returns the number of processors required for each objective.
+/// @post The size of the returned vector is the same as @a aInput.
+/// @post The order of the entries in the returned vector matches the order of the entries in @a aInput.
+[[nodiscard]] std::vector<unsigned int> number_of_processors_per_objective(const ValidatedObjectives& aInput);
+
 }  // namespace plato::criteria::library
 
 #endif

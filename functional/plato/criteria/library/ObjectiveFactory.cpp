@@ -60,4 +60,13 @@ ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& a
     return make_aggregate_function(detail::make_parallel_aggregate(aInput));
 }
 
+std::vector<unsigned int> number_of_processors_per_objective(const ValidatedObjectives& aInput)
+{
+    auto tNumberOfProcessors = std::vector<unsigned int>{};
+    tNumberOfProcessors.reserve(aInput.rawInput().size());
+    std::transform(aInput.rawInput().cbegin(), aInput.rawInput().cend(), std::back_inserter(tNumberOfProcessors),
+                   [](const auto& aObjective) { return aObjective.rawInput().number_of_processors.value_or(1u); });
+    return tNumberOfProcessors;
+}
+
 }  // namespace plato::criteria::library

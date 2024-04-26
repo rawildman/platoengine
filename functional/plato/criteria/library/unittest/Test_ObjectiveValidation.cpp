@@ -7,7 +7,7 @@
 
 namespace plato::criteria::library::unittest
 {
-TEST(ObjectiveFactory, ParallelObjectives)
+TEST(ObjectiveValidation, ParallelObjectives)
 {
     auto tInput = test_utilities::create_valid_example_input();
     {
