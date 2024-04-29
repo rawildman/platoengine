@@ -15,7 +15,6 @@ namespace plato::input_parser
 template <typename Input>
 [[nodiscard]] ParsedInput operator|(ParsedInput&& aParsedInput, const Input& aInput)
 {
-    auto filter = boost::fusion::filter_view<ParsedInput, boost::is_same<Input, boost::mpl::arg<1>>>{aParsedInput};
     boost::fusion::for_each(aParsedInput,
                             [aInput](auto& field)
                             {
