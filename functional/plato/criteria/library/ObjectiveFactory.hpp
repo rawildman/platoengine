@@ -24,6 +24,11 @@ using ParallelAggregateObjective =
 /// @brief Creates the objectives function from the objectives defined in @a aInput.
 ///
 /// The objective function is the weighted sum of all objectives defined in @a aInput.
+/// There are two modes of parallelization: Fully parallel with parallel objectives, or serial objectives run in
+/// serial or parallel. If any parallel objectives are used, then plato must be run with enough ranks to run
+/// all objectives in parallel. For example, if there are three objectives requesting 1, 2, and 3 ranks, then
+/// plato must be run with 6 ranks. If all objectives are serial, then any number of ranks may be used and objectives
+/// will be run in parallel as appropriate.
 [[nodiscard]] ObjectiveFunction make_aggregate_objective_function(const ValidatedObjectives& aInput);
 
 /// @brief Returns the number of processors required for each objective.
