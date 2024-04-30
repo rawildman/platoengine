@@ -32,6 +32,7 @@ class SharedLibCriterion
 
    private:
     std::shared_ptr<library::CriterionInterface> mCriterionInterface;
+    boost::mpi::communicator mComm{MPI_COMM_NULL, boost::mpi::comm_attach};
 };
 
 [[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)

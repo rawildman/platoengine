@@ -57,7 +57,8 @@ SharedLibCriterion::SharedLibCriterion(const std::filesystem::path& aSharedLibPa
                                        const std::vector<std::string>& aFileNames,
                                        const boost::mpi::communicator& aComm)
     : mCriterionInterface{load_criterion_interface<CreateParallelCriterionFunction>(
-          aSharedLibPath, library::kCreateParallelCriterionFunctionName, aFileNames, aComm)}
+          aSharedLibPath, library::kCreateParallelCriterionFunctionName, aFileNames, aComm)},
+      mComm{aComm}
 {
 }
 
