@@ -25,7 +25,9 @@ namespace detail
 [[nodiscard]] std::optional<std::string> validate_aggregation_weight(const input_parser::objective& aInput);
 [[nodiscard]] std::optional<std::string> validate_at_least_one_objective(
     const std::vector<input_parser::objective>& aInput);
-[[nodiscard]] std::optional<std::string> validate_number_of_ranks_vs_objectives(
+[[nodiscard]] std::optional<std::string> validate_number_of_ranks_vs_serial_objectives(
+    const std::vector<input_parser::objective>& aInput);
+[[nodiscard]] std::optional<std::string> validate_number_of_ranks_vs_parallel_objectives(
     const std::vector<input_parser::objective>& aInput);
 }  // namespace detail
 
