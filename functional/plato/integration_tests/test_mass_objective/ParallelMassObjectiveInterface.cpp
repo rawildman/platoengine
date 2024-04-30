@@ -17,7 +17,9 @@ double ParallelMassObjectiveInterface::value(const core::MeshProxy& aMeshProxy) 
 {
     const auto tParallelizedValue = test_utilities::ParallelTestFunctionWrapper<double, const core::MeshProxy&>{
         [](const core::MeshProxy& aMeshProxy) { return MassObjectiveInterface{}.value(aMeshProxy); }};
-    return tParallelizedValue(aMeshProxy, mComm);
+    const auto tResult = tParallelizedValue(aMeshProxy, mComm);
+    std::cout << "Result on rank " << mComm.rank() << " = " << tResult << std::endl;
+    return tResult;
 }
 
 std::vector<double> ParallelMassObjectiveInterface::gradient(const core::MeshProxy& aMeshProxy) const

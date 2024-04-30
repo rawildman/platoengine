@@ -66,10 +66,19 @@ TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfObjectives)
 {
     // One objective and one rank
     input_parser::objective tObjective;
-    EXPECT_FALSE(detail::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
+    EXPECT_FALSE(detail::validate_number_of_ranks_vs_serial_objectives({tObjective}).has_value());
+    // Add an objective, should still be valid
+    EXPECT_FALSE(detail::validate_number_of_ranks_vs_serial_objectives({tObjective, tObjective}).has_value());
+}
+
+TEST(ObjectiveValidation, ValidateMPIRanksVsNumberOfParallelObjectives)
+{
+    // No parallel objectives so this should not result in an error
+    input_parser::objective tObjective;
+    EXPECT_FALSE(detail::validate_number_of_ranks_vs_parallel_objectives({tObjective}).has_value());
     // Change to 2, should now be invalid
     tObjective.number_of_processors = 2u;
-    EXPECT_TRUE(detail::validate_number_of_ranks_vs_objectives({tObjective}).has_value());
+    EXPECT_TRUE(detail::validate_number_of_ranks_vs_parallel_objectives({tObjective}).has_value());
 }
 
 TEST(ObjectiveValidation, ErrorMessagesInvalidObjective)

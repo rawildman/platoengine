@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <boost/mpi/communicator.hpp>
+#include <filesystem>
 #include <string_view>
 
 #include "plato/core/MeshProxy.hpp"
@@ -26,6 +27,8 @@ TEST(ParallelMassObjective, CallValue)
     utilities::write_mesh(kMeshName, utilities::create_mesh(kMeshCommand));
     const double tMass = tSharedLib.f(core::MeshProxy{kMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
+
+    std::filesystem::remove(kMeshName);
 }
 
 TEST(ParallelMassObjective, CallGradient)
@@ -40,5 +43,7 @@ TEST(ParallelMassObjective, CallGradient)
 
     const std::vector<double> tGold(24, 0.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
+
+    std::filesystem::remove(kMeshName);
 }
 }  // namespace plato::integration_tests::parallel

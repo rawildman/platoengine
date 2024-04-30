@@ -13,7 +13,7 @@ constexpr auto kMPISize = int{3};
 void split_vector_and_check(const std::vector<int>& aVector, int aRankNamedTypeNumber, const std::vector<int>& tGold)
 {
     const std::vector<int> tDistributedValues =
-        rank_split_vector(aVector, RankNamedType{aRankNamedTypeNumber}, SizeNamedType{kMPISize});
+        group_split_vector(aVector, ColorNamedType{aRankNamedTypeNumber}, SizeNamedType{kMPISize});
     EXPECT_EQ(tDistributedValues, tGold);
 }
 

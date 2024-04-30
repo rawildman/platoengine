@@ -36,19 +36,7 @@ process_manager::library::ValidatedInput create_two_objective_test_input()
 }
 }  // namespace
 
-TEST(ObjectiveFactory, ValidAggregate)
-{
-    const process_manager::library::ValidatedInput tData = create_two_objective_test_input();
-
-    EXPECT_EQ(tData.objectives().rawInput().size(), 2);
-    const core::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());
-    EXPECT_EQ(tAggregate.size(), 2);
-
-    const std::vector tExpected = {42.0, 13.0};
-    EXPECT_EQ(tAggregate.weights(), tExpected);
-}
-
-TEST(ObjectiveFactory, ValidParallelAggregate)
+TEST(ObjectiveFactory, ValidParallelAggregateTwoObjectives)
 {
     const process_manager::library::ValidatedInput tData = create_two_objective_test_input();
 
@@ -83,11 +71,8 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
         process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
-    const core::Aggregate tAggregate = criteria::library::detail::make_aggregate(tData.objectives());
+    const auto tAggregate = criteria::library::detail::make_parallel_aggregate(tData.objectives());
     EXPECT_EQ(tAggregate.size(), 1);
-
-    const std::vector tExpected = {13.0};
-    EXPECT_EQ(tAggregate.weights(), tExpected);
 }
 
 TEST(ObjectiveFactory, NumberOfProcessors)
