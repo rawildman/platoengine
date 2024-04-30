@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
+#include <iterator>
 
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
@@ -33,6 +34,46 @@ process_manager::library::ValidatedInput create_one_objective_test_input()
 
     return process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
 }
+
+linear_algebra::DynamicVector<double> test_brick_controls()
+{
+    constexpr auto tX = double{2.0};
+    constexpr auto tY = double{4.0};
+    constexpr auto tZ = double{6.0};
+    constexpr auto tCenterCoordinate = double{0.0};
+    return linear_algebra::DynamicVector<double>{tCenterCoordinate, tCenterCoordinate, tCenterCoordinate, tX, tY, tZ};
+}
+
+void test_parallel_mass_evaluation(const unsigned int aNumGroups)
+{
+    auto tObjective = input_parser::objective{};
+    tObjective.number_of_processors = kNumRanks / aNumGroups;
+    tObjective.aggregation_weight = 1.0;
+    tObjective.app = input_parser::CodeOptions::kCustomApp;
+    tObjective.shared_library_path = input_parser::FileName{"libPlatoTestMassObjective.so"};
+    tObjective.name = "test_1";
+
+    auto tInput = input_parser::ParsedInput{};
+    std::fill_n(std::back_inserter(tInput.mObjectives), aNumGroups, tObjective);
+    tInput.mBrickShapeGeometry = test_utilities::create_valid_brick_shape_geometry();
+    tInput.mROLOptimization = test_utilities::create_valid_example_rol_optimization();
+
+    const auto tValidInput = process_manager::library::make_validated_input(tInput);
+
+    const auto tObjectiveFunction = criteria::library::make_aggregate_objective_function(tValidInput.objectives());
+    const auto tMeshFileName = tInput.mBrickShapeGeometry->mesh_name.value().mName;
+    const auto tGeometry =
+        geometry::extension::make_brick_shape_geometry(geometry::extension::BrickShapeGeometry{tMeshFileName});
+
+    const auto tControls = test_brick_controls();
+    ASSERT_EQ(tControls.size(), 6u);
+    const auto tExpectedValue = tControls[3] * tControls[4] * tControls[5] * aNumGroups;
+    const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
+    EXPECT_EQ(tResult, tExpectedValue);
+
+    std::filesystem::remove(tMeshFileName);
+}
+
 }  // namespace
 
 TEST(ObjectiveFactory, MPISize)
@@ -76,41 +117,16 @@ TEST(ObjectiveFactory, NumberOfProcessors)
     }
 }
 
-TEST(ObjectiveFactory, EvaluateParallelMassApp)
+TEST(ObjectiveFactory, EvaluateParallelMassAppTwoObjectives)
 {
-    auto tObjective = input_parser::objective{};
-    constexpr auto tNumGroups = 2;
-    tObjective.number_of_processors = kNumRanks / tNumGroups;
-    tObjective.aggregation_weight = 1.0;
-    tObjective.app = input_parser::CodeOptions::kCustomApp;
-    tObjective.shared_library_path = input_parser::FileName{"libPlatoTestMassObjective.so"};
-    tObjective.name = "test_1";
-    auto tInput = input_parser::ParsedInput{};
-    tInput.mObjectives.push_back(tObjective);
-    tObjective.name = "test_2";
-    tInput.mObjectives.push_back(tObjective);
-    tInput.mBrickShapeGeometry = test_utilities::create_valid_brick_shape_geometry();
-    tInput.mROLOptimization = test_utilities::create_valid_example_rol_optimization();
+    constexpr auto tNumGroups = 2u;
+    test_parallel_mass_evaluation(tNumGroups);
+}
 
-    const auto tValidInput = process_manager::library::make_validated_input(tInput);
-
-    const auto tObjectiveFunction = criteria::library::make_aggregate_objective_function(tValidInput.objectives());
-    const auto tMeshFileName = tInput.mBrickShapeGeometry->mesh_name.value().mName;
-    const auto tGeometry =
-        geometry::extension::make_brick_shape_geometry(geometry::extension::BrickShapeGeometry{tMeshFileName});
-
-    constexpr auto tX = double{2.0};
-    constexpr auto tY = double{4.0};
-    constexpr auto tZ = double{6.0};
-    constexpr auto tCenterCoordinate = double{0.0};
-    const auto tControls =
-        linear_algebra::DynamicVector<double>{tCenterCoordinate, tCenterCoordinate, tCenterCoordinate, tX, tY, tZ};
-    const auto tExpectedValue = tX * tY * tZ * tNumGroups;
-    const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
-    // const auto tResult = double{42.0};
-    EXPECT_EQ(tResult, tExpectedValue);
-
-    std::filesystem::remove(tMeshFileName);
+TEST(ObjectiveFactory, EvaluateParallelMassAppOneObjective)
+{
+    constexpr auto tNumGroups = 1u;
+    test_parallel_mass_evaluation(tNumGroups);
 }
 
 }  // namespace plato::integration_tests::parallel
