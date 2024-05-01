@@ -1,7 +1,9 @@
 include(./cmake/plato_functional_setup.cmake)
 include(./cmake/clang_tidy_setup.cmake)
+include( ./cmake/copy_test_utility_data_files.cmake )
 
 plato_functional_setup()
+copy_test_utility_data_files()
 clang_tidy_setup()
 
 add_subdirectory(./utilities)

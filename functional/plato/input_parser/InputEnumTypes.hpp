@@ -8,6 +8,8 @@
 DECLARE_ENUM_SYMBOL_TABLE(CodeOptions,
                          (kSierraMassApp, "sierra_mass_app")
                          (kNodalSum, "nodal_sum")
+                         (kVolume, "volume")
+                         (kVolumeFraction, "volume_fraction")
                          (kCustomApp, "custom_app"))
 
 DECLARE_ENUM_SYMBOL_TABLE(ObjectiveTypes,

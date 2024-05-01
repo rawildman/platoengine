@@ -6,6 +6,7 @@
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/utilities/Exception.hpp"
+#include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::integration_tests::serial
@@ -15,6 +16,10 @@ namespace
 // These tests use the mass objective library but through the shared library interface so they are testing the shared
 // library more generically
 constexpr std::string_view kLibPath = "libPlatoTestMassObjective.so";
+
+const std::string kSTKCommand =
+    utilities::STKCommandGenerator{{1, 1, 1}, {-1, -1, -1}, {1, 1, 1}, utilities::STKCommandElementType::Hex}
+        .toString();
 
 void generate_bad_library_and_do_nothing()
 {
@@ -36,7 +41,7 @@ TEST(SharedLibObjective, CallValue)
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
     const double tMass = tSharedLib.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 
@@ -49,7 +54,7 @@ TEST(SharedLibObjective, CallGradient)
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tMeshName, {}});
 
     const std::vector<double> tGold(24, 0);
@@ -65,7 +70,7 @@ TEST(SharedLibObjective, ValueUsingFunction)
         criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh("generated:1x1x1|bbox:-1,-1,-1,1,1,1"));
+    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
     const double tMass = tFunction.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 
