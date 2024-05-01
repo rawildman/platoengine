@@ -55,7 +55,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
             active true
             app custom_app
             shared_library_path /path/to/nothing.so
-            number_of_processors 13
+            number_of_processors 1
             input_files test-input.inp
             aggregation_weight 42.0
             objective_type minimize
