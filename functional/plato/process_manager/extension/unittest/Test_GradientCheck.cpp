@@ -32,7 +32,7 @@ TEST(GradientCheck, CreateGradientCheckRun)
         library::process_manager_input<input_parser::gradient_check>(tAllProcessManagerInputs.rawInput().back())};
     tGradientCheck.run(tProblem);
 
-    test_utilities::test_for_existence_and_delete({tInputDeck.mGradientCheck.value().output_file_name.value().mName,
+    test_utilities::test_for_existence_and_remove({tInputDeck.mGradientCheck.value().output_file_name.value().mName,
                                                    tInputDeck.mBrickShapeGeometry.value().mesh_name.value().mName});
 }
 

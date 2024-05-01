@@ -7,7 +7,7 @@
 namespace plato::test_utilities
 {
 
-void test_for_existence_and_delete(const std::vector<std::filesystem::path>& aFilesToCheck)
+void test_for_existence_and_remove(const std::vector<std::filesystem::path>& aFilesToCheck)
 {
     for (const auto& tFileName : aFilesToCheck)
     {
