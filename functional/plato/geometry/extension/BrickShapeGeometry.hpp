@@ -3,17 +3,13 @@
 
 #include <filesystem>
 #include <optional>
+#include <stk_mesh/base/BulkData.hpp>
 
 #include "plato/core/Function.hpp"
 #include "plato/core/MeshProxy.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/linear_algebra/JacobianMultiplier.hpp"
-
-namespace stk::mesh
-{
-class BulkData;
-}
 
 namespace plato::geometry::extension
 {
