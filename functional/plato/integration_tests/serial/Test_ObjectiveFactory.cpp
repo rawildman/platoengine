@@ -4,6 +4,7 @@
 #include "plato/integration_tests/utilities/CheckProcessorsMatchObjectives.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/Zip.hpp"
 
@@ -82,14 +83,16 @@ TEST(ObjectiveFactory, NumberOfProcessors)
         // Check example, which sets number_of_processors to 1
         auto tValidInput = process_manager::library::make_validated_input(tInput);
         utilities::check_processors_match_objectives(
-            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives(),
+            TEST_CONTEXT("One processor"));
     }
     {
         // Set number_of_processors to boost::none, default is 1
         tInput.mObjectives.front().number_of_processors = boost::none;
         auto tValidInput = process_manager::library::make_validated_input(tInput);
         utilities::check_processors_match_objectives(
-            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives(),
+            TEST_CONTEXT("Default using boost::none"));
     }
 }
 

@@ -8,6 +8,7 @@
 #include "plato/integration_tests/utilities/CheckProcessorsMatchObjectives.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 #include "plato/utilities/Exception.hpp"
 
 namespace plato::integration_tests::parallel
@@ -44,7 +45,7 @@ linear_algebra::DynamicVector<double> test_brick_controls()
     return linear_algebra::DynamicVector<double>{tCenterCoordinate, tCenterCoordinate, tCenterCoordinate, tX, tY, tZ};
 }
 
-void test_parallel_mass_evaluation(const unsigned int aNumGroups)
+void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_utilities::TestContext& aTestContext)
 {
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = kNumRanks / aNumGroups;
@@ -69,7 +70,7 @@ void test_parallel_mass_evaluation(const unsigned int aNumGroups)
     ASSERT_EQ(tControls.size(), 6u);
     const auto tExpectedValue = tControls[3] * tControls[4] * tControls[5] * aNumGroups;
     const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
-    EXPECT_EQ(tResult, tExpectedValue);
+    EXPECT_EQ(tResult, tExpectedValue) << aTestContext;
 
     std::filesystem::remove(tMeshFileName);
 }
@@ -97,7 +98,8 @@ TEST(ObjectiveFactory, NumberOfProcessors)
         tInput.mObjectives.front().number_of_processors = static_cast<unsigned int>(kNumRanks);
         auto tValidInput = process_manager::library::make_validated_input(tInput);
         pitu::check_processors_match_objectives(
-            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives(),
+            TEST_CONTEXT("number_of_processors = 4"));
     }
     {
         // Add another objective with 1 processor
@@ -105,7 +107,8 @@ TEST(ObjectiveFactory, NumberOfProcessors)
         tInput.mObjectives.push_back(test_utilities::create_valid_example_objective());
         auto tValidInput = process_manager::library::make_validated_input(tInput);
         pitu::check_processors_match_objectives(
-            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives(),
+            TEST_CONTEXT("Two objectives, 1 and 3 processors"));
     }
     {
         // Deactivate one objective
@@ -113,20 +116,21 @@ TEST(ObjectiveFactory, NumberOfProcessors)
         tInput.mObjectives.back().active = false;
         auto tValidInput = process_manager::library::make_validated_input(tInput);
         pitu::check_processors_match_objectives(
-            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives());
+            criteria::library::number_of_processors_per_objective(tValidInput.objectives()), tValidInput.objectives(),
+            TEST_CONTEXT("Two objectives, one with active = false"));
     }
 }
 
 TEST(ObjectiveFactory, EvaluateParallelMassAppTwoObjectives)
 {
     constexpr auto tNumGroups = 2u;
-    test_parallel_mass_evaluation(tNumGroups);
+    test_parallel_mass_evaluation(tNumGroups, TEST_CONTEXT("Two objectives"));
 }
 
 TEST(ObjectiveFactory, EvaluateParallelMassAppOneObjective)
 {
     constexpr auto tNumGroups = 1u;
-    test_parallel_mass_evaluation(tNumGroups);
+    test_parallel_mass_evaluation(tNumGroups, TEST_CONTEXT("One objective"));
 }
 
 }  // namespace plato::integration_tests::parallel
