@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include "plato/input_parser/InputBlockUtilities.hpp"
 #include "plato/process_manager/extension/SensitivityCheck.hpp"
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
@@ -12,14 +13,13 @@ namespace plato::process_manager::extension::unittest
 {
 TEST(SensitivityCheck, CreateSensitivityCheckRun)
 {
-    input_parser::ParsedInput tInputDeck =
-        test_utilities::create_valid_shape_geometry_example_input_with_gradient_check();
-    tInputDeck.mSensitivityCheck = test_utilities::create_valid_example_sensitivity_check();
-    tInputDeck.mGradientCheck = boost::none;
+    const input_parser::ParsedInput tInputDeck = test_utilities::create_valid_brick_shape_geometry() |
+                                                 test_utilities::create_valid_example_objective() |
+                                                 test_utilities::create_valid_example_sensitivity_check();
 
     const auto tValidatedInput = library::make_validated_input(tInputDeck);
     const library::ValidatedProcessManagerInputVector tAllProcessManagerInputs = tValidatedInput.processManagers();
-    EXPECT_EQ(tAllProcessManagerInputs.rawInput().size(), 2u);
+    EXPECT_EQ(tAllProcessManagerInputs.rawInput().size(), 1u);
 
     const library::ProcessManagerData tProblem = library::make_process_manager_data(tValidatedInput);
     const auto tSensitivityCheck = SensitivityCheck{

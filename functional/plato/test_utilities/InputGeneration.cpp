@@ -2,69 +2,15 @@
 
 #include <fstream>
 
+#include "plato/input_parser/InputBlockUtilities.hpp"
+
 namespace plato::test_utilities
 {
-void create_input_file(const std::filesystem::path& aTestFileName)
-{
-    std::ofstream tOutFile(aTestFileName);
-    const std::string tInput =
-        R"(
-          begin brick_shape_geometry
-            mesh_name my_mesh.exo
-          end
-          begin objective test
-            active true
-            app nodal_sum
-            number_of_processors 4
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-          begin rol_optimization
-            input_file_name its-a_file.txt
-            step_tolerance 10
-            gradient_tolerance 100.0
-            
-          end
-       )";
-    tOutFile << tInput << std::endl;
-    tOutFile.close();
-}
-
-[[nodiscard]] std::string create_valid_example_input_string()
-{
-    const std::string tConstraintInput = create_valid_example_constraint_string();
-    const std::string tObjectiveInput = create_valid_example_objective_string();
-    const std::string tGeometryInput = create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = create_valid_example_rol_optimization_string();
-
-    return tConstraintInput + tObjectiveInput + tGeometryInput + tOptimizerInput;
-}
 
 input_parser::ParsedInput create_valid_example_input()
 {
-    return input_parser::ParsedInput{/*.mObjectives=*/{create_valid_example_objective()},
-                                     /*.mConstraints=*/{create_valid_example_constraint()},
-                                     /*.mBrickShapeGeometry=*/boost::none,
-                                     /*.mDensityTopology = */ create_valid_density_topology_geometry(),
-                                     /*.mROLOptimization = */ create_valid_example_rol_optimization(),
-                                     /*.mGradientCheck=*/boost::none,
-                                     /*.mSensitivityCheck=*/boost::none};
-}
-
-input_parser::ParsedInput create_valid_example_input_with_gradient_check()
-{
-    auto tInput = create_valid_example_input();
-    tInput.mGradientCheck = create_valid_example_gradient_check();
-    return tInput;
-}
-
-input_parser::ParsedInput create_valid_shape_geometry_example_input_with_gradient_check()
-{
-    input_parser::ParsedInput tInputDeck = create_valid_example_input_with_gradient_check();
-    tInputDeck.mDensityTopology = boost::none;
-    tInputDeck.mBrickShapeGeometry = create_valid_brick_shape_geometry();
-    return tInputDeck;
+    return create_valid_example_objective() | create_valid_example_constraint() |
+           create_valid_density_topology_geometry() | create_valid_example_rol_optimization();
 }
 
 input_parser::brick_shape_geometry create_valid_brick_shape_geometry()
@@ -153,27 +99,12 @@ std::string create_valid_example_objective_string()
        )";
 }
 
-std::string create_valid_example_custom_app_objective_string()
-{
-    return R"(
-          begin objective test
-            active true
-            app custom_app
-            shared_library_path /path/to/nothing.so
-            number_of_processors 13
-            input_files test-input.inp
-            aggregation_weight 42.0
-            objective_type minimize
-          end
-       )";
-}
-
 input_parser::rol_optimization create_valid_example_rol_optimization()
 {
     return input_parser::rol_optimization{/*.input_file_name=*/boost::none,
-                                                 /*.max_iterations =  */ 42,
-                                                 /*.step_tolerance = */ 1e-7,
-                                                 /*.gradient_tolerance = */ 1e-9};
+                                          /*.max_iterations =  */ 42,
+                                          /*.step_tolerance = */ 1e-7,
+                                          /*.gradient_tolerance = */ 1e-9};
 }
 
 std::string create_valid_example_rol_optimization_string()
@@ -196,31 +127,9 @@ input_parser::gradient_check create_valid_example_gradient_check()
                                         /*.random_direction_seed = */ 42};
 }
 
-std::string create_valid_example_gradient_check_string()
-{
-    return R"(
-          begin gradient_check
-            output_file_name gradient_check_file.txt
-            number_of_steps 12
-            step_size_reduction_factor 0.5
-            random_direction_seed 123
-            initial_direction_magnitude 0.5
-          end
-       )";
-}
-
 input_parser::sensitivity_check create_valid_example_sensitivity_check()
 {
     return input_parser::sensitivity_check{/*.output_file_name=*/input_parser::FileName{"sensitivity_check.txt"}};
-}
-
-std::string create_valid_example_sensitivity_check_string()
-{
-    return R"(
-          begin sensitivity_check
-            output_file_name sensitivity_check_file.txt
-          end
-       )";
 }
 
 }  // namespace plato::test_utilities

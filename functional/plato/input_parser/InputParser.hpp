@@ -10,30 +10,12 @@
 #include <type_traits>
 
 #include "plato/input_parser/BlockStructRule.hpp"
+#include "plato/input_parser/InputBlockTypeTraits.hpp"
 
 namespace plato::input_parser
 {
 namespace detail
 {
-/// Helper to provide the `value_type` of a std::vector or the type T if it is not a std::vector.
-template <typename T>
-struct TypeOrVectorValueType
-{
-    using type = T;
-};
-
-template <typename T, typename A>
-struct TypeOrVectorValueType<std::vector<T, A>>
-{
-    using type = typename std::vector<T, A>::value_type;
-};
-
-template <typename T>
-struct TypeOrVectorValueType<boost::optional<T>>
-{
-    using type = T;
-};
-
 /// A helper class template for obtaining the block structure type associated with
 /// a given index of ParsedInput. The BlockStruct type will be the `type` alias.
 template <typename ParsedStruct, std::size_t Index>
