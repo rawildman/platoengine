@@ -94,9 +94,9 @@ std::vector<T> group_split_vector(const std::vector<T>& aVector,
 
 ColorNamedType rank_group_color(const std::vector<unsigned int>& aGroupSizes, const RankNamedType aRank)
 {
-    const auto tTotalSize = std::accumulate(aGroupSizes.cbegin(), aGroupSizes.cend(), 0u);
     assert(aRank.mValue >= 0);
     const auto tUnsignedRank = boost::numeric_cast<unsigned int>(aRank.mValue);
+    [[maybe_unused]] const auto tTotalSize = std::accumulate(aGroupSizes.cbegin(), aGroupSizes.cend(), 0u);
     assert(tUnsignedRank < tTotalSize);
 
     auto tPartialSums = std::vector<unsigned int>{};
