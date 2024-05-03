@@ -5,6 +5,12 @@
 
 namespace plato::integration_tests::test_mass_objective
 {
+/// @brief Serial version of a test criterion that computes the mass of a mesh.
+///
+/// The main difference between this and the parallel interface (ParallelMassObjectiveInterface) is that this
+/// version's constructor has no arguments. This implements plato_create_criterion
+/// rather than plato_create_parallel_criterion, which indicates to plato that a serial interface can be used.
+/// @sa ParallelMassObjectiveInterface
 class MassObjectiveInterface : public criteria::library::CriterionInterface
 {
    public:
