@@ -55,7 +55,7 @@ TEST(SharedLibObjective, CallGradient)
     pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tMeshName, {}});
 
-    const std::vector<double> tGold(24, 0);
+    const std::vector<double> tGold(24, 1.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
 
     std::filesystem::remove(tMeshName);

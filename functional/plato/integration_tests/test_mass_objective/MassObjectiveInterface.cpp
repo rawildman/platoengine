@@ -17,7 +17,7 @@ std::vector<double> MassObjectiveInterface::gradient(const core::MeshProxy& aMes
     ///@todo Populate the gradient with actual values
     constexpr unsigned int tNumDimensions = 3;
     const unsigned int tGradientSize = utilities::read_mesh_node_size(aMeshProxy.mFileName.string()) * tNumDimensions;
-    return std::vector<double>(tGradientSize, 0.0);
+    return std::vector<double>(tGradientSize, 1.0);
 }
 }  // namespace plato::integration_tests::test_mass_objective
 

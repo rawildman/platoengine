@@ -46,7 +46,7 @@ TEST(ParallelMassObjective, CallGradient)
     utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand.toString()));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tRankMeshName, {}});
 
-    const std::vector<double> tGold(24, 0.0);
+    const std::vector<double> tGold(24, 1.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
 
     std::filesystem::remove(tRankMeshName);
