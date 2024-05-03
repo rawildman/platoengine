@@ -1,11 +1,19 @@
 #ifndef PLATO_TEST_UTLITIES_TESTCONTEXT
 #define PLATO_TEST_UTLITIES_TESTCONTEXT
 
+#include <stack>
 #include <string>
 
 /// Convenience macro for instantiating a TestContext object. The file and line are added automatically.
-#define TEST_CONTEXT(MESSAGE) \
-    plato::test_utilities::TestContext { __FILE__, __LINE__, (MESSAGE) }
+#define TEST_CONTEXT(MESSAGE)                   \
+    plato::test_utilities::extend_test_context( \
+        plato::test_utilities::TestContext::SingleTestContext{__FILE__, __LINE__, (MESSAGE)})
+
+/// Convenience macro for extending a TestContext object by adding a new context. The file and line are added
+/// automatically.
+#define EXTEND_CONTEXT(MESSAGE, EXISTING_CONTEXT) \
+    plato::test_utilities::extend_test_context(   \
+        plato::test_utilities::TestContext::SingleTestContext{__FILE__, __LINE__, (MESSAGE)}, (EXISTING_CONTEXT))
 
 namespace plato::test_utilities
 {
@@ -31,18 +39,46 @@ namespace plato::test_utilities
 /// @code{.cpp}
 /// test_things(TestContext{__FILE__, __LINE__, "Descriptive error message"});
 /// @endcode
+///
+/// To add multiple test contexts for multiple function calls, use EXTEND_CONTEXT as
+/// @code{.cpp}
+/// test_more_things(EXTEND_CONTEXT("Another descriptive error message", aExistingContext));
+/// @endcode
 struct TestContext
 {
-    std::string mFileName;
-    unsigned int mLineNumber;
-    std::string mMessage;
+    struct SingleTestContext
+    {
+        std::string mFileName;
+        unsigned int mLineNumber;
+        std::string mMessage;
+    };
+
+    std::stack<SingleTestContext> mTestContexts;
 };
 
-template <typename OutStream>
-OutStream& operator<<(OutStream& aOutStream, const TestContext& aTestContext)
+[[nodiscard]] inline TestContext extend_test_context(const TestContext::SingleTestContext& aNewContext,
+                                                     TestContext aExistingContext = TestContext{})
 {
-    aOutStream << "Source file: " << aTestContext.mFileName << ":" << aTestContext.mLineNumber << ": "
-               << aTestContext.mMessage;
+    aExistingContext.mTestContexts.push(aNewContext);
+    return aExistingContext;
+}
+
+template <typename OutStream>
+OutStream& operator<<(OutStream& aOutStream, const TestContext::SingleTestContext& aSingleTestContext)
+{
+    aOutStream << "Source file: " << aSingleTestContext.mFileName << ":" << aSingleTestContext.mLineNumber << ": "
+               << aSingleTestContext.mMessage;
+    return aOutStream;
+}
+
+template <typename OutStream>
+OutStream& operator<<(OutStream& aOutStream, TestContext aTestContext)
+{
+    while (!aTestContext.mTestContexts.empty())
+    {
+        aOutStream << aTestContext.mTestContexts.top() << "\n";
+        aTestContext.mTestContexts.pop();
+    }
     return aOutStream;
 }
 
