@@ -19,5 +19,5 @@ void check_processors_match_objectives(const std::vector<unsigned int>& aNumberO
             EXPECT_EQ(tNumberOfProcessors, tObjective.rawInput().number_of_processors.value_or(1u)) << aTestContext;
         }
     }
-};
+}
 }  // namespace plato::integration_tests::utilities
