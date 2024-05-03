@@ -10,6 +10,8 @@ namespace plato::integration_tests::test_mass_objective
 /// The main difference between this and the parallel interface (ParallelMassObjectiveInterface) is that this
 /// version's constructor has no arguments. This implements plato_create_criterion
 /// rather than plato_create_parallel_criterion, which indicates to plato that a serial interface can be used.
+/// @note This interface is only used when the `number_of_processors` field is equal to one. Otherwise,
+/// ParallelMassObjectiveInterface is used.
 /// @sa ParallelMassObjectiveInterface
 class MassObjectiveInterface : public criteria::library::CriterionInterface
 {
