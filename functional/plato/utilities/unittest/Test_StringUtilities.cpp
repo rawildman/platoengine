@@ -6,9 +6,9 @@ namespace plato::utilities::unittest
 {
 TEST(Utilities, ConcatenateVector)
 {
-    const auto tStrings = std::vector<std::string>{"thing", "tOne", "thing", "two"};
+    const auto tStrings = std::vector<std::string>{"thing", "one", "thing", "two"};
     const auto tResult = concatenate_vector(tStrings);
-    EXPECT_EQ(tResult, "thing tOne thing two");
+    EXPECT_EQ(tResult, "thing one thing two");
 }
 
 TEST(Utilities, ConcatenateVectorCustomDelimiter)
