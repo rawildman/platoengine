@@ -11,6 +11,7 @@
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::process_manager::extension::unittest
 {
@@ -39,8 +40,8 @@ TEST(ConstraintCheck, ValidateAndRunChecksForLinearConstraint)
     validate_and_run_constraint_check(tInputDeck);
 
     ptu::test_for_existence_and_remove(
-        {tInputDeck.mBrickShapeGeometry.value().mesh_name.value().mName,
-         tInputDeck.mConstraintCheck.value().linearity_check_output_file_name.value().mName});
+        {tInputDeck.mConstraintCheck.value().linearity_check_output_file_name.value().mName},
+        TEST_CONTEXT("Checking linearity check files"));
 }
 
 TEST(ConstraintCheck, ValidateAndRunChecksForNonlinearConstraint)
@@ -58,10 +59,10 @@ TEST(ConstraintCheck, ValidateAndRunChecksForNonlinearConstraint)
     validate_and_run_constraint_check(tInputDeck);
 
     ptu::test_for_existence_and_remove(
-        {tInputDeck.mBrickShapeGeometry.value().mesh_name.value().mName,
-         tInputDeck.mConstraintCheck.value().linearity_check_output_file_name.value().mName,
+        {tInputDeck.mConstraintCheck.value().linearity_check_output_file_name.value().mName,
          tInputDeck.mConstraintCheck.value().jacobian_check_output_file_name.value().mName,
-         tInputDeck.mConstraintCheck.value().jacobian_adjoint_consistency_output_file_name.value().mName});
+         tInputDeck.mConstraintCheck.value().jacobian_adjoint_consistency_output_file_name.value().mName},
+        TEST_CONTEXT("Checking constraint check files"));
 }
 
 }  // namespace plato::process_manager::extension::unittest
