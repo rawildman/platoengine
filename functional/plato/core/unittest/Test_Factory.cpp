@@ -30,19 +30,20 @@ using TestFactoryRegistration = FactoryRegistration<TestFactoryObject, TestFacto
                                 return TestFactoryObject{std::string{kBPositive}, aName};
                             }};
 
-struct TestFactoryObject2
+struct TestFactoryObjectForMultipleArgs
 {
     std::string mType;
     std::string mName;
     int mNumber;
 };
-using TestFactoryInput2 = int;
+
+using TestFactoryInputSecondArg = int;
 using TestFactoryRegistrationMultipleArgs =
-    FactoryRegistration<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>;
-[[maybe_unused]] static auto kFactoryTestRegistrationMultipleArgs =
-    TestFactoryRegistrationMultipleArgs{std::string{kBPositive}, [](const std::string& aName, const int& aNumber) {
-                                            return TestFactoryObject2{std::string{kBPositive}, aName, aNumber};
-                                        }};
+    FactoryRegistration<TestFactoryObjectForMultipleArgs, TestFactoryInput, TestFactoryInputSecondArg>;
+[[maybe_unused]] static auto kFactoryTestRegistrationMultipleArgs = TestFactoryRegistrationMultipleArgs{
+    std::string{kBPositive}, [](const std::string& aName, const int& aNumber) {
+        return TestFactoryObjectForMultipleArgs{std::string{kBPositive}, aName, aNumber};
+    }};
 
 }  // namespace
 
@@ -51,8 +52,16 @@ TEST(FactoryRegistration, IsRegistered)
     EXPECT_TRUE((is_factory_function_registered<TestFactoryObject, TestFactoryInput>(kONegative)));
     EXPECT_TRUE((is_factory_function_registered<TestFactoryObject, TestFactoryInput>(kBPositive)));
     EXPECT_FALSE((is_factory_function_registered<TestFactoryObject, TestFactoryInput>("ab")));
-    EXPECT_TRUE((is_factory_function_registered<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>(kBPositive)));
-    EXPECT_FALSE((is_factory_function_registered<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>(kONegative)));
+}
+
+TEST(FactoryRegistration, IsRegisteredMultipleArgs)
+{
+    EXPECT_TRUE(
+        (is_factory_function_registered<TestFactoryObjectForMultipleArgs, TestFactoryInput, TestFactoryInputSecondArg>(
+            kBPositive)));
+    EXPECT_FALSE(
+        (is_factory_function_registered<TestFactoryObjectForMultipleArgs, TestFactoryInput, TestFactoryInputSecondArg>(
+            kONegative)));
 }
 
 TEST(FactoryRegistration, CreateObjectO)
@@ -79,8 +88,9 @@ TEST(FactoryRegistration, CreateObjectMultipleArgs)
 {
     const auto tName = std::string{"king henry"};
     const auto tNumber = int{42};
-    const std::optional<TestFactoryObject2> tTestObjectB =
-        create_object_from_factory<TestFactoryObject2, TestFactoryInput, TestFactoryInput2>(kBPositive, tName, tNumber);
+    const std::optional<TestFactoryObjectForMultipleArgs> tTestObjectB =
+        create_object_from_factory<TestFactoryObjectForMultipleArgs, TestFactoryInput, TestFactoryInputSecondArg>(
+            kBPositive, tName, tNumber);
     ASSERT_TRUE(tTestObjectB.has_value());
     EXPECT_EQ(tTestObjectB->mType, kBPositive);
     EXPECT_EQ(tTestObjectB->mName, tName);
