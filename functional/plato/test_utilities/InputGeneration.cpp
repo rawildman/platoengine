@@ -127,9 +127,21 @@ input_parser::gradient_check create_valid_example_gradient_check()
                                         /*.random_direction_seed = */ 42};
 }
 
+input_parser::constraint_check create_valid_example_constraint_check()
+{
+    return input_parser::constraint_check{
+        /*.linearity_check_output_file_name=*/input_parser::FileName{"constraint_linearity_check.txt"},
+        /*.jacobian_check_output_file_name=*/input_parser::FileName{"constraint_jacobian_check.txt"},
+        /*.jacobian_adjoint_consistency_output_file_name=*/
+        input_parser::FileName{"constraint_jacobian_adjoint_consistency_check.txt"},
+        /*.number_of_steps*/ 10u,
+        /*.initial_direction_magnitude*/ 1.0,
+        /*.step_size_reduction_factor*/ 0.1,
+        /*.random_direction_seed*/ 123};
+}
+
 input_parser::sensitivity_check create_valid_example_sensitivity_check()
 {
     return input_parser::sensitivity_check{/*.output_file_name=*/input_parser::FileName{"sensitivity_check.txt"}};
 }
-
 }  // namespace plato::test_utilities

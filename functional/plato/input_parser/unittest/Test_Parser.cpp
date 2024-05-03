@@ -165,6 +165,40 @@ TEST(ParsedInput, GradientCheckAllValidInputs)
     test_existence_and_equality(tData.mGradientCheck->initial_direction_magnitude, 0.5);
 }
 
+TEST(ParsedInput, ConstraintCheckAllValidInputs)
+{
+    const std::string tInput =
+        R"(
+          begin constraint_check
+            linearity_check_output_file_name ROL_constraint_linearity_check_output.txt
+            jacobian_check_output_file_name ROL_constraint_jacobian_check_output.txt
+            jacobian_adjoint_consistency_output_file_name ROL_constraint_jacobian_adjoint_consistency_check_output.txt
+            number_of_steps 10
+            initial_direction_magnitude 1
+            step_size_reduction_factor 0.1
+            random_direction_seed 123
+          end
+       )";
+
+    // Parse
+    const auto [tParseResult, tIter, tData] = parse_string(tInput);
+
+    // Tests
+    EXPECT_TRUE(tParseResult);
+    EXPECT_EQ(tIter, tInput.end());
+    ASSERT_TRUE(tData.mConstraintCheck);
+    test_existence_and_equality(tData.mConstraintCheck->linearity_check_output_file_name,
+                                std::string{"ROL_constraint_linearity_check_output.txt"});
+    test_existence_and_equality(tData.mConstraintCheck->jacobian_check_output_file_name,
+                                std::string{"ROL_constraint_jacobian_check_output.txt"});
+    test_existence_and_equality(tData.mConstraintCheck->jacobian_adjoint_consistency_output_file_name,
+                                std::string{"ROL_constraint_jacobian_adjoint_consistency_check_output.txt"});
+    test_existence_and_equality(tData.mConstraintCheck->number_of_steps, 10u);
+    test_existence_and_equality(tData.mConstraintCheck->initial_direction_magnitude, 1.0);
+    test_existence_and_equality(tData.mConstraintCheck->step_size_reduction_factor, 0.1);
+    test_existence_and_equality(tData.mConstraintCheck->random_direction_seed, 123u);
+}
+
 TEST(ParsedInput, ObjectiveNotAllInputs)
 {
     const std::string tInput =

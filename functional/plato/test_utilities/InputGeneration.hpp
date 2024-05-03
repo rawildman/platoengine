@@ -27,6 +27,8 @@ namespace plato::test_utilities
 
 [[nodiscard]] input_parser::gradient_check create_valid_example_gradient_check();
 
+[[nodiscard]] input_parser::constraint_check create_valid_example_constraint_check();
+
 [[nodiscard]] input_parser::sensitivity_check create_valid_example_sensitivity_check();
 
 }  // namespace plato::test_utilities
