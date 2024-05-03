@@ -2,10 +2,9 @@
 
 #include <boost/mpi/communicator.hpp>
 
-#include "plato/integration_tests/utilities/DynamicVectorRosenbrockFunction.hpp"
 #include "plato/test_utilities/ParallelTestWrapper.hpp"
 
-namespace plato::integration_tests::parallel
+namespace plato::test_utilities::parallel_unittest
 {
 TEST(ParallelTestFunctionWrapper, MatchesSerialQuadratic)
 {
@@ -17,4 +16,4 @@ TEST(ParallelTestFunctionWrapper, MatchesSerialQuadratic)
     constexpr auto tArg = 42.0;
     EXPECT_EQ(tQuadraticFunction(tArg), tParallelQuadratic(tArg, tComm));
 }
-}  // namespace plato::integration_tests::parallel
+}  // namespace plato::test_utilities::parallel_unittest
