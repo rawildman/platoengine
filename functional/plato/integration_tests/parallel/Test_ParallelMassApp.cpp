@@ -7,6 +7,7 @@
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 #include "plato/utilities/STKUtilities.hpp"
+#include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::integration_tests::parallel
 {
@@ -24,11 +25,12 @@ TEST(ParallelMassObjective, CallValue)
 
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}, tComm};
 
-    utilities::write_mesh(kMeshName, utilities::create_mesh(kMeshCommand));
-    const double tMass = tSharedLib.f(core::MeshProxy{kMeshName, {}});
+    const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
+    utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand));
+    const double tMass = tSharedLib.f(core::MeshProxy{tRankMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 
-    std::filesystem::remove(kMeshName);
+    std::filesystem::remove(tRankMeshName);
 }
 
 TEST(ParallelMassObjective, CallGradient)
@@ -38,12 +40,13 @@ TEST(ParallelMassObjective, CallGradient)
 
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}, tComm};
 
-    utilities::write_mesh(kMeshName, utilities::create_mesh(kMeshCommand));
-    const auto tGrad = tSharedLib.df(core::MeshProxy{kMeshName, {}});
+    const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
+    utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand));
+    const auto tGrad = tSharedLib.df(core::MeshProxy{tRankMeshName, {}});
 
     const std::vector<double> tGold(24, 0.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
 
-    std::filesystem::remove(kMeshName);
+    std::filesystem::remove(tRankMeshName);
 }
 }  // namespace plato::integration_tests::parallel

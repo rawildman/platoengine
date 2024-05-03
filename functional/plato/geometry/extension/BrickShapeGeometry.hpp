@@ -39,6 +39,8 @@ class BrickShapeGeometry
     explicit BrickShapeGeometry(std::filesystem::path aFileName,
                                 std::optional<double> aDiscretizationSize = std::nullopt);
 
+    ~BrickShapeGeometry();
+
     [[nodiscard]] core::MeshProxy generateMesh(const BrickDesign& aDesignParameters) const;
 
     [[nodiscard]] linear_algebra::JacobianColumnEvaluator jacobian(const BrickDesign& aDesignParameters) const;
