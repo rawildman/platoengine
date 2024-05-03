@@ -9,6 +9,7 @@
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::process_manager::extension::unittest
 {
@@ -34,8 +35,8 @@ TEST(GradientCheck, CreateGradientCheckRun)
         library::process_manager_input<input_parser::gradient_check>(tAllProcessManagerInputs.rawInput().back())};
     tGradientCheck.run(tProblem);
 
-    test_utilities::test_for_existence_and_remove({tInputDeck.mGradientCheck.value().output_file_name.value().mName,
-                                                   tInputDeck.mBrickShapeGeometry.value().mesh_name.value().mName});
+    test_utilities::test_for_existence_and_remove({tInputDeck.mGradientCheck.value().output_file_name.value().mName},
+                                                  TEST_CONTEXT("Checking for file existence"));
 }
 
 TEST(GradientCheck, UnwrapValidatedGradientCheckInput)

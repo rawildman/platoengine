@@ -4,7 +4,6 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
-#include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"

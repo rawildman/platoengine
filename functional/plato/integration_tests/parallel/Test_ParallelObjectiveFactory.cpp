@@ -71,8 +71,6 @@ void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_uti
     const auto tExpectedValue = tControls[3] * tControls[4] * tControls[5] * aNumGroups;
     const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
     EXPECT_EQ(tResult, tExpectedValue) << aTestContext;
-
-    std::filesystem::remove(tMeshFileName);
 }
 
 }  // namespace
