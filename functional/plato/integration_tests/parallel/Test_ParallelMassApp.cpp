@@ -20,7 +20,7 @@ const auto kMeshCommand = utilities::STKCommandGenerator{
     /*.mElements=*/{1u, 1u, 1u}, /*.mLowerBounds=*/{-1.0, -1.0, -1.0}, /*.mUpperBounds=*/{1.0, 1.0, 1.0}};
 }  // namespace
 
-TEST(ParallelMassObjective, CallValue)
+TEST(ParallelMassObjective, CallValueAndGradient)
 {
     auto tComm = boost::mpi::communicator{};
     EXPECT_GT(tComm.size(), 1u);
@@ -29,23 +29,11 @@ TEST(ParallelMassObjective, CallValue)
 
     const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
     utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand.toString()));
+
     const double tMass = tSharedLib.f(core::MeshProxy{tRankMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, kMeshCommand.volume());
 
-    std::filesystem::remove(tRankMeshName);
-}
-
-TEST(ParallelMassObjective, CallGradient)
-{
-    auto tComm = boost::mpi::communicator{};
-    EXPECT_GT(tComm.size(), 1u);
-
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}, tComm};
-
-    const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
-    utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand.toString()));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tRankMeshName, {}});
-
     const std::vector<double> tGold(24, 1.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
 
