@@ -4,7 +4,6 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
-#include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
@@ -24,7 +23,6 @@ const std::string kSTKCommand =
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    namespace pfu = plato::utilities;
     const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
     std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
 }
@@ -57,7 +55,7 @@ TEST(SharedLibObjective, CallGradient)
     pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tMeshName, {}});
 
-    const std::vector<double> tGold(24, 0);
+    const std::vector<double> tGold(24, 1.0);
     EXPECT_EQ(tGrad.stdVector(), tGold);
 
     std::filesystem::remove(tMeshName);

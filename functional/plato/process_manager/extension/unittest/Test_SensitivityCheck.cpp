@@ -8,6 +8,7 @@
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::process_manager::extension::unittest
 {
@@ -25,8 +26,8 @@ TEST(SensitivityCheck, CreateSensitivityCheckRun)
     const auto tSensitivityCheck = SensitivityCheck{
         library::process_manager_input<input_parser::sensitivity_check>(tAllProcessManagerInputs.rawInput().back())};
     tSensitivityCheck.run(tProblem);
-    test_utilities::test_for_existence_and_remove({tInputDeck.mSensitivityCheck.value().output_file_name.value().mName,
-                                                   tInputDeck.mBrickShapeGeometry.value().mesh_name.value().mName});
+    test_utilities::test_for_existence_and_remove({tInputDeck.mSensitivityCheck.value().output_file_name.value().mName},
+                                                  TEST_CONTEXT("Sensitivity check file existence"));
 }
 
 }  // namespace plato::process_manager::extension::unittest

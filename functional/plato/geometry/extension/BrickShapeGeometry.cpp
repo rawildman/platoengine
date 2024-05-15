@@ -11,6 +11,7 @@
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/utilities/Exception.hpp"
+#include "plato/utilities/FileUtilities.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 
@@ -48,9 +49,11 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 }  // namespace
 
 BrickShapeGeometry::BrickShapeGeometry(std::filesystem::path aFileName, const std::optional<double> aDiscretizationSize)
-    : mFileName(std::move(aFileName)), mDiscretizationSize(aDiscretizationSize)
+    : mFileName(utilities::make_filename_unique(std::move(aFileName))), mDiscretizationSize(aDiscretizationSize)
 {
 }
+
+BrickShapeGeometry::~BrickShapeGeometry() { std::filesystem::remove(mFileName); }
 
 core::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {

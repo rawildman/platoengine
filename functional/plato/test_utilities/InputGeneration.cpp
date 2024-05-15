@@ -53,7 +53,7 @@ input_parser::constraint create_valid_example_constraint()
                                     /*.active=*/true,
                                     /*.app=*/input_parser::CodeOptions::kNodalSum,
                                     /*.shared_library_path=*/input_parser::FileName{},
-                                    /*.number_of_processors=*/42u,
+                                    /*.number_of_processors=*/1u,
                                     /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                                     /*.equal_to=*/0.0,
                                     /*.is_linear=*/true};
@@ -65,7 +65,7 @@ std::string create_valid_example_constraint_string()
           begin constraint test
             active true
             app nodal_sum
-            number_of_processors 4
+            number_of_processors 1
             input_files test-input.inp
             equal_to 13
             is_linear true
@@ -79,7 +79,7 @@ input_parser::objective create_valid_example_objective()
                                    /*.active=*/true,
                                    /*.app=*/input_parser::CodeOptions::kNodalSum,
                                    /*.shared_library_path=*/input_parser::FileName{},
-                                   /*.number_of_processors=*/42u,
+                                   /*.number_of_processors=*/1u,
                                    /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                                    /*.aggregation_weight=*/13.0,
                                    /*.objective_type=*/input_parser::ObjectiveTypes::kMaximize};
@@ -91,7 +91,7 @@ std::string create_valid_example_objective_string()
           begin objective test
             active true
             app nodal_sum
-            number_of_processors 4
+            number_of_processors 1
             input_files test-input.inp
             aggregation_weight 42.0
             objective_type minimize
