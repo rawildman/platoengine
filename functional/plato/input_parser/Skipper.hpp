@@ -23,6 +23,10 @@ class SkipperRule
                            (boost::spirit::qi::eol | boost::spirit::qi::eoi);
     Rule mAllRules = mWhiteSpaceSkipper | mCommentSkipper;
 };
+
+template <typename Iterator>
+using SkipperType = typename SkipperRule<Iterator>::Rule;
+
 }  // namespace plato::input_parser
 
 #endif
