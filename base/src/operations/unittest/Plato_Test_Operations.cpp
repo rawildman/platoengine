@@ -40,8 +40,10 @@
 //@HEADER
 */
 #include "Plato_Utils.hpp"
+#include "PlatoApp.hpp"
 #include "Plato_InputData.hpp"
 #include "Plato_EnforceBounds.hpp"
+#include "Plato_SetUpperBounds.hpp"
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_OperationsUtilities.hpp"
 
@@ -73,6 +75,46 @@ TEST(EnforceBounds, applyBounds)
     EXPECT_EQ(tDataToBound[7], 15);
     EXPECT_EQ(tDataToBound[8], 0);
     EXPECT_EQ(tDataToBound[9], 0);
+}
+
+TEST(SetUpperBounds, updateUpperBoundsBasedOnFixedEntitiesForDBTOP)
+{
+    int argc = 1;
+    char exeName[] = "exeName";
+    char* argv[1] = {exeName};
+
+    MPI_Comm myComm;
+    MPI_Comm_dup(MPI_COMM_WORLD, &myComm);
+
+    setenv("PLATO_APP_FILE", "operations.xml", true);
+
+    auto tApp = std::make_shared<PlatoApp>(argc, argv, myComm);
+
+    tApp->initialize();
+
+    std::stringstream buffer;
+    buffer << "<Operation>" << std::endl;
+    buffer << "<Function>SetUpperBounds</Function>" << std::endl;
+    buffer << "<Name>Compute Upper Bounds</Name>" << std::endl;
+    buffer << "<UseCase>solid</UseCase>" << std::endl;
+    buffer << "<Discretization>density</Discretization>" << std::endl;
+    buffer << "<Input>" << std::endl;
+    buffer << "  <ArgumentName>Upper Bound Value</ArgumentName>" << std::endl;
+    buffer << "</Input>" << std::endl;
+    buffer << "<Output>" << std::endl;
+    buffer << "  <ArgumentName>Upper Bound Vector</ArgumentName>" << std::endl;
+    buffer << "</Output>" << std::endl;
+    buffer << "<FixedBlocks>" << std::endl;
+    buffer << "  <Index>1</Index>" << std::endl;
+    buffer << "  <DomainValue>.1</DomainValue>" << std::endl;
+    buffer << "  <BoundaryValue>.0001</BoundaryValue>" << std::endl;
+    buffer << "</FixedBlocks>" << std::endl;
+    buffer << "</Operation>" << std::endl;
+    Plato::Parser* parser = new Plato::PugiParser();
+    Plato::InputData inputData = parser->parseString(buffer.str());
+    delete parser;
+
+    std::shared_ptr<Plato::SetUpperBounds> tUpperBounds = std::make_shared<Plato::SetUpperBounds>(tApp.get(), inputData);
 }
 
 } // end PlatoTestOperations namespace
