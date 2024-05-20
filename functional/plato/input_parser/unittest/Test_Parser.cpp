@@ -35,7 +35,7 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
         R"(
           begin objective mp_objective
             active true
-            app sierra_mass_app
+            app volume
             shared_library_path /path/to/lib.so
             number_of_processors 10
             input_files test.txt, test2.xml
@@ -54,7 +54,7 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kSierraMassApp);
+    test_existence_and_equality(tObjective.app, CodeOptions::kVolume);
     test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     test_existence_and_equality(tObjective.active, true);
@@ -85,7 +85,7 @@ TEST(ParsedInput, ConstraintAllValidInputs)
         R"(
           begin constraint mp_constraint
             active true
-            app sierra_mass_app
+            app volume_fraction
             number_of_processors 10
             input_files test.txt
             equal_to 1.0
@@ -104,7 +104,7 @@ TEST(ParsedInput, ConstraintAllValidInputs)
     const auto& tConstraint = tData.mConstraints.front();
     test_existence_and_equality(tConstraint.name, "mp_constraint");
     test_existence_and_equality(tConstraint.active, true);
-    test_existence_and_equality(tConstraint.app, CodeOptions::kSierraMassApp);
+    test_existence_and_equality(tConstraint.app, CodeOptions::kVolumeFraction);
     test_existence_and_equality(tConstraint.number_of_processors, 10u);
     test_existence_and_equality(tConstraint.input_files, std::vector<std::string>{"test.txt"});
     test_existence_and_equality(tConstraint.equal_to, 1.0);
@@ -204,7 +204,7 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     const std::string tInput =
         R"(
           begin objective mp_objective
-            app sierra_mass_app
+            app nodal_sum
             number_of_processors 10
             aggregation_weight 10.0
           end
@@ -216,7 +216,7 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kSierraMassApp);
+    test_existence_and_equality(tObjective.app, CodeOptions::kNodalSum);
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     EXPECT_FALSE(tObjective.active);
     EXPECT_FALSE(tObjective.input_files);
@@ -339,7 +339,7 @@ TEST(ParsedInput, ConstraintMultipleBlocks)
         R"(
           begin constraint mp_constraint_1
             active true
-            app sierra_mass_app
+            app volume
           end
           begin constraint mp_constraint_2
             number_of_processors 10
