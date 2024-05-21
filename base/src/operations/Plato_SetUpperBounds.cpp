@@ -210,6 +210,7 @@ void SetUpperBounds::parseFixedBlocks(Plato::InputData& aNode)
         auto tBoundaryValue = Plato::Get::Double(tFixedBlock, "BoundaryValue");
         mFixedBlockMetadata.mBoundaryValues.push_back(tBoundaryValue);
         auto tMaterialState = Plato::Get::String(tFixedBlock, "MaterialState");
+	tMaterialState = tMaterialState.empty() ? "solid" : tMaterialState; 
         mFixedBlockMetadata.mMaterialStates.push_back(tMaterialState);
     }
 }

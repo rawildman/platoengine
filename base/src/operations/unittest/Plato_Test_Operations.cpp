@@ -46,12 +46,21 @@
 #include "Plato_SetUpperBounds.hpp"
 #include "Plato_SystemCallOperation.hpp"
 #include "Plato_OperationsUtilities.hpp"
-
+#ifdef STK_ENABLED
+#include "stk_io/StkMeshIoBroker.hpp"
+#endif
 #include <fstream>
 #include <gtest/gtest.h>
 
 namespace PlatoTestOperations
 {
+
+#ifdef STK_ENABLED
+void create_two_block_hex_mesh();
+void create_plato_main_input_deck();
+void create_plato_main_operations_file();
+Plato::InputData create_input_data_for_upper_bounds_operation();
+#endif
 
 TEST(EnforceBounds, applyBounds)
 {
@@ -77,44 +86,116 @@ TEST(EnforceBounds, applyBounds)
     EXPECT_EQ(tDataToBound[9], 0);
 }
 
+#ifdef STK_ENABLED
 TEST(SetUpperBounds, updateUpperBoundsBasedOnFixedEntitiesForDBTOP)
 {
-    int argc = 1;
+    // Create a mesh with two hex elements, each in its own block
+    create_two_block_hex_mesh();
+
+    // Create an input deck and operations files for PlatoMain app
+    create_plato_main_input_deck();
+    create_plato_main_operations_file();
+    
+    // Create a PlatoMain app to be used when instantiating the SetUpperBounds operation
+    constexpr int argc = 1;
     char exeName[] = "exeName";
     char* argv[1] = {exeName};
-
-    MPI_Comm myComm;
-    MPI_Comm_dup(MPI_COMM_WORLD, &myComm);
-
+    MPI_Comm tComm;
+    MPI_Comm_dup(MPI_COMM_WORLD, &tComm);
     setenv("PLATO_APP_FILE", "operations.xml", true);
-
-    auto tApp = std::make_shared<PlatoApp>(argc, argv, myComm);
-
+    auto tApp = std::make_shared<PlatoApp>(argc, argv, tComm);
     tApp->initialize();
 
-    std::stringstream buffer;
-    buffer << "<Operation>" << std::endl;
-    buffer << "<Function>SetUpperBounds</Function>" << std::endl;
-    buffer << "<Name>Compute Upper Bounds</Name>" << std::endl;
-    buffer << "<UseCase>solid</UseCase>" << std::endl;
-    buffer << "<Discretization>density</Discretization>" << std::endl;
-    buffer << "<Input>" << std::endl;
-    buffer << "  <ArgumentName>Upper Bound Value</ArgumentName>" << std::endl;
-    buffer << "</Input>" << std::endl;
-    buffer << "<Output>" << std::endl;
-    buffer << "  <ArgumentName>Upper Bound Vector</ArgumentName>" << std::endl;
-    buffer << "</Output>" << std::endl;
-    buffer << "<FixedBlocks>" << std::endl;
-    buffer << "  <Index>1</Index>" << std::endl;
-    buffer << "  <DomainValue>.1</DomainValue>" << std::endl;
-    buffer << "  <BoundaryValue>.0001</BoundaryValue>" << std::endl;
-    buffer << "</FixedBlocks>" << std::endl;
-    buffer << "</Operation>" << std::endl;
-    Plato::Parser* parser = new Plato::PugiParser();
-    Plato::InputData inputData = parser->parseString(buffer.str());
-    delete parser;
+    // Create some input for the SetUpperBounds operation
+    const Plato::InputData tInputData = create_input_data_for_upper_bounds_operation();
 
-    std::shared_ptr<Plato::SetUpperBounds> tUpperBounds = std::make_shared<Plato::SetUpperBounds>(tApp.get(), inputData);
+    // Creat the SetUpperBounds operation
+    auto tOperation = tInputData.get<Plato::InputData>("Operation");
+    std::shared_ptr<Plato::SetUpperBounds> tUpperBounds = std::make_shared<Plato::SetUpperBounds>(tApp.get(), tOperation);
+    constexpr int tTotalNumNodesInMesh = 12;
+    constexpr double tDefaultUpperBound = 1.0;
+    std::vector<double> tUpperBoundValues(tTotalNumNodesInMesh, tDefaultUpperBound);
+
+    // Call the function we are testing
+    tUpperBounds->updateUpperBoundsBasedOnFixedEntitiesForDBTOP(tUpperBoundValues.data());
+    const std::vector<double> tGoldValues = {0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.25};
+
+    for(size_t i=0; i<tGoldValues.size(); ++i)
+    {
+        EXPECT_EQ(tUpperBoundValues[i], tGoldValues[i]);
+    }
+
+    // Clean up after ourselves
+    std::remove("temp_mesh.exo");
+    std::remove("platomain.xml");
+    std::remove("operations.xml");
 }
+
+Plato::InputData create_input_data_for_upper_bounds_operation()
+{
+    std::stringstream tBuffer;
+    tBuffer << "<Operation>" << std::endl;
+    tBuffer << "<Function>SetUpperBounds</Function>" << std::endl;
+    tBuffer << "<Name>Compute Upper Bounds</Name>" << std::endl;
+    tBuffer << "<UseCase>solid</UseCase>" << std::endl;
+    tBuffer << "<Discretization>density</Discretization>" << std::endl;
+    tBuffer << "<Input>" << std::endl;
+    tBuffer << "  <ArgumentName>Upper Bound Value</ArgumentName>" << std::endl;
+    tBuffer << "</Input>" << std::endl;
+    tBuffer << "<Output>" << std::endl;
+    tBuffer << "  <ArgumentName>Upper Bound Vector</ArgumentName>" << std::endl;
+    tBuffer << "</Output>" << std::endl;
+    tBuffer << "<FixedBlocks>" << std::endl;
+    tBuffer << "  <Index>1</Index>" << std::endl;
+    tBuffer << "  <DomainValue>.5</DomainValue>" << std::endl;
+    tBuffer << "  <BoundaryValue>.25</BoundaryValue>" << std::endl;
+    tBuffer << "</FixedBlocks>" << std::endl;
+    tBuffer << "</Operation>" << std::endl;
+    Plato::PugiParser tParser;
+    return tParser.parseString(tBuffer.str());
+}
+
+void create_two_block_hex_mesh()
+{
+    stk::io::StkMeshIoBroker tIoBroker(MPI_COMM_WORLD);
+    tIoBroker.use_simple_fields();
+    tIoBroker.add_mesh_database("textmesh:0,1,HEX_8,1,2,3,4,5,6,7,8,block_1\n0,2,HEX_8,5,6,7,8,9,10,11,12,block_2|coordinates: 0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1, 0,0,2, 1,0,2, 1,1,2, 0,1,2", stk::io::READ_MESH);
+    tIoBroker.create_input_mesh();
+    tIoBroker.populate_bulk_data();
+    Ioss::PropertyManager tProperties;
+    const size_t tOutputFileIndex = tIoBroker.create_output_mesh("temp_mesh.exo", stk::io::WRITE_RESULTS, tProperties);
+    tIoBroker.write_output_mesh(tOutputFileIndex);
+}
+
+void create_plato_main_input_deck()
+{
+    std::ofstream tInputDeckStream;
+    tInputDeckStream.open("platomain.xml");
+    tInputDeckStream << "<?xml version=\"1.0\"?>" << std::endl;
+    tInputDeckStream << "<mesh>" << std::endl;
+    tInputDeckStream << "<type>unstructured</type>" << std::endl;
+    tInputDeckStream << "<format>exodus</format>" << std::endl;
+    tInputDeckStream << "<ignore_node_map>true</ignore_node_map>" << std::endl;
+    tInputDeckStream << "<ignore_element_map>true</ignore_element_map>" << std::endl;
+    tInputDeckStream << "<mesh>temp_mesh.exo</mesh>" << std::endl;
+    tInputDeckStream << "</mesh>" << std::endl;
+    tInputDeckStream.close();
+}
+
+void create_plato_main_operations_file()
+{
+    std::ofstream tOperationsFile;
+    tOperationsFile.open("operations.xml");
+    // Just add something so it isn't empty
+    tOperationsFile << "<?xml version=\"1.0\"?>" << std::endl;
+    tOperationsFile << "<Filter>" << std::endl;
+    tOperationsFile << "<Name>Kernel</Name>" << std::endl;
+    tOperationsFile << "<Scale>1e-10</Scale>" << std::endl;
+    tOperationsFile << "<Power>1</Power>" << std::endl;
+    tOperationsFile << "</Filter>" << std::endl;
+    tOperationsFile.close();
+}
+
+#endif
 
 } // end PlatoTestOperations namespace
