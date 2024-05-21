@@ -45,7 +45,7 @@ int main(int argc,  char **argv)
   {
       if(tMeshManager.get_prune_flag())
       {
-          tMeshPrune.prune_mesh(tMeshManager,argc,argv,1);
+          tMeshPrune.prune_mesh(tMeshManager,argc,argv);
 
           tMeshBalance.balance_mesh(tMeshManager);
       }
@@ -57,7 +57,7 @@ int main(int argc,  char **argv)
   }
 
   if(tMeshManager.get_prune_flag())
-      tMeshPrune.prune_mesh(tMeshManager,argc,argv,1);
+      tMeshPrune.prune_mesh(tMeshManager,argc,argv);
 
   tMeshManager.write_mesh();
 
