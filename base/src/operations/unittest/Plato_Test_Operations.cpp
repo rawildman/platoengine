@@ -186,7 +186,7 @@ TEST(SetUpperBounds, updateUpperBoundsBasedOnFixedEntitiesForDBTOP)
 
     // Call the function we are testing
     tUpperBounds.updateUpperBoundsBasedOnFixedEntitiesForDBTOP(tUpperBoundValues.data());
-    const std::vector<double> tGoldValues = {0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.25};
+    const std::vector<double> tGoldValues = {0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.25, 1, 1, 1, 1};
 
     EXPECT_EQ(tUpperBoundValues, tGoldValues);
 
