@@ -53,7 +53,7 @@ public:
 
            int get_transfer_flag();
 
-	   bool allow_nonmanifold_connections() { return mAllowNonmanifoldConnections; }
+	   bool allow_nonmanifold_connections() const { return mAllowNonmanifoldConnections; }
 
            stk::ParallelMachine* get_communicator();
 

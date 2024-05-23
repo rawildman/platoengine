@@ -8,13 +8,21 @@
 
 #include "PruneMeshAPISTK.hpp"
 
-void MeshPrune::prune_mesh(MeshManager &tMeshManager,int argc, char *argv[])
+void MeshPrune::prune_mesh(MeshManager &tMeshManager)
 {
     tMeshManager.define_iso_fields();
     prune::PerceptPrune pruner;
+    const std::string tFieldName{"LSD"};
+    const std::string tOutputFieldString{""};
+    const double tMinEdgeLength = 0.0;
+    const double tIsoValue = 0.0;
+    const bool tConcatenateResults = false;
+    const bool tOnlyCreateIsoTriangles = true;
+    const bool tReadSpreadFile = 0;
     const int tNumberOfBufferLayers = tMeshManager.get_buffer_layers();
     const bool tAllowNonmanifoldConnections = tMeshManager.allow_nonmanifold_connections();
-    if(pruner.import(argc,argv,"LSD","",1e-5,0.0,0,1,0,
+    if(pruner.import(tFieldName,tOutputFieldString,tMinEdgeLength,
+                     tIsoValue,tConcatenateResults,tOnlyCreateIsoTriangles,tReadSpreadFile,
                      tAllowNonmanifoldConnections,tNumberOfBufferLayers))
     {
         pruner.run_percept_mesh_stand_alone(tMeshManager);
