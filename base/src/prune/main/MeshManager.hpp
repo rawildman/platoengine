@@ -87,7 +87,7 @@ private:
 
         int mNumberOfRefines{0};
         int mNumberOfBufferLayers{0};
-        bool mPruneFlag{true};
+        bool mPruneFlag{false};
         bool mAllowNonmanifoldConnections{false};
         bool mTransferFlag{true};
         double mPruneThreshold{0.5};
