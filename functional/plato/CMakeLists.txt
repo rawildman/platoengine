@@ -1,12 +1,13 @@
 include(./cmake/plato_functional_setup.cmake)
 include(./cmake/clang_tidy_setup.cmake)
-include( ./cmake/copy_test_utility_data_files_and_convert_to_cdf.cmake )
+include(./cmake/copy_test_utility_data_files_and_convert_to_cdf.cmake)
 
 plato_functional_setup()
 copy_test_utility_data_files_and_convert_to_cdf()
 clang_tidy_setup()
 
 add_subdirectory(./utilities)
+add_subdirectory(./services)
 add_subdirectory(./input_parser)
 add_subdirectory(./linear_algebra)
 add_subdirectory(./core)
