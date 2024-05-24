@@ -19,12 +19,11 @@ template <typename... Args>
 }
 
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
-    input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
-    [](const plato::criteria::library::CriterionInput& aInput)
+    std::string{SharedLibCriterion::kAppName}, [](const plato::criteria::library::CriterionInput& aInput)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
 
 [[maybe_unused]] static auto kParallelCustomAppRegistration = library::ParallelCriterionRegistration{
-    input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kCustomApp).value(),
+    std::string{SharedLibCriterion::kAppName},
     [](const plato::criteria::library::CriterionInput& aInput, const boost::mpi::communicator& aComm)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput, aComm)); }};
 

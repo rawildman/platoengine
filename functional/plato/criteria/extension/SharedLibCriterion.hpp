@@ -30,6 +30,8 @@ class SharedLibCriterion
 
     [[nodiscard]] linear_algebra::DynamicVector<double> df(const core::MeshProxy& aMesh) const;
 
+    static constexpr auto kAppName = std::string_view{"custom_app"};
+
    private:
     std::shared_ptr<library::CriterionInterface> mCriterionInterface;
     boost::mpi::communicator mComm{MPI_COMM_NULL, boost::mpi::comm_attach};
