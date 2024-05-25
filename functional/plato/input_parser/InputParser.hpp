@@ -11,6 +11,7 @@
 
 #include "plato/input_parser/BlockStructRule.hpp"
 #include "plato/input_parser/InputBlockTypeTraits.hpp"
+#include "plato/input_parser/Skipper.hpp"
 
 namespace plato::input_parser
 {
@@ -68,10 +69,10 @@ using BlockRuleTypeAt = typename std::tuple_element<I, AllBlockRules>::type;
 
 template <typename ParsedStruct, typename Iterator, typename AllBlockRules, std::size_t... Is>
 auto full_block_or_rule_impl(const AllBlockRules& aAllBlockRules, std::integer_sequence<std::size_t, Is...>)
-    -> boost::spirit::qi::rule<Iterator, ParsedStruct(), boost::spirit::ascii::space_type>
+    -> boost::spirit::qi::rule<Iterator, ParsedStruct(), SkipperType<Iterator>>
 {
     namespace bp = boost::phoenix;
-    bsq::rule<Iterator, ParsedStruct(), bsa::space_type> tRule =
+    bsq::rule<Iterator, ParsedStruct(), SkipperType<Iterator>> tRule =
         *((std::get<Is>(aAllBlockRules).mBlockRule[block_semantic_action<BlockRuleTypeAt<Is, AllBlockRules>, Is>()] |
            ...));
     return tRule;
@@ -84,7 +85,7 @@ using ParsedInputRuleTuple = decltype(detail::plato_input_rule_tuple<ParsedStruc
 
 template <typename ParsedStruct, typename Iterator, typename AllBlockRules>
 auto full_block_or_rule(const AllBlockRules& aAllBlockRules)
-    -> boost::spirit::qi::rule<Iterator, ParsedStruct(), boost::spirit::ascii::space_type>
+    -> boost::spirit::qi::rule<Iterator, ParsedStruct(), SkipperType<Iterator>>
 {
     constexpr auto tNumPlatoBlockRules = std::tuple_size_v<AllBlockRules>;
     return detail::full_block_or_rule_impl<ParsedStruct, Iterator>(aAllBlockRules,
@@ -92,7 +93,7 @@ auto full_block_or_rule(const AllBlockRules& aAllBlockRules)
 }
 
 template <typename ParsedStruct, typename Iterator>
-struct NestedStructParser : boost::spirit::qi::grammar<Iterator, ParsedStruct(), boost::spirit::ascii::space_type>
+struct NestedStructParser : boost::spirit::qi::grammar<Iterator, ParsedStruct(), SkipperType<Iterator>>
 {
     NestedStructParser() : NestedStructParser::base_type(mStartParsedInput, "Plato")
     {
@@ -107,7 +108,7 @@ struct NestedStructParser : boost::spirit::qi::grammar<Iterator, ParsedStruct(),
 
     const ParsedInputRuleTuple<ParsedStruct, Iterator> mAllParsedInputRules{};
 
-    using Rule = boost::spirit::qi::rule<Iterator, ParsedStruct(), boost::spirit::ascii::space_type>;
+    using Rule = boost::spirit::qi::rule<Iterator, ParsedStruct(), SkipperType<Iterator>>;
     Rule mStartParsedInput;
 };
 

@@ -7,6 +7,7 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/input_parser/InputParser.hpp"
 #include "plato/input_parser/unittest/Test_Helpers.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::input_parser::unittest
 {
@@ -14,10 +15,12 @@ namespace
 {
 auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, ParsedInput>
 {
-    InputParser<std::string::const_iterator> tParser;
+    using Iterator = std::string::const_iterator;
+    InputParser<Iterator> tParser;
     ParsedInput tData;
     auto tIter = aInput.cbegin();
-    const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
+    const auto tSkipper = SkipperRule<Iterator>{};
+    const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, tSkipper.skipperRule(), tData);
     return {tParseResult, tIter, tData};
 }
 
@@ -27,6 +30,16 @@ void check_nothing_parsed(const ParsedInput& aInput)
     EXPECT_TRUE(aInput.mConstraints.empty());
     EXPECT_FALSE(aInput.mROLOptimization);
 }
+
+ParsedInput parse_and_check_success(const std::string& aInput, const test_utilities::TestContext& aTestContext)
+{
+    const auto [tParseResult, tIter, tData] = parse_string(aInput);
+
+    EXPECT_TRUE(tParseResult) << aTestContext;
+    EXPECT_EQ(tIter, aInput.cend()) << aTestContext;
+    return tData;
+}
+
 }  // namespace
 
 TEST(ParsedInput, ObjectiveAllValidInputs)
@@ -364,4 +377,70 @@ TEST(ParsedInput, ConstraintMultipleBlocks)
     test_existence_and_equality(tConstraint2.number_of_processors, 10u);
     test_existence_and_equality(tConstraint2.equal_to, -10.0);
 }
+
+TEST(ParsedInput, CommentWithinLine)
+{
+    const std::string tInput =
+        R"(
+          begin objective objective_1 
+            active false # true
+            app nodal_sum
+          end
+       )";
+
+    const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Commented out input mid-line"));
+
+    ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
+    test_existence_and_equality(tParsedInput.mObjectives.front().active, false);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kNodalSum);
+}
+
+TEST(ParsedInput, CommentEntireLine)
+{
+    const std::string tInput =
+        R"(
+          begin objective objective_1 
+            # app nodal_sum
+            app volume
+          end
+       )";
+
+    const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Commented out input"));
+
+    ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+}
+
+TEST(ParsedInput, CommentNonInput)
+{
+    const std::string tInput =
+        R"(
+          begin objective objective_1 
+            # This is not real input!
+            app volume
+          end
+       )";
+    const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment on non-input"));
+
+    ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+}
+
+TEST(ParsedInput, CommentMultipleLinesAndCharacters)
+{
+    const std::string tInput =
+        R"(
+          begin objective objective_1 
+            ## This is not # real input!
+            # active false
+            app volume
+          end
+       )";
+    const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment multiple lines and characters"));
+
+    ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    EXPECT_FALSE(tParsedInput.mObjectives.front().active.has_value());
+}
+
 }  // namespace plato::input_parser::unittest
