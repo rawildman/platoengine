@@ -7,6 +7,7 @@
 
 #include "plato/input_parser/InputBlockStruct.hpp"
 #include "plato/input_parser/InputParser.hpp"
+#include "plato/input_parser/Skipper.hpp"
 
 // clang-format off
 PLATO_INPUT_BLOCK_STRUCT(
@@ -47,10 +48,12 @@ using TestInputParser = NestedStructParser<TestParsedInput, Iterator>;
 
 [[nodiscard]] std::pair<TestParsedInput, bool> parse_input(const std::string_view aInput)
 {
-    TestInputParser<std::string_view::const_iterator> tParser;
+    using Iterator = std::string_view::const_iterator;
+    TestInputParser<Iterator> tParser;
     TestParsedInput tData;
     auto tIter = aInput.cbegin();
-    const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, boost::spirit::ascii::space, tData);
+    const auto tSkipper = SkipperRule<Iterator>{};
+    const bool tParseResult = phrase_parse(tIter, aInput.cend(), tParser, tSkipper.skipperRule(), tData);
     return {tData, tParseResult};
 }
 
