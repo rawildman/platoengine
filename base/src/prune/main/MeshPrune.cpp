@@ -14,11 +14,11 @@ void MeshPrune::prune_mesh(MeshManager &tMeshManager)
     prune::PerceptPrune pruner;
     const std::string tFieldName{"LSD"};
     const std::string tOutputFieldString{""};
-    const double tMinEdgeLength = 0.0;
-    const double tIsoValue = 0.0;
-    const bool tConcatenateResults = false;
-    const bool tOnlyCreateIsoTriangles = true;
-    const bool tReadSpreadFile = 0;
+    constexpr double tMinEdgeLength = 0.0;
+    constexpr double tIsoValue = 0.0;
+    constexpr bool tConcatenateResults = false;
+    constexpr bool tOnlyCreateIsoTriangles = true;
+    constexpr bool tReadSpreadFile = 0;
     const int tNumberOfBufferLayers = tMeshManager.get_buffer_layers();
     const bool tAllowNonmanifoldConnections = tMeshManager.allow_nonmanifold_connections();
     if(pruner.import(tFieldName,tOutputFieldString,tMinEdgeLength,
