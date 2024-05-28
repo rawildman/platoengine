@@ -13,20 +13,20 @@ struct AppConfiguration
 {
     std::string mName;
     std::string mLibraryFileName;
+    bool mHasParallelImplementation = false;
+    bool mHasSerialImplementation = false;
 };
 
 /// @todo Use `operator==() = default` in c++20
-bool operator==(const AppConfiguration& aAppConfigurationLeft, const AppConfiguration& aAppConfigurationRight)
-{
-    return aAppConfigurationLeft.mName == aAppConfigurationRight.mName &&
-           aAppConfigurationLeft.mLibraryFileName == aAppConfigurationRight.mLibraryFileName;
-}
+bool operator==(const AppConfiguration& aAppConfigurationLeft, const AppConfiguration& aAppConfigurationRight);
 
 template <class Archive>
 void serialize(Archive& aArchive, AppConfiguration& aAppConfiguration, const unsigned int /*version*/)
 {
     aArchive& aAppConfiguration.mName;
     aArchive& aAppConfiguration.mLibraryFileName;
+    aArchive& aAppConfiguration.mHasParallelImplementation;
+    aArchive& aAppConfiguration.mHasSerialImplementation;
 }
 
 }  // namespace plato::services

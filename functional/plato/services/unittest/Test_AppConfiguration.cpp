@@ -17,7 +17,7 @@ void save(const Serializable& tS, const std::filesystem::path& aFilename)
 {
     auto tOutFileStream = std::ofstream{aFilename};
     Archive tOutputArchive(tOutFileStream, boost::archive::no_header | boost::archive::no_tracking);
-    tOutputArchive << boost::serialization::make_nvp("Serializable", tS);
+    tOutputArchive << tS;
 }
 
 template <typename Archive, typename Serializable>
@@ -25,7 +25,7 @@ void load(Serializable& tS, const std::filesystem::path& aFilename)
 {
     auto tInFileStream = std::ifstream{aFilename};
     Archive tInputArchive(tInFileStream, 1);
-    tInputArchive >> boost::serialization::make_nvp("Serializable", tS);
+    tInputArchive >> tS;
 }
 
 template <typename Serializable>
@@ -45,7 +45,9 @@ void testSerializeRoundTrip(const Serializable& aSerializable, const test_utilit
 
 TEST(AppConfiguration, Serialization)
 {
-    const auto tAppConfiguration = services::AppConfiguration{/*.name=*/"test-app", /*.lib_name=*/"libtest.so"};
+    const auto tAppConfiguration =
+        services::AppConfiguration{/*.name=*/"test-app", /*.lib_name=*/"libtest.so",
+                                   /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
     testSerializeRoundTrip(tAppConfiguration, TEST_CONTEXT("App configuration"));
 }
 }  // namespace plato::services
