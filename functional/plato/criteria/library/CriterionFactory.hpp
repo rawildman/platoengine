@@ -33,7 +33,7 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput, const Ad
                   "input_parser::constraint wrapped in ValidatedInputTypeWrapper");
 
     const auto& tRawInput = aValidatedInput.rawInput();
-    const std::string tAppName = input_parser::kCodeOptionsTable.toString(tRawInput.app.value()).value();
+    const auto& tAppName = tRawInput.app.value().mToken;
     std::optional<CriterionFunction> tCriterion =
         core::create_object_from_factory<CriterionFunction, CriterionInput, AdditionalArgs...>(
             tAppName, to_criterion_input(aValidatedInput), aArgs...);

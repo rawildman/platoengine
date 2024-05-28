@@ -15,7 +15,6 @@ namespace
 {
 [[maybe_unused]] static auto kObjectiveValidationRegistration = core::ValidationRegistration<input_parser::objective>{
     [](const input_parser::objective& aInput) { return detail::validate_app(aInput); },
-    [](const input_parser::objective& aInput) { return detail::validate_custom_app(aInput); },
     [](const input_parser::objective& aInput) { return detail::validate_number_of_processors(aInput); },
     [](const input_parser::objective& aInput) { return detail::validate_aggregation_weight(aInput); }};
 

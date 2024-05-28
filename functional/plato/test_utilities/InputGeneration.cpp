@@ -51,7 +51,7 @@ input_parser::constraint create_valid_example_constraint()
 {
     return input_parser::constraint{/*.name=*/std::string{"bike-shed"},
                                     /*.active=*/true,
-                                    /*.app=*/input_parser::CodeOptions::kNodalSum,
+                                    /*.app=*/input_parser::AppName{"nodal_sum"},
                                     /*.shared_library_path=*/input_parser::FileName{},
                                     /*.number_of_processors=*/1u,
                                     /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
@@ -77,7 +77,7 @@ input_parser::objective create_valid_example_objective()
 {
     return input_parser::objective{/*.name=*/std::string{"bike-shed"},
                                    /*.active=*/true,
-                                   /*.app=*/input_parser::CodeOptions::kNodalSum,
+                                   /*.app=*/input_parser::AppName{"nodal_sum"},
                                    /*.shared_library_path=*/input_parser::FileName{},
                                    /*.number_of_processors=*/1u,
                                    /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},

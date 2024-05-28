@@ -67,7 +67,7 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kVolume);
+    test_existence_and_equality(tObjective.app, std::string{"volume"});
     test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     test_existence_and_equality(tObjective.active, true);
@@ -117,7 +117,7 @@ TEST(ParsedInput, ConstraintAllValidInputs)
     const auto& tConstraint = tData.mConstraints.front();
     test_existence_and_equality(tConstraint.name, "mp_constraint");
     test_existence_and_equality(tConstraint.active, true);
-    test_existence_and_equality(tConstraint.app, CodeOptions::kVolumeFraction);
+    test_existence_and_equality(tConstraint.app, std::string{"volume_fraction"});
     test_existence_and_equality(tConstraint.number_of_processors, 10u);
     test_existence_and_equality(tConstraint.input_files, std::vector<std::string>{"test.txt"});
     test_existence_and_equality(tConstraint.equal_to, 1.0);
@@ -229,7 +229,7 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kNodalSum);
+    test_existence_and_equality(tObjective.app, std::string{"nodal_sum"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     EXPECT_FALSE(tObjective.active);
     EXPECT_FALSE(tObjective.input_files);

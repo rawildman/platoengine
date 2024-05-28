@@ -50,7 +50,7 @@ void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_uti
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = kNumRanks / aNumGroups;
     tObjective.aggregation_weight = 1.0;
-    tObjective.app = input_parser::CodeOptions::kCustomApp;
+    tObjective.app = input_parser::AppName{"custom_app"};
     tObjective.shared_library_path = input_parser::FileName{"libPlatoTestMassObjective.so"};
     tObjective.name = "test_1";
 

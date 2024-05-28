@@ -18,6 +18,7 @@ template <typename... Args>
     return SharedLibCriterion{aInput.mSharedLibraryPath.mToken, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
 }
 
+// Criterion registration
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
     std::string{SharedLibCriterion::kAppName}, [](const plato::criteria::library::CriterionInput& aInput)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput)); }};
@@ -26,6 +27,13 @@ template <typename... Args>
     std::string{SharedLibCriterion::kAppName},
     [](const plato::criteria::library::CriterionInput& aInput, const boost::mpi::communicator& aComm)
     { return make_shared_lib_function(make_shared_lib_criterion(aInput, aComm)); }};
+
+// Validation registration
+[[maybe_unused]] static auto kObjectiveValidationRegistration = core::ValidationRegistration<input_parser::objective>{
+    [](const input_parser::objective& aInput) { return detail::validate_custom_app(aInput); }};
+
+[[maybe_unused]] static auto kConstraintValidationRegistration = core::ValidationRegistration<input_parser::constraint>{
+    [](const input_parser::constraint& aInput) { return detail::validate_custom_app(aInput); }};
 
 template <typename FunctionPtr, typename... Args>
 std::unique_ptr<library::CriterionInterface> load_criterion_interface(
