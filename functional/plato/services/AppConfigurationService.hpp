@@ -1,5 +1,5 @@
-#ifndef PLATO_SERVICES_SHAREDLIBSERVICE
-#define PLATO_SERVICES_SHAREDLIBSERVICE
+#ifndef PLATO_SERVICES_APPCONFIGURATIONSERVICE
+#define PLATO_SERVICES_APPCONFIGURATIONSERVICE
 
 #include <memory>
 
@@ -12,7 +12,7 @@ namespace plato::services
 {
 /// @brief Returns the current AbstractAppConfigurationService, either the default or
 ///  what was set on a call to set_global_app_configuration_service.
-AbstractAppConfigurationService& app_configuration_service();
+[[nodiscard]] AbstractAppConfigurationService& app_configuration_service();
 
 /// @brief Sets the global shared library service by allocating a new instance of type @a AppConfigurationServiceType
 ///  and calling its constructor with @a aArgs.

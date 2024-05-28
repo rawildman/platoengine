@@ -18,7 +18,8 @@ struct AppConfiguration
 };
 
 /// @todo Use `operator==() = default` in c++20
-bool operator==(const AppConfiguration& aAppConfigurationLeft, const AppConfiguration& aAppConfigurationRight);
+[[nodiscard]] bool operator==(const AppConfiguration& aAppConfigurationLeft,
+                              const AppConfiguration& aAppConfigurationRight);
 
 template <class Archive>
 void serialize(Archive& aArchive, AppConfiguration& aAppConfiguration, const unsigned int /*version*/)
