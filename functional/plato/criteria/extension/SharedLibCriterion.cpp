@@ -15,7 +15,7 @@ template <typename... Args>
 [[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
                                                            Args&&... aArgs)
 {
-    return SharedLibCriterion{aInput.mSharedLibraryPath.mName, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
+    return SharedLibCriterion{aInput.mSharedLibraryPath.mToken, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
 }
 
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{

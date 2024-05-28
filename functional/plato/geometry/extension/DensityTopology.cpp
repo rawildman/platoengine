@@ -30,9 +30,9 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
         const auto& tInput = library::geometry_raw_input<input_parser::density_topology>(aGeometryInput);
         return library::FactoryTypes{
             make_topology_geometry(DensityTopology{tInput}),
-            DensityTopology::initialGuess(tInput.mesh_name.value().mName),
-            DensityTopology::bounds(tInput.mesh_name.value().mName),
-            make_topology_output(tInput.mesh_name.value().mName, tInput.output_name.value().mName)};
+            DensityTopology::initialGuess(tInput.mesh_name.value().mToken),
+            DensityTopology::bounds(tInput.mesh_name.value().mToken),
+            make_topology_output(tInput.mesh_name.value().mToken, tInput.output_name.value().mToken)};
     }};
 
 /// Static registration for input validation functions
@@ -43,7 +43,7 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 }  // namespace
 
 DensityTopology::DensityTopology(const input_parser::density_topology& aInput)
-    : mFileName(aInput.mesh_name.value().mName),
+    : mFileName(aInput.mesh_name.value().mToken),
       mNumDesignParameters(plato::utilities::read_mesh_node_size(mFileName)),
       mFilter(plato::filter::library::make_filter_function(aInput))
 {

@@ -73,7 +73,7 @@ TEST(InputParser, ParseFromFile)
 
     ASSERT_TRUE(tInput.mBrickShapeGeometry.has_value());
     ASSERT_TRUE(tInput.mBrickShapeGeometry->mesh_name.has_value());
-    EXPECT_EQ(tInput.mBrickShapeGeometry->mesh_name->mName, "my_mesh.exo");
+    EXPECT_EQ(tInput.mBrickShapeGeometry->mesh_name->mToken, "my_mesh.exo");
 
     std::filesystem::remove(kTestFileName);
 }

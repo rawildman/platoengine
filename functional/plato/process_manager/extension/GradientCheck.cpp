@@ -41,7 +41,7 @@ namespace
 }  // namespace
 
 GradientCheck::GradientCheck(const ValidatedGradientCheckInput& aInput)
-    : mOutputFileName(aInput.rawInput().output_file_name.value().mName),
+    : mOutputFileName(aInput.rawInput().output_file_name.value().mToken),
       mNumberOfSteps(aInput.rawInput().number_of_steps.value()),
       mInitialDirectionMagnitude(aInput.rawInput().initial_direction_magnitude.value()),
       mStepSizeReductionFactor(aInput.rawInput().step_size_reduction_factor.value()),

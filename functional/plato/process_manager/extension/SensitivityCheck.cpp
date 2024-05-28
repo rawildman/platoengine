@@ -49,7 +49,7 @@ std::unique_ptr<plato::rol_integration::ROLObjectiveFunction> make_rol_sensitivi
 }  // namespace
 
 SensitivityCheck::SensitivityCheck(const ValidatedSensitivityCheckInput& aInput)
-    : mOutputFileName(aInput.rawInput().output_file_name.value().mName)
+    : mOutputFileName(aInput.rawInput().output_file_name.value().mToken)
 {
 }
 

@@ -24,7 +24,7 @@ template <>
 inline void test_existence_and_equality(const boost::optional<FileName>& aOptionalVal, const std::string& aVal)
 {
     ASSERT_TRUE(aOptionalVal);
-    EXPECT_EQ(aOptionalVal.value().mName, aVal);
+    EXPECT_EQ(aOptionalVal.value().mToken, aVal);
 }
 
 template <>

@@ -52,10 +52,10 @@ namespace
 }  // namespace
 
 ConstraintCheck::ConstraintCheck(const ValidatedConstraintCheckInput& aInput)
-    : mLinearityCheckOutputFileName{aInput.rawInput().linearity_check_output_file_name.value().mName},
-      mJacobianCheckOutputFileName{aInput.rawInput().jacobian_check_output_file_name.value().mName},
+    : mLinearityCheckOutputFileName{aInput.rawInput().linearity_check_output_file_name.value().mToken},
+      mJacobianCheckOutputFileName{aInput.rawInput().jacobian_check_output_file_name.value().mToken},
       mJacobianAdjointConsistencyCheckOutputFileName{
-          aInput.rawInput().jacobian_adjoint_consistency_output_file_name.value().mName},
+          aInput.rawInput().jacobian_adjoint_consistency_output_file_name.value().mToken},
       mNumberOfSteps{aInput.rawInput().number_of_steps.value()},
       mInitialDirectionMagnitude{aInput.rawInput().initial_direction_magnitude.value()},
       mStepSizeReductionFactor{aInput.rawInput().step_size_reduction_factor.value()},

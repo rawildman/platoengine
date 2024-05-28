@@ -74,7 +74,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
     const input_parser::objective& tObjective = tValidatedObjective.rawInput();
 
     ASSERT_TRUE(tObjective.shared_library_path.has_value());
-    EXPECT_EQ(tObjective.shared_library_path->mName, tCriterionInput.mSharedLibraryPath.mName);
+    EXPECT_EQ(tObjective.shared_library_path->mToken, tCriterionInput.mSharedLibraryPath.mToken);
     EXPECT_EQ(tObjective.number_of_processors, tCriterionInput.mNumberOfProcessors);
     ASSERT_TRUE(tObjective.input_files.has_value());
     ASSERT_EQ(tObjective.input_files->mList.size(), tCriterionInput.mInputFiles.mList.size());
@@ -97,7 +97,7 @@ TEST(CriterionRegistration, ConvertConstraintInput)
         criteria::library::to_criterion_input(tValidatedConstraint);
     const input_parser::constraint& tConstraint = tValidatedConstraint.rawInput();
 
-    EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mName.empty());
+    EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mToken.empty());
     EXPECT_EQ(tConstraint.number_of_processors, tCriterionInput.mNumberOfProcessors);
     ASSERT_TRUE(tConstraint.input_files.has_value());
     ASSERT_EQ(tConstraint.input_files->mList.size(), tCriterionInput.mInputFiles.mList.size());
