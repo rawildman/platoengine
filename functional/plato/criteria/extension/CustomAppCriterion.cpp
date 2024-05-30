@@ -8,13 +8,6 @@ namespace plato::criteria::extension
 {
 namespace
 {
-template <typename... Args>
-[[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
-                                                           Args&&... aArgs)
-{
-    return SharedLibCriterion{aInput.mSharedLibraryPath.mToken, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
-}
-
 // Criterion registration
 [[maybe_unused]] static auto kCustomAppRegistration = library::CriterionRegistration{
     std::string{detail::custom_app_name()}, [](const plato::criteria::library::CriterionInput& aInput)
