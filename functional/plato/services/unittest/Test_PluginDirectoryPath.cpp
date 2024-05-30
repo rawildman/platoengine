@@ -8,8 +8,8 @@ namespace plato::services::unittest
 {
 TEST(PluginDirectoryPath, CheckPath)
 {
-    // This is a little difficult to test since we don't know if the installation path exists or not
-    // So, we'll check that the returned path is a directory named `plugins` if it exists.
+    // This is a little difficult to test since we don't know if the installation path exists or not,
+    // which depends on if this is run before or after installation.
     const auto tPluginPath = plugin_directory_path();
     if (tPluginPath)
     {
