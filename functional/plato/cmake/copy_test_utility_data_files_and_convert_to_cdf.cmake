@@ -16,9 +16,9 @@ macro( copy_test_utility_data_files_and_convert_to_cdf )
         get_filename_component(BASE_FILE_NAME ${TXTFILE} NAME_WLE)
         set(FULLPATH_TXT_FILE "${FUNCTIONAL_TEST_DATA_DIR}/${BASE_FILE_NAME}.txt")
         set(BUILDPATH_EXO_FILE "${FUNCTIONAL_TEST_DATA_BUILD_PATH}/${BASE_FILE_NAME}.cdf")
-        set(INSTALLPATH_EXO_FILE "${FUNCTIONAL_TEST_DATA_INSTALL_PATH}/${BASE_FILE_NAME}.cdf")
+        
         execute_process(COMMAND "ncgen" ${FULLPATH_TXT_FILE} -o ${BUILDPATH_EXO_FILE} ) 
-        execute_process(COMMAND "ncgen" ${FULLPATH_TXT_FILE} -o ${INSTALLPATH_EXO_FILE} ) 
+        install(FILES ${BUILDPATH_EXO_FILE} DESTINATION "${FUNCTIONAL_TEST_DATA_INSTALL_PATH}")
         
     endforeach(TXTFILE)
 

@@ -28,6 +28,7 @@ void create_mesh_test_volume(const std::string& aGenerationCommand, const double
 void read_mesh_and_test_volume(const std::string_view tMeshFileName, const double aGold)
 {
     const auto tFilePath = test_utilities::test_data_file_path(tMeshFileName);
+    std::cout << "tFilePath: " << tFilePath << std::endl;
     ASSERT_TRUE(tFilePath);
     const double tResult = mesh_volume(tFilePath.value());
     std::cout << std::setprecision(16) << tResult << std::endl;
