@@ -21,8 +21,8 @@ const auto kAnotherTestConfiguration =
 void testSerializeRoundTrip(const AppConfiguration& aSerializable, const test_utilities::TestContext& aTestContext)
 {
     const auto tFilename = std::filesystem::path{"out.config"};
-    save(aSerializable, tFilename);
-    const auto tRoundTripResult = load(tFilename);
+    save_configuration(aSerializable, tFilename);
+    const auto tRoundTripResult = load_configuration(tFilename);
 
     EXPECT_EQ(aSerializable, tRoundTripResult) << aTestContext;
 
@@ -39,24 +39,42 @@ TEST(AppConfiguration, Serialization)
     testSerializeRoundTrip(tAppConfiguration, TEST_CONTEXT("App configuration"));
 }
 
+TEST(AppConfiguration, AppConfigurationWithDirectory)
+{
+    const auto tSharedLibName = std::string_view{"libappetizer.so"};
+    const auto tAppConfiguration =
+        services::AppConfiguration{/*.name=*/"appetizer", /*.lib_name=*/std::string{tSharedLibName},
+                                   /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
+    const auto tDirectory = std::filesystem::path{"/path/to/food"};
+
+    const auto tAppConfigurationWithDirectory = app_configuration_with_directory(tAppConfiguration, tDirectory);
+    EXPECT_EQ(tAppConfigurationWithDirectory.mAppConfiguration, tAppConfiguration);
+    EXPECT_EQ(tAppConfigurationWithDirectory.mLibraryDirectory, tDirectory);
+    EXPECT_EQ(shared_library_path(tAppConfigurationWithDirectory), tDirectory / tSharedLibName);
+}
+
 TEST(AppConfiguration, AppConfigurations)
 {
     const auto tTestDirectory = std::filesystem::path{"test-configuration-directory"};
     std::filesystem::create_directories(tTestDirectory);
 
-    save(kTestConfiguration, tTestDirectory / "test-1.config");
-    save(kAnotherTestConfiguration, tTestDirectory / "test-2.config");
+    save_configuration(kTestConfiguration, tTestDirectory / "test-1.config");
+    save_configuration(kAnotherTestConfiguration, tTestDirectory / "test-2.config");
 
     const auto tAppConfigurations = app_configurations({tTestDirectory});
 
     EXPECT_GE(tAppConfigurations.size(), 2u);
 
     const auto tTestConfigurationIter =
-        std::find(tAppConfigurations.cbegin(), tAppConfigurations.cend(), kTestConfiguration);
+        std::find_if(tAppConfigurations.cbegin(), tAppConfigurations.cend(),
+                     [](const auto& aAppConfigurationWithDirectory)
+                     { return kTestConfiguration == aAppConfigurationWithDirectory.mAppConfiguration; });
     EXPECT_NE(tTestConfigurationIter, tAppConfigurations.cend());
 
     const auto tAnotherTestConfigurationIter =
-        std::find(tAppConfigurations.cbegin(), tAppConfigurations.cend(), kAnotherTestConfiguration);
+        std::find_if(tAppConfigurations.cbegin(), tAppConfigurations.cend(),
+                     [](const auto& aAppConfigurationWithDirectory)
+                     { return kAnotherTestConfiguration == aAppConfigurationWithDirectory.mAppConfiguration; });
     EXPECT_NE(tAnotherTestConfigurationIter, tAppConfigurations.cend());
 }
 

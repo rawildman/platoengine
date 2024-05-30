@@ -27,13 +27,13 @@ TEST(PluginCriteria, RegisterApps)
     const auto tVampireApp =
         services::AppConfiguration{/*.mName=*/std::string{tVampireAppName}, /*mLibraryFileName=*/"libvampire.so",
                                    /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
-    services::save(tVampireApp, tTestDirectory / "vampire.config");
+    services::save_configuration(tVampireApp, tTestDirectory / "vampire.config");
 
     constexpr auto tMummyAppName = std::string_view{"mummy"};
     const auto tMummyApp =
         services::AppConfiguration{/*.mName=*/std::string{tMummyAppName}, /*.mLibraryFileName=*/"libmummy.so",
                                    /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
-    services::save(tMummyApp, tTestDirectory / "mummy.config");
+    services::save_configuration(tMummyApp, tTestDirectory / "mummy.config");
 
     const auto tNumRegistered = register_plugin_apps({tTestDirectory});
 

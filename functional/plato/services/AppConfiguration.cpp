@@ -14,7 +14,8 @@ namespace
 constexpr auto kConfigFileExtension = std::string_view{".config"};
 }  // namespace
 
-std::vector<AppConfiguration> app_configurations(std::vector<std::filesystem::path> aAdditionalSearchDirectories)
+std::vector<AppConfigurationWithDirectory> app_configurations(
+    std::vector<std::filesystem::path> aAdditionalSearchDirectories)
 {
     auto tSearchDirectories = std::move(aAdditionalSearchDirectories);
     if (auto tPluginPath = plugin_directory_path())
@@ -22,25 +23,38 @@ std::vector<AppConfiguration> app_configurations(std::vector<std::filesystem::pa
         tSearchDirectories.push_back(std::move(tPluginPath).value());
     }
 
-    auto tAppConfigurations = std::vector<AppConfiguration>{};
+    auto tAppConfigurations = std::vector<AppConfigurationWithDirectory>{};
     for (const auto& tDirectory : tSearchDirectories)
     {
         utilities::transform_if(
             std::filesystem::directory_iterator{tDirectory}, std::back_inserter(tAppConfigurations),
-            [](const auto& tDirectoryEntry) { return load(tDirectoryEntry.path()); },
+            [&tDirectory](const auto& tDirectoryEntry)
+            { return app_configuration_with_directory(load_configuration(tDirectoryEntry.path()), tDirectory); },
             [](const auto& tDirectoryEntry) { return tDirectoryEntry.path().extension() == kConfigFileExtension; });
     }
     return tAppConfigurations;
 }
 
-void save(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename)
+AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
+                                                               std::filesystem::path aDirectory)
+{
+    return AppConfigurationWithDirectory{/*.mAppConfiguration=*/std::move(aAppConfiguration),
+                                         /*.mLibraryDirectory=*/std::move(aDirectory)};
+}
+
+std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration)
+{
+    return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mAppConfiguration.mLibraryFileName;
+}
+
+void save_configuration(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename)
 {
     auto tOutFileStream = std::ofstream{aFilename};
     auto tOutputArchive = boost::archive::text_oarchive{tOutFileStream};
     tOutputArchive << aAppConfiguration;
 }
 
-AppConfiguration load(const std::filesystem::path& aFilename)
+AppConfiguration load_configuration(const std::filesystem::path& aFilename)
 {
     auto tInFileStream = std::ifstream{aFilename};
     auto tInputArchive = boost::archive::text_iarchive{tInFileStream};

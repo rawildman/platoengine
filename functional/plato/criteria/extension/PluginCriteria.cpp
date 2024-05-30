@@ -18,9 +18,11 @@ std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAddi
     for (const auto& tAppConfiguration : tAppConfigurations)
     {
         [[maybe_unused]] auto tAppRegistration = library::CriterionRegistration{
-            tAppConfiguration.mName, [tAppConfiguration](const plato::criteria::library::CriterionInput& aInput) {
+            tAppConfiguration.mAppConfiguration.mName,
+            [tAppConfiguration](const plato::criteria::library::CriterionInput& aInput)
+            {
                 return make_shared_lib_function(
-                    SharedLibCriterion{tAppConfiguration.mLibraryFileName, aInput.mInputFiles.mList});
+                    SharedLibCriterion{services::shared_library_path(tAppConfiguration), aInput.mInputFiles.mList});
             }};
     }
     return tAppConfigurations.size();

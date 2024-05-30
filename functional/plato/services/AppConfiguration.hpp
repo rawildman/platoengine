@@ -19,15 +19,33 @@ struct AppConfiguration
     bool mHasSerialImplementation = false;
 };
 
+/// @brief Associates an AppConfiguration with the directory in which it was found.
+///
+/// The purpose of this is to generate a path for the shared library associated with the
+/// AppConfiguration, `mLibraryFileName`.
+struct AppConfigurationWithDirectory
+{
+    AppConfiguration mAppConfiguration;
+    std::filesystem::path mLibraryDirectory;
+};
+
 /// @brief Returns all app configurations found in the plugins installation directory as well as those found in the
 /// additional search directories given in @a aAdditionalSearchDirectories.
-std::vector<AppConfiguration> app_configurations(std::vector<std::filesystem::path> aAdditionalSearchDirectories = {});
+std::vector<AppConfigurationWithDirectory> app_configurations(
+    std::vector<std::filesystem::path> aAdditionalSearchDirectories = {});
+
+/// @brief Adds the directory @a aDirectory to the app configuration for generating absolute paths.
+AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
+                                                               std::filesystem::path aDirectory);
+
+/// @brief Returns the path to the shared library contained in @a aAppConfiguration.
+std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration);
 
 /// @brief Writes @a aAppConfiguration to disk, at path @a aFilename.
-void save(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename);
+void save_configuration(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename);
 
 /// @brief Reads an AppConfiguration from disk, at path @a aFilename.
-[[nodiscard]] AppConfiguration load(const std::filesystem::path& aFilename);
+[[nodiscard]] AppConfiguration load_configuration(const std::filesystem::path& aFilename);
 
 /// @todo Use `operator==() = default` in c++20
 [[nodiscard]] bool operator==(const AppConfiguration& aAppConfigurationLeft,
