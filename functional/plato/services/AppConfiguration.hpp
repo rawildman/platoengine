@@ -1,6 +1,7 @@
 #ifndef PLATO_SERVICES_APPCONFIGURATION
 #define PLATO_SERVICES_APPCONFIGURATION
 
+#include <filesystem>
 #include <string>
 
 namespace plato::services
@@ -16,6 +17,12 @@ struct AppConfiguration
     bool mHasParallelImplementation = false;
     bool mHasSerialImplementation = false;
 };
+
+/// @brief Writes @a aAppConfiguration to disk, at path @a aFilename.
+void save(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename);
+
+/// @brief Reads an AppConfiguration from disk, at path @a aFilename.
+[[nodiscard]] AppConfiguration load(const std::filesystem::path& aFilename);
 
 /// @todo Use `operator==() = default` in c++20
 [[nodiscard]] bool operator==(const AppConfiguration& aAppConfigurationLeft,
