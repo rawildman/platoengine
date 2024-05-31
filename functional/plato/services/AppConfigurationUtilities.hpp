@@ -13,7 +13,7 @@ namespace plato::services
 ///
 /// On construction, a directory is created, which can then be populated with AppConfiguration files
 /// using the addConfiguration member. The directory and its contents are removed on destruction.
-class ConfigurationDirectorySetupTeardown
+class [[nodiscard]] ConfigurationDirectorySetupTeardown
 {
    public:
     ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory, const boost::mpi::communicator& aComm = {});

@@ -49,7 +49,7 @@ TEST(AppConfiguration, AppConfigurationWithDirectory)
     const auto tDirectory = std::filesystem::path{"/path/to/food"};
 
     const auto tAppConfigurationWithDirectory = app_configuration_with_directory(tAppConfiguration, tDirectory);
-    EXPECT_EQ(tAppConfigurationWithDirectory.mAppConfiguration, tAppConfiguration);
+    EXPECT_EQ(tAppConfigurationWithDirectory.mConfiguration, tAppConfiguration);
     EXPECT_EQ(tAppConfigurationWithDirectory.mLibraryDirectory, tDirectory);
     EXPECT_EQ(shared_library_path(tAppConfigurationWithDirectory), tDirectory / tSharedLibName);
 }
@@ -67,13 +67,13 @@ TEST(AppConfiguration, AppConfigurations)
     const auto tTestConfigurationIter =
         std::find_if(tAppConfigurations.cbegin(), tAppConfigurations.cend(),
                      [](const auto& aAppConfigurationWithDirectory)
-                     { return kTestConfiguration == aAppConfigurationWithDirectory.mAppConfiguration; });
+                     { return kTestConfiguration == aAppConfigurationWithDirectory.mConfiguration; });
     EXPECT_NE(tTestConfigurationIter, tAppConfigurations.cend());
 
     const auto tAnotherTestConfigurationIter =
         std::find_if(tAppConfigurations.cbegin(), tAppConfigurations.cend(),
                      [](const auto& aAppConfigurationWithDirectory)
-                     { return kAnotherTestConfiguration == aAppConfigurationWithDirectory.mAppConfiguration; });
+                     { return kAnotherTestConfiguration == aAppConfigurationWithDirectory.mConfiguration; });
     EXPECT_NE(tAnotherTestConfigurationIter, tAppConfigurations.cend());
 }
 

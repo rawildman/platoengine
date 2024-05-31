@@ -38,13 +38,13 @@ std::vector<AppConfigurationWithDirectory> app_configurations(
 AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
                                                                std::filesystem::path aDirectory)
 {
-    return AppConfigurationWithDirectory{/*.mAppConfiguration=*/std::move(aAppConfiguration),
+    return AppConfigurationWithDirectory{/*.mConfiguration=*/std::move(aAppConfiguration),
                                          /*.mLibraryDirectory=*/std::move(aDirectory)};
 }
 
 std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration)
 {
-    return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mAppConfiguration.mLibraryFileName;
+    return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mConfiguration.mLibraryFileName;
 }
 
 void save_configuration(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename)

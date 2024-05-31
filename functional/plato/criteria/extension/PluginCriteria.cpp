@@ -12,9 +12,9 @@ namespace
 static const auto kNumberOfPluginsLoaded = register_plugin_apps();
 
 template <typename... Args>
-auto make_plugin_app_function(const services::AppConfigurationWithDirectory& aAppConfiguration,
-                              const plato::criteria::library::CriterionInput& aInput,
-                              Args&&... aAdditionalArgs)
+[[nodiscard]] auto make_plugin_app_function(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                                            const criteria::library::CriterionInput& aInput,
+                                            Args&&... aAdditionalArgs)
 {
     return make_shared_lib_function(SharedLibCriterion{services::shared_library_path(aAppConfiguration),
                                                        aInput.mInputFiles.mList,
@@ -29,18 +29,18 @@ std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAddi
     const auto tAppConfigurations = services::app_configurations(aAdditionalSearchDirectories);
     for (const auto& tAppConfiguration : tAppConfigurations)
     {
-        if (tAppConfiguration.mAppConfiguration.mHasSerialImplementation)
+        if (tAppConfiguration.mConfiguration.mHasSerialImplementation)
         {
-            [[maybe_unused]] auto tAppRegistration = library::CriterionRegistration{
-                tAppConfiguration.mAppConfiguration.mName,
-                [tAppConfiguration](const plato::criteria::library::CriterionInput& aInput)
-                { return make_plugin_app_function(tAppConfiguration, aInput); }};
+            [[maybe_unused]] auto tAppRegistration =
+                library::CriterionRegistration{tAppConfiguration.mConfiguration.mName,
+                                               [tAppConfiguration](const criteria::library::CriterionInput& aInput)
+                                               { return make_plugin_app_function(tAppConfiguration, aInput); }};
         }
-        if (tAppConfiguration.mAppConfiguration.mHasParallelImplementation)
+        if (tAppConfiguration.mConfiguration.mHasParallelImplementation)
         {
             [[maybe_unused]] auto tAppRegistration = library::ParallelCriterionRegistration{
-                tAppConfiguration.mAppConfiguration.mName,
-                [tAppConfiguration](const plato::criteria::library::CriterionInput& aInput,
+                tAppConfiguration.mConfiguration.mName,
+                [tAppConfiguration](const criteria::library::CriterionInput& aInput,
                                     const boost::mpi::communicator& aComm)
                 { return make_plugin_app_function(tAppConfiguration, aInput, aComm); }};
         };

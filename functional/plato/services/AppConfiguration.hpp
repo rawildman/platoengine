@@ -25,7 +25,7 @@ struct AppConfiguration
 /// AppConfiguration, `mLibraryFileName`.
 struct AppConfigurationWithDirectory
 {
-    AppConfiguration mAppConfiguration;
+    AppConfiguration mConfiguration;
     std::filesystem::path mLibraryDirectory;
 };
 
