@@ -1,6 +1,7 @@
 #ifndef PLATO_SERVICES_APPCONFIGURATIONUTILITIES
 #define PLATO_SERVICES_APPCONFIGURATIONUTILITIES
 
+#include <boost/mpi/communicator.hpp>
 #include <filesystem>
 
 #include "plato/services/AppConfiguration.hpp"
@@ -15,7 +16,7 @@ namespace plato::services
 class ConfigurationDirectorySetupTeardown
 {
    public:
-    ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory);
+    ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory, const boost::mpi::communicator& aComm = {});
     ~ConfigurationDirectorySetupTeardown();
 
     /// @brief Create a new AppConfiguration file with name @a aFilename in the directory specified at construction.
@@ -27,6 +28,7 @@ class ConfigurationDirectorySetupTeardown
 
    private:
     std::filesystem::path mDirectory;
+    boost::mpi::communicator mComm;
 };
 
 }  // namespace plato::services

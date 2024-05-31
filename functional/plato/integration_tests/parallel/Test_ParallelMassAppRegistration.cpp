@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <boost/mpi/communicator.hpp>
 #include <filesystem>
 
 #include "plato/criteria/library/ObjectiveFactory.hpp"
@@ -9,17 +10,17 @@
 
 namespace plato::integration_tests::serial
 {
-namespace
-{
-}  // namespace
 
-TEST(MassAppRegistration, RegisterLoadAndRun)
+TEST(ParallelMassAppRegistration, RegisterLoadAndRun)
 {
+    auto tComm = boost::mpi::communicator{};
+    EXPECT_GT(tComm.size(), 1u);
+
     constexpr auto tMassAppLibName = std::string_view{"libPlatoTestMassObjective.so"};
     ASSERT_TRUE(std::filesystem::exists(tMassAppLibName));
 
     const auto tAppName = std::string_view{"test-mass-app"};
-    auto tConfigurationTempDirectory = integration_tests::utilities::register_test_mass_app(tAppName);
+    auto tConfigurationTempDirectory = integration_tests::utilities::register_test_mass_app(tAppName, tComm);
     const auto tValidInput = integration_tests::utilities::create_valid_brick_input(tAppName, 1u);
 
     const auto tObjectiveFunction = criteria::library::make_aggregate_objective_function(tValidInput.objectives());

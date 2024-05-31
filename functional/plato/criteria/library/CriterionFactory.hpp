@@ -43,7 +43,7 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput, const Ad
     }
     else
     {
-        throw utilities::Exception("App not supported.");
+        throw utilities::Exception(tAppName + " app not supported.");
     }
 }
 
