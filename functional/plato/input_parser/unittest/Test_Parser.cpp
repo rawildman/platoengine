@@ -392,7 +392,7 @@ TEST(ParsedInput, CommentWithinLine)
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
     test_existence_and_equality(tParsedInput.mObjectives.front().active, false);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kNodalSum);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"nodal_sum"});
 }
 
 TEST(ParsedInput, CommentEntireLine)
@@ -408,7 +408,7 @@ TEST(ParsedInput, CommentEntireLine)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Commented out input"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
 }
 
 TEST(ParsedInput, CommentNonInput)
@@ -423,7 +423,7 @@ TEST(ParsedInput, CommentNonInput)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment on non-input"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
 }
 
 TEST(ParsedInput, CommentMultipleLinesAndCharacters)
@@ -439,7 +439,7 @@ TEST(ParsedInput, CommentMultipleLinesAndCharacters)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment multiple lines and characters"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
     EXPECT_FALSE(tParsedInput.mObjectives.front().active.has_value());
 }
 
