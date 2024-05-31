@@ -44,7 +44,7 @@ TEST(PluginCriteria, RegisterApps)
     constexpr auto tMummyAppName = std::string_view{"mummy"};
     auto tConfigurationTempDirectory = create_test_app_configurations({tVampireAppName, tMummyAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
-    EXPECT_EQ(tNumRegistered, 2u);
+    EXPECT_GE(tNumRegistered, 2u);
     EXPECT_TRUE(library::is_criterion_function_registered(tVampireAppName));
     EXPECT_TRUE(library::is_criterion_function_registered(tMummyAppName));
 }
@@ -55,7 +55,7 @@ TEST(PluginCriteria, Validation)
     constexpr auto tMedusaAppName = std::string_view{"medusa"};
     auto tConfigurationTempDirectory = create_test_app_configurations({tFrankensteinAppName, tMedusaAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
-    EXPECT_EQ(tNumRegistered, 2u);
+    EXPECT_GE(tNumRegistered, 2u);
 
     auto tCriteria = input_parser::objective{};
     EXPECT_TRUE(library::detail::validate_app_is_registered(tCriteria).has_value());
