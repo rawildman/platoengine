@@ -16,16 +16,16 @@ namespace plato::integration_tests::utilities
 /// successfully registered.
 /// @note This assumes that the actual shared library is in the current working directory, which
 ///  will be the case for any unit tests run from the build directory.
-services::ConfigurationDirectorySetupTeardown register_test_mass_app(
+[[nodiscard]] services::ConfigurationDirectorySetupTeardown register_test_mass_app(
     std::string_view aAppName, const boost::mpi::communicator& aComm = boost::mpi::communicator{});
 
 /// @brief Creates test input that has a brick shape geometry, ROL optimization, and an objective
 /// with name @a aMassAppName and number of processors @a aNumProcessors.
-process_manager::library::ValidatedInput create_valid_brick_input(std::string_view aMassAppName,
-                                                                  const unsigned int aNumProcessors);
+[[nodiscard]] process_manager::library::ValidatedInput create_valid_brick_input(std::string_view aMassAppName,
+                                                                                const unsigned int aNumProcessors);
 
 /// @brief Creates arbitrary test controls with the associated total volume for a BrickShapeGeometry.
-std::pair<linear_algebra::DynamicVector<double>, double> brick_shape_geometry_controls_with_volume();
+[[nodiscard]] std::pair<linear_algebra::DynamicVector<double>, double> brick_shape_geometry_controls_with_volume();
 
 }  // namespace plato::integration_tests::utilities
 

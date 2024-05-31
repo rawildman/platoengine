@@ -20,7 +20,7 @@ template <typename Criteria>
 }
 
 template <typename Criteria>
-[[nodiscard]] std::optional<std::string> validate_app(const Criteria& aInput)
+[[nodiscard]] std::optional<std::string> validate_app_is_registered(const Criteria& aInput)
 {
     if (aInput.app.has_value())
     {

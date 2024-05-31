@@ -21,7 +21,7 @@ TEST(ParallelMassAppRegistration, RegisterLoadAndRun)
 
     const auto tAppName = std::string_view{"test-mass-app"};
     auto tConfigurationTempDirectory = integration_tests::utilities::register_test_mass_app(tAppName, tComm);
-    const auto tValidInput = integration_tests::utilities::create_valid_brick_input(tAppName, 1u);
+    const auto tValidInput = integration_tests::utilities::create_valid_brick_input(tAppName, tComm.size());
 
     const auto tObjectiveFunction = criteria::library::make_aggregate_objective_function(tValidInput.objectives());
     const auto tGeometry =
