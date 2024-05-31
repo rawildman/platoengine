@@ -9,22 +9,23 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/services/AppConfiguration.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
 namespace plato::integration_tests::serial
 {
+
 TEST(MassAppRegistration, RegisterLoadAndRun)
 {
-    const auto tTestDirectory = std::filesystem::path{"test-plugin-directory"};
-    std::filesystem::create_directories(tTestDirectory);
+    auto tConfigurationTempDirectory = services::ConfigurationDirectorySetupTeardown{"test-plugin-directory"};
 
     constexpr auto tAppName = std::string_view{"test-mass-app"};
     const auto tAppConfiguration = services::AppConfiguration{
         /*.mName=*/std::string{tAppName}, /*.mLibraryFileName=*/"../libPlatoTestMassObjective.so",
         /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
-    services::save_configuration(tAppConfiguration, tTestDirectory / "test-mass-app.config");
+    tConfigurationTempDirectory.addConfiguration(tAppConfiguration, "test-mass-app.config");
 
-    const auto tNumRegistered = criteria::extension::register_plugin_apps({tTestDirectory});
+    const auto tNumRegistered = criteria::extension::register_plugin_apps({tConfigurationTempDirectory.directory()});
 
     EXPECT_EQ(tNumRegistered, 1u);
 
@@ -52,7 +53,5 @@ TEST(MassAppRegistration, RegisterLoadAndRun)
     constexpr auto tExpectedValue = tX * tY * tZ;
     const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
     EXPECT_EQ(tResult, tExpectedValue);
-
-    std::filesystem::remove_all(tTestDirectory);
 }
 }  // namespace plato::integration_tests::serial

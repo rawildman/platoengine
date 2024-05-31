@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "plato/services/AppConfiguration.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::services
@@ -55,13 +56,11 @@ TEST(AppConfiguration, AppConfigurationWithDirectory)
 
 TEST(AppConfiguration, AppConfigurations)
 {
-    const auto tTestDirectory = std::filesystem::path{"test-configuration-directory"};
-    std::filesystem::create_directories(tTestDirectory);
+    auto tConfigurationTempDirectory = ConfigurationDirectorySetupTeardown{"test-configuration-directory"};
+    tConfigurationTempDirectory.addConfiguration(kTestConfiguration, "test-1.config")
+        .addConfiguration(kAnotherTestConfiguration, "test-2.config");
 
-    save_configuration(kTestConfiguration, tTestDirectory / "test-1.config");
-    save_configuration(kAnotherTestConfiguration, tTestDirectory / "test-2.config");
-
-    const auto tAppConfigurations = app_configurations({tTestDirectory});
+    const auto tAppConfigurations = app_configurations({tConfigurationTempDirectory.directory()});
 
     EXPECT_GE(tAppConfigurations.size(), 2u);
 
