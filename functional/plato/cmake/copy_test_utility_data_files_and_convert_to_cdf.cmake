@@ -20,11 +20,8 @@ macro( copy_test_utility_data_files_and_convert_to_cdf )
         set(BUILDPATH_CDF_FILE "${FUNCTIONAL_TEST_DATA_BUILD_PATH}/${BASE_FILE_NAME}.cdf")
         set(INSTALLPATH_CDF_FILE "${FUNCTIONAL_TEST_DATA_INSTALL_PATH}/${BASE_FILE_NAME}.cdf")
         
-        message("Attempting to run ncgen on ${FULLPATH_TXT_FILE} with destinations of ${BUILDPATH_CDF_FILE} and ${INSTALLPATH_CDF_FILE}")
-        
         execute_process(COMMAND "${NCGEN_EXE}" ${FULLPATH_TXT_FILE} -o ${BUILDPATH_CDF_FILE} ) 
         execute_process(COMMAND "${NCGEN_EXE}" ${FULLPATH_TXT_FILE} -o ${INSTALLPATH_CDF_FILE} ) 
-    
         
     endforeach(TXTFILE)
 
