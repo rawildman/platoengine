@@ -8,7 +8,7 @@
 #include "plato/criteria/library/CriterionValidation.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/services/AppConfiguration.hpp"
-#include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
 #include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::extension::unittest
@@ -22,9 +22,13 @@ namespace plato::criteria::extension::unittest
     {
         const auto tLibName = utilities::concatenate("lib", tAppName, ".so");
         const auto tConfigName = utilities::concatenate(tAppName, ".config");
+        const auto tCriterionConfiguration =
+            services::CriterionConfiguration{/*.mName=*/"test-criterion", /*.mFunctionName=*/"plato_create_criterion",
+                                             /*.mIsParallelized=*/true};
         tConfigurationTempDirectory.addConfiguration(
-            services::AppConfiguration{/*.mName=*/std::string{tAppName}, /*mLibraryFileName=*/tLibName,
-                                       /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true},
+            services::AppConfiguration{/*.mName=*/std::string{tAppName},
+                                       /*mLibraryFileName=*/tLibName,
+                                       /*.mCriteria=*/{tCriterionConfiguration}},
             tConfigName);
     }
     return tConfigurationTempDirectory;

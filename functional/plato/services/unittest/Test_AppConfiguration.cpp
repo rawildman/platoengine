@@ -5,19 +5,29 @@
 
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
 #include "plato/test_utilities/TestContext.hpp"
 
 namespace plato::services
 {
 namespace
 {
-const auto kTestConfiguration =
-    services::AppConfiguration{/*.name=*/"test-app", /*.lib_name=*/"libtest.so",
-                               /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
+const auto kTestCriterionConfiguration =
+    CriterionConfiguration{/*.mName=*/
+                           "test-criterion", /*.mFunctionName=*/"plato_test_criterion", /*.mHasParallelized=*/true};
+
+const auto kAnotherTestCriterionConfiguration = CriterionConfiguration{
+    /*.mName=*/
+    "antother_test-criterion", /*.mFunctionName=*/"plato_another_test_criterion", /*.mIsParallelized=*/false};
+
+const auto kTestConfiguration = AppConfiguration{/*.mName=*/"test-app",
+                                                 /*.mLibraryFileName=*/"libtest.so",
+                                                 {kTestCriterionConfiguration}};
 
 const auto kAnotherTestConfiguration =
-    services::AppConfiguration{/*.name=*/"another-test-app", /*.lib_name=*/"libanothertest.so",
-                               /*.mHasParallelImplementation=*/false, /*.mHasSerialImplementation=*/true};
+    AppConfiguration{/*.mName=*/"another-test-app",
+                     /*.mLibraryFileName=*/"libanothertest.so",
+                     {kTestCriterionConfiguration, kAnotherTestCriterionConfiguration}};
 
 void testSerializeRoundTrip(const AppConfiguration& aSerializable, const test_utilities::TestContext& aTestContext)
 {
@@ -35,17 +45,17 @@ void testSerializeRoundTrip(const AppConfiguration& aSerializable, const test_ut
 TEST(AppConfiguration, Serialization)
 {
     const auto tAppConfiguration =
-        services::AppConfiguration{/*.name=*/"test-app", /*.lib_name=*/"libtest.so",
-                                   /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
+        services::AppConfiguration{/*.name=*/"test-app",
+                                   /*.lib_name=*/"libtest.so",
+                                   {kTestCriterionConfiguration, kAnotherTestCriterionConfiguration}};
     testSerializeRoundTrip(tAppConfiguration, TEST_CONTEXT("App configuration"));
 }
 
 TEST(AppConfiguration, AppConfigurationWithDirectory)
 {
     const auto tSharedLibName = std::string_view{"libappetizer.so"};
-    const auto tAppConfiguration =
-        services::AppConfiguration{/*.name=*/"appetizer", /*.lib_name=*/std::string{tSharedLibName},
-                                   /*.mHasParallelImplementation=*/true, /*.mHasSerialImplementation=*/true};
+    const auto tAppConfiguration = services::AppConfiguration{
+        /*.name=*/"appetizer", /*.lib_name=*/std::string{tSharedLibName}, {kTestCriterionConfiguration}};
     const auto tDirectory = std::filesystem::path{"/path/to/food"};
 
     const auto tAppConfigurationWithDirectory = app_configuration_with_directory(tAppConfiguration, tDirectory);

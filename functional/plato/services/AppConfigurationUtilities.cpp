@@ -2,38 +2,16 @@
 
 namespace plato::services
 {
-namespace
+AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
+                                                               std::filesystem::path aDirectory)
 {
-constexpr auto kRootRank = int{0};
-}
-ConfigurationDirectorySetupTeardown::ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory,
-                                                                         const boost::mpi::communicator& aComm)
-    : mDirectory{std::move(aDirectory)}, mComm{aComm}
-{
-    if (mComm.rank() == kRootRank)
-    {
-        std::filesystem::create_directories(mDirectory);
-    }
+    return AppConfigurationWithDirectory{/*.mConfiguration=*/std::move(aAppConfiguration),
+                                         /*.mLibraryDirectory=*/std::move(aDirectory)};
 }
 
-ConfigurationDirectorySetupTeardown::~ConfigurationDirectorySetupTeardown()
+std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration)
 {
-    if (mComm.rank() == kRootRank)
-    {
-        std::filesystem::remove_all(mDirectory);
-    }
+    return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mConfiguration.mLibraryFileName;
 }
-
-ConfigurationDirectorySetupTeardown& ConfigurationDirectorySetupTeardown::addConfiguration(
-    const services::AppConfiguration& aConfiguration, const std::filesystem::path& aFilename)
-{
-    if (mComm.rank() == kRootRank)
-    {
-        services::save_configuration(aConfiguration, mDirectory / aFilename);
-    }
-    return *this;
-}
-
-const std::filesystem::path& ConfigurationDirectorySetupTeardown::directory() const { return mDirectory; }
 
 }  // namespace plato::services

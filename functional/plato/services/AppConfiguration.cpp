@@ -4,6 +4,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <fstream>
 
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/services/PluginDirectoryPath.hpp"
 #include "plato/utilities/TransformIf.hpp"
 
@@ -35,18 +36,6 @@ std::vector<AppConfigurationWithDirectory> app_configurations(
     return tAppConfigurations;
 }
 
-AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
-                                                               std::filesystem::path aDirectory)
-{
-    return AppConfigurationWithDirectory{/*.mConfiguration=*/std::move(aAppConfiguration),
-                                         /*.mLibraryDirectory=*/std::move(aDirectory)};
-}
-
-std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration)
-{
-    return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mConfiguration.mLibraryFileName;
-}
-
 void save_configuration(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename)
 {
     auto tOutFileStream = std::ofstream{aFilename};
@@ -63,11 +52,18 @@ AppConfiguration load_configuration(const std::filesystem::path& aFilename)
     return tAppConfiguration;
 }
 
+bool operator==(const CriterionConfiguration& aCriterionConfigurationLeft,
+                const CriterionConfiguration& aCriterionConfigurationRight)
+{
+    return aCriterionConfigurationLeft.mName == aCriterionConfigurationRight.mName &&
+           aCriterionConfigurationLeft.mFunctionName == aCriterionConfigurationRight.mFunctionName &&
+           aCriterionConfigurationLeft.mIsParallelized == aCriterionConfigurationRight.mIsParallelized;
+}
+
 bool operator==(const AppConfiguration& aAppConfigurationLeft, const AppConfiguration& aAppConfigurationRight)
 {
     return aAppConfigurationLeft.mName == aAppConfigurationRight.mName &&
            aAppConfigurationLeft.mLibraryFileName == aAppConfigurationRight.mLibraryFileName &&
-           aAppConfigurationLeft.mHasParallelImplementation == aAppConfigurationRight.mHasParallelImplementation &&
-           aAppConfigurationLeft.mHasSerialImplementation == aAppConfigurationRight.mHasSerialImplementation;
+           aAppConfigurationLeft.mCriteria == aAppConfigurationRight.mCriteria;
 }
 }  // namespace plato::services

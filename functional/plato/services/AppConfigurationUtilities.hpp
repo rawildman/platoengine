@@ -1,35 +1,18 @@
 #ifndef PLATO_SERVICES_APPCONFIGURATIONUTILITIES
 #define PLATO_SERVICES_APPCONFIGURATIONUTILITIES
 
-#include <boost/mpi/communicator.hpp>
 #include <filesystem>
 
 #include "plato/services/AppConfiguration.hpp"
 
 namespace plato::services
 {
-/// @brief The purpose of this class is to facilitate creating and destroying a temporary directory
-/// to hold app configurations using the RAII idiom.
-///
-/// On construction, a directory is created, which can then be populated with AppConfiguration files
-/// using the addConfiguration member. The directory and its contents are removed on destruction.
-class [[nodiscard]] ConfigurationDirectorySetupTeardown
-{
-   public:
-    ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory, const boost::mpi::communicator& aComm = {});
-    ~ConfigurationDirectorySetupTeardown();
+/// @brief Adds the directory @a aDirectory to the app configuration for generating absolute paths.
+AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,
+                                                               std::filesystem::path aDirectory);
 
-    /// @brief Create a new AppConfiguration file with name @a aFilename in the directory specified at construction.
-    ConfigurationDirectorySetupTeardown& addConfiguration(const services::AppConfiguration& aConfiguration,
-                                                          const std::filesystem::path& aFilename);
-
-    /// @brief Get the directory created on construction.
-    const std::filesystem::path& directory() const;
-
-   private:
-    std::filesystem::path mDirectory;
-    boost::mpi::communicator mComm;
-};
+/// @brief Returns the path to the shared library contained in @a aAppConfiguration.
+std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration);
 
 }  // namespace plato::services
 

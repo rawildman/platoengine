@@ -8,7 +8,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
-#include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
 
 namespace plato::integration_tests::utilities
 {

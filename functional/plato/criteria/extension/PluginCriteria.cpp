@@ -4,6 +4,7 @@
 
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 #include "plato/services/AppConfiguration.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 
 namespace plato::criteria::extension
 {
@@ -29,21 +30,22 @@ std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAddi
     const auto tAppConfigurations = services::app_configurations(aAdditionalSearchDirectories);
     for (const auto& tAppConfiguration : tAppConfigurations)
     {
-        if (tAppConfiguration.mConfiguration.mHasSerialImplementation)
-        {
-            [[maybe_unused]] auto tAppRegistration =
-                library::CriterionRegistration{tAppConfiguration.mConfiguration.mName,
-                                               [tAppConfiguration](const criteria::library::CriterionInput& aInput)
-                                               { return make_plugin_app_function(tAppConfiguration, aInput); }};
-        }
-        if (tAppConfiguration.mConfiguration.mHasParallelImplementation)
+        assert(!tAppConfiguration.mConfiguration.mCriteria.empty());
+        if (tAppConfiguration.mConfiguration.mCriteria.front().mIsParallelized)
         {
             [[maybe_unused]] auto tAppRegistration = library::ParallelCriterionRegistration{
                 tAppConfiguration.mConfiguration.mName,
                 [tAppConfiguration](const criteria::library::CriterionInput& aInput,
                                     const boost::mpi::communicator& aComm)
                 { return make_plugin_app_function(tAppConfiguration, aInput, aComm); }};
-        };
+        }
+        else
+        {
+            [[maybe_unused]] auto tAppRegistration =
+                library::CriterionRegistration{tAppConfiguration.mConfiguration.mName,
+                                               [tAppConfiguration](const criteria::library::CriterionInput& aInput)
+                                               { return make_plugin_app_function(tAppConfiguration, aInput); }};
+        }
     }
     return tAppConfigurations.size();
 }
