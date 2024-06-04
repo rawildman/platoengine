@@ -94,40 +94,40 @@ TEST(STKVolumeUtilities, MeshVolume)
 TEST(STKVolumeUtilities, ExternalMeshVolume_Box_2x4x8_hex)
 {
     constexpr double tGold = 2 * 4 * 8;
-    read_mesh_and_test_volume("box_2x4x8_hex.exo", tGold);
-    read_mesh_and_test_volume("box_2x4x8_hex20.exo", tGold);
+    read_mesh_and_test_volume("box_2x4x8_hex.cdf", tGold);
+    read_mesh_and_test_volume("box_2x4x8_hex20.cdf", tGold);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Box_3x4x7_tet)
 {
     constexpr double tGold = 3 * 4 * 7;
-    read_mesh_and_test_volume("box_3x4x7_tet4.exo", tGold);
-    read_mesh_and_test_volume("box_3x4x7_tet10.exo", tGold);
+    read_mesh_and_test_volume("box_3x4x7_tet4.cdf", tGold);
+    read_mesh_and_test_volume("box_3x4x7_tet10.cdf", tGold);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Box_2x4x10_hex_and_tet)
 {
-    read_mesh_and_test_volume("box_2x4x10_hex_and_tet.exo", 2 * 4 * 10);
+    read_mesh_and_test_volume("box_2x4x10_hex_and_tet.cdf", 2 * 4 * 10);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Rectangle_3x4_quad)
 {
-    read_mesh_and_test_volume("rectangle_3x4_quad4.exo", 3 * 4);
+    read_mesh_and_test_volume("rectangle_3x4_quad4.cdf", 3 * 4);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Rectangle_3x4_shell)
 {
-    read_mesh_and_test_volume("rectangle_3x4_shell4.exo", 3 * 4);
+    read_mesh_and_test_volume("rectangle_3x4_shell4.cdf", 3 * 4);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Rectangle_3x4_tri)
 {
-    read_mesh_and_test_volume("rectangle_3x4_tri3.exo", 3 * 4);
+    read_mesh_and_test_volume("rectangle_3x4_tri3.cdf", 3 * 4);
 }
 
 TEST(STKVolumeUtilities, ExternalMeshVolume_Rectangle_4x10_tri_and_shell)
 {
-    read_mesh_and_test_volume("rectangle_4x10_tri_and_shell.exo", 4 * 10);
+    read_mesh_and_test_volume("rectangle_4x10_tri_and_shell.cdf", 4 * 10);
 }
 
 }  // namespace plato::utilities::unittest
