@@ -17,9 +17,30 @@ template <typename... Args>
                                             const criteria::library::CriterionInput& aInput,
                                             Args&&... aAdditionalArgs)
 {
-    return make_shared_lib_function(SharedLibCriterion{services::shared_library_path(aAppConfiguration),
-                                                       aInput.mInputFiles.mList,
-                                                       std::forward<Args>(aAdditionalArgs)...});
+    return make_shared_lib_function(
+        SharedLibCriterion{aAppConfiguration, aInput.mInputFiles.mList, std::forward<Args>(aAdditionalArgs)...});
+}
+
+void register_all_criteria(const services::AppConfigurationWithDirectory& aAppConfiguration)
+{
+    for (const auto& tCriterionConfiguration : aAppConfiguration.mConfiguration.mCriteria)
+    {
+        if (tCriterionConfiguration.mIsParallelized)
+        {
+            [[maybe_unused]] auto tAppRegistration = library::ParallelCriterionRegistration{
+                aAppConfiguration.mConfiguration.mName,
+                [aAppConfiguration](const criteria::library::CriterionInput& aInput,
+                                    const boost::mpi::communicator& aComm)
+                { return make_plugin_app_function(aAppConfiguration, aInput, aComm); }};
+        }
+        else
+        {
+            [[maybe_unused]] auto tAppRegistration =
+                library::CriterionRegistration{aAppConfiguration.mConfiguration.mName,
+                                               [aAppConfiguration](const criteria::library::CriterionInput& aInput)
+                                               { return make_plugin_app_function(aAppConfiguration, aInput); }};
+        }
+    }
 }
 }  // namespace
 
@@ -30,22 +51,7 @@ std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAddi
     const auto tAppConfigurations = services::app_configurations(aAdditionalSearchDirectories);
     for (const auto& tAppConfiguration : tAppConfigurations)
     {
-        assert(!tAppConfiguration.mConfiguration.mCriteria.empty());
-        if (tAppConfiguration.mConfiguration.mCriteria.front().mIsParallelized)
-        {
-            [[maybe_unused]] auto tAppRegistration = library::ParallelCriterionRegistration{
-                tAppConfiguration.mConfiguration.mName,
-                [tAppConfiguration](const criteria::library::CriterionInput& aInput,
-                                    const boost::mpi::communicator& aComm)
-                { return make_plugin_app_function(tAppConfiguration, aInput, aComm); }};
-        }
-        else
-        {
-            [[maybe_unused]] auto tAppRegistration =
-                library::CriterionRegistration{tAppConfiguration.mConfiguration.mName,
-                                               [tAppConfiguration](const criteria::library::CriterionInput& aInput)
-                                               { return make_plugin_app_function(tAppConfiguration, aInput); }};
-        }
+        register_all_criteria(tAppConfiguration);
     }
     return tAppConfigurations.size();
 }

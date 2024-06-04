@@ -14,11 +14,11 @@ services::ConfigurationDirectorySetupTeardown register_test_mass_app(const std::
     auto tConfigurationTempDirectory = services::ConfigurationDirectorySetupTeardown{tTestPluginDirectory, aComm};
 
     const auto tCriterionSerialConfiguration =
-        services::CriterionConfiguration{/*.mName=*/"mass", /*.mFunctionName=*/"plato_create_criterion",
+        services::CriterionConfiguration{/*.mName=*/"mass", /*.mFunctionName=*/"plato_create_test_mass_criterion",
                                          /*.mIsParallelized=*/false};
-    const auto tCriterionParallelConfiguration =
-        services::CriterionConfiguration{/*.mName=*/"mass", /*.mFunctionName=*/"plato_create_parallel_criterion",
-                                         /*.mIsParallelized=*/true};
+    const auto tCriterionParallelConfiguration = services::CriterionConfiguration{
+        /*.mName=*/"mass", /*.mFunctionName=*/"plato_create_parallel_test_mass_criterion",
+        /*.mIsParallelized=*/true};
     tConfigurationTempDirectory.addConfiguration(
         services::AppConfiguration{/*.mName=*/std::string{aAppName},
                                    /*.mLibraryFileName=*/"../libPlatoTestMassObjective.so",

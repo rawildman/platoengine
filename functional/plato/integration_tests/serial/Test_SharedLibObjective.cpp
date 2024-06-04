@@ -4,6 +4,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
@@ -22,7 +23,7 @@ const auto kMeshGenerator =
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
+    const auto tBad = criteria::extension::SharedLibCriterion{services::default_app_configuration("badRobot.so"), {}};
     std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
 }
 }  // namespace
@@ -35,7 +36,7 @@ TEST(SharedLibObjective, BadLibraryPath)
 TEST(SharedLibObjective, CallValue)
 {
     namespace pfu = plato::utilities;
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = criteria::extension::SharedLibCriterion{services::default_app_configuration(kLibPath), {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
@@ -48,7 +49,7 @@ TEST(SharedLibObjective, CallValue)
 TEST(SharedLibObjective, CallGradient)
 {
     namespace pfu = plato::utilities;
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = criteria::extension::SharedLibCriterion{services::default_app_configuration(kLibPath), {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
@@ -64,7 +65,7 @@ TEST(SharedLibObjective, ValueUsingFunction)
 {
     namespace pfu = plato::utilities;
     const auto tFunction = criteria::extension::make_shared_lib_function(
-        criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
+        criteria::extension::SharedLibCriterion{services::default_app_configuration(kLibPath), {}});
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));

@@ -6,7 +6,7 @@
 #include "plato/filter/library/FilterInterface.hpp"
 #include "plato/filter/library/FilterJacobian.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
-#include "plato/utilities/SharedLibraryUtilities.hpp"
+#include "plato/services/SharedLibrarySetupTeardown.hpp"
 
 namespace plato::filter::library
 {
@@ -46,12 +46,10 @@ auto make_filter_function_from_interface(std::unique_ptr<FilterInterface> aFilte
 std::unique_ptr<FilterInterface> load_filter(const input_parser::density_topology& aInput,
                                              const std::filesystem::path& aSharedLibraryPath)
 {
-    using CreateFilterFunction = std::add_pointer_t<std::unique_ptr<FilterInterface>(const FilterParameters&)>;
-    void* const tSharedLibInterface = plato::utilities::load_shared_library(aSharedLibraryPath);
-    const auto tCreateFilterFunction = plato::utilities::load_function<CreateFilterFunction>(
-        tSharedLibInterface, kCreateFilterFunctionName, aSharedLibraryPath);
+    using FilterFunctionSignature = std::unique_ptr<FilterInterface>(const FilterParameters&);
 
-    return tCreateFilterFunction(to_filter_parameters(aInput));
+    auto tSharedLibrary = services::SharedLibrarySetupTeardown{aSharedLibraryPath};
+    return tSharedLibrary.call<FilterFunctionSignature>(kCreateFilterFunctionName, to_filter_parameters(aInput));
 }
 
 bool is_filter_function_registered(const std::string_view aFunctionName)

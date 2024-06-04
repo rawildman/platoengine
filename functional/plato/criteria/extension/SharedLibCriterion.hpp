@@ -14,6 +14,11 @@
 #include "plato/criteria/library/CriterionRegistration.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 
+namespace plato::services
+{
+struct AppConfigurationWithDirectory;
+}
+
 namespace plato::criteria::extension
 {
 /// @brief for a criterion that is loaded from a shared library.
@@ -23,8 +28,9 @@ namespace plato::criteria::extension
 class SharedLibCriterion
 {
    public:
-    SharedLibCriterion(const std::filesystem::path& aSharedLibPath, const std::vector<std::string>& aFileNames);
-    SharedLibCriterion(const std::filesystem::path& aSharedLibPath,
+    SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                       const std::vector<std::string>& aFileNames);
+    SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
                        const std::vector<std::string>& aFileNames,
                        const boost::mpi::communicator& aComm);
 
@@ -39,13 +45,6 @@ class SharedLibCriterion
 
 [[nodiscard]] auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
     -> core::Function<double, linear_algebra::DynamicVector<double>, const core::MeshProxy&>;
-
-template <typename... Args>
-[[nodiscard]] SharedLibCriterion make_shared_lib_criterion(const plato::criteria::library::CriterionInput& aInput,
-                                                           Args&&... aArgs)
-{
-    return SharedLibCriterion{aInput.mSharedLibraryPath.mToken, aInput.mInputFiles.mList, std::forward<Args>(aArgs)...};
-}
 
 }  // namespace plato::criteria::extension
 

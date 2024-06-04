@@ -28,3 +28,11 @@ std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(co
     return std::make_unique<integration_tests::test_mass_objective::MassObjectiveInterface>();
 }
 }  // namespace plato
+
+std::unique_ptr<::plato::criteria::library::CriterionInterface> plato_create_test_mass_criterion(
+    const std::vector<std::string>&)
+{
+    // This version is for testing the plugin loading mechanism
+    abort();
+    return std::make_unique<::plato::integration_tests::test_mass_objective::MassObjectiveInterface>();
+}

@@ -49,8 +49,8 @@ TEST(PluginCriteria, RegisterApps)
     auto tConfigurationTempDirectory = create_test_app_configurations({tVampireAppName, tMummyAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_GE(tNumRegistered, 2u);
-    EXPECT_TRUE(library::is_criterion_function_registered(tVampireAppName));
-    EXPECT_TRUE(library::is_criterion_function_registered(tMummyAppName));
+    EXPECT_TRUE(library::is_parallel_criterion_function_registered(tVampireAppName));
+    EXPECT_TRUE(library::is_parallel_criterion_function_registered(tMummyAppName));
 }
 
 TEST(PluginCriteria, Validation)

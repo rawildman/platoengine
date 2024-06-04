@@ -6,6 +6,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 #include "plato/utilities/StringUtilities.hpp"
@@ -25,7 +26,8 @@ TEST(ParallelMassObjective, CallValueAndGradient)
     auto tComm = boost::mpi::communicator{};
     EXPECT_GT(tComm.size(), 1u);
 
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}, tComm};
+    const auto tSharedLib =
+        criteria::extension::SharedLibCriterion{services::default_app_configuration(kLibPath), {}, tComm};
 
     const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
     utilities::write_mesh(tRankMeshName, utilities::generate_stk_mesh(kMeshGenerator));

@@ -19,7 +19,8 @@ namespace plato::services
 class [[nodiscard]] ConfigurationDirectorySetupTeardown
 {
    public:
-    ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory, const boost::mpi::communicator& aComm = {});
+    explicit ConfigurationDirectorySetupTeardown(std::filesystem::path aDirectory,
+                                                 const boost::mpi::communicator& aComm = {});
     ~ConfigurationDirectorySetupTeardown();
 
     /// @brief Create a new AppConfiguration file with name @a aFilename in the directory specified at construction.
@@ -27,7 +28,7 @@ class [[nodiscard]] ConfigurationDirectorySetupTeardown
                                                           const std::filesystem::path& aFilename);
 
     /// @brief Get the directory created on construction.
-    const std::filesystem::path& directory() const;
+    [[nodiscard]] const std::filesystem::path& directory() const;
 
    private:
     std::filesystem::path mDirectory;

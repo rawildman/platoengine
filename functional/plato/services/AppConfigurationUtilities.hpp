@@ -14,6 +14,12 @@ AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration 
 /// @brief Returns the path to the shared library contained in @a aAppConfiguration.
 std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration);
 
+/// @brief Generates an AppConfiguration for a `custom_app`.
+///
+/// This is used when the criterion type is `custom_app` and an AppConfiguration is needed to interface
+/// with other code. It contains hard-coded function names for the functions to load from a the shared lib and
+/// is assumed that both serial and parallel functions are implemented.
+AppConfigurationWithDirectory default_app_configuration(const std::filesystem::path& aSharedLibPath);
 }  // namespace plato::services
 
 #endif
