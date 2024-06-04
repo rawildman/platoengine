@@ -67,7 +67,7 @@ TEST(UserDefinedToken, Iterators)
 TEST(UserDefinedToken, ConstIterators)
 {
     constexpr std::string_view tTestString = "const_foo_bar";
-    auto tUserDefinedTokenConst = UserDefinedToken<LowerCaseWithUnderscore>{std::string{tTestString}};
+    const auto tUserDefinedTokenConst = UserDefinedToken<LowerCaseWithUnderscore>{std::string{tTestString}};
     EXPECT_EQ(tUserDefinedTokenConst.mToken, tTestString.data());
 
     std::string tCopy;

@@ -40,11 +40,6 @@ struct AppConfigurationWithDirectory
     std::filesystem::path mLibraryDirectory;
 };
 
-/// @brief Returns all app configurations found in the plugins installation directory as well as those found in the
-/// additional search directories given in @a aAdditionalSearchDirectories.
-std::vector<AppConfigurationWithDirectory> app_configurations(
-    std::vector<std::filesystem::path> aAdditionalSearchDirectories = {});
-
 /// @brief Writes @a aAppConfiguration to disk, at path @a aFilename.
 void save_configuration(const AppConfiguration& aAppConfiguration, const std::filesystem::path& aFilename);
 

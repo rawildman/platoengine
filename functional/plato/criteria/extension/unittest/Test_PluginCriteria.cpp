@@ -8,6 +8,7 @@
 #include "plato/criteria/library/CriterionValidation.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/services/AppConfiguration.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
 #include "plato/utilities/StringUtilities.hpp"
 
