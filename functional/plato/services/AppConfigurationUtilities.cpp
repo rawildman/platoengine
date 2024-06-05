@@ -1,5 +1,7 @@
 #include "plato/services/AppConfigurationUtilities.hpp"
 
+#include <algorithm>
+
 #include "plato/services/PluginDirectoryPath.hpp"
 #include "plato/utilities/TransformIf.hpp"
 
@@ -48,14 +50,36 @@ std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& a
 
 AppConfigurationWithDirectory default_app_configuration(const std::filesystem::path& aSharedLibPath)
 {
-    auto tSerialCriterion = CriterionConfiguration{/*.mName=*/std::string{kDefaultName},
-                                                   std::string{kDefaultSerialFunctionName}, /*.mIsParallelized=*/false};
-    auto tParallelCriterion = CriterionConfiguration{
-        /*.mName=*/std::string{kDefaultName}, std::string{kDefaultParallelFunctionName}, /*.mIsParallelized=*/true};
+    auto tSerialCriterion =
+        CriterionConfiguration{/*.mName=*/std::string{kDefaultName},
+                               /*.mIsParallelized=*/false, /*.mFunctionName=*/std::string{kDefaultSerialFunctionName}};
+    auto tParallelCriterion = CriterionConfiguration{/*.mName=*/std::string{kDefaultName}, /*.mIsParallelized=*/true,
+                                                     /*.mFunctionName=*/std::string{kDefaultParallelFunctionName}};
     auto tAppConfiguration =
         AppConfiguration{/*.mName=*/std::string{kDefaultName}, /*mLibraryName=*/aSharedLibPath.filename().string(),
                          /*.mCriteria=*/{std::move(tSerialCriterion), std::move(tParallelCriterion)}};
     return {/*.mConfiguration=*/std::move(tAppConfiguration), /*.mLibraryDirectory=*/aSharedLibPath.parent_path()};
+}
+
+std::optional<std::string_view> function_name(const AppConfiguration& aAppConfiguration,
+                                              const CriterionConfiguration& aCriterionConfiguration)
+{
+    const auto tCriterionConfigurationIter = std::find_if(
+        aAppConfiguration.mCriteria.cbegin(), aAppConfiguration.mCriteria.cend(),
+        [&aCriterionConfiguration](const auto& aCurrentCriterionConfiguration)
+        {
+            return aCriterionConfiguration.mIsParallelized == aCurrentCriterionConfiguration.mIsParallelized &&
+                   aCriterionConfiguration.mName == aCurrentCriterionConfiguration.mName;
+        });
+
+    if (tCriterionConfigurationIter == aAppConfiguration.mCriteria.cend())
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return std::optional<std::string_view>{tCriterionConfigurationIter->mFunctionName};
+    }
 }
 
 void AppConfigurationWriter::operator()(const std::filesystem::path& aFilePath) const

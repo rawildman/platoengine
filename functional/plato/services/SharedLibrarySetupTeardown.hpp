@@ -22,7 +22,13 @@ class [[nodiscard]] SharedLibrarySetupTeardown
    public:
     /// @throw plato::utilities::Exception On error loading the shared library.
     explicit SharedLibrarySetupTeardown(std::filesystem::path aSharedLibraryPath);
-    ~SharedLibrarySetupTeardown();
+
+    /// @todo Figure out how to call `dlclose`, though a library that is loaded will likely be needed for the remainder
+    /// of the application run. The deleters of the std::unique_ptrs passed out of the library use the glibc `free`
+    /// linked with that shared lib. A crash could result if the library is closed. The solution may be to make this a
+    /// singleton and keep the libraries open until program exit. Or use weak_ptr for the objects returned and only
+    /// close a library when all references to the objects returned from a shared lib are gone.
+    ~SharedLibrarySetupTeardown() = default;
 
     SharedLibrarySetupTeardown(const SharedLibrarySetupTeardown&) = delete;
     SharedLibrarySetupTeardown& operator=(const SharedLibrarySetupTeardown&) = delete;
@@ -58,8 +64,9 @@ template <typename FunctionSignature>
         reinterpret_cast<FunctionPtr>(dlsym(mSharedLibrary, std::string{aFunctionName}.c_str()));  // NOLINT
     if (tFunction == nullptr)
     {
+        char* const tErrorMessage = dlerror();
         throw utilities::Exception{"Couldn't load function " + std::string{aFunctionName} + " from shared lib at " +
-                                   mSharedLibraryPath.string()};
+                                   mSharedLibraryPath.string() + "\ndlsym error: " + std::string{tErrorMessage}};
     }
     return tFunction;
 }

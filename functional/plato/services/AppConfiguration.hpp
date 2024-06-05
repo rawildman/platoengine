@@ -15,9 +15,9 @@ namespace plato::services
 /// as if the function has serial or parallel implementations.
 struct CriterionConfiguration
 {
-    std::string mName;
-    std::string mFunctionName;
+    std::string mName{};
     bool mIsParallelized = false;
+    std::string mFunctionName{};
 };
 
 /// @brief Configuration data for defining an app's interface with plato.
@@ -26,9 +26,9 @@ struct CriterionConfiguration
 /// shared library containing an app.
 struct AppConfiguration
 {
-    std::string mName;
-    std::string mLibraryFileName;
-    std::vector<CriterionConfiguration> mCriteria;
+    std::string mName{};
+    std::string mLibraryFileName{};
+    std::vector<CriterionConfiguration> mCriteria{};
 };
 
 /// @brief Associates an AppConfiguration with the directory in which it was found.

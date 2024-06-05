@@ -23,9 +23,11 @@ namespace plato::criteria::extension::unittest
     {
         const auto tLibName = utilities::concatenate("lib", tAppName, ".so");
         const auto tConfigName = utilities::concatenate(tAppName, ".config");
-        const auto tCriterionConfiguration =
-            services::CriterionConfiguration{/*.mName=*/"test-criterion", /*.mFunctionName=*/"plato_create_criterion",
-                                             /*.mIsParallelized=*/true};
+        const auto tCriterionConfiguration = services::CriterionConfiguration{
+            /*.mName=*/"test-criterion",
+            /*.mIsParallelized=*/true,
+            /*.mFunctionName=*/"plato_create_criterion",
+        };
         auto tAppConfiguration = services::AppConfiguration{/*.mName=*/std::string{tAppName},
                                                             /*mLibraryFileName=*/tLibName,
                                                             /*.mCriteria=*/{tCriterionConfiguration}};

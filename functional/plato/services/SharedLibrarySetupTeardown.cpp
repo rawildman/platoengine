@@ -1,5 +1,7 @@
 #include "plato/services/SharedLibrarySetupTeardown.hpp"
 
+#include <dlfcn.h>
+
 #include "AppConfigurationUtilities.hpp"
 #include "plato/services/AppConfiguration.hpp"
 
@@ -20,7 +22,7 @@ void* load_shared_library(const std::filesystem::path& aSharedLibPath)
     {
         char* const tErrorMessage = dlerror();
         throw utilities::Exception{"Couldn't load shared lib at " + aSharedLibPath.string() +
-                                   ". Error: " + std::string{tErrorMessage}};
+                                   ".\ndlopen error: " + std::string{tErrorMessage}};
     }
     return tSharedLibInterface;
 }
@@ -29,14 +31,6 @@ void* load_shared_library(const std::filesystem::path& aSharedLibPath)
 SharedLibrarySetupTeardown::SharedLibrarySetupTeardown(std::filesystem::path aSharedLibraryPath)
     : mSharedLibraryPath{std::move(aSharedLibraryPath)}, mSharedLibrary{load_shared_library(mSharedLibraryPath)}
 {
-}
-
-SharedLibrarySetupTeardown::~SharedLibrarySetupTeardown()
-{
-    // todo: call dlclose?
-    // If any function pointers pointing to functions within this lib are used after dlclose is called, that will result
-    // in a crash. We need a way to tie the lifetime of the function pointers to the lifetime of this object. Maybe
-    // wrapping the function pointers in weak_ptr?
 }
 
 }  // namespace plato::services

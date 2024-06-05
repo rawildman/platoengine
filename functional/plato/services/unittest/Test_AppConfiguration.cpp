@@ -12,13 +12,12 @@ namespace plato::services
 {
 namespace
 {
-const auto kTestCriterionConfiguration =
-    CriterionConfiguration{/*.mName=*/
-                           "test-criterion", /*.mFunctionName=*/"plato_test_criterion", /*.mHasParallelized=*/true};
+const auto kTestCriterionConfiguration = CriterionConfiguration{/*.mName=*/"test-criterion", /*.mHasParallelized=*/true,
+                                                                /*.mFunctionName=*/"plato_test_criterion"};
 
-const auto kAnotherTestCriterionConfiguration = CriterionConfiguration{
-    /*.mName=*/
-    "antother_test-criterion", /*.mFunctionName=*/"plato_another_test_criterion", /*.mIsParallelized=*/false};
+const auto kAnotherTestCriterionConfiguration =
+    CriterionConfiguration{/*.mName=*/"antother_test-criterion", /*.mIsParallelized=*/false,
+                           /*.mFunctionName=*/"plato_another_test_criterion"};
 
 const auto kTestConfiguration = AppConfiguration{/*.mName=*/"test-app",
                                                  /*.mLibraryFileName=*/"libtest.so",

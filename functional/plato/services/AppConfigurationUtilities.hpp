@@ -2,6 +2,7 @@
 #define PLATO_SERVICES_APPCONFIGURATIONUTILITIES
 
 #include <filesystem>
+#include <optional>
 
 #include "plato/services/AppConfiguration.hpp"
 
@@ -25,6 +26,14 @@ std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& a
 /// with other code. It contains hard-coded function names for the functions to load from a the shared lib and
 /// is assumed that both serial and parallel functions are implemented.
 AppConfigurationWithDirectory default_app_configuration(const std::filesystem::path& aSharedLibPath);
+
+/// @brief Finds the function name associated with @a aCriterionConfiguration from the set of all criteria in @a
+/// aAppConfiguration.
+/// @param aCriterionConfiguration The CriterionConfiguration argument's `mFunctionName` field can be empty. The search
+/// is based on the other fields.
+/// @note More than one entry may be present in @a aAppConfiguration, this does not guarantee which will be returned.
+std::optional<std::string_view> function_name(const AppConfiguration& aAppConfiguration,
+                                              const CriterionConfiguration& aCriterionConfiguration);
 
 /// @brief A helper function object for writing an AppConfiguration to disk.
 struct AppConfigurationWriter
