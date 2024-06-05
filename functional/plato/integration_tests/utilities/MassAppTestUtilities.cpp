@@ -3,15 +3,17 @@
 #include "plato/criteria/extension/PluginCriteria.hpp"
 #include "plato/input_parser/InputBlockUtilities.hpp"
 #include "plato/services/AppConfiguration.hpp"
+#include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
+#include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
 
 namespace plato::integration_tests::utilities
 {
-services::ConfigurationDirectorySetupTeardown register_test_mass_app(const std::string_view aAppName,
-                                                                     const boost::mpi::communicator& aComm)
+test_utilities::TestDirectorySetupTeardown register_test_mass_app(const std::string_view aAppName,
+                                                                  const boost::mpi::communicator& aComm)
 {
     const auto tTestPluginDirectory = std::filesystem::path{"test-plugin-directory"};
-    auto tConfigurationTempDirectory = services::ConfigurationDirectorySetupTeardown{tTestPluginDirectory, aComm};
+    auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{tTestPluginDirectory, aComm};
 
     const auto tCriterionSerialConfiguration =
         services::CriterionConfiguration{/*.mName=*/"mass", /*.mFunctionName=*/"plato_create_test_mass_criterion",
@@ -19,11 +21,13 @@ services::ConfigurationDirectorySetupTeardown register_test_mass_app(const std::
     const auto tCriterionParallelConfiguration = services::CriterionConfiguration{
         /*.mName=*/"mass", /*.mFunctionName=*/"plato_create_parallel_test_mass_criterion",
         /*.mIsParallelized=*/true};
-    tConfigurationTempDirectory.addConfiguration(
-        services::AppConfiguration{/*.mName=*/std::string{aAppName},
+    auto tAppConfiguration =
+        services::AppConfiguration{/*.mName=*/
+                                   std::string{aAppName},
                                    /*.mLibraryFileName=*/"../libPlatoTestMassObjective.so",
-                                   /*.mCriteria=*/{tCriterionSerialConfiguration, tCriterionParallelConfiguration}},
-        "test-mass-app.config");
+                                   /*.mCriteria=*/{tCriterionSerialConfiguration, tCriterionParallelConfiguration}};
+    tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{std::move(tAppConfiguration)},
+                                          "test-mass-app.config");
     aComm.barrier();
     criteria::extension::register_plugin_apps({tTestPluginDirectory});
     return tConfigurationTempDirectory;

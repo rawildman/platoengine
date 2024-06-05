@@ -9,15 +9,15 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
-#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
+#include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
 #include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::extension::unittest
 {
-[[nodiscard]] services::ConfigurationDirectorySetupTeardown create_test_app_configurations(
+[[nodiscard]] test_utilities::TestDirectorySetupTeardown create_test_app_configurations(
     const std::vector<std::string_view>& aAppNames)
 {
-    auto tConfigurationTempDirectory = services::ConfigurationDirectorySetupTeardown{"test-plugin-directory"};
+    auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{"test-plugin-directory"};
 
     for (const auto tAppName : aAppNames)
     {
@@ -26,11 +26,11 @@ namespace plato::criteria::extension::unittest
         const auto tCriterionConfiguration =
             services::CriterionConfiguration{/*.mName=*/"test-criterion", /*.mFunctionName=*/"plato_create_criterion",
                                              /*.mIsParallelized=*/true};
-        tConfigurationTempDirectory.addConfiguration(
-            services::AppConfiguration{/*.mName=*/std::string{tAppName},
-                                       /*mLibraryFileName=*/tLibName,
-                                       /*.mCriteria=*/{tCriterionConfiguration}},
-            tConfigName);
+        auto tAppConfiguration = services::AppConfiguration{/*.mName=*/std::string{tAppName},
+                                                            /*mLibraryFileName=*/tLibName,
+                                                            /*.mCriteria=*/{tCriterionConfiguration}};
+        tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{std::move(tAppConfiguration)},
+                                              tConfigName);
     }
     return tConfigurationTempDirectory;
 }

@@ -2,6 +2,7 @@
 #define PLATO_SERVICES_APPCONFIGURATION
 
 #include <boost/serialization/vector.hpp>
+#include <cstdio>
 #include <filesystem>
 #include <string>
 #include <vector>

@@ -25,6 +25,13 @@ std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& a
 /// with other code. It contains hard-coded function names for the functions to load from a the shared lib and
 /// is assumed that both serial and parallel functions are implemented.
 AppConfigurationWithDirectory default_app_configuration(const std::filesystem::path& aSharedLibPath);
+
+/// @brief A helper function object for writing an AppConfiguration to disk.
+struct AppConfigurationWriter
+{
+    void operator()(const std::filesystem::path& aFilePath) const;
+    AppConfiguration mAppConfiguration{};
+};
 }  // namespace plato::services
 
 #endif

@@ -8,7 +8,7 @@
 
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
-#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
+#include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
 
 namespace plato::integration_tests::utilities
 {
@@ -16,7 +16,7 @@ namespace plato::integration_tests::utilities
 /// successfully registered.
 /// @note This assumes that the actual shared library is in the current working directory, which
 ///  will be the case for any unit tests run from the build directory.
-[[nodiscard]] services::ConfigurationDirectorySetupTeardown register_test_mass_app(
+[[nodiscard]] test_utilities::TestDirectorySetupTeardown register_test_mass_app(
     std::string_view aAppName, const boost::mpi::communicator& aComm = boost::mpi::communicator{});
 
 /// @brief Creates test input that has a brick shape geometry, ROL optimization, and an objective

@@ -5,8 +5,8 @@
 
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
-#include "plato/services/ConfigurationDirectorySetupTeardown.hpp"
 #include "plato/test_utilities/TestContext.hpp"
+#include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
 
 namespace plato::services
 {
@@ -66,9 +66,9 @@ TEST(AppConfiguration, AppConfigurationWithDirectory)
 
 TEST(AppConfiguration, AppConfigurations)
 {
-    auto tConfigurationTempDirectory = ConfigurationDirectorySetupTeardown{"test-configuration-directory"};
-    tConfigurationTempDirectory.addConfiguration(kTestConfiguration, "test-1.config")
-        .addConfiguration(kAnotherTestConfiguration, "test-2.config");
+    auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{"test-configuration-directory"};
+    tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{kTestConfiguration}, "test-1.config")
+        .writeFile(services::AppConfigurationWriter{kAnotherTestConfiguration}, "test-2.config");
 
     const auto tAppConfigurations = app_configurations({tConfigurationTempDirectory.directory()});
 

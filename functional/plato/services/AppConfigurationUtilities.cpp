@@ -57,4 +57,10 @@ AppConfigurationWithDirectory default_app_configuration(const std::filesystem::p
                          /*.mCriteria=*/{std::move(tSerialCriterion), std::move(tParallelCriterion)}};
     return {/*.mConfiguration=*/std::move(tAppConfiguration), /*.mLibraryDirectory=*/aSharedLibPath.parent_path()};
 }
+
+void AppConfigurationWriter::operator()(const std::filesystem::path& aFilePath) const
+{
+    save_configuration(mAppConfiguration, aFilePath);
+}
+
 }  // namespace plato::services
