@@ -68,7 +68,6 @@ TEST(AppConfiguration, AppConfigurations)
     auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{"test-configuration-directory"};
     tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{kTestConfiguration}, "test-1.config")
         .writeFile(services::AppConfigurationWriter{kAnotherTestConfiguration}, "test-2.config");
-
     const auto tAppConfigurations = app_configurations({tConfigurationTempDirectory.directory()});
 
     EXPECT_GE(tAppConfigurations.size(), 2u);

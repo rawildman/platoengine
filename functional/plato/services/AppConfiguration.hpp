@@ -1,6 +1,8 @@
 #ifndef PLATO_SERVICES_APPCONFIGURATION
 #define PLATO_SERVICES_APPCONFIGURATION
 
+#include <boost/core/nvp.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 #include <cstdio>
 #include <filesystem>
@@ -58,17 +60,17 @@ void save_configuration(const AppConfiguration& aAppConfiguration, const std::fi
 template <class Archive>
 void serialize(Archive& aArchive, CriterionConfiguration& aAppConfiguration, const unsigned int /*version*/)
 {
-    aArchive& aAppConfiguration.mName;
-    aArchive& aAppConfiguration.mFunctionName;
-    aArchive& aAppConfiguration.mIsParallelized;
+    aArchive& boost::serialization::make_nvp("name", aAppConfiguration.mName);
+    aArchive& boost::serialization::make_nvp("exported_function", aAppConfiguration.mFunctionName);
+    aArchive& boost::serialization::make_nvp("is_parallelized", aAppConfiguration.mIsParallelized);
 }
 
 template <class Archive>
 void serialize(Archive& aArchive, AppConfiguration& aAppConfiguration, const unsigned int /*version*/)
 {
-    aArchive& aAppConfiguration.mName;
-    aArchive& aAppConfiguration.mLibraryFileName;
-    aArchive& aAppConfiguration.mCriteria;
+    aArchive& boost::serialization::make_nvp("name", aAppConfiguration.mName);
+    aArchive& boost::serialization::make_nvp("shared_library_file_name", aAppConfiguration.mLibraryFileName);
+    aArchive& boost::serialization::make_nvp("criteria", aAppConfiguration.mCriteria);
 }
 
 }  // namespace plato::services
