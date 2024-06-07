@@ -15,28 +15,30 @@ namespace detail
 template <typename Criteria>
 [[nodiscard]] std::string criterion_name(const Criteria& aInput)
 {
-    std::string tName = aInput.name.value_or("unnamed");
+    const std::string tName = aInput.name.value_or("unnamed");
     return input_parser::block_name<Criteria>() + " " + tName;
 }
 
 template <typename Criteria>
-[[nodiscard]] std::optional<std::string> validate_app_is_registered(const Criteria& aInput)
+[[nodiscard]] std::optional<std::string> validate_criterion_is_registered(const Criteria& aInput)
 {
-    if (aInput.app.has_value())
+    if (aInput.criterion.has_value())
     {
-        if (is_criterion_function_registered(aInput.app.value().mToken) ||
-            is_parallel_criterion_function_registered(aInput.app.value().mToken))
+        const auto tRegistrationName = criterion_registration_name(aInput.app, aInput.criterion.value());
+        if (is_criterion_function_registered(tRegistrationName) ||
+            is_parallel_criterion_function_registered(tRegistrationName))
         {
             return std::nullopt;
         }
         else
         {
-            return std::optional<std::string>{criterion_name(aInput) + ": app not found: " + aInput.app.value().mToken};
+            return std::optional<std::string>{criterion_name(aInput) +
+                                              ": app/criterion not found: " + tRegistrationName};
         }
     }
     else
     {
-        return core::error_message_for_empty_parameter(criterion_name(aInput), aInput.app, "app");
+        return core::error_message_for_empty_parameter(criterion_name(aInput), aInput.criterion, "criterion");
     }
 }
 

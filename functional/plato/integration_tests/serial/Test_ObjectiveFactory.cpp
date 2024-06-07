@@ -20,12 +20,12 @@ process_manager::library::ValidatedInput create_two_objective_test_input()
     const std::string tObjectiveInput =
         R"(
           begin objective test1
-            app nodal_sum
+            criterion nodal_sum
             aggregation_weight 42.0
           end
           begin objective test2
             active true
-            app nodal_sum
+            criterion nodal_sum
             aggregation_weight 13.0
           end
        )";
@@ -55,12 +55,12 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
         R"(
           begin objective test1
             active false
-            app nodal_sum
+            criterion nodal_sum
             aggregation_weight 42.0
           end
           begin objective test2
             active true
-            app nodal_sum
+            criterion nodal_sum
             aggregation_weight 13.0
           end
        )";

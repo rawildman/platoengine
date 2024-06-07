@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "plato/input_parser/InputBlockUtilities.hpp"
+#include "plato/input_parser/InputDefinitions.hpp"
 
 namespace plato::test_utilities
 {
@@ -51,8 +52,8 @@ input_parser::constraint create_valid_example_constraint()
 {
     return input_parser::constraint{/*.name=*/std::string{"bike-shed"},
                                     /*.active=*/true,
-                                    /*.app=*/input_parser::AppName{"nodal_sum"},
-                                    /*.shared_library_path=*/input_parser::FileName{},
+                                    /*.app=*/input_parser::AppName{std::string{input_parser::kBuiltinAppName}},
+                                    /*.criterion=*/input_parser::CriterionName{"nodal_sum"},
                                     /*.number_of_processors=*/1u,
                                     /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                                     /*.equal_to=*/0.0,
@@ -64,7 +65,8 @@ std::string create_valid_example_constraint_string()
     return R"(
           begin constraint test
             active true
-            app nodal_sum
+            app platoengine
+            criterion nodal_sum
             number_of_processors 1
             input_files test-input.inp
             equal_to 13
@@ -77,8 +79,8 @@ input_parser::objective create_valid_example_objective()
 {
     return input_parser::objective{/*.name=*/std::string{"bike-shed"},
                                    /*.active=*/true,
-                                   /*.app=*/input_parser::AppName{"nodal_sum"},
-                                   /*.shared_library_path=*/input_parser::FileName{},
+                                   /*.app=*/input_parser::AppName{std::string{input_parser::kBuiltinAppName}},
+                                   /*.criterion=*/input_parser::CriterionName{"nodal_sum"},
                                    /*.number_of_processors=*/1u,
                                    /*.input_files=*/input_parser::FileList{{"brown.txt", "butter.txt", "sauce.txt"}},
                                    /*.aggregation_weight=*/13.0,
@@ -90,7 +92,8 @@ std::string create_valid_example_objective_string()
     return R"(
           begin objective test
             active true
-            app nodal_sum
+            app platoengine
+            criterion nodal_sum
             number_of_processors 1
             input_files test-input.inp
             aggregation_weight 42.0

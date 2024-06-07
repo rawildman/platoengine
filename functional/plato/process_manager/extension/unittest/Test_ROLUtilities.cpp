@@ -21,7 +21,7 @@ TEST(ProcessManagerData, InputFileToROLObjective)
     const std::string tInput = test_utilities::create_valid_brick_shape_geometry_string() +
                                " begin objective test"
                                " active true"
-                               " app nodal_sum"
+                               " criterion nodal_sum"
                                " number_of_processors 1"
                                " input_files test-input.inp"
                                " aggregation_weight " +
@@ -52,7 +52,7 @@ TEST(ProcessManagerData, InputFileToROLConstraint)
                                R"(
                                 begin constraint test
                                   active true
-                                  app nodal_sum
+                                  criterion nodal_sum
                                   equal_to 2
                                 end
                               )" +
@@ -83,7 +83,7 @@ TEST(ProcessManagerData, InputFileToROLSolver)
                                R"(
                                 begin constraint test
                                   active true
-                                  app nodal_sum
+                                  criterion nodal_sum
                                   equal_to 2
                                 end
                               )" +

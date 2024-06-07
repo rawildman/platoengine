@@ -6,7 +6,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
-#include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/integration_tests/utilities/AppConfigurationTestUtilities.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
 #include "plato/utilities/StringUtilities.hpp"
@@ -17,7 +17,7 @@ namespace
 {
 constexpr auto kLibPath = std::string_view{"libPlatoTestMassObjective.so"};
 constexpr auto kMeshName = std::string_view{"massTest.exo"};
-const auto kMeshGenerator = utilities::STKCommandGenerator{
+const auto kMeshGenerator = plato::utilities::STKCommandGenerator{
     /*.mElements=*/{1u, 1u, 1u}, /*.mLowerBounds=*/{-1.0, -1.0, -1.0}, /*.mUpperBounds=*/{1.0, 1.0, 1.0}};
 }  // namespace
 
@@ -26,11 +26,16 @@ TEST(ParallelMassObjective, CallValueAndGradient)
     auto tComm = boost::mpi::communicator{};
     EXPECT_GT(tComm.size(), 1u);
 
-    const auto tSharedLib =
-        criteria::extension::SharedLibCriterion{services::default_app_configuration(kLibPath), {}, tComm};
+    const auto tTestConfiguration = utilities::test_app_configuration(kLibPath);
+    // Get parallel criterion:
+    const auto tParallelCriterion = std::find_if(tTestConfiguration.mConfiguration.mCriteria.cbegin(),
+                                                 tTestConfiguration.mConfiguration.mCriteria.cend(),
+                                                 [](const auto& tCriterion) { return tCriterion.mIsParallelized; });
+    ASSERT_NE(tParallelCriterion, tTestConfiguration.mConfiguration.mCriteria.cend());
+    const auto tSharedLib = criteria::extension::SharedLibCriterion{tTestConfiguration, *tParallelCriterion, {}, tComm};
 
-    const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
-    utilities::write_mesh(tRankMeshName, utilities::generate_stk_mesh(kMeshGenerator));
+    const auto tRankMeshName = plato::utilities::concatenate(kMeshName, '.', tComm.rank());
+    plato::utilities::write_mesh(tRankMeshName, plato::utilities::generate_stk_mesh(kMeshGenerator));
 
     const double tMass = tSharedLib.f(core::MeshProxy{tRankMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, kMeshGenerator.volume());

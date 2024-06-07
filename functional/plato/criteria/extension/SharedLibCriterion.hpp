@@ -4,7 +4,6 @@
 #include <boost/mpi/communicator.hpp>
 #include <filesystem>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,8 +28,10 @@ class SharedLibCriterion
 {
    public:
     SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                       const services::CriterionConfiguration& aCriterionConfiguration,
                        const std::vector<std::string>& aFileNames);
     SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                       const services::CriterionConfiguration& aCriterionConfiguration,
                        const std::vector<std::string>& aFileNames,
                        const boost::mpi::communicator& aComm);
 

@@ -31,13 +31,15 @@ test_utilities::TestDirectorySetupTeardown register_test_mass_app(const std::str
     return tConfigurationTempDirectory;
 }
 
-process_manager::library::ValidatedInput create_valid_brick_input(const std::string_view aAppName,
+process_manager::library::ValidatedInput create_valid_brick_input(const input_parser::AppName& aMassAppName,
+                                                                  const input_parser::CriterionName& aCriterionName,
                                                                   const unsigned int aNumProcessors)
 {
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = aNumProcessors;
     tObjective.aggregation_weight = 1.0;
-    tObjective.app = input_parser::AppName{std::string{aAppName}};
+    tObjective.app = aMassAppName;
+    tObjective.criterion = aCriterionName;
     tObjective.name = "test_1";
 
     const auto tInput = tObjective | test_utilities::create_valid_brick_shape_geometry() |

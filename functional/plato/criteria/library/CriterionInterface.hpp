@@ -11,9 +11,6 @@
 
 namespace plato::criteria::library
 {
-static constexpr std::string_view kCreateCriterionFunctionName = "plato_create_criterion";
-static constexpr std::string_view kCreateParallelCriterionFunctionName = "plato_create_parallel_criterion";
-
 /// @brief Interface for implementing criteria loaded from shared libraries.
 ///
 /// Any external criterion (objective or constraint) should inherit this interface

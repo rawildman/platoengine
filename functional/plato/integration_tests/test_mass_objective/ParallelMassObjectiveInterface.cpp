@@ -44,6 +44,5 @@ std::unique_ptr<criteria::library::CriterionInterface> plato_create_parallel_cri
 std::unique_ptr<::plato::criteria::library::CriterionInterface> plato_create_parallel_test_mass_criterion(
     const std::vector<std::string>&, const MPI_Comm aComm)
 {
-    abort();
     return std::make_unique<::plato::integration_tests::test_mass_objective::ParallelMassObjectiveInterface>(aComm);
 }

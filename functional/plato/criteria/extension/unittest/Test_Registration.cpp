@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "plato/core/Function.hpp"
-#include "plato/criteria/extension/CustomAppCriterion.hpp"
 #include "plato/criteria/extension/NodalSumObjective.hpp"
 #include "plato/criteria/extension/VolumeCriterion.hpp"
 #include "plato/criteria/library/CriterionRegistration.hpp"
@@ -13,27 +12,20 @@ namespace plato::criteria::extension::unittest
 
 TEST(CriterionRegistration, NodalSum)
 {
-    EXPECT_TRUE(library::is_criterion_function_registered(NodalSumObjective::kAppName));
+    EXPECT_TRUE(library::is_criterion_function_registered(
+        library::builtin_criterion_registration_name(NodalSumObjective::kAppName)));
 }
 
 TEST(CriterionRegistration, Volume)
 {
-    EXPECT_TRUE(library::is_criterion_function_registered(VolumeCriterion::kVolumeAppName));
+    EXPECT_TRUE(library::is_criterion_function_registered(
+        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeAppName)));
 }
 
 TEST(CriterionRegistration, VolumeFraction)
 {
-    EXPECT_TRUE(library::is_criterion_function_registered(VolumeCriterion::kVolumeFractionAppName));
-}
-
-TEST(CriterionRegistration, CustomApp)
-{
-    EXPECT_TRUE(library::is_criterion_function_registered(detail::custom_app_name()));
-}
-
-TEST(CriterionRegistration, ParallelCustomApp)
-{
-    EXPECT_TRUE(library::is_parallel_criterion_function_registered(detail::custom_app_name()));
+    EXPECT_TRUE(library::is_criterion_function_registered(
+        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeFractionAppName)));
 }
 
 }  // namespace plato::criteria::extension::unittest

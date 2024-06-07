@@ -48,8 +48,8 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
         R"(
           begin objective mp_objective
             active true
-            app volume
-            shared_library_path /path/to/lib.so
+            app platoengine
+            criterion volume
             number_of_processors 10
             input_files test.txt, test2.xml
             objective_type minimize
@@ -67,8 +67,8 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, std::string{"volume"});
-    test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
+    test_existence_and_equality(tObjective.app, std::string{"platoengine"});
+    test_existence_and_equality(tObjective.criterion, std::string{"volume"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     test_existence_and_equality(tObjective.active, true);
     test_existence_and_equality(tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
@@ -217,7 +217,8 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     const std::string tInput =
         R"(
           begin objective mp_objective
-            app nodal_sum
+            app fancy-app
+            criterion quantum-gravitational-turbo-dynamics
             number_of_processors 10
             aggregation_weight 10.0
           end
@@ -229,7 +230,8 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, std::string{"nodal_sum"});
+    test_existence_and_equality(tObjective.app, std::string{"fancy-app"});
+    test_existence_and_equality(tObjective.criterion, std::string{"quantum-gravitational-turbo-dynamics"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     EXPECT_FALSE(tObjective.active);
     EXPECT_FALSE(tObjective.input_files);

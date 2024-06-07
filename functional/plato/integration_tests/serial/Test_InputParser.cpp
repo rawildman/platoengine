@@ -24,7 +24,8 @@ void create_input_file(const std::filesystem::path& aTestFileName)
           end
           begin objective test
             active true
-            app nodal_sum
+            app platoengine
+            criterion nodal_sum
             number_of_processors 4
             input_files test-input.inp
             aggregation_weight 42.0
@@ -58,7 +59,9 @@ TEST(InputParser, ParseFromFile)
     ASSERT_TRUE(tObjective.active.has_value());
     EXPECT_TRUE(tObjective.active.value());
     ASSERT_TRUE(tObjective.app.has_value());
-    EXPECT_EQ(tObjective.app.value().mToken, "nodal_sum");
+    EXPECT_EQ(tObjective.app.value().mToken, "platoengine");
+    ASSERT_TRUE(tObjective.criterion.has_value());
+    EXPECT_EQ(tObjective.criterion.value().mToken, "nodal_sum");
     ASSERT_TRUE(tObjective.number_of_processors.has_value());
     EXPECT_EQ(tObjective.number_of_processors.value(), 4);
     ASSERT_TRUE(tObjective.input_files.has_value());

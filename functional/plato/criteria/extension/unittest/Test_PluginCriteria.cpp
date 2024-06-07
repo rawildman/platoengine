@@ -7,6 +7,7 @@
 #include "plato/criteria/library/CriterionRegistration.hpp"
 #include "plato/criteria/library/CriterionValidation.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
+#include "plato/input_parser/InputFieldTypes.hpp"
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
 #include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
@@ -14,6 +15,10 @@
 
 namespace plato::criteria::extension::unittest
 {
+namespace
+{
+const auto kTestCriterionName = std::string{"test-criterion"};
+
 [[nodiscard]] test_utilities::TestDirectorySetupTeardown create_test_app_configurations(
     const std::vector<std::string_view>& aAppNames)
 {
@@ -24,7 +29,7 @@ namespace plato::criteria::extension::unittest
         const auto tLibName = utilities::concatenate("lib", tAppName, ".so");
         const auto tConfigName = utilities::concatenate(tAppName, ".config");
         const auto tCriterionConfiguration = services::CriterionConfiguration{
-            /*.mName=*/"test-criterion",
+            /*.mName=*/kTestCriterionName,
             /*.mIsParallelized=*/true,
             /*.mFunctionName=*/"plato_create_criterion",
         };
@@ -36,6 +41,7 @@ namespace plato::criteria::extension::unittest
     }
     return tConfigurationTempDirectory;
 }
+}  // namespace
 
 TEST(PluginCriteria, NumberOfPluginsRegistered)
 {
@@ -47,31 +53,36 @@ TEST(PluginCriteria, NumberOfPluginsRegistered)
 TEST(PluginCriteria, RegisterApps)
 {
     // Checks that some fake apps get registered via register_plugin_apps
-    constexpr auto tVampireAppName = std::string_view{"vampire"};
-    constexpr auto tMummyAppName = std::string_view{"mummy"};
+    const auto tVampireAppName = std::string{"vampire"};
+    const auto tMummyAppName = std::string{"mummy"};
     auto tConfigurationTempDirectory = create_test_app_configurations({tVampireAppName, tMummyAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_GE(tNumRegistered, 2u);
-    EXPECT_TRUE(library::is_parallel_criterion_function_registered(tVampireAppName));
-    EXPECT_TRUE(library::is_parallel_criterion_function_registered(tMummyAppName));
+    EXPECT_TRUE(library::is_parallel_criterion_function_registered(library::criterion_registration_name(
+        input_parser::AppName{tVampireAppName}, input_parser::CriterionName{kTestCriterionName})));
+    EXPECT_TRUE(library::is_parallel_criterion_function_registered(library::criterion_registration_name(
+        input_parser::AppName{tMummyAppName}, input_parser::CriterionName{kTestCriterionName})));
 }
 
 TEST(PluginCriteria, Validation)
 {
-    constexpr auto tFrankensteinAppName = std::string_view{"frankenstein"};
-    constexpr auto tMedusaAppName = std::string_view{"medusa"};
+    const auto tFrankensteinAppName = std::string{"frankenstein"};
+    const auto tMedusaAppName = std::string{"medusa"};
     auto tConfigurationTempDirectory = create_test_app_configurations({tFrankensteinAppName, tMedusaAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_GE(tNumRegistered, 2u);
 
     auto tCriteria = input_parser::objective{};
-    EXPECT_TRUE(library::detail::validate_app_is_registered(tCriteria).has_value());
-    tCriteria.app = input_parser::AppName{std::string{tFrankensteinAppName}};
-    EXPECT_FALSE(library::detail::validate_app_is_registered(tCriteria).has_value());
-    tCriteria.app = input_parser::AppName{std::string{tMedusaAppName}};
-    EXPECT_FALSE(library::detail::validate_app_is_registered(tCriteria).has_value());
+    EXPECT_TRUE(library::detail::validate_criterion_is_registered(tCriteria).has_value());
+    tCriteria.app = input_parser::AppName{tFrankensteinAppName};
+    tCriteria.criterion = input_parser::CriterionName{kTestCriterionName};
+    EXPECT_FALSE(library::detail::validate_criterion_is_registered(tCriteria).has_value())
+        << library::detail::validate_criterion_is_registered(tCriteria).value();
+    tCriteria.app = input_parser::AppName{tMedusaAppName};
+    EXPECT_FALSE(library::detail::validate_criterion_is_registered(tCriteria).has_value())
+        << library::detail::validate_criterion_is_registered(tCriteria).value();
     tCriteria.app = input_parser::AppName{std::string{"bog-monster"}};
-    EXPECT_TRUE(library::detail::validate_app_is_registered(tCriteria).has_value());
+    EXPECT_TRUE(library::detail::validate_criterion_is_registered(tCriteria).has_value());
 }
 
 }  // namespace plato::criteria::extension::unittest

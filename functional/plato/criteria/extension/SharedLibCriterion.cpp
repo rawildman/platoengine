@@ -26,17 +26,19 @@ using ParallelFunctionSignature = std::unique_ptr<library::CriterionInterface>(c
 }  // namespace
 
 SharedLibCriterion::SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                                       const services::CriterionConfiguration& aCriterionConfiguration,
                                        const std::vector<std::string>& aFileNames)
     : mCriterionInterface{load_criterion_interface<SerialFunctionSignature>(
-          aAppConfiguration, library::kCreateCriterionFunctionName, aFileNames)}
+          aAppConfiguration, aCriterionConfiguration.mFunctionName, aFileNames)}
 {
 }
 
 SharedLibCriterion::SharedLibCriterion(const services::AppConfigurationWithDirectory& aAppConfiguration,
+                                       const services::CriterionConfiguration& aCriterionConfiguration,
                                        const std::vector<std::string>& aFileNames,
                                        const boost::mpi::communicator& aComm)
     : mCriterionInterface{load_criterion_interface<ParallelFunctionSignature>(
-          aAppConfiguration, library::kCreateParallelCriterionFunctionName, aFileNames, aComm)},
+          aAppConfiguration, aCriterionConfiguration.mFunctionName, aFileNames, aComm)},
       mComm{aComm}
 {
 }

@@ -7,18 +7,7 @@
 #include "plato/input_parser/FileList.hpp"
 #include "plato/input_parser/InputBlockStruct.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
-#include "plato/input_parser/UserDefinedToken.hpp"
-
-namespace plato::input_parser
-{
-/// @brief Provides valid characters for an app's name, which are hyphen, underscore,
-///  and all letters.
-struct ValidAppNameCharacters
-{
-    constexpr const char* operator()() const { return "-a-zA-Z_"; }
-};
-using AppName = UserDefinedToken<ValidAppNameCharacters>;
-}  // namespace plato::input_parser
+#include "plato/input_parser/InputFieldTypes.hpp"
 
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs.
@@ -82,7 +71,7 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), objective,
     (bool, active)
     (plato::input_parser::AppName, app) 
-    (plato::input_parser::FileName, shared_library_path)
+    (plato::input_parser::CriterionName, criterion)
     (unsigned int, number_of_processors)
     (plato::input_parser::FileList, input_files)
     (double, aggregation_weight)
@@ -93,7 +82,7 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), constraint,
     (bool, active)
     (plato::input_parser::AppName, app) 
-    (plato::input_parser::FileName, shared_library_path)
+    (plato::input_parser::CriterionName, criterion)
     (unsigned int, number_of_processors)
     (plato::input_parser::FileList, input_files)
     (double, equal_to)

@@ -6,6 +6,7 @@
 #include "plato/criteria/library/ObjectiveFactory.hpp"
 #include "plato/geometry/extension/BrickShapeGeometry.hpp"
 #include "plato/integration_tests/utilities/CheckProcessorsMatchObjectives.hpp"
+#include "plato/integration_tests/utilities/MassAppTestUtilities.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/test_utilities/TestContext.hpp"
@@ -25,7 +26,7 @@ process_manager::library::ValidatedInput create_one_objective_test_input()
     const std::string tObjectiveInput =
         R"(
           begin objective test1
-            app nodal_sum
+            criterion nodal_sum
             aggregation_weight 42.0
           end
        )";
@@ -47,11 +48,15 @@ linear_algebra::DynamicVector<double> test_brick_controls()
 
 void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_utilities::TestContext& aTestContext)
 {
+    constexpr auto tMassAppName = std::string_view{"test-mass-app"};
+    const auto tComm = boost::mpi::communicator{};
+    auto tConfigurationTempDirectory = utilities::register_test_mass_app(tMassAppName, tComm);
+
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = kNumRanks / aNumGroups;
     tObjective.aggregation_weight = 1.0;
-    tObjective.app = input_parser::AppName{"custom_app"};
-    tObjective.shared_library_path = input_parser::FileName{"libPlatoTestMassObjective.so"};
+    tObjective.app = input_parser::AppName{std::string{tMassAppName}};
+    tObjective.criterion = input_parser::CriterionName{"mass"};
     tObjective.name = "test_1";
 
     auto tInput = input_parser::ParsedInput{};
@@ -67,7 +72,7 @@ void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_uti
         geometry::extension::make_brick_shape_geometry(geometry::extension::BrickShapeGeometry{tMeshFileName});
 
     const auto tControls = test_brick_controls();
-    ASSERT_EQ(tControls.size(), 6u);
+    ASSERT_EQ(tControls.size(), 6u) << aTestContext;
     const auto tExpectedValue = tControls[3] * tControls[4] * tControls[5] * aNumGroups;
     const auto tResult = tObjectiveFunction.f(tGeometry.f(tControls));
     EXPECT_EQ(tResult, tExpectedValue) << aTestContext;

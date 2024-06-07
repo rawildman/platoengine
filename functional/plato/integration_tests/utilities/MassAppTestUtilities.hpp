@@ -6,6 +6,7 @@
 #include <string_view>
 #include <utility>
 
+#include "plato/input_parser/InputFieldTypes.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
@@ -21,8 +22,10 @@ namespace plato::integration_tests::utilities
 
 /// @brief Creates test input that has a brick shape geometry, ROL optimization, and an objective
 /// with name @a aMassAppName and number of processors @a aNumProcessors.
-[[nodiscard]] process_manager::library::ValidatedInput create_valid_brick_input(std::string_view aMassAppName,
-                                                                                const unsigned int aNumProcessors);
+[[nodiscard]] process_manager::library::ValidatedInput create_valid_brick_input(
+    const input_parser::AppName& aMassAppName,
+    const input_parser::CriterionName& aCriterionName,
+    unsigned int aNumProcessors);
 
 /// @brief Creates arbitrary test controls with the associated total volume for a BrickShapeGeometry.
 [[nodiscard]] std::pair<linear_algebra::DynamicVector<double>, double> brick_shape_geometry_controls_with_volume();
