@@ -9,6 +9,7 @@
 #include "plato/input_parser/InputFieldTypes.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
+#include "plato/test_utilities/TestContext.hpp"
 #include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
 
 namespace plato::integration_tests::utilities
@@ -29,6 +30,9 @@ namespace plato::integration_tests::utilities
 
 /// @brief Creates arbitrary test controls with the associated total volume for a BrickShapeGeometry.
 [[nodiscard]] std::pair<linear_algebra::DynamicVector<double>, double> brick_shape_geometry_controls_with_volume();
+
+/// @brief Function that tests registration, loading, and running of the test mass app shared library.
+void register_load_run_test(const boost::mpi::communicator& aComm, const test_utilities::TestContext& aTestContext);
 
 }  // namespace plato::integration_tests::utilities
 

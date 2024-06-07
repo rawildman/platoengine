@@ -13,8 +13,7 @@ namespace plato::criteria::library
 {
 /// @brief Interface for implementing criteria loaded from shared libraries.
 ///
-/// Any external criterion (objective or constraint) should inherit this interface
-/// and implement plato_create_criterion.
+/// Any external criterion (objective or constraint) should inherit this interface.
 class CriterionInterface
 {
    public:
@@ -33,14 +32,5 @@ class CriterionInterface
 };
 
 }  // namespace plato::criteria::library
-
-namespace plato
-{
-extern "C" std::unique_ptr<criteria::library::CriterionInterface> plato_create_criterion(
-    const std::vector<std::string>& aFileNames);
-
-extern "C" std::unique_ptr<criteria::library::CriterionInterface> plato_create_parallel_criterion(
-    const std::vector<std::string>& aFileNames, MPI_Comm aComm);
-}  // namespace plato
 
 #endif
