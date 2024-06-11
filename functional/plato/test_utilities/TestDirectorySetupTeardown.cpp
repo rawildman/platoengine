@@ -10,6 +10,7 @@ TestDirectorySetupTeardown::TestDirectorySetupTeardown(std::filesystem::path aDi
     {
         std::filesystem::create_directories(mDirectory);
     }
+    mComm.barrier();
 }
 
 TestDirectorySetupTeardown::~TestDirectorySetupTeardown()
@@ -18,6 +19,7 @@ TestDirectorySetupTeardown::~TestDirectorySetupTeardown()
     {
         std::filesystem::remove_all(mDirectory);
     }
+    mComm.barrier();
 }
 
 const std::filesystem::path& TestDirectorySetupTeardown::directory() const { return mDirectory; }

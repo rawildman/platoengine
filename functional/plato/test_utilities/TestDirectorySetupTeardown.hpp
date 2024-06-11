@@ -47,6 +47,7 @@ TestDirectorySetupTeardown& TestDirectorySetupTeardown::writeFile(const WriteFun
     {
         aWriteFunction(mDirectory / aFilename);
     }
+    mComm.barrier();
     return *this;
 }
 
