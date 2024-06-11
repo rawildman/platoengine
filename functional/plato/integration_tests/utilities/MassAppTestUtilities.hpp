@@ -23,7 +23,7 @@ namespace plato::integration_tests::utilities
 
 /// @brief Creates test input that has a brick shape geometry, ROL optimization, and an objective
 /// with name @a aMassAppName and number of processors @a aNumProcessors.
-[[nodiscard]] process_manager::library::ValidatedInput create_valid_brick_input(
+[[nodiscard]] process_manager::library::ValidatedInput create_test_mass_app_input(
     const input_parser::AppName& aMassAppName,
     const input_parser::CriterionName& aCriterionName,
     unsigned int aNumProcessors);

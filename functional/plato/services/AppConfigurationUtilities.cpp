@@ -45,27 +45,6 @@ std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& a
     return aAppConfiguration.mLibraryDirectory / aAppConfiguration.mConfiguration.mLibraryFileName;
 }
 
-std::optional<std::string_view> function_name(const AppConfiguration& aAppConfiguration,
-                                              const CriterionConfiguration& aCriterionConfiguration)
-{
-    const auto tCriterionConfigurationIter = std::find_if(
-        aAppConfiguration.mCriteria.cbegin(), aAppConfiguration.mCriteria.cend(),
-        [&aCriterionConfiguration](const auto& aCurrentCriterionConfiguration)
-        {
-            return aCriterionConfiguration.mIsParallelized == aCurrentCriterionConfiguration.mIsParallelized &&
-                   aCriterionConfiguration.mName == aCurrentCriterionConfiguration.mName;
-        });
-
-    if (tCriterionConfigurationIter == aAppConfiguration.mCriteria.cend())
-    {
-        return std::nullopt;
-    }
-    else
-    {
-        return std::optional<std::string_view>{tCriterionConfigurationIter->mFunctionName};
-    }
-}
-
 void AppConfigurationWriter::operator()(const std::filesystem::path& aFilePath) const
 {
     save_configuration(mAppConfiguration, aFilePath);

@@ -20,14 +20,6 @@ AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration 
 /// @brief Returns the path to the shared library contained in @a aAppConfiguration.
 std::filesystem::path shared_library_path(const AppConfigurationWithDirectory& aAppConfiguration);
 
-/// @brief Finds the function name associated with @a aCriterionConfiguration from the set of all criteria in @a
-/// aAppConfiguration.
-/// @param aCriterionConfiguration The CriterionConfiguration argument's `mFunctionName` field can be empty. The search
-/// is based on the other fields.
-/// @note More than one entry may be present in @a aAppConfiguration, this does not guarantee which will be returned.
-std::optional<std::string_view> function_name(const AppConfiguration& aAppConfiguration,
-                                              const CriterionConfiguration& aCriterionConfiguration);
-
 /// @brief A helper function object for writing an AppConfiguration to disk.
 struct AppConfigurationWriter
 {

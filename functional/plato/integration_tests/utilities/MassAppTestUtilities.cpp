@@ -24,8 +24,7 @@ namespace
 /// we don't want it to be used as an actual app. This gets the lib directory so we can find it.
 std::optional<std::filesystem::path> lib_directory_from_plugin_directory()
 {
-    auto tPluginPath = services::plugin_directory_path();
-    if (tPluginPath)
+    if (auto tPluginPath = services::plugin_directory_path())
     {
         return std::move(tPluginPath).value() / ".." / "lib";
     }
@@ -72,9 +71,9 @@ test_utilities::TestDirectorySetupTeardown register_test_mass_app(const std::str
     return tConfigurationTempDirectory;
 }
 
-process_manager::library::ValidatedInput create_valid_brick_input(const input_parser::AppName& aMassAppName,
-                                                                  const input_parser::CriterionName& aCriterionName,
-                                                                  const unsigned int aNumProcessors)
+process_manager::library::ValidatedInput create_test_mass_app_input(const input_parser::AppName& aMassAppName,
+                                                                    const input_parser::CriterionName& aCriterionName,
+                                                                    const unsigned int aNumProcessors)
 {
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = aNumProcessors;
@@ -105,7 +104,7 @@ void register_load_run_test(const boost::mpi::communicator& aComm, const test_ut
     auto tConfigurationTempDirectory = integration_tests::utilities::register_test_mass_app(tAppName.mToken, aComm);
     const auto tCriterionName = input_parser::CriterionName{"mass"};
     const auto tValidInput =
-        integration_tests::utilities::create_valid_brick_input(tAppName, tCriterionName, aComm.size());
+        integration_tests::utilities::create_test_mass_app_input(tAppName, tCriterionName, aComm.size());
 
     const auto tObjectiveFunction = criteria::library::make_aggregate_objective_function(tValidInput.objectives());
     const auto tGeometry =

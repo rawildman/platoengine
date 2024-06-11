@@ -3,7 +3,6 @@
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/optional.hpp>
-#include <optional>
 #include <string_view>
 
 #include "plato/core/FactoryRegistration.hpp"
