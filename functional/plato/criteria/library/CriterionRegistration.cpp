@@ -10,17 +10,9 @@ namespace plato::criteria::library
 {
 namespace
 {
-std::string criterion_registration_name(const std::optional<std::string_view> aAppName,
-                                        const std::string_view aCriterionName)
+std::string criterion_registration_name(const std::string_view aAppName, const std::string_view aCriterionName)
 {
-    if (aAppName)
-    {
-        return std::string{aAppName.value()} + ":" + std::string{aCriterionName};
-    }
-    else
-    {
-        return std::string{aCriterionName};
-    }
+    return std::string{aAppName} + ":" + std::string{aCriterionName};
 }
 }  // namespace
 
