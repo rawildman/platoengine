@@ -13,5 +13,6 @@ else()
 endif()
 
 if( UNIT_TESTING )
+  create_plato_library(PlatoServicesTestSharedLib test_shared_lib "")
   create_plato_unittester(PlatoFunctionalServices unittest)
 endif()
