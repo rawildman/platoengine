@@ -1,5 +1,6 @@
 #include "plato/criteria/extension/PluginCriteria.hpp"
 
+#include <filesystem>
 #include <utility>
 
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
@@ -50,11 +51,22 @@ std::size_t number_of_plugins_registered_at_startup() { return kNumberOfPluginsL
 std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAdditionalSearchDirectories)
 {
     const auto tAppConfigurations = services::app_configurations(aAdditionalSearchDirectories);
+    auto tNumberOfRegisteredApps = std::size_t{0};
     for (const auto& tAppConfiguration : tAppConfigurations)
     {
-        register_all_criteria(tAppConfiguration);
+        if (std::filesystem::exists(services::shared_library_path(tAppConfiguration)))
+        {
+            register_all_criteria(tAppConfiguration);
+            ++tNumberOfRegisteredApps;
+        }
+        else
+        {
+            std::cout << "Warning: The shared library " << services::shared_library_path(tAppConfiguration)
+                      << ", associated with app \"" << tAppConfiguration.mConfiguration.mName
+                      << "\", was not found and will not be available.\n";
+        }
     }
-    return tAppConfigurations.size();
+    return tNumberOfRegisteredApps;
 }
 
 }  // namespace plato::criteria::extension

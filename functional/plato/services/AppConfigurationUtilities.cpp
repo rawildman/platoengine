@@ -1,6 +1,7 @@
 #include "plato/services/AppConfigurationUtilities.hpp"
 
 #include <algorithm>
+#include <filesystem>
 
 #include "plato/services/PluginDirectoryPath.hpp"
 #include "plato/utilities/TransformIf.hpp"

@@ -44,17 +44,18 @@ void testSerializeRoundTrip(const AppConfiguration& aSerializable, const test_ut
 TEST(AppConfiguration, Serialization)
 {
     const auto tAppConfiguration =
-        services::AppConfiguration{/*.name=*/"test-app",
-                                   /*.lib_name=*/"libtest.so",
-                                   {kTestCriterionConfiguration, kAnotherTestCriterionConfiguration}};
+        services::AppConfiguration{/*.mName=*/"test-app",
+                                   /*.mLibraryFileName=*/"libtest.so",
+                                   /*.mCriteria=*/{kTestCriterionConfiguration, kAnotherTestCriterionConfiguration}};
     testSerializeRoundTrip(tAppConfiguration, TEST_CONTEXT("App configuration"));
 }
 
 TEST(AppConfiguration, AppConfigurationWithDirectory)
 {
     const auto tSharedLibName = std::string_view{"libappetizer.so"};
-    const auto tAppConfiguration = services::AppConfiguration{
-        /*.name=*/"appetizer", /*.lib_name=*/std::string{tSharedLibName}, {kTestCriterionConfiguration}};
+    const auto tAppConfiguration =
+        services::AppConfiguration{/*.mName=*/"appetizer", /*.mLbraryFileName=*/std::string{tSharedLibName},
+                                   /*.mCriteria=*/{kTestCriterionConfiguration}};
     const auto tDirectory = std::filesystem::path{"/path/to/food"};
 
     const auto tAppConfigurationWithDirectory = app_configuration_with_directory(tAppConfiguration, tDirectory);
