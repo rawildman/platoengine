@@ -11,7 +11,9 @@
 #include "plato/input_parser/InputFieldTypes.hpp"
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/services/PluginDirectoryPath.hpp"
 #include "plato/test_utilities/TestDirectorySetupTeardown.hpp"
+#include "plato/utilities/OptionalToVector.hpp"
 #include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::extension::unittest
@@ -80,9 +82,14 @@ template <typename SharedLibWriter>
 
 TEST(PluginCriteria, NumberOfPluginsRegistered)
 {
-    // Not much to test since we don't know how many there might be.
-    // Just check that it's equal to the number of apps found.
-    EXPECT_EQ(services::app_configurations().size(), number_of_plugins_registered_at_startup());
+    EXPECT_EQ(services::app_configurations(utilities::optional_to_vector(services::plugin_directory_path())).size(),
+              number_of_plugins_registered_at_startup());
+}
+
+TEST(PluginCriteria, NothingRegisteredForEmptyPaths)
+{
+    const auto tNumberOfRegisteredApps = register_plugin_apps({});
+    EXPECT_EQ(tNumberOfRegisteredApps, 0u);
 }
 
 TEST(PluginCriteria, NonexistentSharedLibrary)
@@ -107,7 +114,7 @@ TEST(PluginCriteria, RegisterApps)
     auto tConfigurationTempDirectory =
         create_test_app_configurations_with_fake_shared_libs({tVampireAppName, tMummyAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
-    EXPECT_GE(tNumRegistered, 2u);
+    EXPECT_EQ(tNumRegistered, 2u);
     EXPECT_TRUE(library::is_parallel_criterion_function_registered(library::criterion_registration_name(
         input_parser::AppName{tVampireAppName}, input_parser::CriterionName{kTestCriterionName})));
     EXPECT_TRUE(library::is_parallel_criterion_function_registered(library::criterion_registration_name(
@@ -121,7 +128,7 @@ TEST(PluginCriteria, ValidateValidApps)
     auto tConfigurationTempDirectory =
         create_test_app_configurations_with_fake_shared_libs({tFrankensteinAppName, tMedusaAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
-    EXPECT_GE(tNumRegistered, 2u);
+    EXPECT_EQ(tNumRegistered, 2u);
 
     auto tCriteria = input_parser::objective{};
     EXPECT_TRUE(library::detail::validate_criterion_is_registered(tCriteria).has_value());

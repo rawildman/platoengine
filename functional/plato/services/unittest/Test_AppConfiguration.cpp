@@ -71,7 +71,7 @@ TEST(AppConfiguration, AppConfigurations)
         .writeFile(services::AppConfigurationWriter{kAnotherTestConfiguration}, "test-2.config");
     const auto tAppConfigurations = app_configurations({tConfigurationTempDirectory.directory()});
 
-    EXPECT_GE(tAppConfigurations.size(), 2u);
+    EXPECT_EQ(tAppConfigurations.size(), 2u);
 
     const auto tTestConfigurationIter =
         std::find_if(tAppConfigurations.cbegin(), tAppConfigurations.cend(),

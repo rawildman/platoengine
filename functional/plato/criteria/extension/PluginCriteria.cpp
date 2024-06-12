@@ -6,12 +6,15 @@
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
 #include "plato/services/AppConfiguration.hpp"
 #include "plato/services/AppConfigurationUtilities.hpp"
+#include "plato/services/PluginDirectoryPath.hpp"
+#include "plato/utilities/OptionalToVector.hpp"
 
 namespace plato::criteria::extension
 {
 namespace
 {
-static const auto kNumberOfPluginsLoaded = register_plugin_apps();
+static const auto kNumberOfPluginsLoaded =
+    register_plugin_apps(utilities::optional_to_vector(services::plugin_directory_path()));
 
 template <typename... Args>
 [[nodiscard]] auto make_plugin_app_function(const services::AppConfigurationWithDirectory& aAppConfiguration,
@@ -48,9 +51,9 @@ void register_all_criteria(const services::AppConfigurationWithDirectory& aAppCo
 
 std::size_t number_of_plugins_registered_at_startup() { return kNumberOfPluginsLoaded; }
 
-std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aAdditionalSearchDirectories)
+std::size_t register_plugin_apps(const std::vector<std::filesystem::path>& aSearchDirectories)
 {
-    const auto tAppConfigurations = services::app_configurations(aAdditionalSearchDirectories);
+    const auto tAppConfigurations = services::app_configurations(aSearchDirectories);
     auto tNumberOfRegisteredApps = std::size_t{0};
     for (const auto& tAppConfiguration : tAppConfigurations)
     {

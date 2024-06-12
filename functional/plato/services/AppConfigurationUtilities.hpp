@@ -8,10 +8,9 @@
 
 namespace plato::services
 {
-/// @brief Returns all app configurations found in the plugins installation directory as well as those found in the
-/// additional search directories given in @a aAdditionalSearchDirectories.
+/// @brief Returns all app configurations found in the directory at paths @a aSearchDirectories.
 [[nodiscard]] std::vector<AppConfigurationWithDirectory> app_configurations(
-    std::vector<std::filesystem::path> aAdditionalSearchDirectories = {});
+    const std::vector<std::filesystem::path>& aSearchDirectories);
 
 /// @brief Adds the directory @a aDirectory to the app configuration for generating absolute paths.
 [[nodiscard]] AppConfigurationWithDirectory app_configuration_with_directory(AppConfiguration aAppConfiguration,

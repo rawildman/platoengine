@@ -14,16 +14,10 @@ constexpr auto kConfigFileExtension = std::string_view{".config"};
 }  // namespace
 
 std::vector<AppConfigurationWithDirectory> app_configurations(
-    std::vector<std::filesystem::path> aAdditionalSearchDirectories)
+    const std::vector<std::filesystem::path>& aSearchDirectories)
 {
-    auto tSearchDirectories = std::move(aAdditionalSearchDirectories);
-    if (auto tPluginPath = plugin_directory_path())
-    {
-        tSearchDirectories.push_back(std::move(tPluginPath).value());
-    }
-
     auto tAppConfigurations = std::vector<AppConfigurationWithDirectory>{};
-    for (const auto& tDirectory : tSearchDirectories)
+    for (const auto& tDirectory : aSearchDirectories)
     {
         utilities::transform_if(
             std::filesystem::directory_iterator{tDirectory}, std::back_inserter(tAppConfigurations),
