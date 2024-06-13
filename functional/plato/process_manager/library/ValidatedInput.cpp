@@ -81,7 +81,7 @@ ValidatedInput make_validated_input(input_parser::ParsedInput aInput)
     if (!tMessages.empty())
     {
         throw plato::utilities::Exception("Error: Could not validate input, the following errors were found: \n" +
-                                          utilities::concatenate_vector(tMessages, "\n"));
+                                          utilities::concatenate_container(tMessages, "\n"));
     }
     return ValidatedInput{std::move(aInput), Key{}};
 }
