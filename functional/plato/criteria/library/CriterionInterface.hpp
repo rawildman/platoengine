@@ -1,8 +1,6 @@
 #ifndef PLATO_CRITERIA_LIBRARY_CRITERIONINTERFACE
 #define PLATO_CRITERIA_LIBRARY_CRITERIONINTERFACE
 
-#include <mpi.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -13,7 +11,21 @@ namespace plato::criteria::library
 {
 /// @brief Interface for implementing criteria loaded from shared libraries.
 ///
-/// Any external criterion (objective or constraint) should inherit this interface.
+/// Any external criterion (objective or constraint) must inherit this interface.
+/// External shared libraries must then provide an exported function that constructs and
+/// returns a `std::unique_ptr` to this interface class. The exported function must be
+/// associated with a criterion name in a config file. The following is an example of the
+/// required declaration for serial criteria:
+/// @code{.cpp}
+/// extern "C" auto plato_create_criterion(const std::vector<std::string>& aFileNames)
+///  -> std::unique_ptr<::plato::criteria::library::CriterionInterface>;
+/// @endcode
+/// and for parallel criteria:
+/// @code{.cpp}
+/// extern "C" auto plato_create_parallel_criterion(const std::vector<std::string>& aFileNames, MPI_Comm aComm)
+///  -> std::unique_ptr<::plato::criteria::library::CriterionInterface>;
+/// @endcode
+/// `extern "C"` ensures that the function name is not mangled in the shared library symbols.
 class CriterionInterface
 {
    public:
