@@ -43,7 +43,7 @@ template <typename SharedLibWriter>
 [[nodiscard]] test_utilities::TestDirectorySetupTeardown create_test_app_configurations_impl(
     const std::vector<std::string_view>& aAppNames, const SharedLibWriter& aSharedLibWriter)
 {
-    auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{"test-plugin-directory"};
+    const auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{"test-plugin-directory"};
 
     for (const auto tAppName : aAppNames)
     {
@@ -57,9 +57,9 @@ template <typename SharedLibWriter>
         auto tAppConfiguration = services::AppConfiguration{/*.mName=*/std::string{tAppName},
                                                             /*.mLibraryFileName=*/tLibName,
                                                             /*.mCriteria=*/{tCriterionConfiguration}};
-        tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{std::move(tAppConfiguration)},
-                                              tConfigName);
-        tConfigurationTempDirectory.writeFile(aSharedLibWriter, tLibName);
+        tConfigurationTempDirectory
+            .writeFile(services::AppConfigurationWriter{std::move(tAppConfiguration)}, tConfigName)
+            .writeFile(aSharedLibWriter, tLibName);
     }
     return tConfigurationTempDirectory;
 }
@@ -96,7 +96,7 @@ TEST(PluginCriteria, NothingRegisteredForEmptyPaths)
 TEST(PluginCriteria, NonexistentSharedLibrary)
 {
     const auto tTheBlobAppName = std::string{"the-blob"};
-    auto tConfigurationTempDirectory = create_test_app_configurations({tTheBlobAppName});
+    const auto tConfigurationTempDirectory = create_test_app_configurations({tTheBlobAppName});
     const auto tNumKnownConfigurations = services::app_configurations({tConfigurationTempDirectory.directory()}).size();
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_NE(tNumRegistered, tNumKnownConfigurations);
@@ -112,7 +112,7 @@ TEST(PluginCriteria, RegisterApps)
     // Checks that some fake apps get registered via register_plugin_apps
     const auto tVampireAppName = std::string{"vampire"};
     const auto tMummyAppName = std::string{"mummy"};
-    auto tConfigurationTempDirectory =
+    const auto tConfigurationTempDirectory =
         create_test_app_configurations_with_fake_shared_libs({tVampireAppName, tMummyAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_EQ(tNumRegistered, 2u);
@@ -126,7 +126,7 @@ TEST(PluginCriteria, ValidateValidApps)
 {
     const auto tFrankensteinAppName = std::string{"frankenstein"};
     const auto tMedusaAppName = std::string{"medusa"};
-    auto tConfigurationTempDirectory =
+    const auto tConfigurationTempDirectory =
         create_test_app_configurations_with_fake_shared_libs({tFrankensteinAppName, tMedusaAppName});
     const auto tNumRegistered = register_plugin_apps({tConfigurationTempDirectory.directory()});
     EXPECT_EQ(tNumRegistered, 2u);
@@ -145,7 +145,7 @@ TEST(PluginCriteria, ValidateValidApps)
 TEST(PluginCriteria, ValidateInvalidApp)
 {
     const auto tWolfmanAppName = std::string{"wolfman"};
-    auto tConfigurationTempDirectory = create_test_app_configurations({tWolfmanAppName});
+    const auto tConfigurationTempDirectory = create_test_app_configurations({tWolfmanAppName});
     register_plugin_apps({tConfigurationTempDirectory.directory()});
 
     auto tCriteria = input_parser::objective{};
@@ -160,7 +160,7 @@ TEST(CriterionRegistration, RegisterAppsList)
 {
     const auto tMartianAppName = std::string{"martian"};
     const auto tCerberusAppName = std::string{"cerberus"};
-    auto tConfigurationTempDirectory =
+    const auto tConfigurationTempDirectory =
         create_test_app_configurations_with_fake_shared_libs({tMartianAppName, tCerberusAppName});
     register_plugin_apps({tConfigurationTempDirectory.directory()});
 

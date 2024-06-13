@@ -53,7 +53,7 @@ test_utilities::TestDirectorySetupTeardown register_test_mass_app(const std::str
                                                                   const boost::mpi::communicator& aComm)
 {
     const auto tTestPluginDirectory = std::filesystem::path{"test-plugin-directory"};
-    auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{tTestPluginDirectory, aComm};
+    const auto tConfigurationTempDirectory = test_utilities::TestDirectorySetupTeardown{tTestPluginDirectory, aComm};
     const auto tMassLibPath = std::filesystem::relative(mass_app_lib_path(), tTestPluginDirectory);
     const auto tCriterionSerialConfiguration = services::CriterionConfiguration{
         /*.mName=*/"mass", /*.mIsParallelized=*/false, /*.mFunctionName=*/"plato_create_test_mass_criterion"};
@@ -101,7 +101,8 @@ void register_load_run_test(const boost::mpi::communicator& aComm, const test_ut
     ASSERT_TRUE(std::filesystem::exists(mass_app_lib_path())) << aTestContext;
 
     const auto tAppName = input_parser::AppName{"test-mass-app"};
-    auto tConfigurationTempDirectory = integration_tests::utilities::register_test_mass_app(tAppName.mToken, aComm);
+    const auto tConfigurationTempDirectory =
+        integration_tests::utilities::register_test_mass_app(tAppName.mToken, aComm);
     const auto tCriterionName = input_parser::CriterionName{"mass"};
     const auto tValidInput =
         integration_tests::utilities::create_test_mass_app_input(tAppName, tCriterionName, aComm.size());

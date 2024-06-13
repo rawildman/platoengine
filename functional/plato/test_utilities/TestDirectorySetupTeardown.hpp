@@ -27,7 +27,8 @@ class [[nodiscard]] TestDirectorySetupTeardown
     /// @param aFilename A path relative to the test directory created on construction.
     /// @pre @a aFilename must be a relative path or filename, checked with an assertion.
     template <typename WriteFunction>
-    TestDirectorySetupTeardown& writeFile(const WriteFunction& aWriteFunction, const std::filesystem::path& aFilename);
+    const TestDirectorySetupTeardown& writeFile(const WriteFunction& aWriteFunction,
+                                                const std::filesystem::path& aFilename) const;
 
     /// @brief Get the directory created on construction.
     [[nodiscard]] const std::filesystem::path& directory() const;
@@ -39,8 +40,8 @@ class [[nodiscard]] TestDirectorySetupTeardown
 };
 
 template <typename WriteFunction>
-TestDirectorySetupTeardown& TestDirectorySetupTeardown::writeFile(const WriteFunction& aWriteFunction,
-                                                                  const std::filesystem::path& aFilename)
+const TestDirectorySetupTeardown& TestDirectorySetupTeardown::writeFile(const WriteFunction& aWriteFunction,
+                                                                        const std::filesystem::path& aFilename) const
 {
     assert(aFilename.is_relative());
     if (mComm.rank() == kRootRank)
