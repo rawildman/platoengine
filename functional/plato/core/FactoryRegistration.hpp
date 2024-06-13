@@ -2,6 +2,7 @@
 #define PLATO_CORE_FACTORYREGISTRATION
 
 #include <functional>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -50,6 +51,10 @@ template <typename FactoryReturn, typename... FactoryInput>
 template <typename FactoryReturn, typename... FactoryInput>
 [[nodiscard]] bool is_factory_function_registered(const std::string_view aFunctionName);
 
+/// @brief Returns the names of all registered functions, useful for error messages.
+template <typename FactoryReturn, typename... FactoryInput>
+[[nodiscard]] std::vector<std::string> registered_function_names();
+
 namespace detail
 {
 /// @return Map holding registered functions used to create CriterionFunction objects in the factory.
@@ -91,6 +96,17 @@ bool is_factory_function_registered(const std::string_view aFunctionName)
 {
     return detail::registered_factory_functions<FactoryReturn, FactoryInput...>().count(std::string{aFunctionName}) ==
            1;
+}
+
+template <typename FactoryReturn, typename... FactoryInput>
+[[nodiscard]] std::vector<std::string> registered_function_names()
+{
+    const auto& tFactoryFunctions = detail::registered_factory_functions<FactoryReturn, FactoryInput...>();
+    auto tFunctionNames = std::vector<std::string>{};
+    tFunctionNames.reserve(tFactoryFunctions.size());
+    std::transform(tFactoryFunctions.cbegin(), tFactoryFunctions.cend(), std::back_inserter(tFunctionNames),
+                   [](const auto& tMapEntry) { return tMapEntry.first; });
+    return tFunctionNames;
 }
 
 }  // namespace plato::core
