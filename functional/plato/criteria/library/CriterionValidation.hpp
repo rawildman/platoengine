@@ -32,8 +32,10 @@ template <typename Criteria>
         }
         else
         {
-            return std::optional<std::string>{criterion_name(aInput) +
-                                              ": app/criterion not found: " + tRegistrationName};
+            auto tErrorMessage = criterion_name(aInput) + ": app/criterion not found: " + tRegistrationName +
+                                 "\nThe following criteria are available: \n" +
+                                 utilities::concatenate_container(registered_criteria_names(), "\n");
+            return std::optional<std::string>{std::in_place_t{}, std::move(tErrorMessage)};
         }
     }
     else

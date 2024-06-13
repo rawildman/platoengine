@@ -9,6 +9,7 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/utilities/Exception.hpp"
+#include "plato/utilities/StringUtilities.hpp"
 
 namespace plato::criteria::library
 {
@@ -43,7 +44,8 @@ CriterionFunction make_criterion_function(const Input& aValidatedInput, const Ad
     }
     else
     {
-        throw utilities::Exception("App/criterion \"" + tRegistrationName + "\" not found.");
+        throw utilities::Exception("App/criterion \"" + tRegistrationName + "\" not found. Available criteria are:\n" +
+                                   utilities::concatenate_container(registered_criteria_names(), "\n"));
     }
 }
 
