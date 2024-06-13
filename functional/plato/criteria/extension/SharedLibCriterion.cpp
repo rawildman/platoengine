@@ -47,8 +47,7 @@ double SharedLibCriterion::f(const core::MeshProxy& aMesh) const { return mCrite
 
 linear_algebra::DynamicVector<double> SharedLibCriterion::df(const core::MeshProxy& aMesh) const
 {
-    std::vector<double> tGradient = mCriterionInterface->gradient(aMesh);
-    return linear_algebra::DynamicVector<double>(std::move(tGradient));
+    return linear_algebra::DynamicVector<double>(mCriterionInterface->gradient(aMesh));
 }
 
 auto make_shared_lib_function(const SharedLibCriterion& aSharedLibCriterion)
