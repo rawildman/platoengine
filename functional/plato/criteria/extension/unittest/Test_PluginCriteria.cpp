@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <string_view>
 
 #include "plato/criteria/extension/PluginCriteria.hpp"
@@ -54,7 +55,7 @@ template <typename SharedLibWriter>
             /*.mFunctionName=*/"plato_create_criterion",
         };
         auto tAppConfiguration = services::AppConfiguration{/*.mName=*/std::string{tAppName},
-                                                            /*mLibraryFileName=*/tLibName,
+                                                            /*.mLibraryFileName=*/tLibName,
                                                             /*.mCriteria=*/{tCriterionConfiguration}};
         tConfigurationTempDirectory.writeFile(services::AppConfigurationWriter{std::move(tAppConfiguration)},
                                               tConfigName);
@@ -153,6 +154,25 @@ TEST(PluginCriteria, ValidateInvalidApp)
 
     tCriteria.app = input_parser::AppName{std::string{"bog-monster"}};
     EXPECT_TRUE(library::detail::validate_criterion_is_registered(tCriteria).has_value());
+}
+
+TEST(CriterionRegistration, RegisterAppsList)
+{
+    const auto tMartianAppName = std::string{"martian"};
+    const auto tCerberusAppName = std::string{"cerberus"};
+    auto tConfigurationTempDirectory =
+        create_test_app_configurations_with_fake_shared_libs({tMartianAppName, tCerberusAppName});
+    register_plugin_apps({tConfigurationTempDirectory.directory()});
+
+    const auto tRegisteredApps = library::registered_criteria_names();
+    const auto tCriterionIsInRegisteredNames = [&tRegisteredApps](const std::string& tAppName)
+    {
+        const auto tRegistrationName = library::criterion_registration_name(
+            input_parser::AppName{tAppName}, input_parser::CriterionName{kTestCriterionName});
+        return tRegisteredApps.count(tRegistrationName) == 1u;
+    };
+    EXPECT_TRUE(tCriterionIsInRegisteredNames(tMartianAppName));
+    EXPECT_TRUE(tCriterionIsInRegisteredNames(tCerberusAppName));
 }
 
 }  // namespace plato::criteria::extension::unittest

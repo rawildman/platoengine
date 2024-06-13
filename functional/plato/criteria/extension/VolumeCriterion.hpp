@@ -18,8 +18,8 @@ struct VolumeCriterion
     [[nodiscard]] double f(const core::MeshProxy& aMeshProxy) const;
     [[nodiscard]] linear_algebra::DynamicVector<double> df(const core::MeshProxy& aMeshProxy) const;
 
-    static constexpr auto kVolumeAppName = std::string_view{"volume"};
-    static constexpr auto kVolumeFractionAppName = std::string_view{"volume_fraction"};
+    static constexpr auto kVolumeCriterionName = std::string_view{"volume"};
+    static constexpr auto kVolumeFractionCriterionName = std::string_view{"volume_fraction"};
 
     double mScaleFactor = 1;
 };

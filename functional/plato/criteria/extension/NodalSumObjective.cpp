@@ -12,7 +12,7 @@ namespace plato::criteria::extension
 namespace
 {
 [[maybe_unused]] static auto kNodalSumRegistration =
-    library::CriterionRegistration{library::builtin_criterion_registration_name(NodalSumObjective::kAppName),
+    library::CriterionRegistration{library::builtin_criterion_registration_name(NodalSumObjective::kCriterionName),
                                    [](const library::CriterionInput&) { return make_nodal_sum_function(); }};
 }
 

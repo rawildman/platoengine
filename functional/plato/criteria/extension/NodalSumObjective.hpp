@@ -16,7 +16,7 @@ struct NodalSumObjective
     [[nodiscard]] double f(const core::MeshProxy& aMeshProxy) const;
     [[nodiscard]] linear_algebra::DynamicVector<double> df(const core::MeshProxy& aMeshProxy) const;
 
-    static constexpr auto kAppName = std::string_view{"nodal_sum"};
+    static constexpr auto kCriterionName = std::string_view{"nodal_sum"};
 };
 
 /// @brief Creates a Function object from a NodalSumObjective

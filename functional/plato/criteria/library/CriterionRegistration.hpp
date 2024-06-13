@@ -3,6 +3,7 @@
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/optional.hpp>
+#include <set>
 #include <string_view>
 
 #include "plato/core/FactoryRegistration.hpp"
@@ -49,6 +50,10 @@ using ParallelCriterionRegistration =
 
 /// @brief Creates a unique name from @a aCriterionName that can be used uniquely register a built-in criterion.
 [[nodiscard]] std::string builtin_criterion_registration_name(std::string_view aCriterionName);
+
+/// @brief Returns the full list of registered criteria, useful for error messages.
+[[nodiscard]] std::set<std::string> registered_criteria_names();
+
 }  // namespace plato::criteria::library
 
 #endif

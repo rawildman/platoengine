@@ -11,11 +11,11 @@ namespace plato::criteria::extension
 namespace
 {
 [[maybe_unused]] static auto kVolumeConstraintRegistration =
-    library::CriterionRegistration{library::builtin_criterion_registration_name(VolumeCriterion::kVolumeAppName),
+    library::CriterionRegistration{library::builtin_criterion_registration_name(VolumeCriterion::kVolumeCriterionName),
                                    [](const library::CriterionInput&) { return make_volume_constraint_function(); }};
 
 [[maybe_unused]] static auto kVolumeFractionConstraintRegistration = library::CriterionRegistration{
-    library::builtin_criterion_registration_name(VolumeCriterion::kVolumeFractionAppName),
+    library::builtin_criterion_registration_name(VolumeCriterion::kVolumeFractionCriterionName),
     [](const library::CriterionInput&) { return make_volume_fraction_constraint_function(); }};
 
 auto read_bulk_and_elements(const std::filesystem::path& aMeshFileName)

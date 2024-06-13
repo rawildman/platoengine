@@ -36,7 +36,7 @@ TEST(CriterionRegistration, RegistrationNameConfiguration)
     const auto tCriterionConfiguration = services::CriterionConfiguration{
         /*.mName*/ std::string{tTestCriterionName}, /*.mIsParallelized*/ false, /*.mFunctionName*/ "fun"};
     const auto tAppConfiguration = services::AppConfiguration{/*.mName=*/std::string{tTestAppName},
-                                                              /*mLibraryFileName=*/"lib.so",
+                                                              /*.mLibraryFileName=*/"lib.so",
                                                               /*.mCriteria=*/{tCriterionConfiguration}};
 
     const auto tCriterionName = input_parser::CriterionName{std::string{tTestCriterionName}};

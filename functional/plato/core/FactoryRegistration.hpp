@@ -4,6 +4,7 @@
 #include <functional>
 #include <iterator>
 #include <optional>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -53,7 +54,7 @@ template <typename FactoryReturn, typename... FactoryInput>
 
 /// @brief Returns the names of all registered functions, useful for error messages.
 template <typename FactoryReturn, typename... FactoryInput>
-[[nodiscard]] std::vector<std::string> registered_function_names();
+[[nodiscard]] std::set<std::string> registered_function_names();
 
 namespace detail
 {
@@ -99,12 +100,12 @@ bool is_factory_function_registered(const std::string_view aFunctionName)
 }
 
 template <typename FactoryReturn, typename... FactoryInput>
-[[nodiscard]] std::vector<std::string> registered_function_names()
+std::set<std::string> registered_function_names()
 {
     const auto& tFactoryFunctions = detail::registered_factory_functions<FactoryReturn, FactoryInput...>();
-    auto tFunctionNames = std::vector<std::string>{};
-    tFunctionNames.reserve(tFactoryFunctions.size());
-    std::transform(tFactoryFunctions.cbegin(), tFactoryFunctions.cend(), std::back_inserter(tFunctionNames),
+    auto tFunctionNames = std::set<std::string>{};
+    std::transform(tFactoryFunctions.cbegin(), tFactoryFunctions.cend(),
+                   std::inserter(tFunctionNames, tFunctionNames.begin()),
                    [](const auto& tMapEntry) { return tMapEntry.first; });
     return tFunctionNames;
 }

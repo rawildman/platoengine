@@ -1,6 +1,8 @@
 #include "plato/criteria/library/CriterionRegistration.hpp"
 
 #include <boost/mpi/communicator.hpp>
+#include <iterator>
+#include <set>
 
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/input_parser/InputDefinitions.hpp"
@@ -43,6 +45,18 @@ std::string criterion_registration_name(const boost::optional<input_parser::AppN
 std::string builtin_criterion_registration_name(const std::string_view aCriterionName)
 {
     return criterion_registration_name(input_parser::kBuiltinAppName, aCriterionName);
+}
+
+std::set<std::string> registered_criteria_names()
+{
+    auto tAllCriteria = std::set<std::string>{};
+    auto tSerialFunctions = core::registered_function_names<CriterionFunction, CriterionInput>();
+    std::move(tSerialFunctions.begin(), tSerialFunctions.end(), std::inserter(tAllCriteria, tAllCriteria.begin()));
+    auto tParallelFunctions =
+        core::registered_function_names<CriterionFunction, CriterionInput, boost::mpi::communicator>();
+    std::move(tParallelFunctions.begin(), tParallelFunctions.end(), std::inserter(tAllCriteria, tAllCriteria.begin()));
+
+    return tAllCriteria;
 }
 
 }  // namespace plato::criteria::library

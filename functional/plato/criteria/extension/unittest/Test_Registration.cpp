@@ -13,19 +13,33 @@ namespace plato::criteria::extension::unittest
 TEST(CriterionRegistration, NodalSum)
 {
     EXPECT_TRUE(library::is_criterion_function_registered(
-        library::builtin_criterion_registration_name(NodalSumObjective::kAppName)));
+        library::builtin_criterion_registration_name(NodalSumObjective::kCriterionName)));
 }
 
 TEST(CriterionRegistration, Volume)
 {
     EXPECT_TRUE(library::is_criterion_function_registered(
-        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeAppName)));
+        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeCriterionName)));
 }
 
 TEST(CriterionRegistration, VolumeFraction)
 {
     EXPECT_TRUE(library::is_criterion_function_registered(
-        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeFractionAppName)));
+        library::builtin_criterion_registration_name(VolumeCriterion::kVolumeFractionCriterionName)));
+}
+
+TEST(CriterionRegistration, BuiltinRegisterAppsList)
+{
+    const auto tRegisteredApps = library::registered_criteria_names();
+    const auto tCriterionIsInRegisteredNames = [&tRegisteredApps](const std::string_view tCriterionName)
+    {
+        const auto tRegistrationName = library::builtin_criterion_registration_name(tCriterionName);
+        return tRegisteredApps.count(tRegistrationName) == 1u;
+    };
+
+    EXPECT_TRUE(tCriterionIsInRegisteredNames(VolumeCriterion::kVolumeCriterionName));
+    EXPECT_TRUE(tCriterionIsInRegisteredNames(VolumeCriterion::kVolumeCriterionName));
+    EXPECT_TRUE(tCriterionIsInRegisteredNames(VolumeCriterion::kVolumeFractionCriterionName));
 }
 
 }  // namespace plato::criteria::extension::unittest

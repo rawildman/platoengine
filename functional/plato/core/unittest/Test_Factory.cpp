@@ -101,11 +101,8 @@ TEST(FactoryRegistration, RegisteredFunctionNames)
 {
     const auto tRegisteredFunctionNames = registered_function_names<TestFactoryObject, TestFactoryInput>();
     EXPECT_EQ(tRegisteredFunctionNames.size(), 2u);
-    const auto tFindRegisteredName = [&tRegisteredFunctionNames](const std::string_view tFunctionName)
-    { return std::find(tRegisteredFunctionNames.cbegin(), tRegisteredFunctionNames.cend(), tFunctionName); };
-
-    EXPECT_NE(tFindRegisteredName(kONegative), tRegisteredFunctionNames.cend());
-    EXPECT_NE(tFindRegisteredName(kBPositive), tRegisteredFunctionNames.cend());
+    EXPECT_EQ(tRegisteredFunctionNames.count(std::string{kONegative}), 1u);
+    EXPECT_EQ(tRegisteredFunctionNames.count(std::string{kBPositive}), 1u);
 }
 
 }  // namespace plato::core::unittest
