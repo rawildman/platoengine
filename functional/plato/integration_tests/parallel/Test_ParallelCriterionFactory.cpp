@@ -36,11 +36,11 @@ TEST(CriterionFactory, ValidObjective)
     const auto tConfigurationTempDirectory = utilities::register_test_mass_app(kMassAppName, tComm);
     tComm.barrier();
     // For pipeline debugging, remove when this test passes
-    for(const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory()})
+    for (const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory()})
     {
         std::cout << "File: " << tFile << " on " << tComm.rank() << " of " << tComm.size() << std::endl;
     }
-    for(const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory() / ".."})
+    for (const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory() / ".."})
     {
         std::cout << "File: " << tFile << " on " << tComm.rank() << " of " << tComm.size() << std::endl;
     }
