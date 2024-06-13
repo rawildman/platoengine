@@ -12,7 +12,7 @@ namespace
 
 TEST(MassAppRegistration, RegisterLoadAndRun)
 {
-    auto tComm = boost::mpi::communicator{};
+    const auto tComm = boost::mpi::communicator{};
     EXPECT_EQ(tComm.size(), 1u);
     utilities::register_load_run_test(tComm, TEST_CONTEXT("Serial mass app test"));
 }

@@ -50,7 +50,7 @@ void test_parallel_mass_evaluation(const unsigned int aNumGroups, const test_uti
 {
     constexpr auto tMassAppName = std::string_view{"test-mass-app"};
     const auto tComm = boost::mpi::communicator{};
-    auto tConfigurationTempDirectory = utilities::register_test_mass_app(tMassAppName, tComm);
+    const auto tConfigurationTempDirectory = utilities::register_test_mass_app(tMassAppName, tComm);
 
     auto tObjective = input_parser::objective{};
     tObjective.number_of_processors = kNumRanks / aNumGroups;
