@@ -35,15 +35,6 @@ TEST(CriterionFactory, ValidObjective)
     const auto tComm = boost::mpi::communicator{};
     const auto tConfigurationTempDirectory = utilities::register_test_mass_app(kMassAppName, tComm);
     tComm.barrier();
-    // For pipeline debugging, remove when this test passes
-    for (const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory()})
-    {
-        std::cout << "File: " << tFile << " on " << tComm.rank() << " of " << tComm.size() << std::endl;
-    }
-    for (const auto& tFile : std::filesystem::directory_iterator{tConfigurationTempDirectory.directory() / ".."})
-    {
-        std::cout << "File: " << tFile << " on " << tComm.rank() << " of " << tComm.size() << std::endl;
-    }
 
     const auto tInput = valid_mass_objective_input(tComm) | test_utilities::create_valid_brick_shape_geometry() |
                         test_utilities::create_valid_example_rol_optimization();
