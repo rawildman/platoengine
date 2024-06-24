@@ -32,7 +32,7 @@ TEST(GeometryFactory, ValidTopology)
     const std::filesystem::path tMeshFileName{tInput.mDensityTopology.value().mesh_name.value().mName};
     const utilities::STKCommandGenerator tSTKCommandGenerator{
         {3, 3, 4}, {-1, -2, -1}, {2, 1, 2}, utilities::STKCommandElementType::Hex};
-    utilities::write_mesh(tMeshFileName, utilities::create_mesh(tSTKCommandGenerator.toString()));
+    utilities::write_mesh(tMeshFileName, utilities::generate_stk_mesh(tSTKCommandGenerator));
 
     const ValidatedInput tData = make_validated_input(tInput);
 

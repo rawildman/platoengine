@@ -15,6 +15,7 @@ struct Tetrahedron
     Coordinate p3;
 
     [[nodiscard]] double volume() const;
+    [[nodiscard]] Coordinate centroid() const;
 
     constexpr static auto kNumVertices = unsigned{4};
     using Indices = std::array<unsigned int, kNumVertices>;

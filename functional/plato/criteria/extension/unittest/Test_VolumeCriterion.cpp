@@ -29,7 +29,7 @@ void test_volume_criteria_from_ctor_and_function(
 void test_scaled_and_unscaled_on_ctor_and_function(const utilities::STKCommandGenerator& aSTKCommandGenerator)
 {
     namespace pfu = plato::utilities;
-    pfu::write_mesh(kMeshFile, pfu::create_mesh(aSTKCommandGenerator.toString()));
+    pfu::write_mesh(kMeshFile, pfu::generate_stk_mesh(aSTKCommandGenerator));
     test_volume_criteria_from_ctor_and_function(VolumeCriterion{}, make_volume_constraint_function(),
                                                 aSTKCommandGenerator.volume());
     test_volume_criteria_from_ctor_and_function(VolumeCriterion{1.0 / aSTKCommandGenerator.volume()},
@@ -78,7 +78,7 @@ TEST(VolumeCriterion, DerivativeOfScaledVolumeOnControls)
     namespace pfu = plato::utilities;
     const pfu::STKCommandGenerator tSTKCommandGenerator{
         {1, 1, 3}, {0, 0, 0}, {2.0, 1.0, 3.0}, utilities::STKCommandElementType::Hex};
-    pfu::write_mesh(kMeshFile, pfu::create_mesh(tSTKCommandGenerator.toString()));
+    pfu::write_mesh(kMeshFile, pfu::generate_stk_mesh(tSTKCommandGenerator));
 
     {
         const std::vector<double> tGold{2, 2, 2};

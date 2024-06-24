@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <iomanip>
 
+#include "plato/utilities/CoordinateTestUtilities.hpp"
 #include "plato/utilities/TesselationTraits.hpp"
 
 namespace plato::utilities::unittest
@@ -23,12 +24,19 @@ TEST(TesselationTraits, Hex8Volume)
 {
     {
         const auto tVolume = detail::volume_impl<stk::topology::HEXAHEDRON_8>(kHexCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 1.0);
+        EXPECT_DOUBLE_EQ(tVolume, 1.0);
     }
     {
         const auto tVolume = detail::volume_impl<stk::topology::HEX_8>(kHexCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 1.0);
+        EXPECT_DOUBLE_EQ(tVolume, 1.0);
     }
+}
+
+TEST(TesselationTraits, Hex8Centroid)
+{
+    const Coordinate tCentroid = detail::centroid_impl<stk::topology::HEXAHEDRON_8>(kHexCoordinates);
+    const Coordinate tGold{0.5, 0.5, 0.5};
+    test_double_equality_of_components(tCentroid, tGold, TEST_CONTEXT("Tesselation traits Hex8 Centroid"));
 }
 
 TEST(TesselationTraits, TetVolume)
@@ -38,36 +46,57 @@ TEST(TesselationTraits, TetVolume)
 
     {
         const auto tVolume = detail::volume_impl<stk::topology::TETRAHEDRON_4>(kTetCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, tGold);
+        EXPECT_DOUBLE_EQ(tVolume, tGold);
     }
     {
         const auto tVolume = detail::volume_impl<stk::topology::TET_4>(kTetCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, tGold);
+        EXPECT_DOUBLE_EQ(tVolume, tGold);
     }
+}
+
+TEST(TesselationTraits, TetCentroid)
+{
+    const Coordinate tCentroid = detail::centroid_impl<stk::topology::TET_4>(kTetCoordinates);
+    const Coordinate tGold{1.0 / 4.0, 1.0 / 4.0, 1.0 / 4.0};
+    test_double_equality_of_components(tCentroid, tGold, TEST_CONTEXT("Tesselation traits Tet Centroid"));
 }
 
 TEST(TesselationTraits, Quad4Volume)
 {
     {
         const auto tVolume = detail::volume_impl<stk::topology::QUADRILATERAL_4>(kQuadCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 1.0);
+        EXPECT_DOUBLE_EQ(tVolume, 1.0);
     }
     {
         const auto tVolume = detail::volume_impl<stk::topology::QUAD_4>(kQuadCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 1.0);
+        EXPECT_DOUBLE_EQ(tVolume, 1.0);
     }
+}
+
+TEST(TesselationTraits, QuadCentroid)
+{
+    const Coordinate tCentroid = detail::centroid_impl<stk::topology::QUADRILATERAL_4>(kQuadCoordinates);
+    const Coordinate tGold{1.0 / 2.0, 1.0 / 2.0, 0.0};
+    test_double_equality_of_components(tCentroid, tGold, TEST_CONTEXT("Tesselation traits Quad Centroid"));
 }
 
 TEST(TesselationTraits, Tri3Volume)
 {
     {
         const auto tVolume = detail::volume_impl<stk::topology::TRIANGLE_3>(kTriCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 0.5);
+        EXPECT_DOUBLE_EQ(tVolume, 0.5);
     }
     {
         const auto tVolume = detail::volume_impl<stk::topology::TRI_3>(kTriCoordinates);
-        ASSERT_DOUBLE_EQ(tVolume, 0.5);
+        EXPECT_DOUBLE_EQ(tVolume, 0.5);
     }
+}
+
+TEST(TesselationTraits, TriCentroid)
+{
+    const Coordinate tCentroid = detail::centroid_impl<stk::topology::TRI_3>(kTriCoordinates);
+    const Coordinate tGold{1.0 / 3.0, 1.0 / 3.0, 0.0};
+    test_double_equality_of_components(tCentroid, tGold, TEST_CONTEXT("Tesselation traits Tri Centroid"));
 }
 
 }  // namespace plato::utilities::unittest

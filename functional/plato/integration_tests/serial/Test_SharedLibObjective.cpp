@@ -16,9 +16,8 @@ namespace
 // library more generically
 constexpr std::string_view kLibPath = "libPlatoTestMassObjective.so";
 
-const std::string kSTKCommand =
-    utilities::STKCommandGenerator{{1, 1, 1}, {-1, -1, -1}, {1, 1, 1}, utilities::STKCommandElementType::Hex}
-        .toString();
+const auto kMeshGenerator =
+    utilities::STKCommandGenerator{{1, 1, 1}, {-1, -1, -1}, {1, 1, 1}, utilities::STKCommandElementType::Hex};
 
 void generate_bad_library_and_do_nothing()
 {
@@ -39,7 +38,7 @@ TEST(SharedLibObjective, CallValue)
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
+    pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
     const double tMass = tSharedLib.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 
@@ -52,7 +51,7 @@ TEST(SharedLibObjective, CallGradient)
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
+    pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
     const auto tGrad = tSharedLib.df(core::MeshProxy{tMeshName, {}});
 
     const std::vector<double> tGold(24, 1.0);
@@ -68,7 +67,7 @@ TEST(SharedLibObjective, ValueUsingFunction)
         criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
 
     constexpr std::string_view tMeshName = "massTest.exo";
-    pfu::write_mesh(tMeshName, pfu::create_mesh(kSTKCommand));
+    pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
     const double tMass = tFunction.f(core::MeshProxy{tMeshName, {}});
     EXPECT_DOUBLE_EQ(tMass, 8.0);
 

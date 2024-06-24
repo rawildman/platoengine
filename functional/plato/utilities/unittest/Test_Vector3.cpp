@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include "plato/utilities/CoordinateTestUtilities.hpp"
 #include "plato/utilities/Vector3.hpp"
 
 namespace plato::utilities::unittest
@@ -13,11 +14,22 @@ constexpr Vector3 kY{0, 1, 0};
 constexpr Vector3 kZ{0, 0, 1};
 constexpr Vector3 k123{1, 2, 3};
 
-void test_double_equality_of_components(const Vector3& aResult, const Vector3& aGold)
+template <typename Container>
+void test_flatten()
 {
-    EXPECT_DOUBLE_EQ(aResult.x, aGold.x);
-    EXPECT_DOUBLE_EQ(aResult.y, aGold.y);
-    EXPECT_DOUBLE_EQ(aResult.z, aGold.z);
+    constexpr Container tContainer{1, 2, 3};
+    {
+        constexpr int tNumberOfSpatialDimensions = 2;
+        const auto tResult = flatten(tContainer, tNumberOfSpatialDimensions);
+        const std::vector<double> tGold = {1, 2};
+        EXPECT_EQ(tResult, tGold);
+    }
+    {
+        constexpr int tNumberOfSpatialDimensions = 3;
+        const auto tResult = flatten(tContainer, tNumberOfSpatialDimensions);
+        const std::vector<double> tGold = {1, 2, 3};
+        EXPECT_EQ(tResult, tGold);
+    }
 }
 
 }  // namespace
@@ -29,7 +41,44 @@ TEST(Vector3, CoordinateSubtraction)
     constexpr Vector3 tResult = p2 - p1;
     constexpr Vector3 tGold{3, 3, 3};
 
-    test_double_equality_of_components(tResult, tGold);
+    test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Vector3 subtraction"));
+}
+
+TEST(Vector3, CoordinateAddition)
+{
+    constexpr Coordinate p1{38, 21, 86};
+    constexpr Coordinate p2{71, 91, 10};
+    {
+        constexpr Coordinate tResult = p1 + p2;
+        constexpr Coordinate tGold{109, 112, 96};
+        test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Coordinate addition"));
+    }
+
+    {
+        constexpr Coordinate tResult = p1 + p2 + p1;
+        constexpr Coordinate tGold{147, 133, 182};
+        test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Coordinate addition"));
+    }
+}
+
+TEST(Vector3, CoordinateScalarMultiplication)
+{
+    constexpr Coordinate p1{1, 2, 3};
+    constexpr double tScale{10};
+    constexpr Coordinate tResult = p1 * tScale;
+    constexpr Coordinate tGold{10, 20, 30};
+
+    test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Coordinate multiplication"));
+}
+
+TEST(Vector3, CoordinateScalarDivision)
+{
+    constexpr Coordinate p1{10, 20, 30};
+    constexpr double tDivisor{10};
+    constexpr Coordinate tResult = p1 / tDivisor;
+    constexpr Coordinate tGold{1, 2, 3};
+
+    test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Vector3 scalar division"));
 }
 
 TEST(Vector3, Dot)
@@ -55,17 +104,38 @@ TEST(Vector3, Cross)
 {
     {
         constexpr Vector3 tResult = cross(kX, kY);
-        test_double_equality_of_components(tResult, kZ);
+        test_double_equality_of_components(tResult, kZ, TEST_CONTEXT("Vector3 cross product"));
     }
     {
         constexpr Vector3 tResult = cross(kY, k123);
         constexpr Vector3 tGold{3, 0, -1};
-        test_double_equality_of_components(tResult, tGold);
+        test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Vector3 cross product"));
     }
     {
         constexpr Vector3 tResult = cross(k123, k123);
         constexpr Vector3 tGold{0, 0, 0};
-        test_double_equality_of_components(tResult, tGold);
+        test_double_equality_of_components(tResult, tGold, TEST_CONTEXT("Vector3 cross product"));
     }
 }
+
+TEST(Coordinate, Magnitude)
+{
+    constexpr Coordinate tCoordinate{-1, -2, -3};
+    const double tGold = std::sqrt(1 + 4 + 9);
+    EXPECT_EQ(tGold, magnitude(tCoordinate));
+}
+
+TEST(Vector3, Magnitude)
+{
+    constexpr Vector3 tVector{1, 2, 3};
+    const double tGold = std::sqrt(1 + 4 + 9);
+    EXPECT_EQ(tGold, magnitude(tVector));
+}
+
+TEST(Container, ContainerToVector)
+{
+    test_flatten<Coordinate>();
+    test_flatten<Vector3>();
+}
+
 }  // namespace plato::utilities::unittest

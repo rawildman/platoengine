@@ -1,15 +1,14 @@
 #ifndef PLATO_UTILITIES_TESSELATIONTRAITS
 #define PLATO_UTILITIES_TESSELATIONTRAITS
 
+#include <iostream>
 #include <numeric>
 #include <stk_topology/topology.hpp>
 #include <vector>
 
-#include "plato/utilities/Exception.hpp"
 #include "plato/utilities/Tetrahedron.hpp"
 #include "plato/utilities/Triangle.hpp"
 #include "plato/utilities/Vector3.hpp"
-
 namespace plato::utilities
 {
 
@@ -100,10 +99,8 @@ template <typename ReturnObject>
 ReturnObject from_coordinates(const std::array<unsigned int, ReturnObject::kNumVertices>& aIndices,
                               const std::vector<Coordinate>& aCoordinates);
 
-/// @brief Determine the volume of a single element with coordinates @a aCoordinates as dictated by the Tesselation
-/// TraitType
-template <stk::topology::topology_t STK_TOPOLOGY>
-double volume_impl(const std::vector<Coordinate>& aCoordinates)
+template <stk::topology::topology_t STK_TOPOLOGY, typename ReturnType, typename F>
+ReturnType accumulate_function_on_tesselation_impl(const std::vector<Coordinate>& aCoordinates, const F& aFunction)
 {
     using TraitType = TesselationTraits<STK_TOPOLOGY>;
     std::array<typename TraitType::ElementType, TraitType::kNumElements> tTesselation;
@@ -111,9 +108,33 @@ double volume_impl(const std::vector<Coordinate>& aCoordinates)
                    [&aCoordinates](const std::array<unsigned int, TraitType::ElementType::kNumVertices>& tIndices)
                    { return from_coordinates<typename TraitType::ElementType>(tIndices, aCoordinates); });
 
-    return std::accumulate(tTesselation.cbegin(), tTesselation.cend(), 0.0,
-                           [](const double aResult, const typename TraitType::ElementType& aReturnObject)
-                           { return aResult + aReturnObject.volume(); });
+    return std::accumulate(tTesselation.cbegin(), tTesselation.cend(), ReturnType{},
+                           [aFunction](const ReturnType aResult, const typename TraitType::ElementType& aReturnObject)
+                           { return aResult + aFunction(aReturnObject); });
+}
+
+/// @brief Determine the volume of a single element with coordinates @a aCoordinates as dictated by the Tesselation
+/// TraitType
+template <stk::topology::topology_t STK_TOPOLOGY>
+double volume_impl(const std::vector<Coordinate>& aCoordinates)
+{
+    return accumulate_function_on_tesselation_impl<STK_TOPOLOGY, double>(
+        aCoordinates, [](const typename TesselationTraits<STK_TOPOLOGY>::ElementType& aReturnObject)
+        { return aReturnObject.volume(); });
+}
+
+/// @brief Determine the centroid of a single element with coordinates @a aCoordinates as dictated by the Tesselation
+/// TraitType
+template <stk::topology::topology_t STK_TOPOLOGY>
+Coordinate centroid_impl(const std::vector<Coordinate>& aCoordinates)
+{
+    const double tVolume = volume_impl<STK_TOPOLOGY>(aCoordinates);
+    assert(tVolume != 0);
+    const Coordinate tVolumeWeightedCentroid = accumulate_function_on_tesselation_impl<STK_TOPOLOGY, Coordinate>(
+        aCoordinates, [](const typename TesselationTraits<STK_TOPOLOGY>::ElementType& aReturnObject)
+        { return aReturnObject.centroid() * aReturnObject.volume(); });
+
+    return tVolumeWeightedCentroid / tVolume;
 }
 
 }  // namespace detail
