@@ -8,6 +8,8 @@
 #include <string_view>
 #include <vector>
 
+#include "plato/utilities/STKCommandGenerator.hpp"
+
 namespace plato::utilities
 {
 namespace detail
@@ -15,8 +17,10 @@ namespace detail
 constexpr std::string_view kTopologyFieldName = "topology";
 }
 
+struct Coordinate;
+
 /// @brief Use a STK @a aGenerationCommand, e.g., "generated:1x1x1" to create and return a shared pointer to a STK Bulk
-[[nodiscard]] std::shared_ptr<stk::mesh::BulkData> create_mesh(const std::string_view aGenerationCommand);
+[[nodiscard]] std::shared_ptr<stk::mesh::BulkData> generate_stk_mesh(const STKCommandGenerator& aSTKCommandGenerator);
 
 /// @brief Given a pathname  @a aMeshName and the STK Bulk data @a aBulk, write to disk the data in exodus format
 void write_mesh(const std::filesystem::path& aMeshName, std::shared_ptr<stk::mesh::BulkData> aBulk);
@@ -41,7 +45,11 @@ void write_mesh(const std::filesystem::path& aMeshName, std::shared_ptr<stk::mes
 
 /// @brief Given a STK Bulk data  @a aBulk, return a std::vector of the nodal coordinates ordered x0,y0,z0,x1,y1,z1, ...
 /// For 2D, only x and y coordinates are included in the vector.
-[[nodiscard]] std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk);
+[[nodiscard]] std::vector<double> flattened_nodal_coordinates(const stk::mesh::BulkData& aBulk);
+
+/// @brief Given a STK Bulk data  @a aBulk, return a std::vector of Coordinates
+/// For 2D, z values of Coordinates are set to 0.
+[[nodiscard]] std::vector<Coordinate> nodal_coordinates(const stk::mesh::BulkData& aBulk);
 
 /// @brief Given a pathname  @a aMeshName, return a std::vector of the nodal densities stored in the kTopologyField name
 [[nodiscard]] std::vector<double> read_mesh_density(const std::filesystem::path& aMeshName);
@@ -69,7 +77,6 @@ stk::mesh::EntityVector element_vector(const stk::mesh::BulkData& aBulk);
 
 namespace detail
 {
-
 template <stk::topology::rank_t Rank>
 unsigned int size(const stk::mesh::BulkData& aBulk)
 {

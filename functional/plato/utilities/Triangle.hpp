@@ -14,6 +14,7 @@ struct Triangle
     Coordinate p2;
 
     [[nodiscard]] double volume() const;
+    [[nodiscard]] Coordinate centroid() const;
 
     constexpr static auto kNumVertices = unsigned{3};
     using Indices = std::array<unsigned int, kNumVertices>;

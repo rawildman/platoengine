@@ -67,12 +67,12 @@ auto make_volume_fraction_constraint_function()
     return core::make_function(
         [](const core::MeshProxy& mesh)
         {
-            const double tVolumeTotal = utilities::mesh_volume(mesh.mFileName);
+            const double tVolumeTotal = utilities::mesh_volume(*utilities::read_mesh_bulk_data(mesh.mFileName));
             return VolumeCriterion{1.0 / tVolumeTotal}.f(mesh);
         },
         [](const core::MeshProxy& mesh)
         {
-            const double tVolumeTotal = utilities::mesh_volume(mesh.mFileName);
+            const double tVolumeTotal = utilities::mesh_volume(*utilities::read_mesh_bulk_data(mesh.mFileName));
             return VolumeCriterion{1.0 / tVolumeTotal}.df(mesh);
         });
 }

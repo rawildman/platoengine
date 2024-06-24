@@ -32,7 +32,7 @@ void create_small_mesh(const std::string& aFileName)
     const pfu::STKCommandGenerator tSTKCommandGenerator{
         {1, 1, 1}, {-1, -2, -1}, {2, 1, 2}, pfu::STKCommandElementType::Hex};
 
-    auto bulk = pfu::create_mesh(tSTKCommandGenerator.toString());
+    auto bulk = pfu::generate_stk_mesh(tSTKCommandGenerator);
     pfu::write_mesh(aFileName, bulk);
 }
 }  // namespace

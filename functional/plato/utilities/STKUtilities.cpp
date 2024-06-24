@@ -6,12 +6,18 @@
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_NodeBlock.h>  // for NodeBlock
 
+#include <algorithm>
+#include <boost/range.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 #include <stk_io/FillMesh.hpp>
 #include <stk_mesh/base/Field.hpp>
 #include <stk_mesh/base/MeshBuilder.hpp>
 #include <stk_mesh/base/MetaData.hpp>
+#include <stk_search/Box.hpp>
 #include <stk_topology/topology.hpp>
 #include <stk_util/parallel/Parallel.hpp>
+
+#include "plato/utilities/Vector3.hpp"
 
 namespace plato::utilities
 {
@@ -38,13 +44,14 @@ void write_defined_output_fields(stk::io::StkMeshIoBroker& tIOBroker,
     tIOBroker.write_defined_output_fields(aOutputFileIndex);
     tIOBroker.end_output_step(aOutputFileIndex);
 }
+
 }  // namespace
 
-std::shared_ptr<stk::mesh::BulkData> create_mesh(const std::string_view aGenerationCommand)
+std::shared_ptr<stk::mesh::BulkData> generate_stk_mesh(const STKCommandGenerator& aSTKCommandGenerator)
 {
     std::shared_ptr<stk::mesh::BulkData> bulk = stk::mesh::MeshBuilder(MPI_COMM_SELF).create();
     bulk->mesh_meta_data().use_simple_fields();
-    stk::io::fill_mesh(std::string{aGenerationCommand}, *bulk);
+    stk::io::fill_mesh(aSTKCommandGenerator.toString(), *bulk);
     return bulk;
 }
 
@@ -112,11 +119,27 @@ unsigned int element_size(const stk::mesh::BulkData& aBulk) { return detail::siz
 
 unsigned int spatial_dimensions(const stk::mesh::BulkData& aBulk) { return aBulk.mesh_meta_data().spatial_dimension(); }
 
-std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
+std::vector<double> flattened_nodal_coordinates(const stk::mesh::BulkData& aBulk)
+{
+    const unsigned int tSpatialDim = spatial_dimensions(aBulk);
+    const auto tCoordinates = nodal_coordinates(aBulk);
+    std::vector<double> tFlattenCoordinates(tCoordinates.size() * tSpatialDim, 0.0);
+
+    for (auto const& tCoordinate : tCoordinates | boost::adaptors::indexed(0))
+    {
+        const auto tCoordinateVector = flatten(tCoordinate.value(), tSpatialDim);
+        unsigned int tBaseIndex = static_cast<unsigned int>(tCoordinate.index() * tSpatialDim);
+        std::copy(tCoordinateVector.begin(), tCoordinateVector.end(), tFlattenCoordinates.begin() + tBaseIndex);
+    }
+
+    return tFlattenCoordinates;
+}
+
+std::vector<Coordinate> nodal_coordinates(const stk::mesh::BulkData& aBulk)
 {
     const unsigned int tSpatialDim = spatial_dimensions(aBulk);
     const unsigned int tNumberOfNodes = node_size(aBulk);
-    std::vector<double> tCoordinates(static_cast<std::size_t>(tNumberOfNodes) * tSpatialDim, 0.0);
+    std::vector<Coordinate> tCoordinates(static_cast<std::size_t>(tNumberOfNodes), {0.0, 0.0, 0.0});
 
     stk::mesh::EntityVector tNodeEntity;
     stk::mesh::get_entities(aBulk, stk::topology::NODE_RANK, tNodeEntity, true);
@@ -125,10 +148,9 @@ std::vector<double> nodal_coordinates(const stk::mesh::BulkData& aBulk)
     for (size_t tNodeIndex = 0; tNodeIndex < tNodeEntity.size(); tNodeIndex++)
     {
         const auto tData = static_cast<const double*>(stk::mesh::field_data(*tCoordsField, tNodeEntity[tNodeIndex]));
-        for (unsigned tCoordIndex = 0; tCoordIndex < tSpatialDim; tCoordIndex++)
-        {
-            tCoordinates[tNodeIndex * tSpatialDim + tCoordIndex] = tData[tCoordIndex];  // NOLINT
-        }
+        tCoordinates[tNodeIndex].x = tData[0];
+        tCoordinates[tNodeIndex].y = tData[1];
+        tCoordinates[tNodeIndex].z = (tSpatialDim == 2 ? 0 : tData[2]);
     }
     return tCoordinates;
 }

@@ -118,13 +118,14 @@ std::shared_ptr<stk::mesh::BulkData> create_mesh(const BrickDesign& aDesign,
         tNumberOfElements = {tNx, tNy, tNz};
     }
 
-    const utilities::STKCommandGenerator tSTKCommandGenerator{tNumberOfElements, tLowerBounds, tUpperBounds,
-                                                              utilities::STKCommandElementType::Hex};
-
+    const utilities::STKNodeSetSideSetIdentifiers tSidesets{false, false, false, false, false, true};
+    const utilities::STKNodeSetSideSetIdentifiers tNodesets{false, false, false, true, false, false};
     const int tPrecision = 16;
-    const std::string tGenerationCommand = tSTKCommandGenerator.toString(tPrecision) + "|sideset:Z|nodeset:Y";
-    std::cout << tGenerationCommand << std::endl;
-    return plato::utilities::create_mesh(tGenerationCommand);
+    const utilities::STKCommandGenerator tSTKCommandGenerator{
+        tNumberOfElements, tLowerBounds, tUpperBounds, utilities::STKCommandElementType::Hex,
+        tNodesets,         tSidesets,    tPrecision};
+
+    return plato::utilities::generate_stk_mesh(tSTKCommandGenerator);
 }
 
 std::vector<double> sensitivities(const unsigned int aParameterIndex)

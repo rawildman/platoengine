@@ -31,24 +31,32 @@ Coordinate coordinate_from_data_array(const double* aData, const unsigned int aN
 
 double element_volume(const stk::mesh::Entity& aElement, const stk::mesh::BulkData& aBulk)
 {
-    return detail::element_volume_impl<stk::topology::HEXAHEDRON_8, stk::topology::HEXAHEDRON_20,
-                                       stk::topology::TETRAHEDRON_4, stk::topology::TETRAHEDRON_10,
-                                       stk::topology::QUADRILATERAL_4, stk::topology::TRIANGLE_3,
-                                       stk::topology::TRIANGLE_3_2D, stk::topology::QUAD_4_2D,
-                                       stk::topology::SHELL_QUAD_4, stk::topology::SHELL_TRIANGLE_3>(
-        aElement, aBulk, aBulk.bucket(aElement).topology()());
+    return detail::element_apply<detail::VolumeTag>(aElement, aBulk);
 }
 
-double mesh_volume(const std::filesystem::path& aMeshFileName)
+Coordinate element_centroid(const stk::mesh::Entity& aElement, const stk::mesh::BulkData& aBulk)
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulk = read_mesh_bulk_data(aMeshFileName);
-    assert(tBulk);
-    const stk::mesh::EntityVector tElements = element_vector(*tBulk);
+    return detail::element_apply<detail::CentroidTag>(aElement, aBulk);
+}
+
+double mesh_volume(const stk::mesh::BulkData& aBulk)
+{
+    const stk::mesh::EntityVector tElements = element_vector(aBulk);
     std::vector<double> tVolume;
     std::transform(tElements.begin(), tElements.end(), std::back_inserter(tVolume),
-                   [&tBulk](const auto& iElement) { return element_volume(iElement, *tBulk); });
+                   [&aBulk](const auto& iElement) { return element_volume(iElement, aBulk); });
 
     return pair_wise_accumulate(tVolume);
+}
+
+std::vector<Coordinate> element_centroids(const stk::mesh::BulkData& aBulk)
+{
+    const stk::mesh::EntityVector tElements = element_vector(aBulk);
+    std::vector<Coordinate> tCentroids;
+    std::transform(tElements.begin(), tElements.end(), std::back_inserter(tCentroids),
+                   [&aBulk](const auto& iElement) { return element_centroid(iElement, aBulk); });
+
+    return tCentroids;
 }
 
 std::vector<Coordinate> element_coordinates(const stk::mesh::Entity& aElement, const stk::mesh::BulkData& aBulk)
@@ -63,6 +71,13 @@ std::vector<Coordinate> element_coordinates(const stk::mesh::Entity& aElement, c
                        return coordinate_from_data_array(tData, tNumDimensions);
                    });
     return tCoordinates;
+}
+
+double average_nodal_density(const stk::mesh::BulkData& aBulk)
+{
+    const auto tTotalNumberOfNodes = node_size(aBulk);
+    const double tTotalVolume = mesh_volume(aBulk);
+    return static_cast<double>(tTotalNumberOfNodes) / tTotalVolume;
 }
 
 }  // namespace plato::utilities

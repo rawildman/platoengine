@@ -16,7 +16,7 @@ namespace
 {
 constexpr auto kLibPath = std::string_view{"libPlatoTestMassObjective.so"};
 constexpr auto kMeshName = std::string_view{"massTest.exo"};
-const auto kMeshCommand = utilities::STKCommandGenerator{
+const auto kMeshGenerator = utilities::STKCommandGenerator{
     /*.mElements=*/{1u, 1u, 1u}, /*.mLowerBounds=*/{-1.0, -1.0, -1.0}, /*.mUpperBounds=*/{1.0, 1.0, 1.0}};
 }  // namespace
 
@@ -28,10 +28,10 @@ TEST(ParallelMassObjective, CallValueAndGradient)
     const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}, tComm};
 
     const auto tRankMeshName = utilities::concatenate(kMeshName, '.', tComm.rank());
-    utilities::write_mesh(tRankMeshName, utilities::create_mesh(kMeshCommand.toString()));
+    utilities::write_mesh(tRankMeshName, utilities::generate_stk_mesh(kMeshGenerator));
 
     const double tMass = tSharedLib.f(core::MeshProxy{tRankMeshName, {}});
-    EXPECT_DOUBLE_EQ(tMass, kMeshCommand.volume());
+    EXPECT_DOUBLE_EQ(tMass, kMeshGenerator.volume());
 
     const auto tGrad = tSharedLib.df(core::MeshProxy{tRankMeshName, {}});
     const std::vector<double> tGold(24, 1.0);

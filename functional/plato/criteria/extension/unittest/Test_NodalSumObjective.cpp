@@ -20,7 +20,7 @@ TEST(NodalSumObjective, Value111)
 {
     namespace pfu = plato::utilities;
 
-    pfu::write_mesh(kTestFile, pfu::create_mesh(pfu::STKCommandGenerator{}.toString()));
+    pfu::write_mesh(kTestFile, pfu::generate_stk_mesh(pfu::STKCommandGenerator{}));
 
     constexpr double tExpectedValue = 12.0;
     EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{kTestFile, {}}), tExpectedValue);
@@ -30,7 +30,7 @@ TEST(NodalSumObjective, Value111)
 TEST(NodalSumObjective, Value211)
 {
     namespace pfu = plato::utilities;
-    pfu::write_mesh(kTestFile, pfu::create_mesh(pfu::STKCommandGenerator{{2, 1, 1}}.toString()));
+    pfu::write_mesh(kTestFile, pfu::generate_stk_mesh(pfu::STKCommandGenerator{{2, 1, 1}}));
 
     constexpr double tExpectedValue = 18.0;
     EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{kTestFile, {}}), tExpectedValue);
@@ -42,7 +42,7 @@ TEST(NodalSumObjective, Value0)
     namespace pfu = plato::utilities;
     const pfu::STKCommandGenerator tSTKCommandGenerator{
         {1, 1, 1}, {-2, -1, -3}, {2, 1, 3}, pfu::STKCommandElementType::Hex};
-    pfu::write_mesh(kTestFile, pfu::create_mesh(tSTKCommandGenerator.toString()));
+    pfu::write_mesh(kTestFile, pfu::generate_stk_mesh(tSTKCommandGenerator));
 
     constexpr double tExpectedValue = 0.0;
     EXPECT_EQ(NodalSumObjective{}.f(core::MeshProxy{kTestFile, {}}), tExpectedValue);
@@ -54,7 +54,7 @@ TEST(NodalSumObjective, Gradient111)
     namespace pfu = plato::utilities;
     const pfu::STKCommandGenerator tSTKCommandGenerator{
         {1, 2, 3}, {0, 0, 0}, {1, 1, 1}, pfu::STKCommandElementType::Hex};
-    auto tBulk = pfu::create_mesh(tSTKCommandGenerator.toString());
+    auto tBulk = pfu::generate_stk_mesh(tSTKCommandGenerator);
     pfu::write_mesh(kTestFile, tBulk);
 
     const auto tNodalSum = NodalSumObjective{};
@@ -69,7 +69,7 @@ TEST(NodalSumObjective, Gradient111)
 TEST(NodalSumObjective, Value)
 {
     namespace pfu = plato::utilities;
-    pfu::write_mesh(kBrickFile, pfu::create_mesh(pfu::STKCommandGenerator{}.toString()));
+    pfu::write_mesh(kBrickFile, pfu::generate_stk_mesh(pfu::STKCommandGenerator{}));
     core::MeshProxy tMeshProxy{kBrickFile, {}};
 
     const NodalSumObjective tPass;
@@ -80,7 +80,7 @@ TEST(NodalSumObjective, Value)
 TEST(NodalSumObjective, Gradient)
 {
     namespace pfu = plato::utilities;
-    pfu::write_mesh(kBrickFile, pfu::create_mesh(pfu::STKCommandGenerator{}.toString()));
+    pfu::write_mesh(kBrickFile, pfu::generate_stk_mesh(pfu::STKCommandGenerator{}));
     core::MeshProxy tMeshProxy{kBrickFile, {}};
 
     const NodalSumObjective tPass;
