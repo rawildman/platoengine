@@ -5,12 +5,6 @@
 #include "plato/utilities/EnumTable.hpp"
 
 // clang-format off
-DECLARE_ENUM_SYMBOL_TABLE(CodeOptions,
-                         (kNodalSum, "nodal_sum")
-                         (kVolume, "volume")
-                         (kVolumeFraction, "volume_fraction")
-                         (kCustomApp, "custom_app"))
-
 DECLARE_ENUM_SYMBOL_TABLE(ObjectiveTypes,
                          (kMinimize, "minimize")
                          (kMaximize, "maximize"))

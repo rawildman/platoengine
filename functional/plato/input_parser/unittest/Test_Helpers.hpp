@@ -20,11 +20,12 @@ void test_existence_and_equality(const boost::optional<T>& aOptionalVal, const U
     EXPECT_EQ(aOptionalVal.value(), aVal);
 }
 
-template <>
-inline void test_existence_and_equality(const boost::optional<FileName>& aOptionalVal, const std::string& aVal)
+template <typename ValidChars>
+inline void test_existence_and_equality(const boost::optional<UserDefinedToken<ValidChars>>& aOptionalVal,
+                                        const std::string& aVal)
 {
     ASSERT_TRUE(aOptionalVal);
-    EXPECT_EQ(aOptionalVal.value().mName, aVal);
+    EXPECT_EQ(aOptionalVal.value().mToken, aVal);
 }
 
 template <>

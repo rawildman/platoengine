@@ -29,7 +29,7 @@ TEST(GeometryFactory, ValidTopology)
     tInput.mObjectives = {pftu::create_valid_example_objective()};
     tInput.mROLOptimization = pftu::create_valid_example_rol_optimization();
 
-    const std::filesystem::path tMeshFileName{tInput.mDensityTopology.value().mesh_name.value().mName};
+    const std::filesystem::path tMeshFileName{tInput.mDensityTopology.value().mesh_name.value().mToken};
     const utilities::STKCommandGenerator tSTKCommandGenerator{
         {3, 3, 4}, {-1, -2, -1}, {2, 1, 2}, utilities::STKCommandElementType::Hex};
     utilities::write_mesh(tMeshFileName, utilities::generate_stk_mesh(tSTKCommandGenerator));

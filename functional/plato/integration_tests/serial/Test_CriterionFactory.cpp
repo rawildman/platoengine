@@ -53,8 +53,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
         R"(
           begin objective test
             active true
-            app custom_app
-            shared_library_path /path/to/nothing.so
+            criterion nodal_sum
             number_of_processors 1
             input_files test-input.inp
             aggregation_weight 42.0
@@ -73,8 +72,6 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
         criteria::library::to_criterion_input(tValidatedObjective);
     const input_parser::objective& tObjective = tValidatedObjective.rawInput();
 
-    ASSERT_TRUE(tObjective.shared_library_path.has_value());
-    EXPECT_EQ(tObjective.shared_library_path->mName, tCriterionInput.mSharedLibraryPath.mName);
     EXPECT_EQ(tObjective.number_of_processors, tCriterionInput.mNumberOfProcessors);
     ASSERT_TRUE(tObjective.input_files.has_value());
     ASSERT_EQ(tObjective.input_files->mList.size(), tCriterionInput.mInputFiles.mList.size());
@@ -97,7 +94,6 @@ TEST(CriterionRegistration, ConvertConstraintInput)
         criteria::library::to_criterion_input(tValidatedConstraint);
     const input_parser::constraint& tConstraint = tValidatedConstraint.rawInput();
 
-    EXPECT_TRUE(tCriterionInput.mSharedLibraryPath.mName.empty());
     EXPECT_EQ(tConstraint.number_of_processors, tCriterionInput.mNumberOfProcessors);
     ASSERT_TRUE(tConstraint.input_files.has_value());
     ASSERT_EQ(tConstraint.input_files->mList.size(), tCriterionInput.mInputFiles.mList.size());

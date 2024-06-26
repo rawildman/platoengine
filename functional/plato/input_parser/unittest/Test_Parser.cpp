@@ -48,8 +48,8 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
         R"(
           begin objective mp_objective
             active true
-            app volume
-            shared_library_path /path/to/lib.so
+            app platoengine
+            criterion volume
             number_of_processors 10
             input_files test.txt, test2.xml
             objective_type minimize
@@ -67,8 +67,8 @@ TEST(ParsedInput, ObjectiveAllValidInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kVolume);
-    test_existence_and_equality(tObjective.shared_library_path, std::string{"/path/to/lib.so"});
+    test_existence_and_equality(tObjective.app, std::string{"platoengine"});
+    test_existence_and_equality(tObjective.criterion, std::string{"volume"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     test_existence_and_equality(tObjective.active, true);
     test_existence_and_equality(tObjective.input_files, std::vector<std::string>{"test.txt", "test2.xml"});
@@ -117,7 +117,7 @@ TEST(ParsedInput, ConstraintAllValidInputs)
     const auto& tConstraint = tData.mConstraints.front();
     test_existence_and_equality(tConstraint.name, "mp_constraint");
     test_existence_and_equality(tConstraint.active, true);
-    test_existence_and_equality(tConstraint.app, CodeOptions::kVolumeFraction);
+    test_existence_and_equality(tConstraint.app, std::string{"volume_fraction"});
     test_existence_and_equality(tConstraint.number_of_processors, 10u);
     test_existence_and_equality(tConstraint.input_files, std::vector<std::string>{"test.txt"});
     test_existence_and_equality(tConstraint.equal_to, 1.0);
@@ -217,7 +217,8 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     const std::string tInput =
         R"(
           begin objective mp_objective
-            app nodal_sum
+            app fancy-app
+            criterion quantum-gravitational-turbo-dynamics
             number_of_processors 10
             aggregation_weight 10.0
           end
@@ -229,7 +230,8 @@ TEST(ParsedInput, ObjectiveNotAllInputs)
     ASSERT_EQ(tData.mObjectives.size(), 1u);
     const auto& tObjective = tData.mObjectives.front();
     test_existence_and_equality(tObjective.name, "mp_objective");
-    test_existence_and_equality(tObjective.app, CodeOptions::kNodalSum);
+    test_existence_and_equality(tObjective.app, std::string{"fancy-app"});
+    test_existence_and_equality(tObjective.criterion, std::string{"quantum-gravitational-turbo-dynamics"});
     test_existence_and_equality(tObjective.number_of_processors, 10u);
     EXPECT_FALSE(tObjective.active);
     EXPECT_FALSE(tObjective.input_files);
@@ -392,7 +394,7 @@ TEST(ParsedInput, CommentWithinLine)
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
     test_existence_and_equality(tParsedInput.mObjectives.front().active, false);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kNodalSum);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"nodal_sum"});
 }
 
 TEST(ParsedInput, CommentEntireLine)
@@ -408,7 +410,7 @@ TEST(ParsedInput, CommentEntireLine)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Commented out input"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
 }
 
 TEST(ParsedInput, CommentNonInput)
@@ -423,7 +425,7 @@ TEST(ParsedInput, CommentNonInput)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment on non-input"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
 }
 
 TEST(ParsedInput, CommentMultipleLinesAndCharacters)
@@ -439,7 +441,7 @@ TEST(ParsedInput, CommentMultipleLinesAndCharacters)
     const auto tParsedInput = parse_and_check_success(tInput, TEST_CONTEXT("Comment multiple lines and characters"));
 
     ASSERT_EQ(tParsedInput.mObjectives.size(), 1u);
-    test_existence_and_equality(tParsedInput.mObjectives.front().app, CodeOptions::kVolume);
+    test_existence_and_equality(tParsedInput.mObjectives.front().app, std::string{"volume"});
     EXPECT_FALSE(tParsedInput.mObjectives.front().active.has_value());
 }
 

@@ -11,9 +11,9 @@ namespace plato::criteria::extension
 {
 namespace
 {
-[[maybe_unused]] static auto kNodalSumRegistration = library::CriterionRegistration{
-    input_parser::kCodeOptionsTable.toString(input_parser::CodeOptions::kNodalSum).value(),
-    [](const library::CriterionInput&) { return make_nodal_sum_function(); }};
+[[maybe_unused]] static auto kNodalSumRegistration =
+    library::CriterionRegistration{library::builtin_criterion_registration_name(NodalSumObjective::kCriterionName),
+                                   [](const library::CriterionInput&) { return make_nodal_sum_function(); }};
 }
 
 double NodalSumObjective::f(const core::MeshProxy& aMeshProxy) const

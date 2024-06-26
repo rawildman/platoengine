@@ -7,6 +7,7 @@
 #include "plato/input_parser/FileList.hpp"
 #include "plato/input_parser/InputBlockStruct.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
+#include "plato/input_parser/InputFieldTypes.hpp"
 
 /// @file Input block declarations.
 ///  Each PLATO_INPUT_BLOCK_STRUCT represents a parsable struct of key-value pairs.
@@ -69,8 +70,8 @@ PLATO_PROCESS_MANAGER_INPUT_BLOCK_STRUCT(
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), objective,
     (bool, active)
-    (plato::input_parser::CodeOptions, app) 
-    (plato::input_parser::FileName, shared_library_path)
+    (plato::input_parser::AppName, app) 
+    (plato::input_parser::CriterionName, criterion)
     (unsigned int, number_of_processors)
     (plato::input_parser::FileList, input_files)
     (double, aggregation_weight)
@@ -80,8 +81,8 @@ PLATO_NAMED_INPUT_BLOCK_STRUCT(
 PLATO_NAMED_INPUT_BLOCK_STRUCT(
     (plato)(input_parser), constraint,
     (bool, active)
-    (plato::input_parser::CodeOptions, app) 
-    (plato::input_parser::FileName, shared_library_path)
+    (plato::input_parser::AppName, app) 
+    (plato::input_parser::CriterionName, criterion)
     (unsigned int, number_of_processors)
     (plato::input_parser::FileList, input_files)
     (double, equal_to)

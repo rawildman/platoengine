@@ -4,6 +4,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/criteria/extension/SharedLibCriterion.hpp"
+#include "plato/integration_tests/utilities/AppConfigurationTestUtilities.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/STKCommandGenerator.hpp"
 #include "plato/utilities/STKUtilities.hpp"
@@ -16,14 +17,23 @@ namespace
 // library more generically
 constexpr std::string_view kLibPath = "libPlatoTestMassObjective.so";
 
-const auto kMeshGenerator =
-    utilities::STKCommandGenerator{{1, 1, 1}, {-1, -1, -1}, {1, 1, 1}, utilities::STKCommandElementType::Hex};
+const auto kMeshGenerator = plato::utilities::STKCommandGenerator{
+    {1, 1, 1}, {-1, -1, -1}, {1, 1, 1}, plato::utilities::STKCommandElementType::Hex};
 
 void generate_bad_library_and_do_nothing()
 {
     // This function should throw an exception
-    const auto tBad = criteria::extension::SharedLibCriterion{std::string{"badRobot.so"}, {}};
+    const auto tTestConfiguration = utilities::test_app_configuration("badRobot.so");
+    const auto tBad = criteria::extension::SharedLibCriterion{
+        tTestConfiguration, tTestConfiguration.mConfiguration.mCriteria.front(), {}};
     std::cout << tBad.f(core::MeshProxy{"dne.exo", {}}) << std::endl;
+}
+
+criteria::extension::SharedLibCriterion test_shared_lib_criterion()
+{
+    const auto tTestConfiguration = utilities::test_app_configuration(kLibPath);
+    return criteria::extension::SharedLibCriterion{
+        tTestConfiguration, tTestConfiguration.mConfiguration.mCriteria.front(), {}};
 }
 }  // namespace
 
@@ -35,7 +45,7 @@ TEST(SharedLibObjective, BadLibraryPath)
 TEST(SharedLibObjective, CallValue)
 {
     namespace pfu = plato::utilities;
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = test_shared_lib_criterion();
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
@@ -48,7 +58,7 @@ TEST(SharedLibObjective, CallValue)
 TEST(SharedLibObjective, CallGradient)
 {
     namespace pfu = plato::utilities;
-    const auto tSharedLib = criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}};
+    const auto tSharedLib = test_shared_lib_criterion();
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));
@@ -63,8 +73,7 @@ TEST(SharedLibObjective, CallGradient)
 TEST(SharedLibObjective, ValueUsingFunction)
 {
     namespace pfu = plato::utilities;
-    const auto tFunction = criteria::extension::make_shared_lib_function(
-        criteria::extension::SharedLibCriterion{std::string{kLibPath}, {}});
+    const auto tFunction = criteria::extension::make_shared_lib_function(test_shared_lib_criterion());
 
     constexpr std::string_view tMeshName = "massTest.exo";
     pfu::write_mesh(tMeshName, pfu::generate_stk_mesh(kMeshGenerator));

@@ -27,7 +27,7 @@ const std::vector<double> kUpperBounds = {10.0, 10.0, 10.0, 1e2, 1e2, 1e2};     
 [[nodiscard]] std::filesystem::path mesh_path(const library::ValidatedGeometryInput& aGeometryInput)
 {
     const auto& tInput = library::geometry_raw_input<input_parser::brick_shape_geometry>(aGeometryInput);
-    return tInput.mesh_name.value().mName;
+    return tInput.mesh_name.value().mToken;
 }
 
 [[nodiscard]] std::function<void(const linear_algebra::DynamicVector<double>&)> make_output()

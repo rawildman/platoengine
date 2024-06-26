@@ -38,7 +38,7 @@ ROL::ParameterList rol_parameter_list(const ValidOptimizationParameters& aOptimi
     /// then fill in any missing entries with defaults.
     if (aOptimizationParameters.rawInput().input_file_name)
     {
-        return *ROL::getParametersFromXmlFile(aOptimizationParameters.rawInput().input_file_name.value().mName);
+        return *ROL::getParametersFromXmlFile(aOptimizationParameters.rawInput().input_file_name.value().mToken);
     }
     else
     {

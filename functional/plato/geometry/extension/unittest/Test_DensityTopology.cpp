@@ -39,7 +39,7 @@ void create_small_mesh(const std::string& aFileName)
 
 TEST(DensityTopology, Jacobian)
 {
-    create_small_mesh(kDensityInput.mesh_name->mName);
+    create_small_mesh(kDensityInput.mesh_name->mToken);
 
     const DensityTopology tDensityTopology(kDensityInput);
 
@@ -58,12 +58,12 @@ TEST(DensityTopology, Jacobian)
     const linear_algebra::DynamicVector<double> tRes = tRolVec * tJacobian;
     EXPECT_EQ(tRes.stdVector(), tGold);
 
-    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
+    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mToken));
 }
 
 TEST(DensityTopology, GenerateMesh)
 {
-    create_small_mesh(kDensityInput.mesh_name->mName);
+    create_small_mesh(kDensityInput.mesh_name->mToken);
 
     const DensityTopology tDensityTopology(kDensityInput);
 
@@ -73,15 +73,15 @@ TEST(DensityTopology, GenerateMesh)
     const auto tMeshProxy = tDensityTopology.generateMesh(tDesignVec);
     EXPECT_EQ(tMeshProxy.mNodalDensities, tDesignVars);
 
-    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
+    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mToken));
 }
 
 TEST(DensityTopology, InitialGuess)
 {
-    create_small_mesh(kDensityInput.mesh_name->mName);
+    create_small_mesh(kDensityInput.mesh_name->mToken);
 
     const linear_algebra::DynamicVector<double> tInitialGuess =
-        DensityTopology::initialGuess(kDensityInput.mesh_name->mName);
+        DensityTopology::initialGuess(kDensityInput.mesh_name->mToken);
 
     EXPECT_EQ(tInitialGuess.size(), kExpectedDensitySize);
 
@@ -90,14 +90,14 @@ TEST(DensityTopology, InitialGuess)
         EXPECT_EQ(val, 0.5);
     }
 
-    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
+    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mToken));
 }
 
 TEST(DensityTopology, Bounds)
 {
-    create_small_mesh(kDensityInput.mesh_name->mName);
+    create_small_mesh(kDensityInput.mesh_name->mToken);
 
-    const auto [tLowerBounds, tUpperBounds] = DensityTopology::bounds(kDensityInput.mesh_name->mName);
+    const auto [tLowerBounds, tUpperBounds] = DensityTopology::bounds(kDensityInput.mesh_name->mToken);
 
     EXPECT_EQ(tLowerBounds.size(), kExpectedDensitySize);
     EXPECT_EQ(tUpperBounds.size(), kExpectedDensitySize);
@@ -105,6 +105,6 @@ TEST(DensityTopology, Bounds)
     EXPECT_TRUE(std::all_of(tLowerBounds.cbegin(), tLowerBounds.cend(), [](const double aVal) { return aVal == 0.0; }));
     EXPECT_TRUE(std::all_of(tUpperBounds.cbegin(), tUpperBounds.cend(), [](const double aVal) { return aVal == 1.0; }));
 
-    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mName));
+    EXPECT_TRUE(std::filesystem::remove(kDensityInput.mesh_name->mToken));
 }
 }  // namespace plato::geometry::extension::unittest
