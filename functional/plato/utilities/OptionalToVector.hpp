@@ -26,7 +26,7 @@ auto optional_to_vector(OptionalT&& aOptional)
     if (aOptional.has_value())
     {
         auto tVector = std::vector<T>{};
-        tVector.emplace_back(std::forward<OptionalT>(aOptional).value());
+        tVector.emplace_back(std::forward<OptionalT>(aOptional).value());  // NOLINT
         return tVector;
     }
     else
