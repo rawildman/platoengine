@@ -14,8 +14,8 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
-#include "plato/utilities/STKCommandGenerator.hpp"
-#include "plato/utilities/STKUtilities.hpp"
+#include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
 
 namespace plato::geometry::extension::unittest
 {
@@ -27,13 +27,12 @@ constexpr unsigned int kExpectedDensitySize = 8;  // Based on mesh generation co
 
 void create_small_mesh(const std::string& aFileName)
 {
-    namespace pfu = plato::utilities;
     ASSERT_EQ(stk::parallel_machine_size(MPI_COMM_WORLD), 1);
-    const pfu::STKCommandGenerator tSTKCommandGenerator{
-        {1, 1, 1}, {-1, -2, -1}, {2, 1, 2}, pfu::STKCommandElementType::Hex};
+    const third_party_integration::stk_io::CommandGenerator tCommandGenerator{
+        {1, 1, 1}, {-1, -2, -1}, {2, 1, 2}, third_party_integration::stk_io::CommandElementType::Hex};
 
-    auto bulk = pfu::generate_stk_mesh(tSTKCommandGenerator);
-    pfu::write_mesh(aFileName, bulk);
+    auto bulk = third_party_integration::stk_io::generate_mesh(tCommandGenerator);
+    third_party_integration::stk_io::write_mesh(aFileName, bulk);
 }
 }  // namespace
 

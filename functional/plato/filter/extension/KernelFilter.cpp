@@ -1,5 +1,6 @@
 #include "plato/filter/extension/KernelFilter.hpp"
 
+#include <boost/math/constants/constants.hpp>
 #include <boost/mpi.hpp>
 #include <boost/serialization/vector.hpp>
 #include <memory>
@@ -7,7 +8,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
-#include "plato/utilities/STKVolumeUtilities.hpp"
+#include "plato/third_party_integration/stk_io/VolumeUtilities.hpp"
 
 namespace plato::filter::extension
 {
@@ -46,9 +47,9 @@ double filter_volume(const FilterRadius aFilterRadius)
 int determine_maximum_connectivity_estimate(const std::filesystem::path& aMeshFileName,
                                             const FilterRadius aFilterRadius)
 {
-    const auto tBulk = utilities::read_mesh_bulk_data(aMeshFileName);
-    auto tNodalCoordinates = utilities::nodal_coordinates(*tBulk);
-    const double tAverageNodalDensity = utilities::average_nodal_density(*tBulk);
+    const auto tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshFileName);
+    auto tNodalCoordinates = third_party_integration::stk_io::nodal_coordinates(*tBulk);
+    const double tAverageNodalDensity = third_party_integration::stk_io::average_nodal_density(*tBulk);
     const double tSearchVolume = detail::filter_volume(aFilterRadius);
     return static_cast<int>(tSearchVolume * tAverageNodalDensity *
                             kMaxMultiplier);  // for Tpetra sparse matrix allocation
@@ -59,14 +60,14 @@ LinearMask create_linear_mask(const std::filesystem::path& aMeshFileName,
                               const FilterCentering aFilterCentering,
                               const boost::mpi::communicator& aCommunicator)
 {
-    const auto tBulk = utilities::read_mesh_bulk_data(aMeshFileName);
-    auto tNodalCoordinates = utilities::nodal_coordinates(*tBulk);
+    const auto tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshFileName);
+    auto tNodalCoordinates = third_party_integration::stk_io::nodal_coordinates(*tBulk);
     const int tMaximumConnectivityEstimate =
         detail::determine_maximum_connectivity_estimate(aMeshFileName, aFilterRadius);
 
     if (aFilterCentering == FilterCentering::ElementCentered)
     {
-        auto tElementCentroids = utilities::element_centroids(*tBulk);
+        auto tElementCentroids = third_party_integration::stk_io::element_centroids(*tBulk);
         return LinearMask(NodalVector{tNodalCoordinates}, CenterVector{tElementCentroids},
                           SearchRadius{aFilterRadius.mValue}, tMaximumConnectivityEstimate, aCommunicator);
     }

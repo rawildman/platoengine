@@ -1,8 +1,8 @@
 #ifndef PLATO_FILTER_EXTENSION_KERNELFILTER
 #define PLATO_FILTER_EXTENSION_KERNELFILTER
 
-#include <boost/math/constants/constants.hpp>
 #include <boost/mpi/communicator.hpp>
+#include <filesystem>
 
 #include "plato/filter/extension/LinearMask.hpp"
 #include "plato/filter/library/FilterInterface.hpp"

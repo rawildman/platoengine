@@ -5,7 +5,7 @@
 
 #include "plato/criteria/library/CriterionRegistration.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
-#include "plato/utilities/STKUtilities.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
 
 namespace plato::criteria::extension
 {
@@ -18,18 +18,18 @@ namespace
 
 double NodalSumObjective::f(const core::MeshProxy& aMeshProxy) const
 {
-    const auto tBulk = utilities::read_mesh_bulk_data(aMeshProxy.mFileName);
+    const auto tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshProxy.mFileName);
     assert(tBulk);
-    const std::vector<double> tCoordinates = utilities::flattened_nodal_coordinates(*tBulk);
+    const std::vector<double> tCoordinates = third_party_integration::stk_io::flattened_nodal_coordinates(*tBulk);
     return std::accumulate(tCoordinates.begin(), tCoordinates.end(), 0.0);
 }
 
 linear_algebra::DynamicVector<double> NodalSumObjective::df(const core::MeshProxy& aMeshProxy) const
 {
-    const auto tBulk = utilities::read_mesh_bulk_data(aMeshProxy.mFileName);
+    const auto tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshProxy.mFileName);
     assert(tBulk);
-    const unsigned int tSpatialDim = utilities::spatial_dimensions(*tBulk);
-    const unsigned int tNumberOfNodes = utilities::node_size(*tBulk);
+    const unsigned int tSpatialDim = third_party_integration::stk_io::spatial_dimensions(*tBulk);
+    const unsigned int tNumberOfNodes = third_party_integration::stk_io::node_size(*tBulk);
     const unsigned int tSize = static_cast<unsigned int>(tSpatialDim * tNumberOfNodes);
     std::vector<double> tCoordinates(tSize, 1);
     return linear_algebra::DynamicVector<double>(std::move(tCoordinates));

@@ -10,10 +10,10 @@
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
+#include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
 #include "plato/utilities/Exception.hpp"
 #include "plato/utilities/FileUtilities.hpp"
-#include "plato/utilities/STKCommandGenerator.hpp"
-#include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::geometry::extension
 {
@@ -58,7 +58,7 @@ BrickShapeGeometry::~BrickShapeGeometry() { std::filesystem::remove(mFileName); 
 core::MeshProxy BrickShapeGeometry::generateMesh(const BrickDesign& aDesignParameters) const
 {
     std::shared_ptr<stk::mesh::BulkData> tMesh = detail::create_mesh(aDesignParameters, mDiscretizationSize);
-    plato::utilities::write_mesh(mFileName, tMesh);
+    third_party_integration::stk_io::write_mesh(mFileName, tMesh);
     return core::MeshProxy{mFileName, {}};
 }
 
@@ -103,13 +103,14 @@ namespace detail
 std::shared_ptr<stk::mesh::BulkData> create_mesh(const BrickDesign& aDesign,
                                                  const std::optional<double> aDiscretizationSize)
 {
-    const utilities::STKCommandBounds tLowerBounds{aDesign.center_x - aDesign.dimension_x / 2.0,
-                                                   aDesign.center_y - aDesign.dimension_y / 2.0,
-                                                   aDesign.center_z - aDesign.dimension_z / 2.0};
-    const utilities::STKCommandBounds tUpperBounds{aDesign.center_x + aDesign.dimension_x / 2.0,
-                                                   aDesign.center_y + aDesign.dimension_y / 2.0,
-                                                   aDesign.center_z + aDesign.dimension_z / 2.0};
-    utilities::STKCommandNumberOfElements tNumberOfElements{1, 1, 1};
+    namespace tpistkio = third_party_integration::stk_io;
+    const auto tLowerBounds = tpistkio::CommandBounds{aDesign.center_x - aDesign.dimension_x / 2.0,
+                                                      aDesign.center_y - aDesign.dimension_y / 2.0,
+                                                      aDesign.center_z - aDesign.dimension_z / 2.0};
+    const auto tUpperBounds = tpistkio::CommandBounds{aDesign.center_x + aDesign.dimension_x / 2.0,
+                                                      aDesign.center_y + aDesign.dimension_y / 2.0,
+                                                      aDesign.center_z + aDesign.dimension_z / 2.0};
+    auto tNumberOfElements = tpistkio::CommandNumberOfElements{1, 1, 1};
     if (aDiscretizationSize)
     {
         const auto tNx = static_cast<unsigned int>(std::ceil(aDesign.dimension_x / aDiscretizationSize.value()));
@@ -118,14 +119,18 @@ std::shared_ptr<stk::mesh::BulkData> create_mesh(const BrickDesign& aDesign,
         tNumberOfElements = {tNx, tNy, tNz};
     }
 
-    const utilities::STKNodeSetSideSetIdentifiers tSidesets{false, false, false, false, false, true};
-    const utilities::STKNodeSetSideSetIdentifiers tNodesets{false, false, false, true, false, false};
+    const auto tSidesets = tpistkio::NodeSetSideSetIdentifiers{tpistkio::UseLowerX{false}, tpistkio::UseUpperX{false},
+                                                               tpistkio::UseLowerY{false}, tpistkio::UseUpperY{false},
+                                                               tpistkio::UseLowerZ{false}, tpistkio::UseUpperZ{true}};
+    const auto tNodesets = tpistkio::NodeSetSideSetIdentifiers{tpistkio::UseLowerX{false}, tpistkio::UseUpperX{false},
+                                                               tpistkio::UseLowerY{false}, tpistkio::UseUpperY{true},
+                                                               tpistkio::UseLowerZ{false}, tpistkio::UseUpperZ{true}};
     const int tPrecision = 16;
-    const utilities::STKCommandGenerator tSTKCommandGenerator{
-        tNumberOfElements, tLowerBounds, tUpperBounds, utilities::STKCommandElementType::Hex,
-        tNodesets,         tSidesets,    tPrecision};
+    const auto tCommandGenerator =
+        tpistkio::CommandGenerator{tNumberOfElements, tLowerBounds, tUpperBounds, tpistkio::CommandElementType::Hex,
+                                   tNodesets,         tSidesets,    tPrecision};
 
-    return plato::utilities::generate_stk_mesh(tSTKCommandGenerator);
+    return tpistkio::generate_mesh(tCommandGenerator);
 }
 
 std::vector<double> sensitivities(const unsigned int aParameterIndex)

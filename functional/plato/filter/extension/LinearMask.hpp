@@ -5,10 +5,7 @@
 #include <optional>
 
 #include "plato/filter/extension/LinearMaskFactory.hpp"
-#include "plato/tpetra_integration/TpetraHelpers.hpp"
-#include "plato/utilities/NamedType.hpp"
-#include "plato/utilities/STKSearchUtilities.hpp"
-#include "plato/utilities/Vector3.hpp"
+#include "plato/third_party_integration/tpetra/Utilities.hpp"
 
 namespace plato::filter::extension
 {
@@ -43,15 +40,15 @@ class LinearMask
                const boost::mpi::communicator& aCommunicator);
 
     /// @brief Return the size of the distance mask.
-    [[nodiscard]] auto size() const
-        -> std::pair<tpetra_integration::TpetraGlobalOrdinal, tpetra_integration::TpetraGlobalOrdinal>;
+    [[nodiscard]] auto size() const -> std::pair<third_party_integration::tpetra::TpetraGlobalOrdinal,
+                                                 third_party_integration::tpetra::TpetraGlobalOrdinal>;
 
     [[nodiscard]] std::vector<double> matrixMultiply(const std::vector<double>& aValues) const;
     [[nodiscard]] std::vector<double> transposeMatrixMultiply(const std::vector<double>& aValues) const;
 
    private:
     boost::mpi::communicator mCommunicator;
-    tpetra_integration::TpetraCRSMatrix mLinearMask;
+    third_party_integration::tpetra::TpetraCRSMatrix mLinearMask;
 };
 
 }  // namespace plato::filter::extension

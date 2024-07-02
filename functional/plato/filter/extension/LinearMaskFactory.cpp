@@ -28,43 +28,47 @@ LinearMaskFactory::LinearMaskFactory(const NodalVector& aNodalCoordinates,
       mNodalCoordinates(createNodalCoordinates(aNodalCoordinates.mValue)),
       mLocalSearchPointWithIdentifiers(detail::stk_search_points(mNodalCoordinates, mCommunicator.rank()))
 {
-    generateDistanceMap(static_cast<tpetra_integration::TpetraGlobalOrdinal>(aNodalCoordinates.mValue.size()));
+    generateDistanceMap(
+        static_cast<third_party_integration::tpetra::TpetraGlobalOrdinal>(aNodalCoordinates.mValue.size()));
 }
 
-tpetra_integration::TpetraMultiVector LinearMaskFactory::createNodalCoordinates(
-    const std::vector<utilities::Coordinate>& aNodalCoordinates)
+third_party_integration::tpetra::TpetraMultiVector LinearMaskFactory::createNodalCoordinates(
+    const std::vector<third_party_integration::common::Coordinate>& aNodalCoordinates)
 {
     const auto tCommunicator(Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
-    auto tNodalCoordinates = tpetra_integration::TpetraMultiVector(
-        Teuchos::rcp(
-            new tpetra_integration::TpetraMap(aNodalCoordinates.size(), tpetra_integration::kIndexBase, tCommunicator)),
-        tpetra_integration::kNumberOfCartesianDimensions, kZeroOut);
-    tpetra_integration::distribute_on_tpetra_multivector(aNodalCoordinates, tNodalCoordinates);
+    auto tNodalCoordinates = third_party_integration::tpetra::TpetraMultiVector(
+        Teuchos::rcp(new third_party_integration::tpetra::TpetraMap(
+            aNodalCoordinates.size(), third_party_integration::tpetra::kIndexBase, tCommunicator)),
+        third_party_integration::tpetra::kNumberOfCartesianDimensions, kZeroOut);
+    third_party_integration::tpetra::distribute_on_tpetra_multivector(aNodalCoordinates, tNodalCoordinates);
     return tNodalCoordinates;
 }
 
-auto LinearMaskFactory::returnMask() const -> const tpetra_integration::TpetraCRSMatrix& { return *mLinearMask; }
-
-auto LinearMaskFactory::generateRow(utilities::Coordinate aCenter)
-    -> std::pair<std::vector<tpetra_integration::TpetraGlobalOrdinal>, std::vector<tpetra_integration::TpetraScalar>>
+auto LinearMaskFactory::returnMask() const -> const third_party_integration::tpetra::TpetraCRSMatrix&
 {
-    const auto tSearchResults =
-        utilities::find_points_in_sphere(aCenter, mSearchRadius, mLocalSearchPointWithIdentifiers, mCommunicator);
+    return *mLinearMask;
+}
+
+auto LinearMaskFactory::generateRow(third_party_integration::common::Coordinate aCenter)
+    -> std::pair<TpetraGlobalOrdinalVector, TpetraScalarVector>
+{
+    const auto tSearchResults = third_party_integration::stk_search::find_points_in_sphere(
+        aCenter, mSearchRadius, mLocalSearchPointWithIdentifiers, mCommunicator);
 
     constexpr bool tZeroOut = true;
-    auto tRow = tpetra_integration::TpetraVector(mNodalCoordinates.getMap(), tZeroOut);
+    auto tRow = third_party_integration::tpetra::TpetraVector(mNodalCoordinates.getMap(), tZeroOut);
 
     double tSum = 0;
-    for (const auto [tLocalIndex] :
-         utilities::MultidimensionalRange{tpetra_integration::number_of_local_elements(mNodalCoordinates.getMap())})
+    for (const auto [tLocalIndex] : utilities::MultidimensionalRange{
+             third_party_integration::tpetra::number_of_local_elements(mNodalCoordinates.getMap())})
     {
-        const utilities::Identifier tLocalIdentifier{tLocalIndex, mCommunicator.rank()};
-        if (utilities::is_in_search_results(tLocalIdentifier, tSearchResults))
+        const third_party_integration::stk_search::Identifier tLocalIdentifier{tLocalIndex, mCommunicator.rank()};
+        if (third_party_integration::stk_search::is_in_search_results(tLocalIdentifier, tSearchResults))
         {
-            const utilities::Coordinate tLocalCoordinate =
-                tpetra_integration::multivector_coordinate(mNodalCoordinates, tLocalIndex);
+            const third_party_integration::common::Coordinate tLocalCoordinate =
+                third_party_integration::tpetra::multivector_coordinate(mNodalCoordinates, tLocalIndex);
 
-            const double tDistance = utilities::magnitude(aCenter - tLocalCoordinate);
+            const double tDistance = third_party_integration::common::magnitude(aCenter - tLocalCoordinate);
             const double tWeight{detail::linear_ramp_weight(Distance{tDistance}, SearchRadius{mSearchRadius})};
 
             const auto tGlobalID = mNodalCoordinates.getMap()->getGlobalElement(tLocalIndex);
@@ -81,27 +85,27 @@ auto LinearMaskFactory::generateRow(utilities::Coordinate aCenter)
                                              detail::EstimatedConnectivity{mMaximumConnectivityEstimate});
 }
 
-void LinearMaskFactory::generateDistanceMap(const tpetra_integration::TpetraGlobalOrdinal aNumberOfRows)
+void LinearMaskFactory::generateDistanceMap(const third_party_integration::tpetra::TpetraGlobalOrdinal aNumberOfRows)
 {
     const auto tCommunicator(Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
-    auto tCrsRowMap = Teuchos::rcp(
-        new tpetra_integration::TpetraMap(mRowCenterCoordinates.size(), tpetra_integration::kIndexBase, tCommunicator));
-    auto tCrsDomainMap =
-        Teuchos::rcp(new tpetra_integration::TpetraMap(aNumberOfRows, tpetra_integration::kIndexBase, tCommunicator));
+    auto tCrsRowMap = Teuchos::rcp(new third_party_integration::tpetra::TpetraMap(
+        mRowCenterCoordinates.size(), third_party_integration::tpetra::kIndexBase, tCommunicator));
+    auto tCrsDomainMap = Teuchos::rcp(new third_party_integration::tpetra::TpetraMap(
+        aNumberOfRows, third_party_integration::tpetra::kIndexBase, tCommunicator));
 
-    mLinearMask = Teuchos::RCP<tpetra_integration::TpetraCRSMatrix>{
-        new tpetra_integration::TpetraCRSMatrix(tCrsRowMap, mMaximumConnectivityEstimate)};
+    mLinearMask = Teuchos::RCP<third_party_integration::tpetra::TpetraCRSMatrix>{
+        new third_party_integration::tpetra::TpetraCRSMatrix(tCrsRowMap, mMaximumConnectivityEstimate)};
 
-    for (tpetra_integration::TpetraGlobalOrdinal tGlobalIndex = 0;
-         tGlobalIndex < static_cast<tpetra_integration::TpetraGlobalOrdinal>(mRowCenterCoordinates.size());
-         ++tGlobalIndex)
+    for (const auto [tGlobalIndex] : utilities::MultidimensionalRange{
+             static_cast<third_party_integration::tpetra::TpetraGlobalOrdinal>(mRowCenterCoordinates.size())})
     {
-        const utilities::Coordinate tGlobalCoordinate = mRowCenterCoordinates[tGlobalIndex];
+        const third_party_integration::common::Coordinate tGlobalCoordinate = mRowCenterCoordinates[tGlobalIndex];
         auto [tGlobalNonZeroIndices, tGlobalNonZeroWeights] = generateRow(tGlobalCoordinate);
 
         mLinearMask->insertGlobalValues(
-            tGlobalIndex, Teuchos::ArrayView<tpetra_integration::TpetraGlobalOrdinal>(tGlobalNonZeroIndices),
-            Teuchos::ArrayView<tpetra_integration::TpetraScalar>(tGlobalNonZeroWeights));
+            tGlobalIndex,
+            Teuchos::ArrayView<third_party_integration::tpetra::TpetraGlobalOrdinal>(tGlobalNonZeroIndices),
+            Teuchos::ArrayView<third_party_integration::tpetra::TpetraScalar>(tGlobalNonZeroWeights));
     }
     mLinearMask->fillComplete(tCrsDomainMap, tCrsRowMap);
 }
@@ -114,20 +118,21 @@ double linear_ramp_weight(const Distance aDistance, const SearchRadius aSearchRa
     return std::max(0.0, 1.0 - aDistance.mValue / aSearchRadius.mValue);
 }
 
-auto normalize_nonzero_weights(const tpetra_integration::TpetraVector& aRowVector,
+auto normalize_nonzero_weights(const third_party_integration::tpetra::TpetraVector& aRowVector,
                                const RowSum aRowSum,
                                const EstimatedConnectivity aEstimatedConnectivity)
-    -> std::pair<std::vector<tpetra_integration::TpetraGlobalOrdinal>, std::vector<tpetra_integration::TpetraScalar>>
+    -> std::pair<TpetraGlobalOrdinalVector, TpetraScalarVector>
 {
-    std::vector<tpetra_integration::TpetraScalar> tNonZeroWeightVector;
-    std::vector<tpetra_integration::TpetraGlobalOrdinal> tNonZeroGlobalIndices;
+    std::vector<third_party_integration::tpetra::TpetraScalar> tNonZeroWeightVector;
+    std::vector<third_party_integration::tpetra::TpetraGlobalOrdinal> tNonZeroGlobalIndices;
     tNonZeroWeightVector.reserve(aEstimatedConnectivity.mValue);
     tNonZeroGlobalIndices.reserve(aEstimatedConnectivity.mValue);
 
-    for (const auto [tLocalIndex] :
-         utilities::MultidimensionalRange{tpetra_integration::number_of_local_elements(aRowVector.getMap())})
+    for (const auto [tLocalIndex] : utilities::MultidimensionalRange{
+             third_party_integration::tpetra::number_of_local_elements(aRowVector.getMap())})
     {
-        const tpetra_integration::TpetraScalar tReplacementWeight = aRowVector.getData()[tLocalIndex] / aRowSum.mValue;
+        const third_party_integration::tpetra::TpetraScalar tReplacementWeight =
+            aRowVector.getData()[tLocalIndex] / aRowSum.mValue;
         if (tReplacementWeight > 0)
         {
             const auto tGlobalID = aRowVector.getMap()->getGlobalElement(tLocalIndex);
@@ -138,20 +143,20 @@ auto normalize_nonzero_weights(const tpetra_integration::TpetraVector& aRowVecto
     return {tNonZeroGlobalIndices, tNonZeroWeightVector};
 }
 
-std::vector<utilities::SearchPointWithIdentifier> stk_search_points(
-    const tpetra_integration::TpetraMultiVector& aNodalCoordinates, const int aRank)
+std::vector<third_party_integration::stk_search::SearchPointWithIdentifier> stk_search_points(
+    const third_party_integration::tpetra::TpetraMultiVector& aNodalCoordinates, const int aRank)
 {
-    std::vector<utilities::SearchPointWithIdentifier> tLocalSearchPointWithIdentifiers(
-        tpetra_integration::number_of_local_elements(aNodalCoordinates.getMap()));
+    std::vector<third_party_integration::stk_search::SearchPointWithIdentifier> tLocalSearchPointWithIdentifiers(
+        third_party_integration::tpetra::number_of_local_elements(aNodalCoordinates.getMap()));
 
-    for (const auto [tLocalIndex] :
-         utilities::MultidimensionalRange{tpetra_integration::number_of_local_elements(aNodalCoordinates.getMap())})
+    for (const auto [tLocalIndex] : utilities::MultidimensionalRange{
+             third_party_integration::tpetra::number_of_local_elements(aNodalCoordinates.getMap())})
     {
-        const utilities::Identifier tIdentifier{tLocalIndex, aRank};
-        const utilities::Coordinate tCoordinate =
-            tpetra_integration::multivector_coordinate(aNodalCoordinates, tLocalIndex);
-        tLocalSearchPointWithIdentifiers[tLocalIndex] =
-            utilities::SearchPointWithIdentifier({utilities::convert_coordinate(tCoordinate), tIdentifier});
+        const third_party_integration::stk_search::Identifier tIdentifier{tLocalIndex, aRank};
+        const third_party_integration::common::Coordinate tCoordinate =
+            third_party_integration::tpetra::multivector_coordinate(aNodalCoordinates, tLocalIndex);
+        tLocalSearchPointWithIdentifiers[tLocalIndex] = third_party_integration::stk_search::SearchPointWithIdentifier(
+            {third_party_integration::stk_search::convert_coordinate(tCoordinate), tIdentifier});
     }
     return tLocalSearchPointWithIdentifiers;
 }
