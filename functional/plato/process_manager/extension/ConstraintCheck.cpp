@@ -14,7 +14,7 @@
 #include "plato/process_manager/library/ProcessManagerData.hpp"
 #include "plato/process_manager/library/ProcessManagerRegistration.hpp"
 #include "plato/process_manager/library/StageOrdering.hpp"
-#include "plato/rol_integration/ROLHelpers.hpp"
+#include "plato/third_party_integration/rol/Utilities.hpp"
 
 namespace plato::process_manager::extension
 {
@@ -86,15 +86,15 @@ void ConstraintCheck::run(const library::ProcessManagerData& aProcessManagerData
         constexpr int tFiniteDifferenceOrder = 1;  // TODO: Should we make this an actual input?
         std::ofstream tCheckJacobianOutFile{mJacobianCheckOutputFileName};
         tConstraint->checkApplyJacobian(
-            rol_integration::to_rol_vector(aProcessManagerData.mGeometry.mInitialGuess),
-            rol_integration::generate_perturbation(tNumDesignVariables), *tConstraintVectorStandIn,
+            third_party_integration::rol::to_rol_vector(aProcessManagerData.mGeometry.mInitialGuess),
+            third_party_integration::rol::generate_perturbation(tNumDesignVariables), *tConstraintVectorStandIn,
             LogspaceGenerator{mInitialDirectionMagnitude, mStepSizeReductionFactor, mNumberOfSteps}.steps(),
             tPrintOutput, tCheckJacobianOutFile, tFiniteDifferenceOrder);
 
         const auto tTolerance = tConstraint->checkAdjointConsistencyJacobian(
-            rol_integration::generate_perturbation(tROLProblem->getMultiplierVector()->dimension()),
-            rol_integration::generate_perturbation(tNumDesignVariables),
-            rol_integration::to_rol_vector(aProcessManagerData.mGeometry.mInitialGuess), false);
+            third_party_integration::rol::generate_perturbation(tROLProblem->getMultiplierVector()->dimension()),
+            third_party_integration::rol::generate_perturbation(tNumDesignVariables),
+            third_party_integration::rol::to_rol_vector(aProcessManagerData.mGeometry.mInitialGuess), false);
         detail::write_jacobian_adjoint_consistency_check_output(mJacobianAdjointConsistencyCheckOutputFileName,
                                                                 tTolerance);
     }

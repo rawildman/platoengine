@@ -4,8 +4,8 @@
 #include "plato/filter/library/FilterJacobian.hpp"
 #include "plato/geometry/library/GeometryRegistration.hpp"
 #include "plato/geometry/library/GeometryValidation.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
 #include "plato/utilities/Exception.hpp"
-#include "plato/utilities/STKUtilities.hpp"
 
 namespace plato::geometry::extension
 {
@@ -44,7 +44,7 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
 
 DensityTopology::DensityTopology(const input_parser::density_topology& aInput)
     : mFileName(aInput.mesh_name.value().mToken),
-      mNumDesignParameters(plato::utilities::read_mesh_node_size(mFileName)),
+      mNumDesignParameters(third_party_integration::stk_io::read_mesh_node_size(mFileName)),
       mFilter(plato::filter::library::make_filter_function(aInput))
 {
 }
@@ -66,13 +66,13 @@ linear_algebra::JacobianMultiplier DensityTopology::jacobian(
 
 linear_algebra::DynamicVector<double> DensityTopology::initialGuess(const std::filesystem::path& aMeshFileName)
 {
-    const unsigned int tNumNodes = plato::utilities::read_mesh_node_size(aMeshFileName);
+    const unsigned int tNumNodes = third_party_integration::stk_io::read_mesh_node_size(aMeshFileName);
     return linear_algebra::DynamicVector<double>(tNumNodes, kInitialDensity);
 }
 
 std::pair<std::vector<double>, std::vector<double>> DensityTopology::bounds(const std::filesystem::path& aMeshFileName)
 {
-    const unsigned int tNumNodes = plato::utilities::read_mesh_node_size(aMeshFileName);
+    const unsigned int tNumNodes = third_party_integration::stk_io::read_mesh_node_size(aMeshFileName);
     return {std::vector<double>(tNumNodes, kDensityLowerBound), std::vector<double>(tNumNodes, kDensityUpperBound)};
 }
 
@@ -80,7 +80,7 @@ void DensityTopology::output(const std::filesystem::path& aInputMeshName,
                              const linear_algebra::DynamicVector<double>& aSolution,
                              const std::filesystem::path& aOutputMeshName)
 {
-    plato::utilities::write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
+    plato::third_party_integration::stk_io::write_mesh_density(aInputMeshName, aSolution.stdVector(), aOutputMeshName);
 }
 
 auto make_topology_geometry(const DensityTopology& aDensityTopology)

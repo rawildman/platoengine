@@ -35,28 +35,32 @@ LinearMask::LinearMask(const NodalVector& aNodalCoordinates,
 
 std::vector<double> LinearMask::matrixMultiply(const std::vector<double>& aValues) const
 {
-    auto [tRowVector, tColumnVector] = tpetra_integration::create_zeroed_row_and_column_vectors_from_crs_map(
-        mLinearMask, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
+    auto [tRowVector, tColumnVector] =
+        third_party_integration::tpetra::create_zeroed_row_and_column_vectors_from_crs_map(
+            mLinearMask, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
 
-    tpetra_integration::distribute_on_tpetra_vector(aValues, tColumnVector);
+    third_party_integration::tpetra::distribute_on_tpetra_vector(aValues, tColumnVector);
     mLinearMask.apply(tColumnVector, tRowVector);
 
-    return tpetra_integration::reduce_tpetra_vector(tRowVector, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
+    return third_party_integration::tpetra::reduce_tpetra_vector(
+        tRowVector, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
 }
 
 std::vector<double> LinearMask::transposeMatrixMultiply(const std::vector<double>& aValues) const
 {
-    auto [tRowVector, tColumnVector] = tpetra_integration::create_zeroed_row_and_column_vectors_from_crs_map(
-        mLinearMask, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
+    auto [tRowVector, tColumnVector] =
+        third_party_integration::tpetra::create_zeroed_row_and_column_vectors_from_crs_map(
+            mLinearMask, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
 
-    tpetra_integration::distribute_on_tpetra_vector(aValues, tRowVector);
+    third_party_integration::tpetra::distribute_on_tpetra_vector(aValues, tRowVector);
     mLinearMask.apply(tRowVector, tColumnVector, Teuchos::TRANS);
 
-    return tpetra_integration::reduce_tpetra_vector(tColumnVector,
-                                                    Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
+    return third_party_integration::tpetra::reduce_tpetra_vector(
+        tColumnVector, Teuchos::rcp(new Teuchos::MpiComm<int>(mCommunicator)));
 }
 
-std::pair<tpetra_integration::TpetraGlobalOrdinal, tpetra_integration::TpetraGlobalOrdinal> LinearMask::size() const
+std::pair<third_party_integration::tpetra::TpetraGlobalOrdinal, third_party_integration::tpetra::TpetraGlobalOrdinal>
+LinearMask::size() const
 {
     return {mLinearMask.getGlobalNumRows(), mLinearMask.getGlobalNumCols()};
 }

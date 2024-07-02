@@ -2,8 +2,8 @@
 
 #include "plato/criteria/library/CriterionRegistration.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
+#include "plato/third_party_integration/stk_io/VolumeUtilities.hpp"
 #include "plato/utilities/PairWiseAccumulate.hpp"
-#include "plato/utilities/STKVolumeUtilities.hpp"
 
 namespace plato::criteria::extension
 {
@@ -21,9 +21,9 @@ namespace
 auto read_bulk_and_elements(const std::filesystem::path& aMeshFileName)
     -> std::pair<std::shared_ptr<stk::mesh::BulkData>, stk::mesh::EntityVector>
 {
-    std::shared_ptr<stk::mesh::BulkData> tBulk = utilities::read_mesh_bulk_data(aMeshFileName);
+    std::shared_ptr<stk::mesh::BulkData> tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshFileName);
     assert(tBulk);
-    const stk::mesh::EntityVector tElements = utilities::element_vector(*tBulk);
+    const stk::mesh::EntityVector tElements = third_party_integration::stk_io::element_vector(*tBulk);
     return {tBulk, tElements};
 }
 
@@ -37,7 +37,7 @@ double VolumeCriterion::f(const core::MeshProxy& aMeshProxy) const
     std::transform(aMeshProxy.mNodalDensities.begin(), aMeshProxy.mNodalDensities.end(), tElements.begin(),
                    std::back_inserter(tScaledVolume),
                    [&tBulkRef = *tBulk](const auto& aControl, const auto& aElement)
-                   { return aControl * utilities::element_volume(aElement, tBulkRef); });
+                   { return aControl * third_party_integration::stk_io::element_volume(aElement, tBulkRef); });
 
     return mScaleFactor * utilities::pair_wise_accumulate(tScaledVolume);
 }
@@ -49,7 +49,7 @@ linear_algebra::DynamicVector<double> VolumeCriterion::df(const core::MeshProxy&
     std::vector<double> tScaledVolume;
     std::transform(tElements.begin(), tElements.end(), std::back_inserter(tScaledVolume),
                    [this, &tBulkRef = *tBulk](const auto& aElement)
-                   { return mScaleFactor * utilities::element_volume(aElement, tBulkRef); });
+                   { return mScaleFactor * third_party_integration::stk_io::element_volume(aElement, tBulkRef); });
 
     return linear_algebra::DynamicVector<double>(std::move(tScaledVolume));
 }
@@ -67,12 +67,14 @@ auto make_volume_fraction_constraint_function()
     return core::make_function(
         [](const core::MeshProxy& mesh)
         {
-            const double tVolumeTotal = utilities::mesh_volume(*utilities::read_mesh_bulk_data(mesh.mFileName));
+            const double tVolumeTotal = third_party_integration::stk_io::mesh_volume(
+                *third_party_integration::stk_io::read_mesh_bulk_data(mesh.mFileName));
             return VolumeCriterion{1.0 / tVolumeTotal}.f(mesh);
         },
         [](const core::MeshProxy& mesh)
         {
-            const double tVolumeTotal = utilities::mesh_volume(*utilities::read_mesh_bulk_data(mesh.mFileName));
+            const double tVolumeTotal = third_party_integration::stk_io::mesh_volume(
+                *third_party_integration::stk_io::read_mesh_bulk_data(mesh.mFileName));
             return VolumeCriterion{1.0 / tVolumeTotal}.df(mesh);
         });
 }

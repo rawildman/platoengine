@@ -5,11 +5,10 @@
 
 #include "plato/filter/extension/LinearMaskFactory.hpp"
 #include "plato/filter/extension/parallel_unittest/LinearMaskTestUtility.hpp"
-#include "plato/utilities/CoordinateTestUtilities.hpp"
-#include "plato/utilities/STKCommandGenerator.hpp"
-#include "plato/utilities/STKSearchUtilities.hpp"  //element_bounding_box , FloatSphere, SearchResults
-#include "plato/utilities/STKUtilities.hpp"        //generate_stk_mesh, element_vector
-#include "plato/utilities/Vector3.hpp"
+#include "plato/third_party_integration/common/unittest/CoordinateTestUtilities.hpp"
+#include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
+#include "plato/third_party_integration/stk_search/Utilities.hpp"
 
 namespace plato::filter::extension::unittest
 {
@@ -20,34 +19,35 @@ namespace
 constexpr auto kNumRanks = int{4};
 constexpr int kNumSpatialDimensions{3};
 
-[[nodiscard]] Teuchos::RCP<const tpetra_integration::TpetraMap> create_contiguous_map(
+[[nodiscard]] Teuchos::RCP<const third_party_integration::tpetra::TpetraMap> create_contiguous_map(
     const Tpetra::global_size_t aSize, Teuchos::RCP<const Teuchos::Comm<int>> aCommunicator)
 {
-    return Teuchos::rcp(
-        new tpetra_integration::TpetraMap(aSize, tpetra_integration::kIndexBase, std::move(aCommunicator)));
+    return Teuchos::rcp(new third_party_integration::tpetra::TpetraMap(
+        aSize, third_party_integration::tpetra::kIndexBase, std::move(aCommunicator)));
 }
 
-[[nodiscard]] tpetra_integration::TpetraVector create_projection_vector(
-    const size_t aSize, const tpetra_integration::TpetraGlobalOrdinal aGlobalIndex)
+[[nodiscard]] third_party_integration::tpetra::TpetraVector create_projection_vector(
+    const size_t aSize, const third_party_integration::tpetra::TpetraGlobalOrdinal aGlobalIndex)
 {
     const auto tCommunicator = Tpetra::getDefaultComm();
     const auto tContiguousMap = create_contiguous_map(aSize, tCommunicator);
     constexpr bool tZeroOut = true;
-    auto tVector = tpetra_integration::TpetraVector(tContiguousMap, tZeroOut);
+    auto tVector = third_party_integration::tpetra::TpetraVector(tContiguousMap, tZeroOut);
     tVector.replaceGlobalValue(aGlobalIndex, 1);
     return tVector;
 }
 
-[[nodiscard]] tpetra_integration::TpetraScalar get_entry(const tpetra_integration::TpetraCRSMatrix& aMatrix,
-                                                         const tpetra_integration::TpetraGlobalOrdinal aGlobalIndexI,
-                                                         const tpetra_integration::TpetraGlobalOrdinal aGlobalIndexJ)
+[[nodiscard]] third_party_integration::tpetra::TpetraScalar get_entry(
+    const third_party_integration::tpetra::TpetraCRSMatrix& aMatrix,
+    const third_party_integration::tpetra::TpetraGlobalOrdinal aGlobalIndexI,
+    const third_party_integration::tpetra::TpetraGlobalOrdinal aGlobalIndexJ)
 {
-    const tpetra_integration::TpetraGlobalOrdinal tNRows = aMatrix.getGlobalNumRows();
-    const tpetra_integration::TpetraGlobalOrdinal tMColumns = aMatrix.getGlobalNumCols();
+    const third_party_integration::tpetra::TpetraGlobalOrdinal tNRows = aMatrix.getGlobalNumRows();
+    const third_party_integration::tpetra::TpetraGlobalOrdinal tMColumns = aMatrix.getGlobalNumCols();
     const auto tCommunicator = Tpetra::getDefaultComm();
     const auto tContiguousMap = create_contiguous_map(tNRows, tCommunicator);
     constexpr bool tZeroOut = true;
-    auto tResult = tpetra_integration::TpetraVector(tContiguousMap, tZeroOut);
+    auto tResult = third_party_integration::tpetra::TpetraVector(tContiguousMap, tZeroOut);
 
     const auto tProjectionI = create_projection_vector(tNRows, aGlobalIndexI);
     const auto tProjectionJ = create_projection_vector(tMColumns, aGlobalIndexJ);
@@ -105,7 +105,8 @@ TEST(LinearMaskFactoryDetail, ReturnNormalizedNonzeroWeights)
     const int tEstimatedConnectivity = tMapSize / kNumRanks;
     const auto tContiguousMap = create_contiguous_map(tMapSize, tCommunicator);
     constexpr bool tZeroOut = true;
-    tpetra_integration::TpetraVector tVector = tpetra_integration::TpetraVector(tContiguousMap, tZeroOut);
+    third_party_integration::tpetra::TpetraVector tVector =
+        third_party_integration::tpetra::TpetraVector(tContiguousMap, tZeroOut);
     constexpr double tRowSum = tMapSize * 1.0;
     {
         const auto [tGlobalNonZeroIndices, tLocalNonZeroWeights] = detail::normalize_nonzero_weights(
@@ -128,20 +129,23 @@ TEST(LinearMaskFactoryDetail, MakeSearchPointsWithIdentifiers)
     const auto tCommunicator = Tpetra::getDefaultComm();
     const auto tThisRank = tCommunicator->getRank();
 
-    const std::vector<utilities::Coordinate> tNodalCoordinates{
+    const std::vector<third_party_integration::common::Coordinate> tNodalCoordinates{
         {1, 1, 1}, {2, 2, 2}, {3, 3, 3}, {4, 4, 4}};  // non-zero to ensure not default ctor
     const auto tContiguousMap = create_contiguous_map(tNodalCoordinates.size(), tCommunicator);
 
     constexpr bool tZeroOut = true;
-    auto tMultiVector = tpetra_integration::TpetraMultiVector(tContiguousMap, kNumSpatialDimensions, tZeroOut);
+    auto tMultiVector =
+        third_party_integration::tpetra::TpetraMultiVector(tContiguousMap, kNumSpatialDimensions, tZeroOut);
 
-    tpetra_integration::distribute_on_tpetra_multivector(tNodalCoordinates, tMultiVector);
+    third_party_integration::tpetra::distribute_on_tpetra_multivector(tNodalCoordinates, tMultiVector);
 
     /// round robin assignment to ranks 0->3 of tNodalCoordinates above
-    const utilities::Coordinate tGoldCoordinate{tThisRank + 1.0, tThisRank + 1.0, tThisRank + 1.0};
-    const std::vector<utilities::SearchPointWithIdentifier> tGoldLocalSearchPointWithIdentifiers{
-        utilities::SearchPointWithIdentifier{utilities::convert_coordinate(tGoldCoordinate),
-                                             utilities::Identifier{0, tThisRank}}};
+    const third_party_integration::common::Coordinate tGoldCoordinate{tThisRank + 1.0, tThisRank + 1.0,
+                                                                      tThisRank + 1.0};
+    const std::vector<third_party_integration::stk_search::SearchPointWithIdentifier>
+        tGoldLocalSearchPointWithIdentifiers{third_party_integration::stk_search::SearchPointWithIdentifier{
+            third_party_integration::stk_search::convert_coordinate(tGoldCoordinate),
+            third_party_integration::stk_search::Identifier{0, tThisRank}}};
 
     const auto tSearchPoints = detail::stk_search_points(tMultiVector, tThisRank);
 
@@ -184,7 +188,7 @@ TEST(LinearMaskFactory, GenerateDistanceMapNodal)
 
 TEST(LinearMaskFactory, GenerateDistanceMapGivenCentroid)
 {
-    const std::vector<utilities::Coordinate> tRelativeToCoordinate{{1, 0, 0}};
+    const std::vector<third_party_integration::common::Coordinate> tRelativeToCoordinate{{1, 0, 0}};
     const LinearMaskFactory tLinearMaskFactory = create_simple_linear_mask<LinearMaskFactory>(tRelativeToCoordinate);
 
     const auto tDistanceMap = tLinearMaskFactory.returnMask();

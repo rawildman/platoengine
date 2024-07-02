@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <boost/math/constants/constants.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <vector>
 
@@ -7,8 +8,8 @@
 #include "plato/filter/extension/KernelFilter.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/TestContext.hpp"
-#include "plato/utilities/STKCommandGenerator.hpp"
-#include "plato/utilities/STKUtilities.hpp"
+#include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
+#include "plato/third_party_integration/stk_io/Utilities.hpp"
 
 namespace plato::filter::extension::unittest
 {
@@ -22,13 +23,14 @@ constexpr double kTolerance = 1e-14;  // for comparison against matlab values
 [[nodiscard]] std::pair<std::vector<double>, std::vector<double> > test_filter_evaluation(
     const FilterCentering aFilterCentering)
 {
-    const utilities::STKCommandGenerator tSTKCommandGenerator{{1, 1, 1}, {0, 0, 0}, {1, 1, 1}};
-    utilities::write_mesh(kMeshFile, utilities::generate_stk_mesh(tSTKCommandGenerator));
+    const third_party_integration::stk_io::CommandGenerator tCommandGenerator{{1, 1, 1}, {0, 0, 0}, {1, 1, 1}};
+    third_party_integration::stk_io::write_mesh(kMeshFile,
+                                                third_party_integration::stk_io::generate_mesh(tCommandGenerator));
     const FilterRadius tFilterRadius{1.1};
 
     const KernelFilter tKernelFilter{kMeshFile, tFilterRadius, aFilterCentering, boost::mpi::communicator{}};
 
-    std::vector<double> tNodalDensities(tSTKCommandGenerator.numberOfNodes(), 0);
+    std::vector<double> tNodalDensities(tCommandGenerator.numberOfNodes(), 0);
     const int tHalfNode = tNodalDensities.size() / 2;
     tNodalDensities[tHalfNode] = 1;
     tNodalDensities[tHalfNode - 1] = .5;
@@ -40,11 +42,11 @@ constexpr double kTolerance = 1e-14;  // for comparison against matlab values
     std::vector<double> tStdVectorSensitivities;
     if (aFilterCentering == FilterCentering::ElementCentered)
     {
-        tStdVectorSensitivities = std::vector<double>(tSTKCommandGenerator.numberOfElements(), 1);
+        tStdVectorSensitivities = std::vector<double>(tCommandGenerator.numberOfElements(), 1);
     }
     else
     {
-        tStdVectorSensitivities = std::vector<double>(tSTKCommandGenerator.numberOfNodes(), 0);
+        tStdVectorSensitivities = std::vector<double>(tCommandGenerator.numberOfNodes(), 0);
         tStdVectorSensitivities[0] = 1;
         tStdVectorSensitivities[1] = .5;
         tStdVectorSensitivities[2] = .25;
@@ -144,11 +146,13 @@ TEST(KernelFilterDetail, FilterVolume)
 
 TEST(KernelFilterDetail, DetermineMaximumConnectivityEstimate)
 {
-    const utilities::STKCommandGenerator tSTKCommandGenerator{{21, 21, 21}, {-10, -10, -10}, {10, 10, 10}};
-    utilities::write_mesh(kMeshFile, utilities::generate_stk_mesh(tSTKCommandGenerator));
+    const third_party_integration::stk_io::CommandGenerator tCommandGenerator{
+        {21, 21, 21}, {-10, -10, -10}, {10, 10, 10}};
+    third_party_integration::stk_io::write_mesh(kMeshFile,
+                                                third_party_integration::stk_io::generate_mesh(tCommandGenerator));
 
     const FilterRadius tFilterRadius{5};
-    const double tNodalDensity = tSTKCommandGenerator.numberOfNodes() / tSTKCommandGenerator.volume();
+    const double tNodalDensity = tCommandGenerator.numberOfNodes() / tCommandGenerator.volume();
     const double tSearchVolume = detail::filter_volume(tFilterRadius);
     const int tGold = static_cast<int>(tNodalDensity * tSearchVolume * detail::kMaxMultiplier);
 
