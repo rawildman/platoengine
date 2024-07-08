@@ -7,6 +7,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/filter/extension/KernelFilter.hpp"
+#include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/TestContext.hpp"
 #include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
@@ -39,7 +40,8 @@ std::pair<std::vector<double>, std::vector<double> > test_filter_evaluation(
     const third_party_integration::stk_io::CommandGenerator& aCommandGenerator,
     const boost::mpi::communicator& aCommunicator)
 {
-    const KernelFilter tKernelFilter{kMeshFile, FilterRadius{1}, FilterCentering::ElementCentered, aCommunicator};
+    const KernelFilter tKernelFilter{kMeshFile, FilterRadius{1},
+                                     input_parser::KernelFilterCenteringTypes::kElementCentered, aCommunicator};
 
     const std::vector<double> tNodalDensities = create_linear_space_vector(aCommandGenerator.numberOfNodes());
     const std::vector<double> tStdVectorSensitivities =
@@ -158,15 +160,15 @@ TEST(KernelFilterDetail, CreateLinearMask)
     tWorldComm.barrier();
     const FilterRadius tFilterRadius{5};
     {
-        const LinearMask tLinearMask =
-            detail::create_linear_mask(kMeshFile, tFilterRadius, FilterCentering::ElementCentered, tWorldComm);
+        const LinearMask tLinearMask = detail::create_linear_mask(
+            kMeshFile, tFilterRadius, input_parser::KernelFilterCenteringTypes::kElementCentered, tWorldComm);
         const auto [tRows, tCols] = tLinearMask.size();
         EXPECT_EQ(tRows, tCommandGenerator.numberOfElements());
         EXPECT_EQ(tCols, tCommandGenerator.numberOfNodes());
     }
     {
-        const LinearMask tLinearMask =
-            detail::create_linear_mask(kMeshFile, tFilterRadius, FilterCentering::NodeCentered, tWorldComm);
+        const LinearMask tLinearMask = detail::create_linear_mask(
+            kMeshFile, tFilterRadius, input_parser::KernelFilterCenteringTypes::kNodeCentered, tWorldComm);
         const auto [tRows, tCols] = tLinearMask.size();
         EXPECT_EQ(tRows, tCommandGenerator.numberOfNodes());
         EXPECT_EQ(tCols, tCommandGenerator.numberOfNodes());

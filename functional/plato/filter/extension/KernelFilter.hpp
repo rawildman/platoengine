@@ -6,6 +6,7 @@
 
 #include "plato/filter/extension/LinearMask.hpp"
 #include "plato/filter/library/FilterInterface.hpp"
+#include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/utilities/NamedType.hpp"
 
 namespace plato::core
@@ -13,17 +14,14 @@ namespace plato::core
 struct MeshProxy;
 }
 
+namespace plato::input_parser
+{
+struct kernel_filter;
+}
+
 namespace plato::filter::extension
 {
 using FilterRadius = utilities::NamedType<double, struct FilterRadiusTag>;
-
-/// @brief an enumerated class to determine whether the computation should be done centered on the elements or on their
-/// nodes.
-enum class FilterCentering
-{
-    ElementCentered,
-    NodeCentered
-};
 
 /// @brief An implementation of a kernel filter that relies on Tpetra and STK objects to conduct a search and create a
 /// linear mask.
@@ -34,7 +32,7 @@ class KernelFilter : public library::FilterInterface
     /// centered on the elements or nodes determined by @a aFilterCentering, using a communicator @a aCommunicator
     KernelFilter(const std::filesystem::path& aMeshFileName,
                  const FilterRadius aFilterRadius,
-                 const FilterCentering aFilterCentering,
+                 const input_parser::KernelFilterCenteringTypes aFilterCentering,
                  const boost::mpi::communicator& aCommunicator);
 
     /// @brief Apply the internal filter to the mesh specified in @a aMeshProxy and return a new MeshProxy object
@@ -51,6 +49,8 @@ class KernelFilter : public library::FilterInterface
 
 namespace detail
 {
+std::optional<std::string> validate_kernel_filter_centering_type(const input_parser::kernel_filter& aInput);
+
 /// @brief an empirically determined value for a uniform hex mesh and filter radii that are similar in size to the
 /// element size.
 // clang-format off
@@ -72,7 +72,7 @@ int determine_maximum_connectivity_estimate(const std::filesystem::path& aMeshFi
 /// centered on the elements or nodes determined by @a aFilterCentering, using a communicator @a aCommunicator
 LinearMask create_linear_mask(const std::filesystem::path& aMeshFileName,
                               const FilterRadius aFilterRadius,
-                              const FilterCentering aFilterCentering,
+                              const input_parser::KernelFilterCenteringTypes aFilterCentering,
                               const boost::mpi::communicator& aCommunicator);
 
 }  // namespace detail

@@ -27,9 +27,10 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
     input_parser::block_name<input_parser::density_topology>(),
     [](const library::ValidatedGeometryInput& aGeometryInput)
     {
-        const auto& tInput = library::geometry_raw_input<input_parser::density_topology>(aGeometryInput);
+        const auto& tInput = core::validated_variant_raw_input<input_parser::density_topology>(aGeometryInput);
         return library::FactoryTypes{
-            make_topology_geometry(DensityTopology{tInput}),
+            make_topology_geometry(DensityTopology{
+                tInput, plato::filter::library::make_filter_function(library::get_cross_referenced_filter(tInput))}),
             DensityTopology::initialGuess(tInput.mesh_name.value().mToken),
             DensityTopology::bounds(tInput.mesh_name.value().mToken),
             make_topology_output(tInput.mesh_name.value().mToken, tInput.output_name.value().mToken)};
@@ -42,10 +43,11 @@ std::function<void(const linear_algebra::DynamicVector<double>&)> make_topology_
         [](const input_parser::density_topology& aInput) { return detail::validate_output_name(aInput); }};
 }  // namespace
 
-DensityTopology::DensityTopology(const input_parser::density_topology& aInput)
+DensityTopology::DensityTopology(const input_parser::density_topology& aInput,
+                                 plato::filter::library::FilterFunction aFilterFunction)
     : mFileName(aInput.mesh_name.value().mToken),
       mNumDesignParameters(third_party_integration::stk_io::read_mesh_node_size(mFileName)),
-      mFilter(plato::filter::library::make_filter_function(aInput))
+      mFilter(std::move(aFilterFunction))
 {
 }
 

@@ -3,6 +3,7 @@
 #include <boost/optional/optional_io.hpp>
 
 #include "plato/criteria/library/CriterionFactory.hpp"
+#include "plato/input_parser/InputBlockUtilities.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 
@@ -16,19 +17,16 @@ namespace
     return test_utilities::create_valid_example_constraint_string() +
            test_utilities::create_valid_example_objective_string() +
            test_utilities::create_valid_density_topology_geometry_string() +
+           test_utilities::create_valid_identity_filter_string() +
            test_utilities::create_valid_example_rol_optimization_string();
 }
 }  // namespace
 
 TEST(CriterionFactory, ValidObjective)
 {
-    namespace pftu = plato::test_utilities;
-
-    const std::string tObjectiveInput = pftu::create_valid_example_objective_string();
-    const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
-    const process_manager::library::ValidatedInput tData =
-        process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    const auto tData = process_manager::library::make_validated_input(
+        test_utilities::create_valid_density_topology_geometry() | test_utilities::create_valid_example_objective() |
+        test_utilities::create_valid_example_rol_optimization() | test_utilities::create_valid_identity_filter());
 
     ASSERT_EQ(tData.objectives().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction = criteria::library::make_criterion_function(tData.objectives().rawInput().front()));
@@ -36,9 +34,10 @@ TEST(CriterionFactory, ValidObjective)
 
 TEST(CriterionFactory, ValidConstraint)
 {
-    namespace pftu = plato::test_utilities;
-    const process_manager::library::ValidatedInput tData =
-        process_manager::library::parse_and_validate(create_valid_example_input_string());
+    const auto tData = process_manager::library::make_validated_input(
+        test_utilities::create_valid_density_topology_geometry() | test_utilities::create_valid_example_objective() |
+        test_utilities::create_valid_example_constraint() | test_utilities::create_valid_example_rol_optimization() |
+        test_utilities::create_valid_identity_filter());
 
     ASSERT_EQ(tData.constraints().rawInput().size(), 1);
     EXPECT_NO_THROW(auto tFunction =
@@ -47,8 +46,6 @@ TEST(CriterionFactory, ValidConstraint)
 
 TEST(CriterionRegistration, ConvertObjectiveInput)
 {
-    namespace pftu = plato::test_utilities;
-
     const std::string tInput =
         R"(
           begin objective test
@@ -61,6 +58,7 @@ TEST(CriterionRegistration, ConvertObjectiveInput)
           end
        )" +
         test_utilities::create_valid_density_topology_geometry_string() +
+        test_utilities::create_valid_identity_filter_string() +
         test_utilities::create_valid_example_rol_optimization_string();
 
     const process_manager::library::ValidatedInput tData = process_manager::library::parse_and_validate(tInput);

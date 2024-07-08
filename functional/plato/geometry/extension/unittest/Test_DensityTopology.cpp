@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "plato/core/MeshProxy.hpp"
+#include "plato/filter/extension/IdentityFilter.hpp"
 #include "plato/geometry/extension/DensityTopology.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/linear_algebra/JacobianColumnEvaluator.hpp"
@@ -40,7 +41,7 @@ TEST(DensityTopology, Jacobian)
 {
     create_small_mesh(kDensityInput.mesh_name->mToken);
 
-    const DensityTopology tDensityTopology(kDensityInput);
+    const DensityTopology tDensityTopology(kDensityInput, filter::extension::make_identity_filter_function());
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
     const linear_algebra::DynamicVector<double> tDesignVec(tDesignVars);
@@ -64,7 +65,7 @@ TEST(DensityTopology, GenerateMesh)
 {
     create_small_mesh(kDensityInput.mesh_name->mToken);
 
-    const DensityTopology tDensityTopology(kDensityInput);
+    const DensityTopology tDensityTopology(kDensityInput, filter::extension::make_identity_filter_function());
 
     const std::vector<double> tDesignVars = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
     const linear_algebra::DynamicVector<double> tDesignVec(tDesignVars);

@@ -6,6 +6,7 @@
 
 #include "plato/core/MeshProxy.hpp"
 #include "plato/filter/extension/KernelFilter.hpp"
+#include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
 #include "plato/test_utilities/TestContext.hpp"
 #include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
@@ -21,7 +22,7 @@ constexpr std::string_view kMeshFile = "mesh.exo";
 constexpr double kTolerance = 1e-14;  // for comparison against matlab values
 
 [[nodiscard]] std::pair<std::vector<double>, std::vector<double> > test_filter_evaluation(
-    const FilterCentering aFilterCentering)
+    const input_parser::KernelFilterCenteringTypes aFilterCentering)
 {
     const third_party_integration::stk_io::CommandGenerator tCommandGenerator{{1, 1, 1}, {0, 0, 0}, {1, 1, 1}};
     third_party_integration::stk_io::write_mesh(kMeshFile,
@@ -40,7 +41,7 @@ constexpr double kTolerance = 1e-14;  // for comparison against matlab values
 
     const auto tPostFilter = tKernelFilter.filter(tMeshProxy).mNodalDensities;
     std::vector<double> tStdVectorSensitivities;
-    if (aFilterCentering == FilterCentering::ElementCentered)
+    if (aFilterCentering == input_parser::KernelFilterCenteringTypes::kElementCentered)
     {
         tStdVectorSensitivities = std::vector<double>(tCommandGenerator.numberOfElements(), 1);
     }
@@ -74,7 +75,8 @@ constexpr double kTolerance = 1e-14;  // for comparison against matlab values
 
 TEST(KernelFilter, SingleHexElementCentered)
 {
-    const auto [tResultFilter, tResultJV] = test_filter_evaluation(FilterCentering::ElementCentered);
+    const auto [tResultFilter, tResultJV] =
+        test_filter_evaluation(input_parser::KernelFilterCenteringTypes::kElementCentered);
 
     ASSERT_EQ(tResultFilter.size(), 1u);
     EXPECT_NEAR(tResultFilter[0], 1.0 / 4.0, kTolerance);
@@ -113,7 +115,8 @@ TEST(KernelFilter, SingleHexElementCentered)
 // clang-format on
 TEST(KernelFilter, SingleHexNodalCentered)
 {
-    const auto [tResultFilter, tResultJV] = test_filter_evaluation(FilterCentering::NodeCentered);
+    const auto [tResultFilter, tResultJV] =
+        test_filter_evaluation(input_parser::KernelFilterCenteringTypes::kNodeCentered);
 
     ASSERT_EQ(tResultFilter.size(), 8u);
     EXPECT_NEAR(tResultFilter[0], 0.0714285714285714, kTolerance);
