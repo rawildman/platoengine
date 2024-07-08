@@ -10,6 +10,11 @@
 
 #include "plato/input_parser/FileList.hpp"
 
+namespace plato::input_parser
+{
+struct ParsedInput;
+}
+
 namespace plato::input_parser::unittest
 {
 /// @brief Tests that @a aOptionalValue contains a value via assertion, and that it is equal to @a aVal.
@@ -43,6 +48,8 @@ void copy_test(T& aFileList)
     std::copy(aFileList.begin(), aFileList.end(), std::back_inserter(tCopy));
     EXPECT_EQ(aFileList.mList, tCopy);
 }
+
+auto parse_string(const std::string& aInput) -> std::tuple<bool, std::string::const_iterator, ParsedInput>;
 
 }  // namespace plato::input_parser::unittest
 

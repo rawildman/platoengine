@@ -47,16 +47,9 @@ template <typename Criteria>
 template <typename Criteria>
 [[nodiscard]] std::optional<std::string> validate_number_of_processors(const Criteria& aInput)
 {
-    if (aInput.number_of_processors.has_value())
-    {
-        return core::error_message_for_parameter_out_of_bounds(criterion_name(aInput), aInput.number_of_processors,
-                                                               "number_of_processors",
-                                                               utilities::lower_bounded(utilities::Inclusive{1u}));
-    }
-    else
-    {
-        return std::nullopt;
-    }
+    return core::error_message_for_optional_parameter_out_of_bounds(criterion_name(aInput), aInput.number_of_processors,
+                                                                    "number_of_processors",
+                                                                    utilities::lower_bounded(utilities::Inclusive{1u}));
 }
 
 template <typename Criteria>

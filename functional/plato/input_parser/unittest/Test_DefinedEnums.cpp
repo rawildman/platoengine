@@ -40,4 +40,13 @@ TEST(ObjectiveTypes, SymbolParser)
     EXPECT_EQ(tParsedObjectiveTypes.front(), ObjectiveTypes::kMinimize);
     EXPECT_EQ(tParsedObjectiveTypes.back(), ObjectiveTypes::kMaximize);
 }
+
+TEST(KernelFilterCenteringTypes, EnumTable)
+{
+    EXPECT_TRUE(kKernelFilterCenteringTypesTable.toString(KernelFilterCenteringTypes::kElementCentered));
+    EXPECT_EQ(kKernelFilterCenteringTypesTable.toString(KernelFilterCenteringTypes::kElementCentered).value(),
+              "element");
+    EXPECT_TRUE(kKernelFilterCenteringTypesTable.toString(KernelFilterCenteringTypes::kNodeCentered));
+    EXPECT_EQ(kKernelFilterCenteringTypesTable.toString(KernelFilterCenteringTypes::kNodeCentered).value(), "node");
+}
 }  // namespace plato::input_parser::unittest

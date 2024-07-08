@@ -17,7 +17,7 @@ process_manager::library::ValidatedInput create_two_objective_test_input()
     namespace pftu = plato::test_utilities;
 
     // Input for the actual test
-    const std::string tObjectiveInput =
+    const std::string tInput =
         R"(
           begin objective test1
             criterion nodal_sum
@@ -28,12 +28,12 @@ process_manager::library::ValidatedInput create_two_objective_test_input()
             criterion nodal_sum
             aggregation_weight 13.0
           end
-       )";
-    // Other inputs to make sure we have valid input
-    const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
+       )" +
+        test_utilities::create_valid_density_topology_geometry_string() +
+        test_utilities::create_valid_identity_filter_string() +
+        test_utilities::create_valid_example_rol_optimization_string();
 
-    return process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    return process_manager::library::parse_and_validate(tInput);
 }
 }  // namespace
 
@@ -51,7 +51,7 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
     namespace pftu = plato::test_utilities;
 
     // Input for the actual test
-    const std::string tObjectiveInput =
+    const std::string tInput =
         R"(
           begin objective test1
             active false
@@ -63,13 +63,12 @@ TEST(ObjectiveFactory, ValidAggregateOneObjective)
             criterion nodal_sum
             aggregation_weight 13.0
           end
-       )";
-    // Other inputs to make sure we have valid input
-    const std::string tGeometryInput = pftu::create_valid_density_topology_geometry_string();
-    const std::string tOptimizerInput = pftu::create_valid_example_rol_optimization_string();
+       )" +
+        test_utilities::create_valid_density_topology_geometry_string() +
+        test_utilities::create_valid_identity_filter_string() +
+        test_utilities::create_valid_example_rol_optimization_string();
 
-    const process_manager::library::ValidatedInput tData =
-        process_manager::library::parse_and_validate(tObjectiveInput + tGeometryInput + tOptimizerInput);
+    const process_manager::library::ValidatedInput tData = process_manager::library::parse_and_validate(tInput);
 
     EXPECT_EQ(tData.objectives().rawInput().size(), 2);
     const auto tAggregate = criteria::library::detail::make_parallel_aggregate(tData.objectives());

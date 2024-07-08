@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "plato/geometry/library/GeometryFactory.hpp"
+#include "plato/input_parser/InputBlockUtilities.hpp"
 #include "plato/process_manager/library/ValidatedInput.hpp"
 #include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
@@ -23,10 +24,9 @@ TEST(GeometryFactory, ValidTopology)
 {
     namespace pftu = plato::test_utilities;
 
-    input_parser::ParsedInput tInput;
-    tInput.mDensityTopology = pftu::create_valid_density_topology_geometry();
-    tInput.mObjectives = {pftu::create_valid_example_objective()};
-    tInput.mROLOptimization = pftu::create_valid_example_rol_optimization();
+    const input_parser::ParsedInput tInput =
+        pftu::create_valid_density_topology_geometry() | pftu::create_valid_example_objective() |
+        pftu::create_valid_identity_filter() | pftu::create_valid_example_rol_optimization();
 
     const std::filesystem::path tMeshFileName{tInput.mDensityTopology.value().mesh_name.value().mToken};
     const third_party_integration::stk_io::CommandGenerator tCommandGenerator{
