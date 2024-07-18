@@ -8,6 +8,7 @@
 #include "plato/filter/library/FilterInterface.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/utilities/NamedType.hpp"
+#include "plato/utilities/StateCache.hpp"
 
 namespace plato::core
 {
@@ -22,6 +23,7 @@ struct kernel_filter;
 namespace plato::filter::extension
 {
 using FilterRadius = utilities::NamedType<double, struct FilterRadiusTag>;
+using FilterCache = plato::utilities::StateCache<std::shared_ptr<library::FilterInterface>, const core::MeshProxy&>;
 
 /// @brief An implementation of a kernel filter that relies on Tpetra and STK objects to conduct a search and create a
 /// linear mask.
@@ -63,6 +65,9 @@ constexpr double kMaxMultiplier = 1.5;
 /// @brief Compute the volume of a sphere with radius @a aFilterRadius
 double filter_volume(const FilterRadius aFilterRadius);
 
+/// @brief Compute the area of a circle with radius @a aFilterRadius
+double filter_area(const FilterRadius aFilterRadius);
+
 /// @brief Compute maximum expected connectivity in a row for a mesh @a aMeshFileName, with a filter sphere with radius
 /// @a aFilterRadius
 int determine_maximum_connectivity_estimate(const std::filesystem::path& aMeshFileName,
@@ -74,6 +79,10 @@ LinearMask create_linear_mask(const std::filesystem::path& aMeshFileName,
                               const FilterRadius aFilterRadius,
                               const input_parser::KernelFilterCenteringTypes aFilterCentering,
                               const boost::mpi::communicator& aCommunicator);
+
+/// @brief Create a StateCache object for constructing a shared pointer to a KernelFilter if the mesh coordinates have
+/// changed (i.e. the mesh has changed)
+[[nodiscard]] FilterCache create_filter_cache(const input_parser::kernel_filter& aInput);
 
 }  // namespace detail
 }  // namespace plato::filter::extension

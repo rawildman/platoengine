@@ -8,7 +8,9 @@
 #include "plato/filter/extension/KernelFilter.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/test_utilities/FilesystemTestUtility.hpp"
+#include "plato/test_utilities/InputGeneration.hpp"
 #include "plato/test_utilities/TestContext.hpp"
+#include "plato/test_utilities/TestDataFilePath.hpp"
 #include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
 #include "plato/third_party_integration/stk_io/Utilities.hpp"
 
@@ -139,11 +141,35 @@ TEST(KernelFilter, SingleHexNodalCentered)
     EXPECT_NEAR(tResultJV[7], 0, kTolerance);
 }
 
+TEST(KernelFilter, ProperlyAllocatesMemoryFor2DMesh)
+{
+    auto tInput = plato::test_utilities::create_valid_kernel_filter();
+    tInput.filter_radius = 5e-1;
+    auto tFilterCache = detail::create_filter_cache(tInput);
+
+    const auto tFilePath = test_utilities::test_data_file_path("rectangle_3x4_tri3.cdf");
+    ASSERT_TRUE(tFilePath.has_value());
+
+    const core::MeshProxy tMeshProxy{
+        tFilePath.value(),
+        std::vector<double>(third_party_integration::stk_io::read_mesh_node_size(tFilePath.value()))};
+
+    ASSERT_NO_THROW([[maybe_unused]] const auto tFilter = tFilterCache.compute(tMeshProxy));
+}
+
 TEST(KernelFilterDetail, FilterVolume)
 {
     constexpr double tRadius = 1.23;
     const double tResult = detail::filter_volume(FilterRadius{tRadius});
     const double tGold = boost::math::constants::pi<double>() * 4.0 / 3.0 * tRadius * tRadius * tRadius;
+    EXPECT_DOUBLE_EQ(tResult, tGold);
+}
+
+TEST(KernelFilterDetail, FilterArea)
+{
+    constexpr double tRadius = 1.23;
+    const double tResult = detail::filter_area(FilterRadius{tRadius});
+    const double tGold = boost::math::constants::pi<double>() * tRadius * tRadius;
     EXPECT_DOUBLE_EQ(tResult, tGold);
 }
 
@@ -164,6 +190,39 @@ TEST(KernelFilterDetail, DetermineMaximumConnectivityEstimate)
 
     constexpr double tNumberOfActualNodes = 515;  // matlab
     EXPECT_GT(tResult, tNumberOfActualNodes);
+
+    test_utilities::test_for_existence_and_remove({kMeshFile}, TEST_CONTEXT("Removing temporary files."));
+}
+
+TEST(KernelFilterDetail, CreateFilterCache_UseToApplyFilter)
+{
+    auto tFilterCache = detail::create_filter_cache(plato::test_utilities::create_valid_kernel_filter());
+
+    // make mesh and filter
+    {
+        const third_party_integration::stk_io::CommandGenerator tCommandGenerator{{2, 2, 2}, {-1, -1, -1}, {1, 1, 1}};
+        third_party_integration::stk_io::write_mesh(kMeshFile,
+                                                    third_party_integration::stk_io::generate_mesh(tCommandGenerator));
+    }
+    core::MeshProxy tMeshProxy{kMeshFile,
+                               std::vector<double>(third_party_integration::stk_io::read_mesh_node_size(kMeshFile))};
+    const auto tFilteredControl = tFilterCache.compute(tMeshProxy)->filter(tMeshProxy).mNodalDensities;
+
+    // change control and ensure filter size is the same but values are different
+    tMeshProxy.mNodalDensities =
+        std::vector<double>(third_party_integration::stk_io::read_mesh_node_size(kMeshFile), 0.5);
+    EXPECT_TRUE(tFilteredControl.size() == tFilterCache.compute(tMeshProxy)->filter(tMeshProxy).mNodalDensities.size());
+    EXPECT_FALSE(tFilteredControl == tFilterCache.compute(tMeshProxy)->filter(tMeshProxy).mNodalDensities);
+
+    // change mesh and ensure filter size is different
+    {
+        const third_party_integration::stk_io::CommandGenerator tCommandGenerator{{3, 2, 3}, {-1, -1, -1}, {1, 1, 1}};
+        third_party_integration::stk_io::write_mesh(kMeshFile,
+                                                    third_party_integration::stk_io::generate_mesh(tCommandGenerator));
+    }
+    tMeshProxy.mNodalDensities = std::vector<double>(third_party_integration::stk_io::read_mesh_node_size(kMeshFile));
+    EXPECT_FALSE(tFilteredControl.size() ==
+                 tFilterCache.compute(tMeshProxy)->filter(tMeshProxy).mNodalDensities.size());
 
     test_utilities::test_for_existence_and_remove({kMeshFile}, TEST_CONTEXT("Removing temporary files."));
 }

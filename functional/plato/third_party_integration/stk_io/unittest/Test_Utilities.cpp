@@ -8,6 +8,7 @@
 #include <stk_util/parallel/Parallel.hpp>
 #include <string_view>
 
+#include "plato/test_utilities/TestDataFilePath.hpp"
 #include "plato/third_party_integration/common/unittest/CoordinateTestUtilities.hpp"
 #include "plato/third_party_integration/stk_io/CommandGenerator.hpp"
 #include "plato/third_party_integration/stk_io/Utilities.hpp"
@@ -40,12 +41,19 @@ TEST(STKUtilities, NumberOfNodesAndElementsFromBulk)
     EXPECT_EQ(element_size(*tMesh), tCommandGenerator.numberOfElements());
 }
 
-TEST(STKUtilities, SpatialDimensions)
+TEST(STKUtilities, SpatialDimensions3)
 {
     const CommandGenerator tCommandGenerator{{2, 2, 2}};
     const auto tMesh = generate_mesh(tCommandGenerator);
     ASSERT_TRUE(tMesh);
     EXPECT_EQ(spatial_dimensions(*tMesh), 3u);
+}
+
+TEST(STKUtilities, SpatialDimensions2)
+{
+    const auto tMesh = read_mesh_bulk_data(test_utilities::test_data_file_path("rectangle_3x4_tri3.cdf").value());
+    ASSERT_TRUE(tMesh);
+    EXPECT_EQ(spatial_dimensions(*tMesh), 2u);
 }
 
 TEST(STKUtilities, ReadCoordinates)

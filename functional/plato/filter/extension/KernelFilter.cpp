@@ -13,6 +13,7 @@
 #include "plato/filter/extension/CommonInputValidation.hpp"
 #include "plato/filter/library/FilterJacobian.hpp"
 #include "plato/filter/library/FilterRegistration.hpp"
+#include "plato/filter/library/HashGeneration.hpp"
 #include "plato/input_parser/InputBlocks.hpp"
 #include "plato/input_parser/InputEnumTypes.hpp"
 #include "plato/linear_algebra/DynamicVector.hpp"
@@ -26,20 +27,13 @@ namespace
     input_parser::block_name<input_parser::kernel_filter>(), [](const library::ValidatedFilterInput& aInput)
     {
         const auto& tInput = core::validated_variant_raw_input<input_parser::kernel_filter>(aInput);
-        return core::make_function(
-            [&tInput](const core::MeshProxy& aMeshProxy)
-            {
-                const KernelFilter tFilter{aMeshProxy.mFileName, FilterRadius{tInput.filter_radius.value()},
-                                           tInput.centering_type.value(), boost::mpi::communicator{}};
-                return tFilter.filter(aMeshProxy);
-            },
-            [&tInput](const core::MeshProxy& aMeshProxy)
-            {
-                std::shared_ptr<library::FilterInterface> tSharedFilter =
-                    std::make_shared<KernelFilter>(aMeshProxy.mFileName, FilterRadius{tInput.filter_radius.value()},
-                                                   tInput.centering_type.value(), boost::mpi::communicator{});
-                return library::FilterJacobian{tSharedFilter, aMeshProxy};
-            });
+        auto tFilterCache = detail::create_filter_cache(tInput);
+
+        return core::make_function([tFilterCache](const core::MeshProxy& aMeshProxy) mutable
+                                   { return tFilterCache.compute(aMeshProxy)->filter(aMeshProxy); },
+                                   [tFilterCache](const core::MeshProxy& aMeshProxy) mutable {
+                                       return library::FilterJacobian{tFilterCache.compute(aMeshProxy), aMeshProxy};
+                                   });
     }};
 
 [[maybe_unused]] static auto kKernelFilterValidationRegistration =
@@ -93,13 +87,19 @@ double filter_volume(const FilterRadius aFilterRadius)
            aFilterRadius.mValue;
 }
 
+double filter_area(const FilterRadius aFilterRadius)
+{
+    return boost::math::constants::pi<double>() * aFilterRadius.mValue * aFilterRadius.mValue;
+}
+
 int determine_maximum_connectivity_estimate(const std::filesystem::path& aMeshFileName,
                                             const FilterRadius aFilterRadius)
 {
     const auto tBulk = third_party_integration::stk_io::read_mesh_bulk_data(aMeshFileName);
-    auto tNodalCoordinates = third_party_integration::stk_io::nodal_coordinates(*tBulk);
     const double tAverageNodalDensity = third_party_integration::stk_io::average_nodal_density(*tBulk);
-    const double tSearchVolume = detail::filter_volume(aFilterRadius);
+    const auto tSpatialDims = third_party_integration::stk_io::spatial_dimensions(*tBulk);
+    const double tSearchVolume =
+        tSpatialDims == 2u ? detail::filter_area(aFilterRadius) : detail::filter_volume(aFilterRadius);
     return static_cast<int>(tSearchVolume * tAverageNodalDensity *
                             kMaxMultiplier);  // for Tpetra sparse matrix allocation
 }
@@ -125,6 +125,17 @@ LinearMask create_linear_mask(const std::filesystem::path& aMeshFileName,
         return LinearMask(NodalVector{tNodalCoordinates}, SearchRadius{aFilterRadius.mValue},
                           tMaximumConnectivityEstimate, aCommunicator);
     }
+}
+
+FilterCache create_filter_cache(const input_parser::kernel_filter& aInput)
+{
+    return FilterCache{[aInput](const core::MeshProxy& aMeshProxy)
+                       {
+                           return std::make_shared<KernelFilter>(
+                               aMeshProxy.mFileName, FilterRadius{aInput.filter_radius.value()},
+                               aInput.centering_type.value(), boost::mpi::communicator{});
+                       },
+                       [](const core::MeshProxy& aMeshProxy) { return library::hash_mesh(aMeshProxy); }};
 }
 
 }  // namespace detail
